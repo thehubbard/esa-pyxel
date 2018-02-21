@@ -1,0 +1,82 @@
+# PyXel! settings
+
+ccd_process:
+
+  detector:
+
+    geometry:
+      row: 100                      # compulsory
+      col: 100                      # compulsory
+      depletion_thickness: 10.0     # um
+      field_free_thickness: 0.0     # um
+      pixel_vert_size: 10.0         # um
+      pixel_horz_size: 10.0         # um
+      total_thickness: 10.0         # um
+
+    environment:
+      temperature: 320  # detector temperature Kelvin
+
+    characteristics:
+      qe: 0.5         # -
+      eta: 1          # e/photon
+      sv:  1.0e-6      # V/e
+      amp: 0.8       # V/V
+      a1: 100         # V/V
+      a2: 65536       # DN/V
+
+  pipeline:
+
+    # -> photons
+    photon_generation:
+      load_image:
+        name: pyxel.models.photon_generation.load_image
+        enabled: true
+        arguments:
+          image_file: data/HorseHead_orig.fits
+
+      photon_level:
+        name: pyxel.models.photon_generation.add_photon_level
+        enabled: false
+        arguments:
+          level: 0
+
+    # -> photons
+    optics:
+      shot_noise:
+        name: pyxel.models.ccd_noise.add_shot_noise
+
+    # -> charge
+    charge_generation:
+
+      photoelectrons: 
+        name: pyxel.models.photoelectrons.simple_conversion
+
+      tars: 
+        name: pyxel.models.tars.tars.run_tars
+        arguments:
+          initial_energy: 100.0   # MeV
+          particle_number: 1
+          incident_angles:      # rad
+            - 0.31416  # pi / 10
+            - 0.7853   # pi / 4
+          starting_position:    # um
+            - 500.0
+            - 500.0
+            - 0.0
+          stepping_length: 1.0  # um
+
+    # -> charge
+    charge_collection:
+
+    # -> charge
+    charge_transfer:
+
+    # -> signal
+    charge_measurement: 
+      readout_noise: 
+        name: pyxel.models.ccd_noise.add_output_node_noise
+        arguments:
+          std_deviation: 1.0
+
+    # -> image
+    readout_electronics: 
