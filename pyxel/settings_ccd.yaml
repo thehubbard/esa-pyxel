@@ -1,7 +1,7 @@
 
 parametric:
 #  mode: single
-#  mode: embedded
+  #mode: embedded
   mode: sequential
   steps:
     -
