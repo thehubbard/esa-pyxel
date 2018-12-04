@@ -40,7 +40,13 @@ simulation:
       target_data_path: ['data/results.fits']     #  <*.npy> <*.fits> <ascii>
       target_fit_range: [0, 2, 0, 2] #[10, 30, 20, 50]
 
-      fitness_mode: residuals    # least-squares   # custom
+      fitness_mode: custom  # residuals    # least-squares
+      fitness_function:
+        func: tests.unittests.test_fitting.custom_fitness_func
+#        name: funcy
+        arguments:
+          asd: 32534
+
 #      weighting_func_path:  # 'pyxel/results.fits'
 
       algorithm: sade   # sga  # nlopt
@@ -77,9 +83,9 @@ processor:
 
       row:   100 # 2381 #580 # 4494                   # compulsory
       col:   100 # 2376 #640 # 1966                   # compulsory
-      total_thickness: 40.0         # um
-      depletion_thickness: 0.0      # um
-      field_free_thickness: 0.0     # um
+#      total_thickness: 40.0         # um
+#      depletion_thickness: 0.0      # um
+#      field_free_thickness: 0.0     # um
       pixel_vert_size: 10. #10.0         # um
       pixel_horz_size: 10. #10.0  #30.   # um
 
@@ -111,7 +117,7 @@ processor:
 
     environment:
       class: pyxel.detectors.environment.Environment
-      temperature: 300                     # K
+#      temperature: 300                     # K
 #      total_ionising_dose: 0              #
 #      total_non_ionising_dose: 0          #
 
