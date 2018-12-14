@@ -6,8 +6,8 @@ from bisect import bisect
 import subprocess
 from pathlib import Path
 
-from pyxel.models.tars.particle import Particle
-from pyxel.models.tars.util import sampling_distribution, load_histogram_data, read_data
+from pyxel.models.charge_generation.tars.particle import Particle
+from pyxel.models.charge_generation.tars.util import sampling_distribution, load_histogram_data, read_data
 from pyxel.detectors.detector import Detector
 
 
@@ -312,7 +312,7 @@ class Simulation:
         self.alpha_lst_per_event += [particle.alpha]
         self.beta_lst_per_event += [particle.beta]
 
-        error = subprocess.call(['./pyxel/models/tars/data/geant4/TestEm18',
+        error = subprocess.call(['./pyxel/models/charge_generation/tars/data/geant4/TestEm18',
                                  'Silicon', particle.type,
                                  str(particle.energy), str(particle.track_length)],
                                 stdout=subprocess.DEVNULL, stderr=subprocess.PIPE)

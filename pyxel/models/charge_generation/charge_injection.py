@@ -5,9 +5,7 @@
 
 import numpy as np
 import pyxel
-# from pyxel.detectors.detector import Detector
 from pyxel.detectors.ccd import CCD
-# import esapy_config as om
 
 
 @pyxel.register('charge_generation', name='charge_injection')
