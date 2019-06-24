@@ -6,6 +6,8 @@ import pyxel as pyx
 M_ELECTRON = 9.10938356e-31    # kg     # TODO put these global constants to a data file
 
 
+# FRED: Same remarks as for 'ccd_characteristics.py'
+# FRED: We should add a .pyi file
 @pyx.detector_class
 class Material:
     """Material attributes of the detector."""

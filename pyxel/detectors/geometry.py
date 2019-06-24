@@ -2,6 +2,9 @@
 import pyxel as pyx
 
 
+# FRED: Same remarks as for 'ccd_characteristics.py'
+# FRED: We should add a .pyi file
+# FRED: Add typing information for all methods
 @pyx.detector_class
 class Geometry:
     """Geometrical attributes of the detector."""

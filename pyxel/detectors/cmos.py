@@ -15,6 +15,7 @@ from pyxel.data_structure.signal import Signal  # noqa: F401
 from pyxel.data_structure.image import Image    # noqa: F401
 
 
+# FRED: Same remarks as for 'ccd.py'
 class CMOS(Detector):
     """CMOS-based detector class containing all detector attributes and data."""
 

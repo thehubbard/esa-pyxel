@@ -3,6 +3,7 @@ import typing as t
 from esapy_config import eval_range
 
 
+# FRED: Use more typing information
 class ParameterValues:
     """TBW."""
 
@@ -30,6 +31,7 @@ class ParameterValues:
         self.logarithmic = logarithmic              # type: bool
         self.boundaries = boundaries                # type: t.Optional[list]
 
+    # FRED: Is it needed ? all values in this `dict` should me copied.
     def __getstate__(self):
         """TBW."""
         return {
@@ -46,6 +48,7 @@ class ParameterValues:
         values = eval_range(self.values)
         return len(values)
 
+    # FRED: Do you need magic method '__contains__' ? If yes then this class will act as a `Collections.abc.Sequence`
     def __iter__(self):
         """TBW."""
         values = eval_range(self.values)

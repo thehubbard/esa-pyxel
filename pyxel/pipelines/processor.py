@@ -22,6 +22,7 @@ class Processor:
         self.detector = detector
         self.pipeline = pipeline
 
+    # FRED: Is it needed ?  Where is the '__setstate__' ?
     def __getstate__(self):
         """TBW."""
         return {
@@ -29,6 +30,7 @@ class Processor:
             'pipeline': self.pipeline,
         }
 
+    # FRED: Could it be renamed '__contains__' ?
     def has(self, key):
         """TBW.
 
@@ -43,6 +45,7 @@ class Processor:
             found = True
         return found
 
+    # FRED: Could it be renamed '__getitem__' ?
     def get(self, key):
         """TBW.
 
@@ -51,6 +54,7 @@ class Processor:
         """
         return get_value(self, key)
 
+    # FRED: Could it be renamed '__setitem__' ?
     def set(self, key, value, convert_value=True):
         """TBW.
 

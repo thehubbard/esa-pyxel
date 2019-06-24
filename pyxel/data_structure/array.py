@@ -2,17 +2,25 @@
 import numpy as np
 import typing as t  # noqa: F401
 from astropy.units import cds
+
+# FRED: Is it possible to move this to `data_structure/__init__.py' ?
 cds.enable()
 
 
 class Array:
     """Array class."""
 
+    # FRED: Add units ?
     def __init__(self) -> None:
         """TBW."""
+        # FRED: self.exp_type and self.type_list could be Class variables instead of instance variable
+        #       It is more clear
+
         self.type = None            # type: t.Optional[type]
         self.exp_type = None        # type: t.Optional[type]
         self.type_list = None       # type: t.Optional[t.List[type]]
+
+        # FRED: Implement a method to initialized 'self._array' ???
         self._array = None          # type: t.Optional[np.ndarray]
 
     @property
@@ -31,6 +39,7 @@ class Array:
 
         Only accepts an array with the right type and shape.
         """
+        # FRED: This could be flattened
         if isinstance(value, np.ndarray):
             if value.dtype in self.type_list:
                 if value.shape == self._array.shape:
@@ -45,6 +54,7 @@ class Array:
         else:
             raise TypeError('%s array should be a numpy.ndarray' % self.__class__.__name__)
 
+    # TODO: Is it necessary ? Maybe not if you implement method __array__
     @property
     def mean(self):
         """Return mean of all pixel values."""

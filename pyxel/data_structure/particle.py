@@ -8,12 +8,13 @@ import pandas as pd
 # cds.enable()
 
 
+# FRED: Add better typing information
 class Particle:
     """Class defining and storing information of all particles with their position, velocity, energy, etc."""
 
     def __init__(self) -> None:
         """TBW."""
-        self.EMPTY_FRAME = pd.DataFrame()
+        self.EMPTY_FRAME = pd.DataFrame()  # FRED: This should be a class variable
         self.frame = pd.DataFrame()
 
     def get_values(self, quantity: str, id_list: list = None):

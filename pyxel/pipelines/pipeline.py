@@ -5,6 +5,7 @@ from pyxel.pipelines.model_group import ModelGroup
 from pyxel.detectors.detector import Detector
 
 
+# FRED: Add more and better typing information
 class DetectionPipeline:
     """TBW."""
 
@@ -53,6 +54,7 @@ class DetectionPipeline:
                               'signal_transfer',
                               'readout_electronics']            # type: t.List[str]           # TODO
 
+    # FRED: Is it needed ?  Where is the '__setstate__' ?
     def __getstate__(self):
         """TBW."""
         return {

@@ -12,6 +12,7 @@ def check_energy(initial_energy):
     :param initial_energy:
     :return:
     """
+    # FRED: Flatten this
     if isinstance(initial_energy, int) or isinstance(initial_energy, float):
         pass
     else:
@@ -25,6 +26,7 @@ def check_position(detector, initial_position):
     :param initial_position:
     :return:
     """
+    # FRED: Flatten this
     if isinstance(initial_position, np.ndarray):
         if 0.0 <= initial_position[0] <= detector.vert_dimension:
             if 0.0 <= initial_position[1] <= detector.horz_dimension:

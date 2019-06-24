@@ -3,6 +3,7 @@ import esapy_config.io as io
 load = io.load
 
 
+# FRED: We should use the YAML loader from `ESAPY_CONFIG`
 def pyxel_yaml_loader():
     """TBW."""
     from pyxel.parametric.parametric import Configuration

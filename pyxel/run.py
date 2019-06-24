@@ -18,6 +18,7 @@ from pyxel.detectors.ccd import CCD
 # from pyxel import __version__ as pyxel_version
 
 
+# FRED: Add more typing information
 def run(input_filename, random_seed: int = None):
     """TBW.
 
@@ -26,7 +27,7 @@ def run(input_filename, random_seed: int = None):
     :return:
     """
     logger = logging.getLogger('pyxel')
-    logger.info('Pipeline started.')
+    logger.info('Pipeline started.')    # FRED: Use `logging.info`
     start_time = time.time()
     if random_seed:
         np.random.seed(random_seed)
@@ -79,7 +80,7 @@ def run(input_filename, random_seed: int = None):
             detector.set_dynamic(steps=simulation.dynamic['steps'],
                                  time_step=simulation.dynamic['t_step'],
                                  ndreadout=simulation.dynamic['non_destructive_readout'])
-        while detector.elapse_time():
+        while detector.elapse_time():  # FRED: Use an iterator for that
             logger.info('time = %.3f s' % detector.time)
             if detector.is_non_destructive_readout:
                 detector.initialize(reset_all=False)
@@ -96,7 +97,7 @@ def run(input_filename, random_seed: int = None):
     logger.info('Running time: %.3f seconds' % (time.time() - start_time))
 
 
-# TODO: Remove this. Get the current version from '__version__' in 'pyxel/__init__.py'
+# FRED: Remove this. Get the current version from '__version__' in 'pyxel/__init__.py'
 def get_pyxel_version():
     """Extract 'pyxel_version' from 'setup.cfg'."""
     from setuptools.config import read_configuration
@@ -108,6 +109,8 @@ def get_pyxel_version():
     return metadata['version']
 
 
+# FRED: Add an option to display colors ? (very optional)
+# FRED: Use library 'click' instead of 'parser' ? (very optional)
 def main():
     """Define the argument parser and run Pyxel."""
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter,

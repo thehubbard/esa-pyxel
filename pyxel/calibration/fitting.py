@@ -12,6 +12,7 @@ from pyxel.parametric.parameter_values import ParameterValues
 from pyxel.pipelines.processor import Processor
 
 
+# FRED: Add typing information for all methods
 class ModelFitting:
     """Pygmo problem class to fit data with any model in Pyxel."""
 

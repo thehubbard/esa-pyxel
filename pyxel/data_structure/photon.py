@@ -38,6 +38,7 @@ class Photon(Array):
 
         :param new_array:
         """
+        # FRED: Flatten this
         if isinstance(new_array, np.ndarray):
             if new_array.dtype in self.type_list:
                 self._array = new_array

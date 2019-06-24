@@ -28,6 +28,7 @@ class Image(Array):
         :param geo:
         """
         super().__init__()                  # TODO: add unit (ADU)
-        self.exp_type = np.uint
+        self.exp_type = np.uint  # FRED: This could be a class variable
+        # FRED: it could be a class variable
         self.type_list = [np.uint16, np.uint32, np.uint64, np.float16, np.float32, np.float64]
         self._array = np.zeros((geo.row, geo.col), dtype=self.exp_type)

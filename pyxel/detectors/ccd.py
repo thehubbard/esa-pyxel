@@ -15,6 +15,7 @@ from pyxel.data_structure.signal import Signal  # noqa: F401
 from pyxel.data_structure.image import Image    # noqa: F401
 
 
+# FRED: This class could be implement with ESAPY_CONFIG
 class CCD(Detector):
     """Charge-Coupled Device class containing all detector attributes and data."""
 
@@ -23,11 +24,11 @@ class CCD(Detector):
                  material: Material,
                  environment: Environment,
                  characteristics: CCDCharacteristics,
-                 photon: Photon = None,
-                 charge: Charge = None,
-                 pixel: Pixel = None,
-                 signal: Signal = None,
-                 image: Image = None) -> None:
+                 photon: Photon = None,         # FRED: Use t.Optional[Photon]
+                 charge: Charge = None,         # FRED: Use t.Optional
+                 pixel: Pixel = None,           # FRED: Use t.Optional
+                 signal: Signal = None,         # FRED: Use t.Optional
+                 image: Image = None) -> None:  # FRED: Use t.Optional + -> None is not needed
         """TBW.
 
         :param geometry:

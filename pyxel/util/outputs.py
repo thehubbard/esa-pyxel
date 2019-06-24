@@ -14,6 +14,7 @@ except ImportError:
     pass
 
 
+# FRED: Add more relevant typing information
 class Outputs:
     """TBW."""
 
@@ -64,8 +65,10 @@ class Outputs:
         self.parameter_values = np.array([])    # type: np.array
         self.parameter_keys = []                # type: list
         self.additional_keys = []               # type: list
+        # FRED: Beware, this will directly display a MatplotLib figure. This should be removed from __init__
         plt.figure()
 
+    # FRED: Use `Pathlib.Path`
     def set_input_file(self, filename: str):
         """TBW."""
         self.input_file = filename
@@ -77,6 +80,7 @@ class Outputs:
         self.population_file = self.new_file('population.out')
         return self.champions_file, self.population_file
 
+    # FRED: Use method `Pathlib.Path.touch`
     def new_file(self, filename: str):
         """TBW."""
         filename = self.output_dir + '/' + filename
@@ -84,6 +88,7 @@ class Outputs:
         file.close()
         return filename
 
+    # FRED: Use `Pathlib.Path`
     def save_to_png(self, processor, obj_name: str, filename: str = None):
         """Write array to bitmap PNG image file."""
         geo = processor.detector.geometry
@@ -102,6 +107,7 @@ class Outputs:
         plt.imshow(array, cmap='gray', extent=[0, geo.col, 0, geo.row], aspect=aspect_ratio)
         plt.savefig(filename, dpi=300)
 
+    # FRED: Use `Pathlib.Path`
     def save_to_fits(self, processor, obj_name: str, filename: str = None):
         """Write array to FITS file."""
         array = processor.get(obj_name)
@@ -111,6 +117,7 @@ class Outputs:
         hdu = fits.PrimaryHDU(array)
         hdu.writeto(filename, overwrite=False, output_verify='exception')
 
+    # FRED: Use `Pathlib.Path`
     def save_to_hdf(self, processor, obj_name: str, filename: str = None):
         """Write detector object to HDF5 file."""
         detector = processor.detector
@@ -138,6 +145,7 @@ class Outputs:
                 dataset[:] = array
         h5file.close()
 
+    # FRED: Use `Pathlib.Path`
     def save_to_txt(self, processor, obj_name: str, filename: str = None):
         """Write data to txt file."""
         data = processor.get(obj_name)
@@ -146,6 +154,7 @@ class Outputs:
         filename = apply_run_number(self.output_dir + '/' + filename + '_??.txt')
         np.savetxt(filename, data, delimiter='|')
 
+    # FRED: Use `Pathlib.Path`
     def save_to_csv(self, processor, obj_name: str, filename: str = None):
         """Write Pandas Dataframe or Numpy array to a CSV file."""
         data = processor.get(obj_name)
@@ -157,6 +166,7 @@ class Outputs:
         except AttributeError:
             np.savetxt(filename, data, delimiter=',')
 
+    # FRED: Use `Pathlib.Path`
     def save_to_npy(self, processor, obj_name: str, filename: str = None):
         """Write Numpy array to Numpy binary npy file."""
         array = processor.get(obj_name)
@@ -165,6 +175,7 @@ class Outputs:
         filename = apply_run_number(self.output_dir + '/' + filename + '_??.npy')
         np.save(file=filename, arr=array)
 
+    # FRED: Use `Pathlib.Path`
     def save_plot(self, filename='figure_??'):
         """Save plot figure in PNG format, close figure and create new canvas for next plot."""
         filename = self.output_dir + '/' + filename + '.png'
@@ -217,7 +228,7 @@ class Outputs:
                         'csv': self.save_to_csv,
                         'png': self.save_to_png}
         for item in self.save_to_file:
-            obj = next(iter(item.keys()))
+            obj = next(iter(item.keys()))  # FRED: This should be solved
             format_list = next(iter(item.values()))
             if format_list is not None:
                 [save_methods[out_format](processor=processor, obj_name=obj) for out_format in format_list]

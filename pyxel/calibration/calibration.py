@@ -15,6 +15,9 @@ from pyxel.pipelines.processor import Processor
 from pyxel.util import Outputs
 
 
+# FRED: Same remarks as for 'ccd_characteristics.py'
+# FRED: We should add a .pyi file
+# FRED: Add typing information for all methods
 @pyx.detector_class
 class Algorithm:
     """TBW.
@@ -81,6 +84,7 @@ class Algorithm:
     nlopt_selection = pyx.attribute(type=str, default='best', doc='')         # todo: "selection" - same name as in SGA
     # NLOPT #####
 
+    # FRED: This could be refactored for each if-statement
     def get_algorithm(self):
         """TBW.
 
@@ -121,6 +125,8 @@ class Algorithm:
         return opt_algorithm
 
 
+# FRED: Same remarks as for 'ccd.py'
+# FRED: Add typing information for all methods
 @pyx.detector_class
 class Calibration:
     """TBW.
@@ -207,7 +213,7 @@ class Calibration:
         :return:
         """
         pg.set_global_rng_seed(seed=self.seed)
-        logger = logging.getLogger('pyxel')
+        logger = logging.getLogger('pyxel')     # FRED: No need for 'logger'. We could use directly 'logging.info'
         logger.info('Seed: %d' % self.seed)
         output_files = (None, None)
         if output:

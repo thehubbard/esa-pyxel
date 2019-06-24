@@ -123,7 +123,7 @@ class ParametricAnalysis:
                 _, att = get_obj_att(config, step.key)
                 value = get_value(config, step.key)
                 values.append((att, value))
-            print('%d: %r' % (i, values))
+            print('%d: %r' % (i, values))  # FRED: Use `logging.debug`
             result.append((i, values))
         return result
 

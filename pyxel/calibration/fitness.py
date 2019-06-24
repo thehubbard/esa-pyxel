@@ -2,6 +2,7 @@
 import numpy as np
 
 
+# FRED: Add typing information for all functions
 def sum_of_abs_residuals(simulated, target, weighting=None):
     """TBW.
 

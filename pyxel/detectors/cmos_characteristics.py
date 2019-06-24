@@ -3,6 +3,8 @@ import pyxel as pyx
 from pyxel.detectors.characteristics import Characteristics
 
 
+# FRED: Same remarks as for 'ccd_characteristics.py'
+# FRED: We should add a .pyi file
 @pyx.detector_class
 class CMOSCharacteristics(Characteristics):
     """Characteristical attributes of a CMOS-based detector."""

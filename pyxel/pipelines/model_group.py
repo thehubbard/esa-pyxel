@@ -26,6 +26,7 @@ class ModelGroup:
                     model.function(detector)
         return False
 
+    # TODO: Is is needed ?
     def __getstate__(self):
         """TBW."""
         return {'models': self.models}

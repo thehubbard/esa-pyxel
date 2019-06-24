@@ -32,6 +32,7 @@ class ModelFunction:
         """TBW."""
         return 'ModelFunction(%(name)r, %(func)r, %(arguments)r, %(enabled)r)' % vars(self)
 
+    # FRED: Is it needed ?  Where is the '__setstate__' ?
     def __getstate__(self):
         """TBW."""
         return {

@@ -3,6 +3,8 @@ import pyxel as pyx
 from pyxel.detectors.geometry import Geometry
 
 
+# FRED: Same remarks as for 'ccd_characteristics.py'
+# FRED: We should add a .pyi file
 @pyx.detector_class
 class CMOSGeometry(Geometry):
     """Geometrical attributes of a CMOS-based detector."""

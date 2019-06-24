@@ -20,6 +20,12 @@ from pyxel.detectors.cmos_characteristics import CMOSCharacteristics    # noqa: 
 from pyxel.detectors.ccd_characteristics import CCDCharacteristics      # noqa: F401
 
 
+# FRED: Same remarks as for 'ccd.py'
+# FRED: Add typing information for all methods
+# FRED: There is a big flaw with this class.
+#       A `Detector` instance can have a `CCDGeometry` and a `CMOSCharacteristics`.
+#       This is not possible. We must solve this issue.
+#       Note: Several solution are possibles
 class Detector:
     """The detector class."""
 
@@ -54,22 +60,27 @@ class Detector:
         if photon:
             self.photon = photon
         else:
+            # FRED: This could be assigned directly in the 'default' field of `attr` or `esapy_config`
             self.photon = Photon(self.geometry)
         if charge:
             self.charge = charge
         else:
+            # FRED: This could be assigned directly in the 'default' field of `attr` or `esapy_config`
             self.charge = Charge()
         if pixel:
             self.pixel = pixel
         else:
+            # FRED: This could be assigned directly in the 'default' field of `attr` or `esapy_config`
             self.pixel = Pixel(self.geometry)
         if signal:
             self.signal = signal
         else:
+            # FRED: This could be assigned directly in the 'default' field of `attr` or `esapy_config`
             self.signal = Signal(self.geometry)
         if image:
             self.image = image
         else:
+            # FRED: This could be assigned directly in the 'default' field of `attr` or `esapy_config`
             self.image = Image(self.geometry)
 
         self.input_image = None
@@ -129,6 +140,7 @@ class Detector:
         """
         return self._non_destructive
 
+    # FRED: This should be solved
     @property
     def geometry(self):
         """TBW."""
@@ -139,6 +151,7 @@ class Detector:
         elif isinstance(self._geometry, Geometry):
             return t.cast(Geometry, self._geometry)
 
+    # FRED: This should be solved
     @property
     def characteristics(self):
         """TBW."""
@@ -163,6 +176,7 @@ class Detector:
         """TBW."""
         return self._time
 
+    # FRED: This method is used in 'run.py'. We could implement this as an iterator.
     def elapse_time(self):
         """TBW."""
         try:
