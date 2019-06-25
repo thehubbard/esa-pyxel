@@ -4,6 +4,7 @@ from pyxel.pipelines.model_function import ModelFunction
 from pyxel import util
 
 
+# FRED: Build this class with ESAPY_EGSE
 class ModelGroup:
     """TBW."""
 
@@ -26,7 +27,7 @@ class ModelGroup:
                     model.function(detector)
         return False
 
-    # TODO: Is is needed ?
+    # FRED: Is is needed ?
     def __getstate__(self):
         """TBW."""
         return {'models': self.models}
@@ -35,6 +36,11 @@ class ModelGroup:
         """TBW."""
         self.models = item['models']
 
+    # FRED: These methods could also be implemented:
+    #       __getitem__, __iter__, __len__, __contains__, __eq__, ... 
+
+    # FRED: Is it needed ? if yes then you could also implement 
+    #       the magic method '__dir__'. It is useful for auto-completion
     def __getattr__(self, item):
         """TBW."""
         for model in self.models:
