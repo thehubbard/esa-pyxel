@@ -32,6 +32,8 @@ def run(input_filename, random_seed: int = None):
     if random_seed:
         np.random.seed(random_seed)
 
+    # FRED: 'cfg' is a `dict`. It would better to use an object create from a class
+    #       built by 'esapy_config'
     cfg = io.load(Path(input_filename))
     simulation = cfg['simulation']
     if 'ccd_detector' in cfg:
