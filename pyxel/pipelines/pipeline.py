@@ -9,6 +9,8 @@ from pyxel.detectors.detector import Detector
 class DetectionPipeline:
     """TBW."""
 
+    # HANS: develop a ModelGroupList class. Pass this as a single argument.
+    # HANS: remove _model_groups order list.
     def __init__(self,      # TODO: Too many instance attributes
                  photon_generation: ModelGroup = None,
                  optics: ModelGroup = None,
@@ -45,6 +47,7 @@ class DetectionPipeline:
         self.charge_transfer = charge_transfer                  # type: t.Optional[ModelGroup]  # CCD
         self.signal_transfer = signal_transfer                  # type: t.Optional[ModelGroup]  # CMOS
 
+        # HANS: this defines the order of steps in the pipeline. The ModelGroupList does this. Is it really needed?
         self._model_groups = ['photon_generation',
                               'optics',
                               'charge_generation',
@@ -108,6 +111,8 @@ class DetectionPipeline:
         for group_name in self.model_group_names:
             models_grp = getattr(self, group_name)      # type: ModelGroup
             if models_grp:
+                # HANS: it may be better to have `run` raise an Abort exception
+                #     and that it is caught here. Working with flag switches is brittle.
                 abort_flag = models_grp.run(detector, self, abort_model=abort_before)
                 if abort_flag:
                     break

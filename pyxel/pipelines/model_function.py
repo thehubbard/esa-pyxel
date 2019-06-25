@@ -49,5 +49,6 @@ class ModelFunction:
         if isinstance(func_ref, type):
             # this is a class type, instantiate it using default arguments.
             func_ref = func_ref()
+            # HANS: should check whether or not it's callable.
         func = functools.partial(func_ref, **self.arguments)
         return func

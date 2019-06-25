@@ -25,11 +25,21 @@ def read_data(data_path: t.Union[str, list]):
             raise FileNotFoundError('Input file %s can not be found.' % str(path))
 
         data = None
+        # HANS: change to Path(path).suffix.lower().startswith('.fit')
+        #       Same applies to `.npy`.
         if '.fits' in path:
             data = fits.getdata(path)
         elif '.npy' in path:
             data = np.load(path)
         else:
+            # HANS: this is a convoluted implementation. Change to:
+            # for sep in [' ', ',', '|', ';']:
+            #     try:
+            #         data = np.loadtxt(path, delimiter=sep[ii])
+            #     except ValueError:
+            #         pass
+            #     else:
+            #         break
             sep = [' ', ',', '|', ';']
             ii, jj = 0, 1
             while jj:

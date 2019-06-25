@@ -1,6 +1,7 @@
 #   --------------------------------------------------------------------------
 #   Copyright 2018 SCI-FIV, ESA (European Space Agency)
 #   --------------------------------------------------------------------------
+# HANS: remove copyright
 """CCD detector modeling class."""
 
 from pyxel.detectors.detector import Detector

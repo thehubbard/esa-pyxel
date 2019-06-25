@@ -32,6 +32,7 @@ class ParameterValues:
         self.boundaries = boundaries                # type: t.Optional[list]
 
     # FRED: Is it needed ? all values in this `dict` should me copied.
+    # HANS: for each `__getstate__` there should be a corresponding `__setstate__`.
     def __getstate__(self):
         """TBW."""
         return {

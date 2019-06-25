@@ -62,6 +62,7 @@ class ModelFitting:
         """
         return self.lbd, self.ubd
 
+    # HANS: expand setting to argument names with default values.
     def configure(self, setting: dict):
         """TBW.
 

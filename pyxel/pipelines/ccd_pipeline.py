@@ -1,4 +1,5 @@
 """TBW."""
+# HANS: remove this file.
 # from pyxel.pipelines.pipeline import DetectionPipeline
 # from pyxel.pipelines.model_group import ModelGroup
 

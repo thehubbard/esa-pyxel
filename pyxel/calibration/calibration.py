@@ -47,6 +47,7 @@ class Algorithm:
         doc=''
     )
 
+    # HANS: apply the coding conventions to the pyx.attribute below as they are vertically defined above.
     # FRED: Maybe a new class `Sade` could contains these attributes ?
     # SADE #####
     variant = pyx.attribute(type=int, validator=[pyx.validate_type(int),
@@ -238,6 +239,7 @@ class Calibration:
             'champions_file': output_files[0],
             'population_file': output_files[1]
         }
+        # HANS: it may be better to pass this in as **settings. Need to discuss. There are many arguments.
         fitting.configure(settings)
 
         prob = pg.problem(fitting)

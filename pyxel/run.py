@@ -50,6 +50,17 @@ def run(input_filename, random_seed: int = None):
         logger.warning('Output is not defined! No output files will be saved!')
     detector.set_output_dir(out.output_dir)
 
+    # HANS: place all code in each if block into a separate function
+    #   and use a dict call map. Example:
+    #   mode_funcs = {
+    #       'single': run_single_mode,
+    #       'calibration': run_calibration_mode,
+    #       'parametric': run_parametric_mode,
+    #       ... etc ...
+    #   }
+
+    # HANS: place logger Mode line outside if / elif /else block. Example:
+    #   logger.info('Mode: %r', simulation.mode)
     if simulation.mode == 'single':
         logger.info('Mode: Single')
         processor.pipeline.run_pipeline(detector)

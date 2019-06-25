@@ -4,6 +4,8 @@ load = io.load
 
 
 # FRED: We should use the YAML loader from `ESAPY_CONFIG`
+# HANS: agree with above. The configuration of the yaml loader is very complex
+#       and causes a lot of confusion when explaining how to add a class to it.
 def pyxel_yaml_loader():
     """TBW."""
     from pyxel.parametric.parametric import Configuration
@@ -62,4 +64,4 @@ def pyxel_yaml_loader():
     io.ObjectModelLoader.add_class(ParameterValues, ['simulation', 'parametric', 'parameters'], is_list=True)
 
 
-pyxel_yaml_loader()
+pyxel_yaml_loader()  # HANS: avoid auto-calling functions on import.
