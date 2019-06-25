@@ -47,6 +47,7 @@ class Algorithm:
         doc=''
     )
 
+    # FRED: Maybe a new class `Sade` could contains these attributes ?
     # SADE #####
     variant = pyx.attribute(type=int, validator=[pyx.validate_type(int),
                                                  pyx.validate_range(1, 18)], default=2, doc='')
@@ -57,6 +58,7 @@ class Algorithm:
     memory = pyx.attribute(type=bool, default=False, doc='')
     # SADE #####
 
+    # FRED: Maybe a new class `SGA` could contains these attributes ?
     # SGA #####
     cr = pyx.attribute(type=float, converter=float, validator=[pyx.validate_type(float),
                                                                pyx.validate_range(0, 1)], default=0.9, doc='')
@@ -70,6 +72,7 @@ class Algorithm:
     selection = pyx.attribute(type=str, default='tournament', doc='')   # validator=pyx.validate_choices(),
     # SGA #####
 
+    # FRED: Maybe a new class `NLOPT` could contains these attributes ?
     # NLOPT #####
     nlopt_solver = pyx.attribute(type=str, default='neldermead', doc='')    # validator=pyx.validate_choices(),  todo
     maxtime = pyx.attribute(type=int, default=0, doc='')                     # validator=pyx.validate_range(),  todo
