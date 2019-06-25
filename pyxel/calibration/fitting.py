@@ -165,10 +165,12 @@ class ModelFitting:
         :param target_data:
         :return:
         """
-        if self.weighting is not None:
-            fitness = self.fitness_func.function(simulated_data, target_data, self.weighting)
-        else:
-            fitness = self.fitness_func.function(simulated_data, target_data)
+        # HANS: use this instead. The if/else statement is redundant, the weighting is optional anyways.
+        fitness = self.fitness_func.function(simulated_data, target_data, self.weighting)
+        # if self.weighting is not None:
+        #     fitness = self.fitness_func.function(simulated_data, target_data, self.weighting)
+        # else:
+        #     fitness = self.fitness_func.function(simulated_data, target_data)
         return fitness
 
     def fitness(self, parameter):

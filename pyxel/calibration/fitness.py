@@ -1,5 +1,18 @@
 """Fitness functions for model fitting."""
 import numpy as np
+import typing as t
+
+
+# HANS: refactor code to this.
+# def sum_of_abs_residuals(
+#         simulated: t.Union[float, np.array],
+#         target: t.Union[float, np.array],
+#         weighting: t.Optional[t.Union[float, np.array]] = None) -> float:
+#     """TBW."""
+#     diff = np.array(target).astype(float) - np.array(simulated).astype(float)
+#     if weighting is not None:
+#         diff *= weighting
+#     return np.sum(np.abs(diff))
 
 
 # FRED: Add typing information for all functions
