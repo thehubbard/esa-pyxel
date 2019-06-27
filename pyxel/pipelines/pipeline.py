@@ -100,6 +100,11 @@ class DetectionPipeline:
                         return model
         raise AttributeError('Model has not found.')
 
+    # FRED: In this function, the input parameter 'detector' is modified.
+    #       It would be maybe better to do in this function:
+    #          1. A deep copy of `detector`
+    #          2. And use this copy for all processing.
+    #        In this case the output `Detector` instance is different than the input `Detector`
     def run_pipeline(self, detector: Detector, abort_before: str = None) -> Detector:
         """TBW.
 
