@@ -7,6 +7,10 @@ from astropy.units import cds
 cds.enable()
 
 
+# FRED: Does it make sense to force 'self._array' to be read-only ?
+#       It could be done with:
+#       ... self._array = np.array(value)
+#       ... self._array.setflags(write=False)
 class Array:
     """Array class."""
 

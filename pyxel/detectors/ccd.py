@@ -17,6 +17,7 @@ from pyxel.data_structure.image import Image    # noqa: F401
 
 
 # FRED: This class could be implement with ESAPY_CONFIG
+# FRED: Method __init__ does not add anything new. Is this method needed ?
 class CCD(Detector):
     """Charge-Coupled Device class containing all detector attributes and data."""
 

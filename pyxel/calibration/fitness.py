@@ -1,6 +1,5 @@
 """Fitness functions for model fitting."""
 import numpy as np
-import typing as t
 
 
 # HANS: refactor code to this.

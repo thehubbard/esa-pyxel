@@ -8,6 +8,7 @@ from pyxel.pipelines.pipeline import DetectionPipeline
 # from pyxel.pipelines.cmos_pipeline import CMOSDetectionPipeline
 
 
+# FRED: Is this class needed ?
 class Processor:
     """TBW."""
 

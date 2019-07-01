@@ -3,6 +3,10 @@ import functools
 from esapy_config import evaluate_reference
 
 
+# FRED: What is `ModelFunction` ?
+#       Is it possible to replace this by a `callable` ?
+#       Is it possible to use a function with an inner function (==> a closure) ?
+#       could be 'name' and 'enabled' stored in `ModelGroup` ?
 class ModelFunction:
     """TBW."""
 
@@ -42,6 +46,7 @@ class ModelFunction:
             'arguments': self.arguments
         }
 
+    # FRED: Replace this by __call__ ?
     @property
     def function(self):
         """TBW."""

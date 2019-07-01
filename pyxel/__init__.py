@@ -73,6 +73,7 @@ def validate(func: t.Callable):
     return new_func
 
 
+# FRED: This function is not needed when you use an instance of `pathlib.Path`
 def check_path(path):
     """TBW."""
     return os.path.exists(path)

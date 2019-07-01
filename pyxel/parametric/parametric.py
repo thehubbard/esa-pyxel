@@ -7,6 +7,7 @@ from esapy_config import get_obj_att, get_value
 from pyxel.parametric.parameter_values import ParameterValues
 
 
+# FRED: Create a `Enum` for 'parametric_mode' ?
 class ParametricAnalysis:
     """TBW."""
 
@@ -133,6 +134,7 @@ class ParametricAnalysis:
         return result
 
 
+# FRED: Create a `Enum` for 'mode' ?
 class Configuration:
     """TBW."""
 

@@ -26,6 +26,15 @@ from pyxel.detectors.ccd_characteristics import CCDCharacteristics      # noqa: 
 #       A `Detector` instance can have a `CCDGeometry` and a `CMOSCharacteristics`.
 #       This is not possible. We must solve this issue.
 #       Note: Several solution are possibles
+# FRED: Add methods to save/load a `Detector` instance to the filesystem
+#       Example of methods:
+#           def to_fits(self, filename: Path):      # Save into one FITS file that contains multiple HDUs
+#               ...
+#           @classmethod
+#           def from_fits(self, filename: Path) -> Detector     # Store into one FITS file
+#               ...
+#           def to_hdf5(...) / def from_hdf5(...)
+#           def to_folder(...)  / def from_folder(...)=
 class Detector:
     """The detector class."""
 

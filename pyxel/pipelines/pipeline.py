@@ -93,6 +93,8 @@ class DetectionPipeline:
         :return:
         """
         for group_name in self.model_group_names:
+            # FRED: This should be refactored (e.g. provide directly a `ModelGroup` and not
+            #       its name)
             model_group = getattr(self, group_name)     # type: ModelGroup
             if model_group:
                 for model in model_group.models:
@@ -114,6 +116,8 @@ class DetectionPipeline:
         """
         self._is_running = True
         for group_name in self.model_group_names:
+            # FRED: This should be refactored (e.g. provide directly a `ModelGroup` and not
+            #       its name)
             models_grp = getattr(self, group_name)      # type: ModelGroup
             if models_grp:
                 # HANS: it may be better to have `run` raise an Abort exception

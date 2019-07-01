@@ -11,6 +11,16 @@ import numba
 
 # @pyxel.validate
 # @pyxel.argument(name='', label='', units='', validate=)
+# FRED: To be discussed : is it not better/relevant if all models return a new `Detector` ?
+#       Therefore the 'input' `Detector` is never modified.
+#
+#       Example:
+#       >>> def simple_collection(detector: Detector) -> Detector:
+#       ...     # Create a new object `Detector`.
+#       ...     # Note: This is not an expensive 'deep' copy
+#       ...     new_detector = detector.copy()
+#       ...     # Do something
+#       ...     return new_detector
 def simple_collection(detector: Detector):
     """Associate charge with the closest pixel."""
     logger = logging.getLogger('pyxel')

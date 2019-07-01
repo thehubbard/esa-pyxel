@@ -46,6 +46,7 @@ class Particle:
         :param id_list: list of particle ids: ``[0, 12, 321]``
         """
         if id_list:
+            # FRED: Check carefully if 'inplace' is needed. This could break lot of things.
             self.frame.query('index not in %s' % id_list, inplace=True)
         else:
             self.frame = self.EMPTY_FRAME.copy()

@@ -9,6 +9,7 @@ from pyxel.detectors.cmos_geometry import CMOSGeometry
 from pyxel.detectors.material import Material
 from pyxel.detectors.environment import Environment
 from pyxel.detectors.cmos_characteristics import CMOSCharacteristics
+# FRED: Remove all 'noqa: F401'
 from pyxel.data_structure.charge import Charge  # noqa: F401
 from pyxel.data_structure.photon import Photon  # noqa: F401
 from pyxel.data_structure.pixel import Pixel    # noqa: F401
