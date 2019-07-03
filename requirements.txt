@@ -24,4 +24,4 @@ poppy==0.8.0
 # ESA libraries        #
 ########################
 
-dependencies/esapy_config-0.7.1-py2.py3-none-any.whl
+dependencies/esapy_config-0.8+28.gdf8ed12-py3-none-any.whl
