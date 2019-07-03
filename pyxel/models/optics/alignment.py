@@ -6,7 +6,7 @@ from pyxel.detectors.detector import Detector
 
 # @pyxel.validate
 # @pyxel.argument(name='image_file', label='', validate=check_path)
-def alignment(detector: Detector):
+def alignment(detector: Detector) -> None:
     """Optical alignment.
 
     :param detector: Pyxel Detector object

@@ -7,6 +7,7 @@ from pyxel import check_type, check_choices
 from pyxel.detectors.detector import Detector
 
 
+# FRED: Remove the following decorators
 @pyxel.validate
 @pyxel.argument(name='level', label='number of photon', units='', validate=check_type(int))
 @pyxel.argument(name='option', label='type of illumination', units='',
@@ -16,9 +17,9 @@ from pyxel.detectors.detector import Detector
 def illumination(detector: Detector,
                  level: int,
                  option: str = 'uniform',
-                 array_size: t.List[int] = None,
-                 hole_size: t.List[int] = None,
-                 hole_center: t.List[int] = None):
+                 array_size: t.Optional[t.List[int]] = None,
+                 hole_size: t.Optional[t.List[int]] = None,
+                 hole_center: t.Optional[t.List[int]] = None) -> None:
     """Generate photon uniformly over the entire array or hole.
 
     detector: Detector

@@ -1,55 +1,48 @@
 """Geometry class for detector."""
-import pyxel as pyx
+import esapy_config.config as ec
+from esapy_config import validators
 
 
-# FRED: Same remarks as for 'ccd_characteristics.py'
-# FRED: We should add a .pyi file
-# FRED: Add typing information for all methods
-@pyx.detector_class
+@ec.config(mode='RO')
 class Geometry:
     """Geometrical attributes of the detector."""
 
-    row = pyx.attribute(
+    row = ec.setting(
         type=int,
         default=0,
-        validator=[pyx.validate_type(int, is_optional=False),
-                   pyx.validate_range(0, 10000)],
+        validator=validators.validate_range(0, 10000),
         doc='Number of pixel rows'
     )
-    col = pyx.attribute(
+    col = ec.setting(
         type=int,
         default=0,
-        validator=[pyx.validate_type(int, is_optional=False),
-                   pyx.validate_range(0, 10000)],
+        validator=validators.validate_range(0, 10000),
         doc='Number of pixel columns'
     )
-    total_thickness = pyx.attribute(
+    total_thickness = ec.setting(
         type=float,
         default=0.0,
-        validator=[pyx.validate_type(float, is_optional=True),
-                   pyx.validate_range(0, 10000)],
+        validator=validators.validate_range(0, 10000),
         metadata={'units': 'um'},
         doc='Thickness of detector'
     )
-    pixel_vert_size = pyx.attribute(
+    pixel_vert_size = ec.setting(
         type=float,
         default=0.0,
-        validator=[pyx.validate_type(float, is_optional=False),
-                   pyx.validate_range(0, 1000)],
+        validator=validators.validate_range(0, 1000),
         metadata={'units': 'um'},
         doc='Vertical dimension of pixel'
     )
-    pixel_horz_size = pyx.attribute(
+    pixel_horz_size = ec.setting(
         type=float,
         default=0.0,
-        validator=[pyx.validate_type(float, is_optional=False),
-                   pyx.validate_range(0, 1000)],
+        validator=validators.validate_range(0, 1000),
         metadata={'units': 'um'},
         doc='Horizontal dimension of pixel'
     )
 
     @property
-    def horz_dimension(self):
+    def horz_dimension(self) -> float:
         """Get total horizontal dimension of detector. Calculated automatically.
 
         :return: horizontal dimension
@@ -57,7 +50,7 @@ class Geometry:
         return self.pixel_horz_size * self.col
 
     @property
-    def vert_dimension(self):
+    def vert_dimension(self) -> float:
         """Get total vertical dimension of detector. Calculated automatically.
 
         :return: vertical dimension

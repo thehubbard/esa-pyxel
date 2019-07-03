@@ -16,7 +16,7 @@ from pyxel.pipelines.processor import Processor
 class ModelFitting:
     """Pygmo problem class to fit data with any model in Pyxel."""
 
-    def __init__(self, processor, variables: t.List[ParameterValues]):
+    def __init__(self, processor: Processor, variables: t.List[ParameterValues]):
         """TBW."""
         # self.logger = logging.getLogger('pyxel')
 
@@ -35,27 +35,27 @@ class ModelFitting:
         # self.fitted_model = None            # type: t.Optional['ModelFunction']
         self.param_processor_list = []      # type: t.List[Processor]
 
-        self.n = 0
-        self.g = 0
+        self.n = 0  # type: int
+        self.g = 0  # type: int
 
         self.champions_file = ''            # type: str
         self.pop_file = ''                  # type: str
 
-        self.fitness_array = None
-        self.population = None
-        self.champion_f_list = None
-        self.champion_x_list = None
+        self.fitness_array = None  # type: t.Optional[np.ndarray]
+        self.population = None  # type: t.Optional[np.ndarray]
+        self.champion_f_list = None  # type: t.Optional[np.ndarray]
+        self.champion_x_list = None  # type: t.Optional[np.ndarray]
 
-        self.lbd = None                     # lower boundary
-        self.ubd = None                     # upper boundary
+        self.lbd = None  # type: t.Optional[list]                   # lower boundary
+        self.ubd = None  # type: t.Optional[list]                   # upper boundary
 
-        self.sim_fit_range = None
-        self.targ_fit_range = None
+        self.sim_fit_range = None  # type: t.Optional[slice]
+        self.targ_fit_range = None  # type: t.Optional[slice]
 
         # self.normalization = False
         # self.target_data_norm = []
 
-    def get_bounds(self):
+    def get_bounds(self) -> t.Tuple[t.Optional[list], t.Optional[list]]:
         """TBW.
 
         :return:
@@ -63,7 +63,7 @@ class ModelFitting:
         return self.lbd, self.ubd
 
     # HANS: expand setting to argument names with default values.
-    def configure(self, setting: dict):
+    def configure(self, setting: t.Dict[str, t.Any]) -> None:
         """TBW.
 
         :param setting: dict
@@ -82,7 +82,7 @@ class ModelFitting:
 
         self.set_bound()
 
-        self.original_processor = deepcopy(self.processor)
+        self.original_processor = deepcopy(self.processor)  # type: Processor
         if 'input_arguments' in setting and setting['input_arguments']:
 
             max_val, min_val = 0, 1000
@@ -141,7 +141,7 @@ class ModelFitting:
     #     self.fitted_model = self.processor.pipeline.get_model(self.model_name_list[0])
     #     self.processor.pipeline.run_pipeline(self.processor.detector, abort_before=self.model_name_list[0])
 
-    def set_bound(self):
+    def set_bound(self) -> None:
         """TBW."""
         self.lbd = []
         self.ubd = []
@@ -158,7 +158,7 @@ class ModelFitting:
                 raise ValueError('Character "_" (or a list of it) should be used to '
                                  'indicate variables need to be calibrated')
 
-    def calculate_fitness(self, simulated_data, target_data):
+    def calculate_fitness(self, simulated_data: np.ndarray, target_data: np.ndarray) -> np.ndarray:
         """TBW.
 
         :param simulated_data:
@@ -173,25 +173,25 @@ class ModelFitting:
         #     fitness = self.fitness_func.function(simulated_data, target_data)
         return fitness
 
-    def fitness(self, parameter):
+    def fitness(self, parameter: list) -> list:
         """Call the fitness function, elements of parameter array could be logarithmic values.
 
         :param parameter: 1d np.array
         :return:
         """
         parameter = self.update_parameter(parameter)
-        processor_list = deepcopy(self.param_processor_list)
+        processor_list = deepcopy(self.param_processor_list)  # type: t.List[Processor]
 
-        overall_fitness = 0.
+        overall_fitness = 0.  # type: float
         for processor, target_data in zip(processor_list, self.all_target_data):
 
-            processor = self.update_processor(parameter, processor)
+            processor = self.update_processor(parameter, processor)  # type: Processor
             if self.calibration_mode == 'pipeline':
                 processor.pipeline.run_pipeline(processor.detector)
             # elif self.calibration_mode == 'single_model':
             #     self.fitted_model.function(processor.detector)               # todo: update
 
-            simulated_data = None
+            simulated_data = None  # type: t.Optional[np.ndarray]
             if self.sim_output == 'image':
                 simulated_data = processor.detector.image.array[self.sim_fit_range]
             elif self.sim_output == 'signal':
@@ -205,7 +205,7 @@ class ModelFitting:
 
         return [overall_fitness]
 
-    def update_parameter(self, parameter):
+    def update_parameter(self, parameter: list) -> list:
         """TBW.
 
         :param parameter: 1d np.array
@@ -221,7 +221,7 @@ class ModelFitting:
             a += b
         return parameter
 
-    def update_processor(self, parameter, new_processor):
+    def update_processor(self, parameter: list, new_processor: Processor) -> Processor:
         """TBW.
 
         :param parameter:
@@ -239,7 +239,7 @@ class ModelFitting:
             a += b
         return new_processor
 
-    def get_results(self, fitness, parameter):
+    def get_results(self, fitness: list, parameter: list) -> t.Tuple[list, list]:
         """TBW.
 
         :param fitness:
@@ -247,7 +247,7 @@ class ModelFitting:
         :return:
         """
         parameter = self.update_parameter(parameter)        # todo : duplicated code, see fitness!
-        new_processor = deepcopy(self.original_processor)  # TODO TODO
+        new_processor = deepcopy(self.original_processor)  # type: Processor  # TODO TODO
         champion = self.update_processor(parameter, new_processor)
         if self.calibration_mode == 'pipeline':
             champion.pipeline.run_pipeline(champion.detector)
@@ -268,7 +268,7 @@ class ModelFitting:
 
         return champion, results
 
-    def population_and_champions(self, parameter, overall_fitness):
+    def population_and_champions(self, parameter: list, overall_fitness: list) -> None:
         """Get champion (also population) of each generation and write it to output file(s).
 
         :param parameter: 1d np.array

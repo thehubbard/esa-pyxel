@@ -7,6 +7,7 @@ from pyxel import check_type, check_path
 from pyxel.detectors.detector import Detector
 
 
+# FRED: Remove the following decorators
 @pyxel.validate
 @pyxel.argument(name='image_file', label='fits file', validate=check_path)
 @pyxel.argument(name='fit_image_to_det', label='fitting image to detector', validate=check_type(bool))
@@ -15,7 +16,7 @@ def load_image(detector: Detector,
                image_file: str,
                fit_image_to_det: bool = False,
                position: t.Optional[list] = None,                        # TODO Too many arguments
-               convert_to_photons: bool = False):
+               convert_to_photons: bool = False) -> None:
     r"""Load FITS file as a numpy array and add to the detector as input image.
 
     :param detector: Pyxel Detector object

@@ -6,7 +6,7 @@ from astropy.io import fits
 
 
 # FRED: Use `pathlib.Path`
-def read_data(data_path: t.Union[str, list]):
+def read_data(data_path: t.Union[str, list]) -> t.List[np.ndarray]:
     """TBW.
 
     :param data_path:
@@ -60,7 +60,7 @@ def read_data(data_path: t.Union[str, list]):
     return output
 
 
-def list_to_slice(input_list: t.Optional[t.List[int]]):
+def list_to_slice(input_list: t.Optional[t.List[int]]) -> t.Tuple[slice, slice]:
     """TBW.
 
     :return:
@@ -78,7 +78,7 @@ def list_to_slice(input_list: t.Optional[t.List[int]]):
 
 def check_ranges(target_fit_range: t.Optional[t.List[int]],
                  out_fit_range: t.Optional[t.List[int]],
-                 rows: int, cols: int):
+                 rows: int, cols: int) -> None:
     """TBW."""
     if target_fit_range:
         # FRED: It could be refactor in a more pythonic way (this is optional)

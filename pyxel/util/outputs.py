@@ -2,6 +2,7 @@
 import os
 import glob
 from copy import copy
+from pathlib import Path
 from shutil import copy2
 import typing as t          # noqa: F401
 import numpy as np
@@ -13,19 +14,23 @@ except ImportError:
     # raise Warning('Matplotlib cannot be imported')        # todo
     pass
 
+if t.TYPE_CHECKING:
+    from ..pipelines.processor import Processor
+    from ..parametric.parametric import ParametricAnalysis
+
 
 # FRED: Add more relevant typing information
 class Outputs:
     """TBW."""
 
     def __init__(self,
-                 save_to_file: list = None,
+                 save_to_file: t.Optional[list] = None,
                  output_folder: str = 'outputs',
-                 parametric_plot: dict = None,
-                 calibration_plot: dict = None,
-                 single_plot: dict = None):
+                 parametric_plot: t.Optional[dict] = None,
+                 calibration_plot: t.Optional[dict] = None,
+                 single_plot: t.Optional[dict] = None):
         """TBW."""
-        self.input_file = None                      # type: t.Optional[str]
+        self.input_file = None                      # type: t.Optional[Path]
         self.champions_file = None                  # type: t.Optional[str]
         self.population_file = None                 # type: t.Optional[str]
         self.parametric_plot = parametric_plot      # type: t.Optional[dict]
@@ -68,28 +73,29 @@ class Outputs:
         # FRED: Beware, this will directly display a MatplotLib figure. This should be removed from __init__
         plt.figure()
 
-    # FRED: Use `Pathlib.Path`
-    def set_input_file(self, filename: str):
+    def set_input_file(self, filename: t.Union[str, Path]) -> None:
         """TBW."""
-        self.input_file = filename
+        self.input_file = Path(filename)
         copy2(self.input_file, self.output_dir)
 
-    def create_files(self):
+    def create_files(self) -> t.Tuple[Path, Path]:
         """TBW."""
         self.champions_file = self.new_file('champions.out')
         self.population_file = self.new_file('population.out')
         return self.champions_file, self.population_file
 
     # FRED: Use method `Pathlib.Path.touch`
-    def new_file(self, filename: str):
+    def new_file(self, filename: t.Union[str, Path]) -> Path:
         """TBW."""
         filename = self.output_dir + '/' + filename
         file = open(filename, 'wb')  # truncate output file
         file.close()
         return filename
 
-    # FRED: Use `Pathlib.Path`
-    def save_to_png(self, processor, obj_name: str, filename: str = None):
+    def save_to_png(self,
+                    processor: "Processor",
+                    obj_name: str,
+                    filename: t.Optional[t.Union[str, Path]] = None) -> None:
         """Write array to bitmap PNG image file."""
         geo = processor.detector.geometry
         array = processor.get(obj_name)
@@ -107,8 +113,10 @@ class Outputs:
         plt.imshow(array, cmap='gray', extent=[0, geo.col, 0, geo.row], aspect=aspect_ratio)
         plt.savefig(filename, dpi=300)
 
-    # FRED: Use `Pathlib.Path`
-    def save_to_fits(self, processor, obj_name: str, filename: str = None):
+    def save_to_fits(self,
+                     processor: "Processor",
+                     obj_name: str,
+                     filename: t.Optional[t.Union[str, Path]] = None) -> None:
         """Write array to FITS file."""
         array = processor.get(obj_name)
         if filename is None:
@@ -117,8 +125,10 @@ class Outputs:
         hdu = fits.PrimaryHDU(array)
         hdu.writeto(filename, overwrite=False, output_verify='exception')
 
-    # FRED: Use `Pathlib.Path`
-    def save_to_hdf(self, processor, obj_name: str, filename: str = None):
+    def save_to_hdf(self,
+                    processor: "Processor",
+                    obj_name: str,
+                    filename: t.Optional[t.Union[str, Path]] = None) -> None:
         """Write detector object to HDF5 file."""
         detector = processor.detector
         if filename is None:
@@ -145,8 +155,10 @@ class Outputs:
                 dataset[:] = array
         h5file.close()
 
-    # FRED: Use `Pathlib.Path`
-    def save_to_txt(self, processor, obj_name: str, filename: str = None):
+    def save_to_txt(self,
+                    processor: "Processor",
+                    obj_name: str,
+                    filename: t.Optional[t.Union[str, Path]] = None) -> None:
         """Write data to txt file."""
         data = processor.get(obj_name)
         if filename is None:
@@ -154,8 +166,10 @@ class Outputs:
         filename = apply_run_number(self.output_dir + '/' + filename + '_??.txt')
         np.savetxt(filename, data, delimiter='|')
 
-    # FRED: Use `Pathlib.Path`
-    def save_to_csv(self, processor, obj_name: str, filename: str = None):
+    def save_to_csv(self,
+                    processor: "Processor",
+                    obj_name: str,
+                    filename: t.Optional[t.Union[str, Path]] = None) -> None:
         """Write Pandas Dataframe or Numpy array to a CSV file."""
         data = processor.get(obj_name)
         if filename is None:
@@ -166,8 +180,10 @@ class Outputs:
         except AttributeError:
             np.savetxt(filename, data, delimiter=',')
 
-    # FRED: Use `Pathlib.Path`
-    def save_to_npy(self, processor, obj_name: str, filename: str = None):
+    def save_to_npy(self,
+                    processor: "Processor",
+                    obj_name: str,
+                    filename: t.Optional[t.Union[str, Path]] = None) -> None:
         """Write Numpy array to Numpy binary npy file."""
         array = processor.get(obj_name)
         if filename is None:
@@ -176,7 +192,7 @@ class Outputs:
         np.save(file=filename, arr=array)
 
     # FRED: Use `Pathlib.Path`
-    def save_plot(self, filename='figure_??'):
+    def save_plot(self, filename: str = 'figure_??') -> None:
         """Save plot figure in PNG format, close figure and create new canvas for next plot."""
         filename = self.output_dir + '/' + filename + '.png'
         filename = apply_run_number(filename)
@@ -184,7 +200,7 @@ class Outputs:
         plt.close('all')
         plt.figure()
 
-    def plot_graph(self, x, y, args: dict = None):
+    def plot_graph(self, x: np.ndarray, y: np.ndarray, args: t.Optinal[dict] = None) -> None:
         """TBW."""
         arg_tpl = self.update_args(plot_type='graph', new_args=args)
         ax_args, plt_args = self.update_args(plot_type='graph', new_args=self.user_plt_args, def_args=arg_tpl)
@@ -192,7 +208,7 @@ class Outputs:
         update_plot(ax_args)
         plt.draw()
 
-    def plot_histogram(self, data, args: dict = None):
+    def plot_histogram(self, data: np.ndarray, args: t.Optional[dict] = None) -> None:
         """TBW."""
         arg_tpl = self.update_args(plot_type='hist', new_args=args)
         ax_args, plt_args = self.update_args(plot_type='hist', new_args=self.user_plt_args, def_args=arg_tpl)
@@ -205,7 +221,7 @@ class Outputs:
         update_plot(ax_args)
         plt.draw()
 
-    def plot_scatter(self, x, y, color=None, args: dict = None):
+    def plot_scatter(self, x: np.ndarray, y: np.ndarray, color: t.Optional[str] = None, args: t.Optional[dict] = None):
         """TBW."""
         arg_tpl = self.update_args(plot_type='scatter', new_args=args)
         ax_args, plt_args = self.update_args(plot_type='scatter', new_args=self.user_plt_args, def_args=arg_tpl)
@@ -219,7 +235,7 @@ class Outputs:
         update_plot(ax_args)
         plt.draw()
 
-    def single_output(self, processor):
+    def single_output(self, processor: "Processor") -> None:
         """TBW."""
         save_methods = {'fits': self.save_to_fits,
                         'hdf': self.save_to_hdf,
@@ -265,7 +281,7 @@ class Outputs:
                 # self.save_to_npy(y, 'y_'+fname)
                 self.save_plot(fname)
 
-    def champions_plot(self, results):
+    def champions_plot(self, results: dict) -> None:
         """TBW."""
         data = np.loadtxt(self.champions_file)
         generations = data[:, 0].astype(int)
@@ -302,7 +318,7 @@ class Outputs:
             self.save_plot('calibrated_parameter_??')
             a += b
 
-    def population_plot(self):
+    def population_plot(self) -> None:
         """TBW."""
         data = np.loadtxt(self.population_file)
         fitnesses = np.log10(data[:, 1])
@@ -322,7 +338,7 @@ class Outputs:
             self.plot_scatter(x, y, color=fitnesses, args=plt_args)
         self.save_plot('population_??')
 
-    def calibration_output(self, processor, results: dict):
+    def calibration_output(self, processor: "Processor", results: dict) -> None:
         """TBW."""
         self.single_output(processor)
 
@@ -340,7 +356,7 @@ class Outputs:
                         self.user_plt_args = self.calibration_plot['population_plot']['plot_args']
                 self.population_plot()
 
-    def add_parametric_step(self, parametric, processor):
+    def add_parametric_step(self, parametric: "ParametricAnalysis", processor: "Processor") -> None:
         """TBW."""
         # self.single_output(processor.detector)
 
@@ -362,7 +378,7 @@ class Outputs:
         else:
             self.parameter_values = np.vstack((self.parameter_values, row))
 
-    def update_args(self, plot_type: str, new_args: dict = None, def_args: tuple = (None, None)):
+    def update_args(self, plot_type: str, new_args: t.Optional[dict] = None, def_args: tuple = (None, None)) -> tuple:
         """TBW."""
         ax_args, plt_args = def_args[0], def_args[1]
         if ax_args is None:
@@ -388,7 +404,7 @@ class Outputs:
 
         return ax_args, plt_args
 
-    def parametric_output(self):
+    def parametric_output(self) -> None:
         """TBW."""
         self.parameter_keys += self.additional_keys
         self.user_plt_args = None
@@ -425,13 +441,13 @@ class Outputs:
         self.save_plot('parametric_??')
 
 
-def show_plots():
+def show_plots() -> None:
     """Close last empty canvas and show all the previously created figures."""
     plt.close()
     plt.show()
 
 
-def update_plot(ax_args):
+def update_plot(ax_args: dict) -> None:
     """TBW."""
     plt.xlabel(ax_args['xlabel'])
     plt.ylabel(ax_args['ylabel'])
@@ -449,7 +465,7 @@ def update_plot(ax_args):
     plt.grid(ax_args['grid'])
 
 
-def update_fits_header(header, key, value):
+def update_fits_header(header: dict, key, value) -> None:
     """TBW.
 
     :param header:
@@ -467,7 +483,7 @@ def update_fits_header(header, key, value):
     header[key] = value
 
 
-def apply_run_number(path):
+def apply_run_number(path: Path) -> Path:
     """Convert the file name numeric placeholder to a unique number.
 
     :param path:

@@ -1,6 +1,7 @@
 """TBW."""
 import logging
 import numpy as np
+import typing as t
 try:
     import pygmo as pg
 except ImportError:
@@ -8,41 +9,38 @@ except ImportError:
     warnings.warn("Cannot import 'pygmo", RuntimeWarning, stacklevel=2)
 
 
-import pyxel as pyx
 from pyxel.calibration.fitting import ModelFitting
 from pyxel.pipelines.model_function import ModelFunction
 from pyxel.pipelines.processor import Processor
 from pyxel.util import Outputs
+import esapy_config.config as ec
+from esapy_config import validators
 
 
-# FRED: Same remarks as for 'ccd_characteristics.py'
-# FRED: We should add a .pyi file
-# FRED: Add typing information for all methods
-@pyx.detector_class
+# FRED: Put classes `Algorithm` and `Calibration` in separated files.
+
+@ec.config
 class Algorithm:
     """TBW.
 
     :return:
     """
 
-    type = pyx.attribute(
+    type = ec.setting(
         type=str,
-        validator=[pyx.validate_type(str),
-                   pyx.validate_choices(['sade', 'sga', 'nlopt'])],
+        validator=validators.validate_in(['sade', 'sga', 'nlopt']),
         default='sade',
         doc=''
     )
-    generations = pyx.attribute(
+    generations = ec.setting(
         type=int,
-        validator=[pyx.validate_type(int),
-                   pyx.validate_range(1, 100000)],
+        validator=validators.validate_range(1, 100000),
         default=1,
         doc=''
     )
-    population_size = pyx.attribute(
+    population_size = ec.setting(
         type=int,
-        validator=[pyx.validate_type(int),
-                   pyx.validate_range(1, 100000)],
+        validator=validators.validate_range(1, 100000),
         default=1,
         doc=''
     )
@@ -50,46 +48,44 @@ class Algorithm:
     # HANS: apply the coding conventions to the pyx.attribute below as they are vertically defined above.
     # FRED: Maybe a new class `Sade` could contains these attributes ?
     # SADE #####
-    variant = pyx.attribute(type=int, validator=[pyx.validate_type(int),
-                                                 pyx.validate_range(1, 18)], default=2, doc='')
-    variant_adptv = pyx.attribute(type=int, validator=[pyx.validate_type(int),
-                                                       pyx.validate_range(1, 2)], default=1, doc='')
-    ftol = pyx.attribute(type=float, default=1e-06, doc='')  # validator=pyx.validate_range(),
-    xtol = pyx.attribute(type=float, default=1e-06, doc='')  # validator=pyx.validate_range(),
-    memory = pyx.attribute(type=bool, default=False, doc='')
+    variant = ec.setting(type=int, validator=validators.validate_range(1, 18), default=2, doc='')
+    variant_adptv = ec.setting(type=int, validator=validators.validate_range(1, 2), default=1, doc='')
+    ftol = ec.setting(type=float, default=1e-06, doc='')  # validator=pyx.validate_range(),
+    xtol = ec.setting(type=float, default=1e-06, doc='')  # validator=pyx.validate_range(),
+    memory = ec.setting(type=bool, default=False, doc='')
     # SADE #####
 
     # FRED: Maybe a new class `SGA` could contains these attributes ?
     # SGA #####
-    cr = pyx.attribute(type=float, converter=float, validator=[pyx.validate_type(float),
-                                                               pyx.validate_range(0, 1)], default=0.9, doc='')
-    eta_c = pyx.attribute(type=float, converter=float, validator=[pyx.validate_type(float)], default=1.0, doc='')
-    m = pyx.attribute(type=float, converter=float, validator=[pyx.validate_type(float),
-                                                              pyx.validate_range(0, 1)], default=0.02, doc='')
-    param_m = pyx.attribute(type=float, default=1.0, doc='')            # validator=pyx.validate_range(1, 2),
-    param_s = pyx.attribute(type=int, default=2, doc='')                # validator=pyx.validate_range(1, 2),
-    crossover = pyx.attribute(type=str, default='exponential', doc='')  # validator=pyx.validate_choices(),
-    mutation = pyx.attribute(type=str, default='polynomial', doc='')    # validator=pyx.validate_choices(),
-    selection = pyx.attribute(type=str, default='tournament', doc='')   # validator=pyx.validate_choices(),
+    cr = ec.setting(type=float, converter=float, validator=validators.validate_range(0., 1.), default=0.9, doc='')
+    eta_c = ec.setting(type=float, converter=float, default=1.0, doc='')
+    m = ec.setting(type=float, converter=float, validator=validators.validate_range(0., 1.), default=0.02, doc='')
+    param_m = ec.setting(type=float, default=1.0, doc='')            # validator=pyx.validate_range(1, 2),
+    param_s = ec.setting(type=int, default=2, doc='')                # validator=pyx.validate_range(1, 2),
+    crossover = ec.setting(type=str, default='exponential', doc='')  # validator=pyx.validate_choices(),
+    mutation = ec.setting(type=str, default='polynomial', doc='')    # validator=pyx.validate_choices(),
+    selection = ec.setting(type=str, default='tournament', doc='')   # validator=pyx.validate_choices(),
     # SGA #####
 
     # FRED: Maybe a new class `NLOPT` could contains these attributes ?
     # NLOPT #####
-    nlopt_solver = pyx.attribute(type=str, default='neldermead', doc='')    # validator=pyx.validate_choices(),  todo
-    maxtime = pyx.attribute(type=int, default=0, doc='')                     # validator=pyx.validate_range(),  todo
-    maxeval = pyx.attribute(type=int, default=0, doc='')
-    xtol_rel = pyx.attribute(type=float, default=1.e-8, doc='')
-    xtol_abs = pyx.attribute(type=float, default=0., doc='')
-    ftol_rel = pyx.attribute(type=float, default=0., doc='')
-    ftol_abs = pyx.attribute(type=float, default=0., doc='')
-    stopval = pyx.attribute(type=float, default=float('-inf'), doc='')
-    local_optimizer = pyx.attribute(type=None, default=None, doc='')          # validator=pyx.validate_choices(),  todo
-    replacement = pyx.attribute(type=str, default='best', doc='')
-    nlopt_selection = pyx.attribute(type=str, default='best', doc='')         # todo: "selection" - same name as in SGA
+    nlopt_solver = ec.setting(type=str, default='neldermead', doc='')    # validator=pyx.validate_choices(),  todo
+    maxtime = ec.setting(type=int, default=0, doc='')                     # validator=pyx.validate_range(),  todo
+    maxeval = ec.setting(type=int, default=0, doc='')
+    xtol_rel = ec.setting(type=float, default=1.e-8, doc='')
+    xtol_abs = ec.setting(type=float, default=0., doc='')
+    ftol_rel = ec.setting(type=float, default=0., doc='')
+    ftol_abs = ec.setting(type=float, default=0., doc='')
+    stopval = ec.setting(type=float, default=float('-inf'), doc='')
+    local_optimizer = ec.setting(type=t.Optional[t.Any],
+                                 default=None,
+                                 doc='')          # validator=pyx.validate_choices(),  todo
+    replacement = ec.setting(type=str, default='best', doc='')
+    nlopt_selection = ec.setting(type=str, default='best', doc='')         # todo: "selection" - same name as in SGA
     # NLOPT #####
 
     # FRED: This could be refactored for each if-statement
-    def get_algorithm(self):
+    def get_algorithm(self) -> t.Any:
         """TBW.
 
         :return:
@@ -129,87 +125,74 @@ class Algorithm:
         return opt_algorithm
 
 
-# FRED: Same remarks as for 'ccd.py'
-# FRED: Add typing information for all methods
-@pyx.detector_class
+@ec.config
 class Calibration:
     """TBW.
 
     :return:
     """
 
-    calibration_mode = pyx.attribute(
+    calibration_mode = ec.setting(
         type=str,
-        validator=[pyx.validate_type(str),
-                   pyx.validate_choices(['pipeline', 'single_model'])],
+        validator=validators.validate_in(['pipeline', 'single_model']),
         default='pipeline',
         doc=''
     )
-    result_type = pyx.attribute(
+    result_type = ec.setting(
         type=str,
-        validator=[pyx.validate_type(str),
-                   pyx.validate_choices(['image', 'signal', 'pixel'])],
+        validator=validators.validate_in(['image', 'signal', 'pixel']),
         default='image',
         doc=''
     )
-    result_fit_range = pyx.attribute(
-        type=list,
-        validator=[pyx.validate_type(list)],
+    result_fit_range = ec.setting(
+        type=t.Optional[list],
         default=None,
         doc=''
     )
-    result_input_arguments = pyx.attribute(
-        type=list,
-        # validator=[pyx.validate_type(list)],
+    result_input_arguments = ec.setting(
+        type=t.Optional[list],
         default=None,
         doc=''
     )
-    target_data_path = pyx.attribute(
-        type=list,
-        validator=[pyx.validate_type(list)],
+    target_data_path = ec.setting(
+        type=t.Optional[list],
         default=None,
         doc=''
     )
-    target_fit_range = pyx.attribute(
-        type=list,
-        validator=[pyx.validate_type(list)],
+    target_fit_range = ec.setting(
+        type=t.Optional[list],
         default=None,
         doc=''
     )
-    fitness_function = pyx.attribute(
-        type=ModelFunction,
-        validator=[pyx.validate_type(ModelFunction)],
+    fitness_function = ec.setting(
+        type=t.Union[ModelFunction, str],
         default='',
         doc=''
     )
-    algorithm = pyx.attribute(
-        type=Algorithm,
-        validator=[pyx.validate_type(Algorithm)],
+    algorithm = ec.setting(
+        type=t.Union[Algorithm, str],
         default='',
         doc=''
     )
-    parameters = pyx.attribute(
-        type=list,
-        validator=[pyx.validate_type(list)],
+    parameters = ec.setting(
+        type=t.Union[list, str],
         default='',
         doc=''
     )
-    seed = pyx.attribute(
+    seed = ec.setting(
         type=int,
-        validator=[pyx.validate_type(int),
-                   pyx.validate_range(0, 100000)],
+        validator=validators.validate_range(0, 100000),
         default=np.random.randint(0, 100000),
         doc=''
     )
-    weighting_path = pyx.attribute(
-        type=list,
-        # validator=[pyx.validate_type(list)],  # todo
+    weighting_path = ec.setting(
+        type=t.Optional[list],
         default=None,
         doc=''
     )
 
     def run_calibration(self, processor: Processor,
-                        output: Outputs = None):
+                        output: t.Optional[Outputs] = None) -> None:
         """TBW.
 
         :param processor: Processor object

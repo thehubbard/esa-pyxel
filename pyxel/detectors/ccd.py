@@ -4,20 +4,19 @@
 # HANS: remove copyright
 """CCD detector modeling class."""
 
+import typing as t
 from pyxel.detectors.detector import Detector
 from pyxel.detectors.ccd_geometry import CCDGeometry
 from pyxel.detectors.material import Material
 from pyxel.detectors.environment import Environment
 from pyxel.detectors.ccd_characteristics import CCDCharacteristics
-from pyxel.data_structure.charge import Charge  # noqa: F401
-from pyxel.data_structure.photon import Photon  # noqa: F401
-from pyxel.data_structure.pixel import Pixel    # noqa: F401
-from pyxel.data_structure.signal import Signal  # noqa: F401
-from pyxel.data_structure.image import Image    # noqa: F401
+from pyxel.data_structure.charge import Charge
+from pyxel.data_structure.photon import Photon
+from pyxel.data_structure.pixel import Pixel
+from pyxel.data_structure.signal import Signal
+from pyxel.data_structure.image import Image
 
 
-# FRED: This class could be implement with ESAPY_CONFIG
-# FRED: Method __init__ does not add anything new. Is this method needed ?
 class CCD(Detector):
     """Charge-Coupled Device class containing all detector attributes and data."""
 
@@ -26,11 +25,11 @@ class CCD(Detector):
                  material: Material,
                  environment: Environment,
                  characteristics: CCDCharacteristics,
-                 photon: Photon = None,         # FRED: Use t.Optional[Photon]
-                 charge: Charge = None,         # FRED: Use t.Optional
-                 pixel: Pixel = None,           # FRED: Use t.Optional
-                 signal: Signal = None,         # FRED: Use t.Optional
-                 image: Image = None) -> None:  # FRED: Use t.Optional + -> None is not needed
+                 photon: t.Optional[Photon] = None,
+                 charge: t.Optional[Charge] = None,
+                 pixel: t.Optional[Pixel] = None,
+                 signal: t.Optional[Signal] = None,
+                 image: t.Optional[Image] = None):
         """TBW.
 
         :param geometry:

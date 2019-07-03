@@ -8,9 +8,10 @@ import pyxel
 from pyxel.detectors.cmos import CMOS
 
 
+# FRED: Remove these decorators ?
 @pyxel.validate
 @pyxel.argument(name='detector', label='', units='', validate=pyxel.check_type(CMOS))
-def dark_current_rule07(detector: CMOS):
+def dark_current_rule07(detector: CMOS) -> None:
     """Generate charge from dark current process.
 
     :param detector: Pyxel Detector object

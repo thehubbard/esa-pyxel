@@ -10,7 +10,7 @@ from pyxel.detectors.detector import Detector
 
 # @pyxel.validate
 # @pyxel.argument(name='', label='', units='', validate=)
-def simple_amplifier(detector: Detector):
+def simple_amplifier(detector: Detector) -> None:
     """Amplify signal.
 
     amp - Gain of output amplifier, a1 - Gain of the signal processor

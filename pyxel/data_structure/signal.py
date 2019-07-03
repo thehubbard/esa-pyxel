@@ -22,7 +22,7 @@ class Signal(Array):
     Accepted array types: np.float16, np.float32, np.float64
     """
 
-    def __init__(self, geo: "Geometry") -> None:
+    def __init__(self, geo: "Geometry"):
         """TBW.
 
         :param geo:

@@ -1,5 +1,6 @@
 """TBW."""
 import functools
+import typing as t
 from esapy_config import evaluate_reference
 
 
@@ -11,10 +12,10 @@ class ModelFunction:
     """TBW."""
 
     def __init__(self,
-                 func,  # callable or str
-                 name: str = None,
-                 arguments: dict = None,
-                 enabled: bool = True) -> None:
+                 func: t.Union[t.Callable, str],  # callable or str
+                 name: t.Optional[str] = None,
+                 arguments: t.Optional[dict] = None,
+                 enabled: t.Optional[bool] = True):
         """TBW.
 
         :param name:
@@ -32,12 +33,12 @@ class ModelFunction:
         self.arguments = arguments
         # self.group = None               # TODO
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """TBW."""
         return 'ModelFunction(%(name)r, %(func)r, %(arguments)r, %(enabled)r)' % vars(self)
 
     # FRED: Is it needed ?  Where is the '__setstate__' ?
-    def __getstate__(self):
+    def __getstate__(self) -> dict:
         """TBW."""
         return {
             'name': self.name,
@@ -48,7 +49,7 @@ class ModelFunction:
 
     # FRED: Replace this by __call__ ?
     @property
-    def function(self):
+    def function(self) -> t.Callable:
         """TBW."""
         func_ref = evaluate_reference(self.func)
         if isinstance(func_ref, type):

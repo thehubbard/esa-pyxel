@@ -14,7 +14,7 @@ class Processor:
 
     def __init__(self,
                  detector: t.Union[CCD, CMOS],
-                 pipeline: DetectionPipeline) -> None:
+                 pipeline: DetectionPipeline):
         """TBW.
 
         :param detector:
@@ -24,7 +24,7 @@ class Processor:
         self.pipeline = pipeline
 
     # FRED: Is it needed ?  Where is the '__setstate__' ?
-    def __getstate__(self):
+    def __getstate__(self) -> dict:
         """TBW."""
         return {
             'detector': self.detector,
@@ -32,7 +32,7 @@ class Processor:
         }
 
     # FRED: Could it be renamed '__contains__' ?
-    def has(self, key):
+    def has(self, key: str) -> bool:
         """TBW.
 
         :param key:
@@ -47,7 +47,7 @@ class Processor:
         return found
 
     # FRED: Could it be renamed '__getitem__' ?
-    def get(self, key):
+    def get(self, key: str) -> t.Any:
         """TBW.
 
         :param key:
@@ -56,7 +56,7 @@ class Processor:
         return get_value(self, key)
 
     # FRED: Could it be renamed '__setitem__' ?
-    def set(self, key, value, convert_value=True):
+    def set(self, key: str, value: t.Any, convert_value: bool = True) -> None:
         """TBW.
 
         :param key:

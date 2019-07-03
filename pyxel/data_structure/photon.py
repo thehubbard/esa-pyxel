@@ -22,7 +22,7 @@ class Photon(Array):
     Accepted array types: np.int32, np.int64, np.uint32, np.uint64, np.float16, np.float32, np.float64
     """
 
-    def __init__(self, geo: "Geometry") -> None:
+    def __init__(self, geo: "Geometry"):
         """TBW.
 
         :param geo:
@@ -33,7 +33,7 @@ class Photon(Array):
         self.type_list = [np.int32, np.int64, np.uint32, np.uint64, np.float16, np.float32, np.float64]
         self._array = None
 
-    def new_array(self, new_array):
+    def new_array(self, new_array: np.ndarray) -> None:
         """TBW.
 
         :param new_array:

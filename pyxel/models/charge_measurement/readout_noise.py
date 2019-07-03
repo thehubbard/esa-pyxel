@@ -6,7 +6,7 @@ import logging
 import numpy as np
 # import pyxel
 from pyxel.detectors.detector import Detector
-
+import typing as t
 # from astropy import units as u
 
 
@@ -15,7 +15,7 @@ from pyxel.detectors.detector import Detector
 # @pyxel.register(group='charge_measurement', name='output_node_noise', detector='ccd')
 def output_node_noise(detector: Detector,
                       std_deviation: float,
-                      random_seed: int = None):
+                      random_seed: t.Optional[int] = None) -> None:
     """Adding noise to signal array of detector output node using normal random distribution.
 
     detector Signal unit: Volt

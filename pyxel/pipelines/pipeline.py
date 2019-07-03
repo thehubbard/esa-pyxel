@@ -12,16 +12,16 @@ class DetectionPipeline:
     # HANS: develop a ModelGroupList class. Pass this as a single argument.
     # HANS: remove _model_groups order list.
     def __init__(self,      # TODO: Too many instance attributes
-                 photon_generation: ModelGroup = None,
-                 optics: ModelGroup = None,
-                 charge_generation: ModelGroup = None,
-                 charge_collection: ModelGroup = None,
-                 charge_transfer: ModelGroup = None,
-                 charge_measurement: ModelGroup = None,
-                 signal_transfer: ModelGroup = None,
-                 readout_electronics: ModelGroup = None,
-                 _model_groups: t.List[str] = None,                        # TODO
-                 doc=None) -> None:
+                 photon_generation: t.Optional[ModelGroup] = None,
+                 optics: t.Optional[ModelGroup] = None,
+                 charge_generation: t.Optional[ModelGroup] = None,
+                 charge_collection: t.Optional[ModelGroup] = None,
+                 charge_transfer: t.Optional[ModelGroup] = None,
+                 charge_measurement: t.Optional[ModelGroup] = None,
+                 signal_transfer: t.Optional[ModelGroup] = None,
+                 readout_electronics: t.Optional[ModelGroup] = None,
+                 _model_groups: t.Optional[t.List[str]] = None,                        # TODO
+                 doc: t.Optional[str] = None):
         """TBW.
 
         :param photon_generation:
@@ -48,6 +48,7 @@ class DetectionPipeline:
         self.signal_transfer = signal_transfer                  # type: t.Optional[ModelGroup]  # CMOS
 
         # HANS: this defines the order of steps in the pipeline. The ModelGroupList does this. Is it really needed?
+        # FRED: if this is needed then it should be immutable (=> it should be a `Tuple`)
         self._model_groups = ['photon_generation',
                               'optics',
                               'charge_generation',
@@ -58,7 +59,7 @@ class DetectionPipeline:
                               'readout_electronics']            # type: t.List[str]           # TODO
 
     # FRED: Is it needed ?  Where is the '__setstate__' ?
-    def __getstate__(self):
+    def __getstate__(self) -> dict:
         """TBW."""
         return {
             'photon_generation': self.photon_generation,
@@ -73,20 +74,20 @@ class DetectionPipeline:
         }
 
     @property
-    def model_group_names(self):
+    def model_group_names(self) -> t.List[str]:
         """TBW."""
         return self._model_groups
 
     @property
-    def is_running(self):
+    def is_running(self) -> bool:
         """Return the running state of this pipeline."""
         return self._is_running
 
-    def abort(self):
+    def abort(self) -> None:
         """TBW."""
         self._is_running = False
 
-    def get_model(self, name):
+    def get_model(self, name: str) -> ModelGroup:
         """TBW.
 
         :param name:
@@ -107,7 +108,7 @@ class DetectionPipeline:
     #          1. A deep copy of `detector`
     #          2. And use this copy for all processing.
     #        In this case the output `Detector` instance is different than the input `Detector`
-    def run_pipeline(self, detector: Detector, abort_before: str = None) -> Detector:
+    def run_pipeline(self, detector: Detector, abort_before: t.Optional[str] = None) -> Detector:
         """TBW.
 
         :param detector:

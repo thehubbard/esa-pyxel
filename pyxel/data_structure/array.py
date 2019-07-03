@@ -15,7 +15,7 @@ class Array:
     """Array class."""
 
     # FRED: Add units ?
-    def __init__(self) -> None:
+    def __init__(self):
         """TBW."""
         # FRED: self.exp_type and self.type_list could be Class variables instead of instance variable
         #       It is more clear
@@ -28,7 +28,7 @@ class Array:
         self._array = None          # type: t.Optional[np.ndarray]
 
     @property
-    def array(self):
+    def array(self) -> np.ndarray:
         """
         Two dimensional numpy array storing the data.
 
@@ -37,7 +37,7 @@ class Array:
         return self._array
 
     @array.setter
-    def array(self, value):
+    def array(self, value: np.ndarray):
         """
         Overwrite the two dimensional numpy array storing the data.
 
@@ -60,31 +60,31 @@ class Array:
 
     # TODO: Is it necessary ? Maybe not if you implement method __array__
     @property
-    def mean(self):
+    def mean(self) -> np.ndarray:
         """Return mean of all pixel values."""
         return np.mean(self._array)
 
     @property
-    def std_deviation(self):
+    def std_deviation(self) -> np.ndarray:
         """Return standard deviation of all pixel values."""
         return np.std(self._array)
 
     @property
-    def max(self):
+    def max(self) -> np.ndarray:
         """Return maximum of all pixel values."""
         return np.max(self._array)
 
     @property
-    def min(self):
+    def min(self) -> np.ndarray:
         """Return minimum of all pixel values."""
         return np.min(self._array)
 
     @property
-    def peak_to_peak(self):
+    def peak_to_peak(self) -> np.ndarray:
         """Return peak-to-peak value of all pixel values."""
         return np.ptp(self._array)
 
     @property
-    def sum(self):
+    def sum(self) -> np.ndarray:
         """Return sum of all pixel values."""
         return np.sum(self._array)

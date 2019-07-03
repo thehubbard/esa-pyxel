@@ -4,20 +4,19 @@
 # HANS: remove copyright
 # """CMOS detector modeling class."""
 
+import typing as t
 from pyxel.detectors.detector import Detector
 from pyxel.detectors.cmos_geometry import CMOSGeometry
 from pyxel.detectors.material import Material
 from pyxel.detectors.environment import Environment
 from pyxel.detectors.cmos_characteristics import CMOSCharacteristics
-# FRED: Remove all 'noqa: F401'
-from pyxel.data_structure.charge import Charge  # noqa: F401
-from pyxel.data_structure.photon import Photon  # noqa: F401
-from pyxel.data_structure.pixel import Pixel    # noqa: F401
-from pyxel.data_structure.signal import Signal  # noqa: F401
-from pyxel.data_structure.image import Image    # noqa: F401
+from pyxel.data_structure.charge import Charge
+from pyxel.data_structure.photon import Photon
+from pyxel.data_structure.pixel import Pixel
+from pyxel.data_structure.signal import Signal
+from pyxel.data_structure.image import Image
 
 
-# FRED: Same remarks as for 'ccd.py'
 class CMOS(Detector):
     """CMOS-based detector class containing all detector attributes and data."""
 
@@ -26,11 +25,11 @@ class CMOS(Detector):
                  material: Material,
                  environment: Environment,
                  characteristics: CMOSCharacteristics,
-                 photon: Photon = None,
-                 charge: Charge = None,
-                 pixel: Pixel = None,
-                 signal: Signal = None,
-                 image: Image = None) -> None:
+                 photon: t.Optional[Photon] = None,
+                 charge: t.Optional[Charge] = None,
+                 pixel: t.Optional[Pixel] = None,
+                 signal: t.Optional[Signal] = None,
+                 image: t.Optional[Image] = None):
         """TBW.
 
         :param geometry:

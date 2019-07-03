@@ -4,9 +4,13 @@
 """Pyxel util functions for Particle classes."""
 import math
 import numpy as np
+import typing as t
+
+if t.TYPE_CHECKING:
+    from ..detectors import Detector
 
 
-def check_energy(initial_energy):
+def check_energy(initial_energy: t.Union[int, float]) -> None:
     """Check energy of the particle if it is a float or int.
 
     :param initial_energy:
@@ -19,7 +23,7 @@ def check_energy(initial_energy):
         raise ValueError('Given particle energy could not be read')
 
 
-def check_position(detector, initial_position):
+def check_position(detector: "Detector", initial_position: t.Tuple[float, float, float]) -> None:
     """Check position of the particle if it is a numpy array and inside the detector.
 
     :param detector:
@@ -42,7 +46,7 @@ def check_position(detector, initial_position):
         raise ValueError('Position of particle is not a numpy array (int or float)')
 
 
-def random_direction(v_abs=1.0):    # TODO check random angles and direction
+def random_direction(v_abs: float = 1.0) -> np.ndarray:    # TODO check random angles and direction
     """Generate random direction for a photon.
 
     :param v_abs:

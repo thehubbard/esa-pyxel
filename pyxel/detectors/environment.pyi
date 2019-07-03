@@ -1,0 +1,13 @@
+class Environment:
+    def __init__(
+        self,
+        temperature: float = 273.15,
+        total_ionising_dose: float = 0.0,
+        total_non_ionising_dose: float = 0.0,
+    ): ...
+    @property
+    def temperature(self) -> float: ...
+    @property
+    def total_ionising_dose(self) -> float: ...
+    @property
+    def total_non_ionising_dose(self) -> float: ...

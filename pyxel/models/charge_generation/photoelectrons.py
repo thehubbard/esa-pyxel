@@ -11,7 +11,7 @@ from pyxel.detectors.detector import Detector
 # @pyxel.validate
 # @pyxel.argument(name='', label='', units='', validate=)
 # @pyxel.register(group='charge_generation', name='photoelectrons')
-def simple_conversion(detector: Detector):
+def simple_conversion(detector: Detector) -> None:
     """Generate charge from incident photon via photoelectric effect, simple statistical model.
 
     :param detector: Pyxel Detector object
@@ -50,7 +50,7 @@ def simple_conversion(detector: Detector):
 # @pyxel.validate
 # @pyxel.argument(name='', label='', units='', validate=)
 # @pyxel.register(group='charge_generation', name='monte_carlo_photoelectrons')
-def monte_carlo_conversion(detector: Detector):
+def monte_carlo_conversion(detector: Detector) -> None:
     """Generate charge from incident photon via photoelectric effect, more exact, stochastic (Monte Carlo) model.
 
     :param detector: Pyxel Detector object
@@ -73,7 +73,7 @@ def monte_carlo_conversion(detector: Detector):
     # TODO: energy threshold
 
 
-def random_pos(detector: Detector):
+def random_pos(detector: Detector) -> None:
     """Generate random position for photoelectric effect inside detector.
 
     :param detector: Pyxel Detector object

@@ -17,7 +17,7 @@ def charge_blocks(detector: CCD,
                   profile_length: int = 0,
                   number_of_blocks: int = 1,
                   block_length: int = 0,
-                  pause_length: int = 0):
+                  pause_length: int = 0) -> None:
     """TBW.
 
     :param detector:

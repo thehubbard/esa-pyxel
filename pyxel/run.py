@@ -16,10 +16,11 @@ import pyxel.io as io
 from pyxel.pipelines.processor import Processor
 from pyxel.detectors.ccd import CCD
 # from pyxel import __version__ as pyxel_version
+import typing as t
 
 
 # FRED: Add more typing information
-def run(input_filename, random_seed: int = None):
+def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
     """TBW.
 
     :param input_filename:
@@ -111,7 +112,7 @@ def run(input_filename, random_seed: int = None):
 
 
 # FRED: Remove this. Get the current version from '__version__' in 'pyxel/__init__.py'
-def get_pyxel_version():
+def get_pyxel_version() -> str:
     """Extract 'pyxel_version' from 'setup.cfg'."""
     from setuptools.config import read_configuration
 

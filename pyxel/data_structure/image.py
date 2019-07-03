@@ -22,7 +22,7 @@ class Image(Array):
     Accepted array types: np.uint16, np.uint32, np.uint64
     """
 
-    def __init__(self, geo: "Geometry") -> None:
+    def __init__(self, geo: "Geometry"):
         """TBW.
 
         :param geo:

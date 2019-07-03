@@ -6,6 +6,7 @@ from scipy import signal
 import matplotlib.pyplot as plt
 # import pyxel
 from pyxel.detectors.detector import Detector
+import typing as t
 
 
 # @pyxel.validate
@@ -15,7 +16,7 @@ def optical_psf(detector: Detector,
                 pixelscale: float,
                 fov_pixels: int,
                 optical_system: list,
-                fov_arcsec: float = None):
+                fov_arcsec: t.Optional[float] = None) -> None:
     """POPPY (Physical Optics Propagation in PYthon) model wrapper.
 
     It calculates the optical Point Spread Function of an optical system.

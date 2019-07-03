@@ -3,17 +3,16 @@ import typing as t
 from esapy_config import eval_range
 
 
-# FRED: Use more typing information
 class ParameterValues:
     """TBW."""
 
     def __init__(self,
                  key: str,
-                 values,
-                 enabled: bool = True,
+                 values: t.List[t.Union[float, int]],
+                 enabled: t.Optional[bool] = True,
                  current=None,
-                 logarithmic: bool = False,
-                 boundaries: list = None):
+                 logarithmic: t.Optional[bool] = False,
+                 boundaries: t.Optional[list] = None):
         """TBW.
 
         :param key:
@@ -33,7 +32,7 @@ class ParameterValues:
 
     # FRED: Is it needed ? all values in this `dict` should me copied.
     # HANS: for each `__getstate__` there should be a corresponding `__setstate__`.
-    def __getstate__(self):
+    def __getstate__(self) -> dict:
         """TBW."""
         return {
             'key': self.key,
@@ -44,13 +43,13 @@ class ParameterValues:
             'boundaries': self.boundaries,
         }
 
-    def __len__(self):
+    def __len__(self) -> int:
         """TBW."""
         values = eval_range(self.values)
         return len(values)
 
     # FRED: Do you need magic method '__contains__' ? If yes then this class will act as a `Collections.abc.Sequence`
-    def __iter__(self):
+    def __iter__(self) -> t.Iterator[t.Union[float, int]]:
         """TBW."""
         values = eval_range(self.values)
         for value in values:

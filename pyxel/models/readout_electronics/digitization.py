@@ -10,12 +10,13 @@ from pyxel.detectors.detector import Detector
 # from astropy import units as u
 
 
+# FRED: Remove the following decorators
 @pyxel.validate
 @pyxel.argument(name='data_type', label='type of output data array', units='ADU',
                 validate=pyxel.check_choices(['numpy.uint16', 'numpy.uint32', 'numpy.uint64',
                                               'numpy.int32', 'numpy.int64']))
 def simple_digitization(detector: Detector,
-                        data_type: str = 'numpy.uint16'):
+                        data_type: str = 'numpy.uint16') -> None:
     """Digitize signal array mimicking readout electronics.
 
     :param detector: Pyxel Detector object
@@ -37,7 +38,7 @@ def simple_digitization(detector: Detector,
     detector.image.array = detector.signal.array.astype(d_type)
 
 
-def simple_processing(detector: Detector):
+def simple_processing(detector: Detector) -> None:
     """Create an image array from signal array.
 
     :param detector: Pyxel Detector object
@@ -50,7 +51,7 @@ def simple_processing(detector: Detector):
 
 def sar_adc(detector: Detector,
             adc_bits: int = 16,
-            range_volt: tuple = (0, 5)):
+            range_volt: tuple = (0, 5)) -> None:
     """Digitize signal array using SAR ADC logic.
 
     :param detector: Pyxel Detector object

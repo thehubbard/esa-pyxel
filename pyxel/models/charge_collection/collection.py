@@ -21,7 +21,7 @@ import numba
 #       ...     new_detector = detector.copy()
 #       ...     # Do something
 #       ...     return new_detector
-def simple_collection(detector: Detector):
+def simple_collection(detector: Detector) -> None:
     """Associate charge with the closest pixel."""
     logger = logging.getLogger('pyxel')
     logger.info('')  # FRED: Use `logging.info`
@@ -38,8 +38,9 @@ def simple_collection(detector: Detector):
     detector.pixel.array = df_to_array(array, charge_per_pixel, pixel_index_ver, pixel_index_hor)
 
 
+# FRED: Is it needed not better to first create a copy of 'array' and then work with this copy ??
 @numba.jit(nopython=True)
-def df_to_array(array, charge_per_pixel, pixel_index_ver, pixel_index_hor):
+def df_to_array(array: np.ndarray, charge_per_pixel: list, pixel_index_ver: list, pixel_index_hor: list) -> np.ndarray:
     """TBW."""
     for i, charge_value in enumerate(charge_per_pixel):
         array[pixel_index_ver[i], pixel_index_hor[i]] += charge_value

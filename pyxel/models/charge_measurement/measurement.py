@@ -10,7 +10,7 @@ from pyxel.detectors.detector import Detector
 
 # @pyxel.validate
 # @pyxel.argument(name='', label='', units='', validate=)
-def simple_measurement(detector: Detector):
+def simple_measurement(detector: Detector) -> None:
     """Create signal array from pixel array.
 
     detector Signal unit: Volt

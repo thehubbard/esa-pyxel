@@ -7,6 +7,8 @@ import logging
 # import pyxel
 from pyxel.detectors.cmos import CMOS
 from pyxel.models.charge_measurement.nghxrg.nghxrg_beta import HXRGNoise
+import numpy as np
+import typing as t
 
 
 # @pyxel.validate
@@ -15,7 +17,7 @@ def nghxrg(detector: CMOS,
            noise: list,
            window_mode: str = 'FULL',
            wind_x0: int = 0, wind_y0: int = 0,
-           wind_x_size: int = 0, wind_y_size: int = 0):
+           wind_x_size: int = 0, wind_y_size: int = 0) -> None:
     """TBW.
 
     :param detector: Pyxel Detector object
@@ -88,7 +90,11 @@ def nghxrg(detector: CMOS,
             pass
 
 
-def display_noisepsd(array, nb_output, dimension, noise_name, mode='plot'):
+def display_noisepsd(array: np.ndarray,
+                     nb_output: float,
+                     dimension: t.Tuple[int],
+                     noise_name: str,
+                     mode: str = 'plot') -> t.Tuple[t.Any, np.ndarray]:
     """Display noise PSD from the generated FITS file."""
     import numpy as np
     import matplotlib.pyplot as plt

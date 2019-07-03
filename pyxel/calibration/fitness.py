@@ -1,5 +1,6 @@
 """Fitness functions for model fitting."""
 import numpy as np
+import typing as t
 
 
 # HANS: refactor code to this.
@@ -14,8 +15,7 @@ import numpy as np
 #     return np.sum(np.abs(diff))
 
 
-# FRED: Add typing information for all functions
-def sum_of_abs_residuals(simulated, target, weighting=None):
+def sum_of_abs_residuals(simulated: np.ndarray, target: np.ndarray, weighting: t.Optional[float] = None) -> np.ndarray:
     """TBW.
 
     :param simulated: np.array
@@ -33,7 +33,9 @@ def sum_of_abs_residuals(simulated, target, weighting=None):
     return np.sum(np.abs(diff))
 
 
-def sum_of_squared_residuals(simulated, target, weighting=None):
+def sum_of_squared_residuals(simulated: np.ndarray,
+                             target: np.ndarray,
+                             weighting: t.Optional[float] = None) -> np.ndarray:
     """TBW.
 
     :param simulated: np.array

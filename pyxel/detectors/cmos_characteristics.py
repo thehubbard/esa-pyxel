@@ -1,70 +1,57 @@
 """TBW."""
-import pyxel as pyx
 from pyxel.detectors.characteristics import Characteristics
+import esapy_config.config as ec
+from esapy_config import validators
 
 
-# FRED: Same remarks as for 'ccd_characteristics.py'
-# FRED: We should add a .pyi file
-@pyx.detector_class
+@ec.config(mode='RO')
 class CMOSCharacteristics(Characteristics):
     """Characteristical attributes of a CMOS-based detector."""
 
-    cutoff = pyx.attribute(
+    cutoff = ec.setting(
         type=float,
         default=2.5,
-        converter=float,
-        validator=[pyx.validate_type(float),
-                   pyx.validate_range(1.7, 15)],
+        validator=validators.validate_range(1.7, 15.),
         doc='Cutoff wavelength',
         metadata={'units': 'um'}
     )
 
-    vbiaspower = pyx.attribute(
+    vbiaspower = ec.setting(
         type=float,
         default=3.350,
-        converter=float,
-        validator=[pyx.validate_type(float),
-                   pyx.validate_range(0.0, 3.4)],
+        validator=validators.validate_range(0.0, 3.4),
         doc='VBIASPOWER',
         metadata={'units': 'V'}
     )
 
-    dsub = pyx.attribute(
+    dsub = ec.setting(
         type=float,
         default=0.500,
-        converter=float,
-        validator=[pyx.validate_type(float),
-                   pyx.validate_range(0.3, 1.0)],
+        validator=validators.validate_range(0.3, 1.0),
         doc='DSUB',
         metadata={'units': 'V'}
     )
 
-    vreset = pyx.attribute(
+    vreset = ec.setting(
         type=float,
         default=0.250,
-        converter=float,
-        validator=[pyx.validate_type(float),
-                   pyx.validate_range(0.0, 0.3)],
+        validator=validators.validate_range(0.0, 0.3),
         doc='VRESET',
         metadata={'units': 'V'}
     )
 
-    biasgate = pyx.attribute(
+    biasgate = ec.setting(
         type=float,
         default=2.300,
-        converter=float,
-        validator=[pyx.validate_type(float),
-                   pyx.validate_range(1.8, 2.6)],
+        validator=validators.validate_range(1.8, 2.6),
         doc='BIASGATE',
         metadata={'units': 'V'}
     )
 
-    preampref = pyx.attribute(
+    preampref = ec.setting(
         type=float,
         default=1.700,
-        converter=float,
-        validator=[pyx.validate_type(float),
-                   pyx.validate_range(0.0, 4.0)],
+        validator=validators.validate_range(0.0, 4.0),
         doc='PREAMPREF',
         metadata={'units': 'V'}
     )

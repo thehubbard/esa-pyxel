@@ -1,27 +1,28 @@
 """Detector class."""
 from math import sqrt
 import collections
-import typing as t  # noqa: F401
+import typing as t
 import numpy as np
+from pathlib import Path
 
 # from astropy import units as u
 from pyxel.detectors.geometry import Geometry
 from pyxel.detectors.material import Material
 from pyxel.detectors.environment import Environment
 from pyxel.detectors.characteristics import Characteristics
-from pyxel.data_structure.charge import Charge                          # noqa: F401
-from pyxel.data_structure.photon import Photon                          # noqa: F401
-from pyxel.data_structure.pixel import Pixel                            # noqa: F401
-from pyxel.data_structure.signal import Signal                          # noqa: F401
-from pyxel.data_structure.image import Image                            # noqa: F401
-from pyxel.detectors.cmos_geometry import CMOSGeometry                  # noqa: F401
-from pyxel.detectors.ccd_geometry import CCDGeometry                    # noqa: F401
-from pyxel.detectors.cmos_characteristics import CMOSCharacteristics    # noqa: F401
-from pyxel.detectors.ccd_characteristics import CCDCharacteristics      # noqa: F401
+from pyxel.data_structure.charge import Charge
+from pyxel.data_structure.photon import Photon
+from pyxel.data_structure.pixel import Pixel
+from pyxel.data_structure.signal import Signal
+from pyxel.data_structure.image import Image
+# from pyxel.detectors.cmos_geometry import CMOSGeometry
+# from pyxel.detectors.ccd_geometry import CCDGeometry
+# from pyxel.detectors.cmos_characteristics import CMOSCharacteristics
+# from pyxel.detectors.ccd_characteristics import CCDCharacteristics
+import esapy_config.config as ec
+import attr
 
 
-# FRED: Same remarks as for 'ccd.py'
-# FRED: Add typing information for all methods
 # FRED: There is a big flaw with this class.
 #       A `Detector` instance can have a `CCDGeometry` and a `CMOSCharacteristics`.
 #       This is not possible. We must solve this issue.
@@ -35,77 +36,103 @@ from pyxel.detectors.ccd_characteristics import CCDCharacteristics      # noqa: 
 #               ...
 #           def to_hdf5(...) / def from_hdf5(...)
 #           def to_folder(...)  / def from_folder(...)=
+@ec.config
 class Detector:
     """The detector class."""
 
-    def __init__(self,
-                 geometry: Geometry,
-                 material: Material,
-                 environment: Environment,
-                 characteristics: Characteristics,
-                 photon: Photon = None,
-                 charge: Charge = None,
-                 pixel: Pixel = None,
-                 signal: Signal = None,
-                 image: Image = None) -> None:
-        """TBW.
+    geometry = ec.setting(type=Geometry)
+    material = ec.setting(type=Material)
+    environment = ec.setting(type=Environment)
+    characteristics = ec.setting(type=Characteristics)
+    photon = ec.setting(type=t.Optional[Photon],
+                        default=attr.Factory(lambda self: Photon(self.geometry), takes_self=True))
+    charge = ec.setting(type=t.Optional[Charge], factory=Charge)
+    pixel = ec.setting(type=t.Optional[Pixel], default=attr.Factory(lambda self: Pixel(self.geometry), takes_self=True))
+    signal = ec.setting(type=t.Optional[Signal],
+                        default=attr.Factory(lambda self: Signal(self.geometry), takes_self=True))
+    image = ec.setting(type=t.Optional[Image], default=attr.Factory(lambda self: Image(self.geometry), takes_self=True))
 
-        :param geometry:
-        :param material:
-        :param environment:
-        :param characteristics:
-        :param photon:
-        :param charge:
-        :param pixel:
-        :param signal:
-        :param image:
-        """
-        self._geometry = geometry                   # type: Geometry
-        self._characteristics = characteristics     # type: Characteristics
-        self.material = material                    # type: Material
-        self.environment = environment              # type: Environment
-        self.header = collections.OrderedDict()     # type: t.Dict[str, object]
+    header = ec.setting(type=collections.OrderedDict, factory=collections.OrderedDict, init=False)
+    input_image = ec.setting(default=None, init=False)
+    output_dir = ec.setting(type=Path, default=Path(), init=False)
+    start_time = ec.setting(type=float, default=0., init=False)
+    end_time = ec.setting(type=float, default=0., init=False)
+    steps = ec.setting(type=int, default=0, init=False)
+    time_step = ec.setting(type=float, default=0., init=False)
+    time = ec.setting(type=float, default=0., init=False)
+    dynamic = ec.setting(type=bool, default=False, init=False)
+    non_destructive = ec.setting(type=bool, default=False, init=False)
+    read_out = ec.setting(type=bool, default=True, init=False)
+    all_time_steps = ec.setting(default=None, init=False)
 
-        if photon:
-            self.photon = photon
-        else:
-            # FRED: This could be assigned directly in the 'default' field of `attr` or `esapy_config`
-            self.photon = Photon(self.geometry)
-        if charge:
-            self.charge = charge
-        else:
-            # FRED: This could be assigned directly in the 'default' field of `attr` or `esapy_config`
-            self.charge = Charge()
-        if pixel:
-            self.pixel = pixel
-        else:
-            # FRED: This could be assigned directly in the 'default' field of `attr` or `esapy_config`
-            self.pixel = Pixel(self.geometry)
-        if signal:
-            self.signal = signal
-        else:
-            # FRED: This could be assigned directly in the 'default' field of `attr` or `esapy_config`
-            self.signal = Signal(self.geometry)
-        if image:
-            self.image = image
-        else:
-            # FRED: This could be assigned directly in the 'default' field of `attr` or `esapy_config`
-            self.image = Image(self.geometry)
+    # def __init__(self,
+    #              geometry: Geometry,
+    #              material: Material,
+    #              environment: Environment,
+    #              characteristics: Characteristics,
+    #              photon: Photon = None,
+    #              charge: Charge = None,
+    #              pixel: Pixel = None,
+    #              signal: Signal = None,
+    #              image: Image = None) -> None:
+    #     """TBW.
+    #
+    #     :param geometry:
+    #     :param material:
+    #     :param environment:
+    #     :param characteristics:
+    #     :param photon:
+    #     :param charge:
+    #     :param pixel:
+    #     :param signal:
+    #     :param image:
+    #     """
+    #     self._geometry = geometry                   # type: Geometry
+    #     self._characteristics = characteristics     # type: Characteristics
+    #     self.material = material                    # type: Material
+    #     self.environment = environment              # type: Environment
+    #     self.header = collections.OrderedDict()     # type: t.Dict[str, object]
+    #
+    #     if photon:
+    #         self.photon = photon
+    #     else:
+    #         # FRED: This could be assigned directly in the 'default' field of `attr` or `esapy_config`
+    #         self.photon = Photon(self.geometry)
+    #     if charge:
+    #         self.charge = charge
+    #     else:
+    #         # FRED: This could be assigned directly in the 'default' field of `attr` or `esapy_config`
+    #         self.charge = Charge()
+    #     if pixel:
+    #         self.pixel = pixel
+    #     else:
+    #         # FRED: This could be assigned directly in the 'default' field of `attr` or `esapy_config`
+    #         self.pixel = Pixel(self.geometry)
+    #     if signal:
+    #         self.signal = signal
+    #     else:
+    #         # FRED: This could be assigned directly in the 'default' field of `attr` or `esapy_config`
+    #         self.signal = Signal(self.geometry)
+    #     if image:
+    #         self.image = image
+    #     else:
+    #         # FRED: This could be assigned directly in the 'default' field of `attr` or `esapy_config`
+    #         self.image = Image(self.geometry)
+    #
+    #     self.input_image = None
+    #     self._output_dir = None                         # type: t.Optional[str]
+    #
+    #     self.start_time = 0.                            # type: float
+    #     self.end_time = 0.                              # type: float
+    #     self.steps = 0                                  # type: int
+    #     self.time_step = 0.                             # type: float
+    #     self._time = 0.                                 # type: float
+    #     self._dynamic = False                           # type: bool
+    #     self._non_destructive = False                   # type: bool
+    #     self.read_out = True                            # type: bool
+    #     self._all_time_steps = None
 
-        self.input_image = None
-        self._output_dir = None                         # type: t.Optional[str]
-
-        self.start_time = 0.                            # type: float
-        self.end_time = 0.                              # type: float
-        self.steps = 0                                  # type: int
-        self.time_step = 0.                             # type: float
-        self._time = 0.                                 # type: float
-        self._dynamic = False                           # type: bool
-        self._non_destructive = False                   # type: bool
-        self.read_out = True                            # type: bool
-        self._all_time_steps = None
-
-    def initialize(self, reset_all=True):
+    def initialize(self, reset_all: bool = True) -> None:
         """TBW."""
         self.photon = Photon(self.geometry)             # type: Photon
         if reset_all:
@@ -114,65 +141,65 @@ class Detector:
             self.signal = Signal(self.geometry)         # type: Signal
             self.image = Image(self.geometry)           # type: Image
 
-    def set_output_dir(self, path: str):
+    def set_output_dir(self, path: t.Optional[t.Union[str, Path]] = None) -> None:
         """Set output directory path."""
-        self._output_dir = path
+        self.output_dir = Path(path)
 
-    @property
-    def output_dir(self):
-        """Output directory path."""
-        return self._output_dir
+    # @property
+    # def output_dir(self):
+    #     """Output directory path."""
+    #     return self._output_dir
 
-    def set_dynamic(self, time_step: float, steps: int, ndreadout: bool = False):
+    def set_dynamic(self, time_step: float, steps: int, ndreadout: bool = False) -> None:
         """Switch on dynamic (time dependent) mode."""
-        self._dynamic = True
+        self.dynamic = True
         self.time_step = time_step
         self.steps = steps
-        self._non_destructive = ndreadout
+        self.non_destructive = ndreadout
         self.end_time = self.time_step * self.steps
-        self._all_time_steps = np.nditer(np.round(np.linspace(self.time_step, self.end_time,
-                                                              self.steps, endpoint=True), decimals=10))
+        self.all_time_steps = np.nditer(np.round(np.linspace(self.time_step, self.end_time,
+                                                             self.steps, endpoint=True), decimals=10))
 
     @property
-    def is_dynamic(self):
+    def is_dynamic(self) -> bool:
         """Return if detector is dynamic (time dependent) or not.
 
         By default it is not dynamic.
         """
-        return self._dynamic
+        return self.dynamic
 
     @property
-    def is_non_destructive_readout(self):
+    def is_non_destructive_readout(self) -> bool:
         """Return if detector readout mode is destructive or integrating.
 
         By default it is destructive (non-integrating).
         """
-        return self._non_destructive
+        return self.non_destructive
 
     # FRED: This should be solved
-    @property
-    def geometry(self):
-        """TBW."""
-        if isinstance(self._geometry, CMOSGeometry):
-            return t.cast(CMOSGeometry, self._geometry)
-        elif isinstance(self._geometry, CCDGeometry):
-            return t.cast(CCDGeometry, self._geometry)
-        elif isinstance(self._geometry, Geometry):
-            return t.cast(Geometry, self._geometry)
+    # @property
+    # def geometry(self):
+    #     """TBW."""
+    #     if isinstance(self._geometry, CMOSGeometry):
+    #         return t.cast(CMOSGeometry, self._geometry)
+    #     elif isinstance(self._geometry, CCDGeometry):
+    #         return t.cast(CCDGeometry, self._geometry)
+    #     elif isinstance(self._geometry, Geometry):
+    #         return t.cast(Geometry, self._geometry)
+    #
+    # # FRED: This should be solved
+    # @property
+    # def characteristics(self):
+    #     """TBW."""
+    #     if isinstance(self._characteristics, CMOSCharacteristics):
+    #         return t.cast(CMOSCharacteristics, self._characteristics)
+    #     elif isinstance(self._characteristics, CCDCharacteristics):
+    #         return t.cast(CCDCharacteristics, self._characteristics)
+    #     elif isinstance(self._characteristics, Characteristics):
+    #         return t.cast(Characteristics, self._characteristics)
 
-    # FRED: This should be solved
     @property
-    def characteristics(self):
-        """TBW."""
-        if isinstance(self._characteristics, CMOSCharacteristics):
-            return t.cast(CMOSCharacteristics, self._characteristics)
-        elif isinstance(self._characteristics, CCDCharacteristics):
-            return t.cast(CCDCharacteristics, self._characteristics)
-        elif isinstance(self._characteristics, Characteristics):
-            return t.cast(Characteristics, self._characteristics)
-
-    @property
-    def e_thermal_velocity(self):
+    def e_thermal_velocity(self) -> float:
         """TBW.
 
         :return:
@@ -180,16 +207,16 @@ class Detector:
         k_boltzmann = 1.38064852e-23  # J/K
         return sqrt(3 * k_boltzmann * self.environment.temperature / self.material.e_effective_mass)
 
-    @property
-    def time(self):     # TODO
-        """TBW."""
-        return self._time
+    # @property
+    # def time(self) -> float:     # TODO
+    #     """TBW."""
+    #     return self._time
 
     # FRED: This method is used in 'run.py'. We could implement this as an iterator.
-    def elapse_time(self):
+    def elapse_time(self) -> float:
         """TBW."""
         try:
-            self._time = float(next(self._all_time_steps))
+            self.time = float(next(self.all_time_steps))
         except StopIteration:
-            self._time = None
-        return self._time
+            self.time = None
+        return self.time
