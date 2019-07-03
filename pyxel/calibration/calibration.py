@@ -34,13 +34,13 @@ class Algorithm:
     )
     generations = ec.setting(
         type=int,
-        validator=validators.validate_range(1, 100000),
+        validator=validators.interval(1, 100000),
         default=1,
         doc=''
     )
     population_size = ec.setting(
         type=int,
-        validator=validators.validate_range(1, 100000),
+        validator=validators.interval(1, 100000),
         default=1,
         doc=''
     )
@@ -48,8 +48,8 @@ class Algorithm:
     # HANS: apply the coding conventions to the pyx.attribute below as they are vertically defined above.
     # FRED: Maybe a new class `Sade` could contains these attributes ?
     # SADE #####
-    variant = ec.setting(type=int, validator=validators.validate_range(1, 18), default=2, doc='')
-    variant_adptv = ec.setting(type=int, validator=validators.validate_range(1, 2), default=1, doc='')
+    variant = ec.setting(type=int, validator=validators.interval(1, 18), default=2, doc='')
+    variant_adptv = ec.setting(type=int, validator=validators.interval(1, 2), default=1, doc='')
     ftol = ec.setting(type=float, default=1e-06, doc='')  # validator=pyx.validate_range(),
     xtol = ec.setting(type=float, default=1e-06, doc='')  # validator=pyx.validate_range(),
     memory = ec.setting(type=bool, default=False, doc='')
@@ -57,9 +57,9 @@ class Algorithm:
 
     # FRED: Maybe a new class `SGA` could contains these attributes ?
     # SGA #####
-    cr = ec.setting(type=float, converter=float, validator=validators.validate_range(0., 1.), default=0.9, doc='')
+    cr = ec.setting(type=float, converter=float, validator=validators.interval(0., 1.), default=0.9, doc='')
     eta_c = ec.setting(type=float, converter=float, default=1.0, doc='')
-    m = ec.setting(type=float, converter=float, validator=validators.validate_range(0., 1.), default=0.02, doc='')
+    m = ec.setting(type=float, converter=float, validator=validators.interval(0., 1.), default=0.02, doc='')
     param_m = ec.setting(type=float, default=1.0, doc='')            # validator=pyx.validate_range(1, 2),
     param_s = ec.setting(type=int, default=2, doc='')                # validator=pyx.validate_range(1, 2),
     crossover = ec.setting(type=str, default='exponential', doc='')  # validator=pyx.validate_choices(),
@@ -181,7 +181,7 @@ class Calibration:
     )
     seed = ec.setting(
         type=int,
-        validator=validators.validate_range(0, 100000),
+        validator=validators.interval(0, 100000),
         default=np.random.randint(0, 100000),
         doc=''
     )

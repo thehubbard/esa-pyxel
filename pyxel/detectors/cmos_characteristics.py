@@ -11,7 +11,7 @@ class CMOSCharacteristics(Characteristics):
     cutoff = ec.setting(
         type=float,
         default=2.5,
-        validator=validators.validate_range(1.7, 15.),
+        validator=validators.interval(1.7, 15.),
         doc='Cutoff wavelength',
         metadata={'units': 'um'}
     )
@@ -19,7 +19,7 @@ class CMOSCharacteristics(Characteristics):
     vbiaspower = ec.setting(
         type=float,
         default=3.350,
-        validator=validators.validate_range(0.0, 3.4),
+        validator=validators.interval(0.0, 3.4),
         doc='VBIASPOWER',
         metadata={'units': 'V'}
     )
@@ -27,7 +27,7 @@ class CMOSCharacteristics(Characteristics):
     dsub = ec.setting(
         type=float,
         default=0.500,
-        validator=validators.validate_range(0.3, 1.0),
+        validator=validators.interval(0.3, 1.0),
         doc='DSUB',
         metadata={'units': 'V'}
     )
@@ -35,7 +35,7 @@ class CMOSCharacteristics(Characteristics):
     vreset = ec.setting(
         type=float,
         default=0.250,
-        validator=validators.validate_range(0.0, 0.3),
+        validator=validators.interval(0.0, 0.3),
         doc='VRESET',
         metadata={'units': 'V'}
     )
@@ -43,7 +43,7 @@ class CMOSCharacteristics(Characteristics):
     biasgate = ec.setting(
         type=float,
         default=2.300,
-        validator=validators.validate_range(1.8, 2.6),
+        validator=validators.interval(1.8, 2.6),
         doc='BIASGATE',
         metadata={'units': 'V'}
     )
@@ -51,7 +51,7 @@ class CMOSCharacteristics(Characteristics):
     preampref = ec.setting(
         type=float,
         default=1.700,
-        validator=validators.validate_range(0.0, 4.0),
+        validator=validators.interval(0.0, 4.0),
         doc='PREAMPREF',
         metadata={'units': 'V'}
     )

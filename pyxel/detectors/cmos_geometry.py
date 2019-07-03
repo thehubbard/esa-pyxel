@@ -11,20 +11,20 @@ class CMOSGeometry(Geometry):
     n_output = ec.setting(
         type=int,
         default=1,
-        validator=validators.validate_range(0, 32),
+        validator=validators.interval(0, 32),
         doc='Number of detector outputs'
     )
     n_row_overhead = ec.setting(
         type=int,
         default=0,
-        validator=validators.validate_range(0, 100),
+        validator=validators.interval(0, 100),
         doc='New row overhead in pixel'
         # This allows for a short wait at the end of a row before starting the next row.
     )
     n_frame_overhead = ec.setting(
         type=int,
         default=0,
-        validator=validators.validate_range(0, 100),
+        validator=validators.interval(0, 100),
         doc='New frame overhead in rows'
         # This allows for a short wait at the end of a frame before starting the next frame.
     )
@@ -38,6 +38,6 @@ class CMOSGeometry(Geometry):
     reference_pixel_border_width = ec.setting(
         type=int,
         default=4,
-        validator=validators.validate_range(0, 32),
+        validator=validators.interval(0, 32),
         doc='Width of reference pixel border around image area'
     )

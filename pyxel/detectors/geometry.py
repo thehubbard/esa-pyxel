@@ -10,33 +10,33 @@ class Geometry:
     row = ec.setting(
         type=int,
         default=0,
-        validator=validators.validate_range(0, 10000),
+        validator=validators.interval(0, 10000),
         doc='Number of pixel rows'
     )
     col = ec.setting(
         type=int,
         default=0,
-        validator=validators.validate_range(0, 10000),
+        validator=validators.interval(0, 10000),
         doc='Number of pixel columns'
     )
     total_thickness = ec.setting(
         type=float,
         default=0.0,
-        validator=validators.validate_range(0, 10000),
+        validator=validators.interval(0, 10000),
         metadata={'units': 'um'},
         doc='Thickness of detector'
     )
     pixel_vert_size = ec.setting(
         type=float,
         default=0.0,
-        validator=validators.validate_range(0, 1000),
+        validator=validators.interval(0, 1000),
         metadata={'units': 'um'},
         doc='Vertical dimension of pixel'
     )
     pixel_horz_size = ec.setting(
         type=float,
         default=0.0,
-        validator=validators.validate_range(0, 1000),
+        validator=validators.interval(0, 1000),
         metadata={'units': 'um'},
         doc='Horizontal dimension of pixel'
     )

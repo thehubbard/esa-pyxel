@@ -200,7 +200,7 @@ class Outputs:
         plt.close('all')
         plt.figure()
 
-    def plot_graph(self, x: np.ndarray, y: np.ndarray, args: t.Optinal[dict] = None) -> None:
+    def plot_graph(self, x: np.ndarray, y: np.ndarray, args: t.Optional[dict] = None) -> None:
         """TBW."""
         arg_tpl = self.update_args(plot_type='graph', new_args=args)
         ax_args, plt_args = self.update_args(plot_type='graph', new_args=self.user_plt_args, def_args=arg_tpl)

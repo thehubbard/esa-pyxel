@@ -46,7 +46,7 @@ class Material:
     trapped_charge = ec.setting(
         type=t.Optional[str],
         default=None,
-        on_change=load_numpy_array,  # FRED: What is it ?
+        # on_change=load_numpy_array,  # FRED: What is it ?
         # validator=[(pyx.validate_type(str) or pyx.validate_type(np.ndarray))], <<< this does not work
         doc='Numpy array storing the trap density temporarily'
     )
@@ -54,14 +54,14 @@ class Material:
     n_acceptor = ec.setting(
         type=float,
         default=0.0,
-        validator=validators.validate_range(0., 1000.),
+        validator=validators.interval(0., 1000.),
         metadata={'units': 'cm-3'},
         doc='Density of acceptors in the lattice'
     )
     n_donor = ec.setting(
         type=float,
         default=0.0,
-        validator=validators.validate_range(0., 1000.),
+        validator=validators.interval(0., 1000.),
         metadata={'units': 'cm-3'},
         doc='Density of donors in the lattice'
     )
@@ -76,7 +76,7 @@ class Material:
         # init=False,
         type=float,
         default=2.328,                      # Silicon
-        validator=validators.validate_range(0., 10000.),
+        validator=validators.interval(0., 10000.),
         metadata={'units': 'g/cm3'},
         doc='Material density'
     )
@@ -84,7 +84,7 @@ class Material:
         # init=False,
         type=float,
         default=3.6,                        # Silicon
-        validator=validators.validate_range(0., 100.),
+        validator=validators.interval(0., 100.),
         metadata={'units': 'eV'},
         doc='Mean ionization energy of the semiconductor lattice'
     )
@@ -92,7 +92,7 @@ class Material:
         # init=False,
         type=float,
         default=1.12,                       # Silicon
-        validator=validators.validate_range(0., 10.),
+        validator=validators.interval(0., 10.),
         metadata={'units': 'eV'},
         doc='Band gap of the semiconductor lattice'
     )
@@ -100,7 +100,7 @@ class Material:
         # init=False,
         type=float,
         default=0.5 * M_ELECTRON,           # Silicon
-        validator=validators.validate_range(0., 1.e-10),
+        validator=validators.interval(0., 1.e-10),
         metadata={'units': 'kg'},
         doc='Electron effective mass in the semiconductor lattice'
     )

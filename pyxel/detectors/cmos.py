@@ -2,7 +2,7 @@
 #   Copyright 2018 SCI-FIV, ESA (European Space Agency)
 #   --------------------------------------------------------------------------
 # HANS: remove copyright
-# """CMOS detector modeling class."""
+"""CMOS detector modeling class."""
 
 import typing as t
 from pyxel.detectors.detector import Detector
