@@ -4,13 +4,14 @@
 """Simple model to generate charges due to dark current process."""
 import logging
 import numpy as np
-import pyxel
 from pyxel.detectors.cmos import CMOS
+from esapy_config import checkers
+from esapy_config import funcargs
 
 
 # FRED: Remove these decorators ?
-@pyxel.validate
-@pyxel.argument(name='detector', label='', units='', validate=pyxel.check_type(CMOS))
+@funcargs.validate
+@funcargs.argument(name='detector', label='', units='', validate=checkers.check_type_function(CMOS))
 def dark_current_rule07(detector: CMOS) -> None:
     """Generate charge from dark current process.
 

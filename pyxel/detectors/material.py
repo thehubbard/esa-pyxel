@@ -1,9 +1,13 @@
 """Geometry class for detector."""
 import typing as t
 import numpy as np
-import pyxel as pyx
 import esapy_config.config as ec
 from esapy_config import validators
+import os
+
+
+# FRED: Fix this
+check_path = os.path.exists
 
 
 # Universal global constants
@@ -39,7 +43,7 @@ class Material:
     def load_numpy_array(self, attr=None, path=None):
         """Create Numpy array storing data temporarily."""
         if isinstance(path, str):
-            if pyx.check_path(path):
+            if check_path(path):
                 if path.endswith('.npy'):
                     setattr(self, '_' + attr, np.load(path))
 

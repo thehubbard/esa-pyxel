@@ -5,13 +5,18 @@
 import logging
 import typing as t
 import numpy as np
-import pyxel
 from pyxel.detectors.detector import Detector
+from esapy_config import funcargs
+import os
+
+
+# FRED: Fix this
+check_path = os.path.exists
 
 
 # FRED: Remove these decorators ?
-@pyxel.validate
-@pyxel.argument(name='txt_file', label='file path', units='', validate=pyxel.check_path)
+@funcargs.validate
+@funcargs.argument(name='txt_file', label='file path', units='', validate=check_path)
 def charge_profile(detector: Detector,
                    txt_file: str,
                    fit_profile_to_det: bool = False,
