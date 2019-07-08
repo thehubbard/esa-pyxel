@@ -159,7 +159,6 @@ class Configuration:
             self.mode = mode
         else:
             raise ValueError('Non-existing running mode defined for Pyxel in yaml config file.')
-
         self.outputs = outputs
         self.parametric = parametric
         self.calibration = calibration

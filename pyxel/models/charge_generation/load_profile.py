@@ -1,8 +1,9 @@
 #   --------------------------------------------------------------------------
-#   Copyright 2018 SCI-FIV, ESA (European Space Agency)
+#   Copyright 2019 SCI-FIV, ESA (European Space Agency)
 #   --------------------------------------------------------------------------
 """Simple model to load charge profiles."""
 import logging
+import typing as t
 import numpy as np
 import pyxel
 from pyxel.detectors.detector import Detector
@@ -13,8 +14,8 @@ from pyxel.detectors.detector import Detector
 @pyxel.argument(name='txt_file', label='file path', units='', validate=pyxel.check_path)
 def charge_profile(detector: Detector,
                    txt_file: str,
-                   fit_profile_to_det: bool,
-                   position: list) -> None:
+                   fit_profile_to_det: bool = False,
+                   position: t.Optional[list] = None) -> None:
     """Load charge profile from txt file for detector, mostly for but not limited to CCDs.
 
     :param detector: Pyxel Detector object

@@ -1,21 +1,22 @@
 #   --------------------------------------------------------------------------
-#   Copyright 2018 SCI-FIV, ESA (European Space Agency)
+#   Copyright 2019 SCI-FIV, ESA (European Space Agency)
 #   --------------------------------------------------------------------------
 """Pyxel detector simulation framework.
 
 Pyxel is a detector simulation framework, that can simulate a variety of
-detector effects (e.g., cosmics, radiation-induced CTI  in CCDs, persistency
-in MCT, diffusion, cross-talk etc.) on a given image.
+detector effects (e.g., cosmic rays, radiation-induced CTI in CCDs, persistence
+in MCT, charge diffusion, crosshatches, noises, crosstalk etc.) on a given image.
 """
 import argparse
 import logging
+import sys
 import time
 from pathlib import Path
 import numpy as np
 import pyxel.io as io
 from pyxel.pipelines.processor import Processor
 from pyxel.detectors.ccd import CCD
-# from pyxel import __version__ as pyxel_version
+from pyxel import __version__ as version
 import typing as t
 
 
@@ -28,6 +29,7 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
     :return:
     """
     logger = logging.getLogger('pyxel')
+    logger.info('Pyxel version ' + version)
     logger.info('Pipeline started.')    # FRED: Use `logging.info`
     start_time = time.time()
     if random_seed:
@@ -44,12 +46,11 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
     else:
         detector = cfg['ccd_detector']
     processor = Processor(detector, cfg['pipeline'])
+
     out = simulation.outputs
     if out:
         out.set_input_file(input_filename)
-    else:
-        logger.warning('Output is not defined! No output files will be saved!')
-    detector.set_output_dir(out.output_dir)
+        detector.set_output_dir(out.output_dir)
 
     # HANS: place all code in each if block into a separate function
     #   and use a dict call map. Example:
@@ -94,7 +95,7 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
             detector.set_dynamic(steps=simulation.dynamic['steps'],
                                  time_step=simulation.dynamic['t_step'],
                                  ndreadout=simulation.dynamic['non_destructive_readout'])
-        while detector.elapse_time():  # FRED: Use an iterator for that
+        while detector.elapse_time():  # FRED: Use an iterator for that ?
             logger.info('time = %.3f s' % detector.time)
             if detector.is_non_destructive_readout:
                 detector.initialize(reset_all=False)
@@ -109,6 +110,10 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
 
     logger.info('Pipeline completed.')
     logger.info('Running time: %.3f seconds' % (time.time() - start_time))
+    # Closing the logger in order to be able to move the file in the output dir
+    logging.shutdown()
+    if out:
+        out.save_log_file()
 
 
 # FRED: Remove this. Get the current version from '__version__' in 'pyxel/__init__.py'
@@ -136,7 +141,6 @@ def main():
     parser.add_argument('-c', '--config', type=str, required=True, help='Configuration file to load (YAML)')
     parser.add_argument('-s', '--seed', type=int, help='Random seed for the framework')
 
-    # parser.add_argument('-o', '--output', type=str, default='outputs', help='Path for output folder')
     # parser.add_argument('-g', '--gui', default=False, type=bool, help='run Graphical User Interface')
     # parser.add_argument('-p', '--port', default=9999, type=int, help='The port to run the web server on')
 
@@ -144,10 +148,17 @@ def main():
 
     logging_level = [logging.ERROR, logging.WARNING, logging.INFO, logging.DEBUG][min(opts.verbosity, 3)]
     log_format = '%(asctime)s - %(name)s - %(funcName)30s \t %(message)s'
-    logging.basicConfig(level=logging_level, format=log_format, datefmt='%d-%m-%Y %H:%M:%S')
+    logging.basicConfig(filename='pyxel.log',
+                        level=logging_level,
+                        format=log_format,
+                        datefmt='%d-%m-%Y %H:%M:%S')
+    # If user wants the log in stdout AND in file, use the three lines below
+    stream_stdout = logging.StreamHandler(sys.stdout)
+    stream_stdout.setFormatter(logging.Formatter(log_format))
+    logging.getLogger().addHandler(stream_stdout)
 
     if opts.config:
-        run(input_filename=opts.config, random_seed=opts.seed)   # output_directory=opts.output,
+        run(input_filename=opts.config, random_seed=opts.seed)
     else:
         print('Define a YAML configuration file!')
 
