@@ -483,6 +483,7 @@ def update_fits_header(header: dict, key, value) -> None:
     header[key] = value
 
 
+# FRED: Use method from `Path` (e.g. path_obj.blog)
 def apply_run_number(path: Path) -> Path:
     """Convert the file name numeric placeholder to a unique number.
 

@@ -147,7 +147,7 @@ class ModelFitting:
         self.ubd = []
         for var in self.variables:
             if var.logarithmic:
-                var.boundaries = np.log10(var.boundaries)
+                var.boundaries = np.log10(var.boundaries)  # type: np.ndarray
             if var.values == '_':
                 self.lbd += [var.boundaries[0]]
                 self.ubd += [var.boundaries[1]]

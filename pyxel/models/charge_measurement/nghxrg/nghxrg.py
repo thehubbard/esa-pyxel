@@ -5,7 +5,7 @@
 
 import logging
 # import pyxel
-from pyxel.detectors.cmos import CMOS
+from pyxel.detectors.cmos import CMOS, CMOSGeometry
 from pyxel.models.charge_measurement.nghxrg.nghxrg_beta import HXRGNoise
 import numpy as np
 import typing as t
@@ -31,7 +31,7 @@ def nghxrg(detector: CMOS,
     logging.getLogger("nghxrg").setLevel(logging.WARNING)
     logger = logging.getLogger('pyxel')
     logger.info('')
-    geo = detector.geometry
+    geo = detector.geometry  # type: CMOSGeometry
     number_of_fits = 1
     ng = HXRGNoise(n_out=geo.n_output,
                    nroh=geo.n_row_overhead,
@@ -49,7 +49,7 @@ def nghxrg(detector: CMOS,
     for item in noise:
         result = None
         if 'ktc_bias_noise' in item:
-            noise_name = 'ktc_bias_noise'
+            noise_name = 'ktc_bias_noise'  # type: str
             if item['ktc_bias_noise']:
                 result = ng.add_ktc_bias_noise(ktc_noise=item['ktc_noise'],
                                                bias_offset=item['bias_offset'],
@@ -76,12 +76,16 @@ def nghxrg(detector: CMOS,
             if item['pca_zero_noise']:
                 # TODO : pca0_file=item['pca0_file'])
                 result = ng.add_pca_zero_noise(pca0_amp=item['pca0_amp'])
+        else:
+            noise_name = None  # For completion
+
         try:
             result = ng.format_result(result)
             if window_mode == 'FULL':
-                display_noisepsd(result,
-                                 geo.n_output, (geo.col, geo.row),
-                                 noise_name)
+                display_noisepsd(array=result,
+                                 nb_output=geo.n_output,
+                                 dimension=(geo.col, geo.row),
+                                 noise_name=noise_name)
                 detector.pixel.array += result
             elif window_mode == 'WINDOW':
                 detector.pixel.array[wind_y0:wind_y0 + wind_y_size,
@@ -92,7 +96,7 @@ def nghxrg(detector: CMOS,
 
 def display_noisepsd(array: np.ndarray,
                      nb_output: float,
-                     dimension: t.Tuple[int],
+                     dimension: t.Tuple[int, int],
                      noise_name: str,
                      mode: str = 'plot') -> t.Tuple[t.Any, np.ndarray]:
     """Display noise PSD from the generated FITS file."""

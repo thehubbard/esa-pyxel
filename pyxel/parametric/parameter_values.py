@@ -9,9 +9,9 @@ class ParameterValues:
     def __init__(self,
                  key: str,
                  values: t.List[t.Union[float, int]],
-                 enabled: t.Optional[bool] = True,
+                 enabled: bool = True,
                  current=None,
-                 logarithmic: t.Optional[bool] = False,
+                 logarithmic: bool = False,
                  boundaries: t.Optional[list] = None):
         """TBW.
 

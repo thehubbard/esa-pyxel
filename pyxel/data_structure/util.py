@@ -30,20 +30,17 @@ def check_position(detector: "Detector", initial_position: t.Tuple[float, float,
     :param initial_position:
     :return:
     """
-    # FRED: Flatten this
-    if isinstance(initial_position, np.ndarray):
-        if 0.0 <= initial_position[0] <= detector.vert_dimension:
-            if 0.0 <= initial_position[1] <= detector.horz_dimension:
-                if -1 * detector.total_thickness <= initial_position[2] <= 0.0:
-                    pass
-                else:
-                    raise ValueError('Z position of particle is outside the detector')
-            else:
-                raise ValueError('Horizontal position of particle is outside the detector')
-        else:
-            raise ValueError('Vertical position of particle is outside the detector')
-    else:
+    if not isinstance(initial_position, np.ndarray):
         raise ValueError('Position of particle is not a numpy array (int or float)')
+
+    if not (0.0 <= initial_position[0] <= detector.vert_dimension):
+        raise ValueError('Vertical position of particle is outside the detector')
+
+    if not (0.0 <= initial_position[1] <= detector.horz_dimension):
+        raise ValueError('Horizontal position of particle is outside the detector')
+
+    if not (-1 * detector.total_thickness <= initial_position[2] <= 0.0):
+        raise ValueError('Z position of particle is outside the detector')
 
 
 def random_direction(v_abs: float = 1.0) -> np.ndarray:    # TODO check random angles and direction

@@ -25,6 +25,8 @@ from pyxel.detectors.ccd import CCD
 # @pyxel.validate
 # @pyxel.argument(name='', label='', units='', validate=)
 # @pyxel.register(group='charge_transfer', name='cdm', detector='ccd')
+# FRED: What is the type of 'tr_p', 'tr_s', 'nt_p', 'nt_s', 'sigma_p' and 'sigma_s' ?
+#       Is it `t.Union[float, t.Iterable[float]]` ???
 def cdm(detector: CCD,
         parallel_cti: bool, serial_cti: bool,
         beta_p: float, beta_s: float,
@@ -42,7 +44,7 @@ def cdm(detector: CCD,
     :param beta_p: electron cloud expansion coefficient, parallel
     :param beta_s: electron cloud expansion coefficient, serial
     :param tr_p: trap release time constants (τ_r), parallel
-    :param tr_s: trap release time constants (τ_r), serial
+    :param tr_s: trap release time constants (τ_r), serials
     :param nt_p: absolute trap densities (n_t), parallel
     :param nt_s: absolute trap densities (n_t), serial
     :param sigma_p: trap capture cross-sections (σ), parallel
@@ -68,6 +70,10 @@ def cdm(detector: CCD,
     logger.info('')
     char = detector.characteristics
 
+    # FRED: Use 'np.asarray' (or 'np.array' ??) for all inputs
+    #       example:
+    #         tr_p = np.asarray(tr_p)
+    #         tr_s = np.asarray(tr_s)
     if isinstance(tr_p, list):
         tr_p = np.array(tr_p)
     if isinstance(tr_s, list):

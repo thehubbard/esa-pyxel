@@ -60,7 +60,7 @@ def read_data(data_path: t.Union[str, list]) -> t.List[np.ndarray]:
     return output
 
 
-def list_to_slice(input_list: t.Optional[t.List[int]]) -> t.Tuple[slice, slice]:
+def list_to_slice(input_list: t.Optional[t.List[int]]) -> t.Union[slice, t.Tuple[slice, slice]]:
     """TBW.
 
     :return:

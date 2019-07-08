@@ -30,7 +30,7 @@ class Photon(Array):
         """
         super().__init__()                  # TODO: add unit (ph)
         self.exp_type = np.int
-        self.type_list = [np.int32, np.int64, np.uint32, np.uint64, np.float16, np.float32, np.float64]
+        self.type_list = [np.int32, np.int64, np.uint32, np.uint64, np.float16, np.float32, np.float64]  # type: list
         self._array = None
 
     def new_array(self, new_array: np.ndarray) -> None:
@@ -38,13 +38,12 @@ class Photon(Array):
 
         :param new_array:
         """
-        # FRED: Flatten this
-        if isinstance(new_array, np.ndarray):
-            if new_array.dtype in self.type_list:
-                self._array = new_array
-                self.type = new_array.dtype
-            else:
-                raise TypeError('Type of %s array should be a(n) %s' %
-                                (self.__class__.__name__, self.exp_type.__name__))
-        else:
+        if not isinstance(new_array, np.ndarray):
             raise TypeError('%s array should be a numpy.ndarray' % self.__class__.__name__)
+
+        if new_array.dtype not in self.type_list:
+            raise TypeError('Type of %s array should be a(n) %s' %
+                            (self.__class__.__name__, self.exp_type.__name__))
+
+        self._array = new_array
+        self.type = new_array.dtype

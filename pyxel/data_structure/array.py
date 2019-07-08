@@ -19,6 +19,7 @@ class Array:
         """TBW."""
         # FRED: self.exp_type and self.type_list could be Class variables instead of instance variable
         #       It is more clear
+        # FRED: self.typ
 
         self.type = None            # type: t.Optional[type]
         self.exp_type = None        # type: t.Optional[type]
@@ -43,20 +44,19 @@ class Array:
 
         Only accepts an array with the right type and shape.
         """
-        # FRED: This could be flattened
-        if isinstance(value, np.ndarray):
-            if value.dtype in self.type_list:
-                if value.shape == self._array.shape:
-                    self.type = value.dtype
-                    self._array = value
-                else:
-                    raise ValueError('Shape of %s array should be %s' %
-                                     (self.__class__.__name__, str(self._array.shape)))
-            else:
-                raise TypeError('Type of %s array should be a(n) %s' %
-                                (self.__class__.__name__, self.exp_type.__name__))
-        else:
+        if not isinstance(value, np.ndarray):
             raise TypeError('%s array should be a numpy.ndarray' % self.__class__.__name__)
+
+        if value.dtype not in self.type_list:
+            raise TypeError('Type of %s array should be a(n) %s' %
+                            (self.__class__.__name__, self.exp_type.__name__))
+
+        if value.shape != self._array.shape:
+            raise ValueError('Shape of %s array should be %s' %
+                             (self.__class__.__name__, str(self._array.shape)))
+
+        self.type = value.dtype
+        self._array = value
 
     # TODO: Is it necessary ? Maybe not if you implement method __array__
     @property
