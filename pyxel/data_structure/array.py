@@ -19,7 +19,7 @@ class Array:
         """TBW."""
         # FRED: self.exp_type and self.type_list could be Class variables instead of instance variable
         #       It is more clear
-        # FRED: self.typ
+        # FRED: is `self.type` needed ?
 
         self.type = None            # type: t.Optional[type]
         self.exp_type = None        # type: t.Optional[type]
