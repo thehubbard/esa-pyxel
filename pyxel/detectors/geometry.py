@@ -3,7 +3,7 @@ import esapy_config.config as ec
 from esapy_config import validators
 
 
-@ec.config(mode='RO')
+@ec.config()
 class Geometry:
     """Geometrical attributes of the detector."""
 

@@ -3,11 +3,11 @@ from . import Geometry
 class CMOSGeometry(Geometry):
     def __init__(
         self,
-        n_output: int = 1,
-        n_row_overhead: int = 0,
-        n_frame_overhead: int = 0,
-        reverse_scan_direction: bool = False,
-        reference_pixel_border_width: int = 4,
+        n_output: int = ...,
+        n_row_overhead: int = ...,
+        n_frame_overhead: int = ...,
+        reverse_scan_direction: bool = ...,
+        reference_pixel_border_width: int = ...,
     ): ...
     @property
     def n_output(self) -> int: ...

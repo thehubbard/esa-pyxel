@@ -1,15 +1,15 @@
 class Characteristics:
     def __init__(
         self,
-        qe: float = 0.0,
-        eta: float = 0.0,
-        sv: float = 0.0,
-        amp: float = 0.0,
-        a1: float = 0.0,
-        a2: float = 0.0,
-        fwc: int = 0,
-        vg: float = 0.0,
-        dt: float = 0.0,
+        qe: float = ...,
+        eta: float = ...,
+        sv: float = ...,
+        amp: float = ...,
+        a1: float = ...,
+        a2: float = ...,
+        fwc: int = ...,
+        vg: float = ...,
+        dt: float = ...,
     ): ...
     @property
     def qe(self) -> float: ...

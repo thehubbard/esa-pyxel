@@ -1,18 +1,16 @@
 import typing as t
 
-M_ELECTRON = 9.10938356e-31  # kg     # TODO put these global constants to a data file
-
 class Material:
     def __init__(
         self,
-        trapped_charge: t.Optional[str] = None,
-        n_acceptor: float = 0.0,
-        n_donor: float = 0.0,
+        trapped_charge: t.Optional[str] = ...,
+        n_acceptor: float = ...,
+        n_donor: float = ...,
         material: str = "silicon",
-        material_density: float = 2.328,
-        ionization_energy: float = 3.6,
-        band_gap: float = 1.12,
-        e_effective_mass: float = 0.5 * M_ELECTRON,
+        material_density: float = ...,
+        ionization_energy: float = ...,
+        band_gap: float = ...,
+        e_effective_mass: float = ...,
     ): ...
     @property
     def trapped_charge(self) -> t.Optional[str]: ...
