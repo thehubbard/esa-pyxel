@@ -26,7 +26,11 @@ import attr
 # FRED: There is a big flaw with this class.
 #       A `Detector` instance can have a `CCDGeometry` and a `CMOSCharacteristics`.
 #       This is not possible. We must solve this issue.
-#       Note: Several solution are possibles
+#       Note: Several solution are possible:
+#         - Classes `Geometry`, `CCDGeometry` and `CMOSGeometry` have exactly the same attributes (not possible ?)
+#         - Remove 'geometry' and 'characteristics' from this class. Implement them only in `CCD` and `CMOSDetector`
+#         - Keep 'geometry' and 'chararacteristics' in this class. For class `CCD`, add a new attribute 'extra_ccd_geometry',
+#           for class `CMOSDetector`, add a new attribute 'extra_cmos_geometry'. Do the same for 'characteristics'
 # FRED: Add methods to save/load a `Detector` instance to the filesystem
 #       Example of methods:
 #           def to_fits(self, filename: Path):      # Save into one FITS file that contains multiple HDUs
@@ -35,7 +39,8 @@ import attr
 #           def from_fits(self, filename: Path) -> Detector     # Store into one FITS file
 #               ...
 #           def to_hdf5(...) / def from_hdf5(...)
-#           def to_folder(...)  / def from_folder(...)=
+#           def to_folder(...)  / def from_folder(...)
+#           def to_yaml(...) ? / def from_yaml(...)
 @ec.config
 class Detector:
     """The detector class."""
@@ -44,6 +49,8 @@ class Detector:
     material = ec.setting(type=Material)
     environment = ec.setting(type=Environment)
     characteristics = ec.setting(type=Characteristics)
+
+    # FRED: Move these in `Geometry` ??
     photon = ec.setting(type=t.Optional[Photon],
                         default=attr.Factory(lambda self: Photon(self.geometry), takes_self=True))
     charge = ec.setting(type=t.Optional[Charge], factory=Charge)
@@ -52,6 +59,7 @@ class Detector:
                         default=attr.Factory(lambda self: Signal(self.geometry), takes_self=True))
     image = ec.setting(type=t.Optional[Image], default=attr.Factory(lambda self: Image(self.geometry), takes_self=True))
 
+    # FRED: Internal attributes (==> 'init=False')
     header = ec.setting(type=collections.OrderedDict, factory=collections.OrderedDict, init=False)
     input_image = ec.setting(default=None, init=False)
     output_dir = ec.setting(type=Path, default=Path(), init=False)
