@@ -4,52 +4,65 @@
 """Pyxel wrapper class for NGHXRG - Teledyne HxRG Noise Generator model."""
 
 import logging
-# import pyxel
+import typing as t
 from pyxel.detectors.cmos import CMOS, CMOSGeometry
 from pyxel.models.charge_measurement.nghxrg.nghxrg_beta import HXRGNoise
 import numpy as np
-import typing as t
+from pathlib import Path
 
 
 # @pyxel.validate
 # @pyxel.argument(name='', label='', units='', validate=)
 def nghxrg(detector: CMOS,
            noise: list,
-           window_mode: str = 'FULL',
-           wind_x0: int = 0, wind_y0: int = 0,
-           wind_x_size: int = 0, wind_y_size: int = 0) -> None:
+           pca0_file: str = None,
+           window_position: t.Optional[t.List[int]] = None,
+           window_size: t.Optional[t.List[int]] = None,
+           plot_psd: bool = True) -> None:
     """TBW.
 
     :param detector: Pyxel Detector object
     :param noise:
-    :param window_mode:
-    :param wind_x0:
-    :param wind_y0:
-    :param wind_x_size:
-    :param wind_y_size:
+    :param pca0_file:
+    :param window_position: [x0 (columns), y0 (rows)]
+    :param window_size: [x (columns), y (rows)]
+    :param plot_psd:
     """
     logging.getLogger("nghxrg").setLevel(logging.WARNING)
     logger = logging.getLogger('pyxel')
     logger.info('')
     geo = detector.geometry  # type: CMOSGeometry
-    number_of_fits = 1
+    step = 1
+    if detector.is_dynamic:
+        step = int(detector.time / detector.time_step)
+    if window_position is None:
+        window_position = [0, 0]
+    if window_size is None:
+        window_size = [geo.col, geo.row]
+    if window_position == [0, 0] and window_size == [geo.col, geo.row]:
+        window_mode = 'FULL'
+    else:
+        window_mode = 'WINDOW'
+
     ng = HXRGNoise(n_out=geo.n_output,
+                   time_step=step,
                    nroh=geo.n_row_overhead,
                    nfoh=geo.n_frame_overhead,
                    reverse_scan_direction=geo.reverse_scan_direction,
                    reference_pixel_border_width=geo.reference_pixel_border_width,
-                   # pca0_file=,    # TODO
+                   pca0_file=pca0_file,
                    det_size_x=geo.col, det_size_y=geo.row,
                    wind_mode=window_mode,
-                   wind_x_size=wind_x_size, wind_y_size=wind_y_size,
-                   wind_x0=wind_x0, wind_y0=wind_y0,
-                   cube_z=number_of_fits,
+                   wind_x_size=window_size[0], wind_y_size=window_size[1],
+                   wind_x0=window_position[0], wind_y0=window_position[1],
                    verbose=True)
 
     for item in noise:
-        result = None
+        result = None  # type: t.Optional[np.ndarray]
+        noise_name = None  # type: t.Optional[str]
         if 'ktc_bias_noise' in item:
-            noise_name = 'ktc_bias_noise'  # type: str
+            # NOTE: there is no kTc or Bias noise added for first/single frame
+            noise_name = 'ktc_bias_noise'
             if item['ktc_bias_noise']:
                 result = ng.add_ktc_bias_noise(ktc_noise=item['ktc_noise'],
                                                bias_offset=item['bias_offset'],
@@ -74,22 +87,19 @@ def nghxrg(detector: CMOS,
         elif 'pca_zero_noise' in item:
             noise_name = 'pca_zero_noise'
             if item['pca_zero_noise']:
-                # TODO : pca0_file=item['pca0_file'])
                 result = ng.add_pca_zero_noise(pca0_amp=item['pca0_amp'])
-        else:
-            noise_name = None  # For completion
-
         try:
             result = ng.format_result(result)
-            if window_mode == 'FULL':
-                display_noisepsd(array=result,
-                                 nb_output=geo.n_output,
-                                 dimension=(geo.col, geo.row),
-                                 noise_name=noise_name)
-                detector.pixel.array += result
-            elif window_mode == 'WINDOW':
-                detector.pixel.array[wind_y0:wind_y0 + wind_y_size,
-                                     wind_x0:wind_x0 + wind_x_size] += result
+            if result.any():
+                if plot_psd:
+                    display_noisepsd(result, noise_name=noise_name,
+                                     nb_output=geo.n_output, dimension=(geo.col, geo.row),
+                                     path=detector.output_dir, step=step)
+                if window_mode == 'FULL':
+                    detector.pixel.array += result
+                elif window_mode == 'WINDOW':
+                    detector.pixel.array[window_position[1]:window_position[1] + window_size[1],
+                                         window_position[0]:window_position[0] + window_size[0]] += result
         except TypeError:
             pass
 
@@ -98,6 +108,8 @@ def display_noisepsd(array: np.ndarray,
                      nb_output: float,
                      dimension: t.Tuple[int, int],
                      noise_name: str,
+                     path: Path,
+                     step: int,
                      mode: str = 'plot') -> t.Tuple[t.Any, np.ndarray]:
     """Display noise PSD from the generated FITS file."""
     import numpy as np
@@ -126,16 +138,17 @@ def display_noisepsd(array: np.ndarray,
     # Initializing table of nb_outputs periodogram +1 for dimensions
     pxx_outputs = np.zeros((nb_output, int(nperseg/2)+1))
 
+    f_vect = None
     # For each output
     for i in np.arange(nb_output):
         # If i odd, flatten data since its the good reading direction
         if i % 2 == 0:
-            output_data = data_corr[:, int(i*(nbcols_p_channel)):
-                                    int((i+1)*(nbcols_p_channel))].flatten()
+            output_data = data_corr[:, int(i * nbcols_p_channel):
+                                    int((i+1) * nbcols_p_channel)].flatten()
         # Else, flip it left/right and then flatten it
         else:
-            output_data = np.fliplr(data_corr[:, int(i*(nbcols_p_channel)):
-                                              int((i+1)*(nbcols_p_channel))])
+            output_data = np.fliplr(data_corr[:, int(i * nbcols_p_channel):
+                                              int((i+1) * nbcols_p_channel)])
             output_data.flatten()
         # output data without flipping
         # output_data = data_corr[:,int(i*(nbcols_p_channel)):
@@ -143,9 +156,7 @@ def display_noisepsd(array: np.ndarray,
 
         # print(output_data, read_freq, nperseg)
         # Add periodogram to the previously initialized array
-        f_vect, pxx_outputs[i] = signal.welch(output_data,
-                                              read_freq,
-                                              nperseg=nperseg)
+        f_vect, pxx_outputs[i] = signal.welch(output_data, read_freq, nperseg=nperseg)
 
     # For the detector
     # detector_data = data_corr.flatten()
@@ -155,23 +166,20 @@ def display_noisepsd(array: np.ndarray,
     #                                   nperseg=nperseg)
 
     if mode == 'plot':
-        # Plotting
         fig, ax1 = plt.subplots(1, 1, figsize=(8, 8))
         fig.canvas.set_window_title('Power Spectral Density')
-        fig.suptitle(noise_name.capitalize()+' Power Spectral Density\n' +
+        fig.suptitle(noise_name + ' Power Spectral Density\n' +
                      'Welch seg. length / Nb pixel output: ' +
                      str('{:1.2f}'.format(nperseg/pix_p_output)))
-
-        ax1.plot(f_vect, np.mean(pxx_outputs, axis=0),
-                 '.-', ms=3, alpha=0.3, label='PSD outputs', zorder=32)
+        ax1.plot(f_vect, np.mean(pxx_outputs, axis=0), '.-', ms=3, alpha=0.5, zorder=32)
         for idx, ax in enumerate([ax1]):
             ax.set_xlim([1, 1e5])
             ax.set_xscale('log')
             ax.set_yscale('log')
             ax.set_xlabel('Frequency [Hz]')
             ax.set_ylabel('PSD [e-${}^2$/Hz]')
-            ax.legend(fontsize=12)
             ax.grid(True, alpha=.4)
-        plt.savefig('outputs/'+noise_name.capitalize()+'.png')
+        plt.savefig(path + '/nghxrg_' + noise_name + '_' + str(step) + '.png', dpi=300)
+        plt.close()
 
     return f_vect, np.mean(pxx_outputs, axis=0)

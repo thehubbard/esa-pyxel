@@ -18,7 +18,6 @@ try:
 except ImportError:
     # raise Warning('Matplotlib cannot be imported')
     pass
-# import pyxel
 from pyxel.detectors.ccd import CCD
 
 
@@ -44,7 +43,7 @@ def cdm(detector: CCD,
     :param beta_p: electron cloud expansion coefficient, parallel
     :param beta_s: electron cloud expansion coefficient, serial
     :param tr_p: trap release time constants (τ_r), parallel
-    :param tr_s: trap release time constants (τ_r), serials
+    :param tr_s: trap release time constants (τ_r), serial
     :param nt_p: absolute trap densities (n_t), parallel
     :param nt_s: absolute trap densities (n_t), serial
     :param sigma_p: trap capture cross-sections (σ), parallel

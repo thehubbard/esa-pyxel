@@ -4,13 +4,12 @@ import poppy as op
 import numpy as np
 from scipy import signal
 import matplotlib.pyplot as plt
-# import pyxel
 from pyxel.detectors.detector import Detector
 import typing as t
 
 
-# @pyxel.validate
-# @pyxel.argument(name='image_file', label='', validate=check_path)
+# @validators.validate
+# @config.argument(name='image_file', label='', validate=check_path)
 def optical_psf(detector: Detector,
                 wavelength: float,
                 pixelscale: float,

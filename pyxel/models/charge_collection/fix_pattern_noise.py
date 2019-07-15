@@ -11,8 +11,8 @@ import typing as t
 # from astropy import units as u
 
 
-# @pyxel.validate
-# @pyxel.argument(name='', label='', units='', validate=)
+# @validators.validate
+# @config.argument(name='', label='', units='', validate=)
 def fix_pattern_noise(detector: Detector,
                       pixel_non_uniformity: t.Optional[np.ndarray] = None) -> None:
     """Add fix pattern noise caused by pixel non-uniformity during charge collection.
