@@ -22,6 +22,7 @@ class Photon(Array):
     Accepted array types: np.int32, np.int64, np.uint32, np.uint64, np.float16, np.float32, np.float64
     """
 
+    # FRED: Replace by '__init__(self, new_array: np.ndarray)' ???
     def __init__(self, geo: "Geometry"):
         """TBW.
 
@@ -33,6 +34,7 @@ class Photon(Array):
         self.type_list = [np.int32, np.int64, np.uint32, np.uint64, np.float16, np.float32, np.float64]  # type: list
         self._array = None
 
+    # FRED: This could be done in '__init__'
     def new_array(self, new_array: np.ndarray) -> None:
         """TBW.
 
@@ -46,4 +48,4 @@ class Photon(Array):
                             (self.__class__.__name__, self.exp_type.__name__))
 
         self._array = new_array
-        self.type = new_array.dtype
+        self.type = new_array.dtype  # FRED: Where is it used ?

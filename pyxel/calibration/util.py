@@ -6,7 +6,7 @@ from astropy.io import fits
 
 
 # FRED: Use `pathlib.Path`
-def read_data(data_path: t.Union[str, list]) -> t.List[np.ndarray]:
+def read_data(data_path: t.Union[str, t.List[str]]) -> t.List[np.ndarray]:
     """TBW.
 
     :param data_path:
