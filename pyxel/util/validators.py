@@ -53,7 +53,6 @@ __all__ = ['check']
 
 def check(name: str, validate: t.Callable[[t.Any], bool]):
     """TBW."""
-
     def wrap(func: t.Callable):
         """TBW."""
         # TODO: Check if name is a valid parameter name
