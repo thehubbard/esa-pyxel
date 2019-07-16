@@ -30,19 +30,6 @@ class ParameterValues:
         self.logarithmic = logarithmic              # type: bool
         self.boundaries = boundaries                # type: t.Optional[list]
 
-    # FRED: Is it needed ? all values in this `dict` should me copied.
-    # HANS: for each `__getstate__` there should be a corresponding `__setstate__`.
-    def __getstate__(self) -> dict:
-        """TBW."""
-        return {
-            'key': self.key,
-            'values': self.values,
-            'enabled': self.enabled,
-            'current': self.current,
-            'logarithmic': self.logarithmic,
-            'boundaries': self.boundaries,
-        }
-
     def __len__(self) -> int:
         """TBW."""
         values = eval_range(self.values)

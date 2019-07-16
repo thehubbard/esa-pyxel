@@ -6,10 +6,8 @@ import numpy as np
 from pathlib import Path
 
 # from astropy import units as u
-from pyxel.detectors.geometry import Geometry
-from pyxel.detectors.material import Material
-from pyxel.detectors.environment import Environment
-from pyxel.detectors.characteristics import Characteristics
+from pyxel.detectors import Material
+from pyxel.detectors import Environment
 from pyxel.data_structure.charge import Charge
 from pyxel.data_structure.photon import Photon
 from pyxel.data_structure.pixel import Pixel
@@ -29,7 +27,8 @@ import attr
 #       Note: Several solution are possible:
 #         - Classes `Geometry`, `CCDGeometry` and `CMOSGeometry` have exactly the same attributes (not possible ?)
 #         - Remove 'geometry' and 'characteristics' from this class. Implement them only in `CCD` and `CMOSDetector`
-#         - Keep 'geometry' and 'chararacteristics' in this class. For class `CCD`, add a new attribute 'extra_ccd_geometry',
+#         - Keep 'geometry' and 'chararacteristics' in this class. For class `CCD`,
+#           add a new attribute 'extra_ccd_geometry',
 #           for class `CMOSDetector`, add a new attribute 'extra_cmos_geometry'. Do the same for 'characteristics'
 # FRED: Add methods to save/load a `Detector` instance to the filesystem
 #       Example of methods:
@@ -41,23 +40,24 @@ import attr
 #           def to_hdf5(...) / def from_hdf5(...)
 #           def to_folder(...)  / def from_folder(...)
 #           def to_yaml(...) ? / def from_yaml(...)
+#           def to_asdf(...) ? / def from_asdf(...)
 @ec.config
 class Detector:
     """The detector class."""
 
-    geometry = ec.setting(type=Geometry)
     material = ec.setting(type=Material)
     environment = ec.setting(type=Environment)
-    characteristics = ec.setting(type=Characteristics)
 
     # FRED: Move these in `Geometry` ??
     photon = ec.setting(type=t.Optional[Photon],
-                        default=attr.Factory(lambda self: Photon(self.geometry), takes_self=True))
-    charge = ec.setting(type=t.Optional[Charge], factory=Charge)
-    pixel = ec.setting(type=t.Optional[Pixel], default=attr.Factory(lambda self: Pixel(self.geometry), takes_self=True))
+                        default=attr.Factory(lambda self: Photon(self.geometry), takes_self=True), init=False)
+    charge = ec.setting(type=t.Optional[Charge], factory=Charge, init=False)
+    pixel = ec.setting(type=t.Optional[Pixel], default=attr.Factory(lambda self: Pixel(self.geometry), takes_self=True),
+                       init=False)
     signal = ec.setting(type=t.Optional[Signal],
-                        default=attr.Factory(lambda self: Signal(self.geometry), takes_self=True))
-    image = ec.setting(type=t.Optional[Image], default=attr.Factory(lambda self: Image(self.geometry), takes_self=True))
+                        default=attr.Factory(lambda self: Signal(self.geometry), takes_self=True), init=False)
+    image = ec.setting(type=t.Optional[Image], default=attr.Factory(lambda self: Image(self.geometry), takes_self=True),
+                       init=False)
 
     # FRED: Internal attributes (==> 'init=False')
     header = ec.setting(type=collections.OrderedDict, factory=collections.OrderedDict, init=False)
@@ -140,6 +140,17 @@ class Detector:
     #     self.read_out = True                            # type: bool
     #     self._all_time_steps = None
 
+    @property
+    def geometry(self):
+        """TBW."""
+        raise NotImplementedError
+
+    @property
+    def characteristics(self):
+        """TBW."""
+        raise NotImplementedError
+
+    # FRED: Rename to 'reset' ?
     def initialize(self, reset_all: bool = True) -> None:
         """TBW."""
         self.photon = Photon(self.geometry)             # type: Photon

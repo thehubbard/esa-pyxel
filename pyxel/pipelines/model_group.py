@@ -32,15 +32,6 @@ class ModelGroup:
                     model.function(detector)
         return False
 
-    # FRED: Is is needed ?
-    def __getstate__(self) -> dict:
-        """TBW."""
-        return {'models': self.models}
-
-    def __setstate__(self, item: dict) -> None:
-        """TBW."""
-        self.models = item['models']
-
     # FRED: These methods could also be implemented:
     #       __getitem__, __iter__, __len__, __contains__, __eq__, ...
 

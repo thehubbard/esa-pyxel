@@ -29,8 +29,7 @@ def nghxrg(detector: CMOS,
     :param plot_psd:
     """
     logging.getLogger("nghxrg").setLevel(logging.WARNING)
-    logger = logging.getLogger('pyxel')
-    logger.info('')
+    logging.info('')
     geo = detector.geometry  # type: CMOSGeometry
     step = 1
     if detector.is_dynamic:
@@ -59,7 +58,6 @@ def nghxrg(detector: CMOS,
 
     for item in noise:
         result = None  # type: t.Optional[np.ndarray]
-        noise_name = None  # type: t.Optional[str]
         if 'ktc_bias_noise' in item:
             # NOTE: there is no kTc or Bias noise added for first/single frame
             noise_name = 'ktc_bias_noise'
@@ -88,12 +86,15 @@ def nghxrg(detector: CMOS,
             noise_name = 'pca_zero_noise'
             if item['pca_zero_noise']:
                 result = ng.add_pca_zero_noise(pca0_amp=item['pca0_amp'])
+        else:
+            noise_name = ''
+
         try:
             result = ng.format_result(result)
             if result.any():
                 if plot_psd:
                     display_noisepsd(result, noise_name=noise_name,
-                                     nb_output=geo.n_output, dimension=(geo.col, geo.row),
+                                     nb_output=geo.n_output, dimensions=(geo.col, geo.row),
                                      path=detector.output_dir, step=step)
                 if window_mode == 'FULL':
                     detector.pixel.array += result
@@ -106,7 +107,7 @@ def nghxrg(detector: CMOS,
 
 def display_noisepsd(array: np.ndarray,
                      nb_output: float,
-                     dimension: t.Tuple[int, int],
+                     dimensions: t.Tuple[int, int],
                      noise_name: str,
                      path: Path,
                      step: int,
@@ -129,7 +130,7 @@ def display_noisepsd(array: np.ndarray,
     """
 
     # Should be in the simulated data header
-    dimension = dimension[0]
+    dimension = dimensions[0]  # type: int
     pix_p_output = dimension**2 / nb_output  # Number of pixels per output
     nbcols_p_channel = dimension / nb_output  # Number of columns per channel
     nperseg = int(pix_p_output / 10.)  # Length of segments for Welch's method
@@ -179,7 +180,9 @@ def display_noisepsd(array: np.ndarray,
             ax.set_xlabel('Frequency [Hz]')
             ax.set_ylabel('PSD [e-${}^2$/Hz]')
             ax.grid(True, alpha=.4)
-        plt.savefig(path + '/nghxrg_' + noise_name + '_' + str(step) + '.png', dpi=300)
+
+        filename = path.joinpath('nghxrg_' + noise_name + '_' + str(step) + '.png')  # type: Path
+        plt.savefig(filename, dpi=300)
         plt.close()
 
     return f_vect, np.mean(pxx_outputs, axis=0)

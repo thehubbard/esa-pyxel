@@ -24,8 +24,7 @@ def simple_digitization(detector: Detector,
     :param data_type: numpy integer type: ``numpy.uint16``, ``numpy.uint32``, ``numpy.uint64``,
                                           ``numpy.int32``, ``numpy.int64``
     """
-    logger = logging.getLogger('pyxel')
-    logger.info('')
+    logging.info('')
 
     d_type = locate(data_type)
     if d_type is None:
@@ -44,8 +43,7 @@ def simple_processing(detector: Detector) -> None:
 
     :param detector: Pyxel Detector object
     """
-    logger = logging.getLogger('pyxel')
-    logger.info('')
+    logging.info('')
     detector.signal.array *= detector.characteristics.a2
     detector.image.array = detector.signal.array
 
@@ -60,8 +58,7 @@ def sar_adc(detector: Detector,
     :param range_volt: tuple with min anx max volt value
     """
     # import numpy as np
-    logger = logging.getLogger('pyxel')
-    logger.info('')
+    logging.info('')
     # Extract the data to digitize
     data = detector.signal.array
     data_digitized = np.zeros((detector.geometry.row, detector.geometry.col))

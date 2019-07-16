@@ -46,8 +46,8 @@ class ModelFitting:
         self.champion_f_list = None  # type: t.Optional[np.ndarray]
         self.champion_x_list = None  # type: t.Optional[np.ndarray]
 
-        self.lbd = None  # type: t.Optional[list]                   # lower boundary
-        self.ubd = None  # type: t.Optional[list]                   # upper boundary
+        self.lbd = []  # type: list                   # lower boundary
+        self.ubd = []  # type: list                   # upper boundary
 
         self.sim_fit_range = None  # type: t.Optional[slice]
         self.targ_fit_range = None  # type: t.Optional[slice]
@@ -55,7 +55,7 @@ class ModelFitting:
         # self.normalization = False
         # self.target_data_norm = []
 
-    def get_bounds(self) -> t.Tuple[t.Optional[list], t.Optional[list]]:
+    def get_bounds(self) -> t.Tuple[list, list]:
         """TBW.
 
         :return:
@@ -69,8 +69,6 @@ class ModelFitting:
         :param setting: dict
         :return:
         """
-        logger = logging.getLogger('pyxel')
-
         self.calibration_mode = setting['calibration_mode']
         self.sim_output = setting['simulation_output']
         self.fitness_func = setting['fitness_func']
@@ -82,7 +80,9 @@ class ModelFitting:
 
         self.set_bound()
 
-        self.original_processor = deepcopy(self.processor)  # type: Processor
+        copied_processor = deepcopy(self.processor)  # type: Processor
+        self.original_processor = copied_processor
+
         if 'input_arguments' in setting and setting['input_arguments']:
 
             max_val, min_val = 0, 1000
@@ -90,8 +90,8 @@ class ModelFitting:
                 min_val = min(min_val, len(arg.values))
                 max_val = max(max_val, len(arg.values))
             if min_val != max_val:
-                logger.warning('The "result_input_arguments" value lists have different lengths! '
-                               'Some values will be ignored.')
+                logging.warning('The "result_input_arguments" value lists have different lengths! '
+                                'Some values will be ignored.')
             for i in range(min_val):
                 new_processor = deepcopy(self.processor)
                 for step in setting['input_arguments']:
@@ -185,7 +185,7 @@ class ModelFitting:
         overall_fitness = 0.  # type: float
         for processor, target_data in zip(processor_list, self.all_target_data):
 
-            processor = self.update_processor(parameter, processor)  # type: Processor
+            processor = self.update_processor(parameter, processor)
             if self.calibration_mode == 'pipeline':
                 processor.pipeline.run_pipeline(processor.detector)
             # elif self.calibration_mode == 'single_model':
@@ -239,7 +239,7 @@ class ModelFitting:
             a += b
         return new_processor
 
-    def get_results(self, fitness: list, parameter: list) -> t.Tuple[list, list]:
+    def get_results(self, fitness: list, parameter: list) -> t.Tuple[Processor, dict]:
         """TBW.
 
         :param fitness:
@@ -248,13 +248,14 @@ class ModelFitting:
         """
         parameter = self.update_parameter(parameter)        # todo : duplicated code, see fitness!
         new_processor = deepcopy(self.original_processor)  # type: Processor  # TODO TODO
-        champion = self.update_processor(parameter, new_processor)
+
+        champion = self.update_processor(parameter, new_processor)  # type: Processor
         if self.calibration_mode == 'pipeline':
             champion.pipeline.run_pipeline(champion.detector)
         # elif self.calibration_mode == 'single_model':
         #     self.fitted_model.function(champion.detector)               # todo: update
 
-        results = OrderedDict()
+        results = OrderedDict()  # type: OrderedDict
         results['fitness'] = fitness[0]
         a, b = 0, 0
         for var in self.variables:

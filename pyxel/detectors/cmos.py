@@ -42,12 +42,23 @@ class CMOS(Detector):
         :param signal:
         :param image:
         """
-        super().__init__(geometry=geometry,
-                         material=material,
+        super().__init__(material=material,
                          environment=environment,
-                         characteristics=characteristics,
                          photon=photon,
                          charge=charge,
                          pixel=pixel,
                          signal=signal,
                          image=image)
+
+        self._geometry = geometry  # type: CMOSGeometry
+        self._characteristics = characteristics  # type: CMOSCharacteristics
+
+    @property
+    def geometry(self) -> CMOSGeometry:
+        """TBW."""
+        return self._geometry
+
+    @property
+    def characteristics(self) -> CMOSCharacteristics:
+        """TBW."""
+        return self._characteristics

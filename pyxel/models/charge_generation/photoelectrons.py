@@ -15,8 +15,7 @@ def simple_conversion(detector: Detector) -> None:
 
     :param detector: Pyxel Detector object
     """
-    logger = logging.getLogger('pyxel')
-    logger.info('')
+    logging.info('')
     geo = detector.geometry
     ch = detector.characteristics
     ph = detector.photon
@@ -54,8 +53,7 @@ def monte_carlo_conversion(detector: Detector) -> None:
 
     :param detector: Pyxel Detector object
     """
-    logger = logging.getLogger('pyxel')
-    logger.info('')
+    logging.info('')
 
     # detector.qe <= 1
     # detector.eta <= 1

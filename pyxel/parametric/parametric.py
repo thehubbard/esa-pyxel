@@ -5,6 +5,7 @@ from copy import deepcopy
 import numpy as np
 from esapy_config import get_obj_att, get_value
 from pyxel.parametric.parameter_values import ParameterValues
+import logging
 
 if t.TYPE_CHECKING:
     from ..pipelines.processor import Processor
@@ -95,7 +96,7 @@ class ParametricAnalysis:
                 new_proc.set(key=key, value=value)
             yield new_proc
 
-    def collect(self, processor: "Processor") -> "t.List[Processor]":
+    def collect(self, processor: "Processor") -> "t.Iterator[Processor]":
         """TBW."""
         for step in self.enabled_steps:
 
@@ -120,7 +121,7 @@ class ParametricAnalysis:
         elif self.parametric_mode == 'parallel':
             configs = self._parallel(processor)
         else:
-            configs = []
+            configs = iter([])
 
         return configs
 
@@ -134,7 +135,7 @@ class ParametricAnalysis:
                 _, att = get_obj_att(config, step.key)
                 value = get_value(config, step.key)
                 values.append((att, value))
-            print('%d: %r' % (i, values))  # FRED: Use `logging.debug`
+            logging.debug('%d: %r' % (i, values))
             result.append((i, values))
         return result
 

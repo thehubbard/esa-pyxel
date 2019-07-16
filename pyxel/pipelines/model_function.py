@@ -37,16 +37,6 @@ class ModelFunction:
         """TBW."""
         return 'ModelFunction(%(name)r, %(func)r, %(arguments)r, %(enabled)r)' % vars(self)
 
-    # FRED: Is it needed ?  Where is the '__setstate__' ?
-    def __getstate__(self) -> dict:
-        """TBW."""
-        return {
-            'name': self.name,
-            'func': self.func,
-            'enabled': self.enabled,
-            'arguments': self.arguments
-        }
-
     # FRED: Replace this by __call__ ?
     @property
     def function(self) -> t.Callable:

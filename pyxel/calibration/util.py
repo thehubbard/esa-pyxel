@@ -60,20 +60,22 @@ def read_data(data_path: t.Union[str, t.List[str]]) -> t.List[np.ndarray]:
     return output
 
 
-def list_to_slice(input_list: t.Optional[t.List[int]]) -> t.Union[slice, t.Tuple[slice, slice]]:
+def list_to_slice(input_list: t.Optional[t.List[int]] = None) -> t.Union[slice, t.Tuple[slice, slice]]:
     """TBW.
 
     :return:
     """
-    if input_list:
-        if len(input_list) == 2:
-            return slice(input_list[0], input_list[1])
-        elif len(input_list) == 4:
-            return slice(input_list[0], input_list[1]), slice(input_list[2], input_list[3])
-        else:
-            raise ValueError('Fitting range should have 2 or 4 values')
-    else:
+    if not input_list:
         return slice(None)
+
+    if len(input_list) == 2:
+        return slice(input_list[0], input_list[1])
+
+    elif len(input_list) == 4:
+        return slice(input_list[0], input_list[1]), slice(input_list[2], input_list[3])
+
+    else:
+        raise ValueError('Fitting range should have 2 or 4 values')
 
 
 def check_ranges(target_fit_range: t.Optional[t.List[int]],
@@ -81,27 +83,31 @@ def check_ranges(target_fit_range: t.Optional[t.List[int]],
                  rows: int, cols: int) -> None:
     """TBW."""
     if target_fit_range:
-        # FRED: It could be refactor in a more pythonic way (this is optional)
-        if len(target_fit_range) != 4 and len(target_fit_range) != 2:
+        if len(target_fit_range) not in (2, 4):
             raise ValueError
+
         if out_fit_range:
-            # FRED: It could be refactor in a more pythonic way (this is optional)
-            if len(out_fit_range) != 4 and len(out_fit_range) != 2:
+            if len(out_fit_range) != 4 not in (2, 4):
                 raise ValueError
+
             if (target_fit_range[1] - target_fit_range[0]) != (out_fit_range[1] - out_fit_range[0]):
                 raise ValueError('Fitting ranges have different lengths in 1st dimension')
+
             # FRED: It could be refactor in a more pythonic way (this is optional)
             if len(target_fit_range) == 4 and len(out_fit_range) == 4:
                 if (target_fit_range[3] - target_fit_range[2]) != (out_fit_range[3] - out_fit_range[2]):
                     raise ValueError('Fitting ranges have different lengths in 2nd dimension')
+
         for i in [0, 1]:
             # FRED: It could be refactor in a more pythonic way (this is optional)
-            if target_fit_range[i] < 0 or target_fit_range[i] > rows:
+            if not (0 <= target_fit_range[i] <= rows):
                 raise ValueError('Value of target fit range is wrong')
+
         if len(target_fit_range) == 4:
             if cols is None:
                 raise ValueError('Target data is not a 2 dimensional array')
+
             for i in [2, 3]:
                 # FRED: It could be refactor in a more pythonic way (this is optional)
-                if target_fit_range[i] < 0 or target_fit_range[i] > cols:
+                if not (0 <= target_fit_range[i] <= cols):
                     raise ValueError('Value of target fit range is wrong')

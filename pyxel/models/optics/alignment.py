@@ -10,8 +10,7 @@ def alignment(detector: Detector) -> None:
 
     :param detector: Pyxel Detector object
     """
-    logger = logging.getLogger('pyxel')
-    logger.info('')
+    logging.info('')
     geo = detector.geometry
     rows, cols = detector.photon.array.shape
     row0 = int((rows - geo.row) / 2)

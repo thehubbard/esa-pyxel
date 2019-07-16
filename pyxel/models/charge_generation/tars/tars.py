@@ -42,8 +42,7 @@ def run_tars(detector: Detector,
     :param spectrum_file: path to input spectrum
     :param random_seed: seed
     """
-    logger = logging.getLogger('pyxel')
-    logger.info('')
+    logging.info('')
     if random_seed:
         np.random.seed(random_seed)
     tars = TARS(detector)

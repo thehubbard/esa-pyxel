@@ -21,26 +21,28 @@ if t.TYPE_CHECKING:
     from ..parametric.parametric import ParametricAnalysis
 
 
-# FRED: Add more relevant typing information
 class Outputs:
     """TBW."""
 
     def __init__(self,
-                 output_folder: str = 'outputs',
+                 output_folder: t.Optional[Path] = None,
                  save_to_file: t.Optional[list] = None,
                  parametric_plot: t.Optional[dict] = None,
-                 calibration_plot: t.Optional[dict] = None,
+                 calibration_plot: t.Optional[t.Dict[str, t.Any]] = None,
                  single_plot: t.Optional[dict] = None):
         """TBW."""
         self.input_file = None                      # type: t.Optional[Path]
-        self.champions_file = None                  # type: t.Optional[str]
-        self.population_file = None                 # type: t.Optional[str]
-        self.parametric_plot = parametric_plot      # type: t.Optional[dict]
-        self.calibration_plot = calibration_plot    # type: t.Optional[dict]
-        self.single_plot = single_plot              # type: t.Optional[dict]
-        self.user_plt_args = None                   # type: t.Optional[dict]
+        self.champions_file = None                  # type: t.Optional[Path]
+        self.population_file = None                 # type: t.Optional[Path]
+        self.parametric_plot = parametric_plot if parametric_plot else {}    # type: dict
+        self.calibration_plot = calibration_plot if calibration_plot else {}   # type: t.Dict[str, t.Any]
+        self.single_plot = single_plot if single_plot else {}              # type: dict
+        self.user_plt_args = {}                   # type: dict
 
-        self.output_dir = output_folder + '/run_' + strftime("%Y%m%d_%H%M%S")  # type: Path
+        if output_folder is None:
+            output_folder = Path('outputs')
+
+        self.output_dir = output_folder.joinpath('run_' + strftime("%Y%m%d_%H%M%S"))  # type: Path
 
         if save_to_file is None:
             self.save_to_file = [{'detector.image.array': ['fits']}]
@@ -79,16 +81,23 @@ class Outputs:
         """TBW."""
         self.input_file = Path(filename)
         copy2(self.input_file, self.output_dir)
-        copied_input_file = glob.glob(self.output_dir + '/*.yaml')[0]
-        with open(copied_input_file, 'a') as file:
+
+        # TODO: sort filenames ?
+        copied_input_file_it = self.output_dir.glob('*.yaml')
+        copied_input_file = next(copied_input_file_it)
+
+        with copied_input_file.open('a') as file:
             file.write("\n#########")
             file.write("\n# Pyxel version: " + str(version))
             file.write("\n#########")
 
+    # TODO: the log file should directly write in 'output_dir'
     def save_log_file(self):
         """Move log file to the output directory of the simulation."""
-        log_file = glob.glob('./pyxel.log')[0]
-        os.rename(log_file, self.output_dir + '/' + os.path.basename(log_file))
+        log_file = Path('pyxel.log').resolve(strict=True)  # type: Path
+
+        new_log_filename = self.output_dir.joinpath(log_file.name)
+        log_file.rename(new_log_filename)
 
     def create_files(self) -> t.Tuple[Path, Path]:
         """TBW."""
@@ -96,24 +105,26 @@ class Outputs:
         self.population_file = self.new_file('population.out')
         return self.champions_file, self.population_file
 
-    # FRED: Use method `Pathlib.Path.touch`
-    def new_file(self, filename: t.Union[str, Path]) -> Path:
+    def new_file(self, filename: str) -> Path:
         """TBW."""
-        filename = self.output_dir + '/' + filename
-        file = open(filename, 'wb')  # truncate output file
-        file.close()
-        return filename
+        new_filename = self.output_dir.joinpath(filename)  # type: Path
+        new_filename.touch()
+
+        return new_filename
 
     def save_to_png(self,
                     processor: "Processor",
                     obj_name: str,
-                    filename: t.Optional[t.Union[str, Path]] = None) -> None:
+                    filename: t.Optional[str] = None) -> None:
         """Write array to bitmap PNG image file."""
         geo = processor.detector.geometry
         array = processor.get(obj_name)
+
         if filename is None:
-            filename = str(obj_name).replace('.', '_')
-        filename = apply_run_number(self.output_dir + '/' + filename + '_??.png')
+            filename = obj_name.replace('.', '_')
+
+        new_filename = apply_run_number(self.output_dir.joinpath(filename + '_??.png'))  # type: Path
+
         fig = plt.figure()
         dpi = 300
         fig.set_size_inches(min(geo.col/dpi, 10.), min(geo.row/dpi, 10.))
@@ -121,95 +132,109 @@ class Outputs:
         ax.set_axis_off()
         fig.add_axes(ax)
         plt.imshow(array, cmap='gray', extent=[0, geo.col, 0, geo.row])
-        plt.savefig(filename, dpi=dpi)
+        plt.savefig(new_filename, dpi=dpi)
 
     def save_to_fits(self,
                      processor: "Processor",
                      obj_name: str,
-                     filename: t.Optional[t.Union[str, Path]] = None) -> None:
+                     filename: t.Optional[str] = None) -> None:
         """Write array to FITS file."""
         array = processor.get(obj_name)
+
         if filename is None:
             filename = str(obj_name).replace('.', '_')
-        filename = apply_run_number(self.output_dir + '/' + filename + '_??.fits')
+
+        new_filename = apply_run_number(self.output_dir.joinpath(filename + '_??.fits'))  # type: Path
+
         hdu = fits.PrimaryHDU(array)
         hdu.header['PYXEL_V'] = str(version)
-        hdu.writeto(filename, overwrite=False, output_verify='exception')
+        hdu.writeto(new_filename, overwrite=False, output_verify='exception')
 
     def save_to_hdf(self,
                     processor: "Processor",
                     obj_name: str,
-                    filename: t.Optional[t.Union[str, Path]] = None) -> None:
+                    filename: t.Optional[str] = None) -> None:
         """Write detector object to HDF5 file."""
         detector = processor.detector
+
         if filename is None:
             filename = 'detector'
-        filename = apply_run_number(self.output_dir + '/' + filename + '_??.h5')
-        h5file = h5.File(filename, 'w')
-        h5file.attrs['pyxel-version'] = str(version)
 
-        detector_grp = h5file.create_group('detector')
-        for array, name in zip([detector.signal.array,
-                                detector.image.array,
-                                detector.photon.array,
-                                detector.pixel.array,
-                                detector.charge.frame],
-                               ['Signal',
-                                'Image',
-                                'Photon',
-                                'Pixels',
-                                'Charges']):
+        new_filename = apply_run_number(self.output_dir.joinpath(filename + '_??.h5'))  # type: Path
 
-            if isinstance(array, np.ndarray):
-                dataset = detector_grp.create_dataset(name, np.shape(array))
-                dataset[:] = array
-            else:
-                dataset = detector_grp.create_dataset(name, np.shape(array))
-                dataset[:] = array
-        h5file.close()
+        with h5.File(new_filename, 'w') as h5file:
+            h5file.attrs['pyxel-version'] = str(version)
+
+            detector_grp = h5file.create_group('detector')
+            for array, name in zip([detector.signal.array,
+                                    detector.image.array,
+                                    detector.photon.array,
+                                    detector.pixel.array,
+                                    detector.charge.frame],
+                                   ['Signal',
+                                    'Image',
+                                    'Photon',
+                                    'Pixels',
+                                    'Charges']):
+
+                if isinstance(array, np.ndarray):
+                    dataset = detector_grp.create_dataset(name, np.shape(array))
+                    dataset[:] = array
+                else:
+                    dataset = detector_grp.create_dataset(name, np.shape(array))
+                    dataset[:] = array
 
     def save_to_txt(self,
                     processor: "Processor",
                     obj_name: str,
-                    filename: t.Optional[t.Union[str, Path]] = None) -> None:
+                    filename: t.Optional[str] = None) -> None:
         """Write data to txt file."""
         data = processor.get(obj_name)
+
         if filename is None:
             filename = str(obj_name).replace('.', '_')
-        filename = apply_run_number(self.output_dir + '/' + filename + '_??.txt')
-        np.savetxt(filename, data, delimiter='|')
+
+        new_filename = apply_run_number(self.output_dir.joinpath(filename + '_??.txt'))  # type: Path
+
+        np.savetxt(new_filename, data, delimiter='|')
 
     def save_to_csv(self,
                     processor: "Processor",
                     obj_name: str,
-                    filename: t.Optional[t.Union[str, Path]] = None) -> None:
+                    filename: t.Optional[str] = None) -> None:
         """Write Pandas Dataframe or Numpy array to a CSV file."""
         data = processor.get(obj_name)
+
         if filename is None:
             filename = str(obj_name).replace('.', '_')
-        filename = apply_run_number(self.output_dir + '/' + filename + '_??.csv')
+
+        new_filename = apply_run_number(self.output_dir.joinpath(filename + '_??.csv'))  # type: Path
+
         try:
-            data.to_csv(filename, float_format='%g')
+            data.to_csv(new_filename, float_format='%g')
         except AttributeError:
             np.savetxt(filename, data, delimiter=',')
 
     def save_to_npy(self,
                     processor: "Processor",
                     obj_name: str,
-                    filename: t.Optional[t.Union[str, Path]] = None) -> None:
+                    filename: t.Optional[str] = None) -> None:
         """Write Numpy array to Numpy binary npy file."""
         array = processor.get(obj_name)
+
         if filename is None:
             filename = str(obj_name).replace('.', '_')
-        filename = apply_run_number(self.output_dir + '/' + filename + '_??.npy')
-        np.save(file=filename, arr=array)
 
-    # FRED: Use `Pathlib.Path`
+        new_filename = apply_run_number(self.output_dir.joinpath(filename + '_??.npy'))  # type: Path
+
+        np.save(file=new_filename, arr=array)
+
     def save_plot(self, filename: str = 'figure_??') -> None:
         """Save plot figure in PNG format, close figure and create new canvas for next plot."""
-        filename = self.output_dir + '/' + filename + '.png'
-        filename = apply_run_number(filename)
-        plt.savefig(filename)
+        new_filename = self.output_dir.joinpath(filename + '.png')  # type: Path
+        output_filename = apply_run_number(new_filename)  # type: Path
+
+        plt.savefig(output_filename)
         plt.close('all')
         plt.figure()
 
@@ -259,10 +284,11 @@ class Outputs:
         for item in self.save_to_file:
             obj = next(iter(item.keys()))  # FRED: This should be solved
             format_list = next(iter(item.values()))
+
             if format_list is not None:
                 [save_methods[out_format](processor=processor, obj_name=obj) for out_format in format_list]
 
-        self.user_plt_args = None
+        self.user_plt_args = {}
         x = processor.detector.photon.array                    # todo: default plots with plot_args?
         y = processor.detector.image.array
         color = None
@@ -357,13 +383,14 @@ class Outputs:
 
         if self.calibration_plot:
             if 'champions_plot' in self.calibration_plot:
-                self.user_plt_args = None
+                self.user_plt_args = {}
                 if self.calibration_plot['champions_plot']:
                     if 'plot_args' in self.calibration_plot['champions_plot']:
                         self.user_plt_args = self.calibration_plot['champions_plot']['plot_args']
                 self.champions_plot(results)
+
             if 'population_plot' in self.calibration_plot:
-                self.user_plt_args = None
+                self.user_plt_args = {}
                 if self.calibration_plot['population_plot']:
                     if 'plot_args' in self.calibration_plot['population_plot']:
                         self.user_plt_args = self.calibration_plot['population_plot']['plot_args']
@@ -420,7 +447,7 @@ class Outputs:
     def parametric_output(self) -> None:
         """TBW."""
         self.parameter_keys += self.additional_keys
-        self.user_plt_args = None
+        self.user_plt_args = {}
 
         if self.parametric_plot:
             if 'x' in self.parametric_plot:

@@ -20,8 +20,7 @@ def fix_pattern_noise(detector: Detector,
     :param detector: Pyxel Detector object
     :param pixel_non_uniformity: path to an ascii file with and array
     """
-    logger = logging.getLogger('pyxel')
-    logger.info('')  # FRED: Use `logging.info`
+    logging.info('')
     geo = detector.geometry  # type: Geometry
 
     if pixel_non_uniformity is not None:
@@ -32,12 +31,12 @@ def fix_pattern_noise(detector: Detector,
     else:
         filename = 'data/pixel_non_uniformity.npy'
         if check_path(filename):
-            logger.warning('"pix_non_uniformity" file is not defined, '
-                           'using array from file: ' + filename)
+            logging.warning('"pix_non_uniformity" file is not defined, '
+                            'using array from file: ' + filename)
             pnu = np.load(filename)
         else:
-            logger.warning('"pix_non_uniformity" file is not defined, '
-                           'generated random array to file: ' + filename)
+            logging.warning('"pix_non_uniformity" file is not defined, '
+                            'generated random array to file: ' + filename)
             # pnu = 0.99 + np.random.random((geo.row, geo.col)) * 0.02
             pnu = np.random.normal(loc=1.0, scale=0.03, size=(geo.row, geo.col))
             np.save(filename, pnu)

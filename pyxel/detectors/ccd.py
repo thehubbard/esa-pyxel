@@ -42,12 +42,23 @@ class CCD(Detector):
         :param signal:
         :param image:
         """
-        super().__init__(geometry=geometry,
-                         material=material,
+        super().__init__(material=material,
                          environment=environment,
-                         characteristics=characteristics,
                          photon=photon,
                          charge=charge,
                          pixel=pixel,
                          signal=signal,
                          image=image)
+
+        self._geometry = geometry  # type: CCDGeometry
+        self._characteristics = characteristics  # type: CCDCharacteristics
+
+    @property
+    def geometry(self) -> CCDGeometry:
+        """TBW."""
+        return self._geometry
+
+    @property
+    def characteristics(self) -> CCDCharacteristics:
+        """TBW."""
+        return self._characteristics

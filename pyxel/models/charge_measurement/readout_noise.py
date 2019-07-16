@@ -23,8 +23,7 @@ def output_node_noise(detector: Detector,
     :param std_deviation: standard deviation
     :param random_seed: seed
     """
-    logger = logging.getLogger('pyxel')
-    logger.info('')
+    logging.info('')
     if random_seed:
         np.random.seed(random_seed)
 

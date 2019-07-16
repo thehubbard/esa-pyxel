@@ -16,8 +16,7 @@ def simple_measurement(detector: Detector) -> None:
 
     :param detector: Pyxel Detector object
     """
-    logger = logging.getLogger('pyxel')
-    logger.info('')
+    logging.info('')
     char = detector.characteristics
 
     array = detector.pixel.array * char.sv

@@ -23,8 +23,7 @@ def non_destructive_readout(detector: CMOS,
     :param mode:
     :param fowler_samples:
     """
-    logger = logging.getLogger('pyxel')
-    logger.info('')
+    logging.info('')
     if not detector.is_non_destructive_readout or not detector.is_dynamic:
         raise ValueError()
 

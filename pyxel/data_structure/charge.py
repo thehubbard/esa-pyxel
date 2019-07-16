@@ -23,13 +23,12 @@ class Charge(Particle):
         super().__init__()
         self.nextid = 0  # type: int
 
-        # FRED: This could be a `Tuple` (because of immutability) ?
-        self.columns = ['charge',
+        self.columns = ('charge',
                         'number',
                         'init_energy', 'energy',
                         'init_pos_ver', 'init_pos_hor', 'init_pos_z',
                         'position_ver', 'position_hor', 'position_z',
-                        'velocity_ver', 'velocity_hor', 'velocity_z']  # type: t.List[str]
+                        'velocity_ver', 'velocity_hor', 'velocity_z')  # type: t.Tuple[str, ...]
 
         self.EMPTY_FRAME = pd.DataFrame(columns=self.columns,
                                         dtype=np.float)   # type: pd.DataFrame       # todo
@@ -59,10 +58,10 @@ class Charge(Particle):
         :param init_z_velocity:
         :return:
         """
-        if len(particles_per_cluster) == len(init_energy) == len(init_ver_position) == len(init_ver_velocity):
-            elements = len(init_energy)
-        else:
+        if not (len(particles_per_cluster) == len(init_energy) == len(init_ver_position) == len(init_ver_velocity)):
             raise ValueError('List arguments have different lengths')
+
+        elements = len(init_energy)
 
         # check_position(self.detector, init_ver_position, init_hor_position, init_z_position)      # TODO
         # check_energy(init_energy)             # TODO

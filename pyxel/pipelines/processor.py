@@ -23,14 +23,6 @@ class Processor:
         self.detector = detector
         self.pipeline = pipeline
 
-    # FRED: Is it needed ?  Where is the '__setstate__' ?
-    def __getstate__(self) -> dict:
-        """TBW."""
-        return {
-            'detector': self.detector,
-            'pipeline': self.pipeline,
-        }
-
     # FRED: Could it be renamed '__contains__' ?
     def has(self, key: str) -> bool:
         """TBW.

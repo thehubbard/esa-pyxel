@@ -18,8 +18,7 @@ def dark_current_rule07(detector: CMOS) -> None:
     :param detector: Pyxel Detector object
     TODO: investigate on the knee of rule07 for higher 1/le*T values
     """
-    logger = logging.getLogger('pyxel')
-    logger.info('')
+    logging.info('')
 
     amp_to_eps = 6.242e+18  # conversion factor amperes to electron per second
     cm2_to_um2 = 1e+8

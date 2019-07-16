@@ -5,7 +5,7 @@ from astropy.io import fits
 from esapy_config.checkers import check_type_function
 from pyxel.detectors.detector import Detector
 import os
-from esapy_config import funcargs
+from ...util import check
 
 
 # FRED: Fix this.
@@ -13,16 +13,12 @@ from esapy_config import funcargs
 check_path = os.path.exists
 
 
-# FRED: Remove the following decorators
-@funcargs.validate
-@funcargs.argument(name='image_file', label='fits file', validate=check_path)
-@funcargs.argument(name='fit_image_to_det', label='fitting image to detector', validate=check_type_function(bool))
-@funcargs.argument(name='convert_to_photons', label='convert ADU values to photon numbers',
-                   validate=check_type_function(bool))
+@check('image_file', validate=check_path)
+@check('convert_to_photons', validate=check_type_function(bool))
 def load_image(detector: Detector,
                image_file: str,
                fit_image_to_det: bool = False,
-               position: t.Optional[list] = None,                        # TODO Too many arguments
+               position: t.Tuple[int, int] = (0, 0),                        # TODO Too many arguments
                convert_to_photons: bool = False) -> None:
     r"""Load FITS file as a numpy array and add to the detector as input image.
 
@@ -34,15 +30,14 @@ def load_image(detector: Detector,
         photon numbers for each pixel using the Photon Transfer Function:
         :math:`PTF = QE \cdot \eta \cdot S_{v} \cdot amp \cdot a_{1} \cdot a_{2}`
     """
-    logger = logging.getLogger('pyxel')
-    logger.info('')
+    logging.info('')
     image = fits.getdata(image_file)
 
     if fit_image_to_det:
-        if position is None:
-            position = [0, 0]
         geo = detector.geometry
-        image = image[slice(position[0], position[0]+geo.row), slice(position[1], position[1]+geo.col)]
+        position_y, position_x = position
+
+        image = image[slice(position_y, position_y+geo.row), slice(position_x, position_x+geo.col)]
 
     detector.input_image = image
     photon_array = image

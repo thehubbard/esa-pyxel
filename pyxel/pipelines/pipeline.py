@@ -58,21 +58,6 @@ class DetectionPipeline:
                               'signal_transfer',
                               'readout_electronics']            # type: t.List[str]           # TODO
 
-    # FRED: Is it needed ?  Where is the '__setstate__' ?
-    def __getstate__(self) -> dict:
-        """TBW."""
-        return {
-            'photon_generation': self.photon_generation,
-            'optics': self.optics,
-            'charge_generation': self.charge_generation,
-            'charge_collection': self.charge_collection,
-            'charge_transfer': self.charge_transfer,
-            'charge_measurement': self.charge_measurement,
-            'signal_transfer': self.signal_transfer,
-            'readout_electronics': self.readout_electronics,
-            '_model_groups': self.model_group_names,              # TODO
-        }
-
     @property
     def model_group_names(self) -> t.List[str]:
         """TBW."""
@@ -101,6 +86,7 @@ class DetectionPipeline:
                 for model in model_group.models:
                     if name == model.name:
                         return model
+
         raise AttributeError('Model has not found.')
 
     # FRED: In this function, the input parameter 'detector' is modified.

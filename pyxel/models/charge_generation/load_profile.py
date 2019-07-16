@@ -28,8 +28,7 @@ def charge_profile(detector: Detector,
     :param fit_profile_to_det: bool
     :param position: list
     """
-    logger = logging.getLogger('pyxel')
-    logger.info('')
+    logging.info('')
     geo = detector.geometry
 
     init_ver_position = np.arange(0.0, geo.row, 1.0) * geo.pixel_vert_size

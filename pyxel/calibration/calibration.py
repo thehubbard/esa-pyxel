@@ -200,8 +200,7 @@ class Calibration:
         :return:
         """
         pg.set_global_rng_seed(seed=self.seed)
-        logger = logging.getLogger('pyxel')     # FRED: No need for 'logger'. We could use directly 'logging.info'
-        logger.info('Seed: %d' % self.seed)
+        logging.info('Seed: %d', self.seed)
         output_files = (None, None)
         if output:
             output_files = output.create_files()

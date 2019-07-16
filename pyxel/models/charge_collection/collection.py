@@ -22,8 +22,7 @@ import numba
 #       ...     return new_detector
 def simple_collection(detector: Detector) -> None:
     """Associate charge with the closest pixel."""
-    logger = logging.getLogger('pyxel')
-    logger.info('')  # FRED: Use `logging.info`
+    logging.info('')
     geo = detector.geometry
     array = np.zeros((geo.row, geo.col))
 

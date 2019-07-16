@@ -15,12 +15,12 @@ from pathlib import Path
 import numpy as np
 import pyxel.io as io
 from pyxel.pipelines.processor import Processor
-from pyxel.detectors.ccd import CCD
+from pyxel.detectors import CCD, CMOS
 from pyxel import __version__ as version
 import typing as t
+from pyxel.pipelines.pipeline import DetectionPipeline
 
 
-# FRED: Add more typing information
 def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
     """TBW.
 
@@ -28,9 +28,9 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
     :param random_seed:
     :return:
     """
-    logger = logging.getLogger('pyxel')
-    logger.info('Pyxel version ' + version)
-    logger.info('Pipeline started.')    # FRED: Use `logging.info`
+    logging.info('Pyxel version ' + version)
+    logging.info('Pipeline started.')
+
     start_time = time.time()
     if random_seed:
         np.random.seed(random_seed)
@@ -38,14 +38,18 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
     # FRED: 'cfg' is a `dict`. It would better to use an object create from a class
     #       built by 'esapy_config'
     cfg = io.load(Path(input_filename))
+
+    pipeline = cfg['pipeline']  # type: DetectionPipeline
+
     simulation = cfg['simulation']
     if 'ccd_detector' in cfg:
-        detector = cfg['ccd_detector']
+        detector = cfg['ccd_detector']  # type: CCD
     elif 'cmos_detector' in cfg:
-        detector = cfg['cmos_detector']
+        detector = cfg['cmos_detector']  # type: CMOS
     else:
-        detector = cfg['ccd_detector']
-    processor = Processor(detector, cfg['pipeline'])
+        detector = cfg['ccd_detector']  # type: CCD
+
+    processor = Processor(detector, pipeline)
 
     out = simulation.outputs
     if out:
@@ -64,20 +68,20 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
     # HANS: place logger Mode line outside if / elif /else block. Example:
     #   logger.info('Mode: %r', simulation.mode)
     if simulation.mode == 'single':
-        logger.info('Mode: Single')
+        logging.info('Mode: Single')
         processor.pipeline.run_pipeline(detector)
         if out:
             out.single_output(processor)
 
     elif simulation.mode == 'calibration' and simulation.calibration:
-        logger.info('Mode: Calibration')
+        logging.info('Mode: Calibration')
         processor, results = simulation.calibration.run_calibration(processor, out)
-        logger.info('Champion fitness:   %1.5e' % results['fitness'])
+        logging.info('Champion fitness:   %1.5e' % results['fitness'])
         if out:
             out.calibration_output(processor=processor, results=results)
 
     elif simulation.mode == 'parametric' and simulation.parametric:
-        logger.info('Mode: Parametric')
+        logging.info('Mode: Parametric')
         configs = simulation.parametric.collect(processor)
         for proc in configs:
             proc.pipeline.run_pipeline(proc.detector)
@@ -88,7 +92,7 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
             out.parametric_output()
 
     elif simulation.mode == 'dynamic' and simulation.dynamic:
-        logger.info('Mode: Dynamic')
+        logging.info('Mode: Dynamic')
         if 'non_destructive_readout' not in simulation.dynamic or isinstance(detector, CCD):
             simulation.dynamic['non_destructive_readout'] = False
         if 't_step' in simulation.dynamic and 'steps' in simulation.dynamic:
@@ -96,7 +100,7 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
                                  time_step=simulation.dynamic['t_step'],
                                  ndreadout=simulation.dynamic['non_destructive_readout'])
         while detector.elapse_time():  # FRED: Use an iterator for that ?
-            logger.info('time = %.3f s' % detector.time)
+            logging.info('time = %.3f s' % detector.time)
             if detector.is_non_destructive_readout:
                 detector.initialize(reset_all=False)
             else:
@@ -108,24 +112,12 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
     else:
         raise ValueError
 
-    logger.info('Pipeline completed.')
-    logger.info('Running time: %.3f seconds' % (time.time() - start_time))
+    logging.info('Pipeline completed.')
+    logging.info('Running time: %.3f seconds' % (time.time() - start_time))
     # Closing the logger in order to be able to move the file in the output dir
     logging.shutdown()
     if out:
         out.save_log_file()
-
-
-# FRED: Remove this. Get the current version from '__version__' in 'pyxel/__init__.py'
-def get_pyxel_version() -> str:
-    """Extract 'pyxel_version' from 'setup.cfg'."""
-    from setuptools.config import read_configuration
-
-    parent_folder = Path(__file__).parent
-    setup_cfg_filename = parent_folder.joinpath('../setup.cfg').resolve(strict=True)
-    metadata = read_configuration(setup_cfg_filename)['metadata']  # type: dict
-
-    return metadata['version']
 
 
 # FRED: Add an option to display colors ? (very optional)
@@ -137,7 +129,7 @@ def main():
 
     parser.add_argument('-v', '--verbosity', action='count', default=0, help='Increase output verbosity (-v/-vv/-vvv)')
     parser.add_argument('-V', '--version', action='version',
-                        version='Pyxel, version {version}'.format(version=get_pyxel_version()))
+                        version='Pyxel, version {version}'.format(version=version))
     parser.add_argument('-c', '--config', type=str, required=True, help='Configuration file to load (YAML)')
     parser.add_argument('-s', '--seed', type=int, help='Random seed for the framework')
 

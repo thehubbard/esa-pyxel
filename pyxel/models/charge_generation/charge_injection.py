@@ -29,8 +29,7 @@ def charge_blocks(detector: CCD,
 
     :return:
     """
-    logger = logging.getLogger('pyxel')
-    logger.info('')
+    logging.info('')
     geo = detector.geometry
     injection_columns = np.array(columns, dtype=float)
     if block_length == 0:

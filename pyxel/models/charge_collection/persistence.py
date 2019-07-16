@@ -14,8 +14,7 @@ def simple_persistence(detector: CMOS,
                        trap_timeconstant: list,
                        trap_density: list) -> None:
     """Trapping/detrapping charges."""
-    logger = logging.getLogger('pyxel')
-    logger.info('')  # FRED: Use `logging.info`
+    logging.info('')
 
     # TODO: NOT FINISHED AND NOT WORKING YET
 

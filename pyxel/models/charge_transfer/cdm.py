@@ -65,8 +65,7 @@ def cdm(detector: CCD,
     # t: constant TDI period (parallel)
     # st: constant TDI period (serial)
 
-    logger = logging.getLogger('pyxel')
-    logger.info('')
+    logging.info('')
     char = detector.characteristics
 
     # FRED: Use 'np.asarray' (or 'np.array' ??) for all inputs
