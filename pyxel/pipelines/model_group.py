@@ -1,4 +1,5 @@
 """TBW."""
+from copy import deepcopy
 import typing as t  # noqa: F401
 from pyxel.pipelines.model_function import ModelFunction
 from pyxel import util
@@ -18,6 +19,11 @@ class ModelGroup:
         :param models:
         """
         self.models = models    # type: t.List[ModelFunction]
+
+    def __deepcopy__(self, memo) -> "ModelGroup":
+        """TBW."""
+        copied_models = deepcopy(self.models)
+        return ModelGroup(models=copied_models)
 
     # FRED: Why is this method returning a `bool` ?
     def run(self, detector: "Detector", pipeline: "DetectionPipeline", abort_model: t.Optional[str] = None) -> bool:

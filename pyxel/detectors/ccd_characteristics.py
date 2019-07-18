@@ -5,7 +5,7 @@ from esapy_config import validators
 
 
 # FRED: can those attributes also be used in `CMOSCharacteristics` ?
-@ec.config(mode='RO')
+@ec.config
 class CCDCharacteristics(Characteristics):
     """Characteristical attributes of a CCD detector."""
 
