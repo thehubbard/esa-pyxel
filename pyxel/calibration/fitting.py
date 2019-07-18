@@ -126,7 +126,10 @@ class ModelFitting:
         except AttributeError:
             rows = len(target_list[0])
             cols = None
-        check_ranges(setting['target_fit_range'], setting['out_fit_range'], rows, cols)
+        check_ranges(target_fit_range=setting['target_fit_range'],
+                     out_fit_range=setting['out_fit_range'],
+                     rows=rows,
+                     cols=cols)
         self.targ_fit_range = list_to_slice(setting['target_fit_range'])
         self.sim_fit_range = list_to_slice(setting['out_fit_range'])
         for target in target_list:

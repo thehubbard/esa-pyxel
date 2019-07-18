@@ -42,12 +42,14 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
     pipeline = cfg['pipeline']  # type: DetectionPipeline
 
     simulation = cfg['simulation']
+
     if 'ccd_detector' in cfg:
-        detector = cfg['ccd_detector']  # type: CCD
+        detector = cfg['ccd_detector']  # type: t.Union[CCD, CMOS]
     elif 'cmos_detector' in cfg:
-        detector = cfg['cmos_detector']  # type: CMOS
+        detector = cfg['cmos_detector']
     else:
-        detector = cfg['ccd_detector']  # type: CCD
+        raise NotImplementedError
+        # detector = cfg['ccd_detector']  # type: CCD
 
     processor = Processor(detector, pipeline)
 

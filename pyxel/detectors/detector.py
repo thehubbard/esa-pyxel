@@ -140,6 +140,10 @@ class Detector:
     #     self.read_out = True                            # type: bool
     #     self._all_time_steps = None
 
+    def __attrs_post_init__(self):
+        """TBW."""
+        self.initialize()
+
     @property
     def geometry(self):
         """TBW."""
@@ -153,7 +157,7 @@ class Detector:
     # FRED: Rename to 'reset' ?
     def initialize(self, reset_all: bool = True) -> None:
         """TBW."""
-        self.photon = Photon(self.geometry)             # type: Photon
+        self.photon = Photon()             # type: Photon
         if reset_all:
             self.charge = Charge()                      # type: Charge
             self.pixel = Pixel(self.geometry)           # type: Pixel

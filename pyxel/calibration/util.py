@@ -78,8 +78,8 @@ def list_to_slice(input_list: t.Optional[t.List[int]] = None) -> t.Union[slice, 
         raise ValueError('Fitting range should have 2 or 4 values')
 
 
-def check_ranges(target_fit_range: t.Optional[t.List[int]],
-                 out_fit_range: t.Optional[t.List[int]],
+def check_ranges(target_fit_range: t.List[int],
+                 out_fit_range: t.List[int],
                  rows: int, cols: int) -> None:
     """TBW."""
     if target_fit_range:
@@ -87,7 +87,7 @@ def check_ranges(target_fit_range: t.Optional[t.List[int]],
             raise ValueError
 
         if out_fit_range:
-            if len(out_fit_range) != 4 not in (2, 4):
+            if len(out_fit_range) not in (2, 4):
                 raise ValueError
 
             if (target_fit_range[1] - target_fit_range[0]) != (out_fit_range[1] - out_fit_range[0]):

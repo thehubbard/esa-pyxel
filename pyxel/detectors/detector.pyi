@@ -15,11 +15,11 @@ class Detector:
         self,
         material: Material,
         environment: Environment,
-        photon: t.Optional[Photon] = ...,
-        charge: t.Optional[Charge] = ...,
-        pixel: t.Optional[Pixel] = ...,
-        signal: t.Optional[Signal] = ...,
-        image: t.Optional[Image] = ...,
+        # photon: t.Optional[Photon] = ...,
+        # charge: t.Optional[Charge] = ...,
+        # pixel: t.Optional[Pixel] = ...,
+        # signal: t.Optional[Signal] = ...,
+        # image: t.Optional[Image] = ...,
     ): ...
     material: Material = ...
     environment: Environment = ...
