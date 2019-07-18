@@ -9,7 +9,7 @@ class ParameterValues:
     def __init__(self,
                  key: str,
                  values: t.List[t.Union[float, int]],
-                 boundaries: t.Tuple[float, float],
+                 boundaries: t.Optional[t.Tuple[float, float]] = None,
                  enabled: bool = True,
                  current=None,
                  logarithmic: bool = False):
@@ -28,7 +28,7 @@ class ParameterValues:
         self.enabled = enabled                      # type: bool
         self.current = current
         self.logarithmic = logarithmic              # type: bool
-        self.boundaries = boundaries                # type: t.Tuple[float, float]
+        self.boundaries = boundaries                # type: t.Optional[t.Tuple[float, float]]
 
     def __len__(self) -> int:
         """TBW."""

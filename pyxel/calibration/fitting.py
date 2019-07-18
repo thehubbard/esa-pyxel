@@ -157,6 +157,7 @@ class ModelFitting:
         self.lbd = []
         self.ubd = []
         for var in self.variables:
+            assert isinstance(var.boundaries, tuple)
             low_val, high_val = var.boundaries
 
             if var.logarithmic:
