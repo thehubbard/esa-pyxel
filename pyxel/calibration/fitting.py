@@ -87,7 +87,7 @@ class ModelFitting:
         #     self.single_model_calibration()
 
         self.set_bound()
-        
+
         copied_processor = deepcopy(self.processor)  # type: Processor
         self.original_processor = copied_processor
 
