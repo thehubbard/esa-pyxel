@@ -72,22 +72,23 @@ class DetectionPipeline:
         """TBW."""
         self._is_running = False
 
-    def get_model(self, name: str) -> ModelGroup:
-        """TBW.
-
-        :param name:
-        :return:
-        """
-        for group_name in self.model_group_names:
-            # FRED: This should be refactored (e.g. provide directly a `ModelGroup` and not
-            #       its name)
-            model_group = getattr(self, group_name)     # type: ModelGroup
-            if model_group:
-                for model in model_group.models:
-                    if name == model.name:
-                        return model
-
-        raise AttributeError('Model has not found.')
+    # TODO: Not used
+    # def get_model(self, name: str) -> ModelGroup:
+    #     """TBW.
+    #
+    #     :param name:
+    #     :return:
+    #     """
+    #     for group_name in self.model_group_names:
+    #         # FRED: This should be refactored (e.g. provide directly a `ModelGroup` and not
+    #         #       its name)
+    #         model_group = getattr(self, group_name)     # type: ModelGroup
+    #         if model_group:
+    #             for model in model_group.models:
+    #                 if name == model.name:
+    #                     return model
+    #
+    #     raise AttributeError('Model has not found.')
 
     # FRED: In this function, the input parameter 'detector' is modified.
     #       It would be maybe better to do in this function:

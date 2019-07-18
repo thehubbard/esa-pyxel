@@ -3,7 +3,7 @@
 import numpy as np
 # from pyxel.util.outputs import image, numpy_array, hist_plot, graph_plot, show_plots
 from pyxel.util.outputs import Outputs, apply_run_number
-from .validators import check
+from .validators import check  # noqa: F401
 
 
 __all__ = ['convert_to_int', 'round_convert_to_int',

@@ -20,7 +20,7 @@ def read_data(data_path: t.Union[str, t.List[str]]) -> t.List[np.ndarray]:
         raise TypeError
 
     output = []                                     # type: list
-    for i, path in enumerate(data_path):
+    for _, path in enumerate(data_path):
         if not os.path.exists(path):
             raise FileNotFoundError('Input file %s can not be found.' % str(path))
 

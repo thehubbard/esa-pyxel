@@ -173,7 +173,7 @@ def display_noisepsd(array: np.ndarray,
                      'Welch seg. length / Nb pixel output: ' +
                      str('{:1.2f}'.format(nperseg/pix_p_output)))
         ax1.plot(f_vect, np.mean(pxx_outputs, axis=0), '.-', ms=3, alpha=0.5, zorder=32)
-        for idx, ax in enumerate([ax1]):
+        for _, ax in enumerate([ax1]):
             ax.set_xlim([1, 1e5])
             ax.set_xscale('log')
             ax.set_yscale('log')

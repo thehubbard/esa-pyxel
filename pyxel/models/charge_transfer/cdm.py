@@ -29,9 +29,9 @@ from pyxel.detectors.ccd import CCD
 def cdm(detector: CCD,
         parallel_cti: bool, serial_cti: bool,
         beta_p: float, beta_s: float,
-        tr_p: float, tr_s: float,
-        nt_p: float, nt_s: float,
-        sigma_p: float, sigma_s: float,
+        tr_p: t.List[float], tr_s: t.List[float],
+        nt_p: t.List[float], nt_s: t.List[float],
+        sigma_p: t.List[float], sigma_s: t.List[float],
         charge_injection: bool) -> None:
     """Charge Distortion Model (CDM) model wrapper.
 
@@ -68,23 +68,6 @@ def cdm(detector: CCD,
     logging.info('')
     char = detector.characteristics
 
-    # FRED: Use 'np.asarray' (or 'np.array' ??) for all inputs
-    #       example:
-    #         tr_p = np.asarray(tr_p)
-    #         tr_s = np.asarray(tr_s)
-    if isinstance(tr_p, list):
-        tr_p = np.array(tr_p)
-    if isinstance(tr_s, list):
-        tr_s = np.array(tr_s)
-    if isinstance(nt_p, list):
-        nt_p = np.array(nt_p)
-    if isinstance(nt_s, list):
-        nt_s = np.array(nt_s)
-    if isinstance(sigma_p, list):
-        sigma_p = np.array(sigma_p)
-    if isinstance(sigma_s, list):
-        sigma_s = np.array(sigma_s)
-
     detector.pixel.array = run_cdm(s=detector.pixel.array,
                                    vg=char.vg, svg=char.svg,
                                    t=char.t, st=char.st,
@@ -94,9 +77,9 @@ def cdm(detector: CCD,
                                    charge_injection=charge_injection,
                                    chg_inj_parallel_transfers=detector.geometry.row,
                                    beta_p=beta_p, beta_s=beta_s,
-                                   tr_p=tr_p, tr_s=tr_s,
-                                   nt_p=nt_p, nt_s=nt_s,
-                                   sigma_p=sigma_p, sigma_s=sigma_s)
+                                   tr_p=np.array(tr_p), tr_s=np.array(tr_s),
+                                   nt_p=np.array(nt_p), nt_s=np.array(nt_s),
+                                   sigma_p=np.array(sigma_p), sigma_s=np.array(sigma_s))
 
 
 @numba.jit(nopython=True, nogil=True, parallel=True)

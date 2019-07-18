@@ -3,6 +3,7 @@
 https://esa.github.io/pagmo2/index.html
 """
 import logging
+import math
 from copy import deepcopy
 from collections import OrderedDict
 import typing as t   # noqa: F401
@@ -10,6 +11,7 @@ import numpy as np
 from pyxel.calibration.util import list_to_slice, check_ranges, read_data
 from pyxel.parametric.parameter_values import ParameterValues
 from pyxel.pipelines.processor import Processor
+from pyxel.pipelines.model_function import ModelFunction
 
 
 # FRED: Add typing information for all methods
@@ -29,8 +31,8 @@ class ModelFitting:
         self.pop = None                     # type: t.Optional[int]
 
         self.all_target_data = []           # type: t.List[t.List[t.Any]]
-        self.weighting = None               # type: t.Optional[t.List[np.ndarray]]
-        self.fitness_func = None
+        self.weighting = []                 # type: t.List[np.ndarray]
+        self.fitness_func = None            # type: t.Optional[ModelFunction]
         self.sim_output = None              # type: t.Optional[str]
         # self.fitted_model = None            # type: t.Optional['ModelFunction']
         self.param_processor_list = []      # type: t.List[Processor]
@@ -49,8 +51,8 @@ class ModelFitting:
         self.lbd = []  # type: list                   # lower boundary
         self.ubd = []  # type: list                   # upper boundary
 
-        self.sim_fit_range = None  # type: t.Optional[slice]
-        self.targ_fit_range = None  # type: t.Optional[slice]
+        self.sim_fit_range = slice(None)  # type: t.Union[slice, t.Tuple[slice, slice]]
+        self.targ_fit_range = slice(None)  # type: t.Union[slice, t.Tuple[slice, slice]]
 
         # self.normalization = False
         # self.target_data_norm = []
@@ -74,6 +76,12 @@ class ModelFitting:
         self.fitness_func = setting['fitness_func']
         self.pop = setting['population_size']
         self.generations = setting['generations']
+
+        assert isinstance(self.calibration_mode, str)
+        assert isinstance(self.sim_output, str)
+        assert isinstance(self.fitness_func, ModelFunction)
+        assert isinstance(self.pop, int)
+        assert isinstance(self.generations, int)
 
         # if self.calibration_mode == 'single_model':           # TODO update
         #     self.single_model_calibration()
@@ -146,27 +154,33 @@ class ModelFitting:
         self.lbd = []
         self.ubd = []
         for var in self.variables:
+            low_val, high_val = var.boundaries
+
             if var.logarithmic:
-                var.boundaries = np.log10(var.boundaries)  # type: np.ndarray
+                low_val = math.log10(low_val)
+                high_val = math.log10(high_val)
+
             if var.values == '_':
-                self.lbd += [var.boundaries[0]]
-                self.ubd += [var.boundaries[1]]
+                self.lbd += [low_val]
+                self.ubd += [high_val]
             elif isinstance(var.values, list) and all(x == '_' for x in var.values[:]):
-                self.lbd += [var.boundaries[0]] * len(var.values)
-                self.ubd += [var.boundaries[1]] * len(var.values)
+                self.lbd += [low_val] * len(var.values)
+                self.ubd += [high_val] * len(var.values)
             else:
                 raise ValueError('Character "_" (or a list of it) should be used to '
                                  'indicate variables need to be calibrated')
 
-    def calculate_fitness(self, simulated_data: np.ndarray, target_data: np.ndarray) -> np.ndarray:
+    def calculate_fitness(self, simulated_data: np.ndarray, target_data: np.ndarray) -> float:
         """TBW.
 
         :param simulated_data:
         :param target_data:
         :return:
         """
+        assert isinstance(self.fitness_func, ModelFunction)
+
         # HANS: use this instead. The if/else statement is redundant, the weighting is optional anyways.
-        fitness = self.fitness_func.function(simulated_data, target_data, self.weighting)
+        fitness = self.fitness_func.function(simulated_data, target_data, self.weighting)  # type: float
         # if self.weighting is not None:
         #     fitness = self.fitness_func.function(simulated_data, target_data, self.weighting)
         # else:
@@ -201,7 +215,7 @@ class ModelFitting:
 
             overall_fitness += self.calculate_fitness(simulated_data, target_data)
 
-        self.population_and_champions(parameter, overall_fitness)
+        self.population_and_champions(parameter=parameter, overall_fitness=overall_fitness)
 
         return [overall_fitness]
 
@@ -246,6 +260,8 @@ class ModelFitting:
         :param parameter:
         :return:
         """
+        assert isinstance(self.original_processor, Processor)
+
         parameter = self.update_parameter(parameter)        # todo : duplicated code, see fitness!
         new_processor = deepcopy(self.original_processor)  # type: Processor  # TODO TODO
 
@@ -269,13 +285,17 @@ class ModelFitting:
 
         return champion, results
 
-    def population_and_champions(self, parameter: list, overall_fitness: list) -> None:
+    def population_and_champions(self, parameter: list, overall_fitness: float) -> None:
         """Get champion (also population) of each generation and write it to output file(s).
 
         :param parameter: 1d np.array
         :param overall_fitness: list
         :return:
         """
+        assert isinstance(self.pop, int)
+        assert isinstance(self.champion_f_list, np.ndarray)
+        assert isinstance(self.champion_x_list, np.ndarray)
+
         # if self.champion_file is None:
         #     self.champion_file = 'champion_id' + str(id(self)) + '.out'
 
@@ -283,6 +303,8 @@ class ModelFitting:
             self.fitness_array = np.array([overall_fitness])
             self.population = parameter
         else:
+            assert isinstance(self.fitness_array, np.ndarray)
+
             self.fitness_array = np.vstack((self.fitness_array, np.array([overall_fitness])))
             self.population = np.vstack((self.population, parameter))
 
