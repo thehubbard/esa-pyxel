@@ -80,6 +80,7 @@ def optical_psf(
     """
     logging.getLogger("poppy").setLevel(logging.WARNING)
 
+    osys = op.OpticalSystem()  # default: npix=1024  # todo: npix=?
     if fov_arcsec:  # TODO
         raise NotImplementedError
 
@@ -124,11 +125,8 @@ def optical_psf(
             raise NotImplementedError
         osys.add_pupil(optical_item)
 
-    osys.add_detector(
-        pixelscale=pixelscale,
-        # fov_arcsec=None,
-        fov_pixels=fov_pixels,
-    )
+    osys.add_detector(pixelscale=pixelscale,
+                      fov_arcsec=fov_arcsec)  # fov_pixels=fov_pixels)
 
     psf = osys.calc_psf(
         wavelength=wavelength,
@@ -140,24 +138,36 @@ def optical_psf(
 
     # psf[0][0].data == psf[1][-1].intensity
 
-    # plt.figure()
-    # ax_orig = plt.gca()
-    # ax_orig.imshow(detector.photon.array, cmap='gray')
-    # ax_orig.set_title('Original')
-    # ax_orig.set_axis_off()
+    plt.figure()
+    plt.imshow(detector.photon.array, cmap='gray')
+    plt.title('Original')
+    plt.colorbar()
 
-    # Convolution
-    a, b = detector.photon.array.shape
-    new_shape = (a + 2 * fov_pixels, b + 2 * fov_pixels)
-    array = np.zeros(new_shape, detector.photon.array.dtype)
-    roi = slice(fov_pixels, fov_pixels + a), slice(fov_pixels, fov_pixels + b)
-    array[roi] = detector.photon.array
+    plt.figure()
+    plt.imshow(psf[0][0].data, cmap='gray')
+    plt.title('PSF lin. scale')
+    plt.colorbar()
 
-    array = signal.convolve2d(
-        array, psf[0][0].data, mode="same", boundary="fill", fillvalue=0
-    )
+    plt.figure()
+    plt.imshow(np.log10(psf[0][0].data), cmap='gray')
+    plt.title('PSF log. scale')
+    plt.colorbar()
 
-    detector.photon = Photon(array)
+    # # Convolution                             # TODO TODO TODO
+    # a = detector.photon.array.shape[0]
+    # b = detector.photon.array.shape[1]
+    # new_shape = (a + 2 * fov_pixels, b + 2 * fov_pixels)
+    # # new_shape = (a, b)
+    # array = np.zeros(new_shape, detector.photon.array.dtype)
+    # roi = slice(fov_pixels, fov_pixels + a), slice(fov_pixels, fov_pixels + b)
+    # # roi = slice(0, 0 + a), slice(0, 0 + b)
+    # array[roi] = detector.photon.array
+    #
+    # array = signal.convolve2d(array,
+    #                           psf[0][0].data,
+    #                           mode='same',
+    #                           boundary='fill', fillvalue=0)
+    # detector.photon.new_array(array)
 
     # plt.figure()
     # ax_int = plt.gca()
@@ -165,7 +175,7 @@ def optical_psf(
     # ax_int.set_title('Convolution with intensity')
     # ax_int.set_axis_off()
 
-    # plt.show()
+    plt.show()
 
     # conv_with_wavefront = signal.convolve2d(detector.photon.array, psf[1][-1].wavefront,
     #                                         mode='same', boundary='fill', fillvalue=0)
