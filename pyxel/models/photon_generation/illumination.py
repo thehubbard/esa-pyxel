@@ -77,7 +77,10 @@ def illumination(
     elif option == "elliptic_hole":
         if hole_size:
             photon_array = np.zeros(shape, dtype=int)
-            if hole_center is None:
+            if hole_center is not None:
+                if not ((0 <= hole_center[0] <= shape[0]) and (0 <= hole_center[1] <= shape[1])):
+                    raise ValueError('Argument "hole_center" should be inside Photon array.')
+            else:
                 hole_center = [int(shape[0] / 2), int(shape[1] / 2)]
             y, x = np.ogrid[: shape[0], : shape[1]]
             dist_from_center = np.sqrt(
