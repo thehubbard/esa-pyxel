@@ -130,6 +130,16 @@ flake8:
   allow_failure: false
 
 
+pydocstyle:
+  image: python:3
+  stage: test
+  script:
+    - python -V
+    - pip install tox
+    - tox -e pydocstyle
+  allow_failure: false
+
+
 doc8:
   image: python:3
   stage: test
