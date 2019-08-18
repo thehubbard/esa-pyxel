@@ -1,6 +1,6 @@
 """TBW."""
 import functools
-from esapy_config import evaluate_reference
+from pyxel.evaluator import evaluate_reference
 
 
 class ModelFunction:

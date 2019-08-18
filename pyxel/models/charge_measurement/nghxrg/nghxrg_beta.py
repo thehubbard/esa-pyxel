@@ -106,7 +106,8 @@ from scipy.ndimage.interpolation import zoom
 def white_noise(nstep=None):
     """Generate white noise for an HxRG including all time steps (actual pixel and overheads).
 
-    Parameters:
+    Parameters
+    ----------
         nstep - Length of vector returned
 
     """
@@ -139,7 +140,8 @@ class HXRGNoise:
                  pca0_file=None):
         """Simulate Teledyne HxRG+SIDECAR ASIC system noise.
 
-        Parameters:
+        Parameters
+        ----------
             naxis1      - X-dimension of the FITS cube
             naxis2      - Y-dimension of the FITS cube
             time_step   - Z-dimension of the FITS cube, number of frame in series over time
@@ -403,7 +405,8 @@ class HXRGNoise:
 
         Generate a vector of non-periodic pink noise.
 
-        Parameters:
+        Parameters
+        ----------
             mode - Selected from {'pink',  'acn'}
 
         """

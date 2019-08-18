@@ -3,7 +3,7 @@ import itertools
 import typing as t
 from copy import deepcopy
 import numpy as np
-from esapy_config import get_obj_att, get_value
+from pyxel.state import get_obj_att, get_value
 from pyxel.parametric.parameter_values import ParameterValues
 
 

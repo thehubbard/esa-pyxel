@@ -441,12 +441,14 @@ class Algorithm:
 
 class CalibrationMode(Enum):
     """TBW."""
+
     Pipeline = 'pipeline'
     SingleModel = 'single_model'
 
 
 class ResultType(Enum):
     """TBW."""
+
     Image = 'image'
     Signal = 'signal'
     Pixel = 'pixel'

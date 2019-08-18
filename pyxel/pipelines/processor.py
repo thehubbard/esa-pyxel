@@ -1,9 +1,11 @@
 """TBW."""
 import typing as t
-from esapy_config import get_obj_att, eval_entry, get_value
+
 from pyxel.detectors.ccd import CCD
 from pyxel.detectors.cmos import CMOS
+from pyxel.evaluator import eval_entry
 from pyxel.pipelines.pipeline import DetectionPipeline
+from pyxel.state import get_obj_att, get_value
 
 
 class Processor:
