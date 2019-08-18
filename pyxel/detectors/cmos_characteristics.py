@@ -7,6 +7,8 @@ class CMOSCharacteristics(Characteristics):
 
     def __init__(
         self,
+
+        # Parameters for CMOS
         qe: float = 0.0,
         eta: float = 0.0,
         sv: float = 0.0,
@@ -16,6 +18,8 @@ class CMOSCharacteristics(Characteristics):
         fwc: int = 0,
         vg: float = 0.0,
         dt: float = 0.0,
+
+        # Parameters for CMOS Characteristics
         cutoff: float = 2.5,
         vbiaspower: float = 3.35,
         dsub: float = 0.5,
@@ -52,8 +56,8 @@ class CMOSCharacteristics(Characteristics):
         if not (0.0 <= vreset <= 0.3):
             raise ValueError("'vreset' must be between 0.0 and 0.3.")
 
-        if not (0.0 <= biasgate <= 0.3):
-            raise ValueError("'biasgate' must be between 0.0 and 0.3.")
+        if not (1.8 <= biasgate <= 2.6):
+            raise ValueError("'biasgate' must be between 1.8 and 2.6.")
 
         if not (0.0 <= preampref <= 4.0):
             raise ValueError("'preampref' must be between 0.0 and 4.0.")
@@ -128,8 +132,8 @@ class CMOSCharacteristics(Characteristics):
     @biasgate.setter
     def biasgate(self, value: float):
         """Set BIASGATE."""
-        if not (0.0 <= value <= 0.3):
-            raise ValueError("'biasgate' must be between 0.0 and 0.3.")
+        if not (1.8 <= value <= 2.6):
+            raise ValueError("'biasgate' must be between 1.8 and 2.6.")
 
         self._biasgate = value
 

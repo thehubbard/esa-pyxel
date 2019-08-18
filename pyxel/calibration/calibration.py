@@ -1,87 +1,402 @@
 """TBW."""
 import logging
+import math
+from enum import Enum
+import typing as t
 import numpy as np
+
 try:
     import pygmo as pg
 except ImportError:
     import warnings
     warnings.warn("Cannot import 'pygmo", RuntimeWarning, stacklevel=2)
 from ..util.outputs import Outputs
-from ..util import validators, config
 from pyxel.calibration.fitting import ModelFitting
 from pyxel.pipelines.model_function import ModelFunction
 from pyxel.pipelines.processor import Processor
+from pyxel.parametric.parameter_values import ParameterValues
 
 
-@config.detector_class
+class AlgorithmType(Enum):
+    """TBW."""
+
+    Sade = 'sade'
+    Sga = 'sga'
+    Nlopt = 'nlopt'
+
+
 class Algorithm:
-    """TBW.
+    """TBW."""
 
-    :return:
-    """
+    def __init__(self,
+                 type: AlgorithmType = AlgorithmType.Sade,
+                 generations: int = 1,
+                 population_size: int = 1,
 
-    type = config.attribute(
-        type=str,
-        validator=[validators.validate_type(str),
-                   validators.validate_choices(['sade', 'sga', 'nlopt'])],
-        default='sade',
-        doc=''
-    )
-    generations = config.attribute(
-        type=int,
-        validator=[validators.validate_type(int),
-                   validators.validate_range(1, 100000)],
-        default=1,
-        doc=''
-    )
-    population_size = config.attribute(
-        type=int,
-        validator=[validators.validate_type(int),
-                   validators.validate_range(1, 100000)],
-        default=1,
-        doc=''
-    )
+                 # SADE #####
+                 variant: int = 2,
+                 variant_adptv: int = 1,
+                 ftol: float = 1e-6,
+                 xtol: float = 1e-6,
+                 memory: bool = False,
+
+                 # SGA #####
+                 cr: float = 0.9,
+                 eta_c: float = 1.0,
+                 m: float = 0.02,
+                 param_m: float = 1.0,
+                 param_s: int = 2,
+                 crossover: str = 'exponential',
+                 mutation: str = 'polynomial',
+                 selection: str = 'tournament',
+
+                 # NLOPT #####
+                 nlopt_solver: str = 'neldermead',
+                 maxtime: int = 0,
+                 maxeval: int = 0,
+                 xtol_rel: float = 1.e-8,
+                 xtol_abs: float = 0.0,
+                 ftol_rel: float = 0.0,
+                 ftol_abs: float = 0.0,
+                 stopval: float = -math.inf,
+                 local_optimizer=None,
+                 replacement: str = 'best',
+                 nlopt_selection: str = 'best',
+                 ):
+        if generations not in range(1, 100001):
+            raise ValueError("'generations' must be between 1 and 100000.")
+
+        if population_size not in range(1, 100001):
+            raise ValueError("'population_size' must be between 1 and 100000.")
+
+        self._type = type
+        self._generations = generations
+        self._population_size = population_size
+
+        # SADE #####
+        if variant not in range(1, 19):
+            raise ValueError("'variant' must be between 1 and 18.")
+
+        if variant_adptv not in (1, 2):
+            raise ValueError("'variant_adptv' must be between 1 and 2.")
+
+        self._variant = variant
+        self._variant_adptv = variant_adptv
+        self._ftol = ftol
+        self._xtol = xtol
+        self._memory = memory
+
+        # SGA #####
+        if not (0.0 <= cr <= 1.0):
+            raise ValueError("'cr' must be between 0.0 and 1.0.")
+
+        if not (0.0 <= m <= 1.0):
+            raise ValueError("'m' must be between 0.0 and 1.0.")
+
+        self._cr = cr
+        self._eta_c = eta_c
+        self._m = m
+        self._param_m = param_m
+        self._param_s = param_s
+        self._crossover = crossover
+        self._mutation = mutation
+        self._selection = selection
+
+        # NLOPT #####
+        self._nlopt_solver = nlopt_solver
+        self._maxtime = maxtime
+        self._maxeval = maxeval
+        self._xtol_rel = xtol_rel
+        self._xtol_abs = xtol_abs
+        self._ftol_rel = ftol_rel
+        self._ftol_abs = ftol_abs
+        self._stopval = stopval
+        self._local_optimizer = local_optimizer
+        self._replacement = replacement
+        self._nlopt_selection = nlopt_selection
+
+    @property
+    def type(self) -> AlgorithmType:
+        """TBW."""
+        return self._type
+
+    @type.setter
+    def type(self, value: AlgorithmType):
+        """TBW."""
+        self._type = value
+
+    @property
+    def generations(self) -> int:
+        """TBW."""
+        return self._generations
+
+    @generations.setter
+    def generations(self, value: int):
+        """TBW."""
+        if value not in range(1, 100001):
+            raise ValueError("'generations' must be between 1 and 100000.")
+
+        self._generations = value
+
+    @property
+    def population_size(self) -> int:
+        """TBW."""
+        return self._population_size
+
+    @population_size.setter
+    def population_size(self, value: int):
+        """TBW."""
+        if value not in range(1, 100001):
+            raise ValueError("'population_size' must be between 1 and 100000.")
+
+        self._population_size = value
 
     # SADE #####
-    variant = config.attribute(type=int, validator=[validators.validate_type(int),
-                                                    validators.validate_range(1, 18)], default=2, doc='')
-    variant_adptv = config.attribute(type=int, validator=[validators.validate_type(int),
-                                                          validators.validate_range(1, 2)], default=1, doc='')
-    ftol = config.attribute(type=float, default=1e-06, doc='')  # validator=validators.validate_range(),
-    xtol = config.attribute(type=float, default=1e-06, doc='')  # validator=validators.validate_range(),
-    memory = config.attribute(type=bool, default=False, doc='')
+    @property
+    def variant(self) -> int:
+        """TBW."""
+        return self._variant
+
+    @variant.setter
+    def variant(self, value: int):
+        """TBW."""
+        if value not in range(1, 19):
+            raise ValueError("'variant' must be between 1 and 18.")
+
+        self._variant = value
+
+    @property
+    def variant_adptv(self) -> int:
+        """TBW."""
+        return self._variant_adptv
+
+    @variant_adptv.setter
+    def variant_adptv(self, value: int):
+        """TBW."""
+        if value not in (1, 2):
+            raise ValueError("'variant_adptv' must be between 1 and 2.")
+
+        self._variant_adptv = value
+
+    @property
+    def ftol(self) -> float:
+        """TBW."""
+        return self._ftol
+
+    @ftol.setter
+    def ftol(self, value: float):
+        """TBW."""
+        self._ftol = value
+
+    @property
+    def xtol(self) -> float:
+        """TBW."""
+        return self._xtol
+
+    @xtol.setter
+    def xtol(self, value: float):
+        """TBW."""
+        self._xtol = value
     # SADE #####
 
     # SGA #####
-    cr = config.attribute(type=float, converter=float, validator=[validators.validate_type(float),
-                                                                  validators.validate_range(0, 1)], default=0.9, doc='')
-    eta_c = config.attribute(type=float, converter=float,
-                             validator=[validators.validate_type(float)], default=1.0, doc='')
-    m = config.attribute(type=float, converter=float, validator=[validators.validate_type(float),
-                                                                 validators.validate_range(0, 1)], default=0.02, doc='')
-    param_m = config.attribute(type=float, default=1.0, doc='')            # validator=validators.validate_range(1, 2),
-    param_s = config.attribute(type=int, default=2, doc='')                # validator=validators.validate_range(1, 2),
-    crossover = config.attribute(type=str, default='exponential', doc='')  # validator=validators.validate_choices(),
-    mutation = config.attribute(type=str, default='polynomial', doc='')    # validator=validators.validate_choices(),
-    selection = config.attribute(type=str, default='tournament', doc='')   # validator=validators.validate_choices(),
+    @property
+    def cr(self) -> float:
+        """TBW."""
+        return self._cr
+
+    @cr.setter
+    def cr(self, value: float):
+        """TBW."""
+        if not (0.0 <= value <= 1.0):
+            raise ValueError("'cr' must be between 0.0 and 1.0.")
+
+        self._cr = value
+
+    @property
+    def eta_c(self) -> float:
+        """TBW."""
+        return self._eta_c
+
+    @eta_c.setter
+    def eta_c(self, value: float):
+        """TBW."""
+        self._eta_c = value
+
+    @property
+    def m(self) -> float:
+        """TBW."""
+        return self._m
+
+    @m.setter
+    def m(self, value: float):
+        """TBW."""
+        if not (0.0 <= value <= 1.0):
+            raise ValueError("'m' must be between 0.0 and 1.0.")
+
+        self._m = value
+
+    @property
+    def param_m(self) -> float:
+        """TBW."""
+        return self._param_m
+
+    @param_m.setter
+    def param_m(self, value: float):
+        """TBW."""
+        self._param_m = value
+
+    @property
+    def param_s(self) -> int:
+        """TBW."""
+        return self._param_s
+
+    @param_s.setter
+    def param_s(self, value: int):
+        """TBW."""
+        self._param_s = value
+
+    @property
+    def crossover(self) -> str:
+        """TBW."""
+        return self._crossover
+
+    @crossover.setter
+    def crossover(self, value: str):
+        """TBW."""
+        self._crossover = value
+
+    @property
+    def mutation(self) -> str:
+        """TBW."""
+        return self._mutation
+
+    @mutation.setter
+    def mutation(self, value: str):
+        """TBW."""
+        self._mutation = value
+
+    @property
+    def selection(self) -> str:
+        """TBW."""
+        return self._selection
+
+    @selection.setter
+    def selection(self, value: str):
+        """TBW."""
+        self._selection = value
     # SGA #####
 
     # NLOPT #####
-    nlopt_solver = config.attribute(type=str, default='neldermead',
-                                    doc='')    # validator=validators.validate_choices(),  todo
-    maxtime = config.attribute(type=int, default=0,
-                               doc='')                     # validator=validators.validate_range(),  todo
-    maxeval = config.attribute(type=int, default=0, doc='')
-    xtol_rel = config.attribute(type=float, default=1.e-8, doc='')
-    xtol_abs = config.attribute(type=float, default=0., doc='')
-    ftol_rel = config.attribute(type=float, default=0., doc='')
-    ftol_abs = config.attribute(type=float, default=0., doc='')
-    stopval = config.attribute(type=float, default=float('-inf'), doc='')
-    local_optimizer = config.attribute(type=None, default=None,
-                                       doc='')          # validator=validators.validate_choices(),  todo
-    replacement = config.attribute(type=str, default='best', doc='')
-    nlopt_selection = config.attribute(type=str, default='best',
-                                       doc='')         # todo: "selection" - same name as in SGA
+    @property
+    def nlopt_solver(self) -> str:
+        """TBW."""
+        return self._nlopt_solver
+
+    @nlopt_solver.setter
+    def nlopt_solver(self, value: str):
+        """TBW."""
+        self._nlopt_solver = value
+
+    @property
+    def maxtime(self) -> int:
+        """TBW."""
+        return self._maxtime
+
+    @maxtime.setter
+    def maxtime(self, value: int):
+        """TBW."""
+        self._maxtime = value
+
+    @property
+    def maxeval(self) -> int:
+        """TBW."""
+        return self._maxeval
+
+    @maxeval.setter
+    def maxeval(self, value: int):
+        """TBW."""
+        self._maxeval = value
+
+    @property
+    def xtol_rel(self) -> float:
+        """TBW."""
+        return self._xtol_rel
+
+    @xtol_rel.setter
+    def xtol_rel(self, value: float):
+        """TBW."""
+        self._xtol_rel = value
+
+    @property
+    def xtol_abs(self) -> float:
+        """TBW."""
+        return self._xtol_abs
+
+    @xtol_abs.setter
+    def xtol_abs(self, value: float):
+        """TBW."""
+        self._xtol_abs = value
+
+    @property
+    def ftol_rel(self) -> float:
+        """TBW."""
+        return self._ftol_rel
+
+    @ftol_rel.setter
+    def ftol_rel(self, value: float):
+        """TBW."""
+        self._ftol_rel = value
+
+    @property
+    def ftol_abs(self) -> float:
+        """TBW."""
+        return self._ftol_abs
+
+    @ftol_abs.setter
+    def ftol_abs(self, value: float):
+        """TBW."""
+        self._ftol_abs = value
+
+    @property
+    def stopval(self) -> float:
+        """TBW."""
+        return self._stopval
+
+    @stopval.setter
+    def stopval(self, value: float):
+        """TBW."""
+        self._stopval = value
+
+    @property
+    def local_optimizer(self):
+        """TBW."""
+        return self._local_optimizer
+
+    @local_optimizer.setter
+    def local_optimizer(self, value):
+        """TBW."""
+        self._local_optimizer = value
+
+    @property
+    def replacement(self) -> str:
+        """TBW."""
+        return self._replacement
+
+    @replacement.setter
+    def replacement(self, value: str):
+        """TBW."""
+        self._replacement = value
+
+    @property
+    def nlopt_selection(self) -> str:
+        """TBW."""
+        return self._nlopt_selection
+
+    @nlopt_selection.setter
+    def nlopt_selection(self, value: str):
+        """TBW."""
+        self._nlopt_selection = value
     # NLOPT #####
 
     def get_algorithm(self):
@@ -89,14 +404,14 @@ class Algorithm:
 
         :return:
         """
-        if self.type == 'sade':
+        if self.type is AlgorithmType.Sade:
             opt_algorithm = pg.sade(gen=self.generations,
                                     variant=self.variant,
                                     variant_adptv=self.variant_adptv,
                                     ftol=self.ftol,
                                     xtol=self.xtol,
                                     memory=self.memory)
-        elif self.type == 'sga':
+        elif self.type is AlgorithmType.Sga:
             opt_algorithm = pg.sga(gen=self.generations,
                                    cr=self.cr,                  # crossover probability
                                    crossover=self.crossover,    # single, exponential, binomial, sbx
@@ -106,7 +421,7 @@ class Algorithm:
                                    selection=self.selection,    # tournament, truncated
                                    eta_c=self.eta_c,            # distribution index for sbx crossover
                                    param_m=self.param_m)        # mutation parameter
-        elif self.type == 'nlopt':
+        elif self.type is AlgorithmType.Nlopt:
             opt_algorithm = pg.nlopt(self.nlopt_solver)
             opt_algorithm.maxtime = self.maxtime        # stop when the optimization time (in seconds) exceeds maxtime
             opt_algorithm.maxeval = self.maxeval        # stop when the number of function evaluations exceeds maxeval
@@ -124,91 +439,210 @@ class Algorithm:
         return opt_algorithm
 
 
-@config.detector_class
+class CalibrationMode(Enum):
+    """TBW."""
+    Pipeline = 'pipeline'
+    SingleModel = 'single_model'
+
+
+class ResultType(Enum):
+    """TBW."""
+    Image = 'image'
+    Signal = 'signal'
+    Pixel = 'pixel'
+
+
 class Calibration:
-    """TBW.
+    """TBW."""
 
-    :return:
-    """
+    def __init__(self,
+                 output_dir=None,
+                 fitting: t.Optional[ModelFitting] = None,
+                 calibration_mode: CalibrationMode = CalibrationMode.Pipeline,
+                 result_type: ResultType = ResultType.Image,
+                 result_fit_range: t.Optional[list] = None,
+                 result_input_arguments: t.Optional[list] = None,
+                 target_data_path: t.Optional[list] = None,
+                 target_fit_range: t.Optional[list] = None,
+                 fitness_function: t.Optional[ModelFunction] = None,
+                 algorithm: t.Optional[Algorithm] = None,
+                 parameters: t.Optional[t.List[ParameterValues]] = None,
+                 seed: int = np.random.randint(0, 100000),
+                 islands: int = 0,
+                 weighting_path: t.Optional[list] = None,
+                 ):
+        if seed not in range(100001):
+            raise ValueError("'seed' must be between 0 and 100000.")
 
-    output_dir = None
-    fitting = None          # type: ModelFitting
-    calibration_mode = config.attribute(
-        type=str,
-        validator=[validators.validate_type(str),
-                   validators.validate_choices(['pipeline', 'single_model'])],
-        default='pipeline',
-        doc=''
-    )
-    result_type = config.attribute(
-        type=str,
-        validator=[validators.validate_type(str),
-                   validators.validate_choices(['image', 'signal', 'pixel'])],
-        default='image',
-        doc=''
-    )
-    result_fit_range = config.attribute(
-        type=list,
-        validator=[validators.validate_type(list)],
-        default=None,
-        doc=''
-    )
-    result_input_arguments = config.attribute(
-        type=list,
-        # validator=[validators.validate_type(list)],
-        default=None,
-        doc=''
-    )
-    target_data_path = config.attribute(
-        type=list,
-        validator=[validators.validate_type(list)],
-        default=None,
-        doc=''
-    )
-    target_fit_range = config.attribute(
-        type=list,
-        validator=[validators.validate_type(list)],
-        default=None,
-        doc=''
-    )
-    fitness_function = config.attribute(
-        type=ModelFunction,
-        validator=[validators.validate_type(ModelFunction)],
-        default='',
-        doc=''
-    )
-    algorithm = config.attribute(
-        type=Algorithm,
-        validator=[validators.validate_type(Algorithm)],
-        default='',
-        doc=''
-    )
-    parameters = config.attribute(
-        type=list,
-        validator=[validators.validate_type(list)],
-        default='',
-        doc=''
-    )
-    seed = config.attribute(
-        type=int,
-        validator=[validators.validate_type(int),
-                   validators.validate_range(0, 100000)],
-        default=np.random.randint(0, 100000),
-        doc=''
-    )
-    islands = config.attribute(
-        type=int,
-        validator=[validators.validate_type(int),
-                   validators.validate_range(0, 100)],
-        default=0,
-        doc=''
-    )
-    weighting_path = config.attribute(
-        type=list,
-        # validator=[validators.validate_type(list)],  # todo
-        default=None,
-        doc=''
-    )
+        if islands not in range(101):
+            raise ValueError("'islands' must be between 0 and 100.")
+
+        self._output_dir = output_dir
+        self._fitting = fitting
+        self._calibration_mode = calibration_mode
+        self._result_type = result_type
+        self._result_fit_range = result_fit_range
+        self._result_input_arguments = result_input_arguments
+        self._target_data_path = target_data_path
+        self._target_fit_range = target_fit_range
+        self._fitness_function = fitness_function
+        self._algorithm = algorithm
+        self._parameters = parameters if parameters else []
+        self._seed = seed
+        self._islands = islands
+        self._weighting_path = weighting_path
+
+    @property
+    def output_dir(self):
+        """TBW."""
+        return self._output_dir
+
+    @output_dir.setter
+    def output_dir(self, value):
+        """TBW."""
+        self._output_dir = value
+
+    @property
+    def fitting(self) -> ModelFitting:
+        """TBW."""
+        if not self._fitting:
+            raise RuntimeError("No 'fitting' defined !")
+
+        return self._fitting
+
+    @fitting.setter
+    def fitting(self, value: ModelFitting):
+        """TBW."""
+        self._fitting = value
+
+    @property
+    def calibration_mode(self) -> CalibrationMode:
+        """TBW."""
+        return self._calibration_mode
+
+    @calibration_mode.setter
+    def calibration_mode(self, value: CalibrationMode):
+        """TBW."""
+        self._calibration_mode = value
+
+    @property
+    def result_type(self) -> ResultType:
+        """TBW."""
+        return self._result_type
+
+    @result_type.setter
+    def result_type(self, value: ResultType):
+        """TBW."""
+        self._result_type = value
+
+    @property
+    def result_fit_range(self) -> t.Optional[list]:
+        """TBW."""
+        return self._result_fit_range
+
+    @result_fit_range.setter
+    def result_fit_range(self, value: list):
+        """TBW."""
+        self._result_fit_range = value
+
+    @property
+    def result_input_arguments(self) -> t.Optional[list]:
+        """TBW."""
+        return self._result_input_arguments
+
+    @result_input_arguments.setter
+    def result_input_arguments(self, value: list):
+        """TBW."""
+        self._result_input_arguments = value
+
+    @property
+    def target_data_path(self) -> t.Optional[list]:
+        """TBW."""
+        return self._target_data_path
+
+    @target_data_path.setter
+    def target_data_path(self, value: list):
+        """TBW."""
+        self._target_data_path = value
+
+    @property
+    def target_fit_range(self) -> t.Optional[list]:
+        """TBW."""
+        return self._target_fit_range
+
+    @target_fit_range.setter
+    def target_fit_range(self, value: list):
+        """TBW."""
+        self._target_fit_range = value
+
+    @property
+    def fitness_function(self) -> t.Optional[ModelFunction]:
+        """TBW."""
+        return self._fitness_function
+
+    @fitness_function.setter
+    def fitness_function(self, value: ModelFunction):
+        """TBW."""
+        self._fitness_function = value
+
+    @property
+    def algorithm(self) -> Algorithm:
+        """TBW."""
+        if not self._algorithm:
+            raise RuntimeError("No 'algorithm' defined !")
+
+        return self._algorithm
+
+    @algorithm.setter
+    def algorithm(self, value: Algorithm):
+        """TBW."""
+        self._algorithm = value
+
+    @property
+    def parameters(self) -> t.List[ParameterValues]:
+        """TBW."""
+        return self._parameters
+
+    @parameters.setter
+    def parameters(self, value: t.List[ParameterValues]):
+        """TBW."""
+        self._parameters = value
+
+    @property
+    def seed(self) -> int:
+        """TBW."""
+        return self._seed
+
+    @seed.setter
+    def seed(self, value: int):
+        """TBW."""
+        if value not in range(100001):
+            raise ValueError("'seed' must be between 0 and 100000.")
+
+        self._seed = value
+
+    @property
+    def islands(self) -> int:
+        """TBW."""
+        return self._islands
+
+    @islands.setter
+    def islands(self, value: int):
+        """TBW."""
+        if value not in range(101):
+            raise ValueError("'islands' must be between 0 and 100.")
+
+        self._islands = value
+
+    @property
+    def weighting_path(self) -> t.Optional[list]:
+        """TBW."""
+        return self._weighting_path
+
+    @weighting_path.setter
+    def weighting_path(self, value: list):
+        """TBW."""
+        self._weighting_path = value
 
     def run_calibration(self, processor: Processor, output_dir: str = None):
         """TBW.

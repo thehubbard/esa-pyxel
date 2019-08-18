@@ -75,8 +75,7 @@ python373:
   script:
     - python -V
     - pip install tox
-    - tox -e py37-extra_all-pyyaml_3.13
-    - tox -e py37-extra_all-pyyaml_last
+    - tox -e py37-extra_all
   allow_failure: false
 
 
@@ -87,8 +86,7 @@ python36:
   script:
     - python -V
     - pip install tox
-    - tox -e py36-extra_all-pyyaml_3.13
-    - tox -e py36-extra_all-pyyaml_last
+    - tox -e py36-extra_all
   allow_failure: false
 
 

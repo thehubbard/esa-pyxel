@@ -4,11 +4,11 @@ import logging
 import numpy as np
 
 from pyxel.detectors import Detector
-from ...util import validators, config, checkers
 
 
-@validators.validate
-@config.argument(name='seed', label='random seed', units='', validate=checkers.check_type(int))
+# TODO: Fix this
+# @validators.validate
+# @config.argument(name='seed', label='random seed', units='', validate=checkers.check_type(int))
 def shot_noise(detector: Detector, random_seed: int = None):
     """Add shot noise to the number of photon per pixel.
 

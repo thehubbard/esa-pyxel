@@ -5,14 +5,13 @@ import typing as t
 import numpy as np
 
 from pyxel.detectors.detector import Detector
-from ...util import config, validators
-from ...util.checkers import check_type, check_choices
 
 
-@validators.validate
-@config.argument(name='level', label='number of photon', units='', validate=check_type(int))
-@config.argument(name='option', label='type of illumination', units='',
-                 validate=check_choices(['uniform', 'rectangular_hole', 'elliptic_hole']))
+# TODO: Fix this
+# @validators.validate
+# @config.argument(name='level', label='number of photon', units='', validate=check_type(int))
+# @config.argument(name='option', label='type of illumination', units='',
+#                  validate=check_choices(['uniform', 'rectangular_hole', 'elliptic_hole']))
 # @config.argument(name='size', label='size of 2d array', units='', validate=check_type(list))
 # @config.argument(name='hole_size', label='size of hole', units='', validate=check_type(list))
 def illumination(detector: Detector,

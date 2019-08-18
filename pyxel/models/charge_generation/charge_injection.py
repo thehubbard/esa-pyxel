@@ -2,11 +2,11 @@
 import logging
 import numpy as np
 from pyxel.detectors.ccd import CCD
-from pyxel.util import validators, config, checkers
 
 
-@validators.validate
-@config.argument(name='detector', label='', units='', validate=checkers.check_type(CCD))
+# TODO: Fix this
+# @validators.validate
+# @config.argument(name='detector', label='', units='', validate=checkers.check_type(CCD))
 def charge_blocks(detector: CCD,
                   charge_level: int,
                   block_start: int = 0,

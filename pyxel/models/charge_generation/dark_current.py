@@ -2,11 +2,11 @@
 import logging
 import numpy as np
 from pyxel.detectors.cmos import CMOS
-from pyxel.util import validators, config, checkers
 
 
-@validators.validate
-@config.argument(name='detector', label='', units='', validate=checkers.check_type(CMOS))
+# TODO: Fix this
+# @validators.validate
+# @config.argument(name='detector', label='', units='', validate=checkers.check_type(CMOS))
 def dark_current_rule07(detector: CMOS):
     """Generate charge from dark current process.
 

@@ -2,11 +2,11 @@
 import logging
 import numpy as np
 from pyxel.detectors.detector import Detector
-from pyxel.util import validators, checkers, config
 
 
-@validators.validate
-@config.argument(name='txt_file', label='file path', units='', validate=checkers.check_path)
+# TODO: Fix this
+# @validators.validate
+# @config.argument(name='txt_file', label='file path', units='', validate=checkers.check_path)
 def charge_profile(detector: Detector,
                    txt_file: str,
                    fit_profile_to_det: bool = False,

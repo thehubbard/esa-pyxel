@@ -34,7 +34,7 @@ class Material:
 
     def __init__(
         self,
-        trapped_charge: t.Optional[Path],
+        trapped_charge: t.Optional[Path] = None,
         n_acceptor: float = 0.0,
         n_donor: float = 0.0,
         material: MaterialType = MaterialType.Silicon,

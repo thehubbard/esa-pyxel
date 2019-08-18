@@ -54,10 +54,10 @@ class Characteristics:
         if not (0.0 <= a1 <= 100.0):
             raise ValueError("'a1' must be between 0.0 and 100.0.")
 
-        if a2 not in range(0, 65536):
-            raise ValueError("'a2' must be between 0 and 65536.")
+        if a2 not in range(65536):
+            raise ValueError("'a2' must be between 0 and 65535.")
 
-        if fwc not in range(0, 1e7 + 1):
+        if fwc not in range(10000001):
             raise ValueError("'fwc' must be between 0 and 1e+7.")
 
         if not (0.0 <= vg <= 1.0):
@@ -146,10 +146,10 @@ class Characteristics:
         return self._a2
 
     @a2.setter
-    def a2(self, value: float):
+    def a2(self, value: int):
         """Set Gain of the Analog-Digital Converter."""
-        if value not in range(0, 65536):
-            raise ValueError("'a2' must be between 0 and 65536.")
+        if value not in range(65536):
+            raise ValueError("'a2' must be between 0 and 65535.")
 
         self._a2 = value
 
@@ -161,7 +161,7 @@ class Characteristics:
     @fwc.setter
     def fwc(self, value: int):
         """Set Full well capacity."""
-        if value not in range(0, 1e7 + 1):
+        if value not in range(10000001):
             raise ValueError("'fwc' must be between 0 and 1e+7.")
 
         self._fwc = value

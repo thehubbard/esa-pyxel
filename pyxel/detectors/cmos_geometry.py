@@ -7,11 +7,14 @@ class CMOSGeometry(Geometry):
 
     def __init__(
         self,
+        # Parameters for Geometry
         row: int = 0,
         col: int = 0,
         total_thickness: float = 0.0,
         pixel_vert_size: float = 0.0,
         pixel_horz_size: float = 0.0,
+
+        # Parameters for CMOS Geometry
         n_output: int = 1,
         n_row_overhead: int = 0,
         n_frame_overhead: int = 0,
@@ -37,16 +40,16 @@ class CMOSGeometry(Geometry):
         reference_pixel_border_width: int
             Width of reference pixel border around image area.
         """
-        if n_output not in range(0, 33):
+        if n_output not in range(33):
             raise ValueError("'n_output' must be between 0 and 32.")
 
-        if n_row_overhead not in range(0, 101):
+        if n_row_overhead not in range(101):
             raise ValueError("'n_row_overhead' must be between 0 and 100.")
 
-        if n_frame_overhead not in range(0, 101):
+        if n_frame_overhead not in range(101):
             raise ValueError("'n_frame_overhead' must be between 0 and 100.")
 
-        if reference_pixel_border_width not in range(0, 33):
+        if reference_pixel_border_width not in range(33):
             raise ValueError("'reference_pixel_border_width' must be between 0 and 32.")
 
         super().__init__(
@@ -71,7 +74,7 @@ class CMOSGeometry(Geometry):
     @n_output.setter
     def n_output(self, value: int):
         """Set Number of detector outputs."""
-        if value not in range(0, 33):
+        if value not in range(33):
             raise ValueError("'n_output' must be between 0 and 32.")
 
         self._n_output = value
@@ -84,7 +87,7 @@ class CMOSGeometry(Geometry):
     @n_row_overhead.setter
     def n_row_overhead(self, value: int):
         """Set Number of detector outputs."""
-        if value not in range(0, 101):
+        if value not in range(101):
             raise ValueError("'n_row_overhead' must be between 0 and 100.")
 
         self._n_row_overhead = value
@@ -97,7 +100,7 @@ class CMOSGeometry(Geometry):
     @n_frame_overhead.setter
     def n_frame_overhead(self, value: int):
         """Set New frame overhead in rows."""
-        if value not in range(0, 101):
+        if value not in range(101):
             raise ValueError("'n_frame_overhead' must be between 0 and 100.")
 
         self._n_frame_overhead = value
@@ -120,7 +123,7 @@ class CMOSGeometry(Geometry):
     @reference_pixel_border_width.setter
     def reference_pixel_border_width(self, value: int):
         """Set Number of detector outputs."""
-        if value not in range(0, 33):
+        if value not in range(33):
             raise ValueError("'reference_pixel_border_width' must be between 0 and 32.")
 
         self._reference_pixel_border_width = value

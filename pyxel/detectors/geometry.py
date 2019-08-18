@@ -28,10 +28,10 @@ class Geometry:
         pixel_horz_size: float
             Horizontal dimension of pixel. Unit: um
         """
-        if row not in range(0, 10001):
+        if row not in range(10001):
             raise ValueError("'row' must be between 0 and 10000.")
 
-        if col not in range(0, 10001):
+        if col not in range(10001):
             raise ValueError("'col' must be between 0 and 10000.")
 
         if not (0.0 <= total_thickness <= 10000.0):
@@ -57,7 +57,7 @@ class Geometry:
     @row.setter
     def row(self, value: int):
         """Set Number of pixel rows."""
-        if value not in range(0, 10001):
+        if value not in range(10001):
             raise ValueError("'row' must be between 0 and 10000.")
 
         self._row = value
@@ -70,7 +70,7 @@ class Geometry:
     @col.setter
     def col(self, value: int):
         """Set Number of pixel columns."""
-        if value not in range(0, 10001):
+        if value not in range(10001):
             raise ValueError("'columns' must be between 0 and 10000.")
 
         self._col = value

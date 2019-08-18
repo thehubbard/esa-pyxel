@@ -1,13 +1,14 @@
 """Fix pattern noise model."""
 import logging
+from pathlib import Path
 import numpy as np
-from pyxel.util.checkers import check_path
 from pyxel.detectors.detector import Detector
 from pyxel.detectors.geometry import Geometry  # noqa: F401
 
 # from astropy import units as u
 
 
+# TODO: Fix this
 # @validators.validate
 # @config.argument(name='', label='', units='', validate=)
 def fix_pattern_noise(detector: Detector,
@@ -28,7 +29,7 @@ def fix_pattern_noise(detector: Detector,
             pnu = np.loadtxt(pixel_non_uniformity)
     else:
         filename = 'data/pixel_non_uniformity.npy'
-        if check_path(filename):
+        if Path(filename).exists():
             logger.warning('"pixel_non_uniformity" file is not defined, '
                            'using array from file: ' + filename)
             pnu = np.load(filename)
