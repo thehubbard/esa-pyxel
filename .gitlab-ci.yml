@@ -102,20 +102,20 @@ mypy:
 
 
 # Run pylint (with pytest) and generate HTML report
-lint:
-  image: python:3
-  stage: test
-  script:
-    - pip install pytest-pylint pytest-html
-    - pip install -r requirements.txt
-    - pip install -e ".[all]"
-    - pip freeze
-    - pytest --pylint --color=yes --verbose --pylint-rcfile=pylint.cfg --html=pylint_report.html --self-contained-html -m pylint || true
-    - ls
-  artifacts:
-    paths:
-      - pylint_report.html
-  allow_failure: true
+# lint:
+#   image: python:3
+#   stage: test
+#   script:
+#     - pip install pytest-pylint pytest-html
+#     - pip install -r requirements.txt
+#     - pip install -e ".[all]"
+#     - pip freeze
+#     - pytest --pylint --color=yes --verbose --pylint-rcfile=pylint.cfg --html=pylint_report.html --self-contained-html -m pylint || true
+#     - ls
+#   artifacts:
+#     paths:
+#       - pylint_report.html
+#   allow_failure: true
 
 
 flake8:
@@ -249,7 +249,7 @@ pages:
     - mv docs/html public/doc
     - mv htmlcov public/coverage
     - mv pytest_report.html public
-    - mv pylint_report.html public
+    # - mv pylint_report.html public
     - mv documentation.svg public
     - mv license.json public
     - ls public
