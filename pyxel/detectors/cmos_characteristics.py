@@ -8,7 +8,7 @@ class CMOSCharacteristics(Characteristics):
     def __init__(
         self,
 
-        # Parameters for CMOS
+        # Parameters for `Characteristics`
         qe: float = 0.0,
         eta: float = 0.0,
         sv: float = 0.0,
@@ -19,7 +19,7 @@ class CMOSCharacteristics(Characteristics):
         vg: float = 0.0,
         dt: float = 0.0,
 
-        # Parameters for CMOS Characteristics
+        # Parameters specific `CMOSCharacteristics`
         cutoff: float = 2.5,
         vbiaspower: float = 3.35,
         dsub: float = 0.5,

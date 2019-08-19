@@ -54,8 +54,8 @@ class Characteristics:
         if not (0.0 <= a1 <= 100.0):
             raise ValueError("'a1' must be between 0.0 and 100.0.")
 
-        if a2 not in range(65536):
-            raise ValueError("'a2' must be between 0 and 65535.")
+        if a2 not in range(65537):
+            raise ValueError("'a2' must be between 0 and 65536.")
 
         if fwc not in range(10000001):
             raise ValueError("'fwc' must be between 0 and 1e+7.")
@@ -148,8 +148,8 @@ class Characteristics:
     @a2.setter
     def a2(self, value: int):
         """Set Gain of the Analog-Digital Converter."""
-        if value not in range(65536):
-            raise ValueError("'a2' must be between 0 and 65535.")
+        if value not in range(65537):
+            raise ValueError("'a2' must be between 0 and 65536.")
 
         self._a2 = value
 

@@ -29,7 +29,8 @@ class Algorithm:
     """TBW."""
 
     def __init__(self,
-                 type: AlgorithmType = AlgorithmType.Sade,
+                 # TODO: Rename 'type' into 'algorithm_type'
+                 type: t.Union[AlgorithmType, str] = AlgorithmType.Sade,
                  generations: int = 1,
                  population_size: int = 1,
 
@@ -69,7 +70,7 @@ class Algorithm:
         if population_size not in range(1, 100001):
             raise ValueError("'population_size' must be between 1 and 100000.")
 
-        self._type = type
+        self._type = AlgorithmType(type)
         self._generations = generations
         self._population_size = population_size
 
@@ -123,7 +124,7 @@ class Algorithm:
     @type.setter
     def type(self, value: AlgorithmType):
         """TBW."""
-        self._type = value
+        self._type = AlgorithmType(value)
 
     @property
     def generations(self) -> int:
@@ -197,6 +198,16 @@ class Algorithm:
     def xtol(self, value: float):
         """TBW."""
         self._xtol = value
+
+    @property
+    def memory(self) -> bool:
+        """TBW."""
+        return self._memory
+
+    @memory.setter
+    def memory(self, value: bool):
+        """TBW."""
+        self._memory = value
     # SADE #####
 
     # SGA #####

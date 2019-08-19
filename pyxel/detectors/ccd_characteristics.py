@@ -6,7 +6,24 @@ class CCDCharacteristics(Characteristics):
     """Characteristical attributes of a CCD detector."""
 
     def __init__(
-        self, fwc_serial: int = 0, svg: float = 0.0, t: float = 0.0, st: float = 0.0
+        self,
+
+        # Parameters for `Characteristics`
+        qe: float = 0.0,
+        eta: float = 0.0,
+        sv: float = 0.0,
+        amp: float = 0.0,
+        a1: float = 0.0,
+        a2: int = 0,
+        fwc: int = 0,
+        vg: float = 0.0,
+        dt: float = 0.0,
+
+        # Parameters specific `CCDCharacteristics`
+        fwc_serial: int = 0,
+        svg: float = 0.0,
+        t: float = 0.0,
+        st: float = 0.0,
     ):
         """Create an instance of `CCDCharacteristics`.
 
@@ -33,6 +50,9 @@ class CCDCharacteristics(Characteristics):
         if not (0.0 <= st <= 10.0):
             raise ValueError("'st' must be between 0.0 and 10.0.")
 
+        super().__init__(
+            qe=qe, eta=eta, sv=sv, amp=amp, a1=a1, a2=a2, fwc=fwc, vg=vg, dt=dt
+        )
         self._fwc_serial = fwc_serial
         self._svg = svg
         self._t = t
