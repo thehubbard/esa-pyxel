@@ -82,7 +82,7 @@ def cdm(detector: CCD,
                                    sigma_p=np.array(sigma_p), sigma_s=np.array(sigma_s))
 
 
-@numba.jit(nopython=True, nogil=True, parallel=True)
+@numba.jit(nopython=True, nogil=True, parallel=False)
 def run_cdm(s: np.ndarray,
             beta_p: float, beta_s: float,
             vg: float, svg: float,

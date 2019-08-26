@@ -1,10 +1,5 @@
-#   --------------------------------------------------------------------------
-#   Copyright 2019 SCI-FIV, ESA (European Space Agency)
-#   --------------------------------------------------------------------------
-# HANS: remove copyright
 """CMOS detector modeling class."""
 
-# import typing as t
 from pyxel.detectors.detector import Detector
 from pyxel.detectors.cmos_geometry import CMOSGeometry
 from pyxel.detectors.material import Material
@@ -37,11 +32,6 @@ class CMOS(Detector):
         :param material:
         :param environment:
         :param characteristics:
-        :param photon:
-        :param charge:
-        :param pixel:
-        :param signal:
-        :param image:
         """
         self._geometry = geometry  # type: CMOSGeometry
         self._characteristics = characteristics  # type: CMOSCharacteristics

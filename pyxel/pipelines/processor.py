@@ -1,11 +1,11 @@
 """TBW."""
 import typing as t
-from esapy_config import get_obj_att, eval_entry, get_value
+
 from pyxel.detectors.ccd import CCD
 from pyxel.detectors.cmos import CMOS
+from pyxel.evaluator import eval_entry
 from pyxel.pipelines.pipeline import DetectionPipeline
-# from pyxel.pipelines.ccd_pipeline import CCDDetectionPipeline
-# from pyxel.pipelines.cmos_pipeline import CMOSDetectionPipeline
+from pyxel.state import get_obj_att, get_value
 
 
 # FRED: Is this class needed ?
@@ -22,6 +22,13 @@ class Processor:
         """
         self.detector = detector
         self.pipeline = pipeline
+
+    # def __getstate__(self):
+    #     """TBW."""
+    #     return {
+    #         'detector': self.detector,
+    #         'pipeline': self.pipeline,
+    #     }
 
     # FRED: Could it be renamed '__contains__' ?
     def has(self, key: str) -> bool:
@@ -71,3 +78,21 @@ class Processor:
             obj[att] = value
         else:
             setattr(obj, att, value)
+
+    def run_pipeline(self, abort_before: str = None) -> "Processor":
+        """TBW.
+
+        :param abort_before: str, model name, the pipeline should be aborted before this
+        :return:
+        """
+        self.pipeline._is_running = True
+        for group_name in self.pipeline.model_group_names:
+            models_grp = getattr(self.pipeline, group_name)
+            if models_grp:
+                abort_flag = models_grp.run(self.detector, self.pipeline, abort_model=abort_before)
+                if abort_flag:
+                    break
+        self.pipeline._is_running = False
+
+        # TODO: Is is necessary to return 'self' ??
+        return self

@@ -1,6 +1,6 @@
 """TBW."""
 import typing as t
-from esapy_config import eval_range
+from pyxel.evaluator import eval_range
 
 
 class ParameterValues:

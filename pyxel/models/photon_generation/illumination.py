@@ -3,18 +3,17 @@ import logging
 import typing as t
 
 import numpy as np
-from esapy_config.checkers import check_type_function, check_choices
+
 from pyxel.detectors.detector import Detector
-from esapy_config import funcargs
 
 
-# FRED: Remove the following decorators
-@funcargs.validate
-@funcargs.argument(name='level', label='number of photon', units='', validate=check_type_function(int))
-@funcargs.argument(name='option', label='type of illumination', units='',
-                   validate=check_choices(['uniform', 'rectangular_hole', 'elliptic_hole']))
-# @pyxel.argument(name='size', label='size of 2d array', units='', validate=check_type(list))
-# @pyxel.argument(name='hole_size', label='size of hole', units='', validate=check_type(list))
+# TODO: Fix this
+# @validators.validate
+# @config.argument(name='level', label='number of photon', units='', validate=check_type(int))
+# @config.argument(name='option', label='type of illumination', units='',
+#                  validate=check_choices(['uniform', 'rectangular_hole', 'elliptic_hole']))
+# @config.argument(name='size', label='size of 2d array', units='', validate=check_type(list))
+# @config.argument(name='hole_size', label='size of hole', units='', validate=check_type(list))
 def illumination(detector: Detector,
                  level: int,
                  option: str = 'uniform',

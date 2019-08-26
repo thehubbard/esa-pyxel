@@ -1,21 +1,18 @@
-#   --------------------------------------------------------------------------
-#   Copyright 2019 SCI-FIV, ESA (European Space Agency)
-#   --------------------------------------------------------------------------
 """Readout electronics model."""
 import logging
 from pydoc import locate
+
 import numpy as np
+
 from pyxel.detectors.detector import Detector
 # from astropy import units as u
-from esapy_config import funcargs
-from esapy_config import checkers
 
 
-# FRED: Remove the following decorators
-@funcargs.validate
-@funcargs.argument(name='data_type', label='type of output data array', units='ADU',
-                   validate=checkers.check_choices(['numpy.uint16', 'numpy.uint32', 'numpy.uint64',
-                                                    'numpy.int32', 'numpy.int64']))
+# TODO: Fix this
+# @validators.validate
+# @config.argument(name='data_type', label='type of output data array', units='ADU',
+#                  validate=checkers.check_choices(['numpy.uint16', 'numpy.uint32', 'numpy.uint64',
+#                                                   'numpy.int32', 'numpy.int64']))
 def simple_digitization(detector: Detector,
                         data_type: str = 'numpy.uint16') -> None:
     """Digitize signal array mimicking readout electronics.

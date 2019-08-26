@@ -33,14 +33,31 @@ cache:
 
 # Run pytest + coverage and create html report (pytest_report.html)
 anaconda3:
-  image: continuumio/anaconda3
+  image: continuumio/anaconda3:latest
+  stage: test
+  script:
+    - pwd
+    - ls
+    - python -V
+    - python3 -V
+    - which python3
+    - pip install pytest
+    - pip install -r requirements.txt
+    - pip install -e ".[all]"
+    - pip freeze
+    - export PYTHONPATH=$PWD  # todo ?
+    - pytest
+  allow_failure: true
+
+
+# Run pytest + coverage and create html report (pytest_report.html)
+pytest-cov:
+  image: python:3.6
   stage: test
   script:
     - pip install pytest pytest-cov pytest-html
     - pip install -r requirements.txt
     - pip install -e ".[all]"
-    - pip freeze
-    - export PYTHONPATH=$PWD
     - pytest --cov=pyxel --cov-report= --cov-report=html --html=pytest_report.html --self-contained-html --color=yes --full-trace --showlocals --verbose
     - coverage report > coverage.out
   artifacts:
@@ -48,7 +65,7 @@ anaconda3:
       - htmlcov
       - pytest_report.html
       - coverage.out
-  allow_failure: false
+  allow_failure: true
 
 
 # Run pytest for Python 3.7
@@ -58,42 +75,8 @@ python373:
   script:
     - python -V
     - pip install tox
-    - tox -e py37-extra_no-pyyaml_last
-  allow_failure: true
-
-
-# TODO: Remove this
-# Run pytest for Python 3.7
-python373_pyyaml313:
-  image: python:3.7
-  stage: test
-  script:
-    - python -V
-    - pip install tox
-    - tox -e py37-extra_no-pyyaml_3.13
-  allow_failure: true
-
-# Run pytest for Python 3.7
-python373_all:
-  image: python:3.7.3   # todo: should be 3.7, but tox or pytest or python3.7.4 causes segmentation fault
-  stage: test
-  script:
-    - python -V
-    - pip install tox
-    - tox -e py37-extra_all-pyyaml_last
-  allow_failure: true
-
-
-# TODO: Remove this
-# Run pytest for Python 3.7
-python373_pyyaml313_all:
-  image: python:3.7
-  stage: test
-  script:
-    - python -V
-    - pip install tox
-    - tox -e py37-extra_all-pyyaml_3.13
-  allow_failure: true
+    - tox -e py37-extra_all
+  allow_failure: false
 
 
 # Run pytest for Python 3.6
@@ -103,42 +86,7 @@ python36:
   script:
     - python -V
     - pip install tox
-    - tox -e py36-extra_no-pyyaml_last
-  allow_failure: false
-
-
-# TODO: Remove this
-# Run pytest for Python 3.6
-python36_pyyaml313:
-  image: python:3.6
-  stage: test
-  script:
-    - python -V
-    - pip install tox
-    - tox -e py36-extra_no-pyyaml_3.13
-  allow_failure: false
-
-
-# Run pytest for Python 3.6
-python36_all:
-  image: python:3.6
-  stage: test
-  script:
-    - python -V
-    - pip install tox
-    - tox -e py36-extra_all-pyyaml_last
-  allow_failure: false
-
-
-# TODO: Remove this
-# Run pytest for Python 3.6
-python36_pyyaml313_all:
-  image: python:3.6
-  stage: test
-  script:
-    - python -V
-    - pip install tox
-    - tox -e py36-extra_all-pyyaml_3.13
+    - tox -e py36-extra_all
   allow_failure: false
 
 
@@ -154,20 +102,20 @@ mypy:
 
 
 # Run pylint (with pytest) and generate HTML report
-lint:
-  image: python:3
-  stage: test
-  script:
-    - pip install pytest-pylint pytest-html
-    - pip install -r requirements.txt
-    - pip install -e ".[all]"
-    - pip freeze
-    - pytest --pylint --color=yes --verbose --pylint-rcfile=pylint.cfg --html=pylint_report.html --self-contained-html -m pylint || true
-    - ls
-  artifacts:
-    paths:
-      - pylint_report.html
-  allow_failure: true
+# lint:
+#   image: python:3
+#   stage: test
+#   script:
+#     - pip install pytest-pylint pytest-html
+#     - pip install -r requirements.txt
+#     - pip install -e ".[all]"
+#     - pip freeze
+#     - pytest --pylint --color=yes --verbose --pylint-rcfile=pylint.cfg --html=pylint_report.html --self-contained-html -m pylint || true
+#     - ls
+#   artifacts:
+#     paths:
+#       - pylint_report.html
+#   allow_failure: true
 
 
 flake8:
@@ -177,6 +125,16 @@ flake8:
     - python -V
     - pip install tox
     - tox -e flake8
+  allow_failure: false
+
+
+pydocstyle:
+  image: python:3
+  stage: test
+  script:
+    - python -V
+    - pip install tox
+    - tox -e pydocstyle
   allow_failure: false
 
 
@@ -194,19 +152,19 @@ doc8:
 # Build stage
 # ###########################
 
-# create badges
-badges:
-  image: python:3
-  stage: build
-  script:
-    - tail -n 1 coverage.out > cov_total.out
-    - PERCENT=$(awk '{printf "%.2f", ($2-$3)/$2*100}' cov_total.out)
-    - python badges.py -cov=$PERCENT
-    - ls
-  artifacts:
-    paths:
-      - coverage.svg
-  allow_failure: false
+## create badges
+#badges:
+#  image: python:3
+#  stage: build
+#  script:
+#    - tail -n 1 coverage.out > cov_total.out
+#    - PERCENT=$(awk '{printf "%.2f", ($2-$3)/$2*100}' cov_total.out)
+#    - python badges.py -cov=$PERCENT
+#    - ls
+#  artifacts:
+#    paths:
+#      - coverage.svg
+#  allow_failure: false
 
 # Scan sourcecode for licenses, copyrights & dependencies
 # experimental, latest version
@@ -291,8 +249,7 @@ pages:
     - mv docs/html public/doc
     - mv htmlcov public/coverage
     - mv pytest_report.html public
-    - mv pylint_report.html public
-    - mv coverage.svg public
+    # - mv pylint_report.html public
     - mv documentation.svg public
     - mv license.json public
     - ls public

@@ -1,7 +1,7 @@
 """TBW."""
 import functools
+from pyxel.evaluator import evaluate_reference
 import typing as t
-from esapy_config import evaluate_reference
 
 
 # FRED: What is `ModelFunction` ?
@@ -33,9 +33,18 @@ class ModelFunction:
         self.arguments = arguments
         # self.group = None               # TODO
 
-    def __repr__(self) -> str:
+    def __repr__(self):
         """TBW."""
         return 'ModelFunction(%(name)r, %(func)r, %(arguments)r, %(enabled)r)' % vars(self)
+
+    def __getstate__(self):
+        """TBW."""
+        return {
+            'name': self.name,
+            'func': self.func,
+            'enabled': self.enabled,
+            'arguments': self.arguments
+        }
 
     # FRED: Replace this by __call__ ?
     @property

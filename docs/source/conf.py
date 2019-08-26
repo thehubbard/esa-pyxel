@@ -51,6 +51,7 @@ extensions = [
     'sphinx.ext.mathjax',       # render math via Javascript
     'sphinx.ext.viewcode',      # add links to highlighted source code
     'sphinx.ext.autosummary',   # Generate autodoc summaries
+    "sphinx.ext.napoleon",      # for numpy docstyle
     'sphinxcontrib.bibtex'
     # 'sphinxcontrib.autoyaml'
     # 'sphinxcontrib.plantuml',

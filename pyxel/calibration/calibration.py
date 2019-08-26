@@ -1,87 +1,417 @@
 """TBW."""
 import logging
-import numpy as np
+import math
+from enum import Enum
 import typing as t
+import numpy as np
+
 try:
     import pygmo as pg
 except ImportError:
     import warnings
     warnings.warn("Cannot import 'pygmo", RuntimeWarning, stacklevel=2)
-
-
+from ..util.outputs import Outputs
 from pyxel.calibration.fitting import ModelFitting
 from pyxel.pipelines.model_function import ModelFunction
 from pyxel.pipelines.processor import Processor
-from pyxel.util import Outputs
-import esapy_config.config as ec
-from esapy_config import validators
+from pyxel.parametric.parameter_values import ParameterValues
+
+
+class AlgorithmType(Enum):
+    """TBW."""
+
+    Sade = 'sade'
+    Sga = 'sga'
+    Nlopt = 'nlopt'
 
 
 # FRED: Put classes `Algorithm` and `Calibration` in separated files.
-
-@ec.config
+# FRED: Maybe a new class `Sade` could contains some attributes ?
+# FRED: Maybe a new class `SGA` could contains some attributes ?
+# FRED: Maybe a new class `NLOPT` could contains some attributes ?
 class Algorithm:
-    """TBW.
+    """TBW."""
 
-    :return:
-    """
+    def __init__(self,
+                 # TODO: Rename 'type' into 'algorithm_type'
+                 type: t.Union[AlgorithmType, str] = AlgorithmType.Sade,
+                 generations: int = 1,
+                 population_size: int = 1,
 
-    type = ec.setting(
-        type=str,
-        validator=validators.validate_in(['sade', 'sga', 'nlopt']),
-        default='sade',
-        doc=''
-    )
-    generations = ec.setting(
-        type=int,
-        validator=validators.interval(1, 100000),
-        default=1,
-        doc=''
-    )
-    population_size = ec.setting(
-        type=int,
-        validator=validators.interval(1, 100000),
-        default=1,
-        doc=''
-    )
+                 # SADE #####
+                 variant: int = 2,
+                 variant_adptv: int = 1,
+                 ftol: float = 1e-6,
+                 xtol: float = 1e-6,
+                 memory: bool = False,
 
-    # HANS: apply the coding conventions to the pyx.attribute below as they are vertically defined above.
-    # FRED: Maybe a new class `Sade` could contains these attributes ?
+                 # SGA #####
+                 cr: float = 0.9,
+                 eta_c: float = 1.0,
+                 m: float = 0.02,
+                 param_m: float = 1.0,
+                 param_s: int = 2,
+                 crossover: str = 'exponential',
+                 mutation: str = 'polynomial',
+                 selection: str = 'tournament',
+
+                 # NLOPT #####
+                 nlopt_solver: str = 'neldermead',
+                 maxtime: int = 0,
+                 maxeval: int = 0,
+                 xtol_rel: float = 1.e-8,
+                 xtol_abs: float = 0.0,
+                 ftol_rel: float = 0.0,
+                 ftol_abs: float = 0.0,
+                 stopval: float = -math.inf,
+                 local_optimizer=None,
+                 replacement: str = 'best',
+                 nlopt_selection: str = 'best',
+                 ):
+        if generations not in range(1, 100001):
+            raise ValueError("'generations' must be between 1 and 100000.")
+
+        if population_size not in range(1, 100001):
+            raise ValueError("'population_size' must be between 1 and 100000.")
+
+        self._type = AlgorithmType(type)
+        self._generations = generations
+        self._population_size = population_size
+
+        # SADE #####
+        if variant not in range(1, 19):
+            raise ValueError("'variant' must be between 1 and 18.")
+
+        if variant_adptv not in (1, 2):
+            raise ValueError("'variant_adptv' must be between 1 and 2.")
+
+        self._variant = variant
+        self._variant_adptv = variant_adptv
+        self._ftol = ftol
+        self._xtol = xtol
+        self._memory = memory
+
+        # SGA #####
+        if not (0.0 <= cr <= 1.0):
+            raise ValueError("'cr' must be between 0.0 and 1.0.")
+
+        if not (0.0 <= m <= 1.0):
+            raise ValueError("'m' must be between 0.0 and 1.0.")
+
+        self._cr = cr
+        self._eta_c = eta_c
+        self._m = m
+        self._param_m = param_m
+        self._param_s = param_s
+        self._crossover = crossover
+        self._mutation = mutation
+        self._selection = selection
+
+        # NLOPT #####
+        self._nlopt_solver = nlopt_solver
+        self._maxtime = maxtime
+        self._maxeval = maxeval
+        self._xtol_rel = xtol_rel
+        self._xtol_abs = xtol_abs
+        self._ftol_rel = ftol_rel
+        self._ftol_abs = ftol_abs
+        self._stopval = stopval
+        self._local_optimizer = local_optimizer
+        self._replacement = replacement
+        self._nlopt_selection = nlopt_selection
+
+    @property
+    def type(self) -> AlgorithmType:
+        """TBW."""
+        return self._type
+
+    @type.setter
+    def type(self, value: AlgorithmType):
+        """TBW."""
+        self._type = AlgorithmType(value)
+
+    @property
+    def generations(self) -> int:
+        """TBW."""
+        return self._generations
+
+    @generations.setter
+    def generations(self, value: int):
+        """TBW."""
+        if value not in range(1, 100001):
+            raise ValueError("'generations' must be between 1 and 100000.")
+
+        self._generations = value
+
+    @property
+    def population_size(self) -> int:
+        """TBW."""
+        return self._population_size
+
+    @population_size.setter
+    def population_size(self, value: int):
+        """TBW."""
+        if value not in range(1, 100001):
+            raise ValueError("'population_size' must be between 1 and 100000.")
+
+        self._population_size = value
+
     # SADE #####
-    variant = ec.setting(type=int, validator=validators.interval(1, 18), default=2, doc='')
-    variant_adptv = ec.setting(type=int, validator=validators.interval(1, 2), default=1, doc='')
-    ftol = ec.setting(type=float, default=1e-06, doc='')  # validator=pyx.validate_range(),
-    xtol = ec.setting(type=float, default=1e-06, doc='')  # validator=pyx.validate_range(),
-    memory = ec.setting(type=bool, default=False, doc='')
+    @property
+    def variant(self) -> int:
+        """TBW."""
+        return self._variant
+
+    @variant.setter
+    def variant(self, value: int):
+        """TBW."""
+        if value not in range(1, 19):
+            raise ValueError("'variant' must be between 1 and 18.")
+
+        self._variant = value
+
+    @property
+    def variant_adptv(self) -> int:
+        """TBW."""
+        return self._variant_adptv
+
+    @variant_adptv.setter
+    def variant_adptv(self, value: int):
+        """TBW."""
+        if value not in (1, 2):
+            raise ValueError("'variant_adptv' must be between 1 and 2.")
+
+        self._variant_adptv = value
+
+    @property
+    def ftol(self) -> float:
+        """TBW."""
+        return self._ftol
+
+    @ftol.setter
+    def ftol(self, value: float):
+        """TBW."""
+        self._ftol = value
+
+    @property
+    def xtol(self) -> float:
+        """TBW."""
+        return self._xtol
+
+    @xtol.setter
+    def xtol(self, value: float):
+        """TBW."""
+        self._xtol = value
+
+    @property
+    def memory(self) -> bool:
+        """TBW."""
+        return self._memory
+
+    @memory.setter
+    def memory(self, value: bool):
+        """TBW."""
+        self._memory = value
     # SADE #####
 
-    # FRED: Maybe a new class `SGA` could contains these attributes ?
     # SGA #####
-    cr = ec.setting(type=float, converter=float, validator=validators.interval(0., 1.), default=0.9, doc='')
-    eta_c = ec.setting(type=float, converter=float, default=1.0, doc='')
-    m = ec.setting(type=float, converter=float, validator=validators.interval(0., 1.), default=0.02, doc='')
-    param_m = ec.setting(type=float, default=1.0, doc='')            # validator=pyx.validate_range(1, 2),
-    param_s = ec.setting(type=int, default=2, doc='')                # validator=pyx.validate_range(1, 2),
-    crossover = ec.setting(type=str, default='exponential', doc='')  # validator=pyx.validate_choices(),
-    mutation = ec.setting(type=str, default='polynomial', doc='')    # validator=pyx.validate_choices(),
-    selection = ec.setting(type=str, default='tournament', doc='')   # validator=pyx.validate_choices(),
+    @property
+    def cr(self) -> float:
+        """TBW."""
+        return self._cr
+
+    @cr.setter
+    def cr(self, value: float):
+        """TBW."""
+        if not (0.0 <= value <= 1.0):
+            raise ValueError("'cr' must be between 0.0 and 1.0.")
+
+        self._cr = value
+
+    @property
+    def eta_c(self) -> float:
+        """TBW."""
+        return self._eta_c
+
+    @eta_c.setter
+    def eta_c(self, value: float):
+        """TBW."""
+        self._eta_c = value
+
+    @property
+    def m(self) -> float:
+        """TBW."""
+        return self._m
+
+    @m.setter
+    def m(self, value: float):
+        """TBW."""
+        if not (0.0 <= value <= 1.0):
+            raise ValueError("'m' must be between 0.0 and 1.0.")
+
+        self._m = value
+
+    @property
+    def param_m(self) -> float:
+        """TBW."""
+        return self._param_m
+
+    @param_m.setter
+    def param_m(self, value: float):
+        """TBW."""
+        self._param_m = value
+
+    @property
+    def param_s(self) -> int:
+        """TBW."""
+        return self._param_s
+
+    @param_s.setter
+    def param_s(self, value: int):
+        """TBW."""
+        self._param_s = value
+
+    @property
+    def crossover(self) -> str:
+        """TBW."""
+        return self._crossover
+
+    @crossover.setter
+    def crossover(self, value: str):
+        """TBW."""
+        self._crossover = value
+
+    @property
+    def mutation(self) -> str:
+        """TBW."""
+        return self._mutation
+
+    @mutation.setter
+    def mutation(self, value: str):
+        """TBW."""
+        self._mutation = value
+
+    @property
+    def selection(self) -> str:
+        """TBW."""
+        return self._selection
+
+    @selection.setter
+    def selection(self, value: str):
+        """TBW."""
+        self._selection = value
     # SGA #####
 
-    # FRED: Maybe a new class `NLOPT` could contains these attributes ?
     # NLOPT #####
-    nlopt_solver = ec.setting(type=str, default='neldermead', doc='')    # validator=pyx.validate_choices(),  todo
-    maxtime = ec.setting(type=int, default=0, doc='')                     # validator=pyx.validate_range(),  todo
-    maxeval = ec.setting(type=int, default=0, doc='')
-    xtol_rel = ec.setting(type=float, default=1.e-8, doc='')
-    xtol_abs = ec.setting(type=float, default=0., doc='')
-    ftol_rel = ec.setting(type=float, default=0., doc='')
-    ftol_abs = ec.setting(type=float, default=0., doc='')
-    stopval = ec.setting(type=float, default=float('-inf'), doc='')
-    local_optimizer = ec.setting(type=t.Optional[t.Any],
-                                 default=None,
-                                 doc='')          # validator=pyx.validate_choices(),  todo
-    replacement = ec.setting(type=str, default='best', doc='')
-    nlopt_selection = ec.setting(type=str, default='best', doc='')         # todo: "selection" - same name as in SGA
+    @property
+    def nlopt_solver(self) -> str:
+        """TBW."""
+        return self._nlopt_solver
+
+    @nlopt_solver.setter
+    def nlopt_solver(self, value: str):
+        """TBW."""
+        self._nlopt_solver = value
+
+    @property
+    def maxtime(self) -> int:
+        """TBW."""
+        return self._maxtime
+
+    @maxtime.setter
+    def maxtime(self, value: int):
+        """TBW."""
+        self._maxtime = value
+
+    @property
+    def maxeval(self) -> int:
+        """TBW."""
+        return self._maxeval
+
+    @maxeval.setter
+    def maxeval(self, value: int):
+        """TBW."""
+        self._maxeval = value
+
+    @property
+    def xtol_rel(self) -> float:
+        """TBW."""
+        return self._xtol_rel
+
+    @xtol_rel.setter
+    def xtol_rel(self, value: float):
+        """TBW."""
+        self._xtol_rel = value
+
+    @property
+    def xtol_abs(self) -> float:
+        """TBW."""
+        return self._xtol_abs
+
+    @xtol_abs.setter
+    def xtol_abs(self, value: float):
+        """TBW."""
+        self._xtol_abs = value
+
+    @property
+    def ftol_rel(self) -> float:
+        """TBW."""
+        return self._ftol_rel
+
+    @ftol_rel.setter
+    def ftol_rel(self, value: float):
+        """TBW."""
+        self._ftol_rel = value
+
+    @property
+    def ftol_abs(self) -> float:
+        """TBW."""
+        return self._ftol_abs
+
+    @ftol_abs.setter
+    def ftol_abs(self, value: float):
+        """TBW."""
+        self._ftol_abs = value
+
+    @property
+    def stopval(self) -> float:
+        """TBW."""
+        return self._stopval
+
+    @stopval.setter
+    def stopval(self, value: float):
+        """TBW."""
+        self._stopval = value
+
+    @property
+    def local_optimizer(self):
+        """TBW."""
+        return self._local_optimizer
+
+    @local_optimizer.setter
+    def local_optimizer(self, value):
+        """TBW."""
+        self._local_optimizer = value
+
+    @property
+    def replacement(self) -> str:
+        """TBW."""
+        return self._replacement
+
+    @replacement.setter
+    def replacement(self, value: str):
+        """TBW."""
+        self._replacement = value
+
+    @property
+    def nlopt_selection(self) -> str:
+        """TBW."""
+        return self._nlopt_selection
+
+    @nlopt_selection.setter
+    def nlopt_selection(self, value: str):
+        """TBW."""
+        self._nlopt_selection = value
     # NLOPT #####
 
     # FRED: This could be refactored for each if-statement
@@ -90,14 +420,14 @@ class Algorithm:
 
         :return:
         """
-        if self.type == 'sade':
+        if self.type is AlgorithmType.Sade:
             opt_algorithm = pg.sade(gen=self.generations,
                                     variant=self.variant,
                                     variant_adptv=self.variant_adptv,
                                     ftol=self.ftol,
                                     xtol=self.xtol,
                                     memory=self.memory)
-        elif self.type == 'sga':
+        elif self.type is AlgorithmType.Sga:
             opt_algorithm = pg.sga(gen=self.generations,
                                    cr=self.cr,                  # crossover probability
                                    crossover=self.crossover,    # single, exponential, binomial, sbx
@@ -107,7 +437,7 @@ class Algorithm:
                                    selection=self.selection,    # tournament, truncated
                                    eta_c=self.eta_c,            # distribution index for sbx crossover
                                    param_m=self.param_m)        # mutation parameter
-        elif self.type == 'nlopt':
+        elif self.type is AlgorithmType.Nlopt:
             opt_algorithm = pg.nlopt(self.nlopt_solver)
             opt_algorithm.maxtime = self.maxtime        # stop when the optimization time (in seconds) exceeds maxtime
             opt_algorithm.maxeval = self.maxeval        # stop when the number of function evaluations exceeds maxeval
@@ -125,87 +455,226 @@ class Algorithm:
         return opt_algorithm
 
 
-@ec.config
+class CalibrationMode(Enum):
+    """TBW."""
+
+    Pipeline = 'pipeline'
+    SingleModel = 'single_model'
+
+
+class ResultType(Enum):
+    """TBW."""
+
+    Image = 'image'
+    Signal = 'signal'
+    Pixel = 'pixel'
+
+
 class Calibration:
-    """TBW.
+    """TBW."""
 
-    :return:
-    """
+    def __init__(self,
+                 output_dir=None,
+                 fitting: t.Optional[ModelFitting] = None,
+                 calibration_mode: CalibrationMode = CalibrationMode.Pipeline,
+                 result_type: ResultType = ResultType.Image,
+                 result_fit_range: t.Optional[list] = None,
+                 result_input_arguments: t.Optional[list] = None,
+                 target_data_path: t.Optional[list] = None,
+                 target_fit_range: t.Optional[list] = None,
+                 fitness_function: t.Optional[ModelFunction] = None,
+                 algorithm: t.Optional[Algorithm] = None,
+                 parameters: t.Optional[t.List[ParameterValues]] = None,
+                 seed: t.Optional[int] = None,
+                 islands: int = 0,
+                 weighting_path: t.Optional[list] = None,
+                 ):
+        if seed not in range(100001):
+            raise ValueError("'seed' must be between 0 and 100000.")
 
-    calibration_mode = ec.setting(
-        type=str,
-        validator=validators.validate_in(['pipeline', 'single_model']),
-        default='pipeline',
-        doc=''
-    )
-    result_type = ec.setting(
-        type=str,
-        validator=validators.validate_in(['image', 'signal', 'pixel']),
-        default='image',
-        doc=''
-    )
-    result_fit_range = ec.setting(
-        type=t.Optional[list],
-        default=None,
-        doc=''
-    )
-    result_input_arguments = ec.setting(
-        type=t.Optional[list],
-        default=None,
-        doc=''
-    )
-    target_data_path = ec.setting(
-        type=t.Optional[list],
-        default=None,
-        doc=''
-    )
-    target_fit_range = ec.setting(
-        type=t.Optional[list],
-        default=None,
-        doc=''
-    )
-    fitness_function = ec.setting(
-        type=t.Union[ModelFunction, str],
-        default='',
-        doc=''
-    )
-    algorithm = ec.setting(
-        type=t.Union[Algorithm, str],
-        default='',
-        doc=''
-    )
-    parameters = ec.setting(
-        type=t.Union[list, str],
-        default='',
-        doc=''
-    )
-    seed = ec.setting(
-        type=int,
-        validator=validators.interval(0, 100000),
-        default=np.random.randint(0, 100000),
-        doc=''
-    )
-    weighting_path = ec.setting(
-        type=t.Optional[list],
-        default=None,
-        doc=''
-    )
+        if islands not in range(101):
+            raise ValueError("'islands' must be between 0 and 100.")
+
+        self._output_dir = output_dir
+        self._fitting = fitting
+        self._calibration_mode = calibration_mode
+        self._result_type = result_type
+        self._result_fit_range = result_fit_range
+        self._result_input_arguments = result_input_arguments
+        self._target_data_path = target_data_path
+        self._target_fit_range = target_fit_range
+        self._fitness_function = fitness_function
+        self._algorithm = algorithm
+        self._parameters = parameters if parameters else []
+        self._seed = np.random.randint(0, 100000) if seed is None else seed
+        self._islands = islands
+        self._weighting_path = weighting_path
+
+    @property
+    def output_dir(self):
+        """TBW."""
+        return self._output_dir
+
+    @output_dir.setter
+    def output_dir(self, value):
+        """TBW."""
+        self._output_dir = value
+
+    @property
+    def fitting(self) -> ModelFitting:
+        """TBW."""
+        if not self._fitting:
+            raise RuntimeError("No 'fitting' defined !")
+
+        return self._fitting
+
+    @fitting.setter
+    def fitting(self, value: ModelFitting):
+        """TBW."""
+        self._fitting = value
+
+    @property
+    def calibration_mode(self) -> CalibrationMode:
+        """TBW."""
+        return self._calibration_mode
+
+    @calibration_mode.setter
+    def calibration_mode(self, value: CalibrationMode):
+        """TBW."""
+        self._calibration_mode = value
+
+    @property
+    def result_type(self) -> ResultType:
+        """TBW."""
+        return self._result_type
+
+    @result_type.setter
+    def result_type(self, value: ResultType):
+        """TBW."""
+        self._result_type = value
+
+    @property
+    def result_fit_range(self) -> t.Optional[list]:
+        """TBW."""
+        return self._result_fit_range
+
+    @result_fit_range.setter
+    def result_fit_range(self, value: list):
+        """TBW."""
+        self._result_fit_range = value
+
+    @property
+    def result_input_arguments(self) -> t.Optional[list]:
+        """TBW."""
+        return self._result_input_arguments
+
+    @result_input_arguments.setter
+    def result_input_arguments(self, value: list):
+        """TBW."""
+        self._result_input_arguments = value
+
+    @property
+    def target_data_path(self) -> t.Optional[list]:
+        """TBW."""
+        return self._target_data_path
+
+    @target_data_path.setter
+    def target_data_path(self, value: list):
+        """TBW."""
+        self._target_data_path = value
+
+    @property
+    def target_fit_range(self) -> t.Optional[list]:
+        """TBW."""
+        return self._target_fit_range
+
+    @target_fit_range.setter
+    def target_fit_range(self, value: list):
+        """TBW."""
+        self._target_fit_range = value
+
+    @property
+    def fitness_function(self) -> t.Optional[ModelFunction]:
+        """TBW."""
+        return self._fitness_function
+
+    @fitness_function.setter
+    def fitness_function(self, value: ModelFunction):
+        """TBW."""
+        self._fitness_function = value
+
+    @property
+    def algorithm(self) -> Algorithm:
+        """TBW."""
+        if not self._algorithm:
+            raise RuntimeError("No 'algorithm' defined !")
+
+        return self._algorithm
+
+    @algorithm.setter
+    def algorithm(self, value: Algorithm):
+        """TBW."""
+        self._algorithm = value
+
+    @property
+    def parameters(self) -> t.List[ParameterValues]:
+        """TBW."""
+        return self._parameters
+
+    @parameters.setter
+    def parameters(self, value: t.List[ParameterValues]):
+        """TBW."""
+        self._parameters = value
+
+    @property
+    def seed(self) -> int:
+        """TBW."""
+        return self._seed
+
+    @seed.setter
+    def seed(self, value: int):
+        """TBW."""
+        if value not in range(100001):
+            raise ValueError("'seed' must be between 0 and 100000.")
+
+        self._seed = value
+
+    @property
+    def islands(self) -> int:
+        """TBW."""
+        return self._islands
+
+    @islands.setter
+    def islands(self, value: int):
+        """TBW."""
+        if value not in range(101):
+            raise ValueError("'islands' must be between 0 and 100.")
+
+        self._islands = value
+
+    @property
+    def weighting_path(self) -> t.Optional[list]:
+        """TBW."""
+        return self._weighting_path
+
+    @weighting_path.setter
+    def weighting_path(self, value: list):
+        """TBW."""
+        self._weighting_path = value
 
     def run_calibration(self, processor: Processor,
-                        output: t.Optional[Outputs] = None) -> None:
+                        output_dir: str = None) -> None:
         """TBW.
 
         :param processor: Processor object
-        :param output: Output object
+        :param output_dir: Output object
         :return:
         """
         pg.set_global_rng_seed(seed=self.seed)
         logging.info('Seed: %d', self.seed)
-        output_files = (None, None)
-        if output:
-            output_files = output.create_files()
 
-        fitting = ModelFitting(processor, self.parameters)
+        self.output_dir = output_dir
+        self.fitting = ModelFitting(processor, self.parameters)
 
         settings = {
             'calibration_mode': self.calibration_mode,
@@ -218,19 +687,67 @@ class Calibration:
             'out_fit_range': self.result_fit_range,
             'input_arguments': self.result_input_arguments,
             'weighting': self.weighting_path,
-            'champions_file': output_files[0],
-            'population_file': output_files[1]
+            'file_path': output_dir
         }
         # HANS: it may be better to pass this in as **settings. Need to discuss. There are many arguments.
-        fitting.configure(settings)
+        self.fitting.configure(settings)
 
-        prob = pg.problem(fitting)
+        prob = pg.problem(self.fitting)
         opt_algorithm = self.algorithm.get_algorithm()
         algo = pg.algorithm(opt_algorithm)
-        pop = pg.population(prob, size=self.algorithm.population_size)
-        pop = algo.evolve(pop)
 
-        champion_f = pop.champion_f
-        champion_x = pop.champion_x
-        return fitting.get_results(fitness=champion_f,
-                                   parameter=champion_x)
+        # try:
+        #     bfe = pg.bfe(udbfe=pg.member_bfe())
+        # except AttributeError:
+        #     bfe = None
+        #
+        # try:
+        #     archi = pg.archipelago(n=self.islands, algo=algo, prob=prob, b=bfe,
+        #                            pop_size=self.algorithm.population_size, udi=pg.mp_island())
+        # except KeyError:
+        #     archi = pg.archipelago(n=self.islands, algo=algo, prob=prob,
+        #                            pop_size=self.algorithm.population_size, udi=pg.mp_island())
+        #
+        # try:
+        #     pop = pg.population(prob=prob, size=self.algorithm.population_size, b=bfe)
+        # except TypeError:
+        #     pop = pg.population(prob=prob, size=self.algorithm.population_size)
+
+        if self.islands > 1:  # default
+            archi = pg.archipelago(n=self.islands, algo=algo, prob=prob,
+                                   pop_size=self.algorithm.population_size, udi=pg.mp_island())
+            archi.evolve()
+            logging.info(archi)
+            archi.wait_check()
+            champion_f = archi.get_champions_f()
+            champion_x = archi.get_champions_x()
+        else:
+            pop = pg.population(prob=prob, size=self.algorithm.population_size)
+            pop = algo.evolve(pop)
+            champion_f = [pop.champion_f]
+            champion_x = [pop.champion_x]
+
+        self.fitting.file_matching_renaming()
+        res = []  # type: list
+        for f, x in zip(champion_f, champion_x):
+            res += [self.fitting.get_results(overall_fitness=f, parameter=x)]
+
+        logging.info('Calibration ended.')
+        return res
+
+    def post_processing(self, calib_results: list, output: Outputs):
+        """TBW."""
+        for item in calib_results:
+            proc_list = item[0]
+            result_dict = item[1]
+
+            output.calibration_outputs(processor_list=proc_list)
+
+            ii = 0
+            for processor, target_data in zip(proc_list, self.fitting.all_target_data):
+                simulated_data = self.fitting.get_simulated_data(processor)
+                output.fitting_plot(target_data=target_data, simulated_data=simulated_data, data_i=ii)
+                ii += 1
+            output.fitting_plot_close(result_type=self.result_type, island=result_dict['island'])
+
+        output.calibration_plots(calib_results[0][1])

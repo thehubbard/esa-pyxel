@@ -1,16 +1,14 @@
-#   --------------------------------------------------------------------------
-#   Copyright 2019 SCI-FIV, ESA (European Space Agency)
-#   --------------------------------------------------------------------------
 """Fix pattern noise model."""
 import logging
+from pathlib import Path
 import numpy as np
-from pyxel.util.checkers import check_path
 from pyxel.detectors.detector import Detector
 from pyxel.detectors.geometry import Geometry  # noqa: F401
 import typing as t
 # from astropy import units as u
 
 
+# TODO: Fix this
 # @validators.validate
 # @config.argument(name='', label='', units='', validate=)
 def fix_pattern_noise(detector: Detector,
@@ -30,12 +28,12 @@ def fix_pattern_noise(detector: Detector,
             pnu = np.loadtxt(pixel_non_uniformity)
     else:
         filename = 'data/pixel_non_uniformity.npy'
-        if check_path(filename):
-            logging.warning('"pix_non_uniformity" file is not defined, '
+        if Path(filename).exists():
+            logging.warning('"pixel_non_uniformity" file is not defined, '
                             'using array from file: ' + filename)
             pnu = np.load(filename)
         else:
-            logging.warning('"pix_non_uniformity" file is not defined, '
+            logging.warning('"pixel_non_uniformity" file is not defined, '
                             'generated random array to file: ' + filename)
             # pnu = 0.99 + np.random.random((geo.row, geo.col)) * 0.02
             pnu = np.random.normal(loc=1.0, scale=0.03, size=(geo.row, geo.col))

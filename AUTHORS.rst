@@ -1,15 +1,17 @@
 Authors
 ============
 
-Main developers:
+Developers:
 
-* `David Lucsanyi (ESA) <David.Lucsanyi@esa.int>`_
-* `Thibaut Prodhomme (ESA) <Thibaut.Prodhomme@esa.int>`_
-* `Hans Smit (ESA) <Hans.Smit@esa.int>`_
-* `Frederic Lemmel (ESA) <Frederic.Lemmel@esa.int>`_
+* `David Lucsanyi <lucsanyid@gmail.com>`_
+* `Thibaut Prod'homme <thibaut.prodhomme@esa.int>`_
+* `Hans Smit <hans.smit@esa.int>`_
+* `Frederic Lemmel <frederic.lemmel@esa.int>`_
+* `Benoit Serra <benoit.serra@eso.org>`_
 
 Contributors:
 
-* Pierre-Elie Crouzet (ESA)
-* Peter Verhoeve (ESA)
-* Brian Shortt (ESA)
+* Elizabeth George
+* Pierre-Elie Crouzet
+* Peter Verhoeve
+* Brian Shortt

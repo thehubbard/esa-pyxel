@@ -1,15 +1,15 @@
 """Pyxel photon generator models: photon shot noise."""
 import logging
+
 import numpy as np
+
 from pyxel.detectors import Detector
-import typing as t
-from esapy_config import funcargs, checkers
 
 
-# FRED: Remove the following decorators
-@funcargs.validate
-@funcargs.argument(name='seed', label='random seed', units='', validate=checkers.check_type_function(int))
-def shot_noise(detector: Detector, random_seed: t.Optional[int] = None) -> None:
+# TODO: Fix this
+# @validators.validate
+# @config.argument(name='seed', label='random seed', units='', validate=checkers.check_type(int))
+def shot_noise(detector: Detector, random_seed: int = None):
     """Add shot noise to the number of photon per pixel.
 
     :param detector: Pyxel Detector object

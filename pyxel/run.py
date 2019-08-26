@@ -1,6 +1,3 @@
-#   --------------------------------------------------------------------------
-#   Copyright 2019 SCI-FIV, ESA (European Space Agency)
-#   --------------------------------------------------------------------------
 """Pyxel detector simulation framework.
 
 Pyxel is a detector simulation framework, that can simulate a variety of
@@ -13,6 +10,7 @@ import sys
 import time
 from pathlib import Path
 import numpy as np
+from dask import delayed, distributed
 import pyxel.io as io
 from pyxel.pipelines.processor import Processor
 from pyxel.detectors import CCD, CMOS
@@ -28,7 +26,7 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
     :param random_seed:
     :return:
     """
-    logging.info('Pyxel version ' + version)
+    logging.info('Pyxel version %s', version)
     logging.info('Pipeline started.')
 
     start_time = time.time()
@@ -48,10 +46,9 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
     elif 'cmos_detector' in cfg:
         detector = cfg['cmos_detector']
     else:
-        raise NotImplementedError
-        # detector = cfg['ccd_detector']  # type: CCD
+        raise NotImplementedError('Detector is not defined in YAML config. file!')
 
-    processor = Processor(detector, pipeline)
+    processor = Processor(detector=detector, pipeline=pipeline)
 
     out = simulation.outputs
     if out:
@@ -71,27 +68,37 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
     #   logger.info('Mode: %r', simulation.mode)
     if simulation.mode == 'single':
         logging.info('Mode: Single')
-        processor.pipeline.run_pipeline(detector)
+        processor.run_pipeline()
         if out:
             out.single_output(processor)
 
     elif simulation.mode == 'calibration' and simulation.calibration:
         logging.info('Mode: Calibration')
-        processor, results = simulation.calibration.run_calibration(processor, out)
-        logging.info('Champion fitness:   %1.5e' % results['fitness'])
+        results = simulation.calibration.run_calibration(processor, out.output_dir)
         if out:
-            out.calibration_output(processor=processor, results=results)
+            simulation.calibration.post_processing(calib_results=results, output=out)
 
     elif simulation.mode == 'parametric' and simulation.parametric:
         logging.info('Mode: Parametric')
+
+        # client = distributed.Client(processes=True)
+        # client = distributed.Client(n_workers=4, processes=False, threads_per_worker=4)
+        client = distributed.Client(processes=False)
+        logging.info(client)
+        # use as few processes (and workers?) as possible with as many threads_per_worker as possible
+        # Dasbboard available on http://127.0.0.1:8787
+
         configs = simulation.parametric.collect(processor)
+        result_list = []
+        out.params_func(simulation.parametric)
         for proc in configs:
-            proc.pipeline.run_pipeline(proc.detector)
-            if out:
-                out.add_parametric_step(processor=proc,
-                                        parametric=simulation.parametric)
-        if out:
-            out.parametric_output()
+            result_proc = delayed(proc.run_pipeline)()
+            result_val = delayed(out.extract_func)(proc=result_proc)
+            result_list.append(result_val)
+        array = delayed(out.merge_func)(result_list)
+        plot_array = array.compute()
+        if out.parametric_plot is not None:
+            out.plotting_func(plot_array)
 
     elif simulation.mode == 'dynamic' and simulation.dynamic:
         logging.info('Mode: Dynamic')
@@ -102,12 +109,12 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
                                  time_step=simulation.dynamic['t_step'],
                                  ndreadout=simulation.dynamic['non_destructive_readout'])
         while detector.elapse_time():  # FRED: Use an iterator for that ?
-            logging.info('time = %.3f s' % detector.time)
+            logging.info('time = %.3f s', detector.time)
             if detector.is_non_destructive_readout:
                 detector.initialize(reset_all=False)
             else:
                 detector.initialize(reset_all=True)
-            processor.pipeline.run_pipeline(detector)
+            processor.run_pipeline()
             if out and detector.read_out:
                 out.single_output(processor)
 
@@ -141,7 +148,7 @@ def main():
     opts = parser.parse_args()
 
     logging_level = [logging.ERROR, logging.WARNING, logging.INFO, logging.DEBUG][min(opts.verbosity, 3)]
-    log_format = '%(asctime)s - %(name)s - %(funcName)30s \t %(message)s'
+    log_format = '%(asctime)s - %(name)s - %(threadName)30s - %(funcName)30s \t %(message)s'
     logging.basicConfig(filename='pyxel.log',
                         level=logging_level,
                         format=log_format,

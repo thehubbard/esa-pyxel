@@ -2,10 +2,8 @@
 # import logging
 import typing as t  # noqa: F401
 from pyxel.pipelines.model_group import ModelGroup
-from pyxel.detectors.detector import Detector
 
 
-# FRED: Add more and better typing information
 class DetectionPipeline:
     """TBW."""
 
@@ -58,6 +56,20 @@ class DetectionPipeline:
                               'signal_transfer',
                               'readout_electronics']            # type: t.List[str]           # TODO
 
+    # def __getstate__(self):
+    #     """TBW."""
+    #     return {
+    #         'photon_generation': self.photon_generation,
+    #         'optics': self.optics,
+    #         'charge_generation': self.charge_generation,
+    #         'charge_collection': self.charge_collection,
+    #         'charge_transfer': self.charge_transfer,
+    #         'charge_measurement': self.charge_measurement,
+    #         'signal_transfer': self.signal_transfer,
+    #         'readout_electronics': self.readout_electronics,
+    #         '_model_groups': self.model_group_names,              # TODO
+    #     }
+
     @property
     def model_group_names(self) -> t.List[str]:
         """TBW."""
@@ -72,46 +84,16 @@ class DetectionPipeline:
         """TBW."""
         self._is_running = False
 
-    # TODO: Not used
-    # def get_model(self, name: str) -> ModelGroup:
-    #     """TBW.
-    #
-    #     :param name:
-    #     :return:
-    #     """
-    #     for group_name in self.model_group_names:
-    #         # FRED: This should be refactored (e.g. provide directly a `ModelGroup` and not
-    #         #       its name)
-    #         model_group = getattr(self, group_name)     # type: ModelGroup
-    #         if model_group:
-    #             for model in model_group.models:
-    #                 if name == model.name:
-    #                     return model
-    #
-    #     raise AttributeError('Model has not found.')
-
-    # FRED: In this function, the input parameter 'detector' is modified.
-    #       It would be maybe better to do in this function:
-    #          1. A deep copy of `detector`
-    #          2. And use this copy for all processing.
-    #        In this case the output `Detector` instance is different than the input `Detector`
-    def run_pipeline(self, detector: Detector, abort_before: t.Optional[str] = None) -> Detector:
+    def get_model(self, name: str):
         """TBW.
 
-        :param detector:
-        :param abort_before: str, model name, the pipeline should be aborted before this
+        :param name:
         :return:
         """
-        self._is_running = True
         for group_name in self.model_group_names:
-            # FRED: This should be refactored (e.g. provide directly a `ModelGroup` and not
-            #       its name)
-            models_grp = getattr(self, group_name)      # type: ModelGroup
-            if models_grp:
-                # HANS: it may be better to have `run` raise an Abort exception
-                #     and that it is caught here. Working with flag switches is brittle.
-                abort_flag = models_grp.run(detector, self, abort_model=abort_before)
-                if abort_flag:
-                    break
-        self._is_running = False
-        return detector
+            model_group = getattr(self, group_name)     # type: ModelGroup
+            if model_group:
+                for model in model_group.models:
+                    if name == model.name:
+                        return model
+        raise AttributeError('Model has not found.')

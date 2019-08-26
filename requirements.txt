@@ -1,7 +1,1 @@
 # Pyxel requirements
-
-########################
-# ESA libraries        #
-########################
-
-dependencies/esapy_config-0.8+28.gdf8ed12-py3-none-any.whl

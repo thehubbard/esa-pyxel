@@ -4,6 +4,7 @@ doc8
 sphinx
 sphinx-rtd-theme
 sphinxcontrib-bibtex
+sphinxcontrib-napoleon
 
 # sphinxcontrib-plantuml
 # sphinxcontrib-mermaid

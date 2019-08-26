@@ -2,19 +2,14 @@
 import logging
 import typing as t
 from astropy.io import fits
-from esapy_config.checkers import check_type_function
 from pyxel.detectors.detector import Detector
-import os
-from ...util import check
 
 
-# FRED: Fix this.
-# FRED: Use `Pathlib.Path`
-check_path = os.path.exists
-
-
-@check('image_file', validate=check_path)
-@check('convert_to_photons', validate=check_type_function(bool))
+# TODO: Fix this
+# @validators.validate
+# @config.argument(name='image_file', label='fits file', validate=check_path)
+# @config.argument(name='fit_image_to_det', label='fitting image to detector', validate=check_type(bool))
+# @config.argument(name='convert_to_photons', label='convert ADU values to photon numbers', validate=check_type(bool))
 def load_image(detector: Detector,
                image_file: str,
                fit_image_to_det: bool = False,

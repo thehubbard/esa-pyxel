@@ -1,6 +1,3 @@
-#   --------------------------------------------------------------------------
-#   Copyright 2019 SCI-FIV, ESA (European Space Agency)
-#   --------------------------------------------------------------------------
 """Pyxel Photon class to generate and track photon."""
 
 import numpy as np

@@ -1,6 +1,6 @@
 """TBW."""
-import esapy_config.io as io
-load = io.load
+from .object_model import ObjectModelLoader
+from .object_model import load  # noqa: F401
 
 
 # FRED: We should use the YAML loader from `ESAPY_CONFIG`
@@ -18,12 +18,12 @@ def pyxel_yaml_loader():
     try:
         from pyxel.calibration.calibration import Calibration
         from pyxel.calibration.calibration import Algorithm
-        io.ObjectModelLoader.add_class(Calibration, ['simulation', 'calibration'])
-        io.ObjectModelLoader.add_class(Algorithm, ['simulation', 'calibration', 'algorithm'])
-        io.ObjectModelLoader.add_class(ModelFunction, ['simulation', 'calibration', 'fitness_function'])
-        io.ObjectModelLoader.add_class(ParameterValues, ['simulation', 'calibration', 'parameters'], is_list=True)
-        io.ObjectModelLoader.add_class(ParameterValues, ['simulation', 'calibration', 'result_input_arguments'],
-                                       is_list=True)
+        ObjectModelLoader.add_class(Calibration, ['simulation', 'calibration'])
+        ObjectModelLoader.add_class(Algorithm, ['simulation', 'calibration', 'algorithm'])
+        ObjectModelLoader.add_class(ModelFunction, ['simulation', 'calibration', 'fitness_function'])
+        ObjectModelLoader.add_class(ParameterValues, ['simulation', 'calibration', 'parameters'], is_list=True)
+        ObjectModelLoader.add_class(ParameterValues, ['simulation', 'calibration', 'result_input_arguments'],
+                                    is_list=True)
         # WITH_CALIBRATION = True  # noqa: N806
     except ImportError:
         # WITH_CALIBRATION = False  # noqa: N806
@@ -36,32 +36,32 @@ def pyxel_yaml_loader():
 
     from pyxel.pipelines.pipeline import DetectionPipeline
 
-    io.ObjectModelLoader.add_class(CCD, ['ccd_detector'])  # pyxel.detectors.ccd.CCD
-    io.ObjectModelLoader.add_class(CMOS, ['cmos_detector'])
-    io.ObjectModelLoader.add_class(Detector, ['detector'])
+    ObjectModelLoader.add_class(CCD, ['ccd_detector'])  # pyxel.detectors.ccd.CCD
+    ObjectModelLoader.add_class(CMOS, ['cmos_detector'])
+    ObjectModelLoader.add_class(Detector, ['detector'])
 
-    io.ObjectModelLoader.add_class(CCDGeometry, ['ccd_detector', 'geometry'])
-    io.ObjectModelLoader.add_class(CMOSGeometry, ['cmos_detector', 'geometry'])
-    io.ObjectModelLoader.add_class(Geometry, ['detector', 'geometry'])
+    ObjectModelLoader.add_class(CCDGeometry, ['ccd_detector', 'geometry'])
+    ObjectModelLoader.add_class(CMOSGeometry, ['cmos_detector', 'geometry'])
+    ObjectModelLoader.add_class(Geometry, ['detector', 'geometry'])
 
-    io.ObjectModelLoader.add_class(CCDCharacteristics, ['ccd_detector', 'characteristics'])
-    io.ObjectModelLoader.add_class(CMOSCharacteristics, ['cmos_detector', 'characteristics'])
-    io.ObjectModelLoader.add_class(Characteristics, ['detector', 'characteristics'])
+    ObjectModelLoader.add_class(CCDCharacteristics, ['ccd_detector', 'characteristics'])
+    ObjectModelLoader.add_class(CMOSCharacteristics, ['cmos_detector', 'characteristics'])
+    ObjectModelLoader.add_class(Characteristics, ['detector', 'characteristics'])
 
-    io.ObjectModelLoader.add_class(Material, [None, 'material'])
-    io.ObjectModelLoader.add_class(Environment, [None, 'environment'])
+    ObjectModelLoader.add_class(Material, [None, 'material'])
+    ObjectModelLoader.add_class(Environment, [None, 'environment'])
 
-    io.ObjectModelLoader.add_class(DetectionPipeline, ['pipeline'])
+    ObjectModelLoader.add_class(DetectionPipeline, ['pipeline'])
 
-    io.ObjectModelLoader.add_class(ModelGroup, ['pipeline', None])
-    io.ObjectModelLoader.add_class(ModelFunction, ['pipeline', None, None])
+    ObjectModelLoader.add_class(ModelGroup, ['pipeline', None])
+    ObjectModelLoader.add_class(ModelFunction, ['pipeline', None, None])
 
-    io.ObjectModelLoader.add_class(Configuration, ['simulation'])
+    ObjectModelLoader.add_class(Configuration, ['simulation'])
 
-    io.ObjectModelLoader.add_class(Outputs, ['simulation', 'outputs'])
+    ObjectModelLoader.add_class(Outputs, ['simulation', 'outputs'])
 
-    io.ObjectModelLoader.add_class(ParametricAnalysis, ['simulation', 'parametric'])
-    io.ObjectModelLoader.add_class(ParameterValues, ['simulation', 'parametric', 'parameters'], is_list=True)
+    ObjectModelLoader.add_class(ParametricAnalysis, ['simulation', 'parametric'])
+    ObjectModelLoader.add_class(ParameterValues, ['simulation', 'parametric', 'parameters'], is_list=True)
 
 
 pyxel_yaml_loader()  # HANS: avoid auto-calling functions on import.
