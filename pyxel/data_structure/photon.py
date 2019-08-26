@@ -38,6 +38,20 @@ class Photon(Array):
             shape = self._array.shape
             return f'Photon<shape={shape}>'
 
+    @property
+    def array(self) -> np.ndarray:
+        """TBW."""
+        if self._array is None:
+            raise RuntimeError("Photon array is not initialized ! "
+                               "Please use a 'Photon Generation' model")
+
+        return self._array
+
+    @array.setter
+    def array(self, value: np.ndarray):
+        """TBW."""
+        super().array.fset(self, value)
+
     # FRED: This could be done in '__init__'
     def new_array(self, new_array: np.ndarray) -> None:
         """TBW.

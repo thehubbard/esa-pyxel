@@ -379,7 +379,7 @@ class ModelFitting:
         logging.info('Post-processing island %d, champion fitness: %1.5e', island, overall_fitness[0])
 
         champion_list = deepcopy(self.param_processor_list)  # type: t.List[Processor]
-        for processor, target_data in zip(champion_list, self.all_target_data):
+        for processor in champion_list:
             processor = self.update_processor(parameter, processor)
             if self.calibration_mode == 'pipeline':
                 processor.run_pipeline()

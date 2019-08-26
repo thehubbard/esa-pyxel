@@ -1,8 +1,12 @@
 """Unittests for the 'ModelFitting' class."""
-import pytest
 import numpy as np
+import pytest
+
 import pyxel.io as io
 from pyxel.calibration.fitting import ModelFitting
+from pyxel.detectors import CCD
+from pyxel.parametric.parametric import Configuration
+from pyxel.pipelines.pipeline import DetectionPipeline
 from pyxel.pipelines.processor import Processor
 
 try:
@@ -157,13 +161,13 @@ def test_weighting(yaml, factor, expected_fitness):
     print('fitness: ', fitness)
 
 
-def custom_fitness_func(sim, targ):
+def custom_fitness_func(simulated, target, weighting=None):
     """Custom fitness func for testing"""
-    return np.sum(targ * 2 - sim / 2 + 1.)
+    return np.sum(target * 2 - simulated / 2 + 1.)
 
 
 @pytest.mark.skipif(not WITH_PYGMO, reason="Package 'pygmo' is not installed.")
-@pytest.mark.parametrize('yaml, simulated_data, target_data, expected_fitness',
+@pytest.mark.parametrize('yaml, simulated, target, weighting',
                          [
                              ('tests/data/calibrate_custom_fitness.yaml',
                               1., 2., 4.5),
@@ -172,17 +176,28 @@ def custom_fitness_func(sim, targ):
                              ('tests/data/calibrate_least_squares.yaml',
                               2., 4., 4.),
                          ])
-def test_custom_fitness(yaml, simulated_data, target_data, expected_fitness):
+def test_custom_fitness(yaml, simulated, target, weighting):
     """Test"""
     cfg = io.load(yaml)
+    assert isinstance(cfg, dict)
+
     detector = cfg['ccd_detector']
+    assert isinstance(detector, CCD)
+
     pipeline = cfg['pipeline']
+    assert isinstance(pipeline, DetectionPipeline)
+
     processor = Processor(detector, pipeline)
+    assert isinstance(processor, Processor)
+
     simulation = cfg['simulation']
-    mf = ModelFitting(processor, simulation.calibration.parameters)
-    configure(mf, simulation)
-    fitness = mf.calculate_fitness(simulated_data, target_data)
-    assert fitness == expected_fitness
+    assert isinstance(simulation, Configuration)
+
+    mf = ModelFitting(processor, variables=simulation.calibration.parameters)
+    configure(mf=mf, sim=simulation)
+
+    fitness = mf.calculate_fitness(simulated, target)
+    assert fitness == weighting
     print('fitness: ', fitness)
 
 

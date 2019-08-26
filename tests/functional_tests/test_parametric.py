@@ -41,7 +41,7 @@ expected_embedded = [
     ('sequential', expected_sequential),
     ('embedded', expected_embedded),
 ])
-def test_pipeline_parametric(mode, expected):
+def test_pipeline_parametric_without_init_photon(mode, expected):
     input_filename = 'tests/data/parametric.yaml'
     cfg = io.load(Path(input_filename))
 
@@ -73,4 +73,7 @@ def test_pipeline_parametric(mode, expected):
 
     for config in configs:
         assert isinstance(config, Processor)
-        config.run_pipeline()
+
+        with pytest.raises(RuntimeError, match=r"Photon array is not initialized ! "
+                                                "Please use a 'Photon Generation' model"):
+            config.run_pipeline()
