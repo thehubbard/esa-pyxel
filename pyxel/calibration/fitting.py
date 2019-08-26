@@ -2,20 +2,23 @@
 
 https://esa.github.io/pagmo2/index.html
 """
-import os
 import logging
 import math
-from operator import add
-from copy import deepcopy
-from dask import delayed
+import os
+import re
+import typing as t  # noqa: F401
 from collections import OrderedDict
-import typing as t   # noqa: F401
-import numpy as np
-from pyxel.calibration.util import list_to_slice, check_ranges, read_data
-from pyxel.parametric.parameter_values import ParameterValues
-from pyxel.pipelines.processor import Processor
-from pyxel.pipelines.model_function import ModelFunction
+from copy import deepcopy
+from operator import add
 from pathlib import Path
+
+import numpy as np
+from dask import delayed
+
+from pyxel.calibration.util import check_ranges, list_to_slice, read_data
+from pyxel.parametric.parameter_values import ParameterValues
+from pyxel.pipelines.model_function import ModelFunction
+from pyxel.pipelines.processor import Processor
 
 
 class ModelFitting:
@@ -32,7 +35,7 @@ class ModelFitting:
         self.pop = None                     # type: t.Optional[int]
 
         self.all_target_data = []           # type: t.List[t.List[t.Any]]
-        self.weighting = []                 # type: t.List[np.ndarray]
+        self.weighting = None               # type: t.Optional[t.List[np.ndarray]]
         self.fitness_func = None            # type: t.Optional[ModelFunction]
         self.sim_output = None              # type: t.Optional[str]
         # self.fitted_model = None            # type: t.Optional['ModelFunction']
@@ -225,14 +228,16 @@ class ModelFitting:
         assert isinstance(self.fitness_func, ModelFunction)
 
         # HANS: use this instead. The if/else statement is redundant, the weighting is optional anyways.
-        fitness = self.fitness_func.function(simulated_data, target_data, self.weighting)  # type: float
+        fitness = self.fitness_func.function(simulated=simulated_data,
+                                             target=target_data,
+                                             weighting=self.weighting)  # type: float
         # if self.weighting is not None:
         #     fitness = self.fitness_func.function(simulated_data, target_data, self.weighting)
         # else:
         #     fitness = self.fitness_func.function(simulated_data, target_data)
         return fitness
 
-    def fitness(self, parameter: list) -> list:
+    def fitness(self, parameter: np.ndarray) -> t.List[float]:
         """Call the fitness function, elements of parameter array could be logarithmic values.
 
         :param parameter: 1d np.array
@@ -264,12 +269,13 @@ class ModelFitting:
 
             simulated_data = self.get_simulated_data(result_proc)
 
-            overall_fitness += self.calculate_fitness(simulated_data, target_data)
+            overall_fitness += self.calculate_fitness(simulated_data=simulated_data,
+                                                      target_data=target_data)
 
-        self.save_population(parameter, overall_fitness)
+        self.save_population(parameter=parameter, overall_fitness=overall_fitness)
 
         if (self.n + 1) % self.pop == 0:
-            logger.info('%d. generation' % self.g)
+            logger.info('%d. generation', self.g)
             self.champion_to_file(parameter)
             self.g += 1
 
@@ -278,7 +284,7 @@ class ModelFitting:
         return [overall_fitness]
 
     # TODO: This method changes the input 'parameter'. Is it normal ?
-    def update_parameter(self, parameter: list) -> np.ndarray:
+    def update_parameter(self, parameter: np.ndarray) -> np.ndarray:
         """TBW.
 
         :param parameter: 1d np.array
@@ -312,15 +318,16 @@ class ModelFitting:
             a += b
         return new_processor
 
-    def file_matching_renaming(self):
+    def file_matching_renaming(self) -> None:
         """TBW."""
         if self.file_path:
             # TODO: Sort these filenames !
             output_champion_files = self.file_path.glob('champions_id_*.out')  # type: t.Iterator[Path]
 
             for ii, chfile in enumerate(output_champion_files):
-                with chfile.open():
-                    *_, lastline = chfile.readlines()
+                # Get last line from file 'chfile'
+                with chfile.open() as fh:
+                    *_, lastline = fh.readlines()
 
                 lastline = lastline.replace('\n', '')
                 lastline = lastline.split(' ')[1:]
@@ -328,14 +335,18 @@ class ModelFitting:
 
                 os.rename(chfile, self.file_path.joinpath(f'champions_id{ii}.out'))
 
-                aw = chfile[chfile.rfind('champions_id_'):chfile.rfind('.out')]
+                result = re.findall(pattern=r'champions_id_(\w+)\.out', string=chfile.name)
+                if len(result) != 1:
+                    raise ValueError(f"Cannot extract information from '{result}'.")
+                aw = result[0]  # type: str
+
                 fid = aw.split('_')[-1]
                 popfiles = list(self.file_path.glob(f'population_id_{fid}.out'))  # type: t.List[Path]
                 popfile = popfiles[0]  # type: Path
 
                 os.rename(popfile, self.file_path.joinpath(f'population_id{ii}.out'))
 
-    def get_results(self, overall_fitness: list, parameter: list) -> t.Tuple[t.List[Processor], dict]:
+    def get_results(self, overall_fitness: np.ndarray, parameter: np.ndarray) -> t.Tuple[t.List[Processor], dict]:
         """TBW.
 
         :param overall_fitness:
@@ -346,7 +357,7 @@ class ModelFitting:
         results['fitness'] = overall_fitness[0]
 
         # TODO: Apply a copy of 'parameter' in 'self.update_parameter' ??
-        parameter = self.update_parameter(parameter)  # type: np.ndarray
+        parameter = self.update_parameter(parameter)
 
         if self.file_path:
             # TODO: Use 'np.ravel(parameter)' instead of 'parameter.reshape(1, len(parameter))' ?
@@ -385,11 +396,23 @@ class ModelFitting:
 
         return champion_list, results
 
-    def champion_to_file(self, parameter):
+    def champion_to_file(self, parameter: list) -> None:
         """Get champion of each generation and write it to output files together with last population.
 
         :return:
         """
+        if self.champion_f_list is None:
+            raise RuntimeError("'champion_f_list' was not initialized with method '.configure(...)'.")
+
+        if self.champion_x_list is None:
+            raise RuntimeError("'champion_x_list' was not initialized with method '.configure(...)'.")
+
+        if self.fitness_array is None:
+            raise RuntimeError("'fitness_array' was not initialized with method '.configure(...)'.")
+
+        if self.population is None:
+            raise RuntimeError("'population' was not initialized with method '.configure(...)'.")
+
         best_index = np.argmin(self.fitness_array)
 
         if self.g == 0:
@@ -412,13 +435,16 @@ class ModelFitting:
             self.add_to_champ_file(parameter)
             self.add_to_pop_file(parameter)
 
-    def save_population(self, parameter, overall_fitness):
+    def save_population(self, parameter: list, overall_fitness: float) -> None:
         """Save population of each generation to get champions.
 
         :param parameter: 1d np.array
         :param overall_fitness: list
         :return:
         """
+        if self.pop is None:
+            raise RuntimeError("'pop' was not initialized with method '.configure'.")
+
         if self.n % self.pop == 0:
             self.fitness_array = np.array([overall_fitness])
             self.population = parameter
@@ -426,21 +452,26 @@ class ModelFitting:
             self.fitness_array = np.vstack((self.fitness_array, np.array([overall_fitness])))
             self.population = np.vstack((self.population, parameter))
 
-    def add_to_champ_file(self, parameter):
+    def add_to_champ_file(self, parameter: np.ndarray) -> None:
         """TBW."""
-        champions_file = self.file_path + '/champions_id_' + str(id(self)) + '.out'
+        assert self.champion_f_list is not None
+        assert self.champion_x_list is not None
+
+        champions_file = self.file_path.joinpath(f'champions_id_{id(self)}.out')  # type: Path
         str_format = '%d' + (len(parameter) + 1) * ' %.6E'
-        with open(champions_file, 'ab') as file1:
+        with champions_file.open('ab') as file1:
             np.savetxt(file1,
                        np.c_[np.array([self.g]), self.champion_f_list[self.g],
                              self.champion_x_list[self.g, :].reshape(1, len(parameter))],
                        fmt=str_format)
 
-    def add_to_pop_file(self, parameter):
+    def add_to_pop_file(self, parameter: np.ndarray):
         """TBW."""
-        pop_file = self.file_path + '/population_id_' + str(id(self)) + '.out'
+        assert self.fitness_array is not None
+
+        pop_file = self.file_path.joinpath(f'population_id_{id(self)}.out')  # type: Path
         str_format = '%d' + (len(parameter) + 1) * ' %.6E'
-        with open(pop_file, 'wb') as file2:
+        with pop_file.open('wb') as file2:
             np.savetxt(file2,
                        np.c_[self.g * np.ones(self.fitness_array.shape),
                              self.fitness_array, self.population],

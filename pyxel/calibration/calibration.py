@@ -1,20 +1,24 @@
 """TBW."""
 import logging
 import math
-from enum import Enum
 import typing as t
+from enum import Enum
+from pathlib import Path
+
 import numpy as np
+
+from pyxel.calibration.fitting import ModelFitting
+from pyxel.parametric.parameter_values import ParameterValues
+from pyxel.pipelines.model_function import ModelFunction
+from pyxel.pipelines.processor import Processor
+
+from ..util.outputs import Outputs
 
 try:
     import pygmo as pg
 except ImportError:
     import warnings
     warnings.warn("Cannot import 'pygmo", RuntimeWarning, stacklevel=2)
-from ..util.outputs import Outputs
-from pyxel.calibration.fitting import ModelFitting
-from pyxel.pipelines.model_function import ModelFunction
-from pyxel.pipelines.processor import Processor
-from pyxel.parametric.parameter_values import ParameterValues
 
 
 class AlgorithmType(Enum):
@@ -489,7 +493,7 @@ class Calibration:
                  islands: int = 0,
                  weighting_path: t.Optional[list] = None,
                  ):
-        if seed not in range(100001):
+        if seed is not None and seed not in range(100001):
             raise ValueError("'seed' must be between 0 and 100000.")
 
         if islands not in range(101):
@@ -663,7 +667,7 @@ class Calibration:
         self._weighting_path = value
 
     def run_calibration(self, processor: Processor,
-                        output_dir: str = None) -> None:
+                        output_dir: Path) -> list:
         """TBW.
 
         :param processor: Processor object
@@ -674,7 +678,8 @@ class Calibration:
         logging.info('Seed: %d', self.seed)
 
         self.output_dir = output_dir
-        self.fitting = ModelFitting(processor, self.parameters)
+        self.fitting = ModelFitting(processor=processor,
+                                    variables=self.parameters)
 
         settings = {
             'calibration_mode': self.calibration_mode,

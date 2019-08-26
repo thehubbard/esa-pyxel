@@ -1,6 +1,7 @@
 """TBW."""
 # import logging
 import typing as t  # noqa: F401
+
 from pyxel.pipelines.model_group import ModelGroup
 
 
@@ -47,14 +48,14 @@ class DetectionPipeline:
 
         # HANS: this defines the order of steps in the pipeline. The ModelGroupList does this. Is it really needed?
         # FRED: if this is needed then it should be immutable (=> it should be a `Tuple`)
-        self._model_groups = ['photon_generation',
+        self._model_groups = ('photon_generation',
                               'optics',
                               'charge_generation',
                               'charge_collection',
                               'charge_transfer',
                               'charge_measurement',
                               'signal_transfer',
-                              'readout_electronics']            # type: t.List[str]           # TODO
+                              'readout_electronics')            # type: t.Tuple[str, ...]           # TODO
 
     # def __getstate__(self):
     #     """TBW."""
@@ -71,7 +72,7 @@ class DetectionPipeline:
     #     }
 
     @property
-    def model_group_names(self) -> t.List[str]:
+    def model_group_names(self) -> t.Tuple[str, ...]:
         """TBW."""
         return self._model_groups
 

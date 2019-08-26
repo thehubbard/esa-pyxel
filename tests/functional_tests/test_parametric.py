@@ -1,7 +1,10 @@
 from pathlib import Path
 import pytest
 import pyxel.io as io
-from pyxel.pipelines.processor import Processor
+from pyxel.pipelines.processor import Processor, DetectionPipeline
+from pyxel.parametric.parametric import Configuration, ParametricAnalysis
+from pyxel.detectors import CCD
+from collections import abc
 
 try:
     import pygmo as pg
@@ -41,14 +44,33 @@ expected_embedded = [
 def test_pipeline_parametric(mode, expected):
     input_filename = 'tests/data/parametric.yaml'
     cfg = io.load(Path(input_filename))
-    simulation = cfg.pop('simulation')
+
+    assert isinstance(cfg, dict)
+    assert 'simulation' in cfg
+    assert 'ccd_detector' in cfg
+    assert 'pipeline' in cfg
+
+    simulation = cfg['simulation']
+    assert isinstance(simulation, Configuration)
+
     parametric = simulation.parametric
+    assert isinstance(parametric, ParametricAnalysis)
+
     parametric.parametric_mode = mode
+
     detector = cfg['ccd_detector']
+    assert isinstance(detector, CCD)
+
     pipeline = cfg['pipeline']
+    assert isinstance(pipeline, DetectionPipeline)
+
     processor = Processor(detector, pipeline)  # type: pyxel.pipelines.processor.Processor
     result = parametric.debug(processor)
     assert result == expected
+
     configs = parametric.collect(processor)
+    assert isinstance(configs, abc.Iterator)
+
     for config in configs:
+        assert isinstance(config, Processor)
         config.run_pipeline()

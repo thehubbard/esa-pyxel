@@ -4,7 +4,7 @@ import typing as t
 from pyxel.detectors.ccd import CCD
 from pyxel.detectors.cmos import CMOS
 from pyxel.evaluator import eval_entry
-from pyxel.pipelines.pipeline import DetectionPipeline
+from pyxel.pipelines.pipeline import DetectionPipeline, ModelGroup
 from pyxel.state import get_obj_att, get_value
 
 
@@ -87,9 +87,11 @@ class Processor:
         """
         self.pipeline._is_running = True
         for group_name in self.pipeline.model_group_names:
-            models_grp = getattr(self.pipeline, group_name)
+            models_grp = getattr(self.pipeline, group_name)  # type: ModelGroup
             if models_grp:
-                abort_flag = models_grp.run(self.detector, self.pipeline, abort_model=abort_before)
+                abort_flag = models_grp.run(detector=self.detector,
+                                            pipeline=self.pipeline,
+                                            abort_model=abort_before)
                 if abort_flag:
                     break
         self.pipeline._is_running = False

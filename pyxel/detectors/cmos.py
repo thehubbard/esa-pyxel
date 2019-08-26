@@ -1,10 +1,11 @@
 """CMOS detector modeling class."""
 
-from pyxel.detectors.detector import Detector
-from pyxel.detectors.cmos_geometry import CMOSGeometry
-from pyxel.detectors.material import Material
-from pyxel.detectors.environment import Environment
 from pyxel.detectors.cmos_characteristics import CMOSCharacteristics
+from pyxel.detectors.cmos_geometry import CMOSGeometry
+from pyxel.detectors.detector import Detector
+from pyxel.detectors.environment import Environment
+from pyxel.detectors.material import Material
+
 # from pyxel.data_structure.charge import Charge
 # from pyxel.data_structure.photon import Photon
 # from pyxel.data_structure.pixel import Pixel
@@ -37,13 +38,8 @@ class CMOS(Detector):
         self._characteristics = characteristics  # type: CMOSCharacteristics
 
         super().__init__(material=material,
-                         environment=environment,
-                         # photon=photon,
-                         # charge=charge,
-                         # pixel=pixel,
-                         # signal=signal,
-                         # image=image
-                         )
+                         environment=environment)
+        super().initialize()
 
     @property
     def geometry(self) -> CMOSGeometry:

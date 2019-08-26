@@ -8,7 +8,9 @@ from pyxel.detectors.cmos import CMOS
 from pyxel.detectors.geometry import Geometry
 from pyxel.detectors.characteristics import Characteristics
 from pyxel.detectors.detector import Detector
+from pyxel.detectors.optics import Optics
 
 
+# TODO: Is '__all__' really necessary ?
 __all__ = ['Detector', 'CCD', 'CMOS',
-           'Geometry', 'Characteristics', 'Material', 'Environment']
+           'Geometry', 'Characteristics', 'Material', 'Environment', 'Optics']

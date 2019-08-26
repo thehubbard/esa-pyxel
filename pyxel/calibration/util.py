@@ -1,6 +1,7 @@
 """TBW."""
 import os
 import typing as t
+
 import numpy as np
 from astropy.io import fits
 

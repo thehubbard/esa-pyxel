@@ -1,19 +1,21 @@
 """Detector class."""
-from math import sqrt
 import collections
 import typing as t
-import numpy as np
+from math import sqrt
 from pathlib import Path
 
-# from pyxel.detectors.geometry import Geometry
-from pyxel.detectors.material import Material
-from pyxel.detectors.environment import Environment
+import numpy as np
+
 # from pyxel.detectors.characteristics import Characteristics
 from pyxel.data_structure.charge import Charge
+from pyxel.data_structure.image import Image
 from pyxel.data_structure.photon import Photon
 from pyxel.data_structure.pixel import Pixel
 from pyxel.data_structure.signal import Signal
-from pyxel.data_structure.image import Image
+from pyxel.detectors.environment import Environment
+# from pyxel.detectors.geometry import Geometry
+from pyxel.detectors.material import Material
+
 # from pyxel.detectors.cmos_geometry import CMOSGeometry                  # noqa: F401
 # from pyxel.detectors.ccd_geometry import CCDGeometry                    # noqa: F401
 # from pyxel.detectors.cmos_characteristics import CMOSCharacteristics    # noqa: F401
@@ -48,41 +50,13 @@ class Detector:
                  environment: Environment):
         """TBW.
 
-        :param geometry:
         :param material:
         :param environment:
-        :param characteristics:
-        :param photon:
-        :param charge:
-        :param pixel:
-        :param signal:
-        :param image:
         """
         self.material = material                    # type: Material
         self.environment = environment              # type: Environment
 
         self.header = collections.OrderedDict()     # type: t.Dict[str, object]
-
-        # if photon:
-        #     self.photon = photon
-        # else:
-        #     self.photon = Photon(self.geometry)
-        # if charge:
-        #     self.charge = charge
-        # else:
-        #     self.charge = Charge()
-        # if pixel:
-        #     self.pixel = pixel
-        # else:
-        #     self.pixel = Pixel(self.geometry)
-        # if signal:
-        #     self.signal = signal
-        # else:
-        #     self.signal = Signal(self.geometry)
-        # if image:
-        #     self.image = image
-        # else:
-        #     self.image = Image(self.geometry)
 
         self._photon = None  # type: t.Optional[Photon]
         self._charge = None  # type: t.Optional[Charge]
@@ -91,17 +65,17 @@ class Detector:
         self._image = None  # type: t.Optional[Image]
 
         self.input_image = None
-        self._output_dir = None                         # type: t.Optional[Path]
+        self._output_dir = None             # type: t.Optional[Path]
 
-        self.start_time = 0.                            # type: float
-        self.end_time = 0.                              # type: float
-        self.steps = 0                                  # type: int
-        self.time_step = 0.                             # type: float
-        self._time = 0.                                 # type: float
-        self._dynamic = False                           # type: bool
-        self._non_destructive = False                   # type: bool
-        self.read_out = True                            # type: bool
-        self._all_time_steps_it = iter([])              # type: t.Iterator[float]
+        self.start_time = 0.                # type: float
+        self.end_time = 0.                  # type: float
+        self.steps = 0                      # type: int
+        self.time_step = 0.                 # type: float
+        self._time = 0.                     # type: float
+        self._dynamic = False               # type: bool
+        self._non_destructive = False       # type: bool
+        self.read_out = True                # type: bool
+        self._all_time_steps_it = iter([])  # type: t.Iterator[float]
 
     @property
     def geometry(self):

@@ -1,21 +1,19 @@
 """Utility functions for creating outputs."""
 import os
-from glob import glob
+import typing as t  # noqa: F401
 from copy import copy
+from glob import glob
 from pathlib import Path
 from shutil import copy2
-import typing as t          # noqa: F401
-import numpy as np
+from time import strftime
+
 import astropy.io.fits as fits
 import h5py as h5
-from time import strftime
-from pyxel import __version__ as version
+import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
-try:
-    import matplotlib.pyplot as plt
-except ImportError:
-    # raise Warning('Matplotlib cannot be imported')        # todo
-    pass
+
+from pyxel import __version__ as version
 
 if t.TYPE_CHECKING:
     from ..pipelines.processor import Processor
@@ -26,7 +24,7 @@ class Outputs:
     """TBW."""
 
     def __init__(self,
-                 output_folder: Path,
+                 output_folder: t.Union[str, Path],
                  save_data_to_file: t.Optional[list] = None,
                  save_parameter_to_file: t.Optional[dict] = None,
                  parametric_plot: t.Optional[dict] = None,
@@ -39,7 +37,7 @@ class Outputs:
         self.single_plot = single_plot                                          # type: t.Optional[dict]
         self.user_plt_args = None                                               # type: t.Optional[dict]
         self.save_parameter_to_file = save_parameter_to_file                    # type: t.Optional[dict]
-        self.output_dir = output_folder.joinpath('run_' + strftime("%Y%m%d_%H%M%S"))   # type: Path
+        self.output_dir = Path(output_folder).joinpath('run_' + strftime("%Y%m%d_%H%M%S"))   # type: Path
         # if save_data_to_file is None:
         #     self.save_data_to_file = [{'detector.image.array': ['fits']}]       # type: list
         # else:
@@ -82,7 +80,7 @@ class Outputs:
 
         with copied_input_file.open('a') as file:
             file.write("\n#########")
-            file.write("\n# Pyxel version: " + str(version))
+            file.write(f"\n# Pyxel version: {version}")
             file.write("\n#########")
 
     # TODO: the log file should directly write in 'output_dir'

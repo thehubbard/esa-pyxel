@@ -17,6 +17,7 @@ class Photon(Array):
     Accepted array types: np.int32, np.int64, np.uint32, np.uint64, np.float16, np.float32, np.float64
     """
 
+    # TODO: add unit (ph)
     EXP_TYPE = np.int
     TYPE_LIST = (np.int32, np.int64, np.uint32, np.uint64, np.float16, np.float32, np.float64)
 
@@ -28,6 +29,14 @@ class Photon(Array):
     #     :param array:
     #     """
     #     super().__init__()                  # TODO: add unit (ph)
+
+    def __repr__(self):
+        """TBW."""
+        if self._array is None:
+            return 'Photon<Not Initialized>'
+        else:
+            shape = self._array.shape
+            return f'Photon<shape={shape}>'
 
     # FRED: This could be done in '__init__'
     def new_array(self, new_array: np.ndarray) -> None:

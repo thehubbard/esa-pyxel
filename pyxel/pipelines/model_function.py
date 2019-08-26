@@ -1,7 +1,8 @@
 """TBW."""
 import functools
-from pyxel.evaluator import evaluate_reference
 import typing as t
+
+from pyxel.evaluator import evaluate_reference
 
 
 # FRED: What is `ModelFunction` ?
@@ -12,10 +13,10 @@ class ModelFunction:
     """TBW."""
 
     def __init__(self,
-                 func: t.Union[t.Callable, str],  # callable or str
+                 func: t.Union[t.Callable, str],  # TODO: Replace by 'func: t.Callable'
                  name: t.Optional[str] = None,
                  arguments: t.Optional[dict] = None,
-                 enabled: t.Optional[bool] = True):
+                 enabled: bool = True):
         """TBW.
 
         :param name:
@@ -29,8 +30,8 @@ class ModelFunction:
             arguments = {}
         self.func = func
         self.name = name
-        self.enabled = enabled
-        self.arguments = arguments
+        self.enabled = enabled  # type: bool
+        self.arguments = arguments if arguments else {}  # type: dict
         # self.group = None               # TODO
 
     def __repr__(self):

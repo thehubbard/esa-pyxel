@@ -1,11 +1,13 @@
 """TBW."""
 import itertools
+import logging
 import typing as t
 from copy import deepcopy
+
 import numpy as np
-from pyxel.state import get_obj_att, get_value
+
 from pyxel.parametric.parameter_values import ParameterValues
-import logging
+from pyxel.state import get_obj_att, get_value
 
 if t.TYPE_CHECKING:
     from ..pipelines.processor import Processor
@@ -141,11 +143,10 @@ class Configuration:
     """TBW."""
 
     def __init__(self, mode: str,
-                 outputs: "t.Optional[Outputs]" = None,
+                 outputs: "Outputs",
                  parametric: t.Optional[ParametricAnalysis] = None,
                  calibration: "t.Optional[Calibration]" = None,
-                 dynamic: t.Optional[bool] = None
-                 ):
+                 dynamic: t.Optional[t.Dict[str, t.Any]] = None):
         """TBW.
 
         :param mode:

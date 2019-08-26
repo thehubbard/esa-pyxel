@@ -1,9 +1,11 @@
 """Pyxel Charge class to generate electrons or holes inside detector."""
-import pandas as pd
-import numpy as np
-from astropy.units import cds
-from pyxel.data_structure.particle import Particle
 import typing as t
+
+import numpy as np
+import pandas as pd
+from astropy.units import cds
+
+from pyxel.data_structure.particle import Particle
 
 cds.enable()
 

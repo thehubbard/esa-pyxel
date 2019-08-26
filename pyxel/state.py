@@ -1,7 +1,6 @@
 """TBW."""
-import typing as t
 import logging
-
+import typing as t
 
 __all__ = ['get_obj_att', 'get_obj_by_type', 'get_value', 'get_state_dict',
            'get_state_ids', 'copy_processor', 'copy_state', 'ConfigObjects']

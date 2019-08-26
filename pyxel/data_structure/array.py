@@ -1,6 +1,7 @@
 """Pyxel Array class."""
-import numpy as np
 import typing as t  # noqa: F401
+
+import numpy as np
 from astropy.units import cds
 
 # FRED: Is it possible to move this to `data_structure/__init__.py' ?

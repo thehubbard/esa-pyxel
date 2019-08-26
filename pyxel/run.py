@@ -8,15 +8,19 @@ import argparse
 import logging
 import sys
 import time
+import typing as t
 from pathlib import Path
+
 import numpy as np
 from dask import delayed, distributed
+
 import pyxel.io as io
-from pyxel.pipelines.processor import Processor
-from pyxel.detectors import CCD, CMOS
 from pyxel import __version__ as version
-import typing as t
+from pyxel.detectors import CCD, CMOS
+from pyxel.parametric.parametric import Configuration
 from pyxel.pipelines.pipeline import DetectionPipeline
+from pyxel.pipelines.processor import Processor
+from pyxel.util import Outputs
 
 
 def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
@@ -35,11 +39,11 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
 
     # FRED: 'cfg' is a `dict`. It would better to use an object create from a class
     #       built by 'esapy_config'
-    cfg = io.load(Path(input_filename))
+    cfg = io.load(Path(input_filename))  # type: dict
 
     pipeline = cfg['pipeline']  # type: DetectionPipeline
 
-    simulation = cfg['simulation']
+    simulation = cfg['simulation']  # type: Configuration
 
     if 'ccd_detector' in cfg:
         detector = cfg['ccd_detector']  # type: t.Union[CCD, CMOS]
@@ -50,10 +54,9 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
 
     processor = Processor(detector=detector, pipeline=pipeline)
 
-    out = simulation.outputs
-    if out:
-        out.set_input_file(input_filename)
-        detector.set_output_dir(out.output_dir)
+    out = simulation.outputs  # type: Outputs
+    out.set_input_file(input_filename)
+    detector.set_output_dir(out.output_dir)
 
     # HANS: place all code in each if block into a separate function
     #   and use a dict call map. Example:
@@ -68,17 +71,23 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
     #   logger.info('Mode: %r', simulation.mode)
     if simulation.mode == 'single':
         logging.info('Mode: Single')
+
         processor.run_pipeline()
-        if out:
-            out.single_output(processor)
+        out.single_output(processor)
 
-    elif simulation.mode == 'calibration' and simulation.calibration:
+    elif simulation.mode == 'calibration':
+        if not simulation.calibration:
+            raise RuntimeError("Missing 'Calibration' parameters.")
+
         logging.info('Mode: Calibration')
-        results = simulation.calibration.run_calibration(processor, out.output_dir)
-        if out:
-            simulation.calibration.post_processing(calib_results=results, output=out)
+        results = simulation.calibration.run_calibration(processor=processor, output_dir=out.output_dir)
 
-    elif simulation.mode == 'parametric' and simulation.parametric:
+        simulation.calibration.post_processing(calib_results=results, output=out)
+
+    elif simulation.mode == 'parametric':
+        if not simulation.parametric:
+            raise RuntimeError("Missing 'Parametric' parameters.")
+
         logging.info('Mode: Parametric')
 
         # client = distributed.Client(processes=True)
@@ -100,7 +109,10 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
         if out.parametric_plot is not None:
             out.plotting_func(plot_array)
 
-    elif simulation.mode == 'dynamic' and simulation.dynamic:
+    elif simulation.mode == 'dynamic':
+        if not simulation.dynamic:
+            raise RuntimeError("Missing 'Dynamic' parameters.")
+
         logging.info('Mode: Dynamic')
         if 'non_destructive_readout' not in simulation.dynamic or isinstance(detector, CCD):
             simulation.dynamic['non_destructive_readout'] = False
@@ -115,18 +127,17 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
             else:
                 detector.initialize(reset_all=True)
             processor.run_pipeline()
-            if out and detector.read_out:
+            if detector.read_out:
                 out.single_output(processor)
 
     else:
-        raise ValueError
+        raise NotImplementedError(f"Simulation mode {simulation.mode} is not implemented !")
 
     logging.info('Pipeline completed.')
     logging.info('Running time: %.3f seconds' % (time.time() - start_time))
     # Closing the logger in order to be able to move the file in the output dir
     logging.shutdown()
-    if out:
-        out.save_log_file()
+    out.save_log_file()
 
 
 # FRED: Add an option to display colors ? (very optional)

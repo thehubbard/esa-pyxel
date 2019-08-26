@@ -1,7 +1,8 @@
 """Pyxel util functions for Particle classes."""
 import math
-import numpy as np
 import typing as t
+
+import numpy as np
 
 if t.TYPE_CHECKING:
     from ..detectors import Detector

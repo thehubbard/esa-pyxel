@@ -1,8 +1,9 @@
 """TBW."""
-from copy import deepcopy
 import typing as t  # noqa: F401
-from pyxel.pipelines.model_function import ModelFunction
+from copy import deepcopy
+
 from pyxel import util
+from pyxel.pipelines.model_function import ModelFunction
 
 if t.TYPE_CHECKING:
     from ..detectors import Detector

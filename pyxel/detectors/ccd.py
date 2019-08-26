@@ -1,15 +1,15 @@
 """CCD detector modeling class."""
 
-from pyxel.detectors.detector import Detector
-from pyxel.detectors.ccd_geometry import CCDGeometry
-from pyxel.detectors.material import Material
-from pyxel.detectors.environment import Environment
-from pyxel.detectors.ccd_characteristics import CCDCharacteristics
 from pyxel.data_structure.charge import Charge  # noqa: F401
+from pyxel.data_structure.image import Image  # noqa: F401
 from pyxel.data_structure.photon import Photon  # noqa: F401
-from pyxel.data_structure.pixel import Pixel    # noqa: F401
+from pyxel.data_structure.pixel import Pixel  # noqa: F401
 from pyxel.data_structure.signal import Signal  # noqa: F401
-from pyxel.data_structure.image import Image    # noqa: F401
+from pyxel.detectors.ccd_characteristics import CCDCharacteristics
+from pyxel.detectors.ccd_geometry import CCDGeometry
+from pyxel.detectors.detector import Detector
+from pyxel.detectors.environment import Environment
+from pyxel.detectors.material import Material
 
 
 class CCD(Detector):
@@ -19,13 +19,7 @@ class CCD(Detector):
                  geometry: CCDGeometry,
                  material: Material,
                  environment: Environment,
-                 characteristics: CCDCharacteristics,
-                 # photon: t.Optional[Photon] = None,
-                 # charge: t.Optional[Charge] = None,
-                 # pixel: t.Optional[Pixel] = None,
-                 # signal: t.Optional[Signal] = None,
-                 # image: t.Optional[Image] = None
-                 ):
+                 characteristics: CCDCharacteristics):
         """TBW.
 
         :param geometry:
@@ -38,6 +32,7 @@ class CCD(Detector):
 
         super().__init__(material=material,
                          environment=environment)
+        super().initialize()
 
     @property
     def geometry(self) -> CCDGeometry:

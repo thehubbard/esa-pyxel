@@ -1,6 +1,6 @@
 """TBW."""
-import logging
 import importlib
+import logging
 from ast import literal_eval
 
 __all__ = ['evaluate_reference', 'eval_range', 'eval_entry']

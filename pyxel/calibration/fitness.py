@@ -24,7 +24,7 @@ def sum_of_abs_residuals(simulated: np.ndarray, target: np.ndarray, weighting: t
     :return:
     """
     try:
-        diff = target.astype(float) - simulated.astype(float)
+        diff = target.astype(float) - simulated.astype(float)  # type: np.ndarray
     except AttributeError:
         diff = float(target) - float(simulated)
 
