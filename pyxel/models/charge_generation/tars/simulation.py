@@ -1,14 +1,19 @@
 """Pyxel TARS model to generate charge by ionization."""
 
-import typing as t  # noqa: F401
-import numpy as np
-from bisect import bisect
 import subprocess
+import typing as t  # noqa: F401
+from bisect import bisect
 from pathlib import Path
 
-from pyxel.models.charge_generation.tars.particle import Particle
-from pyxel.models.charge_generation.tars.util import sampling_distribution, load_histogram_data, read_data
+import numpy as np
+
 from pyxel.detectors.detector import Detector
+from pyxel.models.charge_generation.tars.particle import Particle
+from pyxel.models.charge_generation.tars.util import (
+    load_histogram_data,
+    read_data,
+    sampling_distribution,
+)
 
 
 class Simulation:

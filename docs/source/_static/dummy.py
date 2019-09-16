@@ -1,6 +1,8 @@
 """Pyxel dummy model for demo."""
 import logging
+
 import numpy as np
+
 import pyxel
 from pyxel.detectors import Detector
 

@@ -1,9 +1,11 @@
 """Unittests for the 'PixelLoader' class."""
-import re
 import inspect
+import re
+
 import numpy as np
 import pytest
 import yaml
+
 try:
     from yaml import UnsafeLoader as Loader  # For pyyaml >= 5.1
 except ImportError:

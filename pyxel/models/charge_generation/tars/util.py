@@ -1,6 +1,7 @@
 """Pyxel TARS model to generate charge by ionization."""
 
 import bisect
+
 import numpy as np
 import pandas as pd
 from scipy import interpolate

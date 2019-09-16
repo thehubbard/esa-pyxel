@@ -4,14 +4,16 @@ from pathlib import Path
 
 import yaml
 
+from pyxel.state import get_state_dict, get_value
+
+from ..evaluator import evaluate_reference
+
 try:
     # Use LibYAML library
     from yaml import CSafeLoader as SafeLoader  # type: ignore
 except ImportError:
     from yaml import SafeLoader  # type: ignore   # noqa
 
-from ..evaluator import evaluate_reference
-from pyxel.state import get_value, get_state_dict
 
 
 __all__ = ['load', 'dump', 'ObjectModelLoader']

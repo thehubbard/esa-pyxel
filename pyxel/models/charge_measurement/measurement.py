@@ -1,6 +1,8 @@
 """Charge readout model."""
 import logging
+
 from pyxel.detectors.detector import Detector
+
 # from astropy import units as u
 
 

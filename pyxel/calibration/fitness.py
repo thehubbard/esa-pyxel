@@ -1,7 +1,7 @@
 """Fitness functions for model fitting."""
-import numpy as np
 import typing as t
 
+import numpy as np
 
 # HANS: refactor code to this.
 # def sum_of_abs_residuals(

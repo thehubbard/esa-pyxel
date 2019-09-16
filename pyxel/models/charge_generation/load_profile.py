@@ -1,8 +1,10 @@
 """Simple model to load charge profiles."""
 import logging
-import numpy as np
-from pyxel.detectors.detector import Detector
 import typing as t
+
+import numpy as np
+
+from pyxel.detectors.detector import Detector
 
 
 # TODO: Fix this

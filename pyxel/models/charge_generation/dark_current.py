@@ -1,6 +1,8 @@
 """Simple model to generate charges due to dark current process."""
 import logging
+
 import numpy as np
+
 from pyxel.detectors.cmos import CMOS
 
 

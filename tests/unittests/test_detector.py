@@ -1,7 +1,9 @@
 """Unit tests for class `Detector`."""
 
 from copy import deepcopy
+
 import pytest
+
 from pyxel.detectors.ccd import CCD
 from pyxel.detectors.ccd_characteristics import CCDCharacteristics
 from pyxel.detectors.ccd_geometry import CCDGeometry
@@ -13,6 +15,7 @@ from pyxel.detectors.detector import Detector
 from pyxel.detectors.environment import Environment
 from pyxel.detectors.geometry import Geometry
 from pyxel.detectors.material import Material
+
 # from pyxel.data_structure.photon import Photon
 
 

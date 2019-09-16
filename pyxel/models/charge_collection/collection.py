@@ -1,8 +1,10 @@
 """Pyxel charge collection model."""
 import logging
-import numpy as np
-from pyxel.detectors.detector import Detector
+
 import numba
+import numpy as np
+
+from pyxel.detectors.detector import Detector
 
 
 # @pyxel.validate

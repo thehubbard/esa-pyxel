@@ -1,5 +1,6 @@
 """Pyxel photon generator models."""
 import logging
+
 from pyxel.detectors.detector import Detector
 
 

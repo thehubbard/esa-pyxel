@@ -2,15 +2,20 @@
 
 import logging
 import math
+import typing as t  # noqa: F401
 from pathlib import Path
-import typing as t   # noqa: F401
+
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
+
 from pyxel.detectors.detector import Detector
-from pyxel.models.charge_generation.tars.simulation import Simulation
-from pyxel.models.charge_generation.tars.util import read_data, interpolate_data  # , load_histogram_data
 from pyxel.models.charge_generation.tars.plotting import PlottingTARS
+from pyxel.models.charge_generation.tars.simulation import Simulation
+from pyxel.models.charge_generation.tars.util import (  # , load_histogram_data
+    interpolate_data,
+    read_data,
+)
 
 # from astropy import units as u
 

@@ -1,11 +1,13 @@
 """Pyxel photon generator models."""
 import logging
-import poppy as op
+import typing as t
+
+import matplotlib.pyplot as plt
 import numpy as np
 from scipy import signal
-import matplotlib.pyplot as plt
+
+import poppy as op
 from pyxel.detectors.detector import Detector
-import typing as t
 
 
 # @validators.validate

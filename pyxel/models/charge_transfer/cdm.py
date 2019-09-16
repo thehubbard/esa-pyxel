@@ -10,15 +10,18 @@ This is a function to run the upgraded CDM CTI model developed by Alex Short (ES
 :author: David Lucsanyi
 """
 import logging
-import numpy as np
-import numba
 import typing as t
+
+import numba
+import numpy as np
+
+from pyxel.detectors.ccd import CCD
+
 try:
     import matplotlib.pyplot as plt
 except ImportError:
     # raise Warning('Matplotlib cannot be imported')
     pass
-from pyxel.detectors.ccd import CCD
 
 
 # @pyxel.validate

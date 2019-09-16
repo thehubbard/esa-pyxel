@@ -1,7 +1,9 @@
 """Pyxel photon generator models."""
 import logging
 import typing as t
+
 from astropy.io import fits
+
 from pyxel.detectors.detector import Detector
 
 

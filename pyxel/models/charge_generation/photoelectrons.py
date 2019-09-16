@@ -1,6 +1,8 @@
 """Simple model to convert photon into photo-electrons inside detector."""
 import logging
+
 import numpy as np
+
 from pyxel.detectors.detector import Detector
 
 

@@ -2,10 +2,12 @@
 
 import logging
 import typing as t
+from pathlib import Path
+
+import numpy as np
+
 from pyxel.detectors.cmos import CMOS, CMOSGeometry
 from pyxel.models.charge_measurement.nghxrg.nghxrg_beta import HXRGNoise
-import numpy as np
-from pathlib import Path
 
 
 # @pyxel.validate

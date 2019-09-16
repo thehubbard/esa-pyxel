@@ -1,10 +1,12 @@
-from pathlib import Path
-import pytest
-import pyxel.io as io
-from pyxel.pipelines.processor import Processor, DetectionPipeline
-from pyxel.parametric.parametric import Configuration, ParametricAnalysis
-from pyxel.detectors import CCD
 from collections import abc
+from pathlib import Path
+
+import pytest
+
+import pyxel.io as io
+from pyxel.detectors import CCD
+from pyxel.parametric.parametric import Configuration, ParametricAnalysis
+from pyxel.pipelines.processor import DetectionPipeline, Processor
 
 try:
     import pygmo as pg
