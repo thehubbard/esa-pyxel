@@ -229,7 +229,7 @@ class Outputs:
                         'csv': self.save_to_csv,
                         'png': self.save_to_png}
         for item in self.save_data_to_file:
-            obj = next(iter(item.keys()))  # FRED: Simplify this ?
+            obj = next(iter(item.keys()))  # TODO: Simplify this ?
             format_list = next(iter(item.values()))
             data = processor.get(obj)
             if format_list is not None:
@@ -535,7 +535,6 @@ def update_fits_header(header: dict, key, value) -> None:
     header[key] = value
 
 
-# FRED: Use method from `Path` (e.g. path_obj.glob)
 def apply_run_number(path: Path) -> Path:
     """Convert the file name numeric placeholder to a unique number.
 
@@ -544,6 +543,7 @@ def apply_run_number(path: Path) -> Path:
     """
     path_str = str(path)
     if '?' in path_str:
+        # TODO: Use method 'Path.glob'
         dir_list = sorted(glob(path_str))
         p_0 = path_str.find('?')
         p_1 = path_str.rfind('?')

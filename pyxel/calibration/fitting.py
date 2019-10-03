@@ -15,7 +15,12 @@ from pathlib import Path
 import numpy as np
 from dask import delayed
 
-from pyxel.calibration.util import check_ranges, list_to_slice, read_data
+from pyxel.calibration.util import (
+    CalibrationMode,
+    check_ranges,
+    list_to_slice,
+    read_data,
+)
 from pyxel.parametric.parameter_values import ParameterValues
 from pyxel.pipelines.model_function import ModelFunction
 from pyxel.pipelines.processor import Processor
@@ -26,25 +31,25 @@ class ModelFitting:
 
     def __init__(self, processor: Processor, variables: t.List[ParameterValues]):
         """TBW."""
-        self.processor = processor          # type: Processor
-        self.variables = variables          # type: t.List[ParameterValues]
+        self.processor = processor  # type: Processor
+        self.variables = variables  # type: t.List[ParameterValues]
 
-        self.calibration_mode = None        # type: t.Optional[str]
-        self.original_processor = None      # type: t.Optional[Processor]
-        self.generations = None             # type: t.Optional[int]
-        self.pop = None                     # type: t.Optional[int]
+        self.calibration_mode = None  # type: t.Optional[str]
+        self.original_processor = None  # type: t.Optional[Processor]
+        self.generations = None  # type: t.Optional[int]
+        self.pop = None  # type: t.Optional[int]
 
-        self.all_target_data = []           # type: t.List[t.List[t.Any]]
-        self.weighting = None               # type: t.Optional[t.List[np.ndarray]]
-        self.fitness_func = None            # type: t.Optional[ModelFunction]
-        self.sim_output = None              # type: t.Optional[str]
+        self.all_target_data = []  # type: t.List[t.List[t.Any]]
+        self.weighting = None  # type: t.Optional[t.List[np.ndarray]]
+        self.fitness_func = None  # type: t.Optional[ModelFunction]
+        self.sim_output = None  # type: t.Optional[str]
         # self.fitted_model = None            # type: t.Optional['ModelFunction']
-        self.param_processor_list = []      # type: t.List[Processor]
+        self.param_processor_list = []  # type: t.List[Processor]
 
         self.n = 0  # type: int
         self.g = 0  # type: int
 
-        self.file_path = Path('')                 # type: Path
+        self.file_path = Path("")  # type: Path
 
         self.fitness_array = None  # type: t.Optional[np.ndarray]
         self.population = None  # type: t.Optional[np.ndarray]
@@ -57,7 +62,7 @@ class ModelFitting:
         self.sim_fit_range = slice(None)  # type: t.Union[slice, t.Tuple[slice, slice]]
         self.targ_fit_range = slice(None)  # type: t.Union[slice, t.Tuple[slice, slice]]
 
-        self.match = {}                     # type: t.Dict[int, str]
+        self.match = {}  # type: t.Dict[int, str]
 
         # self.normalization = False
         # self.target_data_norm = []
@@ -69,24 +74,44 @@ class ModelFitting:
         """
         return self.lbd, self.ubd
 
-    # HANS: expand setting to argument names with default values.
-    def configure(self, setting: t.Dict[str, t.Any]) -> None:
+    def configure(
+        self,
+        calibration_mode: CalibrationMode,
+        simulation_output: str,
+        fitness_func: ModelFunction,
+        population_size,
+        generations: int,
+        file_path: Path,
+        target_fit_range: t.List[int],
+        out_fit_range: t.List[int],
+        target_output: t.Union[str, t.List[str]],
+        input_arguments: t.Optional[list] = None,
+        weighting: t.Optional[t.Union[str, t.List[str]]] = None,
+    ) -> None:
         """TBW.
 
-        :param setting: dict
-        :return:
+        Parameters
+        ----------
+        calibration_mode
+        simulation_output
+        fitness_func
+        population_size
+        generations
+        file_path
+        target_fit_range
+        out_fit_range
+        target_output
+        input_arguments
+        weighting
         """
-        self.calibration_mode = setting['calibration_mode']
-        self.sim_output = setting['simulation_output']
-        self.fitness_func = setting['fitness_func']
-        self.pop = setting['population_size']
-        self.generations = setting['generations']
+        self.calibration_mode = calibration_mode
+        self.sim_output = simulation_output
+        self.fitness_func = fitness_func
+        self.pop = population_size
+        self.generations = generations
 
-        assert isinstance(self.calibration_mode, str)
-        assert isinstance(self.sim_output, str)
-        assert isinstance(self.fitness_func, ModelFunction)
+        # TODO: Remove 'assert'
         assert isinstance(self.pop, int)
-        assert isinstance(self.generations, int)
 
         # if self.calibration_mode == 'single_model':           # TODO update
         #     self.single_model_calibration()
@@ -94,18 +119,20 @@ class ModelFitting:
         self.set_bound()
 
         self.original_processor = deepcopy(self.processor)
-        if 'input_arguments' in setting and setting['input_arguments']:
+        if input_arguments:
 
             max_val, min_val = 0, 1000
-            for arg in setting['input_arguments']:
+            for arg in input_arguments:
                 min_val = min(min_val, len(arg.values))
                 max_val = max(max_val, len(arg.values))
             if min_val != max_val:
-                logging.warning('The "result_input_arguments" value lists have different lengths! '
-                                'Some values will be ignored.')
+                logging.warning(
+                    'The "result_input_arguments" value lists have different lengths! '
+                    "Some values will be ignored."
+                )
             for i in range(min_val):
                 new_processor = deepcopy(self.processor)
-                for step in setting['input_arguments']:
+                for step in input_arguments:
                     step.current = step.values[i]
                     new_processor.set(step.key, step.current)
                 self.param_processor_list += [new_processor]
@@ -120,25 +147,27 @@ class ModelFitting:
             params += b
         self.champion_f_list = np.zeros((1, 1))
         self.champion_x_list = np.zeros((1, params))
-        self.file_path = setting['file_path']
+        self.file_path = file_path
 
-        target_list = read_data(setting['target_output'])
+        target_list = read_data(target_output)
         try:
             rows, cols = target_list[0].shape
         except AttributeError:
             rows = len(target_list[0])
             cols = None
-        check_ranges(target_fit_range=setting['target_fit_range'],
-                     out_fit_range=setting['out_fit_range'],
-                     rows=rows,
-                     cols=cols)
-        self.targ_fit_range = list_to_slice(setting['target_fit_range'])
-        self.sim_fit_range = list_to_slice(setting['out_fit_range'])
+        check_ranges(
+            target_fit_range=target_fit_range,
+            out_fit_range=out_fit_range,
+            rows=rows,
+            cols=cols,
+        )
+        self.targ_fit_range = list_to_slice(target_fit_range)
+        self.sim_fit_range = list_to_slice(out_fit_range)
         for target in target_list:
             self.all_target_data += [target[self.targ_fit_range]]
 
-        if setting['weighting']:
-            wf = read_data(setting['weighting'])[0]
+        if weighting:
+            wf = read_data(weighting)[0]
             self.weighting = wf[self.targ_fit_range]
 
     # def single_model_calibration(self):     # TODO update
@@ -166,24 +195,26 @@ class ModelFitting:
                 low_val = math.log10(low_val)
                 high_val = math.log10(high_val)
 
-            if var.values == '_':
+            if var.values == "_":
                 self.lbd += [low_val]
                 self.ubd += [high_val]
-            elif isinstance(var.values, list) and all(x == '_' for x in var.values[:]):
+            elif isinstance(var.values, list) and all(x == "_" for x in var.values[:]):
                 self.lbd += [low_val] * len(var.values)
                 self.ubd += [high_val] * len(var.values)
             else:
-                raise ValueError('Character "_" (or a list of it) should be used to '
-                                 'indicate variables need to be calibrated')
+                raise ValueError(
+                    'Character "_" (or a list of it) should be used to '
+                    "indicate variables need to be calibrated"
+                )
 
     def get_simulated_data(self, processor):
         """TBW."""
         simulated_data = None
-        if self.sim_output == 'image':
+        if self.sim_output == "image":
             simulated_data = processor.detector.image.array[self.sim_fit_range]
-        elif self.sim_output == 'signal':
+        elif self.sim_output == "signal":
             simulated_data = processor.detector.signal.array[self.sim_fit_range]
-        elif self.sim_output == 'pixel':
+        elif self.sim_output == "pixel":
             simulated_data = processor.detector.pixel.array[self.sim_fit_range]
         return simulated_data
 
@@ -192,11 +223,11 @@ class ModelFitting:
 
         PYGMO BFE IS STILL NOT FULLY IMPLEMENTED, THEREFORE THIS FUNC CAN NOT BE USED YET.
         """
-        logger = logging.getLogger('pyxel')
-        logger.info('batch_fitness() called with %s ' % population_parameter_vector)
+        logger = logging.getLogger("pyxel")
+        logger.info("batch_fitness() called with %s " % population_parameter_vector)
         fitness_vector = []
         for parameter in population_parameter_vector:
-            overall_fitness = 0.
+            overall_fitness = 0.0
             parameter = self.update_parameter([parameter])
             processor_list = deepcopy(self.param_processor_list)
             for processor, target_data in zip(processor_list, self.all_target_data):
@@ -210,7 +241,9 @@ class ModelFitting:
                 fitness = delayed(self.calculate_fitness)(simulated_data, target_data)
                 # overall_fitness = add(overall_fitness, fitness)
                 overall_fitness = delayed(add)(overall_fitness, fitness)
-            fitness_vector.append(overall_fitness)  # overall fitness per individual for the full population
+            fitness_vector.append(
+                overall_fitness
+            )  # overall fitness per individual for the full population
         # fitness_vector = self.merge(fitness_vector)
         fitness_vector = delayed(merge_fitness)(fitness_vector)
         # population_fitness_vector = fitness_vector
@@ -218,23 +251,22 @@ class ModelFitting:
 
         return population_fitness_vector
 
-    def calculate_fitness(self, simulated_data: np.ndarray, target_data: np.ndarray) -> float:
+    def calculate_fitness(
+        self, simulated_data: np.ndarray, target_data: np.ndarray
+    ) -> float:
         """TBW.
 
         :param simulated_data:
         :param target_data:
         :return:
         """
+        # TODO: Remove 'assert'
         assert isinstance(self.fitness_func, ModelFunction)
 
-        # HANS: use this instead. The if/else statement is redundant, the weighting is optional anyways.
-        fitness = self.fitness_func.function(simulated=simulated_data,
-                                             target=target_data,
-                                             weighting=self.weighting)  # type: float
-        # if self.weighting is not None:
-        #     fitness = self.fitness_func.function(simulated_data, target_data, self.weighting)
-        # else:
-        #     fitness = self.fitness_func.function(simulated_data, target_data)
+        fitness = self.fitness_func.function(
+            simulated=simulated_data, target=target_data, weighting=self.weighting
+        )  # type: float
+
         return fitness
 
     def fitness(self, parameter: np.ndarray) -> t.List[float]:
@@ -248,20 +280,20 @@ class ModelFitting:
             raise NotImplementedError("'pop' is not initialized.")
 
         # TODO: Use directory 'logging.'
-        logger = logging.getLogger('pyxel')
+        logger = logging.getLogger("pyxel")
         prev_log_level = logger.getEffectiveLevel()
 
         parameter = self.update_parameter(parameter)
         processor_list = deepcopy(self.param_processor_list)  # type: t.List[Processor]
 
-        overall_fitness = 0.  # type: float
+        overall_fitness = 0.0  # type: float
         for processor, target_data in zip(processor_list, self.all_target_data):
 
             processor = self.update_processor(parameter, processor)
 
             logger.setLevel(logging.WARNING)
             result_proc = None
-            if self.calibration_mode == 'pipeline':
+            if self.calibration_mode == "pipeline":
                 result_proc = processor.run_pipeline()
             # elif self.calibration_mode == 'single_model':
             #     self.fitted_model.function(processor.detector)               # todo: update
@@ -269,13 +301,14 @@ class ModelFitting:
 
             simulated_data = self.get_simulated_data(result_proc)
 
-            overall_fitness += self.calculate_fitness(simulated_data=simulated_data,
-                                                      target_data=target_data)
+            overall_fitness += self.calculate_fitness(
+                simulated_data=simulated_data, target_data=target_data
+            )
 
         self.save_population(parameter=parameter, overall_fitness=overall_fitness)
 
         if (self.n + 1) % self.pop == 0:
-            logger.info('%d. generation', self.g)
+            logger.info("%d. generation", self.g)
             self.champion_to_file(parameter)
             self.g += 1
 
@@ -296,7 +329,9 @@ class ModelFitting:
             if isinstance(var.values, list):
                 b = len(var.values)
             if var.logarithmic:
-                parameter[a:a + b] = np.power(10, parameter[a:a + b])
+                start = a
+                stop = a + b
+                parameter[start:stop] = np.power(10, parameter[start:stop])
             a += b
         return parameter
 
@@ -309,12 +344,15 @@ class ModelFitting:
         """
         a, b = 0, 0
         for var in self.variables:
-            if var.values == '_':
+            if var.values == "_":
                 b = 1
                 new_processor.set(var.key, parameter[a])
             elif isinstance(var.values, list):
                 b = len(var.values)
-                new_processor.set(var.key, parameter[a:a + b])
+
+                start = a
+                stop = a + b
+                new_processor.set(var.key, parameter[start:stop])
             a += b
         return new_processor
 
@@ -322,31 +360,39 @@ class ModelFitting:
         """TBW."""
         if self.file_path:
             # TODO: Sort these filenames !
-            output_champion_files = self.file_path.glob('champions_id_*.out')  # type: t.Iterator[Path]
+            output_champion_files = self.file_path.glob(
+                "champions_id_*.out"
+            )  # type: t.Iterator[Path]
 
             for ii, chfile in enumerate(output_champion_files):
                 # Get last line from file 'chfile'
                 with chfile.open() as fh:
                     *_, lastline = fh.readlines()
 
-                lastline = lastline.replace('\n', '')
-                lastline = lastline.split(' ')[1:]
+                lastline = lastline.replace("\n", "")
+                lastline = lastline.split(" ")[1:]
                 self.match[ii] = lastline
 
-                os.rename(chfile, self.file_path.joinpath(f'champions_id{ii}.out'))
+                os.rename(chfile, self.file_path.joinpath(f"champions_id{ii}.out"))
 
-                result = re.findall(pattern=r'champions_id_(\w+)\.out', string=chfile.name)
+                result = re.findall(
+                    pattern=r"champions_id_(\w+)\.out", string=chfile.name
+                )
                 if len(result) != 1:
                     raise ValueError(f"Cannot extract information from '{result}'.")
                 aw = result[0]  # type: str
 
-                fid = aw.split('_')[-1]
-                popfiles = list(self.file_path.glob(f'population_id_{fid}.out'))  # type: t.List[Path]
+                fid = aw.split("_")[-1]
+                popfiles = list(
+                    self.file_path.glob(f"population_id_{fid}.out")
+                )  # type: t.List[Path]
                 popfile = popfiles[0]  # type: Path
 
-                os.rename(popfile, self.file_path.joinpath(f'population_id{ii}.out'))
+                os.rename(popfile, self.file_path.joinpath(f"population_id{ii}.out"))
 
-    def get_results(self, overall_fitness: np.ndarray, parameter: np.ndarray) -> t.Tuple[t.List[Processor], dict]:
+    def get_results(
+        self, overall_fitness: np.ndarray, parameter: np.ndarray
+    ) -> t.Tuple[t.List[Processor], dict]:
         """TBW.
 
         :param overall_fitness:
@@ -354,18 +400,26 @@ class ModelFitting:
         :return:
         """
         results = OrderedDict()  # type: t.Dict[str, t.Any]
-        results['fitness'] = overall_fitness[0]
+        results["fitness"] = overall_fitness[0]
 
         # TODO: Apply a copy of 'parameter' in 'self.update_parameter' ??
         parameter = self.update_parameter(parameter)
 
         if self.file_path:
             # TODO: Use 'np.ravel(parameter)' instead of 'parameter.reshape(1, len(parameter))' ?
-            s = np.c_[overall_fitness, parameter.reshape(1, len(parameter))]  # type: np.ndarray
-            np.set_printoptions(formatter={'float': '{: .6E}'.format}, suppress=False)
-            sss = np.array2string(s, separator='', suppress_small=False)
-            sss = sss.replace('\n', '').replace('   ', ' ').replace('  ', ' ').replace('[[ ', '').replace(']]', '')
-            sss = sss.split(' ')
+            s = np.c_[
+                overall_fitness, parameter.reshape(1, len(parameter))
+            ]  # type: np.ndarray
+            np.set_printoptions(formatter={"float": "{: .6E}".format}, suppress=False)
+            sss = np.array2string(s, separator="", suppress_small=False)
+            sss = (
+                sss.replace("\n", "")
+                .replace("   ", " ")
+                .replace("  ", " ")
+                .replace("[[ ", "")
+                .replace("]]", "")
+            )
+            sss = sss.split(" ")
             island = -1
             for k, v in self.match.items():
                 if sss == v:
@@ -375,23 +429,30 @@ class ModelFitting:
                 raise RuntimeError()
         else:
             island = 0
-        results['island'] = island
-        logging.info('Post-processing island %d, champion fitness: %1.5e', island, overall_fitness[0])
+        results["island"] = island
+        logging.info(
+            "Post-processing island %d, champion fitness: %1.5e",
+            island,
+            overall_fitness[0],
+        )
 
         champion_list = deepcopy(self.param_processor_list)  # type: t.List[Processor]
         for processor in champion_list:
             processor = self.update_processor(parameter, processor)
-            if self.calibration_mode == 'pipeline':
+            if self.calibration_mode == "pipeline":
                 processor.run_pipeline()
 
         a, b = 0, 0
         for var in self.variables:
-            if var.values == '_':
+            if var.values == "_":
                 b = 1
                 results[var.key] = parameter[a]
             elif isinstance(var.values, list):
                 b = len(var.values)
-                results[var.key] = parameter[a:a + b]
+
+                start = a
+                stop = a + b
+                results[var.key] = parameter[start:stop]
             a += b
 
         return champion_list, results
@@ -402,16 +463,24 @@ class ModelFitting:
         :return:
         """
         if self.champion_f_list is None:
-            raise RuntimeError("'champion_f_list' was not initialized with method '.configure(...)'.")
+            raise RuntimeError(
+                "'champion_f_list' was not initialized with method '.configure(...)'."
+            )
 
         if self.champion_x_list is None:
-            raise RuntimeError("'champion_x_list' was not initialized with method '.configure(...)'.")
+            raise RuntimeError(
+                "'champion_x_list' was not initialized with method '.configure(...)'."
+            )
 
         if self.fitness_array is None:
-            raise RuntimeError("'fitness_array' was not initialized with method '.configure(...)'.")
+            raise RuntimeError(
+                "'fitness_array' was not initialized with method '.configure(...)'."
+            )
 
         if self.population is None:
-            raise RuntimeError("'population' was not initialized with method '.configure(...)'.")
+            raise RuntimeError(
+                "'population' was not initialized with method '.configure(...)'."
+            )
 
         best_index = np.argmin(self.fitness_array)
 
@@ -422,11 +491,19 @@ class ModelFitting:
             best_champ_index = np.argmin(self.champion_f_list)
 
             if self.fitness_array[best_index] < self.champion_f_list[best_champ_index]:
-                self.champion_f_list = np.vstack((self.champion_f_list, self.fitness_array[best_index]))
-                self.champion_x_list = np.vstack((self.champion_x_list, self.population[best_index]))
+                self.champion_f_list = np.vstack(
+                    (self.champion_f_list, self.fitness_array[best_index])
+                )
+                self.champion_x_list = np.vstack(
+                    (self.champion_x_list, self.population[best_index])
+                )
             else:
-                self.champion_f_list = np.vstack((self.champion_f_list, self.champion_f_list[-1]))
-                self.champion_x_list = np.vstack((self.champion_x_list, self.champion_x_list[-1]))
+                self.champion_f_list = np.vstack(
+                    (self.champion_f_list, self.champion_f_list[-1])
+                )
+                self.champion_x_list = np.vstack(
+                    (self.champion_x_list, self.champion_x_list[-1])
+                )
 
         # TODO: should we keep and write to file the population(s) which had the champion inside?
         # because usually this is not the last population currently we save to file!
@@ -449,7 +526,9 @@ class ModelFitting:
             self.fitness_array = np.array([overall_fitness])
             self.population = parameter
         else:
-            self.fitness_array = np.vstack((self.fitness_array, np.array([overall_fitness])))
+            self.fitness_array = np.vstack(
+                (self.fitness_array, np.array([overall_fitness]))
+            )
             self.population = np.vstack((self.population, parameter))
 
     def add_to_champ_file(self, parameter: np.ndarray) -> None:
@@ -457,25 +536,39 @@ class ModelFitting:
         assert self.champion_f_list is not None
         assert self.champion_x_list is not None
 
-        champions_file = self.file_path.joinpath(f'champions_id_{id(self)}.out')  # type: Path
-        str_format = '%d' + (len(parameter) + 1) * ' %.6E'
-        with champions_file.open('ab') as file1:
-            np.savetxt(file1,
-                       np.c_[np.array([self.g]), self.champion_f_list[self.g],
-                             self.champion_x_list[self.g, :].reshape(1, len(parameter))],
-                       fmt=str_format)
+        champions_file = self.file_path.joinpath(
+            f"champions_id_{id(self)}.out"
+        )  # type: Path
+        str_format = "%d" + (len(parameter) + 1) * " %.6E"
+        with champions_file.open("ab") as file1:
+            np.savetxt(
+                file1,
+                np.c_[
+                    np.array([self.g]),
+                    self.champion_f_list[self.g],
+                    self.champion_x_list[self.g, :].reshape(1, len(parameter)),
+                ],
+                fmt=str_format,
+            )
 
     def add_to_pop_file(self, parameter: np.ndarray):
         """TBW."""
         assert self.fitness_array is not None
 
-        pop_file = self.file_path.joinpath(f'population_id_{id(self)}.out')  # type: Path
-        str_format = '%d' + (len(parameter) + 1) * ' %.6E'
-        with pop_file.open('wb') as file2:
-            np.savetxt(file2,
-                       np.c_[self.g * np.ones(self.fitness_array.shape),
-                             self.fitness_array, self.population],
-                       fmt=str_format)
+        pop_file = self.file_path.joinpath(
+            f"population_id_{id(self)}.out"
+        )  # type: Path
+        str_format = "%d" + (len(parameter) + 1) * " %.6E"
+        with pop_file.open("wb") as file2:
+            np.savetxt(
+                file2,
+                np.c_[
+                    self.g * np.ones(self.fitness_array.shape),
+                    self.fitness_array,
+                    self.population,
+                ],
+                fmt=str_format,
+            )
 
     # def least_squares(self, simulated_data, dataset=None):
     #     """TBW.

@@ -18,7 +18,7 @@ class Charge(Particle):
 
     def __init__(self):
         """TBW."""
-        # FRED: The following line is not really needed
+        # TODO: The following line is not really needed
         super().__init__()
         self.nextid = 0  # type: int
 
@@ -67,7 +67,7 @@ class Charge(Particle):
         # Check if particle number is integer:
         # check_type(particles_per_cluster)      # TODO
 
-        # FRED: particle_type should be a Enum class ?
+        # TODO: particle_type should be a Enum class ?
         if particle_type == 'e':
             charge = [-1] * elements            # * cds.e
         elif particle_type == 'h':

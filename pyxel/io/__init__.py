@@ -3,9 +3,7 @@ from .object_model import ObjectModelLoader
 from .object_model import load  # noqa: F401
 
 
-# FRED: We should use the YAML loader from `ESAPY_CONFIG`
-# HANS: agree with above. The configuration of the yaml loader is very complex
-#       and causes a lot of confusion when explaining how to add a class to it.
+# TODO: Re-develop the YAML loader and representer. See Issue #59.
 def pyxel_yaml_loader():
     """TBW."""
     from pyxel.parametric.parametric import Configuration
@@ -64,4 +62,4 @@ def pyxel_yaml_loader():
     ObjectModelLoader.add_class(ParameterValues, ['simulation', 'parametric', 'parameters'], is_list=True)
 
 
-pyxel_yaml_loader()  # HANS: avoid auto-calling functions on import.
+pyxel_yaml_loader()  # TODO: avoid auto-calling functions on import.

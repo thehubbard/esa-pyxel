@@ -15,7 +15,7 @@ if t.TYPE_CHECKING:
     from ..util import Outputs
 
 
-# FRED: Create a `Enum` for 'parametric_mode' ?
+# TODO: Use `Enum` for `parametric_mode` ?
 class ParametricAnalysis:
     """TBW."""
 
@@ -23,15 +23,14 @@ class ParametricAnalysis:
                  parametric_mode: str,
                  parameters: t.List[ParameterValues],
                  from_file: t.Optional[str] = None,
-                 # HANS: column_range should be of type: t.Tuple[int, int]
-                 column_range: t.Optional[t.List[int]] = None):
+                 column_range: t.Optional[t.Tuple[int, int]] = None):
         """TBW."""
         self.parametric_mode = parametric_mode
         self._parameters = parameters
         self.file = from_file
         self.data = None  # type: t.Optional[np.ndarray]
-        if column_range:  # HANS: ensure that the size == 2
-            self.columns = slice(column_range[0], column_range[1])
+        if column_range:
+            self.columns = slice(*column_range)
 
     @property
     def enabled_steps(self) -> t.List[ParameterValues]:
@@ -50,16 +49,21 @@ class ParametricAnalysis:
             new_proc = deepcopy(processor)  # type: Processor
             for step in self.enabled_steps:
                 key = step.key
-                # HANS: this is confusing code. Explain.
+
+                # TODO: this is confusing code. Fix this.
+                #       Furthermore 'step.values' should be a `t.List[int, float]` and not a `str`
                 if step.values == '_':
                     value = data_array[i]
                     i += 1
+
                 elif isinstance(step.values, list) and all(x == '_' for x in step.values[:]):
                     value = data_array[i: i + len(step.values)]
                     i += len(value)
+
                 else:
                     raise ValueError('Only "_" characters (or a list of them) should be used to '
                                      'indicate parameters updated from file in parallel')
+
                 new_proc.set(key, value)
             yield new_proc
 
@@ -98,7 +102,7 @@ class ParametricAnalysis:
         """TBW."""
         for step in self.enabled_steps:
 
-            # HANS: the string literal expressions are difficult to maintain.
+            # TODO: the string literal expressions are difficult to maintain.
             #     Example: 'pipeline.', '.arguments', '.enabled'
             #     We may want to consider an API for this.
             if 'pipeline.' in step.key:
@@ -138,7 +142,7 @@ class ParametricAnalysis:
         return result
 
 
-# FRED: Create a `Enum` for 'mode' ?
+# TODO: Use a `Enum` for 'mode' ?
 class Configuration:
     """TBW."""
 
@@ -157,6 +161,7 @@ class Configuration:
             self.mode = mode
         else:
             raise ValueError('Non-existing running mode defined for Pyxel in yaml config file.')
+
         self.outputs = outputs
         self.parametric = parametric
         self.calibration = calibration

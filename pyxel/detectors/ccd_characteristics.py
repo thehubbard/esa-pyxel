@@ -2,7 +2,6 @@
 from pyxel.detectors.characteristics import Characteristics
 
 
-# FRED: can those attributes also be used in `CMOSCharacteristics` ?
 # TODO: 'svg' should be the full volume and not the half
 class CCDCharacteristics(Characteristics):
     """Characteristical attributes of a CCD detector."""

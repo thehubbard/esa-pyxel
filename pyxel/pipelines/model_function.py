@@ -5,7 +5,7 @@ import typing as t
 from pyxel.evaluator import evaluate_reference
 
 
-# FRED: What is `ModelFunction` ?
+# TODO: What is `ModelFunction` ?
 #       Is it possible to replace this by a `callable` ?
 #       Is it possible to use a function with an inner function (==> a closure) ?
 #       could be 'name' and 'enabled' stored in `ModelGroup` ?
@@ -38,6 +38,7 @@ class ModelFunction:
         """TBW."""
         return 'ModelFunction(%(name)r, %(func)r, %(arguments)r, %(enabled)r)' % vars(self)
 
+    # TODO: Is this method needed ?
     def __getstate__(self):
         """TBW."""
         return {
@@ -47,7 +48,7 @@ class ModelFunction:
             'arguments': self.arguments
         }
 
-    # FRED: Replace this by __call__ ?
+    # TODO: Replace this by __call__ ?
     @property
     def function(self) -> t.Callable:
         """TBW."""
@@ -55,6 +56,6 @@ class ModelFunction:
         if isinstance(func_ref, type):
             # this is a class type, instantiate it using default arguments.
             func_ref = func_ref()
-            # HANS: should check whether or not it's callable.
+            # TODO: should check whether or not it's callable.
         func = functools.partial(func_ref, **self.arguments)
         return func

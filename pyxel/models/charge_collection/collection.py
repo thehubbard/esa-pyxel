@@ -9,7 +9,7 @@ from pyxel.detectors.detector import Detector
 
 # @pyxel.validate
 # @pyxel.argument(name='', label='', units='', validate=)
-# FRED: To be discussed : is it not better/relevant if all models return a new `Detector` ?
+# TODO: Is it not better/relevant if all models return a new `Detector` ?
 #       Therefore the 'input' `Detector` is never modified.
 #
 #       Example:
@@ -35,7 +35,7 @@ def simple_collection(detector: Detector) -> None:
     detector.pixel.array = df_to_array(array, charge_per_pixel, pixel_index_ver, pixel_index_hor)
 
 
-# FRED: Is it needed not better to first create a copy of 'array' and then work with this copy ??
+# TODO: Is it needed not better to first create a copy of 'array' and then work with this copy ??
 @numba.jit(nopython=True)
 def df_to_array(array: np.ndarray, charge_per_pixel: list, pixel_index_ver: list, pixel_index_hor: list) -> np.ndarray:
     """TBW."""

@@ -15,7 +15,6 @@ except ImportError:
     from yaml import SafeLoader  # type: ignore   # noqa
 
 
-
 __all__ = ['load', 'dump', 'ObjectModelLoader']
 
 

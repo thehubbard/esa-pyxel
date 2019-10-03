@@ -8,13 +8,13 @@ import pandas as pd
 # cds.enable()
 
 
-# FRED: Add better typing information
 class Particle:
     """Class defining and storing information of all particles with their position, velocity, energy, etc."""
 
     def __init__(self) -> None:
         """TBW."""
-        self.EMPTY_FRAME = pd.DataFrame()   # type: pd.DataFrame # FRED: This should be a class variable
+        # TODO: This should be a class variable
+        self.EMPTY_FRAME = pd.DataFrame()   # type: pd.DataFrame
         self.frame = pd.DataFrame()  # type: pd.DataFrame
 
     def get_values(self, quantity: str, id_list: t.Optional[list] = None) -> np.ndarray:
@@ -46,7 +46,7 @@ class Particle:
         :param id_list: list of particle ids: ``[0, 12, 321]``
         """
         if id_list:
-            # FRED: Check carefully if 'inplace' is needed. This could break lot of things.
+            # TODO: Check carefully if 'inplace' is needed. This could break lot of things.
             self.frame.query('index not in %s' % id_list, inplace=True)
         else:
             self.frame = self.EMPTY_FRAME.copy()

@@ -27,7 +27,7 @@ except ImportError:
 # @pyxel.validate
 # @pyxel.argument(name='', label='', units='', validate=)
 # @pyxel.register(group='charge_transfer', name='cdm', detector='ccd')
-# FRED: What is the type of 'tr_p', 'tr_s', 'nt_p', 'nt_s', 'sigma_p' and 'sigma_s' ?
+# TODO: What is the type of 'tr_p', 'tr_s', 'nt_p', 'nt_s', 'sigma_p' and 'sigma_s' ?
 #       Is it `t.Union[float, t.Iterable[float]]` ???
 def cdm(detector: CCD,
         parallel_cti: bool, serial_cti: bool,

@@ -6,32 +6,16 @@ from pathlib import Path
 
 import numpy as np
 
-# from pyxel.detectors.characteristics import Characteristics
 from pyxel.data_structure.charge import Charge
 from pyxel.data_structure.image import Image
 from pyxel.data_structure.photon import Photon
 from pyxel.data_structure.pixel import Pixel
 from pyxel.data_structure.signal import Signal
 from pyxel.detectors.environment import Environment
-# from pyxel.detectors.geometry import Geometry
 from pyxel.detectors.material import Material
 
-# from pyxel.detectors.cmos_geometry import CMOSGeometry                  # noqa: F401
-# from pyxel.detectors.ccd_geometry import CCDGeometry                    # noqa: F401
-# from pyxel.detectors.cmos_characteristics import CMOSCharacteristics    # noqa: F401
-# from pyxel.detectors.ccd_characteristics import CCDCharacteristics      # noqa:
 
-
-# FRED: There is a big flaw with this class.
-#       A `Detector` instance can have a `CCDGeometry` and a `CMOSCharacteristics`.
-#       This is not possible. We must solve this issue.
-#       Note: Several solution are possible:
-#         - Classes `Geometry`, `CCDGeometry` and `CMOSGeometry` have exactly the same attributes (not possible ?)
-#         - Remove 'geometry' and 'characteristics' from this class. Implement them only in `CCD` and `CMOSDetector`
-#         - Keep 'geometry' and 'chararacteristics' in this class. For class `CCD`,
-#           add a new attribute 'extra_ccd_geometry',
-#           for class `CMOSDetector`, add a new attribute 'extra_cmos_geometry'. Do the same for 'characteristics'
-# FRED: Add methods to save/load a `Detector` instance to the filesystem
+# TODO: Add methods to save/load a `Detector` instance to the filesystem
 #       Example of methods:
 #           def to_fits(self, filename: Path):      # Save into one FITS file that contains multiple HDUs
 #               ...
@@ -127,7 +111,7 @@ class Detector:
 
         return self._image
 
-    # FRED: Rename to 'reset' ?
+    # TODO: Rename to 'reset' ?
     def initialize(self, reset_all: bool = True) -> None:
         """TBW."""
         self._photon = Photon()
@@ -190,7 +174,7 @@ class Detector:
         """TBW."""
         return self._time
 
-    # FRED: This method is used in 'run.py'. We could implement this as an iterator.
+    # TODO: This method is used in 'run.py'. We could implement this as an iterator.
     def elapse_time(self) -> float:
         """TBW."""
         try:

@@ -8,6 +8,7 @@ from pathlib import Path
 import numpy as np
 
 from pyxel.calibration.fitting import ModelFitting
+from pyxel.calibration.util import CalibrationMode
 from pyxel.parametric.parameter_values import ParameterValues
 from pyxel.pipelines.model_function import ModelFunction
 from pyxel.pipelines.processor import Processor
@@ -18,60 +19,62 @@ try:
     import pygmo as pg
 except ImportError:
     import warnings
+
     warnings.warn("Cannot import 'pygmo", RuntimeWarning, stacklevel=2)
 
 
 class AlgorithmType(Enum):
     """TBW."""
 
-    Sade = 'sade'
-    Sga = 'sga'
-    Nlopt = 'nlopt'
+    Sade = "sade"
+    Sga = "sga"
+    Nlopt = "nlopt"
 
 
-# FRED: Put classes `Algorithm` and `Calibration` in separated files.
-# FRED: Maybe a new class `Sade` could contains some attributes ?
-# FRED: Maybe a new class `SGA` could contains some attributes ?
-# FRED: Maybe a new class `NLOPT` could contains some attributes ?
+# TODO: Put classes `Algorithm` and `Calibration` in separated files.
+# TODO: Maybe a new class `Sade` could contains some attributes ?
+# TODO: Maybe a new class `SGA` could contains some attributes ?
+# TODO: Maybe a new class `NLOPT` could contains some attributes ?
 class Algorithm:
     """TBW."""
 
-    def __init__(self,
-                 # TODO: Rename 'type' into 'algorithm_type'
-                 type: t.Union[AlgorithmType, str] = AlgorithmType.Sade,
-                 generations: int = 1,
-                 population_size: int = 1,
+    def __init__(
+        self,
+        # TODO: Rename 'type' into 'algorithm_type'
+        type: t.Union[AlgorithmType, str] = AlgorithmType.Sade,
+        generations: int = 1,
+        population_size: int = 1,
 
-                 # SADE #####
-                 variant: int = 2,
-                 variant_adptv: int = 1,
-                 ftol: float = 1e-6,
-                 xtol: float = 1e-6,
-                 memory: bool = False,
+        # SADE #####
+        variant: int = 2,
+        variant_adptv: int = 1,
+        ftol: float = 1e-6,
+        xtol: float = 1e-6,
+        memory: bool = False,
 
-                 # SGA #####
-                 cr: float = 0.9,
-                 eta_c: float = 1.0,
-                 m: float = 0.02,
-                 param_m: float = 1.0,
-                 param_s: int = 2,
-                 crossover: str = 'exponential',
-                 mutation: str = 'polynomial',
-                 selection: str = 'tournament',
+        # SGA #####
+        cr: float = 0.9,
+        eta_c: float = 1.0,
+        m: float = 0.02,
+        param_m: float = 1.0,
+        param_s: int = 2,
+        crossover: str = "exponential",
+        mutation: str = "polynomial",
+        selection: str = "tournament",
 
-                 # NLOPT #####
-                 nlopt_solver: str = 'neldermead',
-                 maxtime: int = 0,
-                 maxeval: int = 0,
-                 xtol_rel: float = 1.e-8,
-                 xtol_abs: float = 0.0,
-                 ftol_rel: float = 0.0,
-                 ftol_abs: float = 0.0,
-                 stopval: float = -math.inf,
-                 local_optimizer=None,
-                 replacement: str = 'best',
-                 nlopt_selection: str = 'best',
-                 ):
+        # NLOPT #####
+        nlopt_solver: str = "neldermead",
+        maxtime: int = 0,
+        maxeval: int = 0,
+        xtol_rel: float = 1.0e-8,
+        xtol_abs: float = 0.0,
+        ftol_rel: float = 0.0,
+        ftol_abs: float = 0.0,
+        stopval: float = -math.inf,
+        local_optimizer=None,
+        replacement: str = "best",
+        nlopt_selection: str = "best",
+    ):
         if generations not in range(1, 100001):
             raise ValueError("'generations' must be between 1 and 100000.")
 
@@ -216,6 +219,7 @@ class Algorithm:
     def memory(self, value: bool):
         """TBW."""
         self._memory = value
+
     # SADE #####
 
     # SGA #####
@@ -304,6 +308,7 @@ class Algorithm:
     def selection(self, value: str):
         """TBW."""
         self._selection = value
+
     # SGA #####
 
     # NLOPT #####
@@ -416,37 +421,46 @@ class Algorithm:
     def nlopt_selection(self, value: str):
         """TBW."""
         self._nlopt_selection = value
+
     # NLOPT #####
 
-    # FRED: This could be refactored for each if-statement
+    # TODO: This could be refactored for each if-statement
     def get_algorithm(self) -> t.Any:
         """TBW.
 
         :return:
         """
         if self.type is AlgorithmType.Sade:
-            opt_algorithm = pg.sade(gen=self.generations,
-                                    variant=self.variant,
-                                    variant_adptv=self.variant_adptv,
-                                    ftol=self.ftol,
-                                    xtol=self.xtol,
-                                    memory=self.memory)
+            opt_algorithm = pg.sade(
+                gen=self.generations,
+                variant=self.variant,
+                variant_adptv=self.variant_adptv,
+                ftol=self.ftol,
+                xtol=self.xtol,
+                memory=self.memory,
+            )
         elif self.type is AlgorithmType.Sga:
-            opt_algorithm = pg.sga(gen=self.generations,
-                                   cr=self.cr,                  # crossover probability
-                                   crossover=self.crossover,    # single, exponential, binomial, sbx
-                                   m=self.m,                    # mutation probability
-                                   mutation=self.mutation,      # uniform, gaussian, polynomial
-                                   param_s=self.param_s,        # number of best ind. in 'truncated'/tournament
-                                   selection=self.selection,    # tournament, truncated
-                                   eta_c=self.eta_c,            # distribution index for sbx crossover
-                                   param_m=self.param_m)        # mutation parameter
+            opt_algorithm = pg.sga(
+                gen=self.generations,
+                cr=self.cr,  # crossover probability
+                crossover=self.crossover,  # single, exponential, binomial, sbx
+                m=self.m,  # mutation probability
+                mutation=self.mutation,  # uniform, gaussian, polynomial
+                param_s=self.param_s,  # number of best ind. in 'truncated'/tournament
+                selection=self.selection,  # tournament, truncated
+                eta_c=self.eta_c,  # distribution index for sbx crossover
+                param_m=self.param_m,
+            )  # mutation parameter
         elif self.type is AlgorithmType.Nlopt:
             opt_algorithm = pg.nlopt(self.nlopt_solver)
-            opt_algorithm.maxtime = self.maxtime        # stop when the optimization time (in seconds) exceeds maxtime
-            opt_algorithm.maxeval = self.maxeval        # stop when the number of function evaluations exceeds maxeval
-            opt_algorithm.xtol_rel = self.xtol_rel      # relative stopping criterion for x
-            opt_algorithm.xtol_abs = self.xtol_abs      # absolute stopping criterion for x
+            opt_algorithm.maxtime = (
+                self.maxtime
+            )  # stop when the optimization time (in seconds) exceeds maxtime
+            opt_algorithm.maxeval = (
+                self.maxeval
+            )  # stop when the number of function evaluations exceeds maxeval
+            opt_algorithm.xtol_rel = self.xtol_rel  # relative stopping criterion for x
+            opt_algorithm.xtol_abs = self.xtol_abs  # absolute stopping criterion for x
             opt_algorithm.ftol_rel = self.ftol_rel
             opt_algorithm.ftol_abs = self.ftol_abs
             opt_algorithm.stopval = self.stopval
@@ -459,40 +473,34 @@ class Algorithm:
         return opt_algorithm
 
 
-class CalibrationMode(Enum):
-    """TBW."""
-
-    Pipeline = 'pipeline'
-    SingleModel = 'single_model'
-
-
 class ResultType(Enum):
     """TBW."""
 
-    Image = 'image'
-    Signal = 'signal'
-    Pixel = 'pixel'
+    Image = "image"
+    Signal = "signal"
+    Pixel = "pixel"
 
 
 class Calibration:
     """TBW."""
 
-    def __init__(self,
-                 output_dir=None,
-                 fitting: t.Optional[ModelFitting] = None,
-                 calibration_mode: CalibrationMode = CalibrationMode.Pipeline,
-                 result_type: ResultType = ResultType.Image,
-                 result_fit_range: t.Optional[list] = None,
-                 result_input_arguments: t.Optional[list] = None,
-                 target_data_path: t.Optional[list] = None,
-                 target_fit_range: t.Optional[list] = None,
-                 fitness_function: t.Optional[ModelFunction] = None,
-                 algorithm: t.Optional[Algorithm] = None,
-                 parameters: t.Optional[t.List[ParameterValues]] = None,
-                 seed: t.Optional[int] = None,
-                 islands: int = 0,
-                 weighting_path: t.Optional[list] = None,
-                 ):
+    def __init__(
+        self,
+        output_dir=None,
+        fitting: t.Optional[ModelFitting] = None,
+        calibration_mode: CalibrationMode = CalibrationMode.Pipeline,
+        result_type: ResultType = ResultType.Image,
+        result_fit_range: t.Optional[list] = None,
+        result_input_arguments: t.Optional[list] = None,
+        target_data_path: t.Optional[list] = None,
+        target_fit_range: t.Optional[list] = None,
+        fitness_function: t.Optional[ModelFunction] = None,
+        algorithm: t.Optional[Algorithm] = None,
+        parameters: t.Optional[t.List[ParameterValues]] = None,
+        seed: t.Optional[int] = None,
+        islands: int = 0,
+        weighting_path: t.Optional[list] = None,
+    ):
         if seed is not None and seed not in range(100001):
             raise ValueError("'seed' must be between 0 and 100000.")
 
@@ -666,8 +674,7 @@ class Calibration:
         """TBW."""
         self._weighting_path = value
 
-    def run_calibration(self, processor: Processor,
-                        output_dir: Path) -> list:
+    def run_calibration(self, processor: Processor, output_dir: Path) -> list:
         """TBW.
 
         :param processor: Processor object
@@ -675,27 +682,24 @@ class Calibration:
         :return:
         """
         pg.set_global_rng_seed(seed=self.seed)
-        logging.info('Seed: %d', self.seed)
+        logging.info("Seed: %d", self.seed)
 
         self.output_dir = output_dir
-        self.fitting = ModelFitting(processor=processor,
-                                    variables=self.parameters)
+        self.fitting = ModelFitting(processor=processor, variables=self.parameters)
 
-        settings = {
-            'calibration_mode': self.calibration_mode,
-            'generations': self.algorithm.generations,
-            'population_size': self.algorithm.population_size,
-            'simulation_output': self.result_type,
-            'fitness_func': self.fitness_function,
-            'target_output': self.target_data_path,
-            'target_fit_range': self.target_fit_range,
-            'out_fit_range': self.result_fit_range,
-            'input_arguments': self.result_input_arguments,
-            'weighting': self.weighting_path,
-            'file_path': output_dir
-        }
-        # HANS: it may be better to pass this in as **settings. Need to discuss. There are many arguments.
-        self.fitting.configure(settings)
+        self.fitting.configure(
+            calibration_mode=self.calibration_mode,
+            generations=self.algorithm.generations,
+            population_size=self.algorithm.population_size,
+            simulation_output=self.result_type,
+            fitness_func=self.fitness_function,
+            target_output=self.target_data_path,
+            target_fit_range=self.target_fit_range,
+            out_fit_range=self.result_fit_range,
+            input_arguments=self.result_input_arguments,
+            weighting=self.weighting_path,
+            file_path=output_dir,
+        )
 
         prob = pg.problem(self.fitting)
         opt_algorithm = self.algorithm.get_algorithm()
@@ -719,8 +723,13 @@ class Calibration:
         #     pop = pg.population(prob=prob, size=self.algorithm.population_size)
 
         if self.islands > 1:  # default
-            archi = pg.archipelago(n=self.islands, algo=algo, prob=prob,
-                                   pop_size=self.algorithm.population_size, udi=pg.mp_island())
+            archi = pg.archipelago(
+                n=self.islands,
+                algo=algo,
+                prob=prob,
+                pop_size=self.algorithm.population_size,
+                udi=pg.mp_island(),
+            )
             archi.evolve()
             logging.info(archi)
             archi.wait_check()
@@ -737,7 +746,7 @@ class Calibration:
         for f, x in zip(champion_f, champion_x):
             res += [self.fitting.get_results(overall_fitness=f, parameter=x)]
 
-        logging.info('Calibration ended.')
+        logging.info("Calibration ended.")
         return res
 
     def post_processing(self, calib_results: list, output: Outputs):
@@ -751,8 +760,12 @@ class Calibration:
             ii = 0
             for processor, target_data in zip(proc_list, self.fitting.all_target_data):
                 simulated_data = self.fitting.get_simulated_data(processor)
-                output.fitting_plot(target_data=target_data, simulated_data=simulated_data, data_i=ii)
+                output.fitting_plot(
+                    target_data=target_data, simulated_data=simulated_data, data_i=ii
+                )
                 ii += 1
-            output.fitting_plot_close(result_type=self.result_type, island=result_dict['island'])
+            output.fitting_plot_close(
+                result_type=self.result_type, island=result_dict["island"]
+            )
 
         output.calibration_plots(calib_results[0][1])

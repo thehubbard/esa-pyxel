@@ -14,10 +14,7 @@ def check_energy(initial_energy: t.Union[int, float]) -> None:
     :param initial_energy:
     :return:
     """
-    # FRED: Flatten this
-    if isinstance(initial_energy, int) or isinstance(initial_energy, float):
-        pass
-    else:
+    if not isinstance(initial_energy, int) and not isinstance(initial_energy, float):
         raise ValueError('Given particle energy could not be read')
 
 

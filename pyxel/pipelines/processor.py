@@ -8,7 +8,7 @@ from pyxel.pipelines.pipeline import DetectionPipeline, ModelGroup
 from pyxel.state import get_obj_att, get_value
 
 
-# FRED: Is this class needed ?
+# TODO: Is this class needed ?
 class Processor:
     """TBW."""
 
@@ -30,7 +30,7 @@ class Processor:
     #         'pipeline': self.pipeline,
     #     }
 
-    # FRED: Could it be renamed '__contains__' ?
+    # TODO: Could it be renamed '__contains__' ?
     def has(self, key: str) -> bool:
         """TBW.
 
@@ -45,7 +45,7 @@ class Processor:
             found = True
         return found
 
-    # FRED: Could it be renamed '__getitem__' ?
+    # TODO: Could it be renamed '__getitem__' ?
     def get(self, key: str) -> t.Any:
         """TBW.
 
@@ -54,7 +54,7 @@ class Processor:
         """
         return get_value(self, key)
 
-    # FRED: Could it be renamed '__setitem__' ?
+    # TODO: Could it be renamed '__setitem__' ?
     def set(self, key: str, value: t.Any, convert_value: bool = True) -> None:
         """TBW.
 

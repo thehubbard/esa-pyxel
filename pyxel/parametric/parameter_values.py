@@ -23,7 +23,7 @@ class ParameterValues:
         :param current:
         :param logarithmic:
         """
-        # TODO: should the values be evaluated?
+        # TODO: should these values be evaluated?
         self.key = key                              # unique identifier to the step. example: detector.geometry.row
         self.values = values                        # type: t.List[t.Union[float, int]]
         self.enabled = enabled                      # type: bool
@@ -36,7 +36,7 @@ class ParameterValues:
         values = eval_range(self.values)
         return len(values)
 
-    # FRED: Do you need magic method '__contains__' ? If yes then this class will act as a `Collections.abc.Sequence`
+    # TODO: Is method '__contains__' needed ? If yes then this class will act as a `Collections.abc.Sequence`
     def __iter__(self) -> t.Iterator[t.Union[float, int]]:
         """TBW."""
         values = eval_range(self.values)

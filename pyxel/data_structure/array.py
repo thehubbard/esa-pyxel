@@ -4,11 +4,11 @@ import typing as t  # noqa: F401
 import numpy as np
 from astropy.units import cds
 
-# FRED: Is it possible to move this to `data_structure/__init__.py' ?
+# TODO: Is it possible to move this to `data_structure/__init__.py' ?
 cds.enable()
 
 
-# FRED: Does it make sense to force 'self._array' to be read-only ?
+# TODO: Does it make sense to force 'self._array' to be read-only ?
 #       It could be done with:
 #       ... self._array = np.array(value)
 #       ... self._array.setflags(write=False)
@@ -18,16 +18,16 @@ class Array:
     EXP_TYPE = type(None)  # type: t.Type
     TYPE_LIST = ()  # type: t.Tuple[t.Type, ...]
 
-    # FRED: Add units ?
+    # TODO: Add units ?
     def __init__(self):
         """TBW."""
-        # FRED: self.exp_type and self.type_list could be Class variables instead of instance variable
+        # TODO: self.exp_type and self.type_list could be Class variables instead of instance variable
         #       It is more clear
-        # FRED: is `self.type` needed ?
+        # TODO: is `self.type` needed ?
 
         self.type = None            # type: t.Optional[type]
 
-        # FRED: Implement a method to initialized 'self._array' ???
+        # TODO: Implement a method to initialized 'self._array' ???
         self._array = None          # type: t.Optional[np.ndarray]
 
     @property

@@ -20,19 +20,17 @@ def configure(mf, sim):
     """TBW."""
     pg.set_global_rng_seed(sim.calibration.seed)
     np.random.seed(sim.calibration.seed)
-    settings = {
-        'calibration_mode': sim.calibration.calibration_mode,
-        'generations': sim.calibration.algorithm.generations,
-        'population_size': sim.calibration.algorithm.population_size,
-        'simulation_output': sim.calibration.result_type,
-        'fitness_func': sim.calibration.fitness_function,
-        'target_output': sim.calibration.target_data_path,
-        'target_fit_range': sim.calibration.target_fit_range,
-        'out_fit_range': sim.calibration.result_fit_range,
-        'weighting': sim.calibration.weighting_path,
-        'file_path': None
-    }
-    mf.configure(settings)
+
+    mf.configure(calibration_mode=sim.calibration.calibration_mode,
+                 generations=sim.calibration.algorithm.generations,
+                 population_size=sim.calibration.algorithm.population_size,
+                 simulation_output=sim.calibration.result_type,
+                 fitness_func=sim.calibration.fitness_function,
+                 target_output=sim.calibration.target_data_path,
+                 target_fit_range=sim.calibration.target_fit_range,
+                 out_fit_range=sim.calibration.result_fit_range,
+                 weighting=sim.calibration.weighting_path,
+                 file_path=None)
 
 
 @pytest.mark.skipif(not WITH_PYGMO, reason="Package 'pygmo' is not installed.")

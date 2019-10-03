@@ -10,7 +10,8 @@ if t.TYPE_CHECKING:
     from ..pipelines.pipeline import DetectionPipeline
 
 
-# FRED: Build this class with ESAPY_EGSE.
+# TODO: These methods could also be as a `abc.Sequence` with magical methods:
+#       __getitem__, __iter__, __len__, __contains__, ...
 class ModelGroup:
     """TBW."""
 
@@ -26,7 +27,7 @@ class ModelGroup:
         copied_models = deepcopy(self.models)
         return ModelGroup(models=copied_models)
 
-    # FRED: Why is this method returning a `bool` ?
+    # TODO: Why is this method returning a `bool` ?
     def run(self, detector: "Detector", pipeline: "DetectionPipeline", abort_model: t.Optional[str] = None) -> bool:
         """Execute each enabled model in this group."""
         for model in self.models:
@@ -39,10 +40,7 @@ class ModelGroup:
                     model.function(detector)
         return False
 
-    # FRED: These methods could also be implemented:
-    #       __getitem__, __iter__, __len__, __contains__, __eq__, ...
-
-    # FRED: Is it needed ? if yes then you could also implement
+    # TODO: Is it needed ? if yes then you could also implement
     #       the magic method '__dir__'. It is useful for auto-completion
     def __getattr__(self, item: str) -> t.Optional[ModelFunction]:
         """TBW."""

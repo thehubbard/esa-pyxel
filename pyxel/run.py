@@ -37,8 +37,13 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
     if random_seed:
         np.random.seed(random_seed)
 
-    # FRED: 'cfg' is a `dict`. It would better to use an object create from a class
-    #       built by 'esapy_config'
+    # TODO: 'cfg' is a `dict`. It would better to use an helper class. See Issue #60.
+    #       Example:
+    #           >>> cfg = io.load(input_filename)
+    #           >>> cfg.pipeline
+    #           ...
+    #           >>> cfg.simulation
+    #           ...
     cfg = io.load(Path(input_filename))  # type: dict
 
     pipeline = cfg['pipeline']  # type: DetectionPipeline
@@ -58,17 +63,8 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
     out.set_input_file(input_filename)
     detector.set_output_dir(out.output_dir)
 
-    # HANS: place all code in each if block into a separate function
-    #   and use a dict call map. Example:
-    #   mode_funcs = {
-    #       'single': run_single_mode,
-    #       'calibration': run_calibration_mode,
-    #       'parametric': run_parametric_mode,
-    #       ... etc ...
-    #   }
-
-    # HANS: place logger Mode line outside if / elif /else block. Example:
-    #   logger.info('Mode: %r', simulation.mode)
+    # TODO: Create new separate functions 'run_single', 'run_calibration', 'run_parametric'
+    #       and 'run_dynamic'. See issue #61.
     if simulation.mode == 'single':
         logging.info('Mode: Single')
 
@@ -120,7 +116,9 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
             detector.set_dynamic(steps=simulation.dynamic['steps'],
                                  time_step=simulation.dynamic['t_step'],
                                  ndreadout=simulation.dynamic['non_destructive_readout'])
-        while detector.elapse_time():  # FRED: Use an iterator for that ?
+
+        # TODO: Use an iterator for that ?
+        while detector.elapse_time():
             logging.info('time = %.3f s', detector.time)
             if detector.is_non_destructive_readout:
                 detector.initialize(reset_all=False)
@@ -140,8 +138,8 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
     out.save_log_file()
 
 
-# FRED: Add an option to display colors ? (very optional)
-# FRED: Use library 'click' instead of 'parser' ? (very optional)
+# TODO: Use library 'click' instead of 'parser' ? See issue #62
+#       Add an option to display colors ? (very optional)
 def main():
     """Define the argument parser and run Pyxel."""
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter,
