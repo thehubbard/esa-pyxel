@@ -37,6 +37,7 @@ class ModelGroup:
                 raise util.PipelineAborted('Pipeline has been aborted.')
             else:
                 if model.enabled:
+                    # TODO: Display here information about the executed model
                     model.function(detector)
         return False
 

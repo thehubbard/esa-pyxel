@@ -4,7 +4,8 @@ import typing as t
 
 import numpy as np
 
-from pyxel.detectors.detector import Detector
+from pyxel.data_structure import Photon
+from pyxel.detectors import Detector
 
 
 # TODO: Fix this
@@ -49,7 +50,7 @@ def illumination(detector: Detector,
             shape = detector.photon.array.shape
         except AttributeError:
             geo = detector.geometry
-            detector.photon.new_array(np.zeros((geo.row, geo.col), dtype=int))
+            detector.photon = Photon(np.zeros((geo.row, geo.col), dtype=int))
             shape = detector.photon.array.shape
     else:
         shape = tuple(array_size)
@@ -84,6 +85,6 @@ def illumination(detector: Detector,
     try:
         detector.photon.array += photon_array
     except TypeError:
-        detector.photon.new_array(photon_array)
+        detector.photon = Photon(photon_array)
     except ValueError:
         raise ValueError('Shapes of arrays do not match')

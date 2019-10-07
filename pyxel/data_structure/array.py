@@ -19,16 +19,47 @@ class Array:
     TYPE_LIST = ()  # type: t.Tuple[t.Type, ...]
 
     # TODO: Add units ?
-    def __init__(self):
+    def __init__(self, value: np.ndarray):
         """TBW."""
-        # TODO: self.exp_type and self.type_list could be Class variables instead of instance variable
-        #       It is more clear
-        # TODO: is `self.type` needed ?
+        self.validate_type(value)
 
-        self.type = None            # type: t.Optional[type]
+        self._array = value  # type: np.ndarray
+
+        # TODO: is `self.type` needed ?
+        # self.type = None            # type: t.Optional[type]
 
         # TODO: Implement a method to initialized 'self._array' ???
-        self._array = None          # type: t.Optional[np.ndarray]
+
+    def __repr__(self):
+        """TBW."""
+        cls_name = self.__class__.__name__
+        shape = self._array.shape
+        dtype = self._array.dtype
+
+        return f"{cls_name}<shape={shape}, dtype={dtype}>"
+
+    def validate_type(self, value) -> None:
+        """Validate a value.
+
+        Parameters
+        ----------
+        value
+        """
+        cls_name = self.__class__.__name__  # type: str
+
+        if not isinstance(value, np.ndarray):
+            raise TypeError(f"{cls_name} array should be a numpy.ndarray")
+
+        if value.dtype not in self.TYPE_LIST:
+            exp_type_name = self.EXP_TYPE.__name__  # type: str
+            raise TypeError(f"Expected type of {cls_name} array is {exp_type_name}.")
+
+    def validate_shape(self, value) -> None:
+        """TBW."""
+        cls_name = self.__class__.__name__  # type: str
+
+        if value.shape != self._array.shape:
+            raise ValueError(f"Expected {cls_name} array is {self._array.shape}.")
 
     @property
     def array(self) -> np.ndarray:
@@ -37,8 +68,8 @@ class Array:
 
         Only accepts an array with the right type and shape.
         """
-        if self._array is None:
-            raise ValueError("'array' is not initialized.")
+        # if self._array is None:
+        #     raise ValueError("'array' is not initialized.")
 
         return self._array
 
@@ -49,18 +80,10 @@ class Array:
 
         Only accepts an array with the right type and shape.
         """
-        if not isinstance(value, np.ndarray):
-            raise TypeError('%s array should be a numpy.ndarray' % self.__class__.__name__)
+        self.validate_type(value)
+        self.validate_shape(value)
 
-        if value.dtype not in self.TYPE_LIST:
-            raise TypeError('Type of %s array should be a(n) %s' %
-                            (self.__class__.__name__, self.EXP_TYPE.__name__))
-
-        if value.shape != self.array.shape:
-            raise ValueError('Shape of %s array should be %s' %
-                             (self.__class__.__name__, str(self.array.shape)))
-
-        self.type = value.dtype
+        # self.type = value.dtype
         self._array = value
 
     # # TODO: Is it necessary ? Maybe not if you implement method __array__

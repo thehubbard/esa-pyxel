@@ -26,6 +26,6 @@ class Signal(Array):
 
         :param geo:
         """
-        super().__init__()                  # TODO: add unit (V)
+        new_array = np.zeros((geo.row, geo.col), dtype=self.EXP_TYPE)
 
-        self._array = np.zeros((geo.row, geo.col), dtype=self.EXP_TYPE)
+        super().__init__(new_array)                  # TODO: add unit (V)

@@ -1,16 +1,17 @@
 """The detector attribute and data structure subpackage."""
 
+# flake8: noqa
 # Warning: Import order matters
-from pyxel.detectors.material import Material
-from pyxel.detectors.environment import Environment
-from pyxel.detectors.ccd import CCD
-from pyxel.detectors.cmos import CMOS
-from pyxel.detectors.geometry import Geometry
-from pyxel.detectors.characteristics import Characteristics
-from pyxel.detectors.detector import Detector
-from pyxel.detectors.optics import Optics
+from .material import Material
+from .environment import Environment
+from .ccd import CCD
+from .cmos import CMOS
+from .geometry import Geometry
+from .characteristics import Characteristics
+from .detector import Detector
+from .optics import Optics
 
 
 # TODO: Is '__all__' really necessary ?
-__all__ = ['Detector', 'CCD', 'CMOS',
-           'Geometry', 'Characteristics', 'Material', 'Environment', 'Optics']
+# __all__ = ['Detector', 'CCD', 'CMOS',
+#            'Geometry', 'Characteristics', 'Material', 'Environment', 'Optics']

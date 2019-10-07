@@ -7,7 +7,8 @@ import numpy as np
 import poppy as op
 from scipy import signal
 
-from pyxel.detectors.detector import Detector
+from pyxel.data_structure import Photon
+from pyxel.detectors import Detector
 
 
 # @validators.validate
@@ -124,8 +125,7 @@ def optical_psf(detector: Detector,
     # ax_orig.set_axis_off()
 
     # Convolution
-    a = detector.photon.array.shape[0]
-    b = detector.photon.array.shape[1]
+    a, b = detector.photon.array.shape
     new_shape = (a + 2 * fov_pixels, b + 2 * fov_pixels)
     array = np.zeros(new_shape, detector.photon.array.dtype)
     roi = slice(fov_pixels, fov_pixels + a), slice(fov_pixels, fov_pixels + b)
@@ -135,7 +135,8 @@ def optical_psf(detector: Detector,
                               psf[0][0].data,
                               mode='same',
                               boundary='fill', fillvalue=0)
-    detector.photon.new_array(array)
+
+    detector.photon = Photon(array)
 
     # plt.figure()
     # ax_int = plt.gca()

@@ -79,6 +79,10 @@ class Detector:
 
         return self._photon
 
+    @photon.setter
+    def photon(self, obj: Photon):
+        self._photon = obj
+
     @property
     def charge(self) -> Charge:
         """TBW."""
@@ -114,7 +118,7 @@ class Detector:
     # TODO: Rename to 'reset' ?
     def initialize(self, reset_all: bool = True) -> None:
         """TBW."""
-        self._photon = Photon()
+        self._photon = None
         if reset_all:
             self._charge = Charge()
             self._pixel = Pixel(self.geometry)

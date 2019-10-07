@@ -4,7 +4,8 @@ import typing as t
 
 from astropy.io import fits
 
-from pyxel.detectors.detector import Detector
+from pyxel.data_structure import Photon
+from pyxel.detectors import Detector
 
 
 # TODO: Fix this
@@ -43,4 +44,4 @@ def load_image(detector: Detector,
         cht = detector.characteristics
         photon_array = photon_array / (cht.qe * cht.eta * cht.sv * cht.amp * cht.a1 * cht.a2)
 
-    detector.photon.new_array(photon_array)
+    detector.photon = Photon(photon_array)
