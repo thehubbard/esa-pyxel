@@ -501,19 +501,11 @@ class ModelFitting:
             best_champ_index = np.argmin(self.champion_f_list)
 
             if self.fitness_array[best_index] < self.champion_f_list[best_champ_index]:
-                self.champion_f_list = np.vstack(
-                    (self.champion_f_list, self.fitness_array[best_index])
-                )
-                self.champion_x_list = np.vstack(
-                    (self.champion_x_list, self.population[best_index])
-                )
+                self.champion_f_list = np.vstack((self.champion_f_list, self.fitness_array[best_index]))
+                self.champion_x_list = np.vstack((self.champion_x_list, self.population[best_index]))
             else:
-                self.champion_f_list = np.vstack(
-                    (self.champion_f_list, self.champion_f_list[-1])
-                )
-                self.champion_x_list = np.vstack(
-                    (self.champion_x_list, self.champion_x_list[-1])
-                )
+                self.champion_f_list = np.vstack((self.champion_f_list, self.champion_f_list[-1]))
+                self.champion_x_list = np.vstack((self.champion_x_list, self.champion_x_list[-1]))
 
         # TODO: should we keep and write to file the population(s) which had the champion inside?
         # because usually this is not the last population currently we save to file!
@@ -536,9 +528,7 @@ class ModelFitting:
             self.fitness_array = np.array([overall_fitness])
             self.population = parameter
         else:
-            self.fitness_array = np.vstack(
-                (self.fitness_array, np.array([overall_fitness]))
-            )
+            self.fitness_array = np.vstack((self.fitness_array, np.array([overall_fitness])))
             self.population = np.vstack((self.population, parameter))
 
     def add_to_champ_file(self, parameter: np.ndarray) -> None:
@@ -567,9 +557,7 @@ class ModelFitting:
         assert self.fitness_array is not None
         assert self.file_path
 
-        pop_file = self.file_path.joinpath(
-            f"population_id_{id(self)}.out"
-        )  # type: Path
+        pop_file = self.file_path.joinpath(f"population_id_{id(self)}.out")
         str_format = "%d" + (len(parameter) + 1) * " %.6E"
         with pop_file.open("wb") as file2:
             np.savetxt(
