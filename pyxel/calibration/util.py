@@ -22,56 +22,72 @@ class ResultType(Enum):
     Pixel = "pixel"
 
 
-def read_data(filenames: t.List[Path]) -> t.List[np.ndarray]:
+def read_single_data(filename: Path) -> np.ndarray:
+    """TBW.
+
+    Parameters
+    ----------
+    filename
+
+    Returns
+    -------
+    array
+        TBW.
+    """
+    if not isinstance(filename, Path):
+        raise TypeError("Expecting a `Path` object.")
+
+    if not filename.exists():
+        raise FileNotFoundError(f"Input file '{filename}' can not be found.")
+
+    # TODO: change to Path(path).suffix.lower().startswith('.fit')
+    #       Same applies to `.npy`.
+    if '.fits' in filename.suffix:
+        data = fits.getdata(filename)  # type: np.ndarray
+
+    elif '.npy' in filename.suffix:
+        data = np.load(filename)
+
+    else:
+        # TODO: this is a convoluted implementation. Change to:
+        # for sep in [' ', ',', '|', ';']:
+        #     try:
+        #         data = np.loadtxt(path, delimiter=sep[ii])
+        #     except ValueError:
+        #         pass
+        #     else:
+        #         break
+        sep = [' ', ',', '|', ';']
+        ii, jj = 0, 1
+        while jj:
+            try:
+                jj -= 1
+                data = np.loadtxt(filename, delimiter=sep[ii])
+            except ValueError:
+                ii += 1
+                jj += 1
+                if ii >= len(sep):
+                    break
+
+    # TODO: Is it the right manner ?
+    if data is None:
+        raise IOError("Input file '{filename}' can not be read by Pyxel.")
+
+    return data
+
+
+def read_data(filenames: t.Sequence[t.Union[str, Path]]) -> t.List[np.ndarray]:
     """TBW.
 
     :param filenames:
     :return:
     """
-    # # if isinstance(data_path, str):
-    # #     data_path = [data_path]
-    # elif isinstance(data_path, list) and all(isinstance(item, str) for item in data_path):
-    #     pass
-    # else:
-    #     raise TypeError
-
     output = []  # type: t.List[np.ndarray]
 
-    for _, filename in enumerate(filenames):
-        if not filename.exists():
-            raise FileNotFoundError(f"Input file '{filename}' can not be found.")
+    for filename in filenames:
+        data = read_single_data(Path(filename))
 
-        # TODO: change to Path(path).suffix.lower().startswith('.fit')
-        #       Same applies to `.npy`.
-        if '.fits' in filename.suffix:
-            data = fits.getdata(filename)  # type: np.ndarray
-        elif '.npy' in filename.suffix:
-            data = np.load(filename)
-        else:
-            # TODO: this is a convoluted implementation. Change to:
-            # for sep in [' ', ',', '|', ';']:
-            #     try:
-            #         data = np.loadtxt(path, delimiter=sep[ii])
-            #     except ValueError:
-            #         pass
-            #     else:
-            #         break
-            sep = [' ', ',', '|', ';']
-            ii, jj = 0, 1
-            while jj:
-                try:
-                    jj -= 1
-                    data = np.loadtxt(filename, delimiter=sep[ii])
-                except ValueError:
-                    ii += 1
-                    jj += 1
-                    if ii >= len(sep):
-                        break
-
-        if data is None:
-            raise IOError("Input file '{filename}' can not be read by Pyxel.")
-        else:
-            output += [data]
+        output += [data]
 
     return output
 

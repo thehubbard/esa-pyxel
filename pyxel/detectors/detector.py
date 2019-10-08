@@ -75,8 +75,8 @@ class Detector:
     def photon(self) -> Photon:
         """TBW."""
         if not self._photon:
-            raise RuntimeError("'photon' not initialized.")
-
+            raise RuntimeError("Photon array is not initialized ! "
+                               "Please use a 'Photon Generation' model")
         return self._photon
 
     @photon.setter

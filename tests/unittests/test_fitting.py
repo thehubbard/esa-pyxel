@@ -1,9 +1,12 @@
 """Unittests for the 'ModelFitting' class."""
+from pathlib import Path
+
 import numpy as np
 import pytest
 
 import pyxel.io as io
 from pyxel.calibration.fitting import ModelFitting
+from pyxel.calibration.util import CalibrationMode, ResultType
 from pyxel.detectors import CCD
 from pyxel.parametric.parametric import Configuration
 from pyxel.pipelines.pipeline import DetectionPipeline
@@ -52,10 +55,10 @@ def test_configure_params(yaml_file):
 
     configure(mf, simulation)
 
-    assert mf.calibration_mode == 'pipeline'
+    assert mf.calibration_mode == CalibrationMode.Pipeline
     assert mf.sim_fit_range == slice(2, 5, None)
     assert mf.targ_fit_range == slice(1, 4, None)
-    assert mf.sim_output == 'image'
+    assert mf.sim_output == ResultType.Image
 
 
 @pytest.mark.skipif(not WITH_PYGMO, reason="Package 'pygmo' is not installed.")
@@ -74,7 +77,7 @@ def test_configure_fits_target(yaml):
     configure(mf, simulation)
     assert mf.sim_fit_range == (slice(2, 5, None), slice(4, 7, None))
     assert mf.targ_fit_range == (slice(1, 4, None), slice(5, 8, None))
-    assert mf.sim_output == 'image'
+    assert mf.sim_output == ResultType.Image
     expected = np.array([[3858.44799859, 3836.11204939, 3809.85008514],
                          [4100.87410744, 4053.26348117, 4018.33656962],
                          [4233.53215652, 4021.60164244, 3969.79740826]])
@@ -137,13 +140,12 @@ def test_calculate_fitness(simulated_data, target_data, expected_fitness):
     assert fitness == expected_fitness
     print('fitness: ', fitness)
 
-
 @pytest.mark.skipif(not WITH_PYGMO, reason="Package 'pygmo' is not installed.")
 @pytest.mark.parametrize('yaml, factor, expected_fitness',
                          [
-                             ('tests/data/calibrate_weighting.yaml', 1, 0.),
-                             ('tests/data/calibrate_weighting.yaml', 2, 310815803081.51117),
-                             ('tests/data/calibrate_weighting.yaml', 3, 621631606163.0223),
+                             (Path('tests/data/calibrate_weighting.yaml'), 1, 0.),
+                             (Path('tests/data/calibrate_weighting.yaml'), 2, 310815803081.51117),
+                             (Path('tests/data/calibrate_weighting.yaml'), 3, 621631606163.0223),
                          ])
 def test_weighting(yaml, factor, expected_fitness):
     """Test"""

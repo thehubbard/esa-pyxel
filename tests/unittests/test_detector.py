@@ -47,12 +47,13 @@ def test_init(cls, geometry, environment, characteristics, material):
     assert obj.characteristics is characteristics
     assert obj.material is material
 
-    assert obj.photon is not None
     assert obj.charge is not None
     assert obj.pixel is not None
     assert obj.signal is not None
     assert obj.image is not None
 
+    with pytest.raises(RuntimeError, match=r"Photon array is not initialized ! Please use a 'Photon Generation' model"):
+        _ = obj.photon
 #
 # @pytest.mark.parametrize("obj, other_obj", [
 #     (Detector(Geometry(), Material(), Environment(), Characteristics()),        # TODO
