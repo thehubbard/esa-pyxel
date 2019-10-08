@@ -23,17 +23,17 @@ from pyxel.models.charge_generation.tars.util import (  # , load_histogram_data
 # @validators.validate
 # @config.argument(name='', label='', units='', validate=)
 def run_tars(detector: Detector,
-             simulation_mode: str = None,
-             running_mode: str = None,
-             particle_type: str = None,
-             initial_energy: t.Union[str, float] = None,
-             particle_number: int = None,
-             incident_angles: tuple = None,
-             starting_position: tuple = None,
+             simulation_mode: t.Optional[str] = None,
+             running_mode: t.Optional[str] = None,
+             particle_type: t.Optional[str] = None,
+             initial_energy: t.Optional[t.Union[str, float]] = None,
+             particle_number: t.Optional[int] = None,
+             incident_angles: t.Optional[t.Tuple[str, str]] = None,
+             starting_position: t.Optional[t.Tuple[str, str, str]] = None,
              # step_size_file: str = None,
              # stopping_file: str = None,
-             spectrum_file: str = None,
-             random_seed: int = None):
+             spectrum_file: t.Optional[str] = None,
+             random_seed: t.Optional[int] = None):
     """Simulate charge deposition by cosmic rays.
 
     :param detector: Pyxel detector object
@@ -50,7 +50,6 @@ def run_tars(detector: Detector,
     logging.info('')
     if random_seed:
         np.random.seed(random_seed)
-    tars = TARS(detector)
 
     if simulation_mode is None:
         raise ValueError('TARS: Simulation mode is not defined')
@@ -69,6 +68,8 @@ def run_tars(detector: Detector,
         incident_angles = ('random', 'random')
     if starting_position is None:
         starting_position = ('random', 'random', 'random')
+
+    tars = TARS(detector)
 
     tars.set_simulation_mode(simulation_mode)
     tars.set_particle_type(particle_type)                # MeV
@@ -217,8 +218,8 @@ class TARS:
         self.part_type = None
         self.init_energy = None
         self.particle_number = None
-        self.angle_alpha = None
-        self.angle_beta = None
+        self.angle_alpha = None  # type: t.Optional[str]
+        self.angle_beta = None  # type: t.Optional[str]
         self.position_ver = None
         self.position_hor = None
         self.position_z = None
@@ -255,7 +256,7 @@ class TARS:
         """
         self.particle_number = number
 
-    def set_incident_angles(self, angles):
+    def set_incident_angles(self, angles: t.Tuple[str, str]):
         """TBW.
 
         :param angles:
@@ -348,11 +349,11 @@ class TARS:
         """TBW."""
         # print("TARS - simulation processing...\n")
 
-        self.sim_obj.parameters(self.simulation_mode,
-                                self.part_type,
-                                self.init_energy,
-                                self.position_ver, self.position_hor, self.position_z,
-                                self.angle_alpha, self.angle_beta)
+        self.sim_obj.parameters(sim_mode=self.simulation_mode,
+                                part_type=self.part_type,
+                                init_energy=self.init_energy,
+                                pos_ver=self.position_ver, pos_hor=self.position_hor, pos_z=self.position_z,
+                                alpha=self.angle_alpha, beta=self.angle_beta)
         out_path = 'data/'
         for k in tqdm(range(0, self.particle_number)):
             # for k in range(0, self.particle_number):

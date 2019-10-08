@@ -4,9 +4,10 @@ from pathlib import Path
 
 import yaml
 
-from pyxel.state import get_state_dict, get_value
-
 from ..evaluator import evaluate_reference
+
+# from pyxel.state import get_state_dict, get_value
+
 
 try:
     # Use LibYAML library
@@ -15,7 +16,7 @@ except ImportError:
     from yaml import SafeLoader  # type: ignore   # noqa
 
 
-__all__ = ['load', 'dump', 'ObjectModelLoader']
+__all__ = ['load', 'ObjectModelLoader']
 
 
 class ObjectModelLoader(yaml.SafeLoader):
@@ -62,16 +63,16 @@ class ObjectModelLoader(yaml.SafeLoader):
         cls.add_constructor('!Class', _constructor_class)
         cls.add_constructor('!Object', _constructor_object)
 
-
-class ObjectModelDumper(yaml.SafeDumper):
-    """Custom `SafeDumper` that represents Pyxel objects.
-
-    This class is not directly instantiated by user code, but instead is
-    used to maintain the available constructor functions that are
-    called when parsing a YAML stream.  See the `PyYaml documentation
-    <http://pyyaml.org/wiki/PyYAMLDocumentation>`_ for details of the
-    class signature.
-    """
+#
+# class ObjectModelDumper(yaml.SafeDumper):
+#     """Custom `SafeDumper` that represents Pyxel objects.
+#
+#     This class is not directly instantiated by user code, but instead is
+#     used to maintain the available constructor functions that are
+#     called when parsing a YAML stream.  See the `PyYaml documentation
+#     <http://pyyaml.org/wiki/PyYAMLDocumentation>`_ for details of the
+#     class signature.
+#     """
 
 
 def _constructor_object(loader: ObjectModelLoader, node: yaml.Node):
@@ -179,35 +180,35 @@ def load_yaml(stream: t.Union[str, t.IO]):
     return result
 
 
-def dump(cfg_obj) -> str:
-    """Serialize a Python object into a YAML stream.
-
-    :param cfg_obj: Object to serialize to YAML.
-    :return: the YAML output as a `str`.
-    """
-    cfg_map = get_state_dict(cfg_obj)
-
-    class_name = ''
-    keys = []
-    for paths in ObjectModelLoader.class_paths:
-        class_name = paths[-1]
-        key = '.'.join([str(path) for path in paths[:-1]])
-        if '.None' in key:
-            none_key = key.split('.None')[0]
-            cfg_map_val = get_value(cfg_map, none_key)
-            att_keys = cfg_map_val.keys()
-            for att_key in att_keys:
-                keys.append(key.replace('None', att_key))
-        else:
-            keys.append(key)
-
-    for key in keys:
-        cfg_map_val = get_value(cfg_map, key)
-        cfg_obj_val = get_value(cfg_obj, key)
-        cfg_map_val[class_name] = cfg_obj_val.__module__ + '.' + cfg_obj_val.__class__.__name__
-
-    result = yaml.dump(cfg_map, default_flow_style=False)
-    return result
+# def dump(cfg_obj) -> str:
+#     """Serialize a Python object into a YAML stream.
+#
+#     :param cfg_obj: Object to serialize to YAML.
+#     :return: the YAML output as a `str`.
+#     """
+#     cfg_map = get_state_dict(cfg_obj)
+#
+#     class_name = ''
+#     keys = []
+#     for paths in ObjectModelLoader.class_paths:
+#         class_name = paths[-1]
+#         key = '.'.join([str(path) for path in paths[:-1]])
+#         if '.None' in key:
+#             none_key = key.split('.None')[0]
+#             cfg_map_val = get_value(cfg_map, none_key)
+#             att_keys = cfg_map_val.keys()
+#             for att_key in att_keys:
+#                 keys.append(key.replace('None', att_key))
+#         else:
+#             keys.append(key)
+#
+#     for key in keys:
+#         cfg_map_val = get_value(cfg_map, key)
+#         cfg_obj_val = get_value(cfg_obj, key)
+#         cfg_map_val[class_name] = cfg_obj_val.__module__ + '.' + cfg_obj_val.__class__.__name__
+#
+#     result = yaml.dump(cfg_map, default_flow_style=False)
+#     return result
 
 
 # def define_pyxel_loader():

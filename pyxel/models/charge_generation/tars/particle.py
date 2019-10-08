@@ -1,5 +1,7 @@
 """Pyxel TARS model to generate charge by ionization."""
 
+import typing as t
+
 import numpy as np
 
 from pyxel.detectors.detector import Detector
@@ -79,7 +81,7 @@ class Particle:
         # # update direction:
         # self.dir_ver, self.dir_hor, self.dir_z = get_direction_from_angles()
 
-        self.track_length = None
+        self.track_length = None  # type: t.Optional[float]
 
         self.dir_ver, self.dir_hor, self.dir_z = isotropic_direction()
 
@@ -170,6 +172,9 @@ class Particle:
                             surface_start_point = self.intersection_correction(intersect_points[i, :])
                         else:
                             surface_end_point = self.intersection_correction(intersect_points[i, :])
+
+        assert surface_start_point is not None
+        assert surface_end_point is not None
 
         self.track_length = np.linalg.norm(surface_end_point - surface_start_point)
 

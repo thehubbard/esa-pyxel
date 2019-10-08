@@ -2,13 +2,13 @@
 import logging
 import typing as t
 
-__all__ = ['get_obj_att', 'get_obj_by_type', 'get_value', 'get_state_dict',
+__all__ = ['get_obj_att', 'get_obj_by_type', 'get_value',
            'get_state_ids', 'copy_processor', 'copy_state', 'ConfigObjects']
 
 
 def get_obj_by_type(obj: t.Any,
                     key: str,
-                    obj_type: t.Type = None) -> t.Any:
+                    obj_type: t.Optional[t.Type] = None) -> t.Any:
     """Get the object associated with the class type following the key chain.
 
     :param obj:
@@ -74,43 +74,43 @@ def get_obj_att(obj: t.Any,
 
 
 #  t.Any) -> t.Union[t.List[t.Any], t.Dict[str, t.Any]]:
-def get_state_dict(obj):
-    """Recursively re-create the configuration object model as a dictionary tree.
-
-    This routine aids in create a JSON compatible dictionary.
-
-    The dictionary object returned is a deep copy of the original object.
-    """
-    def get_state_helper(val):
-        """TBW."""
-        if hasattr(val, 'get_state_json'):  # TODO: PYXEL specific
-            return val.get_state_json()
-        elif hasattr(val, '__getstate__'):
-            return val.__getstate__()
-        else:
-            return val
-
-    result = {}
-    if isinstance(obj, dict):
-        for key, value in obj.items():
-            result[key] = get_state_dict(value)
-    elif isinstance(obj, list):
-        result = []
-        for value in obj:
-            result.append(get_state_dict(value))
-    else:
-        if not hasattr(obj, '__getstate__'):
-            return result
-        for key, value in obj.__getstate__().items():
-            if isinstance(value, list):
-                result[key] = [get_state_helper(val) for val in value]
-
-            elif isinstance(value, dict):
-                result[key] = {key2: get_state_helper(val) for key2, val in value.items()}
-
-            else:
-                result[key] = get_state_helper(value)
-    return result
+# def get_state_dict(obj):
+#     """Recursively re-create the configuration object model as a dictionary tree.
+#
+#     This routine aids in create a JSON compatible dictionary.
+#
+#     The dictionary object returned is a deep copy of the original object.
+#     """
+#     def get_state_helper(val):
+#         """TBW."""
+#         if hasattr(val, 'get_state_json'):  # TODO: PYXEL specific
+#             return val.get_state_json()
+#         elif hasattr(val, '__getstate__'):
+#             return val.__getstate__()
+#         else:
+#             return val
+#
+#     result = {}
+#     if isinstance(obj, dict):
+#         for key, value in obj.items():
+#             result[key] = get_state_dict(value)
+#     elif isinstance(obj, list):
+#         result = []
+#         for value in obj:
+#             result.append(get_state_dict(value))
+#     else:
+#         if not hasattr(obj, '__getstate__'):
+#             return result
+#         for key, value in obj.__getstate__().items():
+#             if isinstance(value, list):
+#                 result[key] = [get_state_helper(val) for val in value]
+#
+#             elif isinstance(value, dict):
+#                 result[key] = {key2: get_state_helper(val) for key2, val in value.items()}
+#
+#             else:
+#                 result[key] = get_state_helper(value)
+#     return result
 
 
 def get_state(obj: t.Any) -> t.Dict[str, t.Any]:

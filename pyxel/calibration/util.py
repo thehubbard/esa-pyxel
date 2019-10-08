@@ -2,6 +2,7 @@
 import os
 import typing as t
 from enum import Enum
+from pathlib import Path
 
 import numpy as np
 from astropy.io import fits
@@ -14,32 +15,39 @@ class CalibrationMode(Enum):
     SingleModel = "single_model"
 
 
-# TODO: Use `pathlib.Path`
-def read_data(data_path: t.Union[str, t.List[str]]) -> t.List[np.ndarray]:
+class ResultType(Enum):
+    """TBW."""
+
+    Image = "image"
+    Signal = "signal"
+    Pixel = "pixel"
+
+
+def read_data(filenames: t.List[Path]) -> t.List[np.ndarray]:
     """TBW.
 
-    :param data_path:
+    :param filenames:
     :return:
     """
-    if isinstance(data_path, str):
-        data_path = [data_path]
-    elif isinstance(data_path, list) and all(isinstance(item, str) for item in data_path):
-        pass
-    else:
-        raise TypeError
+    # # if isinstance(data_path, str):
+    # #     data_path = [data_path]
+    # elif isinstance(data_path, list) and all(isinstance(item, str) for item in data_path):
+    #     pass
+    # else:
+    #     raise TypeError
 
-    output = []                                     # type: list
-    for _, path in enumerate(data_path):
-        if not os.path.exists(path):
-            raise FileNotFoundError('Input file %s can not be found.' % str(path))
+    output = [] # type: t.List[np.ndarray]
 
-        data = None
+    for _, filename in enumerate(filenames):
+        if not filename.exists():
+            raise FileNotFoundError(f"Input file '{filename}' can not be found.")
+
         # TODO: change to Path(path).suffix.lower().startswith('.fit')
         #       Same applies to `.npy`.
-        if '.fits' in path:
-            data = fits.getdata(path)
-        elif '.npy' in path:
-            data = np.load(path)
+        if '.fits' in filename.suffix:
+            data = fits.getdata(filename)  # type: np.ndarray
+        elif '.npy' in filename.suffix:
+            data = np.load(filename)
         else:
             # TODO: this is a convoluted implementation. Change to:
             # for sep in [' ', ',', '|', ';']:
@@ -54,7 +62,7 @@ def read_data(data_path: t.Union[str, t.List[str]]) -> t.List[np.ndarray]:
             while jj:
                 try:
                     jj -= 1
-                    data = np.loadtxt(path, delimiter=sep[ii])
+                    data = np.loadtxt(filename, delimiter=sep[ii])
                 except ValueError:
                     ii += 1
                     jj += 1
@@ -62,7 +70,7 @@ def read_data(data_path: t.Union[str, t.List[str]]) -> t.List[np.ndarray]:
                         break
 
         if data is None:
-            raise IOError('Input file %s can not be read by Pyxel.' % str(path))
+            raise IOError("Input file '{filename}' can not be read by Pyxel.")
         else:
             output += [data]
 

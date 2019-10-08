@@ -40,7 +40,7 @@ class Environment:
         return self._temperature
 
     @temperature.setter
-    def temperature(self, value: float):
+    def temperature(self, value: float) -> None:
         """Set Temperature of the detector."""
         if not (0.0 <= value <= 1000.0):
             raise ValueError("'temperature' must be between 0.0 and 1000.0.")
@@ -53,7 +53,7 @@ class Environment:
         return self._total_ionising_dose
 
     @total_ionising_dose.setter
-    def total_ionising_dose(self, value: float):
+    def total_ionising_dose(self, value: float) -> None:
         """Set Total Ionising Dose (TID) of the detector."""
         if not (0.0 <= value <= 1e15):
             raise ValueError("'total_ionising_dose' must be between 0.0 and 1e15.")
@@ -66,7 +66,7 @@ class Environment:
         return self._total_non_ionising_dose
 
     @total_non_ionising_dose.setter
-    def total_non_ionising_dose(self, value: float):
+    def total_non_ionising_dose(self, value: float) -> None:
         """Set Total Ionising Dose (TID) of the detector."""
         if not (0.0 <= value <= 1e15):
             raise ValueError("'total_non_ionising_dose' must be between 0.0 and 1e15.")

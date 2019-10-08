@@ -1,5 +1,6 @@
 """Pyxel TARS model to generate charge by ionization."""
 
+import typing as t
 from pathlib import Path
 
 import numpy as np
@@ -11,7 +12,6 @@ try:
 except ImportError:
     # raise Warning('Matplotlib cannot be imported')
     pass
-# import typing as t   # noqa: F401
 
 
 class PlottingTARS:
@@ -260,7 +260,7 @@ class PlottingTARS:
         plt.grid(True)
         self.save_and_draw('trajectory_xz')
 
-    def plot_track_histogram(self, histogram_data, normalize: bool = None):
+    def plot_track_histogram(self, histogram_data, normalize: bool = False):
         """TBW."""
         hist_bins = 1000
         hist_range = (0, 1000)
@@ -287,7 +287,7 @@ class PlottingTARS:
         plt.legend(loc='upper right')
         self.save_and_draw('track_length')
 
-    def plot_step_size_histograms(self, normalize: bool = None):
+    def plot_step_size_histograms(self, normalize: bool = False):
         """TBW."""
         energies = ['100MeV']
         thicknesses = ['40um', '50um', '60um', '70um', '100um']
@@ -355,7 +355,7 @@ class PlottingTARS:
     #     plt.legend(loc='upper right')
     #     self.save_and_draw('secondary_spectra')
 
-    def plot_gaia_vs_gras_hist(self, normalize: bool = None):
+    def plot_gaia_vs_gras_hist(self, normalize: bool = False):
         """TBW."""
         # GRAS simulation results (by Marco) + GAIA BAM data - Perfect overlap in case of normalization!
         path = Path(__file__).parent.joinpath('data', 'validation', 'Gaia_CCD_study-20180404T115340Z-001',
@@ -407,7 +407,7 @@ class PlottingTARS:
         plt.legend(loc='upper right')
         self.save_and_draw('gaia_vs_gras_electron_hist')
 
-    def plot_old_tars_hist(self, normalize: bool = None):
+    def plot_old_tars_hist(self, normalize: bool = False):
         """TBW."""
         # earlier TARS results of Lionel
         folder_path = Path(__file__).parent.joinpath('data', 'validation', 'Results-20180404T121902Z-001', 'Results')
@@ -449,7 +449,7 @@ class PlottingTARS:
         plt.legend(loc='upper right')
         self.save_and_draw('old_tars_electron_hist')
 
-    def plot_gaia_bam_vs_sm_electron_hist(self, normalize: bool = None):
+    def plot_gaia_bam_vs_sm_electron_hist(self, normalize: bool = False):
         """TBW."""
         path = Path(__file__).parent.joinpath('data', 'validation')
         hist_names = [
@@ -490,8 +490,10 @@ class PlottingTARS:
         plt.legend(loc='upper right')
         self.save_and_draw('gaia_BAM_vs_SM_electron_hist')
 
-    def plot_electron_hist(self, data1, data2=None, data3=None,
-                           title='', hist_bins=500, hist_range=(0, 15000), normalize: bool = None):
+    def plot_electron_hist(self,
+                           data1: np.ndarray,
+                           data2: t.Optional[np.ndarray] = None, data3: t.Optional[np.ndarray] = None,
+                           title='', hist_bins=500, hist_range=(0, 15000), normalize: bool = False):
         """TBW."""
         labels = [
             'TARS (David), 40um'

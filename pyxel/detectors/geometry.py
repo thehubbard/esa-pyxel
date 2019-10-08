@@ -55,7 +55,7 @@ class Geometry:
         return self._row
 
     @row.setter
-    def row(self, value: int):
+    def row(self, value: int) -> None:
         """Set Number of pixel rows."""
         if value not in range(10001):
             raise ValueError("'row' must be between 0 and 10000.")
@@ -68,7 +68,7 @@ class Geometry:
         return self._col
 
     @col.setter
-    def col(self, value: int):
+    def col(self, value: int) -> None:
         """Set Number of pixel columns."""
         if value not in range(10001):
             raise ValueError("'columns' must be between 0 and 10000.")
@@ -81,7 +81,7 @@ class Geometry:
         return self._total_thickness
 
     @total_thickness.setter
-    def total_thickness(self, value: float):
+    def total_thickness(self, value: float) -> None:
         """Set Thickness of detector."""
         if not (0.0 <= value <= 10000.0):
             raise ValueError("'total_thickness' must be between 0.0 and 10000.0.")
@@ -94,7 +94,7 @@ class Geometry:
         return self._pixel_vert_size
 
     @pixel_vert_size.setter
-    def pixel_vert_size(self, value: float):
+    def pixel_vert_size(self, value: float) -> None:
         """Set Vertical dimension of pixel."""
         if not (0.0 <= value <= 1000.0):
             raise ValueError("'pixel_vert_size' must be between 0.0 and 1000.0.")
@@ -107,7 +107,7 @@ class Geometry:
         return self._pixel_horz_size
 
     @pixel_horz_size.setter
-    def pixel_horz_size(self, value: float):
+    def pixel_horz_size(self, value: float) -> None:
         """Set Horizontal dimension of pixel."""
         if not (0.0 <= value <= 1000.0):
             raise ValueError("'pixel_horz_size' must be between 0.0 and 1000.0.")

@@ -14,9 +14,11 @@ from pathlib import Path
 
 import numpy as np
 from dask import delayed
+from dask.delayed import Delayed
 
 from pyxel.calibration.util import (
     CalibrationMode,
+    ResultType,
     check_ranges,
     list_to_slice,
     read_data,
@@ -34,30 +36,30 @@ class ModelFitting:
         self.processor = processor  # type: Processor
         self.variables = variables  # type: t.List[ParameterValues]
 
-        self.calibration_mode = None  # type: t.Optional[str]
+        self.calibration_mode = None  # type: t.Optional[CalibrationMode]
         self.original_processor = None  # type: t.Optional[Processor]
         self.generations = None  # type: t.Optional[int]
         self.pop = None  # type: t.Optional[int]
 
         self.all_target_data = []  # type: t.List[t.List[t.Any]]
-        self.weighting = None  # type: t.Optional[t.List[np.ndarray]]
+        self.weighting = []  # type: t.List[np.ndarray]
         self.fitness_func = None  # type: t.Optional[ModelFunction]
-        self.sim_output = None  # type: t.Optional[str]
+        self.sim_output = None  # type: t.Optional[ResultType]
         # self.fitted_model = None            # type: t.Optional['ModelFunction']
         self.param_processor_list = []  # type: t.List[Processor]
 
         self.n = 0  # type: int
         self.g = 0  # type: int
 
-        self.file_path = Path("")  # type: Path
+        self.file_path = None  # type: t.Optional[Path]
 
         self.fitness_array = None  # type: t.Optional[np.ndarray]
         self.population = None  # type: t.Optional[np.ndarray]
         self.champion_f_list = None  # type: t.Optional[np.ndarray]
         self.champion_x_list = None  # type: t.Optional[np.ndarray]
 
-        self.lbd = []  # type: list                   # lower boundary
-        self.ubd = []  # type: list                   # upper boundary
+        self.lbd = []  # type: t.List[float]  # lower boundary
+        self.ubd = []  # type: t.List[float]  # upper boundary
 
         self.sim_fit_range = slice(None)  # type: t.Union[slice, t.Tuple[slice, slice]]
         self.targ_fit_range = slice(None)  # type: t.Union[slice, t.Tuple[slice, slice]]
@@ -67,7 +69,7 @@ class ModelFitting:
         # self.normalization = False
         # self.target_data_norm = []
 
-    def get_bounds(self) -> t.Tuple[list, list]:
+    def get_bounds(self) -> t.Tuple[t.List[float], t.List[float]]:
         """TBW.
 
         :return:
@@ -77,16 +79,16 @@ class ModelFitting:
     def configure(
         self,
         calibration_mode: CalibrationMode,
-        simulation_output: str,
+        simulation_output: ResultType,
         fitness_func: ModelFunction,
-        population_size,
+        population_size: int,
         generations: int,
         file_path: Path,
         target_fit_range: t.List[int],
         out_fit_range: t.List[int],
-        target_output: t.Union[str, t.List[str]],
+        target_output: t.List[Path],
         input_arguments: t.Optional[list] = None,
-        weighting: t.Optional[t.Union[str, t.List[str]]] = None,
+        weighting: t.Optional[t.List[Path]] = None,
     ) -> None:
         """TBW.
 
@@ -104,8 +106,8 @@ class ModelFitting:
         input_arguments
         weighting
         """
-        self.calibration_mode = calibration_mode
-        self.sim_output = simulation_output
+        self.calibration_mode = CalibrationMode(calibration_mode)
+        self.sim_output = ResultType(simulation_output)
         self.fitness_func = fitness_func
         self.pop = population_size
         self.generations = generations
@@ -131,7 +133,7 @@ class ModelFitting:
                     "Some values will be ignored."
                 )
             for i in range(min_val):
-                new_processor = deepcopy(self.processor)
+                new_processor = deepcopy(self.processor)  # type: Processor
                 for step in input_arguments:
                     step.current = step.values[i]
                     new_processor.set(step.key, step.current)
@@ -140,7 +142,7 @@ class ModelFitting:
             self.param_processor_list = [deepcopy(self.processor)]
 
         params = 0
-        for var in self.variables:
+        for var in self.variables:  # type: ParameterValues
             b = 1
             if isinstance(var.values, list):
                 b = len(var.values)
@@ -149,7 +151,7 @@ class ModelFitting:
         self.champion_x_list = np.zeros((1, params))
         self.file_path = file_path
 
-        target_list = read_data(target_output)
+        target_list = read_data(filenames=target_output)  # type: t.List[np.ndarray]
         try:
             rows, cols = target_list[0].shape
         except AttributeError:
@@ -167,7 +169,7 @@ class ModelFitting:
             self.all_target_data += [target[self.targ_fit_range]]
 
         if weighting:
-            wf = read_data(weighting)[0]
+            wf = read_data(weighting)[0]  # type: np.ndarray
             self.weighting = wf[self.targ_fit_range]
 
     # def single_model_calibration(self):     # TODO update
@@ -187,7 +189,7 @@ class ModelFitting:
         """TBW."""
         self.lbd = []
         self.ubd = []
-        for var in self.variables:
+        for var in self.variables:  # type: ParameterValues
             assert var.boundaries
             low_val, high_val = var.boundaries
 
@@ -207,15 +209,15 @@ class ModelFitting:
                     "indicate variables need to be calibrated"
                 )
 
-    def get_simulated_data(self, processor):
+    def get_simulated_data(self, processor) -> np.ndarray:
         """TBW."""
-        simulated_data = None
-        if self.sim_output == "image":
-            simulated_data = processor.detector.image.array[self.sim_fit_range]
-        elif self.sim_output == "signal":
+        if self.sim_output == ResultType.Image:
+            simulated_data = processor.detector.image.array[self.sim_fit_range]  # type: np.ndarray
+        elif self.sim_output == ResultType.Signal:
             simulated_data = processor.detector.signal.array[self.sim_fit_range]
-        elif self.sim_output == "pixel":
+        elif self.sim_output == ResultType.Pixel:
             simulated_data = processor.detector.pixel.array[self.sim_fit_range]
+
         return simulated_data
 
     def batch_fitness(self, population_parameter_vector):
@@ -225,6 +227,7 @@ class ModelFitting:
         """
         logger = logging.getLogger("pyxel")
         logger.info("batch_fitness() called with %s " % population_parameter_vector)
+
         fitness_vector = []
         for parameter in population_parameter_vector:
             overall_fitness = 0.0
@@ -241,13 +244,15 @@ class ModelFitting:
                 fitness = delayed(self.calculate_fitness)(simulated_data, target_data)
                 # overall_fitness = add(overall_fitness, fitness)
                 overall_fitness = delayed(add)(overall_fitness, fitness)
+
             fitness_vector.append(
                 overall_fitness
             )  # overall fitness per individual for the full population
+
         # fitness_vector = self.merge(fitness_vector)
-        fitness_vector = delayed(merge_fitness)(fitness_vector)
+        fitness_vector_delayed = delayed(merge_fitness)(fitness_vector)  # type: Delayed
         # population_fitness_vector = fitness_vector
-        population_fitness_vector = fitness_vector.compute()
+        population_fitness_vector = fitness_vector_delayed.compute()
 
         return population_fitness_vector
 
@@ -289,7 +294,8 @@ class ModelFitting:
         overall_fitness = 0.0  # type: float
         for processor, target_data in zip(processor_list, self.all_target_data):
 
-            processor = self.update_processor(parameter, processor)
+            processor = self.update_processor(parameter=parameter,
+                                              new_processor=processor)
 
             logger.setLevel(logging.WARNING)
             result_proc = None
@@ -386,6 +392,7 @@ class ModelFitting:
                 popfiles = list(
                     self.file_path.glob(f"population_id_{fid}.out")
                 )  # type: t.List[Path]
+
                 popfile = popfiles[0]  # type: Path
 
                 os.rename(popfile, self.file_path.joinpath(f"population_id{ii}.out"))
@@ -535,6 +542,7 @@ class ModelFitting:
         """TBW."""
         assert self.champion_f_list is not None
         assert self.champion_x_list is not None
+        assert self.file_path
 
         champions_file = self.file_path.joinpath(
             f"champions_id_{id(self)}.out"
@@ -554,6 +562,7 @@ class ModelFitting:
     def add_to_pop_file(self, parameter: np.ndarray):
         """TBW."""
         assert self.fitness_array is not None
+        assert self.file_path
 
         pop_file = self.file_path.joinpath(
             f"population_id_{id(self)}.out"

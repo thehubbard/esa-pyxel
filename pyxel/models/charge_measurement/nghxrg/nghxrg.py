@@ -14,10 +14,10 @@ from pyxel.models.charge_measurement.nghxrg.nghxrg_beta import HXRGNoise
 # @pyxel.argument(name='', label='', units='', validate=)
 def nghxrg(detector: CMOS,
            noise: list,
-           pca0_file: str = None,
+           pca0_file: t.Optional[str] = None,
            window_position: t.Optional[t.List[int]] = None,
            window_size: t.Optional[t.List[int]] = None,
-           plot_psd: bool = True) -> None:
+           plot_psd: t.Optional[bool] = True) -> None:
     """TBW.
 
     :param detector: Pyxel Detector object

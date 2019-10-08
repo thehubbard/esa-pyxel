@@ -1,6 +1,7 @@
 """Pyxel TARS model to generate charge by ionization."""
 
 import bisect
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -61,7 +62,7 @@ def get_yvalue_with_interpolation(function_array, x_value):
     return intpol_y_value
 
 
-def load_histogram_data(file_name, hist_type, skip_rows, read_rows):
+def load_histogram_data(file_name: Path, hist_type, skip_rows, read_rows):
     """TBW.
 
     :param file_name:
@@ -89,8 +90,7 @@ def load_histogram_data(file_name, hist_type, skip_rows, read_rows):
 #
 #     return spectrum_data
 
-
-def read_data(file_name):
+def read_data(file_name: Path) -> np.ndarray:
     """TBW.
 
     :param file_name:
@@ -100,7 +100,7 @@ def read_data(file_name):
     return data
 
 
-def interpolate_data(data):
+def interpolate_data(data: np.ndarray):
     """TBW.
 
     :param data:

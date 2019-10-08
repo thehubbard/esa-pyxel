@@ -43,7 +43,7 @@ class Simulation:
 
         self.stopping_power = None
 
-        self.particle = None
+        self.particle = None  # type: t.Optional[Particle]
 
         self.particle_type = None
         self.initial_energy = None
@@ -195,11 +195,11 @@ class Simulation:
         mat = self.detector.material
         ioniz_energy = mat.ionization_energy   # eV
 
-        self.particle = Particle(self.detector,
-                                 self.simulation_mode,
-                                 self.particle_type,
-                                 self.initial_energy, self.spectrum_cdf,
-                                 self.position_ver, self.position_hor, self.position_z
+        self.particle = Particle(detector=self.detector,
+                                 simulation_mode=self.simulation_mode,
+                                 particle_type=self.particle_type,
+                                 input_energy=self.initial_energy, spectrum_cdf=self.spectrum_cdf,
+                                 starting_pos_ver=self.position_ver, starting_pos_hor=self.position_hor, starting_pos_z=self.position_z
                                  # self.angle_alpha, self.angle_beta)
                                  )
         particle = self.particle
@@ -300,14 +300,16 @@ class Simulation:
         secondaries = 0
         tertiaries = 0
 
-        self.particle = Particle(self.detector,
-                                 self.simulation_mode,
-                                 self.particle_type,
-                                 self.initial_energy, self.spectrum_cdf,
-                                 self.position_ver, self.position_hor, self.position_z
+        self.particle = Particle(detector=self.detector,
+                                 simulation_mode=self.simulation_mode,
+                                 particle_type=self.particle_type,
+                                 input_energy=self.initial_energy, spectrum_cdf=self.spectrum_cdf,
+                                 starting_pos_ver=self.position_ver, starting_pos_hor=self.position_hor, starting_pos_z=self.position_z
                                  # self.angle_alpha, self.angle_beta
                                  )
         particle = self.particle
+
+        assert particle.track_length is not None
         if particle.track_length < 1.:
             return True
 

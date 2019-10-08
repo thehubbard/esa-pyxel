@@ -8,11 +8,11 @@ from shutil import copy2
 from time import strftime
 
 import astropy.io.fits as fits
-import h5py as h5
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
+import h5py as h5
 from pyxel import __version__ as version
 
 if t.TYPE_CHECKING:
@@ -367,7 +367,7 @@ class Outputs:
                 for iid, file_pop in enumerate(self.output_dir.glob('population_id*.out')):
                     self.population_plot(results=results, population_file=file_pop, island_id=iid)
 
-    def fitting_plot(self, target_data, simulated_data, data_i) -> None:
+    def fitting_plot(self, target_data: np.ndarray, simulated_data: np.ndarray, data_i) -> None:
         """TBW."""
         if self.calibration_plot:
             if 'fitting_plot' in self.calibration_plot:

@@ -9,7 +9,7 @@ class ParameterValues:
 
     def __init__(self,
                  key: str,
-                 values: t.List[t.Union[float, int]],
+                 values: t.List[t.Union[float, int, str]],
                  boundaries: t.Optional[t.Tuple[float, float]] = None,
                  enabled: bool = True,
                  current=None,
@@ -25,7 +25,7 @@ class ParameterValues:
         """
         # TODO: should these values be evaluated?
         self.key = key                              # unique identifier to the step. example: detector.geometry.row
-        self.values = values                        # type: t.List[t.Union[float, int]]
+        self.values = values                        # type: t.List[t.Union[float, int, str]]
         self.enabled = enabled                      # type: bool
         self.current = current
         self.logarithmic = logarithmic              # type: bool

@@ -8,7 +8,7 @@ from pathlib import Path
 import numpy as np
 
 from pyxel.calibration.fitting import ModelFitting
-from pyxel.calibration.util import CalibrationMode
+from pyxel.calibration.util import CalibrationMode, ResultType
 from pyxel.parametric.parameter_values import ParameterValues
 from pyxel.pipelines.model_function import ModelFunction
 from pyxel.pipelines.processor import Processor
@@ -41,7 +41,7 @@ class Algorithm:
     def __init__(
         self,
         # TODO: Rename 'type' into 'algorithm_type'
-        type: t.Union[AlgorithmType, str] = AlgorithmType.Sade,
+        type: AlgorithmType = AlgorithmType.Sade,
         generations: int = 1,
         population_size: int = 1,
 
@@ -473,12 +473,9 @@ class Algorithm:
         return opt_algorithm
 
 
-class ResultType(Enum):
+def to_path_list(values: t.Sequence[t.Union[str, Path]]) -> t.List[Path]:
     """TBW."""
-
-    Image = "image"
-    Signal = "signal"
-    Pixel = "pixel"
+    return [Path(obj) for obj in values]
 
 
 class Calibration:
@@ -486,14 +483,14 @@ class Calibration:
 
     def __init__(
         self,
-        output_dir=None,
+        output_dir: t.Optional[Path] = None,
         fitting: t.Optional[ModelFitting] = None,
         calibration_mode: CalibrationMode = CalibrationMode.Pipeline,
         result_type: ResultType = ResultType.Image,
-        result_fit_range: t.Optional[list] = None,
+        result_fit_range: t.Optional[t.List[int]] = None,
         result_input_arguments: t.Optional[list] = None,
-        target_data_path: t.Optional[list] = None,
-        target_fit_range: t.Optional[list] = None,
+        target_data_path: t.Optional[t.List[Path]] = None,
+        target_fit_range: t.Optional[t.List[int]] = None,
         fitness_function: t.Optional[ModelFunction] = None,
         algorithm: t.Optional[Algorithm] = None,
         parameters: t.Optional[t.List[ParameterValues]] = None,
@@ -509,26 +506,29 @@ class Calibration:
 
         self._output_dir = output_dir
         self._fitting = fitting
-        self._calibration_mode = calibration_mode
-        self._result_type = result_type
-        self._result_fit_range = result_fit_range
-        self._result_input_arguments = result_input_arguments
-        self._target_data_path = target_data_path
-        self._target_fit_range = target_fit_range
+        self._calibration_mode = CalibrationMode(calibration_mode)  # type: CalibrationMode
+        self._result_type = ResultType(result_type)  # type: ResultType
+        self._result_fit_range = result_fit_range if result_fit_range else []
+        self._result_input_arguments = result_input_arguments if result_input_arguments else []
+        self._target_data_path = to_path_list(target_data_path) if target_data_path else []  # type: t.List[Path]
+        self._target_fit_range = target_fit_range if target_fit_range else []
         self._fitness_function = fitness_function
         self._algorithm = algorithm
         self._parameters = parameters if parameters else []
-        self._seed = np.random.randint(0, 100000) if seed is None else seed
+        self._seed = np.random.randint(0, 100000) if seed is None else seed  # type: int
         self._islands = islands
         self._weighting_path = weighting_path
 
     @property
-    def output_dir(self):
+    def output_dir(self) -> Path:
         """TBW."""
+        if not self._output_dir:
+            raise RuntimeError("No 'output_dir' defined !")
+
         return self._output_dir
 
     @output_dir.setter
-    def output_dir(self, value):
+    def output_dir(self, value: Path):
         """TBW."""
         self._output_dir = value
 
@@ -566,7 +566,7 @@ class Calibration:
         self._result_type = value
 
     @property
-    def result_fit_range(self) -> t.Optional[list]:
+    def result_fit_range(self) -> t.List[int]:
         """TBW."""
         return self._result_fit_range
 
@@ -576,7 +576,7 @@ class Calibration:
         self._result_fit_range = value
 
     @property
-    def result_input_arguments(self) -> t.Optional[list]:
+    def result_input_arguments(self) -> list:
         """TBW."""
         return self._result_input_arguments
 
@@ -586,17 +586,17 @@ class Calibration:
         self._result_input_arguments = value
 
     @property
-    def target_data_path(self) -> t.Optional[list]:
+    def target_data_path(self) -> t.List[Path]:
         """TBW."""
         return self._target_data_path
 
     @target_data_path.setter
-    def target_data_path(self, value: list):
+    def target_data_path(self, value: t.List[Path]):
         """TBW."""
         self._target_data_path = value
 
     @property
-    def target_fit_range(self) -> t.Optional[list]:
+    def target_fit_range(self) -> t.List[int]:
         """TBW."""
         return self._target_fit_range
 
@@ -606,8 +606,11 @@ class Calibration:
         self._target_fit_range = value
 
     @property
-    def fitness_function(self) -> t.Optional[ModelFunction]:
+    def fitness_function(self) -> ModelFunction:
         """TBW."""
+        if not self._fitness_function:
+            raise RuntimeError("No 'fitness_function' defined !")
+
         return self._fitness_function
 
     @fitness_function.setter

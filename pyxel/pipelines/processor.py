@@ -79,7 +79,7 @@ class Processor:
         else:
             setattr(obj, att, value)
 
-    def run_pipeline(self, abort_before: str = None) -> "Processor":
+    def run_pipeline(self, abort_before: t.Optional[str] = None) -> "Processor":
         """TBW.
 
         :param abort_before: str, model name, the pipeline should be aborted before this

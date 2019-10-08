@@ -83,7 +83,7 @@ class Characteristics:
         return self._qe
 
     @qe.setter
-    def qe(self, value: float):
+    def qe(self, value: float) -> None:
         """Set Quantum efficiency."""
         if not (0.0 <= value <= 1.0):
             raise ValueError("'qe' must be between 0.0 and 1.0.")
@@ -96,7 +96,7 @@ class Characteristics:
         return self._eta
 
     @eta.setter
-    def eta(self, value: float):
+    def eta(self, value: float) -> None:
         """Set Quantum yield."""
         if not (0.0 <= value <= 1.0):
             raise ValueError("'eta' must be between 0.0 and 1.0.")
@@ -109,7 +109,7 @@ class Characteristics:
         return self._sv
 
     @sv.setter
-    def sv(self, value: float):
+    def sv(self, value: float) -> None:
         """Set Sensitivity of charge readout."""
         if not (0.0 <= value <= 100.0):
             raise ValueError("'sv' must be between 0.0 and 100.0.")
@@ -121,7 +121,7 @@ class Characteristics:
         return self._amp
 
     @amp.setter
-    def amp(self, value: float):
+    def amp(self, value: float) -> None:
         """Set Gain of output amplifier."""
         if not (0.0 <= value <= 100.0):
             raise ValueError("'amp' must be between 0.0 and 100.0.")
@@ -134,7 +134,7 @@ class Characteristics:
         return self._a1
 
     @a1.setter
-    def a1(self, value: float):
+    def a1(self, value: float) -> None:
         """Set Gain of the signal processor."""
         if not (0.0 <= value <= 100.0):
             raise ValueError("'a1' must be between 0.0 and 100.0.")
@@ -147,7 +147,7 @@ class Characteristics:
         return self._a2
 
     @a2.setter
-    def a2(self, value: int):
+    def a2(self, value: int) -> None:
         """Set Gain of the Analog-Digital Converter."""
         if value not in range(65537):
             raise ValueError("'a2' must be between 0 and 65536.")
@@ -160,7 +160,7 @@ class Characteristics:
         return self._fwc
 
     @fwc.setter
-    def fwc(self, value: int):
+    def fwc(self, value: int) -> None:
         """Set Full well capacity."""
         if value not in range(10000001):
             raise ValueError("'fwc' must be between 0 and 1e+7.")
@@ -173,7 +173,7 @@ class Characteristics:
         return self._vg
 
     @vg.setter
-    def vg(self, value: float):
+    def vg(self, value: float) -> None:
         """Set Half pixel volume charge can occupy."""
         if not (0.0 <= value <= 1.0):
             raise ValueError("'vg' must be between 0.0 and 1.0.")
@@ -184,7 +184,7 @@ class Characteristics:
         return self._dt
 
     @dt.setter
-    def dt(self, value: float):
+    def dt(self, value: float) -> None:
         """Set Pixel dwell time."""
         if not (0.0 <= value <= 10.0):
             raise ValueError("'dt' must be between 0.0 and 10.0.")

@@ -30,7 +30,7 @@ class Array:
 
         # TODO: Implement a method to initialized 'self._array' ???
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """TBW."""
         cls_name = self.__class__.__name__
         shape = self._array.shape
@@ -38,7 +38,7 @@ class Array:
 
         return f"{cls_name}<shape={shape}, dtype={dtype}>"
 
-    def validate_type(self, value) -> None:
+    def validate_type(self, value: np.ndarray) -> None:
         """Validate a value.
 
         Parameters
@@ -54,7 +54,7 @@ class Array:
             exp_type_name = self.EXP_TYPE.__name__  # type: str
             raise TypeError(f"Expected type of {cls_name} array is {exp_type_name}.")
 
-    def validate_shape(self, value) -> None:
+    def validate_shape(self, value: np.ndarray) -> None:
         """TBW."""
         cls_name = self.__class__.__name__  # type: str
 
@@ -74,7 +74,7 @@ class Array:
         return self._array
 
     @array.setter
-    def array(self, value: np.ndarray):
+    def array(self, value: np.ndarray) -> None:
         """
         Overwrite the two dimensional numpy array storing the data.
 

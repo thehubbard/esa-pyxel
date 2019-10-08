@@ -4,7 +4,7 @@ import numpy as np
 import logging
 # from pyxel.util.outputs import image, numpy_array, hist_plot, graph_plot, show_plots
 from pyxel.util.outputs import Outputs, apply_run_number
-
+import typing as t
 
 __all__ = ['convert_to_int', 'round_convert_to_int',
            'PipelineAborted',
@@ -15,7 +15,7 @@ __all__ = ['convert_to_int', 'round_convert_to_int',
 class PipelineAborted(Exception):
     """Exception to force the pipeline to stop processing."""
 
-    def __init__(self, message: str = None, errors=None):
+    def __init__(self, message: t.Optional[str] = None, errors=None):
         """TBW."""
         super().__init__(message)
         self.errors = errors

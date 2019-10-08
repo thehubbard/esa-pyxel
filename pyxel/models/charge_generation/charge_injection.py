@@ -1,5 +1,6 @@
 """Pyxel charge injection functions for CCDs."""
 import logging
+import typing as t
 
 import numpy as np
 
@@ -12,7 +13,7 @@ from pyxel.detectors.ccd import CCD
 def charge_blocks(detector: CCD,
                   charge_level: int,
                   block_start: int = 0,
-                  block_end: int = None) -> None:
+                  block_end: t.Optional[int] = None) -> None:
     """TBW.
 
     :param detector:
