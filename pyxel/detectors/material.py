@@ -109,7 +109,7 @@ class Material:
         return self._trapped_charge
 
     @trapped_charge.setter
-    def trapped_charge(self, value: Path):
+    def trapped_charge(self, value: Path) -> None:
         """Set Numpy array storing the trap density temporarily."""
         self._trapped_charge = load_array(value)
 
@@ -119,7 +119,7 @@ class Material:
         return self._n_acceptor
 
     @n_acceptor.setter
-    def n_acceptor(self, value: float):
+    def n_acceptor(self, value: float) -> None:
         """Set Density of acceptors in the lattice."""
         if not (0.0 <= value <= 1000.0):
             raise ValueError("'n_acceptor' must be between 0.0 and 1000.0.")
@@ -132,7 +132,7 @@ class Material:
         return self._n_donor
 
     @n_donor.setter
-    def n_donor(self, value: float):
+    def n_donor(self, value: float) -> None:
         """Set Density of donors in the lattice."""
         if not (0.0 <= value <= 1000.0):
             raise ValueError("'n_donor' must be between 0.0 and 1000.0.")
@@ -145,7 +145,7 @@ class Material:
         return self._material
 
     @material.setter
-    def material(self, value: MaterialType):
+    def material(self, value: MaterialType) -> None:
         """Set Semiconductor material of the detector."""
         self._material = value
 
@@ -155,7 +155,7 @@ class Material:
         return self._n_donor
 
     @material_density.setter
-    def material_density(self, value: float):
+    def material_density(self, value: float) -> None:
         """Set Material density."""
         if not (0.0 <= value <= 10000.0):
             raise ValueError("'material_density' must be between 0.0 and 10000.0.")
@@ -168,7 +168,7 @@ class Material:
         return self._ionization_energy
 
     @ionization_energy.setter
-    def ionization_energy(self, value: float):
+    def ionization_energy(self, value: float) -> None:
         """Set Mean ionization energy of the semiconductor lattice."""
         if not (0.0 <= value <= 100.0):
             raise ValueError("'ionization_energy' must be between 0.0 and 100.0.")
@@ -181,7 +181,7 @@ class Material:
         return self._band_gap
 
     @band_gap.setter
-    def band_gap(self, value: float):
+    def band_gap(self, value: float) -> None:
         """Set Band gap of the semiconductor lattice."""
         if not (0.0 <= value <= 10.0):
             raise ValueError("'band_gap' must be between 0.0 and 10.0.")
@@ -194,7 +194,7 @@ class Material:
         return self._e_effective_mass
 
     @e_effective_mass.setter
-    def e_effective_mass(self, value: float):
+    def e_effective_mass(self, value: float) -> None:
         """Set Electron effective mass in the semiconductor lattice."""
         if not (0.0 <= value <= 1.0e-10):
             raise ValueError("'e_effective_mass' must be between 0.0 and 1.e-10.")

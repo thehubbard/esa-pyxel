@@ -53,7 +53,7 @@ def nghxrg(detector: CMOS,
                    wind_mode=window_mode,
                    wind_x_size=window_size[0], wind_y_size=window_size[1],
                    wind_x0=window_position[0], wind_y0=window_position[1],
-                   verbose=True)
+                   verbose=True)  # type: HXRGNoise
 
     for item in noise:
         result = None  # type: t.Optional[np.ndarray]

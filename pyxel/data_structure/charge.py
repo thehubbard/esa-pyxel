@@ -36,7 +36,7 @@ class Charge(Particle):
 
     def add_charge(self,
                    particle_type: str,
-                   particles_per_cluster,
+                   particles_per_cluster: list,
                    init_energy: t.List[float],
                    init_ver_position: t.List[float],
                    init_hor_position: t.List[float],

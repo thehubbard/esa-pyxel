@@ -59,7 +59,7 @@ class CCDCharacteristics(Characteristics):
         self._t = t
         self._st = st
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """Return a string representation."""
         return f"CCDCharacteristics(fwc_serial={self.fwc_serial}, svg={self.svg}, t={self.t}, st={self.st})"
 
@@ -69,7 +69,7 @@ class CCDCharacteristics(Characteristics):
         return self._fwc_serial
 
     @fwc_serial.setter
-    def fwc_serial(self, value: int):
+    def fwc_serial(self, value: int) -> None:
         """Set Full well capacity (serial register)."""
         if value not in range(10000001):
             raise ValueError("'fwc_serial' must be between 0 and 1e+7.")
@@ -82,7 +82,7 @@ class CCDCharacteristics(Characteristics):
         return self._svg
 
     @svg.setter
-    def svg(self, value: float):
+    def svg(self, value: float) -> None:
         """Set Half pixel volume charge can occupy (serial register)."""
         if not (0.0 <= value <= 1.0):
             raise ValueError("'svg' must be between 0.0 and 1.0.")
@@ -95,7 +95,7 @@ class CCDCharacteristics(Characteristics):
         return self._t
 
     @t.setter
-    def t(self, value: float):
+    def t(self, value: float) -> None:
         """Set Parallel transfer period."""
         if not (0.0 <= value <= 10.0):
             raise ValueError("'t' must be between 0.0 and 10.0.")
@@ -108,7 +108,7 @@ class CCDCharacteristics(Characteristics):
         return self._st
 
     @st.setter
-    def st(self, value: float):
+    def st(self, value: float) -> None:
         """Get Serial transfer period."""
         if not (0.0 <= value <= 10.0):
             raise ValueError("'st' must be between 0.0 and 10.0.")

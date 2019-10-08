@@ -13,6 +13,7 @@ from pathlib import Path
 
 import numpy as np
 from dask import delayed, distributed
+from dask.delayed import Delayed
 
 import pyxel.io as io
 from pyxel import __version__ as version
@@ -100,7 +101,7 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
             result_proc = delayed(proc.run_pipeline)()
             result_val = delayed(out.extract_func)(proc=result_proc)
             result_list.append(result_val)
-        array = delayed(out.merge_func)(result_list)
+        array = delayed(out.merge_func)(result_list)  # type: Delayed
         plot_array = array.compute()
         if out.parametric_plot is not None:
             out.plotting_func(plot_array)
@@ -140,7 +141,7 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
 
 # TODO: Use library 'click' instead of 'parser' ? See issue #62
 #       Add an option to display colors ? (very optional)
-def main():
+def main() -> None:
     """Define the argument parser and run Pyxel."""
     parser = argparse.ArgumentParser(formatter_class=argparse.ArgumentDefaultsHelpFormatter,
                                      description=__doc__)

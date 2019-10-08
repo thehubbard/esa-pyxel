@@ -1,7 +1,7 @@
 """TBW."""
-# import logging
-import typing as t  # noqa: F401
+import typing as t
 
+from pyxel.pipelines.model_function import ModelFunction
 from pyxel.pipelines.model_group import ModelGroup
 
 
@@ -86,16 +86,16 @@ class DetectionPipeline:
         """TBW."""
         self._is_running = False
 
-    def get_model(self, name: str):
+    def get_model(self, name: str) -> ModelFunction:
         """TBW.
 
         :param name:
         :return:
         """
-        for group_name in self.model_group_names:
+        for group_name in self.model_group_names:  # type: str
             model_group = getattr(self, group_name)  # type: ModelGroup
             if model_group:
-                for model in model_group.models:
+                for model in model_group.models:  # type: ModelFunction
                     if name == model.name:
                         return model
         raise AttributeError("Model has not found.")

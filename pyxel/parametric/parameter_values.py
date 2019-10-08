@@ -33,7 +33,7 @@ class ParameterValues:
 
     def __len__(self) -> int:
         """TBW."""
-        values = eval_range(self.values)
+        values = eval_range(self.values)  # type: list
         return len(values)
 
     # TODO: Is method '__contains__' needed ? If yes then this class will act as a `Collections.abc.Sequence`

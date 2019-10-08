@@ -18,6 +18,7 @@ from pyxel import __version__ as version
 if t.TYPE_CHECKING:
     from ..pipelines.processor import Processor
     from ..detectors import Detector
+    from ..parametric.parametric import ParametricAnalysis
 
 
 class Outputs:
@@ -203,7 +204,9 @@ class Outputs:
         update_plot(ax_args)
         plt.draw()
 
-    def plot_scatter(self, x: np.ndarray, y: np.ndarray, color: t.Optional[str] = None, args: t.Optional[dict] = None):
+    def plot_scatter(self, x: np.ndarray, y: np.ndarray,
+                     color: t.Optional[str] = None,
+                     args: t.Optional[dict] = None) -> None:
         """TBW."""
         arg_tpl = self.update_args(plot_type='scatter', new_args=args)
         ax_args, plt_args = self.update_args(plot_type='scatter', new_args=self.user_plt_args, def_args=arg_tpl)
@@ -346,7 +349,7 @@ class Outputs:
             for processor in processor_list:
                 self.single_output(processor)
 
-    def calibration_plots(self, results: dict):
+    def calibration_plots(self, results: dict) -> None:
         """TBW."""
         if self.calibration_plot:
             if 'champions_plot' in self.calibration_plot:
@@ -390,7 +393,7 @@ class Outputs:
                 plt.legend()
                 self.save_plot(filename='fitted_datasets_id' + str(island))
 
-    def params_func(self, param) -> None:
+    def params_func(self, param: "ParametricAnalysis") -> None:
         """TBW."""
         for var in param.enabled_steps:
             if var.key not in self.parameter_keys:
@@ -401,7 +404,7 @@ class Outputs:
                     if par is not None and par not in self.parameter_keys:
                         self.parameter_keys += [par]
 
-    def extract_func(self, proc) -> dict:
+    def extract_func(self, proc: "Processor") -> dict:
         """TBW."""
         # self.single_output(processor.detector)    # TODO: extract other things (optional)
         res_row = np.array([])
@@ -434,7 +437,7 @@ class Outputs:
         plot_array = np.array([k['plot'] for k in result_list])  # type: np.ndarray
         return plot_array
 
-    def plotting_func(self, plot_array):
+    def plotting_func(self, plot_array: np.ndarray) -> None:
         """TBW."""
         self.user_plt_args = None
         if self.parametric_plot:
@@ -517,6 +520,7 @@ def update_plot(ax_args: dict) -> None:
         plt.ticklabel_format(style='sci', axis='y', scilimits=(0, 0))
 
 
+# TODO: Refactor this function
 def update_fits_header(header: dict, key, value) -> None:
     """TBW.
 
@@ -525,6 +529,7 @@ def update_fits_header(header: dict, key, value) -> None:
     :param value:
     :return:
     """
+
     if not isinstance(value, (str, int, float)):
         value = '%r' % value
     if isinstance(value, str):

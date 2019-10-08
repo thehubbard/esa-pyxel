@@ -11,7 +11,7 @@ from ..evaluator import evaluate_reference
 
 try:
     # Use LibYAML library
-    from yaml import CSafeLoader as SafeLoader  # type: ignore
+    from yaml import CSafeLoader as SafeLoader
 except ImportError:
     from yaml import SafeLoader  # type: ignore   # noqa
 
@@ -35,7 +35,7 @@ class ObjectModelLoader(yaml.SafeLoader):
     def add_class(cls,
                   klass: type,
                   paths: list,
-                  is_list: bool = False):
+                  is_list: bool = False) -> None:
         """TBW.
 
         :param klass:
@@ -46,7 +46,7 @@ class ObjectModelLoader(yaml.SafeLoader):
         ClassConstructor(cls, klass, paths, is_list)
 
     @classmethod
-    def add_class_ref(cls, path_to_class: list):
+    def add_class_ref(cls, path_to_class: list) -> None:
         """TBW.
 
         :param path_to_class:
@@ -75,7 +75,7 @@ class ObjectModelLoader(yaml.SafeLoader):
 #     """
 
 
-def _constructor_object(loader: ObjectModelLoader, node: yaml.Node):
+def _constructor_object(loader: ObjectModelLoader, node: yaml.Node) -> t.Any:
     """TBW.
 
     :param loader:
@@ -99,7 +99,7 @@ def _constructor_object(loader: ObjectModelLoader, node: yaml.Node):
     return result
 
 
-def _constructor_class(loader: ObjectModelLoader, node: yaml.ScalarNode):
+def _constructor_class(loader: ObjectModelLoader, node: yaml.ScalarNode) -> t.Any:
     """TBW.
 
     :param loader:
@@ -129,7 +129,7 @@ class ClassConstructor:
         self.paths = paths
         self.is_list = is_list
 
-    def __call__(self, loader, node):
+    def __call__(self, loader, node) -> t.Union[list, dict, t.Any]:
         """TBW.
 
         :param loader:
@@ -140,15 +140,15 @@ class ClassConstructor:
             obj = node.value
 
         elif isinstance(node, yaml.SequenceNode):
-            coll = loader.construct_sequence(node, deep=True)
+            lst = loader.construct_sequence(node, deep=True)  # type: t.List
             if self.is_list:
-                obj = [self.klass(**kwargs) for kwargs in coll]
+                obj = [self.klass(**kwargs) for kwargs in lst]
             else:
-                obj = self.klass(coll)
+                obj = self.klass(lst)
 
         elif isinstance(node, yaml.MappingNode):
-            coll = loader.construct_mapping(node, deep=True)
-            obj = self.klass(**coll)
+            dct = loader.construct_mapping(node, deep=True)
+            obj = self.klass(**dct)
 
         else:
             raise RuntimeError('Invalid node: %r' % node)
@@ -156,7 +156,7 @@ class ClassConstructor:
         return obj
 
 
-def load(yaml_file: t.Union[str, Path]):
+def load(yaml_file: t.Union[str, Path]) -> t.Any:
     """Load YAML file.
 
     :param yaml_file:
@@ -170,7 +170,7 @@ def load(yaml_file: t.Union[str, Path]):
             return load_yaml(file_obj)
 
 
-def load_yaml(stream: t.Union[str, t.IO]):
+def load_yaml(stream: t.Union[str, t.IO]) -> t.Any:
     """Load a YAML document.
 
     :param stream: document to process.

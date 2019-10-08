@@ -13,12 +13,15 @@ class Particle:
 
     def __init__(self,
                  detector: Detector,
-                 simulation_mode=None,
-                 particle_type=None,
-                 input_energy=None, spectrum_cdf=None,
-                 starting_pos_ver=None, starting_pos_hor=None, starting_pos_z=None,
+                 simulation_mode: str,
+                 particle_type: str,
+                 input_energy: t.Union[int, float, str],
+                 spectrum_cdf: np.ndarray,
+                 starting_pos_ver: t.Union[str, np.ndarray],
+                 starting_pos_hor: t.Union[str, np.ndarray],
+                 starting_pos_z: t.Union[str, np.ndarray],
                  # input_alpha='random', input_beta='random'
-                 ) -> None:
+                 ):
         """Creation of a particle according to some parameters.
 
         :param detector:
@@ -115,12 +118,12 @@ class Particle:
         else:
             raise ValueError('Given particle energy could not be read')
 
-        self.deposited_energy = 0
-        self.total_edep = 0
+        self.deposited_energy = 0.0  # type: float
+        self.total_edep = 0.0  # type: float
 
         self.type = particle_type
-        ionizing_particles = ['proton', 'ion', 'alpha', 'beta', 'electron']
-        non_ionizing_particles = ['gamma', 'x-ray']     # 'photon'
+        ionizing_particles = ('proton', 'ion', 'alpha', 'beta', 'electron')
+        non_ionizing_particles = ('gamma', 'x-ray')  # 'photon'
 
         if self.type in ionizing_particles:
             # call direct ionization func when needed - already implemented in simulation
@@ -133,7 +136,7 @@ class Particle:
         else:
             raise ValueError('Given particle type can not be simulated')
 
-    def get_surface_point(self):
+    def get_surface_point(self) -> np.ndarray:
         """TBW.
 
         :return:
@@ -145,21 +148,21 @@ class Particle:
                         np.array([0., 1., 0.]),
                         np.array([-1., 0., 0.]),
                         np.array([0., -1., 0.]),
-                        np.array([1., 0., 0.])]
+                        np.array([1., 0., 0.])]  # type: t.List[np.ndarray]
 
         points = [np.array([0., 0., 0.]),  # top plane (usually particle enters vol. via this)
                   np.array([0., 0., -1 * geo.total_thickness]),  # bottom plane (usually particle leaves vol. via this)
                   np.array([0., 0., 0.]),
                   np.array([geo.vert_dimension, 0., 0.]),
                   np.array([geo.vert_dimension, geo.horz_dimension, 0.]),
-                  np.array([0., geo.horz_dimension, 0.])]
+                  np.array([0., geo.horz_dimension, 0.])]  # type: t.List[np.ndarray]
 
         intersect_points = np.zeros((6, 3))
         track_direction = np.array([self.dir_ver, self.dir_hor, self.dir_z])
         random_det_point = np.array([self.random_det_pt_vert, self.random_det_pt_horz, self.random_det_pt_z])
 
-        surface_start_point = None
-        surface_end_point = None
+        surface_start_point = None  # type: t.Optional[np.ndarray]
+        surface_end_point = None  # type: t.Optional[np.ndarray]
         for i in range(6):
             intersect_points[i, :] = find_intersection(n=norm_vectors[i], p0=points[i],
                                                        ls=random_det_point, lv=track_direction)
@@ -187,7 +190,7 @@ class Particle:
 
         return surface_start_point
 
-    def get_angles(self):
+    def get_angles(self) -> t.Tuple[float, float]:
         """TBW.
 
         :return:
@@ -238,7 +241,8 @@ class Particle:
     #
     #     return track_length
 
-    def intersection_correction(self, array: np.ndarray):
+    # TODO: warning this method modify input parameter 'array' !!!
+    def intersection_correction(self, array: np.ndarray) -> np.ndarray:
         """TBW.
 
         :param array:
@@ -262,7 +266,8 @@ class Particle:
         return array
 
 
-def find_intersection(n, p0, ls, lv):
+def find_intersection(n: np.ndarray, p0: np.ndarray,
+                      ls: np.ndarray, lv: np.ndarray) -> np.ndarray:
     """TBW.
 
     https://en.wikipedia.org/wiki/Line%E2%80%93plane_intersection
@@ -280,7 +285,7 @@ def find_intersection(n, p0, ls, lv):
         return p
 
 
-def isotropic_direction():
+def isotropic_direction() -> t.Tuple[float, float, float]:
     """TBW.
 
     :param n:
@@ -294,7 +299,7 @@ def isotropic_direction():
     return u, v, w
 
 
-def non_isotropic_direction(n):
+def non_isotropic_direction(n: int) -> t.Tuple[float, float, float]:
     """TBW.
 
     :param n:

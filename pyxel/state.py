@@ -138,7 +138,7 @@ def get_state(obj: t.Any) -> t.Dict[str, t.Any]:
 
 def get_state_ids(obj: t.Any,
                   parent_key_list: t.Optional[t.List[str]] = None,
-                  result: t.Optional[t.Dict[str, t.Any]] = None):
+                  result: t.Optional[t.Dict[str, t.Any]] = None) -> t.Any:
     """Retrieve a flat dictionary of the object attribute hierarchy.
 
     The dot-format is used as the key representation.
@@ -175,7 +175,7 @@ def get_state_ids(obj: t.Any,
     return result
 
 
-def get_value(obj: t.Any, key: str):
+def get_value(obj: t.Any, key: str) -> t.Any:
     """Retrieve the attribute value of the object given the attribute dot formatted key chain.
 
     Example::
@@ -281,7 +281,7 @@ class ConfigObjects:
             self.log.info('key: %s, name: %s, value: %r', key, name, value)
         return value
 
-    def set(self, key: str, value: t.Any):
+    def set(self, key: str, value: t.Any) -> None:
         """Object-model setter."""
         obj, att = get_obj_att(self, key)
         if not hasattr(obj, '_' + att):
@@ -321,7 +321,7 @@ class ConfigObjects:
     #
     #     func(*args)
 
-    def append(self, config):
+    def append(self, config) -> None:
         """TBW."""
         self._configs.append(config)
 

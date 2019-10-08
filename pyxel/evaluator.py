@@ -1,7 +1,10 @@
 """TBW."""
 import importlib
 import logging
+import typing as t
 from ast import literal_eval
+
+import numpy as np
 
 __all__ = ['evaluate_reference', 'eval_range', 'eval_entry']
 
@@ -40,39 +43,43 @@ def evaluate_reference(reference_str):
     return reference
 
 
-def eval_range(values):
+def eval_range(values: t.Union[str, list, tuple]) -> list:
     """Evaluate a string representation of a list or numpy array.
 
     :param values:
     :return: list
     """
-    if values:
-        # TODO: consider using this instead:
-        # result = eval(value, {}, np.__dict__)
-        if isinstance(values, str):
-            if 'numpy' in values:
-                locals_dict = {'numpy': importlib.import_module('numpy')}
-                globals_dict = None
-                values = eval(values, globals_dict, locals_dict)
-                # NOTE: the following casting is to ensure JSON serialization works
-                # JSON does not accept numpy.int* or numpy.float* types.
-                if values.dtype == float:
-                    values = [float(value) for value in values]
-                elif values.dtype == int:
-                    values = [int(value) for value in values]
-                else:
-                    logging.warning('numpy data type is not a float or int: %r', values)
+    if isinstance(values, str):
+        if 'numpy' in values:
+            locals_dict = {'numpy': importlib.import_module('numpy')}
+            globals_dict = None
+            values_array = eval(values, globals_dict, locals_dict)  # type: np.ndarray
+
+            # NOTE: the following casting is to ensure JSON serialization works
+            # JSON does not accept numpy.int* or numpy.float* types.
+            if values_array.dtype == float:
+                values_lst = [float(value) for value in values_array]  # type: list
+            elif values_array.dtype == int:
+                values_lst = [int(value) for value in values_array]
             else:
-                values = eval(values)
+                logging.warning('numpy data type is not a float or int: %r',
+                                values_array)
+                raise NotImplementedError
+        else:
+            obj = eval(values)
+            values_lst = list(obj)
 
-        if not isinstance(values, (list, tuple)):
-            values = list(values)
+    elif isinstance(values, (list, tuple)):
+        values_lst = list(values)
+
     else:
-        values = []
-    return values
+        # values_lst = []
+        raise NotImplementedError
+
+    return values_lst
 
 
-def eval_entry(value):
+def eval_entry(value) -> t.Any:
     """TBW.
 
     :param value:

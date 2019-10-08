@@ -1,5 +1,4 @@
 """TBW."""
-import os
 import typing as t
 from enum import Enum
 from pathlib import Path
@@ -36,7 +35,7 @@ def read_data(filenames: t.List[Path]) -> t.List[np.ndarray]:
     # else:
     #     raise TypeError
 
-    output = [] # type: t.List[np.ndarray]
+    output = []  # type: t.List[np.ndarray]
 
     for _, filename in enumerate(filenames):
         if not filename.exists():

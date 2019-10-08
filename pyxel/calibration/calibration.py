@@ -133,7 +133,7 @@ class Algorithm:
         return self._type
 
     @type.setter
-    def type(self, value: AlgorithmType):
+    def type(self, value: AlgorithmType) -> None:
         """TBW."""
         self._type = AlgorithmType(value)
 
@@ -143,7 +143,7 @@ class Algorithm:
         return self._generations
 
     @generations.setter
-    def generations(self, value: int):
+    def generations(self, value: int) -> None:
         """TBW."""
         if value not in range(1, 100001):
             raise ValueError("'generations' must be between 1 and 100000.")
@@ -156,7 +156,7 @@ class Algorithm:
         return self._population_size
 
     @population_size.setter
-    def population_size(self, value: int):
+    def population_size(self, value: int) -> None:
         """TBW."""
         if value not in range(1, 100001):
             raise ValueError("'population_size' must be between 1 and 100000.")
@@ -170,7 +170,7 @@ class Algorithm:
         return self._variant
 
     @variant.setter
-    def variant(self, value: int):
+    def variant(self, value: int) -> None:
         """TBW."""
         if value not in range(1, 19):
             raise ValueError("'variant' must be between 1 and 18.")
@@ -183,7 +183,7 @@ class Algorithm:
         return self._variant_adptv
 
     @variant_adptv.setter
-    def variant_adptv(self, value: int):
+    def variant_adptv(self, value: int) -> None:
         """TBW."""
         if value not in (1, 2):
             raise ValueError("'variant_adptv' must be between 1 and 2.")
@@ -196,7 +196,7 @@ class Algorithm:
         return self._ftol
 
     @ftol.setter
-    def ftol(self, value: float):
+    def ftol(self, value: float) -> None:
         """TBW."""
         self._ftol = value
 
@@ -206,7 +206,7 @@ class Algorithm:
         return self._xtol
 
     @xtol.setter
-    def xtol(self, value: float):
+    def xtol(self, value: float) -> None:
         """TBW."""
         self._xtol = value
 
@@ -216,7 +216,7 @@ class Algorithm:
         return self._memory
 
     @memory.setter
-    def memory(self, value: bool):
+    def memory(self, value: bool) -> None:
         """TBW."""
         self._memory = value
 
@@ -229,7 +229,7 @@ class Algorithm:
         return self._cr
 
     @cr.setter
-    def cr(self, value: float):
+    def cr(self, value: float) -> None:
         """TBW."""
         if not (0.0 <= value <= 1.0):
             raise ValueError("'cr' must be between 0.0 and 1.0.")
@@ -242,7 +242,7 @@ class Algorithm:
         return self._eta_c
 
     @eta_c.setter
-    def eta_c(self, value: float):
+    def eta_c(self, value: float) -> None:
         """TBW."""
         self._eta_c = value
 
@@ -252,7 +252,7 @@ class Algorithm:
         return self._m
 
     @m.setter
-    def m(self, value: float):
+    def m(self, value: float) -> None:
         """TBW."""
         if not (0.0 <= value <= 1.0):
             raise ValueError("'m' must be between 0.0 and 1.0.")
@@ -265,7 +265,7 @@ class Algorithm:
         return self._param_m
 
     @param_m.setter
-    def param_m(self, value: float):
+    def param_m(self, value: float) -> None:
         """TBW."""
         self._param_m = value
 
@@ -275,7 +275,7 @@ class Algorithm:
         return self._param_s
 
     @param_s.setter
-    def param_s(self, value: int):
+    def param_s(self, value: int) -> None:
         """TBW."""
         self._param_s = value
 
@@ -285,7 +285,7 @@ class Algorithm:
         return self._crossover
 
     @crossover.setter
-    def crossover(self, value: str):
+    def crossover(self, value: str) -> None:
         """TBW."""
         self._crossover = value
 
@@ -295,7 +295,7 @@ class Algorithm:
         return self._mutation
 
     @mutation.setter
-    def mutation(self, value: str):
+    def mutation(self, value: str) -> None:
         """TBW."""
         self._mutation = value
 
@@ -305,7 +305,7 @@ class Algorithm:
         return self._selection
 
     @selection.setter
-    def selection(self, value: str):
+    def selection(self, value: str) -> None:
         """TBW."""
         self._selection = value
 
@@ -318,7 +318,7 @@ class Algorithm:
         return self._nlopt_solver
 
     @nlopt_solver.setter
-    def nlopt_solver(self, value: str):
+    def nlopt_solver(self, value: str) -> None:
         """TBW."""
         self._nlopt_solver = value
 
@@ -328,7 +328,7 @@ class Algorithm:
         return self._maxtime
 
     @maxtime.setter
-    def maxtime(self, value: int):
+    def maxtime(self, value: int) -> None:
         """TBW."""
         self._maxtime = value
 
@@ -338,7 +338,7 @@ class Algorithm:
         return self._maxeval
 
     @maxeval.setter
-    def maxeval(self, value: int):
+    def maxeval(self, value: int) -> None:
         """TBW."""
         self._maxeval = value
 
@@ -348,7 +348,7 @@ class Algorithm:
         return self._xtol_rel
 
     @xtol_rel.setter
-    def xtol_rel(self, value: float):
+    def xtol_rel(self, value: float) -> None:
         """TBW."""
         self._xtol_rel = value
 
@@ -358,7 +358,7 @@ class Algorithm:
         return self._xtol_abs
 
     @xtol_abs.setter
-    def xtol_abs(self, value: float):
+    def xtol_abs(self, value: float) -> None:
         """TBW."""
         self._xtol_abs = value
 
@@ -368,7 +368,7 @@ class Algorithm:
         return self._ftol_rel
 
     @ftol_rel.setter
-    def ftol_rel(self, value: float):
+    def ftol_rel(self, value: float) -> None:
         """TBW."""
         self._ftol_rel = value
 
@@ -378,7 +378,7 @@ class Algorithm:
         return self._ftol_abs
 
     @ftol_abs.setter
-    def ftol_abs(self, value: float):
+    def ftol_abs(self, value: float) -> None:
         """TBW."""
         self._ftol_abs = value
 
@@ -388,7 +388,7 @@ class Algorithm:
         return self._stopval
 
     @stopval.setter
-    def stopval(self, value: float):
+    def stopval(self, value: float) -> None:
         """TBW."""
         self._stopval = value
 
@@ -398,7 +398,7 @@ class Algorithm:
         return self._local_optimizer
 
     @local_optimizer.setter
-    def local_optimizer(self, value):
+    def local_optimizer(self, value) -> None:
         """TBW."""
         self._local_optimizer = value
 
@@ -408,7 +408,7 @@ class Algorithm:
         return self._replacement
 
     @replacement.setter
-    def replacement(self, value: str):
+    def replacement(self, value: str) -> None:
         """TBW."""
         self._replacement = value
 
@@ -418,7 +418,7 @@ class Algorithm:
         return self._nlopt_selection
 
     @nlopt_selection.setter
-    def nlopt_selection(self, value: str):
+    def nlopt_selection(self, value: str) -> None:
         """TBW."""
         self._nlopt_selection = value
 
@@ -528,7 +528,7 @@ class Calibration:
         return self._output_dir
 
     @output_dir.setter
-    def output_dir(self, value: Path):
+    def output_dir(self, value: Path) -> None:
         """TBW."""
         self._output_dir = value
 
@@ -541,7 +541,7 @@ class Calibration:
         return self._fitting
 
     @fitting.setter
-    def fitting(self, value: ModelFitting):
+    def fitting(self, value: ModelFitting) -> None:
         """TBW."""
         self._fitting = value
 
@@ -551,7 +551,7 @@ class Calibration:
         return self._calibration_mode
 
     @calibration_mode.setter
-    def calibration_mode(self, value: CalibrationMode):
+    def calibration_mode(self, value: CalibrationMode) -> None:
         """TBW."""
         self._calibration_mode = value
 
@@ -561,7 +561,7 @@ class Calibration:
         return self._result_type
 
     @result_type.setter
-    def result_type(self, value: ResultType):
+    def result_type(self, value: ResultType) -> None:
         """TBW."""
         self._result_type = value
 
@@ -571,7 +571,7 @@ class Calibration:
         return self._result_fit_range
 
     @result_fit_range.setter
-    def result_fit_range(self, value: list):
+    def result_fit_range(self, value: list) -> None:
         """TBW."""
         self._result_fit_range = value
 
@@ -581,7 +581,7 @@ class Calibration:
         return self._result_input_arguments
 
     @result_input_arguments.setter
-    def result_input_arguments(self, value: list):
+    def result_input_arguments(self, value: list) -> None:
         """TBW."""
         self._result_input_arguments = value
 
@@ -591,7 +591,7 @@ class Calibration:
         return self._target_data_path
 
     @target_data_path.setter
-    def target_data_path(self, value: t.List[Path]):
+    def target_data_path(self, value: t.List[Path]) -> None:
         """TBW."""
         self._target_data_path = value
 
@@ -601,7 +601,7 @@ class Calibration:
         return self._target_fit_range
 
     @target_fit_range.setter
-    def target_fit_range(self, value: list):
+    def target_fit_range(self, value: list) -> None:
         """TBW."""
         self._target_fit_range = value
 
@@ -614,7 +614,7 @@ class Calibration:
         return self._fitness_function
 
     @fitness_function.setter
-    def fitness_function(self, value: ModelFunction):
+    def fitness_function(self, value: ModelFunction) -> None:
         """TBW."""
         self._fitness_function = value
 
@@ -627,7 +627,7 @@ class Calibration:
         return self._algorithm
 
     @algorithm.setter
-    def algorithm(self, value: Algorithm):
+    def algorithm(self, value: Algorithm) -> None:
         """TBW."""
         self._algorithm = value
 
@@ -637,7 +637,7 @@ class Calibration:
         return self._parameters
 
     @parameters.setter
-    def parameters(self, value: t.List[ParameterValues]):
+    def parameters(self, value: t.List[ParameterValues]) -> None:
         """TBW."""
         self._parameters = value
 
@@ -647,7 +647,7 @@ class Calibration:
         return self._seed
 
     @seed.setter
-    def seed(self, value: int):
+    def seed(self, value: int) -> None:
         """TBW."""
         if value not in range(100001):
             raise ValueError("'seed' must be between 0 and 100000.")
@@ -660,7 +660,7 @@ class Calibration:
         return self._islands
 
     @islands.setter
-    def islands(self, value: int):
+    def islands(self, value: int) -> None:
         """TBW."""
         if value not in range(101):
             raise ValueError("'islands' must be between 0 and 100.")
@@ -673,7 +673,7 @@ class Calibration:
         return self._weighting_path
 
     @weighting_path.setter
-    def weighting_path(self, value: list):
+    def weighting_path(self, value: list) -> None:
         """TBW."""
         self._weighting_path = value
 
@@ -752,7 +752,7 @@ class Calibration:
         logging.info("Calibration ended.")
         return res
 
-    def post_processing(self, calib_results: list, output: Outputs):
+    def post_processing(self, calib_results: list, output: Outputs) -> None:
         """TBW."""
         for item in calib_results:
             proc_list = item[0]

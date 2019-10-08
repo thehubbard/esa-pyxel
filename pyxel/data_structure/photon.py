@@ -44,7 +44,7 @@ class Photon(Array):
         return self._array
 
     @array.setter
-    def array(self, value: np.ndarray):
+    def array(self, value: np.ndarray) -> None:
         """TBW."""
         self.validate_type(value)
 

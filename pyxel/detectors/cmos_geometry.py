@@ -72,7 +72,7 @@ class CMOSGeometry(Geometry):
         return self._n_output
 
     @n_output.setter
-    def n_output(self, value: int):
+    def n_output(self, value: int) -> None:
         """Set Number of detector outputs."""
         if value not in range(33):
             raise ValueError("'n_output' must be between 0 and 32.")
@@ -85,7 +85,7 @@ class CMOSGeometry(Geometry):
         return self._n_row_overhead
 
     @n_row_overhead.setter
-    def n_row_overhead(self, value: int):
+    def n_row_overhead(self, value: int) -> None:
         """Set Number of detector outputs."""
         if value not in range(101):
             raise ValueError("'n_row_overhead' must be between 0 and 100.")
@@ -98,7 +98,7 @@ class CMOSGeometry(Geometry):
         return self._n_frame_overhead
 
     @n_frame_overhead.setter
-    def n_frame_overhead(self, value: int):
+    def n_frame_overhead(self, value: int) -> None:
         """Set New frame overhead in rows."""
         if value not in range(101):
             raise ValueError("'n_frame_overhead' must be between 0 and 100.")
@@ -111,7 +111,7 @@ class CMOSGeometry(Geometry):
         return self._reverse_scan_direction
 
     @reverse_scan_direction.setter
-    def reverse_scan_direction(self, value: bool):
+    def reverse_scan_direction(self, value: bool) -> None:
         """Set reverse scan direction."""
         self._reverse_scan_direction = value
 
@@ -121,7 +121,7 @@ class CMOSGeometry(Geometry):
         return self._reference_pixel_border_width
 
     @reference_pixel_border_width.setter
-    def reference_pixel_border_width(self, value: int):
+    def reference_pixel_border_width(self, value: int) -> None:
         """Set Number of detector outputs."""
         if value not in range(33):
             raise ValueError("'reference_pixel_border_width' must be between 0 and 32.")

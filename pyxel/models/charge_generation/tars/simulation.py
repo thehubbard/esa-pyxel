@@ -6,6 +6,7 @@ from bisect import bisect
 from pathlib import Path
 
 import numpy as np
+import pandas as pd
 
 from pyxel.detectors.detector import Detector
 from pyxel.models.charge_generation.tars.particle import Particle
@@ -25,33 +26,33 @@ class Simulation:
         :param Detector detector: Detector object(from CCD/CMSO library) containing all the simulated detector specs
         """
         self.detector = detector
-        self.simulation_mode = None
+        self.simulation_mode = None  # type: t.Optional[str]
 
-        self.flux_dist = None
-        self.spectrum_cdf = None
+        self.flux_dist = None  # type: t.Optional[np.ndarray]
+        self.spectrum_cdf = None  # type: t.Optional[np.ndarray]
 
-        self.energy_loss_data = None
+        self.energy_loss_data = None  # type: t.Optional[str]
 
-        self.elec_number_dist = None
+        self.elec_number_dist = pd.DataFrame()
         self.elec_number_cdf = np.zeros((1, 2))
-        self.step_size_dist = None
+        self.step_size_dist = pd.DataFrame()
         self.step_cdf = np.zeros((1, 2))
-        self.kin_energy_dist = None
+        self.kin_energy_dist = pd.DataFrame()
         self.kin_energy_cdf = np.zeros((1, 2))
 
-        self.data_library = None
+        self.data_library = pd.DataFrame()
 
         self.stopping_power = None
 
         self.particle = None  # type: t.Optional[Particle]
 
-        self.particle_type = None
-        self.initial_energy = None
-        self.position_ver = None
-        self.position_hor = None
-        self.position_z = None
-        self.angle_alpha = None
-        self.angle_beta = None
+        self.particle_type = None  # type: t.Optional[str]
+        self.initial_energy = None  # type: t.Optional[t.Union[str, float]]
+        self.position_ver = None  # type: t.Optional[str]
+        self.position_hor = None  # type: t.Optional[str]
+        self.position_z = None  # type: t.Optional[str]
+        self.angle_alpha = None  # type: t.Optional[str]
+        self.angle_beta = None  # type: t.Optional[str]
         self.step_length = 1.0          # fix, all the other data/parameters should be adjusted to this
         self.energy_cut = 1.0e-5        # MeV
 
@@ -78,7 +79,12 @@ class Simulation:
         self.alpha_lst_per_event = []            # type: t.List[float]
         self.beta_lst_per_event = []             # type: t.List[float]
 
-    def parameters(self, sim_mode, part_type, init_energy, pos_ver, pos_hor, pos_z, alpha, beta):
+    def parameters(self,
+                   sim_mode: str,
+                   part_type: str,
+                   init_energy: t.Union[str, float],
+                   pos_ver: str, pos_hor: str, pos_z: str,
+                   alpha: str, beta: str) -> None:
         """TBW.
 
         :param sim_mode:
@@ -99,34 +105,34 @@ class Simulation:
         self.angle_alpha = alpha
         self.angle_beta = beta
 
-    def find_smaller_neighbor(self, column, value):
+    def find_smaller_neighbor(self, column: str, value: float) -> float:
         """TBW.
 
         :return:
         """
-        sorted_list = sorted(self.data_library[column].unique())
+        sorted_list = sorted(self.data_library[column].unique())  # type: t.List[float]
         index = bisect(sorted_list, value) - 1
         if index < 0:
             index = 0
         return sorted_list[index]
 
-    def find_larger_neighbor(self, column, value):
+    def find_larger_neighbor(self, column: str, value: float) -> float:
         """TBW.
 
         :return:
         """
-        sorted_list = sorted(self.data_library[column].unique())
+        sorted_list = sorted(self.data_library[column].unique())  # type: t.List[float]
         index = bisect(sorted_list, value)
         if index > len(sorted_list) - 1:
             index = len(sorted_list) - 1
         return sorted_list[index]
 
-    def find_closest_neighbor(self, column, value):
+    def find_closest_neighbor(self, column: str, value: float) -> float:
         """TBW.
 
         :return:
         """
-        sorted_list = sorted(self.data_library[column].unique())
+        sorted_list = sorted(self.data_library[column].unique())  # type: t.List[float]
         index_smaller = bisect(sorted_list, value) - 1
         index_larger = bisect(sorted_list, value)
 
@@ -137,7 +143,8 @@ class Simulation:
         else:
             return sorted_list[index_smaller]
 
-    def select_stepsize_data(self, p_type, p_energy, p_track_length):
+    def select_stepsize_data(self, p_type: str,
+                             p_energy: float, p_track_length: float) -> pd.DataFrame:
         """TBW.
 
         :param p_type: str
@@ -147,12 +154,12 @@ class Simulation:
         """
         df = self.data_library
 
-        distance = self.find_larger_neighbor('thickness', p_track_length)
-        energy = self.find_closest_neighbor('energy', p_energy)
+        distance = self.find_larger_neighbor(column='thickness', value=p_track_length)
+        energy = self.find_closest_neighbor(column='energy', value=p_energy)
 
         return df[(df.type == p_type) & (df.energy == energy) & (df.thickness == distance)].path.values[0]
 
-    def set_stepsize_distribution(self, step_size_file):
+    def set_stepsize_distribution(self, step_size_file: Path) -> None:
         """TBW.
 
         :param step_size_file:
@@ -182,7 +189,7 @@ class Simulation:
         # cum_sum /= np.max(cum_sum)
         # self.kin_energy_cdf = np.stack((self.kin_energy_dist['energy'], cum_sum), axis=1)
 
-    def event_generation(self):
+    def event_generation(self) -> bool:
         """Generate an event.
 
         :return:
@@ -195,14 +202,22 @@ class Simulation:
         mat = self.detector.material
         ioniz_energy = mat.ionization_energy   # eV
 
+        assert self.simulation_mode is not None
+        assert self.particle_type is not None
+        assert self.initial_energy is not None
+
         self.particle = Particle(detector=self.detector,
                                  simulation_mode=self.simulation_mode,
                                  particle_type=self.particle_type,
                                  input_energy=self.initial_energy, spectrum_cdf=self.spectrum_cdf,
-                                 starting_pos_ver=self.position_ver, starting_pos_hor=self.position_hor, starting_pos_z=self.position_z
+                                 starting_pos_ver=self.position_ver, starting_pos_hor=self.position_hor,
+                                 starting_pos_z=self.position_z
                                  # self.angle_alpha, self.angle_beta)
                                  )
+
         particle = self.particle
+        assert particle.track_length is not None
+
         self.track_length_lst_per_event += [particle.track_length]
 
         if self.energy_loss_data == 'stepsize':
@@ -287,7 +302,7 @@ class Simulation:
 
         return False
 
-    def event_generation_geant4(self):
+    def event_generation_geant4(self) -> bool:
         """Generate an event running a geant4 app directly.
 
         :return:
@@ -300,11 +315,16 @@ class Simulation:
         secondaries = 0
         tertiaries = 0
 
+        assert self.simulation_mode is not None
+        assert self.particle_type is not None
+        assert self.initial_energy is not None
+
         self.particle = Particle(detector=self.detector,
                                  simulation_mode=self.simulation_mode,
                                  particle_type=self.particle_type,
                                  input_energy=self.initial_energy, spectrum_cdf=self.spectrum_cdf,
-                                 starting_pos_ver=self.position_ver, starting_pos_hor=self.position_hor, starting_pos_z=self.position_z
+                                 starting_pos_ver=self.position_ver, starting_pos_hor=self.position_hor,
+                                 starting_pos_z=self.position_z
                                  # self.angle_alpha, self.angle_beta
                                  )
         particle = self.particle

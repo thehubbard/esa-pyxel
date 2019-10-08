@@ -34,12 +34,12 @@ class ModelFunction:
         self.arguments = arguments if arguments else {}  # type: dict
         # self.group = None               # TODO
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """TBW."""
         return 'ModelFunction(%(name)r, %(func)r, %(arguments)r, %(enabled)r)' % vars(self)
 
     # TODO: Is this method needed ?
-    def __getstate__(self):
+    def __getstate__(self) -> dict:
         """TBW."""
         return {
             'name': self.name,

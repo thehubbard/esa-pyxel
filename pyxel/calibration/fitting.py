@@ -42,7 +42,7 @@ class ModelFitting:
         self.pop = None  # type: t.Optional[int]
 
         self.all_target_data = []  # type: t.List[t.List[t.Any]]
-        self.weighting = []  # type: t.List[np.ndarray]
+        self.weighting = None  # type: t.Optional[np.ndarray]
         self.fitness_func = None  # type: t.Optional[ModelFunction]
         self.sim_output = None  # type: t.Optional[ResultType]
         # self.fitted_model = None            # type: t.Optional['ModelFunction']
@@ -209,7 +209,7 @@ class ModelFitting:
                     "indicate variables need to be calibrated"
                 )
 
-    def get_simulated_data(self, processor) -> np.ndarray:
+    def get_simulated_data(self, processor: Processor) -> np.ndarray:
         """TBW."""
         if self.sim_output == ResultType.Image:
             simulated_data = processor.detector.image.array[self.sim_fit_range]  # type: np.ndarray
@@ -298,14 +298,17 @@ class ModelFitting:
                                               new_processor=processor)
 
             logger.setLevel(logging.WARNING)
-            result_proc = None
-            if self.calibration_mode == "pipeline":
-                result_proc = processor.run_pipeline()
+            # result_proc = None
+            if self.calibration_mode == CalibrationMode.Pipeline:
+                result_proc = processor.run_pipeline()  # type: Processor
             # elif self.calibration_mode == 'single_model':
             #     self.fitted_model.function(processor.detector)               # todo: update
+            else:
+                raise NotImplementedError
+
             logger.setLevel(prev_log_level)
 
-            simulated_data = self.get_simulated_data(result_proc)
+            simulated_data = self.get_simulated_data(processor=result_proc)
 
             overall_fitness += self.calculate_fitness(
                 simulated_data=simulated_data, target_data=target_data
@@ -559,7 +562,7 @@ class ModelFitting:
                 fmt=str_format,
             )
 
-    def add_to_pop_file(self, parameter: np.ndarray):
+    def add_to_pop_file(self, parameter: np.ndarray) -> None:
         """TBW."""
         assert self.fitness_array is not None
         assert self.file_path

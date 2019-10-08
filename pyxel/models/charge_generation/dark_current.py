@@ -31,7 +31,7 @@ def dark_current_rule07(detector: CMOS) -> None:
     q = 1.602176624e-19     # Elementary charge (Coulomb)
     k = 1.38064852e-23      # Boltzmann constant (m2 kg s-2 K-1)
 
-    def lambda_e(lambda_cutoff: float):
+    def lambda_e(lambda_cutoff: float) -> float:
         """Compute lambda_e.
 
         :param lambda_cutoff: (int) Cut-off wavelength of the detector

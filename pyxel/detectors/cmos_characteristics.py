@@ -78,7 +78,7 @@ class CMOSCharacteristics(Characteristics):
         return self._cutoff
 
     @cutoff.setter
-    def cutoff(self, value: float):
+    def cutoff(self, value: float) -> None:
         """Set Cutoff wavelength."""
         if not (1.7 <= value <= 15.0):
             raise ValueError("'cutoff' must be between 1.7 and 15.0.")
@@ -91,7 +91,7 @@ class CMOSCharacteristics(Characteristics):
         return self._vbiaspower
 
     @vbiaspower.setter
-    def vbiaspower(self, value: float):
+    def vbiaspower(self, value: float) -> None:
         """Set VBIASPOWER."""
         if not (0.0 <= value <= 3.4):
             raise ValueError("'vbiaspower' must be between 0.0 and 3.4.")
@@ -104,7 +104,7 @@ class CMOSCharacteristics(Characteristics):
         return self._dsub
 
     @dsub.setter
-    def dsub(self, value: float):
+    def dsub(self, value: float) -> None:
         """Set DSUB."""
         if not (0.3 <= value <= 1.0):
             raise ValueError("'dsub' must be between 0.3 and 1.0.")
@@ -117,7 +117,7 @@ class CMOSCharacteristics(Characteristics):
         return self._vreset
 
     @vreset.setter
-    def vreset(self, value: float):
+    def vreset(self, value: float) -> None:
         """Set VRESET."""
         if not (0.0 <= value <= 0.3):
             raise ValueError("'vreset' must be between 0.0 and 0.3.")
@@ -130,7 +130,7 @@ class CMOSCharacteristics(Characteristics):
         return self._biasgate
 
     @biasgate.setter
-    def biasgate(self, value: float):
+    def biasgate(self, value: float) -> None:
         """Set BIASGATE."""
         if not (1.8 <= value <= 2.6):
             raise ValueError("'biasgate' must be between 1.8 and 2.6.")
@@ -143,7 +143,7 @@ class CMOSCharacteristics(Characteristics):
         return self._preampref
 
     @preampref.setter
-    def preampref(self, value: float):
+    def preampref(self, value: float) -> None:
         """Set PREAMPREF."""
         if not (0.0 <= value <= 4.0):
             raise ValueError("'preampref' must be between 0.0 and 4.0.")

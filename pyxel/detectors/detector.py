@@ -80,7 +80,7 @@ class Detector:
         return self._photon
 
     @photon.setter
-    def photon(self, obj: Photon):
+    def photon(self, obj: Photon) -> None:
         self._photon = obj
 
     @property
