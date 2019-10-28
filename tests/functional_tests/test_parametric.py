@@ -1,7 +1,12 @@
+from collections import abc
 from pathlib import Path
+
 import pytest
+
 import pyxel.io as io
-from pyxel.pipelines.processor import Processor
+from pyxel.detectors import CCD
+from pyxel.parametric.parametric import Configuration, ParametricAnalysis
+from pyxel.pipelines.processor import DetectionPipeline, Processor
 
 try:
     import pygmo as pg
@@ -38,17 +43,39 @@ expected_embedded = [
     ('sequential', expected_sequential),
     ('embedded', expected_embedded),
 ])
-def test_pipeline_parametric(mode, expected):
+def test_pipeline_parametric_without_init_photon(mode, expected):
     input_filename = 'tests/data/parametric.yaml'
     cfg = io.load(Path(input_filename))
-    simulation = cfg.pop('simulation')
+
+    assert isinstance(cfg, dict)
+    assert 'simulation' in cfg
+    assert 'ccd_detector' in cfg
+    assert 'pipeline' in cfg
+
+    simulation = cfg['simulation']
+    assert isinstance(simulation, Configuration)
+
     parametric = simulation.parametric
+    assert isinstance(parametric, ParametricAnalysis)
+
     parametric.parametric_mode = mode
+
     detector = cfg['ccd_detector']
+    assert isinstance(detector, CCD)
+
     pipeline = cfg['pipeline']
+    assert isinstance(pipeline, DetectionPipeline)
+
     processor = Processor(detector, pipeline)  # type: pyxel.pipelines.processor.Processor
     result = parametric.debug(processor)
     assert result == expected
+
     configs = parametric.collect(processor)
+    assert isinstance(configs, abc.Iterator)
+
     for config in configs:
-        config.run_pipeline()
+        assert isinstance(config, Processor)
+
+        with pytest.raises(RuntimeError, match=r"Photon array is not initialized ! "
+                                                "Please use a 'Photon Generation' model"):
+            config.run_pipeline()

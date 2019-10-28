@@ -1,21 +1,26 @@
 """Pyxel TARS model to generate charge by ionization."""
 
+import typing as t
+from pathlib import Path
+
 import numpy as np
+import pandas as pd
+
+if t.TYPE_CHECKING:
+    from pyxel.models.charge_generation.tars.tars import TARS
+
 try:
     import matplotlib.pyplot as plt
     from mpl_toolkits.mplot3d import Axes3D  # noqa: F401
 except ImportError:
     # raise Warning('Matplotlib cannot be imported')
     pass
-import pandas as pd
-from pathlib import Path
-# import typing as t   # noqa: F401
 
 
 class PlottingTARS:
     """Plotting class for TARS."""
 
-    def __init__(self, tars,
+    def __init__(self, tars: "TARS",
                  draw_plots: bool = False,
                  save_plots: bool = False,
                  file_format: str = 'png') -> None:
@@ -32,7 +37,7 @@ class PlottingTARS:
         self.save_plots = save_plots
         self.file_format = file_format
 
-    def save_and_draw(self, fig_name: str):
+    def save_and_draw(self, fig_name: str) -> None:
         """TBW.
 
         :param fig_name:
@@ -43,16 +48,16 @@ class PlottingTARS:
         if self.draw_plots:
             plt.draw()
 
-    def show(self):
+    def show(self) -> None:
         """TBW."""
         plt.show()
 
-    def save_edep(self):
+    def save_edep(self) -> None:
         """TBW."""
         np.save('orig2_edep_per_step_10k', self.tars.sim_obj.edep_per_step)
         np.save('orig2_edep_per_particle_10k', self.tars.sim_obj.total_edep_per_particle)
 
-    def plot_edep_per_step(self):
+    def plot_edep_per_step(self) -> tuple:
         """TBW."""
         plt.figure()
         n, bins, patches = plt.hist(self.tars.sim_obj.edep_per_step, 300, facecolor='b')
@@ -64,7 +69,7 @@ class PlottingTARS:
         self.save_and_draw('edep_per_step')
         return n, bins, patches
 
-    def plot_edep_per_particle(self):
+    def plot_edep_per_particle(self) -> tuple:
         """TBW."""
         plt.figure()
         n, bins, patches = plt.hist(self.tars.sim_obj.total_edep_per_particle, 200, facecolor='g')
@@ -76,10 +81,14 @@ class PlottingTARS:
         self.save_and_draw('edep_per_particle')
         return n, bins, patches
 
-    def plot_spectrum_cdf(self):
+    def plot_spectrum_cdf(self) -> None:
         """TBW."""
-        lin_energy_range = self.tars.sim_obj.spectrum_cdf[:, 0]
-        cum_sum = self.tars.sim_obj.spectrum_cdf[:, 1]
+        sim_obj = self.tars.sim_obj
+        assert sim_obj.spectrum_cdf is not None
+        assert sim_obj.flux_dist is not None
+
+        lin_energy_range = sim_obj.spectrum_cdf[:, 0]
+        cum_sum = sim_obj.spectrum_cdf[:, 1]
         plt.figure()
         plt.title('Spectrum CDF')
         plt.xlabel('Energy (MeV)')
@@ -87,10 +96,14 @@ class PlottingTARS:
         plt.semilogx(lin_energy_range, cum_sum)
         self.save_and_draw('spectrum_cdf')
 
-    def plot_flux_spectrum(self):
+    def plot_flux_spectrum(self) -> None:
         """TBW."""
-        lin_energy_range = self.tars.sim_obj.spectrum_cdf[:, 0]
-        flux_dist = self.tars.sim_obj.flux_dist
+        sim_obj = self.tars.sim_obj
+        assert sim_obj.spectrum_cdf is not None
+        assert sim_obj.flux_dist is not None
+
+        lin_energy_range = sim_obj.spectrum_cdf[:, 0]
+        flux_dist = sim_obj.flux_dist
         plt.figure()
         plt.title('Proton flux spectrum (CREME data)')
         plt.xlabel('Energy (MeV)')
@@ -98,7 +111,7 @@ class PlottingTARS:
         plt.loglog(lin_energy_range, flux_dist)
         self.save_and_draw('flux_spectrum')
 
-    def plot_spectrum_hist(self, data):
+    def plot_spectrum_hist(self, data: t.Optional[str] = None) -> None:
         """TBW."""
         plt.figure()
         plt.title('Proton flux spectrum sampled by TARS')
@@ -119,7 +132,7 @@ class PlottingTARS:
         # plt.legend(loc='upper right')
         self.save_and_draw('tars_spectrum')
 
-    def plot_charges_3d(self):
+    def plot_charges_3d(self) -> None:
         """TBW."""
         geo = self.tars.sim_obj.detector.geometry
 
@@ -127,8 +140,8 @@ class PlottingTARS:
         fig = plt.figure(figsize=plt.figaspect(0.5))
         # fig = plt.figure()
 
-        size = self.tars.sim_obj.e_num_lst_per_event
-        size = [x / 10. for x in size]
+        e_num_lst_per_event = self.tars.sim_obj.e_num_lst_per_event
+        size = [x / 10. for x in e_num_lst_per_event]
         # ax = fig.add_subplot(1, 2, 1, projection='3d')
         ax = fig.add_subplot(1, 2, 1, projection='3d')
         ax.scatter(self.tars.sim_obj.e_pos0_lst, self.tars.sim_obj.e_pos1_lst, self.tars.sim_obj.e_pos2_lst,
@@ -184,21 +197,21 @@ class PlottingTARS:
         # ax2.set_ylabel(r'horizontal ($\mu$m)')
         # ax2.set_zlabel(r'z ($\mu$m)')
 
-    def plot_let_cdf(self):
-        """TBW."""
-        plt.figure()
-        plt.title('LET CDF')
-        plt.plot(self.tars.sim_obj.let_cdf[:, 0], self.tars.sim_obj.let_cdf[:, 1], '.')
-        self.save_and_draw('let_cdf')
+    # def plot_let_cdf(self) -> None:
+    #     """TBW."""
+    #     plt.figure()
+    #     plt.title('LET CDF')
+    #     plt.plot(self.tars.sim_obj.let_cdf[:, 0], self.tars.sim_obj.let_cdf[:, 1], '.')
+    #     self.save_and_draw('let_cdf')
 
-    def plot_step_cdf(self):
+    def plot_step_cdf(self) -> None:
         """TBW."""
         plt.figure()
         plt.title('Step size CDF')
         plt.plot(self.tars.sim_obj.step_cdf[:, 0], self.tars.sim_obj.step_cdf[:, 1], '.')
         self.save_and_draw('step_cdf')
 
-    def plot_step_dist(self):
+    def plot_step_dist(self) -> None:
         """TBW."""
         plt.figure()
         plt.title('Step size distribution')
@@ -208,14 +221,14 @@ class PlottingTARS:
                  self.tars.sim_obj.step_size_dist['counts'], '.')
         self.save_and_draw('step_dist')
 
-    def plot_tertiary_number_cdf(self):
+    def plot_tertiary_number_cdf(self) -> None:
         """TBW."""
         plt.figure()
         plt.title('Tertiary electron number CDF')
         plt.plot(self.tars.sim_obj.elec_number_cdf[:, 0], self.tars.sim_obj.elec_number_cdf[:, 1], '.')
         self.save_and_draw('elec_number_cdf')
 
-    def plot_tertiary_number_dist(self):
+    def plot_tertiary_number_dist(self) -> None:
         """TBW."""
         plt.figure()
         plt.title('Tertiary electron number distribution')
@@ -223,20 +236,24 @@ class PlottingTARS:
                  self.tars.sim_obj.elec_number_dist['counts'], '.')
         self.save_and_draw('elec_number_dist')
 
-    def plot_let_dist(self):
-        """TBW."""
-        plt.figure()
-        plt.title('LET dist')
-        plt.plot(self.tars.sim_obj.let_dist[:, 1], self.tars.sim_obj.let_dist[:, 2], '.')
-        self.save_and_draw('let_dist')
+    # def plot_let_dist(self) -> None:
+    #     """TBW."""
+    #     plt.figure()
+    #     plt.title('LET dist')
+    #     plt.plot(self.tars.sim_obj.let_dist[:, 1], self.tars.sim_obj.let_dist[:, 2], '.')
+    #     self.save_and_draw('let_dist')
 
-    def plot_trajectory_xy(self):
+    def plot_trajectory_xy(self) -> None:
         """TBW."""
         plt.figure()
         geo = self.tars.sim_obj.detector.geometry
+
+        particle = self.tars.sim_obj.particle
+        assert particle is not None
+
         # self.trajectory[:, 0] - VERTICAL COORDINATE
         # self.trajectory[:, 1] - HORIZONTAL COORDINATE
-        plt.plot(self.tars.sim_obj.particle.trajectory[:, 1], self.tars.sim_obj.particle.trajectory[:, 0], '.')
+        plt.plot(particle.trajectory[:, 1], particle.trajectory[:, 0], '.')
         plt.xlabel(r'horizontal ($\mu$m)')
         plt.ylabel(r'vertical ($\mu$m)')
         plt.title('p trajectory in CCD')
@@ -244,13 +261,16 @@ class PlottingTARS:
         plt.grid(True)
         self.save_and_draw('trajectory_xy')
 
-    def plot_trajectory_xz(self):
+    def plot_trajectory_xz(self) -> None:
         """TBW."""
         plt.figure()
         geo = self.tars.sim_obj.detector.geometry
+        particle = self.tars.sim_obj.particle
+        assert particle is not None
+
         # self.trajectory[:, 2] - Z COORDINATE
         # self.trajectory[:, 1] - HORIZONTAL COORDINATE
-        plt.plot(self.tars.sim_obj.particle.trajectory[:, 1], self.tars.sim_obj.particle.trajectory[:, 2], '.')
+        plt.plot(particle.trajectory[:, 1], particle.trajectory[:, 2], '.')
         plt.xlabel(r'horizontal ($\mu$m)')
         plt.ylabel(r'z ($\mu$m)')
         plt.title('p trajectory in CCD')
@@ -258,7 +278,9 @@ class PlottingTARS:
         plt.grid(True)
         self.save_and_draw('trajectory_xz')
 
-    def plot_track_histogram(self, histogram_data, normalize: bool = None):
+    def plot_track_histogram(self,
+                             histogram_data: t.Union[str, np.ndarray],
+                             normalize: bool = False) -> None:
         """TBW."""
         hist_bins = 1000
         hist_range = (0, 1000)
@@ -268,14 +290,18 @@ class PlottingTARS:
 
         if isinstance(histogram_data, str):
             if histogram_data.endswith('.npy'):
-                histogram_data = np.load(histogram_data)
+                data = np.load(histogram_data)  # type: np.ndarray
+            else:
+                raise NotImplementedError
+        else:
+            data = histogram_data
 
         col = (1, 0, 1, 1)
 
         if normalize:
-            plt.hist(histogram_data, bins=hist_bins, range=hist_range, fc=col, density=True)
+            plt.hist(data, bins=hist_bins, range=hist_range, fc=col, density=True)
         else:
-            plt.hist(histogram_data, bins=hist_bins, range=hist_range, fc=col)
+            plt.hist(data, bins=hist_bins, range=hist_range, fc=col)
 
         # plt.axis([0, 15e3, 0, 0.0001])
         # plt.axis([0, 15e3, 0, 3E3])
@@ -285,7 +311,7 @@ class PlottingTARS:
         plt.legend(loc='upper right')
         self.save_and_draw('track_length')
 
-    def plot_step_size_histograms(self, normalize: bool = None):
+    def plot_step_size_histograms(self, normalize: bool = False) -> None:
         """TBW."""
         energies = ['100MeV']
         thicknesses = ['40um', '50um', '60um', '70um', '100um']
@@ -353,7 +379,7 @@ class PlottingTARS:
     #     plt.legend(loc='upper right')
     #     self.save_and_draw('secondary_spectra')
 
-    def plot_gaia_vs_gras_hist(self, normalize: bool = None):
+    def plot_gaia_vs_gras_hist(self, normalize: bool = False) -> None:
         """TBW."""
         # GRAS simulation results (by Marco) + GAIA BAM data - Perfect overlap in case of normalization!
         path = Path(__file__).parent.joinpath('data', 'validation', 'Gaia_CCD_study-20180404T115340Z-001',
@@ -405,7 +431,7 @@ class PlottingTARS:
         plt.legend(loc='upper right')
         self.save_and_draw('gaia_vs_gras_electron_hist')
 
-    def plot_old_tars_hist(self, normalize: bool = None):
+    def plot_old_tars_hist(self, normalize: bool = False) -> None:
         """TBW."""
         # earlier TARS results of Lionel
         folder_path = Path(__file__).parent.joinpath('data', 'validation', 'Results-20180404T121902Z-001', 'Results')
@@ -447,7 +473,7 @@ class PlottingTARS:
         plt.legend(loc='upper right')
         self.save_and_draw('old_tars_electron_hist')
 
-    def plot_gaia_bam_vs_sm_electron_hist(self, normalize: bool = None):
+    def plot_gaia_bam_vs_sm_electron_hist(self, normalize: bool = False) -> None:
         """TBW."""
         path = Path(__file__).parent.joinpath('data', 'validation')
         hist_names = [
@@ -488,8 +514,14 @@ class PlottingTARS:
         plt.legend(loc='upper right')
         self.save_and_draw('gaia_BAM_vs_SM_electron_hist')
 
-    def plot_electron_hist(self, data1, data2=None, data3=None,
-                           title='', hist_bins=500, hist_range=(0, 15000), normalize: bool = None):
+    def plot_electron_hist(self,
+                           data1: np.ndarray,
+                           data2: t.Optional[np.ndarray] = None,
+                           data3: t.Optional[np.ndarray] = None,
+                           title: str = '',
+                           hist_bins: int = 500,
+                           hist_range: t.Tuple[int, int] = (0, 15000),
+                           normalize: bool = False) -> None:
         """TBW."""
         labels = [
             'TARS (David), 40um'
@@ -540,15 +572,20 @@ class PlottingTARS:
         plt.legend(loc='upper right')
         self.save_and_draw('electron_hist')
 
-    def polar_angle_dist(self, theta):
+    def polar_angle_dist(self, theta: t.Union[str, np.ndarray]) -> None:
         """TBW."""
         if isinstance(theta, str):
             if theta.endswith('.npy'):
-                theta = np.load(theta)
+                theta_data = np.load(theta)  # type: np.ndarray
+            else:
+                raise NotImplementedError
+        else:
+            theta_data = theta
+
         fig = plt.figure()
         fig.add_subplot(111, polar=True)
         # theta = 2 * np.pi * np.random.rand(10000)
-        plt.hist(theta, bins=360, histtype='step')
+        plt.hist(theta_data, bins=360, histtype='step')
         # plt.polar(theta)
         plt.xlabel('')
         plt.ylabel('')

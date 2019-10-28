@@ -4,23 +4,23 @@ import typing as t
 
 import numpy as np
 
-from pyxel.detectors.detector import Detector
-from ...util import config, validators
-from ...util.checkers import check_type, check_choices
+from pyxel.data_structure import Photon
+from pyxel.detectors import Detector
 
 
-@validators.validate
-@config.argument(name='level', label='number of photon', units='', validate=check_type(int))
-@config.argument(name='option', label='type of illumination', units='',
-                 validate=check_choices(['uniform', 'rectangular_hole', 'elliptic_hole']))
+# TODO: Fix this
+# @validators.validate
+# @config.argument(name='level', label='number of photon', units='', validate=check_type(int))
+# @config.argument(name='option', label='type of illumination', units='',
+#                  validate=check_choices(['uniform', 'rectangular_hole', 'elliptic_hole']))
 # @config.argument(name='size', label='size of 2d array', units='', validate=check_type(list))
 # @config.argument(name='hole_size', label='size of hole', units='', validate=check_type(list))
 def illumination(detector: Detector,
                  level: int,
                  option: str = 'uniform',
-                 array_size: t.List[int] = None,
-                 hole_size: t.List[int] = None,
-                 hole_center: t.List[int] = None):
+                 array_size: t.Optional[t.List[int]] = None,
+                 hole_size: t.Optional[t.List[int]] = None,
+                 hole_center: t.Optional[t.List[int]] = None) -> None:
     """Generate photon uniformly over the entire array or hole.
 
     detector: Detector
@@ -43,15 +43,14 @@ def illumination(detector: Detector,
     hole_center: list, optional
         List of integers defining the center of the elliptic or rectangular hole.
     """
-    logger = logging.getLogger('pyxel')
-    logger.info('')
+    logging.info('')
 
     if array_size is None:
         try:
             shape = detector.photon.array.shape
         except AttributeError:
             geo = detector.geometry
-            detector.photon.new_array(np.zeros((geo.row, geo.col), dtype=int))
+            detector.photon = Photon(np.zeros((geo.row, geo.col), dtype=int))
             shape = detector.photon.array.shape
     else:
         shape = tuple(array_size)
@@ -86,6 +85,6 @@ def illumination(detector: Detector,
     try:
         detector.photon.array += photon_array
     except TypeError:
-        detector.photon.new_array(photon_array)
+        detector.photon = Photon(photon_array)
     except ValueError:
         raise ValueError('Shapes of arrays do not match')

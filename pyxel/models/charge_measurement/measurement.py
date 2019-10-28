@@ -1,20 +1,21 @@
 """Charge readout model."""
 import logging
+
 from pyxel.detectors.detector import Detector
+
 # from astropy import units as u
 
 
-# @validators.validate
-# @config.argument(name='', label='', units='', validate=)
-def simple_measurement(detector: Detector):
+# @pyxel.validate
+# @pyxel.argument(name='', label='', units='', validate=)
+def simple_measurement(detector: Detector) -> None:
     """Create signal array from pixel array.
 
     detector Signal unit: Volt
 
     :param detector: Pyxel Detector object
     """
-    logger = logging.getLogger('pyxel')
-    logger.info('')
+    logging.info('')
     char = detector.characteristics
 
     array = detector.pixel.array * char.sv

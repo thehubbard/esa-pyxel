@@ -75,8 +75,7 @@ python373:
   script:
     - python -V
     - pip install tox
-    - tox -e py37-extra_all-pyyaml_3.13
-    - tox -e py37-extra_all-pyyaml_last
+    - tox -e py37-extra_all
   allow_failure: false
 
 
@@ -87,14 +86,13 @@ python36:
   script:
     - python -V
     - pip install tox
-    - tox -e py36-extra_all-pyyaml_3.13
-    - tox -e py36-extra_all-pyyaml_last
+    - tox -e py36-extra_all
   allow_failure: false
 
 
 # Run mypy
 mypy:
-  image: python:3
+  image: python:3.7
   stage: test
   script:
     - python -V
@@ -104,20 +102,20 @@ mypy:
 
 
 # Run pylint (with pytest) and generate HTML report
-lint:
-  image: python:3
-  stage: test
-  script:
-    - pip install pytest-pylint pytest-html
-    - pip install -r requirements.txt
-    - pip install -e ".[all]"
-    - pip freeze
-    - pytest --pylint --color=yes --verbose --pylint-rcfile=pylint.cfg --html=pylint_report.html --self-contained-html -m pylint || true
-    - ls
-  artifacts:
-    paths:
-      - pylint_report.html
-  allow_failure: true
+# lint:
+#   image: python:3
+#   stage: test
+#   script:
+#     - pip install pytest-pylint pytest-html
+#     - pip install -r requirements.txt
+#     - pip install -e ".[all]"
+#     - pip freeze
+#     - pytest --pylint --color=yes --verbose --pylint-rcfile=pylint.cfg --html=pylint_report.html --self-contained-html -m pylint || true
+#     - ls
+#   artifacts:
+#     paths:
+#       - pylint_report.html
+#   allow_failure: true
 
 
 flake8:
@@ -127,6 +125,16 @@ flake8:
     - python -V
     - pip install tox
     - tox -e flake8
+  allow_failure: false
+
+
+pydocstyle:
+  image: python:3
+  stage: test
+  script:
+    - python -V
+    - pip install tox
+    - tox -e pydocstyle
   allow_failure: false
 
 
@@ -197,7 +205,7 @@ licenses-latest:
 
 # Generate the Sphinx documentation into 'doc/html'
 doc:
-  image: python:3
+  image: python:3.7
   stage: build
   script:
     - pip install tox
@@ -241,7 +249,7 @@ pages:
     - mv docs/html public/doc
     - mv htmlcov public/coverage
     - mv pytest_report.html public
-    - mv pylint_report.html public
+    # - mv pylint_report.html public
     - mv documentation.svg public
     - mv license.json public
     - ls public

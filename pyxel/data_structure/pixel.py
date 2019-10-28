@@ -13,18 +13,19 @@ cds.enable()
 
 
 class Pixel(Array):
-    """
-    Pixel class defining and storing information of charge packets within pixel.
+    """Pixel class defining and storing information of charge packets within pixel.
 
-    Accepted array types: np.int32, np.int64, np.uint32, np.uint64, np.float16, np.float32, np.float64
+    Accepted array types: np.int32, np.int64, np.uint32, np.uint64, np.float16, np.float32, np.float64.
     """
 
-    def __init__(self, geo: "Geometry") -> None:
+    EXP_TYPE = np.int
+    TYPE_LIST = (np.int32, np.int64, np.uint32, np.uint64, np.float16, np.float32, np.float64)
+
+    def __init__(self, geo: "Geometry"):
         """TBW.
 
         :param geo:
         """
-        super().__init__()                  # TODO: add unit (e-)
-        self.exp_type = np.int
-        self.type_list = [np.int32, np.int64, np.uint32, np.uint64, np.float16, np.float32, np.float64]
-        self._array = np.zeros((geo.row, geo.col), dtype=self.exp_type)
+        new_array = np.zeros((geo.row, geo.col), dtype=self.EXP_TYPE)
+
+        super().__init__(new_array)

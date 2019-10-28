@@ -1,16 +1,19 @@
 """Pyxel charge injection functions for CCDs."""
 import logging
+import typing as t
+
 import numpy as np
+
 from pyxel.detectors.ccd import CCD
-from pyxel.util import validators, config, checkers
 
 
-@validators.validate
-@config.argument(name='detector', label='', units='', validate=checkers.check_type(CCD))
+# TODO: Fix this
+# @validators.validate
+# @config.argument(name='detector', label='', units='', validate=checkers.check_type(CCD))
 def charge_blocks(detector: CCD,
                   charge_level: int,
                   block_start: int = 0,
-                  block_end: int = None):
+                  block_end: t.Optional[int] = None) -> None:
     """TBW.
 
     :param detector:
@@ -19,8 +22,7 @@ def charge_blocks(detector: CCD,
     :param block_end:
     :return:
     """
-    logger = logging.getLogger('pyxel')
-    logger.info('')
+    logging.info('')
     geo = detector.geometry
     if block_end is None:
         block_end = geo.row

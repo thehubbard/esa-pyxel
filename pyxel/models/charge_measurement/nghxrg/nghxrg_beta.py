@@ -85,6 +85,8 @@ from __future__ import division, print_function
 # import datetime
 # Have not verified this in Python 3.x (JML):
 import logging
+# PCA0FILE = path.dirname(path.abspath(__file__)) + '/nirspec_pca0.fits'
+import typing as t
 # import os
 # import warnings
 from os import path
@@ -100,13 +102,12 @@ from scipy.ndimage.interpolation import zoom
 # # Have not verified this in Python 3.x (JML):
 # _log = logging.getLogger('nghxrg')
 
-# PCA0FILE = path.dirname(path.abspath(__file__)) + '/nirspec_pca0.fits'
 
-
-def white_noise(nstep=None):
+def white_noise(nstep: int) -> np.ndarray:
     """Generate white noise for an HxRG including all time steps (actual pixel and overheads).
 
-    Parameters:
+    Parameters
+    ----------
         nstep - Length of vector returned
 
     """
@@ -124,22 +125,23 @@ class HXRGNoise:
     """
 
     # These class variables are common to all HxRG detectors
-    nghxrg_version = 2.8    # Sofware version
+    NGHXRG_VERSION = 2.8    # Sofware version
 
     def __init__(self,
-                 det_size_x, det_size_y,
-                 time_step,
-                 n_out, nroh, nfoh,
-                 reverse_scan_direction,
-                 reference_pixel_border_width,
-                 wind_mode,
-                 wind_x_size, wind_y_size,
-                 wind_x0, wind_y0,
-                 verbose,
-                 pca0_file=None):
+                 det_size_x: int, det_size_y: int,
+                 time_step: int,
+                 n_out: int, nroh: int, nfoh: int,
+                 reverse_scan_direction: bool,
+                 reference_pixel_border_width: int,
+                 wind_mode: str,
+                 wind_x_size: int, wind_y_size: int,
+                 wind_x0: int, wind_y0: int,
+                 verbose: bool,
+                 pca0_file: t.Optional[str] = None):
         """Simulate Teledyne HxRG+SIDECAR ASIC system noise.
 
-        Parameters:
+        Parameters
+        ----------
             naxis1      - X-dimension of the FITS cube
             naxis2      - Y-dimension of the FITS cube
             time_step   - Z-dimension of the FITS cube, number of frame in series over time
@@ -393,17 +395,19 @@ class HXRGNoise:
                 # os.sys.exit()
             self.pca0 = data[y1:y2, x1:x2]
 
-    def message(self, message_text):
+    # TODO: Remove this method, use only 'self._log.info'
+    def message(self, message_text: str) -> None:
         """Print a message to the terminal."""
         if self.verbose is True:
             self._log.info('NG: ' + message_text)
 
-    def pink_noise(self, mode):
+    def pink_noise(self, mode: str) -> np.ndarray:
         """TBW.
 
         Generate a vector of non-periodic pink noise.
 
-        Parameters:
+        Parameters
+        ----------
             mode - Selected from {'pink',  'acn'}
 
         """
@@ -545,7 +549,8 @@ class HXRGNoise:
         # self.message('Initializing results cube')
         # result = np.zeros((self.naxis3,  self.naxis2,  self.naxis1), dtype=np.float32)
 
-    def add_ktc_bias_noise(self, ktc_noise=29., bias_offset=5000., bias_amp=500.):
+    def add_ktc_bias_noise(self, ktc_noise: float = 29., bias_offset: float = 5000.,
+                           bias_amp: float = 500.) -> np.ndarray:
         """TBW.
 
         Inject a bias pattern and kTC noise.
@@ -586,7 +591,8 @@ class HXRGNoise:
 
         return result
 
-    def add_white_read_noise(self, rd_noise=5.2, reference_pixel_noise_ratio=0.8):
+    def add_white_read_noise(self, rd_noise: float = 5.2,
+                             reference_pixel_noise_ratio: float = 0.8) -> np.ndarray:
         """TBW.
 
         Make white read noise. This is the same for all pixel.
@@ -626,7 +632,7 @@ class HXRGNoise:
 
         return result
 
-    def add_corr_pink_noise(self, c_pink=3.):
+    def add_corr_pink_noise(self, c_pink: float = 3.) -> np.ndarray:
         """TBW.
 
         Add correlated pink noise.
@@ -658,7 +664,7 @@ class HXRGNoise:
 
         return result
 
-    def add_uncorr_pink_noise(self, u_pink=1.):
+    def add_uncorr_pink_noise(self, u_pink: float = 1.) -> np.ndarray:
         """TBW.
 
         Add uncorrelated pink noise. Because this pink noise is stationary and
@@ -681,7 +687,7 @@ class HXRGNoise:
 
         return result
 
-    def add_acn_noise(self, acn=0.5):
+    def add_acn_noise(self, acn: float = 0.5) -> np.ndarray:
         """TBW.
 
         Add Alternating Column Noise (ACN)
@@ -724,7 +730,8 @@ class HXRGNoise:
 
         return result
 
-    def add_pca_zero_noise(self, pca0_amp=0.2):  # TODO add pca0_file
+    # TODO add pca0_file
+    def add_pca_zero_noise(self, pca0_amp: float = 0.2) -> np.ndarray:
         """TBW.
 
         Add PCA-zero. The PCA-zero template is modulated by 1/f.
@@ -747,7 +754,8 @@ class HXRGNoise:
 
         return result
 
-    def format_result(self, result):
+    # TODO: Warning this method modify input parameter 'result' !!
+    def format_result(self, result: np.ndarray) -> np.ndarray:
         """TBW.
 
         If the data cube has only 1 frame,  reformat into a 2-dimensional image.
@@ -776,7 +784,7 @@ class HXRGNoise:
 
         return result
 
-    def create_hdu(self, result, o_file=None):
+    def create_hdu(self, result: np.ndarray, o_file: t.Optional[str] = None) -> None:
         """TBW.
 
         Create HDU file and saving data to it

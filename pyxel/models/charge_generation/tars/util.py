@@ -1,24 +1,27 @@
 """Pyxel TARS model to generate charge by ionization."""
 
 import bisect
+import typing as t
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
 from scipy import interpolate
 
 
-def sampling_distribution(distribution):
+def sampling_distribution(distribution: np.ndarray):
     """TBW.
 
     :param distribution:
     """
-    u = np.random.random()
+    u = np.random.random()  # type: float
     # random_value_from_dist = distribution[bisect.bisect(distribution[:, 1], u) - 1, 0]
     random_value_from_dist = get_xvalue_with_interpolation(distribution, u)
 
     return random_value_from_dist
 
 
-def get_xvalue_with_interpolation(function_array, y_value):
+def get_xvalue_with_interpolation(function_array: np.ndarray, y_value: float):
     """TBW.
 
     :param function_array:
@@ -60,7 +63,10 @@ def get_yvalue_with_interpolation(function_array, x_value):
     return intpol_y_value
 
 
-def load_histogram_data(file_name, hist_type, skip_rows, read_rows):
+def load_histogram_data(file_name: Path,
+                        hist_type: str,
+                        skip_rows: t.Optional[int] = None,
+                        read_rows: t.Optional[int] = None) -> pd.DataFrame:
     """TBW.
 
     :param file_name:
@@ -88,8 +94,7 @@ def load_histogram_data(file_name, hist_type, skip_rows, read_rows):
 #
 #     return spectrum_data
 
-
-def read_data(file_name):
+def read_data(file_name: Path) -> np.ndarray:
     """TBW.
 
     :param file_name:
@@ -99,11 +104,12 @@ def read_data(file_name):
     return data
 
 
-def interpolate_data(data):
+def interpolate_data(data: np.ndarray) -> t.Callable[[np.ndarray], np.ndarray]:
     """TBW.
 
     :param data:
     :return:
     """
-    data_function = interpolate.interp1d(data[:, 0], data[:, 1], kind='linear')
+    data_function = interpolate.interp1d(data[:, 0], data[:, 1],
+                                         kind='linear')  # type: t.Callable[[np.ndarray], np.ndarray]
     return data_function

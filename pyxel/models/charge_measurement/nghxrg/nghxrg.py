@@ -2,18 +2,22 @@
 
 import logging
 import typing as t
-from pyxel.detectors.cmos import CMOS
+from pathlib import Path
+
+import numpy as np
+
+from pyxel.detectors.cmos import CMOS, CMOSGeometry
 from pyxel.models.charge_measurement.nghxrg.nghxrg_beta import HXRGNoise
 
 
-# @validators.validate
-# @config.argument(name='', label='', units='', validate=)
+# @pyxel.validate
+# @pyxel.argument(name='', label='', units='', validate=)
 def nghxrg(detector: CMOS,
            noise: list,
-           pca0_file: str = None,
+           pca0_file: t.Optional[str] = None,
            window_position: t.Optional[t.List[int]] = None,
            window_size: t.Optional[t.List[int]] = None,
-           plot_psd: bool = True):
+           plot_psd: t.Optional[bool] = True) -> None:
     """TBW.
 
     :param detector: Pyxel Detector object
@@ -24,9 +28,8 @@ def nghxrg(detector: CMOS,
     :param plot_psd:
     """
     logging.getLogger("nghxrg").setLevel(logging.WARNING)
-    logger = logging.getLogger('pyxel')
-    logger.info('')
-    geo = detector.geometry
+    logging.info('')
+    geo = detector.geometry  # type: CMOSGeometry
     step = 1
     if detector.is_dynamic:
         step = int(detector.time / detector.time_step)
@@ -50,11 +53,10 @@ def nghxrg(detector: CMOS,
                    wind_mode=window_mode,
                    wind_x_size=window_size[0], wind_y_size=window_size[1],
                    wind_x0=window_position[0], wind_y0=window_position[1],
-                   verbose=True)
+                   verbose=True)  # type: HXRGNoise
 
     for item in noise:
-        result = None
-        noise_name = None
+        result = None  # type: t.Optional[np.ndarray]
         if 'ktc_bias_noise' in item:
             # NOTE: there is no kTc or Bias noise added for first/single frame
             noise_name = 'ktc_bias_noise'
@@ -83,12 +85,15 @@ def nghxrg(detector: CMOS,
             noise_name = 'pca_zero_noise'
             if item['pca_zero_noise']:
                 result = ng.add_pca_zero_noise(pca0_amp=item['pca0_amp'])
+        else:
+            noise_name = ''
+
         try:
             result = ng.format_result(result)
             if result.any():
                 if plot_psd:
                     display_noisepsd(result, noise_name=noise_name,
-                                     nb_output=geo.n_output, dimension=(geo.col, geo.row),
+                                     nb_output=geo.n_output, dimensions=(geo.col, geo.row),
                                      path=detector.output_dir, step=step)
                 if window_mode == 'FULL':
                     detector.pixel.array += result
@@ -99,7 +104,13 @@ def nghxrg(detector: CMOS,
             pass
 
 
-def display_noisepsd(array, nb_output, dimension, noise_name, path, step, mode='plot'):
+def display_noisepsd(array: np.ndarray,
+                     nb_output: float,
+                     dimensions: t.Tuple[int, int],
+                     noise_name: str,
+                     path: Path,
+                     step: int,
+                     mode: str = 'plot') -> t.Tuple[t.Any, np.ndarray]:
     """Display noise PSD from the generated FITS file."""
     import numpy as np
     import matplotlib.pyplot as plt
@@ -118,7 +129,7 @@ def display_noisepsd(array, nb_output, dimension, noise_name, path, step, mode='
     """
 
     # Should be in the simulated data header
-    dimension = dimension[0]
+    dimension = dimensions[0]  # type: int
     pix_p_output = dimension**2 / nb_output  # Number of pixels per output
     nbcols_p_channel = dimension / nb_output  # Number of columns per channel
     nperseg = int(pix_p_output / 10.)  # Length of segments for Welch's method
@@ -161,14 +172,16 @@ def display_noisepsd(array, nb_output, dimension, noise_name, path, step, mode='
                      'Welch seg. length / Nb pixel output: ' +
                      str('{:1.2f}'.format(nperseg/pix_p_output)))
         ax1.plot(f_vect, np.mean(pxx_outputs, axis=0), '.-', ms=3, alpha=0.5, zorder=32)
-        for idx, ax in enumerate([ax1]):
+        for _, ax in enumerate([ax1]):
             ax.set_xlim([1, 1e5])
             ax.set_xscale('log')
             ax.set_yscale('log')
             ax.set_xlabel('Frequency [Hz]')
             ax.set_ylabel('PSD [e-${}^2$/Hz]')
             ax.grid(True, alpha=.4)
-        plt.savefig(path + '/nghxrg_' + noise_name + '_' + str(step) + '.png', dpi=300)
+
+        filename = path.joinpath('nghxrg_' + noise_name + '_' + str(step) + '.png')  # type: Path
+        plt.savefig(filename, dpi=300)
         plt.close()
 
     return f_vect, np.mean(pxx_outputs, axis=0)

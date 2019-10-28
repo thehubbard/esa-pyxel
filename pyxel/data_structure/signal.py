@@ -13,18 +13,19 @@ cds.enable()
 
 
 class Signal(Array):
-    """
-    Signal class defining and storing information of detector signal.
+    """Signal class defining and storing information of detector signal.
 
-    Accepted array types: np.float16, np.float32, np.float64
+    Accepted array types: np.float16, np.float32, np.float64.
     """
 
-    def __init__(self, geo: "Geometry") -> None:
+    EXP_TYPE = np.float
+    TYPE_LIST = (np.float16, np.float32, np.float64)
+
+    def __init__(self, geo: "Geometry"):
         """TBW.
 
         :param geo:
         """
-        super().__init__()                  # TODO: add unit (V)
-        self.exp_type = np.float
-        self.type_list = [np.float16, np.float32, np.float64]
-        self._array = np.zeros((geo.row, geo.col), dtype=self.exp_type)
+        new_array = np.zeros((geo.row, geo.col), dtype=self.EXP_TYPE)
+
+        super().__init__(new_array)                  # TODO: add unit (V)

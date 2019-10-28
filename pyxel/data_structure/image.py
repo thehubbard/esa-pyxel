@@ -19,12 +19,14 @@ class Image(Array):
     Accepted array types: np.uint16, np.uint32, np.uint64
     """
 
-    def __init__(self, geo: "Geometry") -> None:
+    EXP_TYPE = np.uint
+    TYPE_LIST = (np.uint16, np.uint32, np.uint64, np.float16, np.float32, np.float64)
+
+    def __init__(self, geo: "Geometry"):
         """TBW.
 
         :param geo:
         """
-        super().__init__()                  # TODO: add unit (ADU)
-        self.exp_type = np.uint
-        self.type_list = [np.uint16, np.uint32, np.uint64, np.float16, np.float32, np.float64]
-        self._array = np.zeros((geo.row, geo.col), dtype=self.exp_type)
+        new_array = np.zeros((geo.row, geo.col), dtype=self.EXP_TYPE)
+
+        super().__init__(new_array)

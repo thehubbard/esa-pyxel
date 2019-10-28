@@ -1,20 +1,21 @@
 """Simple model to generate charges due to dark current process."""
 import logging
+
 import numpy as np
+
 from pyxel.detectors.cmos import CMOS
-from pyxel.util import validators, config, checkers
 
 
-@validators.validate
-@config.argument(name='detector', label='', units='', validate=checkers.check_type(CMOS))
-def dark_current_rule07(detector: CMOS):
+# TODO: Fix this
+# @validators.validate
+# @config.argument(name='detector', label='', units='', validate=checkers.check_type(CMOS))
+def dark_current_rule07(detector: CMOS) -> None:
     """Generate charge from dark current process.
 
     :param detector: Pyxel Detector object
     TODO: investigate on the knee of rule07 for higher 1/le*T values
     """
-    logger = logging.getLogger('pyxel')
-    logger.info('')
+    logging.info('')
     geo = detector.geometry
     temperature = detector.environment.temperature
     cutoff = detector.characteristics.cutoff
@@ -30,7 +31,7 @@ def dark_current_rule07(detector: CMOS):
     q = 1.602176624e-19     # Elementary charge (Coulomb)
     k = 1.38064852e-23      # Boltzmann constant (m2 kg s-2 K-1)
 
-    def lambda_e(lambda_cutoff: float):
+    def lambda_e(lambda_cutoff: float) -> float:
         """Compute lambda_e.
 
         :param lambda_cutoff: (int) Cut-off wavelength of the detector

@@ -10,25 +10,32 @@ This is a function to run the upgraded CDM CTI model developed by Alex Short (ES
 :author: David Lucsanyi
 """
 import logging
-import numpy as np
+import typing as t
+
 import numba
+import numpy as np
+
+from pyxel.detectors.ccd import CCD
+
 try:
     import matplotlib.pyplot as plt
 except ImportError:
     # raise Warning('Matplotlib cannot be imported')
     pass
-from pyxel.detectors.ccd import CCD
 
 
-# @validators.validate
-# @config.argument(name='', label='', units='', validate=)
+# @pyxel.validate
+# @pyxel.argument(name='', label='', units='', validate=)
+# @pyxel.register(group='charge_transfer', name='cdm', detector='ccd')
+# TODO: What is the type of 'tr_p', 'tr_s', 'nt_p', 'nt_s', 'sigma_p' and 'sigma_s' ?
+#       Is it `t.Union[float, t.Iterable[float]]` ???
 def cdm(detector: CCD,
         parallel_cti: bool, serial_cti: bool,
         beta_p: float, beta_s: float,
-        tr_p: float, tr_s: float,
-        nt_p: float, nt_s: float,
-        sigma_p: float, sigma_s: float,
-        charge_injection: bool):
+        tr_p: t.List[float], tr_s: t.List[float],
+        nt_p: t.List[float], nt_s: t.List[float],
+        sigma_p: t.List[float], sigma_s: t.List[float],
+        charge_injection: bool) -> None:
     """Charge Distortion Model (CDM) model wrapper.
 
     :param detector: Pyxel CCD detector object
@@ -61,22 +68,8 @@ def cdm(detector: CCD,
     # t: constant TDI period (parallel)
     # st: constant TDI period (serial)
 
-    logger = logging.getLogger('pyxel')
-    logger.info('')
+    logging.info('')
     char = detector.characteristics
-
-    if isinstance(tr_p, list):
-        tr_p = np.array(tr_p)
-    if isinstance(tr_s, list):
-        tr_s = np.array(tr_s)
-    if isinstance(nt_p, list):
-        nt_p = np.array(nt_p)
-    if isinstance(nt_s, list):
-        nt_s = np.array(nt_s)
-    if isinstance(sigma_p, list):
-        sigma_p = np.array(sigma_p)
-    if isinstance(sigma_s, list):
-        sigma_s = np.array(sigma_s)
 
     detector.pixel.array = run_cdm(s=detector.pixel.array,
                                    vg=char.vg, svg=char.svg,
@@ -87,9 +80,9 @@ def cdm(detector: CCD,
                                    charge_injection=charge_injection,
                                    chg_inj_parallel_transfers=detector.geometry.row,
                                    beta_p=beta_p, beta_s=beta_s,
-                                   tr_p=tr_p, tr_s=tr_s,
-                                   nt_p=nt_p, nt_s=nt_s,
-                                   sigma_p=sigma_p, sigma_s=sigma_s)
+                                   tr_p=np.array(tr_p), tr_s=np.array(tr_s),
+                                   nt_p=np.array(nt_p), nt_s=np.array(nt_s),
+                                   sigma_p=np.array(sigma_p), sigma_s=np.array(sigma_s))
 
 
 @numba.jit(nopython=True, nogil=True, parallel=False)
@@ -105,7 +98,7 @@ def run_cdm(s: np.ndarray,
             charge_injection: bool = False,
             chg_inj_parallel_transfers: int = 0,
             parallel_cti: bool = True,
-            serial_cti: bool = True):
+            serial_cti: bool = True) -> np.ndarray:
     """CDM model.
 
     :param s: np.ndarray
@@ -194,7 +187,7 @@ def run_cdm(s: np.ndarray,
     return s
 
 
-def plot_serial_profile(data, row, data2=None):
+def plot_serial_profile(data: np.ndarray, row: int, data2: t.Optional[np.ndarray] = None) -> None:
     """TBW.
 
     :param data:
@@ -211,7 +204,7 @@ def plot_serial_profile(data, row, data2=None):
         plt.plot(profile_x, profile_y_2, color='red')
 
 
-def plot_parallel_profile(data, col, data2=None):
+def plot_parallel_profile(data: np.ndarray, col: int, data2: t.Optional[np.ndarray] = None) -> None:
     """TBW.
 
     :param data:
@@ -228,7 +221,7 @@ def plot_parallel_profile(data, col, data2=None):
         plt.plot(profile_x, profile_y_2, color='red')
 
 
-def plot_1d_profile(array, offset=0, label='', m='-'):
+def plot_1d_profile(array: np.ndarray, offset: int = 0, label: str = '', m: str = '-') -> None:
     """Plot profile on log scale.
 
     :param array:
@@ -243,7 +236,11 @@ def plot_1d_profile(array, offset=0, label='', m='-'):
         plt.legend()
 
 
-def plot_1d_profile_lin(array, offset=0, label='', m='-', col=None):
+def plot_1d_profile_lin(array: np.ndarray,
+                        offset: int = 0,
+                        label: str = '',
+                        m: str = '-',
+                        col: t.Optional[str] = None) -> None:
     """TBW.
 
     :param array:
@@ -259,7 +256,7 @@ def plot_1d_profile_lin(array, offset=0, label='', m='-', col=None):
         plt.legend()
 
 
-def plot_1d_profile_with_err(array, error, offset=0, label=''):
+def plot_1d_profile_with_err(array: np.ndarray, error: np.ndarray, offset: int = 0, label: str = '') -> None:
     """TBW.
 
     :param array:
@@ -274,7 +271,7 @@ def plot_1d_profile_with_err(array, error, offset=0, label=''):
         plt.legend()
 
 
-def plot_residuals(data, data2, label=''):  # col='magenta',
+def plot_residuals(data: np.ndarray, data2: np.ndarray, label: str = '') -> None:  # col='magenta',
     """TBW.
 
     :param data:
@@ -291,7 +288,7 @@ def plot_residuals(data, data2, label=''):  # col='magenta',
     plt.legend()
 
 
-def plot_image(data):
+def plot_image(data: np.ndarray) -> None:
     """TBW.
 
     :param data:
@@ -311,7 +308,7 @@ def optimized_cdm(s: np.ndarray, beta_p: float, beta_s: float,
                   nt_p: np.ndarray, nt_s: np.ndarray,
                   sigma_p: np.ndarray, sigma_s: np.ndarray,
                   charge_injection: bool = False, chg_inj_parallel_transfers: int = 0,
-                  parallel_cti: bool = True, serial_cti: bool = True):
+                  parallel_cti: bool = True, serial_cti: bool = True) -> np.ndarray:
     """CDM model.
 
     Done by Patricia Liebing. Not yet test or compared to the original 'run_cdm' function.

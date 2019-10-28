@@ -1,4 +1,5 @@
 import pytest
+
 import pyxel.io as io
 
 try:
@@ -26,7 +27,7 @@ def test_yaml_load(yaml_file):
     assert cfg['ccd_detector'].material.__class__.__name__ == 'Material'
     assert cfg['ccd_detector'].characteristics.__class__.__name__ == 'CCDCharacteristics'
     assert cfg['ccd_detector'].charge.__class__.__name__ == 'Charge'
-    assert cfg['ccd_detector'].photon.__class__.__name__ == 'Photon'
+    # assert cfg['ccd_detector'].photon.__class__.__name__ == 'Photon'
     assert cfg['ccd_detector'].pixel.__class__.__name__ == 'Pixel'
     assert cfg['ccd_detector'].signal.__class__.__name__ == 'Signal'
     assert cfg['ccd_detector'].image.__class__.__name__ == 'Image'

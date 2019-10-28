@@ -1,16 +1,22 @@
 """TBW."""
 import functools
-from esapy_config import evaluate_reference
+import typing as t
+
+from pyxel.evaluator import evaluate_reference
 
 
+# TODO: What is `ModelFunction` ?
+#       Is it possible to replace this by a `callable` ?
+#       Is it possible to use a function with an inner function (==> a closure) ?
+#       could be 'name' and 'enabled' stored in `ModelGroup` ?
 class ModelFunction:
     """TBW."""
 
     def __init__(self,
-                 func,  # callable or str
-                 name: str = None,
-                 arguments: dict = None,
-                 enabled: bool = True) -> None:
+                 func: t.Union[t.Callable, str],  # TODO: Replace by 'func: t.Callable'
+                 name: t.Optional[str] = None,
+                 arguments: t.Optional[dict] = None,
+                 enabled: bool = True):
         """TBW.
 
         :param name:
@@ -24,15 +30,16 @@ class ModelFunction:
             arguments = {}
         self.func = func
         self.name = name
-        self.enabled = enabled
-        self.arguments = arguments
+        self.enabled = enabled  # type: bool
+        self.arguments = arguments if arguments else {}  # type: dict
         # self.group = None               # TODO
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """TBW."""
         return 'ModelFunction(%(name)r, %(func)r, %(arguments)r, %(enabled)r)' % vars(self)
 
-    def __getstate__(self):
+    # TODO: Is this method needed ?
+    def __getstate__(self) -> dict:
         """TBW."""
         return {
             'name': self.name,
@@ -41,12 +48,14 @@ class ModelFunction:
             'arguments': self.arguments
         }
 
+    # TODO: Replace this by __call__ ?
     @property
-    def function(self):
+    def function(self) -> t.Callable:
         """TBW."""
         func_ref = evaluate_reference(self.func)
         if isinstance(func_ref, type):
             # this is a class type, instantiate it using default arguments.
             func_ref = func_ref()
+            # TODO: should check whether or not it's callable.
         func = functools.partial(func_ref, **self.arguments)
         return func

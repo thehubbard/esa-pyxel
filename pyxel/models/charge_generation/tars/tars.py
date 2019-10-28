@@ -2,15 +2,20 @@
 
 import logging
 import math
+import typing as t  # noqa: F401
 from pathlib import Path
-import typing as t   # noqa: F401
+
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
+
 from pyxel.detectors.detector import Detector
-from pyxel.models.charge_generation.tars.simulation import Simulation
-from pyxel.models.charge_generation.tars.util import read_data, interpolate_data  # , load_histogram_data
 from pyxel.models.charge_generation.tars.plotting import PlottingTARS
+from pyxel.models.charge_generation.tars.simulation import Simulation
+from pyxel.models.charge_generation.tars.util import (  # , load_histogram_data
+    interpolate_data,
+    read_data,
+)
 
 # from astropy import units as u
 
@@ -18,17 +23,17 @@ from pyxel.models.charge_generation.tars.plotting import PlottingTARS
 # @validators.validate
 # @config.argument(name='', label='', units='', validate=)
 def run_tars(detector: Detector,
-             simulation_mode: str = None,
-             running_mode: str = None,
-             particle_type: str = None,
-             initial_energy: t.Union[str, float] = None,
-             particle_number: int = None,
-             incident_angles: tuple = None,
-             starting_position: tuple = None,
+             simulation_mode: t.Optional[str] = None,
+             running_mode: t.Optional[str] = None,
+             particle_type: t.Optional[str] = None,
+             initial_energy: t.Optional[t.Union[str, float]] = None,
+             particle_number: t.Optional[int] = None,
+             incident_angles: t.Optional[t.Tuple[str, str]] = None,
+             starting_position: t.Optional[t.Tuple[str, str, str]] = None,
              # step_size_file: str = None,
              # stopping_file: str = None,
-             spectrum_file: str = None,
-             random_seed: int = None):
+             spectrum_file: t.Optional[str] = None,
+             random_seed: t.Optional[int] = None) -> None:
     """Simulate charge deposition by cosmic rays.
 
     :param detector: Pyxel detector object
@@ -42,11 +47,9 @@ def run_tars(detector: Detector,
     :param spectrum_file: path to input spectrum
     :param random_seed: seed
     """
-    logger = logging.getLogger('pyxel')
-    logger.info('')
+    logging.info('')
     if random_seed:
         np.random.seed(random_seed)
-    tars = TARS(detector)
 
     if simulation_mode is None:
         raise ValueError('TARS: Simulation mode is not defined')
@@ -61,18 +64,30 @@ def run_tars(detector: Detector,
 
     if initial_energy is None:
         initial_energy = 'random'       # TODO
-    if incident_angles is None:
-        incident_angles = ('random', 'random')
-    if starting_position is None:
-        starting_position = ('random', 'random', 'random')
 
-    tars.set_simulation_mode(simulation_mode)
-    tars.set_particle_type(particle_type)                # MeV
-    tars.set_initial_energy(initial_energy)              # MeV
-    tars.set_particle_number(particle_number)            # -
-    tars.set_incident_angles(incident_angles)            # rad
-    tars.set_starting_position(starting_position)        # um
-    tars.set_particle_spectrum(spectrum_file)
+    if incident_angles is None:
+        incident_angle_alpha, incident_angle_beta = ('random', 'random')
+    else:
+        incident_angle_alpha, incident_angle_beta = incident_angles
+
+    if starting_position is None:
+        start_pos_ver, start_pos_hor, start_pos_z = ('random', 'random', 'random')
+    else:
+        start_pos_ver, start_pos_hor, start_pos_z = starting_position
+
+    tars = TARS(detector=detector, simulation_mode=simulation_mode,
+                particle_type=particle_type, initial_energy=initial_energy,
+                particle_number=particle_number,
+                incident_angle_alpha=incident_angle_alpha, incident_angle_beta=incident_angle_beta,
+                start_pos_ver=start_pos_ver, start_pos_hor=start_pos_hor, start_pos_z=start_pos_z)
+
+    # tars.set_simulation_mode(simulation_mode)
+    # tars.set_particle_type(particle_type)                # MeV
+    # tars.set_initial_energy(initial_energy)              # MeV
+    # tars.set_particle_number(particle_number)            # -
+    # tars.set_incident_angles(incident_angles)            # rad
+    # tars.set_starting_position(starting_position)        # um
+    tars.set_particle_spectrum(Path(spectrum_file))
 
     if running_mode == 'stopping':
         # tars.run_mod()          ########
@@ -204,54 +219,67 @@ def run_tars(detector: Detector,
 class TARS:
     """TBW."""
 
-    def __init__(self, detector: Detector) -> None:
+    def __init__(self,
+                 detector: Detector,
+                 simulation_mode: str,
+                 particle_type: str,
+                 initial_energy: t.Union[str, float],
+                 particle_number: int,
+                 incident_angle_alpha: str, incident_angle_beta: str,
+                 start_pos_ver: str, start_pos_hor: str, start_pos_z: str,
+                 ):
         """TBW.
 
         :param detector:
         """
-        self.simulation_mode = None
-        self.part_type = None
-        self.init_energy = None
-        self.particle_number = None
-        self.angle_alpha = None
-        self.angle_beta = None
-        self.position_ver = None
-        self.position_hor = None
-        self.position_z = None
+        self.simulation_mode = simulation_mode
+        self.part_type = particle_type
+        self.init_energy = initial_energy
+        self.particle_number = particle_number
+        self.angle_alpha = incident_angle_alpha
+        self.angle_beta = incident_angle_beta
+        self.position_ver = start_pos_ver
+        self.position_hor = start_pos_hor
+        self.position_z = start_pos_z
 
         self.sim_obj = Simulation(detector)
         self.charge_obj = detector.charge
         self.log = logging.getLogger(__name__)
 
-    def set_simulation_mode(self, sim_mode):
+    # TODO: Is it still used ?
+    def set_simulation_mode(self, sim_mode: str) -> None:
         """TBW.
 
         :param sim_mode:
         """
         self.simulation_mode = sim_mode
 
-    def set_particle_type(self, particle_type):
+    # TODO: Is it still used ?
+    def set_particle_type(self, particle_type: str) -> None:
         """TBW.
 
         :param particle_type:
         """
         self.part_type = particle_type
 
-    def set_initial_energy(self, energy):
+    # TODO: Is it still used ?
+    def set_initial_energy(self, energy: t.Union[str, float]) -> None:
         """TBW.
 
         :param energy:
         """
         self.init_energy = energy
 
-    def set_particle_number(self, number):
+    # TODO: Is it still used ?
+    def set_particle_number(self, number: int) -> None:
         """TBW.
 
         :param number:
         """
         self.particle_number = number
 
-    def set_incident_angles(self, angles):
+    # TODO: Is it still used ?
+    def set_incident_angles(self, angles: t.Tuple[str, str]) -> None:
         """TBW.
 
         :param angles:
@@ -260,7 +288,8 @@ class TARS:
         self.angle_alpha = alpha
         self.angle_beta = beta
 
-    def set_starting_position(self, start_position):
+    # TODO: Is it still used ?
+    def set_starting_position(self, start_position: t.Tuple[str, str, str]) -> None:
         """TBW.
 
         :param start_position:
@@ -270,7 +299,7 @@ class TARS:
         self.position_hor = position_horizontal
         self.position_z = position_z
 
-    def set_particle_spectrum(self, file_name):
+    def set_particle_spectrum(self, file_name: Path) -> None:
         """Set up the particle specs according to a spectrum.
 
         :param string file_name: path of the file containing the spectrum
@@ -290,7 +319,7 @@ class TARS:
         cum_sum /= np.max(cum_sum)
         self.sim_obj.spectrum_cdf = np.stack((lin_energy_range, cum_sum), axis=1)
 
-    def set_stopping_power(self, stopping_file):
+    def set_stopping_power(self, stopping_file: Path) -> None:
         """TBW.
 
         :param stopping_file:
@@ -298,16 +327,16 @@ class TARS:
         self.sim_obj.energy_loss_data = 'stopping'
         self.sim_obj.stopping_power = read_data(stopping_file)
 
-    def set_stepsize(self):
+    def set_stepsize(self) -> None:
         """TBW."""
         self.sim_obj.energy_loss_data = 'stepsize'
         self.create_data_library()
 
-    def set_geant4(self):
+    def set_geant4(self) -> None:
         """TBW."""
         self.sim_obj.energy_loss_data = 'geant4'
 
-    def create_data_library(self):
+    def create_data_library(self) -> None:
         """TBW."""
         self.sim_obj.data_library = pd.DataFrame(columns=['type', 'energy', 'thickness', 'path'])
 
@@ -340,15 +369,15 @@ class TARS:
                     self.sim_obj.data_library = pd.concat([self.sim_obj.data_library, new_df], ignore_index=True)
                     i += 1
 
-    def run(self):
+    def run(self) -> None:
         """TBW."""
         # print("TARS - simulation processing...\n")
 
-        self.sim_obj.parameters(self.simulation_mode,
-                                self.part_type,
-                                self.init_energy,
-                                self.position_ver, self.position_hor, self.position_z,
-                                self.angle_alpha, self.angle_beta)
+        self.sim_obj.parameters(sim_mode=self.simulation_mode,
+                                part_type=self.part_type,
+                                init_energy=self.init_energy,
+                                pos_ver=self.position_ver, pos_hor=self.position_hor, pos_z=self.position_z,
+                                alpha=self.angle_alpha, beta=self.angle_beta)
         out_path = 'data/'
         for k in tqdm(range(0, self.particle_number)):
             # for k in range(0, self.particle_number):
@@ -393,9 +422,12 @@ class TARS:
                                    self.sim_obj.e_vel1_lst,
                                    self.sim_obj.e_vel2_lst)
 
-    def run_mod(self):
+    def run_mod(self) -> None:
         """TBW."""
+        # TODO: Use `logging`
         print("TARS - adding previous cosmic ray signals to image ...\n")
+
+        # TODO: Use `pathlib.Path`
         out_path = 'data/'
         e_num_lst_per_step = np.load(out_path + 'tars-e_num_lst_per_step.npy')
         e_pos0_lst = np.load(out_path + 'tars-e_pos0_lst.npy')

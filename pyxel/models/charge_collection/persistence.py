@@ -4,7 +4,9 @@
 #   --------------------------------------------------------------------------
 """Pyxel persistence model."""
 import logging
+
 from pyxel.detectors.cmos import CMOS
+
 # import numpy as np
 
 
@@ -12,10 +14,9 @@ from pyxel.detectors.cmos import CMOS
 # @config.argument(name='', label='', units='', validate=)
 def simple_persistence(detector: CMOS,
                        trap_timeconstant: list,
-                       trap_density: list):
+                       trap_density: list) -> None:
     """Trapping/detrapping charges."""
-    logger = logging.getLogger('pyxel')
-    logger.info('')
+    logging.info('')
 
     # TODO: NOT FINISHED AND NOT WORKING YET
 

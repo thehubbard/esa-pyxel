@@ -1,16 +1,20 @@
 """Simple model to convert photon into photo-electrons inside detector."""
 import logging
+
 import numpy as np
+
 from pyxel.detectors.detector import Detector
 
 
-def simple_conversion(detector: Detector):
+# TODO: Fix this
+# @validators.validate
+# @config.argument(name='', label='', units='', validate=)
+def simple_conversion(detector: Detector) -> None:
     """Generate charge from incident photon via photoelectric effect, simple statistical model.
 
     :param detector: Pyxel Detector object
     """
-    logger = logging.getLogger('pyxel')
-    logger.info('')
+    logging.info('')
     geo = detector.geometry
     ch = detector.characteristics
     ph = detector.photon
@@ -37,15 +41,15 @@ def simple_conversion(detector: Detector):
                                init_z_velocity=[0.] * size)
 
 
+# TODO: Fix this
 # @validators.validate
 # @config.argument(name='', label='', units='', validate=)
-def monte_carlo_conversion(detector: Detector):
+def monte_carlo_conversion(detector: Detector) -> None:
     """Generate charge from incident photon via photoelectric effect, more exact, stochastic (Monte Carlo) model.
 
     :param detector: Pyxel Detector object
     """
-    logger = logging.getLogger('pyxel')
-    logger.info('')
+    logging.info('')
 
     # detector.qe <= 1
     # detector.eta <= 1
@@ -62,7 +66,7 @@ def monte_carlo_conversion(detector: Detector):
     # TODO: energy threshold
 
 
-def random_pos(detector: Detector):
+def random_pos(detector: Detector) -> None:
     """Generate random position for photoelectric effect inside detector.
 
     :param detector: Pyxel Detector object

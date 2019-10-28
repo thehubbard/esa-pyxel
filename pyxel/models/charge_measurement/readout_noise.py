@@ -1,6 +1,9 @@
 """Readout noise model."""
 import logging
+import typing as t
+
 import numpy as np
+
 from pyxel.detectors.detector import Detector
 
 # from astropy import units as u
@@ -11,7 +14,7 @@ from pyxel.detectors.detector import Detector
 
 def output_node_noise(detector: Detector,
                       std_deviation: float,
-                      random_seed: int = None):
+                      random_seed: t.Optional[int] = None) -> None:
     """Adding noise to signal array of detector output node using normal random distribution.
 
     detector Signal unit: Volt
@@ -20,8 +23,7 @@ def output_node_noise(detector: Detector,
     :param std_deviation: standard deviation
     :param random_seed: seed
     """
-    logger = logging.getLogger('pyxel')
-    logger.info('')
+    logging.info('')
     if random_seed:
         np.random.seed(random_seed)
 

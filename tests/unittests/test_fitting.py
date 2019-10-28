@@ -1,8 +1,15 @@
 """Unittests for the 'ModelFitting' class."""
-import pytest
+from pathlib import Path
+
 import numpy as np
+import pytest
+
 import pyxel.io as io
 from pyxel.calibration.fitting import ModelFitting
+from pyxel.calibration.util import CalibrationMode, ResultType
+from pyxel.detectors import CCD
+from pyxel.parametric.parametric import Configuration
+from pyxel.pipelines.pipeline import DetectionPipeline
 from pyxel.pipelines.processor import Processor
 
 try:
@@ -16,19 +23,17 @@ def configure(mf, sim):
     """TBW."""
     pg.set_global_rng_seed(sim.calibration.seed)
     np.random.seed(sim.calibration.seed)
-    settings = {
-        'calibration_mode': sim.calibration.calibration_mode,
-        'generations': sim.calibration.algorithm.generations,
-        'population_size': sim.calibration.algorithm.population_size,
-        'simulation_output': sim.calibration.result_type,
-        'fitness_func': sim.calibration.fitness_function,
-        'target_output': sim.calibration.target_data_path,
-        'target_fit_range': sim.calibration.target_fit_range,
-        'out_fit_range': sim.calibration.result_fit_range,
-        'weighting': sim.calibration.weighting_path,
-        'file_path': None
-    }
-    mf.configure(settings)
+
+    mf.configure(calibration_mode=sim.calibration.calibration_mode,
+                 generations=sim.calibration.algorithm.generations,
+                 population_size=sim.calibration.algorithm.population_size,
+                 simulation_output=sim.calibration.result_type,
+                 fitness_func=sim.calibration.fitness_function,
+                 target_output=sim.calibration.target_data_path,
+                 target_fit_range=sim.calibration.target_fit_range,
+                 out_fit_range=sim.calibration.result_fit_range,
+                 weighting=sim.calibration.weighting_path,
+                 file_path=None)
 
 
 @pytest.mark.skipif(not WITH_PYGMO, reason="Package 'pygmo' is not installed.")
@@ -50,10 +55,10 @@ def test_configure_params(yaml_file):
 
     configure(mf, simulation)
 
-    assert mf.calibration_mode == 'pipeline'
+    assert mf.calibration_mode == CalibrationMode.Pipeline
     assert mf.sim_fit_range == slice(2, 5, None)
     assert mf.targ_fit_range == slice(1, 4, None)
-    assert mf.sim_output == 'image'
+    assert mf.sim_output == ResultType.Image
 
 
 @pytest.mark.skipif(not WITH_PYGMO, reason="Package 'pygmo' is not installed.")
@@ -72,7 +77,7 @@ def test_configure_fits_target(yaml):
     configure(mf, simulation)
     assert mf.sim_fit_range == (slice(2, 5, None), slice(4, 7, None))
     assert mf.targ_fit_range == (slice(1, 4, None), slice(5, 8, None))
-    assert mf.sim_output == 'image'
+    assert mf.sim_output == ResultType.Image
     expected = np.array([[3858.44799859, 3836.11204939, 3809.85008514],
                          [4100.87410744, 4053.26348117, 4018.33656962],
                          [4233.53215652, 4021.60164244, 3969.79740826]])
@@ -135,13 +140,12 @@ def test_calculate_fitness(simulated_data, target_data, expected_fitness):
     assert fitness == expected_fitness
     print('fitness: ', fitness)
 
-
 @pytest.mark.skipif(not WITH_PYGMO, reason="Package 'pygmo' is not installed.")
 @pytest.mark.parametrize('yaml, factor, expected_fitness',
                          [
-                             ('tests/data/calibrate_weighting.yaml', 1, 0.),
-                             ('tests/data/calibrate_weighting.yaml', 2, 310815803081.51117),
-                             ('tests/data/calibrate_weighting.yaml', 3, 621631606163.0223),
+                             (Path('tests/data/calibrate_weighting.yaml'), 1, 0.),
+                             (Path('tests/data/calibrate_weighting.yaml'), 2, 310815803081.51117),
+                             (Path('tests/data/calibrate_weighting.yaml'), 3, 621631606163.0223),
                          ])
 def test_weighting(yaml, factor, expected_fitness):
     """Test"""
@@ -157,13 +161,13 @@ def test_weighting(yaml, factor, expected_fitness):
     print('fitness: ', fitness)
 
 
-def custom_fitness_func(sim, targ):
+def custom_fitness_func(simulated, target, weighting=None):
     """Custom fitness func for testing"""
-    return np.sum(targ * 2 - sim / 2 + 1.)
+    return np.sum(target * 2 - simulated / 2 + 1.)
 
 
 @pytest.mark.skipif(not WITH_PYGMO, reason="Package 'pygmo' is not installed.")
-@pytest.mark.parametrize('yaml, simulated_data, target_data, expected_fitness',
+@pytest.mark.parametrize('yaml, simulated, target, weighting',
                          [
                              ('tests/data/calibrate_custom_fitness.yaml',
                               1., 2., 4.5),
@@ -172,17 +176,28 @@ def custom_fitness_func(sim, targ):
                              ('tests/data/calibrate_least_squares.yaml',
                               2., 4., 4.),
                          ])
-def test_custom_fitness(yaml, simulated_data, target_data, expected_fitness):
+def test_custom_fitness(yaml, simulated, target, weighting):
     """Test"""
     cfg = io.load(yaml)
+    assert isinstance(cfg, dict)
+
     detector = cfg['ccd_detector']
+    assert isinstance(detector, CCD)
+
     pipeline = cfg['pipeline']
+    assert isinstance(pipeline, DetectionPipeline)
+
     processor = Processor(detector, pipeline)
+    assert isinstance(processor, Processor)
+
     simulation = cfg['simulation']
-    mf = ModelFitting(processor, simulation.calibration.parameters)
-    configure(mf, simulation)
-    fitness = mf.calculate_fitness(simulated_data, target_data)
-    assert fitness == expected_fitness
+    assert isinstance(simulation, Configuration)
+
+    mf = ModelFitting(processor, variables=simulation.calibration.parameters)
+    configure(mf=mf, sim=simulation)
+
+    fitness = mf.calculate_fitness(simulated, target)
+    assert fitness == weighting
     print('fitness: ', fitness)
 
 

@@ -1,16 +1,19 @@
 """Simple model to load charge profiles."""
 import logging
+import typing as t
+
 import numpy as np
+
 from pyxel.detectors.detector import Detector
-from pyxel.util import validators, checkers, config
 
 
-@validators.validate
-@config.argument(name='txt_file', label='file path', units='', validate=checkers.check_path)
+# TODO: Fix this
+# @validators.validate
+# @config.argument(name='txt_file', label='file path', units='', validate=checkers.check_path)
 def charge_profile(detector: Detector,
                    txt_file: str,
                    fit_profile_to_det: bool = False,
-                   profile_position: list = None):
+                   profile_position: t.Optional[list] = None) -> None:
     """Load charge profile from txt file for detector, mostly for but not limited to CCDs.
 
     :param detector: Pyxel Detector object
@@ -18,8 +21,7 @@ def charge_profile(detector: Detector,
     :param fit_profile_to_det: bool
     :param profile_position: list
     """
-    logger = logging.getLogger('pyxel')
-    logger.info('')
+    logging.info('')
     geo = detector.geometry
 
     # All pixels has zero charge by default

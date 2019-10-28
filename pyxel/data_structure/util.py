@@ -1,43 +1,44 @@
 """Pyxel util functions for Particle classes."""
 import math
+import typing as t
+
 import numpy as np
 
+if t.TYPE_CHECKING:
+    from ..detectors import Detector
 
-def check_energy(initial_energy):
+
+def check_energy(initial_energy: t.Union[int, float]) -> None:
     """Check energy of the particle if it is a float or int.
 
     :param initial_energy:
     :return:
     """
-    if isinstance(initial_energy, int) or isinstance(initial_energy, float):
-        pass
-    else:
+    if not isinstance(initial_energy, int) and not isinstance(initial_energy, float):
         raise ValueError('Given particle energy could not be read')
 
 
-def check_position(detector, initial_position):
+def check_position(detector: "Detector", initial_position: t.Tuple[float, float, float]) -> None:
     """Check position of the particle if it is a numpy array and inside the detector.
 
     :param detector:
     :param initial_position:
     :return:
     """
-    if isinstance(initial_position, np.ndarray):
-        if 0.0 <= initial_position[0] <= detector.vert_dimension:
-            if 0.0 <= initial_position[1] <= detector.horz_dimension:
-                if -1 * detector.total_thickness <= initial_position[2] <= 0.0:
-                    pass
-                else:
-                    raise ValueError('Z position of particle is outside the detector')
-            else:
-                raise ValueError('Horizontal position of particle is outside the detector')
-        else:
-            raise ValueError('Vertical position of particle is outside the detector')
-    else:
+    if not isinstance(initial_position, np.ndarray):
         raise ValueError('Position of particle is not a numpy array (int or float)')
 
+    if not (0.0 <= initial_position[0] <= detector.geometry.vert_dimension):
+        raise ValueError('Vertical position of particle is outside the detector')
 
-def random_direction(v_abs=1.0):    # TODO check random angles and direction
+    if not (0.0 <= initial_position[1] <= detector.geometry.horz_dimension):
+        raise ValueError('Horizontal position of particle is outside the detector')
+
+    if not (-1 * detector.geometry.total_thickness <= initial_position[2] <= 0.0):
+        raise ValueError('Z position of particle is outside the detector')
+
+
+def random_direction(v_abs: float = 1.0) -> np.ndarray:    # TODO check random angles and direction
     """Generate random direction for a photon.
 
     :param v_abs:

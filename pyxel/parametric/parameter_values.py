@@ -1,6 +1,7 @@
 """TBW."""
 import typing as t
-from esapy_config import eval_range
+
+from pyxel.evaluator import eval_range
 
 
 class ParameterValues:
@@ -8,45 +9,35 @@ class ParameterValues:
 
     def __init__(self,
                  key: str,
-                 values,
+                 values: t.List[t.Union[float, int, str]],
+                 boundaries: t.Optional[t.Tuple[float, float]] = None,
                  enabled: bool = True,
                  current=None,
-                 logarithmic: bool = False,
-                 boundaries: list = None):
+                 logarithmic: bool = False):
         """TBW.
 
         :param key:
         :param values:
+        :param boundaries:
         :param enabled:
         :param current:
         :param logarithmic:
-        :param boundaries:
         """
-        # TODO: should the values be evaluated?
+        # TODO: should these values be evaluated?
         self.key = key                              # unique identifier to the step. example: detector.geometry.row
-        self.values = values                        # type: t.List[t.Union[float, int]]
+        self.values = values                        # type: t.List[t.Union[float, int, str]]
         self.enabled = enabled                      # type: bool
         self.current = current
         self.logarithmic = logarithmic              # type: bool
-        self.boundaries = boundaries                # type: t.Optional[list]
+        self.boundaries = boundaries                # type: t.Optional[t.Tuple[float, float]]
 
-    def __getstate__(self):
+    def __len__(self) -> int:
         """TBW."""
-        return {
-            'key': self.key,
-            'values': self.values,
-            'enabled': self.enabled,
-            'current': self.current,
-            'logarithmic': self.logarithmic,
-            'boundaries': self.boundaries,
-        }
-
-    def __len__(self):
-        """TBW."""
-        values = eval_range(self.values)
+        values = eval_range(self.values)  # type: list
         return len(values)
 
-    def __iter__(self):
+    # TODO: Is method '__contains__' needed ? If yes then this class will act as a `Collections.abc.Sequence`
+    def __iter__(self) -> t.Iterator[t.Union[float, int]]:
         """TBW."""
         values = eval_range(self.values)
         for value in values:
