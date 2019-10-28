@@ -205,7 +205,7 @@ licenses-latest:
 
 # Generate the Sphinx documentation into 'doc/html'
 doc:
-  image: python:3
+  image: python:3.7
   stage: build
   script:
     - pip install tox
