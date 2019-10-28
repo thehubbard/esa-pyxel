@@ -63,8 +63,7 @@ class Array:
 
     @property
     def array(self) -> np.ndarray:
-        """
-        Two dimensional numpy array storing the data.
+        """Two dimensional numpy array storing the data.
 
         Only accepts an array with the right type and shape.
         """
@@ -75,8 +74,7 @@ class Array:
 
     @array.setter
     def array(self, value: np.ndarray) -> None:
-        """
-        Overwrite the two dimensional numpy array storing the data.
+        """Overwrite the two dimensional numpy array storing the data.
 
         Only accepts an array with the right type and shape.
         """
