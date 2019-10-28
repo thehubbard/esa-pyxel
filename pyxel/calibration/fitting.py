@@ -64,7 +64,7 @@ class ModelFitting:
         self.sim_fit_range = slice(None)  # type: t.Union[slice, t.Tuple[slice, slice]]
         self.targ_fit_range = slice(None)  # type: t.Union[slice, t.Tuple[slice, slice]]
 
-        self.match = {}  # type: t.Dict[int, str]
+        self.match = {}  # type: t.Dict[int, t.List[str]]
 
         # self.normalization = False
         # self.target_data_norm = []
@@ -378,9 +378,11 @@ class ModelFitting:
                 with chfile.open() as fh:
                     *_, lastline = fh.readlines()
 
-                lastline = lastline.replace("\n", "")
-                lastline = lastline.split(" ")[1:]
-                self.match[ii] = lastline
+                cleaned_lastline = lastline.replace("\n", "")  # type: str
+                columns = cleaned_lastline.split(" ")  # type: t.List[str]
+
+                _, *other_columns = columns
+                self.match[ii] = other_columns
 
                 os.rename(chfile, self.file_path.joinpath(f"champions_id{ii}.out"))
 
