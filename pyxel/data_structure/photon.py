@@ -19,18 +19,27 @@ class Photon(Array):
 
     # TODO: add unit (ph)
     EXP_TYPE = np.int
-    TYPE_LIST = (np.int32, np.int64, np.uint32, np.uint64, np.float16, np.float32, np.float64)
+    TYPE_LIST = (
+        np.int32,
+        np.int64,
+        np.uint32,
+        np.uint64,
+        np.float16,
+        np.float32,
+        np.float64,
+    )
 
     def __init__(self, value: np.ndarray):
         """TBW."""
         cls_name = self.__class__.__name__  # type: str
 
         if not isinstance(value, np.ndarray):
-            raise TypeError(f'{cls_name} array should be a numpy.ndarray')
+            raise TypeError(f"{cls_name} array should be a numpy.ndarray")
 
         if value.dtype not in self.TYPE_LIST:
-            raise TypeError(f'Type of {cls_name} array should be a(n) %s' %
-                            self.EXP_TYPE.__name__)
+            raise TypeError(
+                f"Type of {cls_name} array should be a(n) %s" % self.EXP_TYPE.__name__
+            )
 
         self._array = value
 
@@ -38,8 +47,10 @@ class Photon(Array):
     def array(self) -> np.ndarray:
         """TBW."""
         if self._array is None:
-            raise RuntimeError("Photon array is not initialized ! "
-                               "Please use a 'Photon Generation' model.")
+            raise RuntimeError(
+                "Photon array is not initialized ! "
+                "Please use a 'Photon Generation' model."
+            )
 
         return self._array
 

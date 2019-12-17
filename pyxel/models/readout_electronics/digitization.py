@@ -14,25 +14,28 @@ from pyxel.detectors.detector import Detector
 # @config.argument(name='data_type', label='type of output data array', units='ADU',
 #                  validate=checkers.check_choices(['numpy.uint16', 'numpy.uint32', 'numpy.uint64',
 #                                                   'numpy.int32', 'numpy.int64']))
-def simple_digitization(detector: Detector,
-                        data_type: str = 'numpy.uint16') -> None:
+def simple_digitization(detector: Detector, data_type: str = "numpy.uint16") -> None:
     """Digitize signal array mimicking readout electronics.
 
     :param detector: Pyxel Detector object
     :param data_type: numpy integer type: ``numpy.uint16``, ``numpy.uint32``, ``numpy.uint64``,
                                           ``numpy.int32``, ``numpy.int64``
     """
-    logging.info('')
+    logging.info("")
 
     d_type = locate(data_type)
     if d_type is None:
-        raise TypeError('Can not locate the type defined as `data_type` argument in yaml file.')
+        raise TypeError(
+            "Can not locate the type defined as `data_type` argument in yaml file."
+        )
     # Gain of the Analog-Digital Converter
     detector.signal.array *= detector.characteristics.a2
     # floor of signal values element-wise (quantization)
     detector.signal.array = np.floor(detector.signal.array)
     # convert floats to other datatype (e.g. 16-bit unsigned integers)
-    detector.signal.array = np.clip(detector.signal.array, a_min=np.iinfo(d_type).min, a_max=np.iinfo(d_type).max)
+    detector.signal.array = np.clip(
+        detector.signal.array, a_min=np.iinfo(d_type).min, a_max=np.iinfo(d_type).max
+    )
     detector.image.array = detector.signal.array.astype(d_type)
 
 
@@ -41,14 +44,12 @@ def simple_processing(detector: Detector) -> None:
 
     :param detector: Pyxel Detector object
     """
-    logging.info('')
+    logging.info("")
     detector.signal.array *= detector.characteristics.a2
     detector.image.array = detector.signal.array
 
 
-def sar_adc(detector: Detector,
-            adc_bits: int = 16,
-            range_volt: tuple = (0, 5)) -> None:
+def sar_adc(detector: Detector, adc_bits: int = 16, range_volt: tuple = (0, 5)) -> None:
     """Digitize signal array using SAR ADC logic.
 
     :param detector: Pyxel Detector object
@@ -56,27 +57,27 @@ def sar_adc(detector: Detector,
     :param range_volt: tuple with min anx max volt value
     """
     # import numpy as np
-    logging.info('')
+    logging.info("")
     # Extract the data to digitize
     data = detector.signal.array
     data_digitized = np.zeros((detector.geometry.row, detector.geometry.col))
     # First normalize the data to voltage since there is no model for
     # the conversion photogenerated carrier > volts in the model/charge_measure
-    data = data*range_volt[1]/np.max(data)
+    data = data * range_volt[1] / np.max(data)
     # steps = list()
     # Set the reference voltage of the ADC to half the max
-    ref = range_volt[1]/2.
+    ref = range_volt[1] / 2.0
     # For each bits, compare the value of the ref to the capacitance value
     for i in np.arange(0, adc_bits):
         # digital value associated with this step
-        digital_value = 2**(adc_bits-(i+1))
+        digital_value = 2 ** (adc_bits - (i + 1))
         # All data that is higher than the ref is equal to the dig. value
         data_digitized[data >= ref] += digital_value
         # Subtract ref value from the data
         data[data >= ref] -= ref
         # steps.append(ref)
         # Divide reference voltage by 2 for next step
-        ref /= 2.
+        ref /= 2.0
 
     detector.image.array = data_digitized
     # return data_digitized, steps

@@ -16,17 +16,18 @@ from pyxel.detectors.material import Material
 class CMOS(Detector):
     """CMOS-based detector class containing all detector attributes and data."""
 
-    def __init__(self,
-                 geometry: CMOSGeometry,
-                 material: Material,
-                 environment: Environment,
-                 characteristics: CMOSCharacteristics,
-                 # photon: t.Optional[Photon] = None,
-                 # charge: t.Optional[Charge] = None,
-                 # pixel: t.Optional[Pixel] = None,
-                 # signal: t.Optional[Signal] = None,
-                 # image: t.Optional[Image] = None
-                 ):
+    def __init__(
+        self,
+        geometry: CMOSGeometry,
+        material: Material,
+        environment: Environment,
+        characteristics: CMOSCharacteristics,
+        # photon: t.Optional[Photon] = None,
+        # charge: t.Optional[Charge] = None,
+        # pixel: t.Optional[Pixel] = None,
+        # signal: t.Optional[Signal] = None,
+        # image: t.Optional[Image] = None
+    ):
         """TBW.
 
         :param geometry:
@@ -37,8 +38,7 @@ class CMOS(Detector):
         self._geometry = geometry  # type: CMOSGeometry
         self._characteristics = characteristics  # type: CMOSCharacteristics
 
-        super().__init__(material=material,
-                         environment=environment)
+        super().__init__(material=material, environment=environment)
         super().initialize()
 
     @property

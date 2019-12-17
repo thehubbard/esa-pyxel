@@ -11,17 +11,18 @@ from pyxel.models.charge_generation.tars.util import sampling_distribution
 class Particle:
     """Particle class define a particle together with its characteristics."""
 
-    def __init__(self,
-                 detector: Detector,
-                 simulation_mode: str,
-                 particle_type: str,
-                 input_energy: t.Union[int, float, str],
-                 spectrum_cdf: np.ndarray,
-                 starting_pos_ver: t.Union[str, np.ndarray],
-                 starting_pos_hor: t.Union[str, np.ndarray],
-                 starting_pos_z: t.Union[str, np.ndarray],
-                 # input_alpha='random', input_beta='random'
-                 ):
+    def __init__(
+        self,
+        detector: Detector,
+        simulation_mode: str,
+        particle_type: str,
+        input_energy: t.Union[int, float, str],
+        spectrum_cdf: np.ndarray,
+        starting_pos_ver: t.Union[str, np.ndarray],
+        starting_pos_hor: t.Union[str, np.ndarray],
+        starting_pos_z: t.Union[str, np.ndarray],
+        # input_alpha='random', input_beta='random'
+    ):
         """Creation of a particle according to some parameters.
 
         :param detector:
@@ -94,36 +95,40 @@ class Particle:
 
         self.alpha, self.beta = self.get_angles()  # rad
 
-        mode_1 = ['cosmic_ray', 'cosmics']
-        mode_2 = ['radioactive_decay', 'snowflakes']
-        if simulation_mode in mode_1:          # cosmic rays coming from OUTSIDE the detector volume
+        mode_1 = ["cosmic_ray", "cosmics"]
+        mode_2 = ["radioactive_decay", "snowflakes"]
+        if (
+            simulation_mode in mode_1
+        ):  # cosmic rays coming from OUTSIDE the detector volume
             self.starting_position = self.get_surface_point()
-        elif simulation_mode in mode_2:     # radioactive decay INSIDE the detector volume
-            self.starting_position = np.array([self.random_det_pt_vert, self.random_det_pt_horz, self.random_det_pt_z])
+        elif simulation_mode in mode_2:  # radioactive decay INSIDE the detector volume
+            self.starting_position = np.array(
+                [self.random_det_pt_vert, self.random_det_pt_horz, self.random_det_pt_z]
+            )
 
-        if starting_pos_ver != 'random':
+        if starting_pos_ver != "random":
             self.starting_position[0] = starting_pos_ver
-        if starting_pos_hor != 'random':
+        if starting_pos_hor != "random":
             self.starting_position[1] = starting_pos_hor
-        if starting_pos_z != 'random':
+        if starting_pos_z != "random":
             self.starting_position[2] = starting_pos_z
 
         self.position = np.copy(self.starting_position)
         self.trajectory = np.copy(self.starting_position)
 
-        if input_energy == 'random':
+        if input_energy == "random":
             self.energy = sampling_distribution(spectrum_cdf)
         elif isinstance(input_energy, int) or isinstance(input_energy, float):
             self.energy = input_energy
         else:
-            raise ValueError('Given particle energy could not be read')
+            raise ValueError("Given particle energy could not be read")
 
         self.deposited_energy = 0.0  # type: float
         self.total_edep = 0.0  # type: float
 
         self.type = particle_type
-        ionizing_particles = ('proton', 'ion', 'alpha', 'beta', 'electron')
-        non_ionizing_particles = ('gamma', 'x-ray')  # 'photon'
+        ionizing_particles = ("proton", "ion", "alpha", "beta", "electron")
+        non_ionizing_particles = ("gamma", "x-ray")  # 'photon'
 
         if self.type in ionizing_particles:
             # call direct ionization func when needed - already implemented in simulation
@@ -131,10 +136,12 @@ class Particle:
 
         elif self.type in non_ionizing_particles:
             # call NON-direct ionization func when needed - need to be implemented
-            raise NotImplementedError('Given particle type simulation is not yet implemented')
+            raise NotImplementedError(
+                "Given particle type simulation is not yet implemented"
+            )
 
         else:
-            raise ValueError('Given particle type can not be simulated')
+            raise ValueError("Given particle type can not be simulated")
 
     def get_surface_point(self) -> np.ndarray:
         """TBW.
@@ -143,38 +150,67 @@ class Particle:
         """
         geo = self.detector.geometry
 
-        norm_vectors = [np.array([0., 0., -1.]),  # top plane (usually particle enters vol. via this)
-                        np.array([0., 0., 1.]),   # bottom plane (usually particle leaves vol. via this)
-                        np.array([0., 1., 0.]),
-                        np.array([-1., 0., 0.]),
-                        np.array([0., -1., 0.]),
-                        np.array([1., 0., 0.])]  # type: t.List[np.ndarray]
+        norm_vectors = [
+            np.array(
+                [0.0, 0.0, -1.0]
+            ),  # top plane (usually particle enters vol. via this)
+            np.array(
+                [0.0, 0.0, 1.0]
+            ),  # bottom plane (usually particle leaves vol. via this)
+            np.array([0.0, 1.0, 0.0]),
+            np.array([-1.0, 0.0, 0.0]),
+            np.array([0.0, -1.0, 0.0]),
+            np.array([1.0, 0.0, 0.0]),
+        ]  # type: t.List[np.ndarray]
 
-        points = [np.array([0., 0., 0.]),  # top plane (usually particle enters vol. via this)
-                  np.array([0., 0., -1 * geo.total_thickness]),  # bottom plane (usually particle leaves vol. via this)
-                  np.array([0., 0., 0.]),
-                  np.array([geo.vert_dimension, 0., 0.]),
-                  np.array([geo.vert_dimension, geo.horz_dimension, 0.]),
-                  np.array([0., geo.horz_dimension, 0.])]  # type: t.List[np.ndarray]
+        points = [
+            np.array(
+                [0.0, 0.0, 0.0]
+            ),  # top plane (usually particle enters vol. via this)
+            np.array(
+                [0.0, 0.0, -1 * geo.total_thickness]
+            ),  # bottom plane (usually particle leaves vol. via this)
+            np.array([0.0, 0.0, 0.0]),
+            np.array([geo.vert_dimension, 0.0, 0.0]),
+            np.array([geo.vert_dimension, geo.horz_dimension, 0.0]),
+            np.array([0.0, geo.horz_dimension, 0.0]),
+        ]  # type: t.List[np.ndarray]
 
         intersect_points = np.zeros((6, 3))
         track_direction = np.array([self.dir_ver, self.dir_hor, self.dir_z])
-        random_det_point = np.array([self.random_det_pt_vert, self.random_det_pt_horz, self.random_det_pt_z])
+        random_det_point = np.array(
+            [self.random_det_pt_vert, self.random_det_pt_horz, self.random_det_pt_z]
+        )
 
         surface_start_point = None  # type: t.Optional[np.ndarray]
         surface_end_point = None  # type: t.Optional[np.ndarray]
         for i in range(6):
-            intersect_points[i, :] = find_intersection(n=norm_vectors[i], p0=points[i],
-                                                       ls=random_det_point, lv=track_direction)
+            intersect_points[i, :] = find_intersection(
+                n=norm_vectors[i], p0=points[i], ls=random_det_point, lv=track_direction
+            )
 
-            eps = 1E-8
+            eps = 1e-8
             if 0.0 - eps <= intersect_points[i, 0] <= geo.vert_dimension + eps:
                 if 0.0 - eps <= intersect_points[i, 1] <= geo.horz_dimension + eps:
-                    if -1 * geo.total_thickness - eps <= intersect_points[i, 2] <= 0.0 + eps:
-                        if np.dot(track_direction, intersect_points[i, :] - random_det_point) < 0:
-                            surface_start_point = self.intersection_correction(intersect_points[i, :])
+                    if (
+                        -1 * geo.total_thickness - eps
+                        <= intersect_points[i, 2]
+                        <= 0.0 + eps
+                    ):
+                        if (
+                            np.dot(
+                                track_direction,
+                                intersect_points[i, :] - random_det_point,
+                            )
+                            < 0
+                        ):
+                            surface_start_point = self.intersection_correction(
+                                intersect_points[i, :]
+                            )
                         else:
-                            surface_end_point = self.intersection_correction(intersect_points[i, :])
+                            surface_end_point = self.intersection_correction(
+                                intersect_points[i, :]
+                            )
 
         assert surface_start_point is not None
         assert surface_end_point is not None
@@ -182,11 +218,11 @@ class Particle:
         self.track_length = np.linalg.norm(surface_end_point - surface_start_point)
 
         if np.all(surface_start_point == surface_end_point):
-            raise ValueError('This should not happen')
+            raise ValueError("This should not happen")
         if surface_start_point is None:
-            raise ValueError('This should not happen')
+            raise ValueError("This should not happen")
         if surface_end_point is None:
-            raise ValueError('This should not happen')
+            raise ValueError("This should not happen")
 
         return surface_start_point
 
@@ -195,12 +231,18 @@ class Particle:
 
         :return:
         """
-        beta = np.arccos(np.dot(np.array([1., 0.]), np.array([self.dir_ver, self.dir_hor])))
+        beta = np.arccos(
+            np.dot(np.array([1.0, 0.0]), np.array([self.dir_ver, self.dir_hor]))
+        )
 
-        alpha = np.arccos(np.dot(np.array([0., 0., 1.]),
-                                 np.array([self.dir_ver, self.dir_hor, self.dir_z])))
+        alpha = np.arccos(
+            np.dot(
+                np.array([0.0, 0.0, 1.0]),
+                np.array([self.dir_ver, self.dir_hor, self.dir_z]),
+            )
+        )
 
-        if self.dir_hor < 0.:
+        if self.dir_hor < 0.0:
             beta += np.pi
             alpha += np.pi
 
@@ -248,26 +290,27 @@ class Particle:
         :param array:
         :return:
         """
-        eps = 1E-8
+        eps = 1e-8
         geo = self.detector.geometry
         if abs(array[0] - geo.vert_dimension) < eps:
             array[0] = geo.vert_dimension
         if abs(array[0]) < eps:
-            array[0] = 0.
+            array[0] = 0.0
         if abs(array[1] - geo.horz_dimension) < eps:
             array[1] = geo.horz_dimension
         if abs(array[1]) < eps:
-            array[1] = 0.
+            array[1] = 0.0
         if abs(array[2] + geo.total_thickness) < eps:
             array[2] = -1 * geo.total_thickness
         if abs(array[2]) < eps:
-            array[2] = 0.
+            array[2] = 0.0
 
         return array
 
 
-def find_intersection(n: np.ndarray, p0: np.ndarray,
-                      ls: np.ndarray, lv: np.ndarray) -> np.ndarray:
+def find_intersection(
+    n: np.ndarray, p0: np.ndarray, ls: np.ndarray, lv: np.ndarray
+) -> np.ndarray:
     """TBW.
 
     https://en.wikipedia.org/wiki/Line%E2%80%93plane_intersection
@@ -277,7 +320,7 @@ def find_intersection(n: np.ndarray, p0: np.ndarray,
     :param lv: direction of particle track
     :return:
     """
-    if np.dot(lv, n) == 0:   # No intersection of track and detector plane
+    if np.dot(lv, n) == 0:  # No intersection of track and detector plane
         return None
     else:
         d = np.dot((p0 - ls), n) / np.dot(lv, n)

@@ -16,7 +16,7 @@ def shot_noise(detector: Detector, random_seed: t.Optional[int] = None) -> None:
     :param detector: Pyxel Detector object
     :param random_seed: int seed
     """
-    logging.info('')
+    logging.info("")
     if random_seed:
         np.random.seed(random_seed)
 

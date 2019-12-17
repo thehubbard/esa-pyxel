@@ -212,7 +212,9 @@ class ModelFitting:
     def get_simulated_data(self, processor: Processor) -> np.ndarray:
         """TBW."""
         if self.sim_output == ResultType.Image:
-            simulated_data = processor.detector.image.array[self.sim_fit_range]  # type: np.ndarray
+            simulated_data = processor.detector.image.array[
+                self.sim_fit_range
+            ]  # type: np.ndarray
         elif self.sim_output == ResultType.Signal:
             simulated_data = processor.detector.signal.array[self.sim_fit_range]
         elif self.sim_output == ResultType.Pixel:
@@ -294,8 +296,9 @@ class ModelFitting:
         overall_fitness = 0.0  # type: float
         for processor, target_data in zip(processor_list, self.all_target_data):
 
-            processor = self.update_processor(parameter=parameter,
-                                              new_processor=processor)
+            processor = self.update_processor(
+                parameter=parameter, new_processor=processor
+            )
 
             logger.setLevel(logging.WARNING)
             # result_proc = None
@@ -503,11 +506,19 @@ class ModelFitting:
             best_champ_index = np.argmin(self.champion_f_list)
 
             if self.fitness_array[best_index] < self.champion_f_list[best_champ_index]:
-                self.champion_f_list = np.vstack((self.champion_f_list, self.fitness_array[best_index]))
-                self.champion_x_list = np.vstack((self.champion_x_list, self.population[best_index]))
+                self.champion_f_list = np.vstack(
+                    (self.champion_f_list, self.fitness_array[best_index])
+                )
+                self.champion_x_list = np.vstack(
+                    (self.champion_x_list, self.population[best_index])
+                )
             else:
-                self.champion_f_list = np.vstack((self.champion_f_list, self.champion_f_list[-1]))
-                self.champion_x_list = np.vstack((self.champion_x_list, self.champion_x_list[-1]))
+                self.champion_f_list = np.vstack(
+                    (self.champion_f_list, self.champion_f_list[-1])
+                )
+                self.champion_x_list = np.vstack(
+                    (self.champion_x_list, self.champion_x_list[-1])
+                )
 
         # TODO: should we keep and write to file the population(s) which had the champion inside?
         # because usually this is not the last population currently we save to file!
@@ -530,7 +541,9 @@ class ModelFitting:
             self.fitness_array = np.array([overall_fitness])
             self.population = parameter
         else:
-            self.fitness_array = np.vstack((self.fitness_array, np.array([overall_fitness])))
+            self.fitness_array = np.vstack(
+                (self.fitness_array, np.array([overall_fitness]))
+            )
             self.population = np.vstack((self.population, parameter))
 
     def add_to_champ_file(self, parameter: np.ndarray) -> None:

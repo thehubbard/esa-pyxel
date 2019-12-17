@@ -8,16 +8,17 @@ from pyxel.detectors import Detector
 
 
 @pyxel.validate
-@pyxel.argument(name='number', label='label of arg',
-                units='', validate=pyxel.check_type(int))
+@pyxel.argument(
+    name="number", label="label of arg", units="", validate=pyxel.check_type(int)
+)
 def new_model(detector: Detector, number: int = None):
     """My new dummy model.
 
     :param detector: Pyxel Detector object
     :param number: an integer
     """
-    log = logging.getLogger('pyxel')
-    log.info('')
+    log = logging.getLogger("pyxel")
+    log.info("")
     if number:
-        print('number = ', str(number))
+        print("number = ", str(number))
     detector.pixel.array *= np.random.rand()

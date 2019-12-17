@@ -8,36 +8,59 @@ import subprocess
 def badges():
     """Create badges."""
     parser = argparse.ArgumentParser()
-    parser.add_argument('-cov', '--coverage', type=float, default=None, help='Test coverage badge with percent')
-    parser.add_argument('-ver', '--version', type=str, default=None, help='Version badge')
-    parser.add_argument('-lic', '--license', type=str, default=None, help='License badge')
-    parser.add_argument('-doc', '--documentation', type=str, default=None, help='Documentation badge')
-    parser.add_argument('-ch', '--chat', type=str, default=None, help='Chat badge')
+    parser.add_argument(
+        "-cov",
+        "--coverage",
+        type=float,
+        default=None,
+        help="Test coverage badge with percent",
+    )
+    parser.add_argument(
+        "-ver", "--version", type=str, default=None, help="Version badge"
+    )
+    parser.add_argument(
+        "-lic", "--license", type=str, default=None, help="License badge"
+    )
+    parser.add_argument(
+        "-doc", "--documentation", type=str, default=None, help="Documentation badge"
+    )
+    parser.add_argument("-ch", "--chat", type=str, default=None, help="Chat badge")
     opts = parser.parse_args()
 
     if opts.coverage:
-        if 0. <= opts.coverage < 20.:
-            colour = 'red'
-        elif 20. <= opts.coverage < 40.:
-            colour = 'orange'
-        elif 40. <= opts.coverage < 60.:
-            colour = 'yellow'
-        elif 60. <= opts.coverage < 80.:
-            colour = 'yellowgreen'
-        elif 80. <= opts.coverage < 90.:
-            colour = 'green'
-        elif 90. <= opts.coverage <= 100.:
-            colour = 'brightgreen'
+        if 0.0 <= opts.coverage < 20.0:
+            colour = "red"
+        elif 20.0 <= opts.coverage < 40.0:
+            colour = "orange"
+        elif 40.0 <= opts.coverage < 60.0:
+            colour = "yellow"
+        elif 60.0 <= opts.coverage < 80.0:
+            colour = "yellowgreen"
+        elif 80.0 <= opts.coverage < 90.0:
+            colour = "green"
+        elif 90.0 <= opts.coverage <= 100.0:
+            colour = "brightgreen"
         else:
-            colour = 'lightgrey'
-        percent = '{:.2f}'.format(opts.coverage)
-        process = 'wget -O coverage.svg https://img.shields.io/badge/coverage-' + percent + '%25-' + colour + '.svg'
+            colour = "lightgrey"
+        percent = "{:.2f}".format(opts.coverage)
+        process = (
+            "wget -O coverage.svg https://img.shields.io/badge/coverage-"
+            + percent
+            + "%25-"
+            + colour
+            + ".svg"
+        )
         subprocess.run(process, shell=True)
 
     if opts.documentation:
-        colour = 'brightgreen'
-        process = 'wget -O documentation.svg https://img.shields.io/badge/docs-' + \
-                  opts.documentation + '-' + colour + '.svg'
+        colour = "brightgreen"
+        process = (
+            "wget -O documentation.svg https://img.shields.io/badge/docs-"
+            + opts.documentation
+            + "-"
+            + colour
+            + ".svg"
+        )
         subprocess.run(process, shell=True)
 
     # if opts.license:
@@ -53,5 +76,5 @@ def badges():
     #     subprocess.run(process, shell=True)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     badges()

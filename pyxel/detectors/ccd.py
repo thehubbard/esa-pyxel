@@ -15,11 +15,13 @@ from pyxel.detectors.material import Material
 class CCD(Detector):
     """Charge-Coupled Device class containing all detector attributes and data."""
 
-    def __init__(self,
-                 geometry: CCDGeometry,
-                 material: Material,
-                 environment: Environment,
-                 characteristics: CCDCharacteristics):
+    def __init__(
+        self,
+        geometry: CCDGeometry,
+        material: Material,
+        environment: Environment,
+        characteristics: CCDCharacteristics,
+    ):
         """TBW.
 
         :param geometry:
@@ -30,8 +32,7 @@ class CCD(Detector):
         self._geometry = geometry  # type: CCDGeometry
         self._characteristics = characteristics  # type: CCDCharacteristics
 
-        super().__init__(material=material,
-                         environment=environment)
+        super().__init__(material=material, environment=environment)
         super().initialize()
 
     @property

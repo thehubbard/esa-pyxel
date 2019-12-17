@@ -12,7 +12,7 @@ def alignment(detector: Detector) -> None:
 
     :param detector: Pyxel Detector object
     """
-    logging.info('')
+    logging.info("")
 
     geo = detector.geometry
     rows, cols = detector.photon.array.shape
@@ -22,6 +22,8 @@ def alignment(detector: Detector) -> None:
     if row0 < 0 or col0 < 0:
         raise ValueError
 
-    aligned_optical_image = detector.photon.array[slice(row0, row0 + geo.row), slice(col0, col0 + geo.col)]
+    aligned_optical_image = detector.photon.array[
+        slice(row0, row0 + geo.row), slice(col0, col0 + geo.col)
+    ]
 
     detector.photon = Photon(aligned_optical_image)

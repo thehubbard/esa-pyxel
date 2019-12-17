@@ -14,31 +14,37 @@ def simple_conversion(detector: Detector) -> None:
 
     :param detector: Pyxel Detector object
     """
-    logging.info('')
+    logging.info("")
     geo = detector.geometry
     ch = detector.characteristics
     ph = detector.photon
 
-    detector_charge = np.zeros((geo.row, geo.col))      # all pixels has zero charge by default
+    detector_charge = np.zeros(
+        (geo.row, geo.col)
+    )  # all pixels has zero charge by default
     photon_rows, photon_cols = ph.array.shape
-    detector_charge[slice(0, photon_rows), slice(0, photon_cols)] = ph.array * ch.qe * ch.eta
-    charge_number = detector_charge.flatten()           # the average charge numbers per pixel
-    where_non_zero = np.where(charge_number > 0.)
+    detector_charge[slice(0, photon_rows), slice(0, photon_cols)] = (
+        ph.array * ch.qe * ch.eta
+    )
+    charge_number = detector_charge.flatten()  # the average charge numbers per pixel
+    where_non_zero = np.where(charge_number > 0.0)
     charge_number = charge_number[where_non_zero]
     size = charge_number.size
 
     init_ver_pix_position = geo.vertical_pixel_center_pos_list()[where_non_zero]
     init_hor_pix_position = geo.horizontal_pixel_center_pos_list()[where_non_zero]
 
-    detector.charge.add_charge(particle_type='e',
-                               particles_per_cluster=charge_number,
-                               init_energy=[0.] * size,
-                               init_ver_position=init_ver_pix_position,
-                               init_hor_position=init_hor_pix_position,
-                               init_z_position=[0.] * size,
-                               init_ver_velocity=[0.] * size,
-                               init_hor_velocity=[0.] * size,
-                               init_z_velocity=[0.] * size)
+    detector.charge.add_charge(
+        particle_type="e",
+        particles_per_cluster=charge_number,
+        init_energy=[0.0] * size,
+        init_ver_position=init_ver_pix_position,
+        init_hor_position=init_hor_pix_position,
+        init_z_position=[0.0] * size,
+        init_ver_velocity=[0.0] * size,
+        init_hor_velocity=[0.0] * size,
+        init_z_velocity=[0.0] * size,
+    )
 
 
 # TODO: Fix this
@@ -49,7 +55,7 @@ def monte_carlo_conversion(detector: Detector) -> None:
 
     :param detector: Pyxel Detector object
     """
-    logging.info('')
+    logging.info("")
 
     # detector.qe <= 1
     # detector.eta <= 1

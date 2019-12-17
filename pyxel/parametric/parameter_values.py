@@ -7,13 +7,15 @@ from pyxel.evaluator import eval_range
 class ParameterValues:
     """TBW."""
 
-    def __init__(self,
-                 key: str,
-                 values: t.List[t.Union[float, int, str]],
-                 boundaries: t.Optional[t.Tuple[float, float]] = None,
-                 enabled: bool = True,
-                 current=None,
-                 logarithmic: bool = False):
+    def __init__(
+        self,
+        key: str,
+        values: t.List[t.Union[float, int, str]],
+        boundaries: t.Optional[t.Tuple[float, float]] = None,
+        enabled: bool = True,
+        current=None,
+        logarithmic: bool = False,
+    ):
         """TBW.
 
         :param key:
@@ -24,12 +26,12 @@ class ParameterValues:
         :param logarithmic:
         """
         # TODO: should these values be evaluated?
-        self.key = key                              # unique identifier to the step. example: detector.geometry.row
-        self.values = values                        # type: t.List[t.Union[float, int, str]]
-        self.enabled = enabled                      # type: bool
+        self.key = key  # unique identifier to the step. example: detector.geometry.row
+        self.values = values  # type: t.List[t.Union[float, int, str]]
+        self.enabled = enabled  # type: bool
         self.current = current
-        self.logarithmic = logarithmic              # type: bool
-        self.boundaries = boundaries                # type: t.Optional[t.Tuple[float, float]]
+        self.logarithmic = logarithmic  # type: bool
+        self.boundaries = boundaries  # type: t.Optional[t.Tuple[float, float]]
 
     def __len__(self) -> int:
         """TBW."""

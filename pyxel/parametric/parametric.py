@@ -19,11 +19,13 @@ if t.TYPE_CHECKING:
 class ParametricAnalysis:
     """TBW."""
 
-    def __init__(self,
-                 parametric_mode: str,
-                 parameters: t.List[ParameterValues],
-                 from_file: t.Optional[str] = None,
-                 column_range: t.Optional[t.Tuple[int, int]] = None):
+    def __init__(
+        self,
+        parametric_mode: str,
+        parameters: t.List[ParameterValues],
+        from_file: t.Optional[str] = None,
+        column_range: t.Optional[t.Tuple[int, int]] = None,
+    ):
         """TBW."""
         self.parametric_mode = parametric_mode
         self._parameters = parameters
@@ -52,17 +54,21 @@ class ParametricAnalysis:
 
                 # TODO: this is confusing code. Fix this.
                 #       Furthermore 'step.values' should be a `t.List[int, float]` and not a `str`
-                if step.values == '_':
+                if step.values == "_":
                     value = data_array[i]
                     i += 1
 
-                elif isinstance(step.values, list) and all(x == '_' for x in step.values[:]):
-                    value = data_array[i: i + len(step.values)]
+                elif isinstance(step.values, list) and all(
+                    x == "_" for x in step.values[:]
+                ):
+                    value = data_array[i : i + len(step.values)]
                     i += len(value)
 
                 else:
-                    raise ValueError('Only "_" characters (or a list of them) should be used to '
-                                     'indicate parameters updated from file in parallel')
+                    raise ValueError(
+                        'Only "_" characters (or a list of them) should be used to '
+                        "indicate parameters updated from file in parallel"
+                    )
 
                 new_proc.set(key, value)
             yield new_proc
@@ -105,22 +111,29 @@ class ParametricAnalysis:
             # TODO: the string literal expressions are difficult to maintain.
             #     Example: 'pipeline.', '.arguments', '.enabled'
             #     We may want to consider an API for this.
-            if 'pipeline.' in step.key:
-                model_name = step.key[:step.key.find('.arguments')]
-                model_enabled = model_name + '.enabled'  # type: str
+            if "pipeline." in step.key:
+                model_name = step.key[: step.key.find(".arguments")]
+                model_enabled = model_name + ".enabled"  # type: str
                 if not processor.get(model_enabled):
-                    raise ValueError('The "%s" model referenced in parametric configuration '
-                                     'has not been enabled in yaml config!' % model_name)
+                    raise ValueError(
+                        'The "%s" model referenced in parametric configuration '
+                        "has not been enabled in yaml config!" % model_name
+                    )
 
-            if any(x == '_' for x in step.values[:]) and self.parametric_mode != 'parallel':
-                raise ValueError('Either define "parallel" as parametric mode or '
-                                 'do not use "_" character in "values" field')
+            if (
+                any(x == "_" for x in step.values[:])
+                and self.parametric_mode != "parallel"
+            ):
+                raise ValueError(
+                    'Either define "parallel" as parametric mode or '
+                    'do not use "_" character in "values" field'
+                )
 
-        if self.parametric_mode == 'embedded':
+        if self.parametric_mode == "embedded":
             configs = self._embedded(processor)
-        elif self.parametric_mode == 'sequential':
+        elif self.parametric_mode == "sequential":
             configs = self._sequential(processor)
-        elif self.parametric_mode == 'parallel':
+        elif self.parametric_mode == "parallel":
             configs = self._parallel(processor)
         else:
             configs = iter([])
@@ -137,7 +150,7 @@ class ParametricAnalysis:
                 _, att = get_obj_att(config, step.key)
                 value = get_value(config, step.key)
                 values.append((att, value))
-            logging.debug('%d: %r' % (i, values))
+            logging.debug("%d: %r" % (i, values))
             result.append((i, values))
         return result
 
@@ -146,21 +159,26 @@ class ParametricAnalysis:
 class Configuration:
     """TBW."""
 
-    def __init__(self, mode: str,
-                 outputs: "Outputs",
-                 parametric: t.Optional[ParametricAnalysis] = None,
-                 calibration: "t.Optional[Calibration]" = None,
-                 dynamic: t.Optional[t.Dict[str, t.Any]] = None):
+    def __init__(
+        self,
+        mode: str,
+        outputs: "Outputs",
+        parametric: t.Optional[ParametricAnalysis] = None,
+        calibration: "t.Optional[Calibration]" = None,
+        dynamic: t.Optional[t.Dict[str, t.Any]] = None,
+    ):
         """TBW.
 
         :param mode:
         :param parametric:
         :param calibration:
         """
-        if mode in ['single', 'parametric', 'calibration', 'dynamic']:
+        if mode in ["single", "parametric", "calibration", "dynamic"]:
             self.mode = mode
         else:
-            raise ValueError('Non-existing running mode defined for Pyxel in yaml config file.')
+            raise ValueError(
+                "Non-existing running mode defined for Pyxel in yaml config file."
+            )
 
         self.outputs = outputs
         self.parametric = parametric

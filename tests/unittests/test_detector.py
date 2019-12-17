@@ -19,27 +19,30 @@ from pyxel.detectors.material import Material
 # from pyxel.data_structure.photon import Photon
 
 
-@pytest.mark.parametrize("cls, geometry, environment, characteristics, material", [
-    # (Geometry(), Environment(), Characteristics(), Material()),
-    # (Geometry(), Environment(), CCDCharacteristics(), Material()),
-    # (Geometry(), Environment(), CMOSCharacteristics(), Material()),
-
-    (CCD, CCDGeometry(), Environment(), Characteristics(), Material()),
-    (CCD, CCDGeometry(), Environment(), CCDCharacteristics(), Material()),
-    (CCD, CCDGeometry(), Environment(), CMOSCharacteristics(), Material()),
-
-    (CMOS, CMOSGeometry(), Environment(), Characteristics(), Material()),
-    (CMOS, CMOSGeometry(), Environment(), CCDCharacteristics(), Material()),
-    (CMOS, CMOSGeometry(), Environment(), CMOSCharacteristics(), Material())
-])
+@pytest.mark.parametrize(
+    "cls, geometry, environment, characteristics, material",
+    [
+        # (Geometry(), Environment(), Characteristics(), Material()),
+        # (Geometry(), Environment(), CCDCharacteristics(), Material()),
+        # (Geometry(), Environment(), CMOSCharacteristics(), Material()),
+        (CCD, CCDGeometry(), Environment(), Characteristics(), Material()),
+        (CCD, CCDGeometry(), Environment(), CCDCharacteristics(), Material()),
+        (CCD, CCDGeometry(), Environment(), CMOSCharacteristics(), Material()),
+        (CMOS, CMOSGeometry(), Environment(), Characteristics(), Material()),
+        (CMOS, CMOSGeometry(), Environment(), CCDCharacteristics(), Material()),
+        (CMOS, CMOSGeometry(), Environment(), CMOSCharacteristics(), Material()),
+    ],
+)
 def test_init(cls, geometry, environment, characteristics, material):
     """Test Detector.__init__ with valid entries."""
 
     # Create a `Detector`
-    obj = cls(geometry=geometry,
-              environment=environment,
-              characteristics=characteristics,
-              material=material)
+    obj = cls(
+        geometry=geometry,
+        environment=environment,
+        characteristics=characteristics,
+        material=material,
+    )
 
     # Test getters
     assert obj.geometry is geometry
@@ -52,8 +55,13 @@ def test_init(cls, geometry, environment, characteristics, material):
     assert obj.signal is not None
     assert obj.image is not None
 
-    with pytest.raises(RuntimeError, match=r"Photon array is not initialized ! Please use a 'Photon Generation' model"):
+    with pytest.raises(
+        RuntimeError,
+        match=r"Photon array is not initialized ! Please use a 'Photon Generation' model",
+    ):
         _ = obj.photon
+
+
 #
 # @pytest.mark.parametrize("obj, other_obj", [
 #     (Detector(Geometry(), Material(), Environment(), Characteristics()),        # TODO
@@ -82,9 +90,9 @@ def test_init(cls, geometry, environment, characteristics, material):
 #     assert isinstance(obj, Detector)
 
 
-@pytest.mark.parametrize("obj", [
-    CCD(CCDGeometry(), Material(), Environment(), CCDCharacteristics()),
-])
+@pytest.mark.parametrize(
+    "obj", [CCD(CCDGeometry(), Material(), Environment(), CCDCharacteristics()),]
+)
 def test_copy(obj):
     """Test Detector.copy."""
     assert isinstance(obj, Detector)

@@ -20,7 +20,7 @@ class ModelGroup:
 
         :param models:
         """
-        self.models = models    # type: t.List[ModelFunction]
+        self.models = models  # type: t.List[ModelFunction]
 
     def __deepcopy__(self, memo) -> "ModelGroup":
         """TBW."""
@@ -28,13 +28,18 @@ class ModelGroup:
         return ModelGroup(models=copied_models)
 
     # TODO: Why is this method returning a `bool` ?
-    def run(self, detector: "Detector", pipeline: "DetectionPipeline", abort_model: t.Optional[str] = None) -> bool:
+    def run(
+        self,
+        detector: "Detector",
+        pipeline: "DetectionPipeline",
+        abort_model: t.Optional[str] = None,
+    ) -> bool:
         """Execute each enabled model in this group."""
         for model in self.models:
             if model.name == abort_model:
                 return True
             if not pipeline.is_running:
-                raise util.PipelineAborted('Pipeline has been aborted.')
+                raise util.PipelineAborted("Pipeline has been aborted.")
             else:
                 if model.enabled:
                     # TODO: Display here information about the executed model

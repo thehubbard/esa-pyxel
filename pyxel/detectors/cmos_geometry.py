@@ -13,7 +13,6 @@ class CMOSGeometry(Geometry):
         total_thickness: float = 0.0,
         pixel_vert_size: float = 0.0,
         pixel_horz_size: float = 0.0,
-
         # Parameters for CMOS Geometry
         n_output: int = 1,
         n_row_overhead: int = 0,

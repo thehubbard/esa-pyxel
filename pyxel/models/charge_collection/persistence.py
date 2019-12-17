@@ -12,11 +12,11 @@ from pyxel.detectors.cmos import CMOS
 
 # @validators.validate
 # @config.argument(name='', label='', units='', validate=)
-def simple_persistence(detector: CMOS,
-                       trap_timeconstant: list,
-                       trap_density: list) -> None:
+def simple_persistence(
+    detector: CMOS, trap_timeconstant: list, trap_density: list
+) -> None:
     """Trapping/detrapping charges."""
-    logging.info('')
+    logging.info("")
 
     # TODO: NOT FINISHED AND NOT WORKING YET
 

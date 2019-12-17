@@ -19,7 +19,15 @@ class Pixel(Array):
     """
 
     EXP_TYPE = np.int
-    TYPE_LIST = (np.int32, np.int64, np.uint32, np.uint64, np.float16, np.float32, np.float64)
+    TYPE_LIST = (
+        np.int32,
+        np.int64,
+        np.uint32,
+        np.uint64,
+        np.float16,
+        np.float32,
+        np.float64,
+    )
 
     def __init__(self, geo: "Geometry"):
         """TBW.

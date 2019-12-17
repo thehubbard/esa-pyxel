@@ -8,7 +8,6 @@ class CCDCharacteristics(Characteristics):
 
     def __init__(
         self,
-
         # Parameters for `Characteristics`
         qe: float = 0.0,  # unit: NA
         eta: float = 0.0,  # unit: electron/photon
@@ -19,7 +18,6 @@ class CCDCharacteristics(Characteristics):
         fwc: int = 0,  # unit: electron
         vg: float = 0.0,  # unit: cm^2
         dt: float = 0.0,  # unit: s
-
         # Parameters specific `CCDCharacteristics`
         fwc_serial: int = 0,  # unit: electron
         svg: float = 0.0,  # unit: cm^2

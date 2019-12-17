@@ -12,9 +12,7 @@ from pyxel.state import get_obj_att, get_value
 class Processor:
     """TBW."""
 
-    def __init__(self,
-                 detector: t.Union[CCD, CMOS],
-                 pipeline: DetectionPipeline):
+    def __init__(self, detector: t.Union[CCD, CMOS], pipeline: DetectionPipeline):
         """TBW.
 
         :param detector:
@@ -89,9 +87,11 @@ class Processor:
         for group_name in self.pipeline.model_group_names:
             models_grp = getattr(self.pipeline, group_name)  # type: ModelGroup
             if models_grp:
-                abort_flag = models_grp.run(detector=self.detector,
-                                            pipeline=self.pipeline,
-                                            abort_model=abort_before)
+                abort_flag = models_grp.run(
+                    detector=self.detector,
+                    pipeline=self.pipeline,
+                    abort_model=abort_before,
+                )
                 if abort_flag:
                     break
         self.pipeline._is_running = False

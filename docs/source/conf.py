@@ -23,17 +23,19 @@ from setuptools.config import read_configuration
 
 import sphinx_rtd_theme
 
-html_theme = 'sphinx_rtd_theme'
+html_theme = "sphinx_rtd_theme"
 
 html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 
 # Read 'setup.cfg' file
 parent_folder = Path(__file__).parent
-setup_cfg_filename = parent_folder.joinpath("../../setup.cfg").resolve(strict=True)  # type: Path
+setup_cfg_filename = parent_folder.joinpath("../../setup.cfg").resolve(
+    strict=True
+)  # type: Path
 metadata = read_configuration(setup_cfg_filename)["metadata"]  # type: dict
 
 
-plantuml = 'java -jar /usr/local/plantuml/plantuml.jar'
+plantuml = "java -jar /usr/local/plantuml/plantuml.jar"
 
 # -- General configuration ------------------------------------------------
 
@@ -46,43 +48,43 @@ plantuml = 'java -jar /usr/local/plantuml/plantuml.jar'
 # ones.
 # extensions = ['sphinx.ext.autodoc']
 extensions = [
-    'sphinx.ext.autodoc',       # include documentation from docstrings
-    'sphinx.ext.todo',          # support for todo items (.. todo::)
-    'sphinx.ext.coverage',      # collect doc coverage stats
-    'sphinx.ext.mathjax',       # render math via Javascript
-    'sphinx.ext.viewcode',      # add links to highlighted source code
-    'sphinx.ext.autosummary',   # Generate autodoc summaries
-    "sphinx.ext.napoleon",      # for numpy docstyle
-    'sphinxcontrib.bibtex'
+    "sphinx.ext.autodoc",  # include documentation from docstrings
+    "sphinx.ext.todo",  # support for todo items (.. todo::)
+    "sphinx.ext.coverage",  # collect doc coverage stats
+    "sphinx.ext.mathjax",  # render math via Javascript
+    "sphinx.ext.viewcode",  # add links to highlighted source code
+    "sphinx.ext.autosummary",  # Generate autodoc summaries
+    "sphinx.ext.napoleon",  # for numpy docstyle
+    "sphinxcontrib.bibtex"
     # 'sphinxcontrib.autoyaml'
     # 'sphinxcontrib.plantuml',
     # 'sphinxcontrib.mermaid',
 ]
 
-highlight_language = 'python3'
+highlight_language = "python3"
 
 # autoyaml_root
 # autoyaml_doc_delimeter
 # autoyaml_comment
 
 
-autodoc_member_order = 'bysource'
+autodoc_member_order = "bysource"
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+templates_path = ["_templates"]
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
 #
-source_suffix = ['.rst', '.md']
+source_suffix = [".rst", ".md"]
 # source_suffix = '.rst'
 
 # The master toctree document.
-master_doc = 'index'
+master_doc = "index"
 
 # General information about the project.
 project = metadata["name"]
-copyright = '2019, European Space Agency'
+copyright = "2019, European Space Agency"
 author = metadata["author"]
 
 # The version info for the project you're documenting, acts as replacement for
@@ -104,10 +106,10 @@ language = None
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This patterns also effect to html_static_path and html_extra_path
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'sphinx'
+pygments_style = "sphinx"
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = False
@@ -129,7 +131,7 @@ html_theme = html_theme  # 'alabaster'
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
+html_static_path = ["_static"]
 
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
@@ -137,9 +139,9 @@ html_static_path = ['_static']
 # This is required for the alabaster theme
 # refs: http://alabaster.readthedocs.io/en/latest/installation.html#sidebars
 html_sidebars = {
-    '**': [
-        'relations.html',  # needs 'show_related': True theme option to display
-        'searchbox.html',
+    "**": [
+        "relations.html",  # needs 'show_related': True theme option to display
+        "searchbox.html",
     ]
 }
 
@@ -156,15 +158,12 @@ latex_elements = {
     # The paper size ('letterpaper' or 'a4paper').
     #
     # 'papersize': 'letterpaper',
-
     # The font size ('10pt', '11pt' or '12pt').
     #
     # 'pointsize': '10pt',
-
     # Additional stuff for the LaTeX preamble.
     #
     # 'preamble': '',
-
     # Latex figure (float) alignment
     #
     # 'figure_align': 'htbp',
@@ -174,11 +173,13 @@ latex_elements = {
 # (source start file, target name, title,
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
-    (master_doc,
-     metadata["name"] + ".tex",
-     metadata["name"] + " Documentation",
-     metadata["author"],
-     'manual'),
+    (
+        master_doc,
+        metadata["name"] + ".tex",
+        metadata["name"] + " Documentation",
+        metadata["author"],
+        "manual",
+    ),
 ]
 
 
@@ -187,10 +188,7 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc,
-     metadata["name"],
-     metadata["name"] + " Documentation",
-     [author], 1)
+    (master_doc, metadata["name"], metadata["name"] + " Documentation", [author], 1)
 ]
 
 

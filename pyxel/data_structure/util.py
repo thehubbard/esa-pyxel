@@ -15,10 +15,12 @@ def check_energy(initial_energy: t.Union[int, float]) -> None:
     :return:
     """
     if not isinstance(initial_energy, int) and not isinstance(initial_energy, float):
-        raise ValueError('Given particle energy could not be read')
+        raise ValueError("Given particle energy could not be read")
 
 
-def check_position(detector: "Detector", initial_position: t.Tuple[float, float, float]) -> None:
+def check_position(
+    detector: "Detector", initial_position: t.Tuple[float, float, float]
+) -> None:
     """Check position of the particle if it is a numpy array and inside the detector.
 
     :param detector:
@@ -26,26 +28,28 @@ def check_position(detector: "Detector", initial_position: t.Tuple[float, float,
     :return:
     """
     if not isinstance(initial_position, np.ndarray):
-        raise ValueError('Position of particle is not a numpy array (int or float)')
+        raise ValueError("Position of particle is not a numpy array (int or float)")
 
     if not (0.0 <= initial_position[0] <= detector.geometry.vert_dimension):
-        raise ValueError('Vertical position of particle is outside the detector')
+        raise ValueError("Vertical position of particle is outside the detector")
 
     if not (0.0 <= initial_position[1] <= detector.geometry.horz_dimension):
-        raise ValueError('Horizontal position of particle is outside the detector')
+        raise ValueError("Horizontal position of particle is outside the detector")
 
     if not (-1 * detector.geometry.total_thickness <= initial_position[2] <= 0.0):
-        raise ValueError('Z position of particle is outside the detector')
+        raise ValueError("Z position of particle is outside the detector")
 
 
-def random_direction(v_abs: float = 1.0) -> np.ndarray:    # TODO check random angles and direction
+def random_direction(
+    v_abs: float = 1.0,
+) -> np.ndarray:  # TODO check random angles and direction
     """Generate random direction for a photon.
 
     :param v_abs:
     :return:
     """
     alpha = 2 * math.pi * np.random.random()
-    beta = 2. * math.pi * np.random.random()
+    beta = 2.0 * math.pi * np.random.random()
     v_z = v_abs * math.sin(alpha)
     v_ver = v_abs * math.cos(alpha) * math.cos(beta)
     v_hor = v_abs * math.cos(alpha) * math.sin(beta)
