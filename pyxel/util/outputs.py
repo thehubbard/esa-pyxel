@@ -338,7 +338,7 @@ class Outputs:
             plt_args = {"xlabel": "generation", "linestyle": "-", "sci_y": True}
             key = item[0]
             param_value = item[1]
-            param_name = key[key.rfind(".") + 1 :]
+            param_name = key[key.rfind(".") + 1 :]  # noqa: E203
             plt_args["ylabel"] = param_name
             if param_name == "fitness":
                 plt_args["title"] = "Champion fitness"
@@ -348,10 +348,10 @@ class Outputs:
                 continue
             else:
                 if key.rfind(".arguments") == -1:
-                    mdn = key[: key.rfind("." + param_name)]
+                    mdn = key[: key.rfind("." + param_name)]  # noqa: E203
                 else:
-                    mdn = key[: key.rfind(".arguments")]
-                model_name = mdn[mdn.rfind(".") + 1 :]
+                    mdn = key[: key.rfind(".arguments")]  # noqa: E203
+                model_name = mdn[mdn.rfind(".") + 1 :]  # noqa: E203
                 plt_args["title"] = title + model_name + " / " + param_name
                 plt_args["ylabel"] = param_name
 
@@ -361,7 +361,7 @@ class Outputs:
                 self.plot_graph(generations, column, args=plt_args)
             elif isinstance(param_value, np.ndarray):
                 b = len(param_value)
-                column = data[:, a : a + b]
+                column = data[:, a : a + b]  # noqa: E203
                 self.plot_graph(generations, column, args=plt_args)
                 plt.legend(["index " + str(i) for i in range(b)])
 
@@ -549,8 +549,15 @@ class Outputs:
             raise KeyError()
         x = plot_array[:, 0]
         y = plot_array[:, 1]
-        par_name = x_key[x_key[: x_key[: x_key.rfind(".")].rfind(".")].rfind(".") + 1 :]
-        res_name = y_key[y_key[: y_key[: y_key.rfind(".")].rfind(".")].rfind(".") + 1 :]
+
+        # TODO: Refactor this
+        par_name = x_key[
+            x_key[: x_key[: x_key.rfind(".")].rfind(".")].rfind(".") + 1 :  # noqa: E203
+        ]
+        res_name = y_key[
+            y_key[: y_key[: y_key.rfind(".")].rfind(".")].rfind(".") + 1 :  # noqa: E203
+        ]
+
         args = {"xlabel": par_name, "ylabel": res_name}
         if isinstance(x, np.ndarray):
             x = x.flatten()
@@ -651,12 +658,17 @@ def apply_run_number(path: Path) -> Path:
         dir_list = sorted(glob(path_str))
         p_0 = path_str.find("?")
         p_1 = path_str.rfind("?")
-        template = path_str[p_0 : p_1 + 1]
+
+        start_idx = p_0
+        end_idx = p_1 + 1
+        template = path_str[start_idx:end_idx]
+
         path_str = path_str.replace(template, "{:0%dd}" % len(template))
         last_num = 0
         if len(dir_list):
             path_last = dir_list[-1]
-            last_num = int(path_last[p_0 : p_1 + 1])
+
+            last_num = int(path_last[start_idx:end_idx])
         last_num += 1
         path_str = path_str.format(last_num)
     return type(path)(path_str)

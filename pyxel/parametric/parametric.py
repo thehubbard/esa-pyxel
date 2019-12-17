@@ -61,7 +61,7 @@ class ParametricAnalysis:
                 elif isinstance(step.values, list) and all(
                     x == "_" for x in step.values[:]
                 ):
-                    value = data_array[i : i + len(step.values)]
+                    value = data_array[i : i + len(step.values)]  # noqa: E203
                     i += len(value)
 
                 else:

@@ -114,9 +114,14 @@ def nghxrg(
                 if window_mode == "FULL":
                     detector.pixel.array += result
                 elif window_mode == "WINDOW":
+                    start_y_idx = window_position[1]
+                    end_y_idx = window_position[1] + window_size[1]
+
+                    start_x_idx = window_position[0]
+                    end_x_idx = window_position[0] + window_size[0]
+
                     detector.pixel.array[
-                        window_position[1] : window_position[1] + window_size[1],
-                        window_position[0] : window_position[0] + window_size[0],
+                        start_y_idx:end_y_idx, start_x_idx:end_x_idx,
                     ] += result
         except TypeError:
             pass
@@ -164,16 +169,16 @@ def display_noisepsd(
     for i in np.arange(nb_output):
         # If i odd, flatten data since its the good reading direction
         if i % 2 == 0:
-            output_data = data_corr[
-                :, int(i * nbcols_p_channel) : int((i + 1) * nbcols_p_channel)
-            ].flatten()
+            start_x_idx = int(i * nbcols_p_channel)
+            end_x_idx = int((i + 1) * nbcols_p_channel)
+
+            output_data = data_corr[:, start_x_idx:end_x_idx].flatten()
         # Else, flip it left/right and then flatten it
         else:
-            output_data = np.fliplr(
-                data_corr[
-                    :, int(i * nbcols_p_channel) : int((i + 1) * nbcols_p_channel)
-                ]
-            )
+            start_x_idx = int(i * nbcols_p_channel)
+            end_x_idx = int((i + 1) * nbcols_p_channel)
+
+            output_data = np.fliplr(data_corr[:, start_x_idx:end_x_idx])
             output_data.flatten()
         # output data without flipping
         # output_data = data_corr[:,int(i*(nbcols_p_channel)):
