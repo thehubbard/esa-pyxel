@@ -13,12 +13,14 @@ from pyxel.detectors import Detector
 
 # @validators.validate
 # @config.argument(name='image_file', label='', validate=check_path)
-def optical_psf(detector: Detector,
-                wavelength: float,
-                pixelscale: float,
-                fov_pixels: int,
-                optical_system: list,
-                fov_arcsec: t.Optional[float] = None) -> None:
+def optical_psf(
+    detector: Detector,
+    wavelength: float,
+    pixelscale: float,
+    fov_pixels: int,
+    optical_system: list,
+    fov_arcsec: t.Optional[float] = None,
+) -> None:
     """POPPY (Physical Optics Propagation in PYthon) model wrapper.
 
     It calculates the optical Point Spread Function of an optical system.
@@ -70,51 +72,65 @@ def optical_psf(detector: Detector,
         Field Of View on detector plane in arcsec.
     """
     logging.getLogger("poppy").setLevel(logging.WARNING)
-    logging.info('')
+    logging.info("")
 
-    if fov_arcsec:                      # TODO
+    if fov_arcsec:  # TODO
         raise NotImplementedError
 
     osys = op.OpticalSystem(npix=1000)  # default: 1024
 
     for item in optical_system:
-        if item['item'] == 'CircularAperture':
-            optical_item = op.CircularAperture(radius=item['radius'])
-        elif item['item'] == 'ThinLens':
-            optical_item = op.ThinLens(nwaves=item['nwaves'],
-                                       reference_wavelength=wavelength,
-                                       radius=item['radius'])
-        elif item['item'] == 'SquareAperture':
-            optical_item = op.SquareAperture(size=item['size'])
-        elif item['item'] == 'RectangularAperture':
-            optical_item = op.RectangleAperture(width=item['width'], height=item['height'])  # m
-        elif item['item'] == 'HexagonAperture':
-            optical_item = op.HexagonAperture(side=item['side'])
-        elif item['item'] == 'SecondaryObscuration':
-            optical_item = op.SecondaryObscuration(secondary_radius=item['secondary_radius'],
-                                                   n_supports=item['n_supports'],
-                                                   support_width=item['support_width'])      # cm
-        elif item['item'] == 'ZernikeWFE':
-            optical_item = op.ZernikeWFE(radius=item['radius'],
-                                         coefficients=item['coefficients'],         # list of floats
-                                         aperture_stop=item['aperture_stop'])       # bool
-        elif item['item'] == 'SineWaveWFE':
-            optical_item = op.SineWaveWFE(spatialfreq=item['spatialfreq'],      # 1/m
-                                          amplitude=item['amplitude'],          # um
-                                          rotation=item['rotation'])
+        if item["item"] == "CircularAperture":
+            optical_item = op.CircularAperture(radius=item["radius"])
+        elif item["item"] == "ThinLens":
+            optical_item = op.ThinLens(
+                nwaves=item["nwaves"],
+                reference_wavelength=wavelength,
+                radius=item["radius"],
+            )
+        elif item["item"] == "SquareAperture":
+            optical_item = op.SquareAperture(size=item["size"])
+        elif item["item"] == "RectangularAperture":
+            optical_item = op.RectangleAperture(
+                width=item["width"], height=item["height"]
+            )  # m
+        elif item["item"] == "HexagonAperture":
+            optical_item = op.HexagonAperture(side=item["side"])
+        elif item["item"] == "SecondaryObscuration":
+            optical_item = op.SecondaryObscuration(
+                secondary_radius=item["secondary_radius"],
+                n_supports=item["n_supports"],
+                support_width=item["support_width"],
+            )  # cm
+        elif item["item"] == "ZernikeWFE":
+            optical_item = op.ZernikeWFE(
+                radius=item["radius"],
+                coefficients=item["coefficients"],  # list of floats
+                aperture_stop=item["aperture_stop"],
+            )  # bool
+        elif item["item"] == "SineWaveWFE":
+            optical_item = op.SineWaveWFE(
+                spatialfreq=item["spatialfreq"],  # 1/m
+                amplitude=item["amplitude"],  # um
+                rotation=item["rotation"],
+            )
         else:
             raise NotImplementedError
         osys.add_pupil(optical_item)
 
-    osys.add_detector(pixelscale=pixelscale,
-                      # fov_arcsec=None,
-                      fov_pixels=fov_pixels)
+    osys.add_detector(
+        pixelscale=pixelscale,
+        # fov_arcsec=None,
+        fov_pixels=fov_pixels,
+    )
 
-    psf = osys.calc_psf(wavelength=wavelength,
-                        return_intermediates=True,
-                        # return_final=True,
-                        display_intermediates=True,
-                        normalize="last")                   # TODO NORMALIZATION!!!!
+    psf = osys.calc_psf(
+        wavelength=wavelength,
+        return_intermediates=True,
+        # return_final=True,
+        display_intermediates=True,
+        normalize="last",
+    )  # TODO NORMALIZATION!!!!
 
     # psf[0][0].data == psf[1][-1].intensity
 
@@ -131,10 +147,9 @@ def optical_psf(detector: Detector,
     roi = slice(fov_pixels, fov_pixels + a), slice(fov_pixels, fov_pixels + b)
     array[roi] = detector.photon.array
 
-    array = signal.convolve2d(array,
-                              psf[0][0].data,
-                              mode='same',
-                              boundary='fill', fillvalue=0)
+    array = signal.convolve2d(
+        array, psf[0][0].data, mode="same", boundary="fill", fillvalue=0
+    )
 
     detector.photon = Photon(array)
 
@@ -149,4 +164,4 @@ def optical_psf(detector: Detector,
     # conv_with_wavefront = signal.convolve2d(detector.photon.array, psf[1][-1].wavefront,
     #                                         mode='same', boundary='fill', fillvalue=0)
 
-    plt.close('all')       # TODO
+    plt.close("all")  # TODO

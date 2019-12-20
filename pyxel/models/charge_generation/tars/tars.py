@@ -22,18 +22,20 @@ from pyxel.models.charge_generation.tars.util import (  # , load_histogram_data
 
 # @validators.validate
 # @config.argument(name='', label='', units='', validate=)
-def run_tars(detector: Detector,
-             simulation_mode: t.Optional[str] = None,
-             running_mode: t.Optional[str] = None,
-             particle_type: t.Optional[str] = None,
-             initial_energy: t.Optional[t.Union[str, float]] = None,
-             particle_number: t.Optional[int] = None,
-             incident_angles: t.Optional[t.Tuple[str, str]] = None,
-             starting_position: t.Optional[t.Tuple[str, str, str]] = None,
-             # step_size_file: str = None,
-             # stopping_file: str = None,
-             spectrum_file: t.Optional[str] = None,
-             random_seed: t.Optional[int] = None) -> None:
+def run_tars(
+    detector: Detector,
+    simulation_mode: t.Optional[str] = None,
+    running_mode: t.Optional[str] = None,
+    particle_type: t.Optional[str] = None,
+    initial_energy: t.Optional[t.Union[str, float]] = None,
+    particle_number: t.Optional[int] = None,
+    incident_angles: t.Optional[t.Tuple[str, str]] = None,
+    starting_position: t.Optional[t.Tuple[str, str, str]] = None,
+    # step_size_file: str = None,
+    # stopping_file: str = None,
+    spectrum_file: t.Optional[str] = None,
+    random_seed: t.Optional[int] = None,
+) -> None:
     """Simulate charge deposition by cosmic rays.
 
     :param detector: Pyxel detector object
@@ -47,39 +49,46 @@ def run_tars(detector: Detector,
     :param spectrum_file: path to input spectrum
     :param random_seed: seed
     """
-    logging.info('')
+    logging.info("")
     if random_seed:
         np.random.seed(random_seed)
 
     if simulation_mode is None:
-        raise ValueError('TARS: Simulation mode is not defined')
+        raise ValueError("TARS: Simulation mode is not defined")
     if running_mode is None:
-        raise ValueError('TARS: Running mode is not defined')
+        raise ValueError("TARS: Running mode is not defined")
     if particle_type is None:
-        raise ValueError('TARS: Particle type is not defined')
+        raise ValueError("TARS: Particle type is not defined")
     if particle_number is None:
-        raise ValueError('TARS: Particle number is not defined')
+        raise ValueError("TARS: Particle number is not defined")
     if spectrum_file is None:
-        raise ValueError('TARS: Spectrum is not defined')
+        raise ValueError("TARS: Spectrum is not defined")
 
     if initial_energy is None:
-        initial_energy = 'random'       # TODO
+        initial_energy = "random"  # TODO
 
     if incident_angles is None:
-        incident_angle_alpha, incident_angle_beta = ('random', 'random')
+        incident_angle_alpha, incident_angle_beta = ("random", "random")
     else:
         incident_angle_alpha, incident_angle_beta = incident_angles
 
     if starting_position is None:
-        start_pos_ver, start_pos_hor, start_pos_z = ('random', 'random', 'random')
+        start_pos_ver, start_pos_hor, start_pos_z = ("random", "random", "random")
     else:
         start_pos_ver, start_pos_hor, start_pos_z = starting_position
 
-    tars = TARS(detector=detector, simulation_mode=simulation_mode,
-                particle_type=particle_type, initial_energy=initial_energy,
-                particle_number=particle_number,
-                incident_angle_alpha=incident_angle_alpha, incident_angle_beta=incident_angle_beta,
-                start_pos_ver=start_pos_ver, start_pos_hor=start_pos_hor, start_pos_z=start_pos_z)
+    tars = TARS(
+        detector=detector,
+        simulation_mode=simulation_mode,
+        particle_type=particle_type,
+        initial_energy=initial_energy,
+        particle_number=particle_number,
+        incident_angle_alpha=incident_angle_alpha,
+        incident_angle_beta=incident_angle_beta,
+        start_pos_ver=start_pos_ver,
+        start_pos_hor=start_pos_hor,
+        start_pos_z=start_pos_z,
+    )
 
     # tars.set_simulation_mode(simulation_mode)
     # tars.set_particle_type(particle_type)                # MeV
@@ -89,18 +98,18 @@ def run_tars(detector: Detector,
     # tars.set_starting_position(starting_position)        # um
     tars.set_particle_spectrum(Path(spectrum_file))
 
-    if running_mode == 'stopping':
+    if running_mode == "stopping":
         # tars.run_mod()          ########
         raise NotImplementedError
         # tars.set_stopping_power(stopping_file)
         # tars.run()
-    elif running_mode == 'stepsize':
+    elif running_mode == "stepsize":
         tars.set_stepsize()
         tars.run()
-    elif running_mode == 'geant4':
+    elif running_mode == "geant4":
         tars.set_geant4()
         tars.run()
-    elif running_mode == 'plotting':
+    elif running_mode == "plotting":
 
         plot_obj = PlottingTARS(tars, save_plots=True, draw_plots=True)
 
@@ -219,15 +228,19 @@ def run_tars(detector: Detector,
 class TARS:
     """TBW."""
 
-    def __init__(self,
-                 detector: Detector,
-                 simulation_mode: str,
-                 particle_type: str,
-                 initial_energy: t.Union[str, float],
-                 particle_number: int,
-                 incident_angle_alpha: str, incident_angle_beta: str,
-                 start_pos_ver: str, start_pos_hor: str, start_pos_z: str,
-                 ):
+    def __init__(
+        self,
+        detector: Detector,
+        simulation_mode: str,
+        particle_type: str,
+        initial_energy: t.Union[str, float],
+        particle_number: int,
+        incident_angle_alpha: str,
+        incident_angle_beta: str,
+        start_pos_ver: str,
+        start_pos_hor: str,
+        start_pos_z: str,
+    ):
         """TBW.
 
         :param detector:
@@ -312,7 +325,9 @@ class TARS:
 
         spectrum_function = interpolate_data(spectrum)
 
-        lin_energy_range = np.arange(np.min(spectrum[:, 0]), np.max(spectrum[:, 0]), 0.01)
+        lin_energy_range = np.arange(
+            np.min(spectrum[:, 0]), np.max(spectrum[:, 0]), 0.01
+        )
         self.sim_obj.flux_dist = spectrum_function(lin_energy_range)
 
         cum_sum = np.cumsum(self.sim_obj.flux_dist)
@@ -324,35 +339,39 @@ class TARS:
 
         :param stopping_file:
         """
-        self.sim_obj.energy_loss_data = 'stopping'
+        self.sim_obj.energy_loss_data = "stopping"
         self.sim_obj.stopping_power = read_data(stopping_file)
 
     def set_stepsize(self) -> None:
         """TBW."""
-        self.sim_obj.energy_loss_data = 'stepsize'
+        self.sim_obj.energy_loss_data = "stepsize"
         self.create_data_library()
 
     def set_geant4(self) -> None:
         """TBW."""
-        self.sim_obj.energy_loss_data = 'geant4'
+        self.sim_obj.energy_loss_data = "geant4"
 
     def create_data_library(self) -> None:
         """TBW."""
-        self.sim_obj.data_library = pd.DataFrame(columns=['type', 'energy', 'thickness', 'path'])
+        self.sim_obj.data_library = pd.DataFrame(
+            columns=["type", "energy", "thickness", "path"]
+        )
 
         # mat_list = ['Si']
 
-        type_list = ['proton']                  # , 'ion', 'alpha', 'beta', 'electron', 'gamma', 'x-ray']
-        energy_list = [100.]                    # MeV
-        thick_list = [40., 50., 60., 70., 100.]       # um
+        type_list = [
+            "proton"
+        ]  # , 'ion', 'alpha', 'beta', 'electron', 'gamma', 'x-ray']
+        energy_list = [100.0]  # MeV
+        thick_list = [40.0, 50.0, 60.0, 70.0, 100.0]  # um
 
-        path = Path(__file__).parent.joinpath('data', 'inputs')
+        path = Path(__file__).parent.joinpath("data", "inputs")
         filename_list = [
-            'stepsize_proton_100MeV_40um_Si_10k.ascii',
-            'stepsize_proton_100MeV_50um_Si_10k.ascii',
-            'stepsize_proton_100MeV_60um_Si_10k.ascii',
-            'stepsize_proton_100MeV_70um_Si_10k.ascii',
-            'stepsize_proton_100MeV_100um_Si_10k.ascii'
+            "stepsize_proton_100MeV_40um_Si_10k.ascii",
+            "stepsize_proton_100MeV_50um_Si_10k.ascii",
+            "stepsize_proton_100MeV_60um_Si_10k.ascii",
+            "stepsize_proton_100MeV_70um_Si_10k.ascii",
+            "stepsize_proton_100MeV_100um_Si_10k.ascii",
         ]
 
         i = 0
@@ -360,67 +379,109 @@ class TARS:
             for en in energy_list:
                 for th in thick_list:
                     data_dict = {
-                        'type': pt,
-                        'energy': en,
-                        'thickness': th,
-                        'path': str(Path(path, filename_list[i])),
-                        }
+                        "type": pt,
+                        "energy": en,
+                        "thickness": th,
+                        "path": str(Path(path, filename_list[i])),
+                    }
                     new_df = pd.DataFrame(data_dict, index=[0])
-                    self.sim_obj.data_library = pd.concat([self.sim_obj.data_library, new_df], ignore_index=True)
+                    self.sim_obj.data_library = pd.concat(
+                        [self.sim_obj.data_library, new_df], ignore_index=True
+                    )
                     i += 1
 
     def run(self) -> None:
         """TBW."""
         # print("TARS - simulation processing...\n")
 
-        self.sim_obj.parameters(sim_mode=self.simulation_mode,
-                                part_type=self.part_type,
-                                init_energy=self.init_energy,
-                                pos_ver=self.position_ver, pos_hor=self.position_hor, pos_z=self.position_z,
-                                alpha=self.angle_alpha, beta=self.angle_beta)
-        out_path = 'data/'
+        self.sim_obj.parameters(
+            sim_mode=self.simulation_mode,
+            part_type=self.part_type,
+            init_energy=self.init_energy,
+            pos_ver=self.position_ver,
+            pos_hor=self.position_hor,
+            pos_z=self.position_z,
+            alpha=self.angle_alpha,
+            beta=self.angle_beta,
+        )
+        out_path = "data/"
         for k in tqdm(range(0, self.particle_number)):
             # for k in range(0, self.particle_number):
             err = None
-            if self.sim_obj.energy_loss_data == 'stepsize':     # TODO
+            if self.sim_obj.energy_loss_data == "stepsize":  # TODO
                 err = self.sim_obj.event_generation()
-            elif self.sim_obj.energy_loss_data == 'geant4':
+            elif self.sim_obj.energy_loss_data == "geant4":
                 err = self.sim_obj.event_generation_geant4()
             if k % 10 == 0:
-                np.save(out_path + 'tars-e_num_lst_per_event.npy', self.sim_obj.e_num_lst_per_event)
-                np.save(out_path + 'tars-sec_lst_per_event.npy', self.sim_obj.sec_lst_per_event)
-                np.save(out_path + 'tars-ter_lst_per_event.npy', self.sim_obj.ter_lst_per_event)
-                np.save(out_path + 'tars-track_length_lst_per_event.npy', self.sim_obj.track_length_lst_per_event)
-                np.save(out_path + 'tars-p_energy_lst_per_event.npy', self.sim_obj.p_energy_lst_per_event)
-                np.save(out_path + 'tars-alpha_lst_per_event.npy', self.sim_obj.alpha_lst_per_event)
-                np.save(out_path + 'tars-beta_lst_per_event.npy', self.sim_obj.beta_lst_per_event)
+                np.save(
+                    out_path + "tars-e_num_lst_per_event.npy",
+                    self.sim_obj.e_num_lst_per_event,
+                )
+                np.save(
+                    out_path + "tars-sec_lst_per_event.npy",
+                    self.sim_obj.sec_lst_per_event,
+                )
+                np.save(
+                    out_path + "tars-ter_lst_per_event.npy",
+                    self.sim_obj.ter_lst_per_event,
+                )
+                np.save(
+                    out_path + "tars-track_length_lst_per_event.npy",
+                    self.sim_obj.track_length_lst_per_event,
+                )
+                np.save(
+                    out_path + "tars-p_energy_lst_per_event.npy",
+                    self.sim_obj.p_energy_lst_per_event,
+                )
+                np.save(
+                    out_path + "tars-alpha_lst_per_event.npy",
+                    self.sim_obj.alpha_lst_per_event,
+                )
+                np.save(
+                    out_path + "tars-beta_lst_per_event.npy",
+                    self.sim_obj.beta_lst_per_event,
+                )
 
-                np.save(out_path + 'tars-e_num_lst_per_step.npy', self.sim_obj.e_num_lst_per_step)
-                np.save(out_path + 'tars-e_pos0_lst.npy', self.sim_obj.e_pos0_lst)
-                np.save(out_path + 'tars-e_pos1_lst.npy', self.sim_obj.e_pos1_lst)
-                np.save(out_path + 'tars-e_pos2_lst.npy', self.sim_obj.e_pos2_lst)
+                np.save(
+                    out_path + "tars-e_num_lst_per_step.npy",
+                    self.sim_obj.e_num_lst_per_step,
+                )
+                np.save(out_path + "tars-e_pos0_lst.npy", self.sim_obj.e_pos0_lst)
+                np.save(out_path + "tars-e_pos1_lst.npy", self.sim_obj.e_pos1_lst)
+                np.save(out_path + "tars-e_pos2_lst.npy", self.sim_obj.e_pos2_lst)
 
-                np.save(out_path + 'tars-all_e_from_eloss.npy', self.sim_obj.electron_number_from_eloss)
-                np.save(out_path + 'tars-sec_e_from_eloss.npy', self.sim_obj.secondaries_from_eloss)
-                np.save(out_path + 'tars-ter_e_from_eloss.npy', self.sim_obj.tertiaries_from_eloss)
+                np.save(
+                    out_path + "tars-all_e_from_eloss.npy",
+                    self.sim_obj.electron_number_from_eloss,
+                )
+                np.save(
+                    out_path + "tars-sec_e_from_eloss.npy",
+                    self.sim_obj.secondaries_from_eloss,
+                )
+                np.save(
+                    out_path + "tars-ter_e_from_eloss.npy",
+                    self.sim_obj.tertiaries_from_eloss,
+                )
             if err:
                 k -= 1
 
         size = len(self.sim_obj.e_num_lst_per_step)
 
-        self.sim_obj.e_vel0_lst = [0.] * size
-        self.sim_obj.e_vel1_lst = [0.] * size
-        self.sim_obj.e_vel2_lst = [0.] * size
+        self.sim_obj.e_vel0_lst = [0.0] * size
+        self.sim_obj.e_vel1_lst = [0.0] * size
+        self.sim_obj.e_vel2_lst = [0.0] * size
 
-        self.charge_obj.add_charge('e',
-                                   self.sim_obj.e_num_lst_per_step,
-                                   self.sim_obj.e_energy_lst,
-                                   self.sim_obj.e_pos0_lst,
-                                   self.sim_obj.e_pos1_lst,
-                                   self.sim_obj.e_pos2_lst,
-                                   self.sim_obj.e_vel0_lst,
-                                   self.sim_obj.e_vel1_lst,
-                                   self.sim_obj.e_vel2_lst)
+        self.charge_obj.add_charge(
+            "e",
+            self.sim_obj.e_num_lst_per_step,
+            self.sim_obj.e_energy_lst,
+            self.sim_obj.e_pos0_lst,
+            self.sim_obj.e_pos1_lst,
+            self.sim_obj.e_pos2_lst,
+            self.sim_obj.e_vel0_lst,
+            self.sim_obj.e_vel1_lst,
+            self.sim_obj.e_vel2_lst,
+        )
 
     def run_mod(self) -> None:
         """TBW."""
@@ -428,24 +489,26 @@ class TARS:
         print("TARS - adding previous cosmic ray signals to image ...\n")
 
         # TODO: Use `pathlib.Path`
-        out_path = 'data/'
-        e_num_lst_per_step = np.load(out_path + 'tars-e_num_lst_per_step.npy')
-        e_pos0_lst = np.load(out_path + 'tars-e_pos0_lst.npy')
-        e_pos1_lst = np.load(out_path + 'tars-e_pos1_lst.npy')
-        e_pos2_lst = np.load(out_path + 'tars-e_pos2_lst.npy')
+        out_path = "data/"
+        e_num_lst_per_step = np.load(out_path + "tars-e_num_lst_per_step.npy")
+        e_pos0_lst = np.load(out_path + "tars-e_pos0_lst.npy")
+        e_pos1_lst = np.load(out_path + "tars-e_pos1_lst.npy")
+        e_pos2_lst = np.load(out_path + "tars-e_pos2_lst.npy")
 
         size = len(e_num_lst_per_step)
-        e_energy_lst = [0.] * size
-        e_vel0_lst = [0.] * size
-        e_vel1_lst = [0.] * size
-        e_vel2_lst = [0.] * size
+        e_energy_lst = [0.0] * size
+        e_vel0_lst = [0.0] * size
+        e_vel1_lst = [0.0] * size
+        e_vel2_lst = [0.0] * size
 
-        self.charge_obj.add_charge('e',
-                                   e_num_lst_per_step,
-                                   e_energy_lst,
-                                   e_pos0_lst,
-                                   e_pos1_lst,
-                                   e_pos2_lst,
-                                   e_vel0_lst,
-                                   e_vel1_lst,
-                                   e_vel2_lst)
+        self.charge_obj.add_charge(
+            "e",
+            e_num_lst_per_step,
+            e_energy_lst,
+            e_pos0_lst,
+            e_pos1_lst,
+            e_pos2_lst,
+            e_vel0_lst,
+            e_vel1_lst,
+            e_vel2_lst,
+        )

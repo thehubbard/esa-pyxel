@@ -44,14 +44,12 @@ class Algorithm:
         type: AlgorithmType = AlgorithmType.Sade,
         generations: int = 1,
         population_size: int = 1,
-
         # SADE #####
         variant: int = 2,
         variant_adptv: int = 1,
         ftol: float = 1e-6,
         xtol: float = 1e-6,
         memory: bool = False,
-
         # SGA #####
         cr: float = 0.9,
         eta_c: float = 1.0,
@@ -61,7 +59,6 @@ class Algorithm:
         crossover: str = "exponential",
         mutation: str = "polynomial",
         selection: str = "tournament",
-
         # NLOPT #####
         nlopt_solver: str = "neldermead",
         maxtime: int = 0,
@@ -506,11 +503,17 @@ class Calibration:
 
         self._output_dir = output_dir
         self._fitting = fitting
-        self._calibration_mode = CalibrationMode(calibration_mode)  # type: CalibrationMode
+        self._calibration_mode = CalibrationMode(
+            calibration_mode
+        )  # type: CalibrationMode
         self._result_type = ResultType(result_type)  # type: ResultType
         self._result_fit_range = result_fit_range if result_fit_range else []
-        self._result_input_arguments = result_input_arguments if result_input_arguments else []
-        self._target_data_path = to_path_list(target_data_path) if target_data_path else []  # type: t.List[Path]
+        self._result_input_arguments = (
+            result_input_arguments if result_input_arguments else []
+        )
+        self._target_data_path = (
+            to_path_list(target_data_path) if target_data_path else []
+        )  # type: t.List[Path]
         self._target_fit_range = target_fit_range if target_fit_range else []
         self._fitness_function = fitness_function
         self._algorithm = algorithm

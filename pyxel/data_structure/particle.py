@@ -14,7 +14,7 @@ class Particle:
     def __init__(self) -> None:
         """TBW."""
         # TODO: This should be a class variable
-        self.EMPTY_FRAME = pd.DataFrame()   # type: pd.DataFrame
+        self.EMPTY_FRAME = pd.DataFrame()  # type: pd.DataFrame
         self.frame = pd.DataFrame()  # type: pd.DataFrame
 
     def get_values(self, quantity: str, id_list: t.Optional[list] = None) -> np.ndarray:
@@ -25,12 +25,14 @@ class Particle:
         :return: array
         """
         if id_list:
-            array = self.frame.query('index in %s' % id_list)[quantity].values
+            array = self.frame.query("index in %s" % id_list)[quantity].values
         else:
             array = self.frame[quantity].values
         return array
 
-    def set_values(self, quantity: str, new_value_list: list, id_list: t.Optional[list] = None) -> None:
+    def set_values(
+        self, quantity: str, new_value_list: list, id_list: t.Optional[list] = None
+    ) -> None:
         """Update quantity values of particles defined with id_list. By default it updates all.
 
         :param quantity: name of quantity: ``number``, ``energy``, ``position_ver``, ``velocity_hor``, etc.
@@ -47,6 +49,6 @@ class Particle:
         """
         if id_list:
             # TODO: Check carefully if 'inplace' is needed. This could break lot of things.
-            self.frame.query('index not in %s' % id_list, inplace=True)
+            self.frame.query("index not in %s" % id_list, inplace=True)
         else:
             self.frame = self.EMPTY_FRAME.copy()

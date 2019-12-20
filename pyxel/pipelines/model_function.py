@@ -12,11 +12,13 @@ from pyxel.evaluator import evaluate_reference
 class ModelFunction:
     """TBW."""
 
-    def __init__(self,
-                 func: t.Union[t.Callable, str],  # TODO: Replace by 'func: t.Callable'
-                 name: t.Optional[str] = None,
-                 arguments: t.Optional[dict] = None,
-                 enabled: bool = True):
+    def __init__(
+        self,
+        func: t.Union[t.Callable, str],  # TODO: Replace by 'func: t.Callable'
+        name: t.Optional[str] = None,
+        arguments: t.Optional[dict] = None,
+        enabled: bool = True,
+    ):
         """TBW.
 
         :param name:
@@ -24,7 +26,7 @@ class ModelFunction:
         :param arguments:
         """
         if callable(func):
-            func = func.__module__ + '.' + func.__name__
+            func = func.__module__ + "." + func.__name__
 
         if arguments is None:
             arguments = {}
@@ -36,16 +38,18 @@ class ModelFunction:
 
     def __repr__(self) -> str:
         """TBW."""
-        return 'ModelFunction(%(name)r, %(func)r, %(arguments)r, %(enabled)r)' % vars(self)
+        return "ModelFunction(%(name)r, %(func)r, %(arguments)r, %(enabled)r)" % vars(
+            self
+        )
 
     # TODO: Is this method needed ?
     def __getstate__(self) -> dict:
         """TBW."""
         return {
-            'name': self.name,
-            'func': self.func,
-            'enabled': self.enabled,
-            'arguments': self.arguments
+            "name": self.name,
+            "func": self.func,
+            "enabled": self.enabled,
+            "arguments": self.arguments,
         }
 
     # TODO: Replace this by __call__ ?

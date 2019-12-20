@@ -4,23 +4,27 @@ import pytest
 from pyxel.detectors.environment import Environment
 
 
-@pytest.mark.parametrize("list_in, list_out",
-                         [
-                             # (None, None, None, None, None, None),
-                             # (1, None, None, 1.0, None, None),
-                             # (None, 2, None, None, 2.0, None),
-                             # (None, None, 3, None, None, 3.0),
-                             ([1, 2, 3], [1.0, 2.0, 3.0]),
-                             ([4.0, 5.0, 6.0], [4.0, 5.0, 6.0]),
-                             ([7, 0, 0], [7.0, 0.0, 0.0])
-                         ])
+@pytest.mark.parametrize(
+    "list_in, list_out",
+    [
+        # (None, None, None, None, None, None),
+        # (1, None, None, 1.0, None, None),
+        # (None, 2, None, None, 2.0, None),
+        # (None, None, 3, None, None, 3.0),
+        ([1, 2, 3], [1.0, 2.0, 3.0]),
+        ([4.0, 5.0, 6.0], [4.0, 5.0, 6.0]),
+        ([7, 0, 0], [7.0, 0.0, 0.0]),
+    ],
+)
 def test_init(list_in, list_out):
     """Test Environment.__init__ with valid entries."""
 
     # Create the object
-    obj = Environment(temperature=list_in[0],
-                      total_ionising_dose=list_in[1],
-                      total_non_ionising_dose=list_in[2])
+    obj = Environment(
+        temperature=list_in[0],
+        total_ionising_dose=list_in[1],
+        total_non_ionising_dose=list_in[2],
+    )
 
     # Test getters
     assert obj.temperature == list_out[0]

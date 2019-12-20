@@ -12,9 +12,10 @@ from pyxel.detectors.detector import Detector
 # @validators.validate
 # @config.argument(name='', label='', units='', validate=)
 
-def output_node_noise(detector: Detector,
-                      std_deviation: float,
-                      random_seed: t.Optional[int] = None) -> None:
+
+def output_node_noise(
+    detector: Detector, std_deviation: float, random_seed: t.Optional[int] = None
+) -> None:
     """Adding noise to signal array of detector output node using normal random distribution.
 
     detector Signal unit: Volt
@@ -23,11 +24,11 @@ def output_node_noise(detector: Detector,
     :param std_deviation: standard deviation
     :param random_seed: seed
     """
-    logging.info('')
+    logging.info("")
     if random_seed:
         np.random.seed(random_seed)
 
-    signal_mean_array = detector.signal.array.astype('float64')
+    signal_mean_array = detector.signal.array.astype("float64")
     sigma_array = std_deviation * np.ones(signal_mean_array.shape)
 
     signal = np.random.normal(loc=signal_mean_array, scale=sigma_array)

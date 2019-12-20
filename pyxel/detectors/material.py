@@ -93,15 +93,15 @@ class Material:
         # TODO: The following parameters could be extracted into a new dedicated class
         self._material = material  # TODO: create func for compound materials
         self._material_density = (
-            material_density
-        )  # TODO: set automatically depending on the material
+            material_density  # TODO: set automatically depending on the material
+        )
         self._ionization_energy = (
-            ionization_energy
-        )  # TODO: set automatically depending on the material
+            ionization_energy  # TODO: set automatically depending on the material
+        )
         self._band_gap = band_gap  # TODO: set automatically depending on the material
         self._e_effective_mass = (
-            e_effective_mass
-        )  # TODO: set automatically depending on the material
+            e_effective_mass  # TODO: set automatically depending on the material
+        )
 
     @property
     def trapped_charge(self) -> t.Optional[np.ndarray]:

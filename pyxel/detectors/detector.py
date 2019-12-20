@@ -29,18 +29,16 @@ from pyxel.detectors.material import Material
 class Detector:
     """The detector class."""
 
-    def __init__(self,
-                 material: Material,
-                 environment: Environment):
+    def __init__(self, material: Material, environment: Environment):
         """TBW.
 
         :param material:
         :param environment:
         """
-        self.material = material                    # type: Material
-        self.environment = environment              # type: Environment
+        self.material = material  # type: Material
+        self.environment = environment  # type: Environment
 
-        self.header = collections.OrderedDict()     # type: t.Dict[str, object]
+        self.header = collections.OrderedDict()  # type: t.Dict[str, object]
 
         self._photon = None  # type: t.Optional[Photon]
         self._charge = None  # type: t.Optional[Charge]
@@ -49,16 +47,16 @@ class Detector:
         self._image = None  # type: t.Optional[Image]
 
         self.input_image = None
-        self._output_dir = None             # type: t.Optional[Path]
+        self._output_dir = None  # type: t.Optional[Path]
 
-        self.start_time = 0.                # type: float
-        self.end_time = 0.                  # type: float
-        self.steps = 0                      # type: int
-        self.time_step = 0.                 # type: float
-        self._time = 0.                     # type: float
-        self._dynamic = False               # type: bool
-        self._non_destructive = False       # type: bool
-        self.read_out = True                # type: bool
+        self.start_time = 0.0  # type: float
+        self.end_time = 0.0  # type: float
+        self.steps = 0  # type: int
+        self.time_step = 0.0  # type: float
+        self._time = 0.0  # type: float
+        self._dynamic = False  # type: bool
+        self._non_destructive = False  # type: bool
+        self.read_out = True  # type: bool
         self._all_time_steps_it = iter([])  # type: t.Iterator[float]
 
     @property
@@ -75,8 +73,10 @@ class Detector:
     def photon(self) -> Photon:
         """TBW."""
         if not self._photon:
-            raise RuntimeError("Photon array is not initialized ! "
-                               "Please use a 'Photon Generation' model")
+            raise RuntimeError(
+                "Photon array is not initialized ! "
+                "Please use a 'Photon Generation' model"
+            )
         return self._photon
 
     @photon.setter
@@ -137,7 +137,9 @@ class Detector:
 
         return self._output_dir
 
-    def set_dynamic(self, time_step: float, steps: int, ndreadout: bool = False) -> None:
+    def set_dynamic(
+        self, time_step: float, steps: int, ndreadout: bool = False
+    ) -> None:
         """Switch on dynamic (time dependent) mode."""
         self._dynamic = True
         self.time_step = time_step
@@ -145,7 +147,10 @@ class Detector:
         self._non_destructive = ndreadout
         self.end_time = self.time_step * self.steps
 
-        all_time_steps = np.round(np.linspace(self.time_step, self.end_time, self.steps, endpoint=True), decimals=10)
+        all_time_steps = np.round(
+            np.linspace(self.time_step, self.end_time, self.steps, endpoint=True),
+            decimals=10,
+        )
         self._all_time_steps_it = map(float, all_time_steps)
 
     @property
@@ -171,10 +176,15 @@ class Detector:
         :return:
         """
         k_boltzmann = 1.38064852e-23  # J/K
-        return sqrt(3 * k_boltzmann * self.environment.temperature / self.material.e_effective_mass)
+        return sqrt(
+            3
+            * k_boltzmann
+            * self.environment.temperature
+            / self.material.e_effective_mass
+        )
 
     @property
-    def time(self) -> float:     # TODO
+    def time(self) -> float:  # TODO
         """TBW."""
         return self._time
 

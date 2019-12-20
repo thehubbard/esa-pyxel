@@ -2,13 +2,18 @@
 import logging
 import typing as t
 
-__all__ = ['get_obj_att', 'get_obj_by_type', 'get_value',
-           'get_state_ids', 'copy_processor', 'copy_state', 'ConfigObjects']
+__all__ = [
+    "get_obj_att",
+    "get_obj_by_type",
+    "get_value",
+    "get_state_ids",
+    "copy_processor",
+    "copy_state",
+    "ConfigObjects",
+]
 
 
-def get_obj_by_type(obj: t.Any,
-                    key: str,
-                    obj_type: t.Optional[t.Type] = None) -> t.Any:
+def get_obj_by_type(obj: t.Any, key: str, obj_type: t.Optional[t.Type] = None) -> t.Any:
     """Get the object associated with the class type following the key chain.
 
     :param obj:
@@ -22,9 +27,9 @@ def get_obj_by_type(obj: t.Any,
             return obj
 
 
-def get_obj_att(obj: t.Any,
-                key: str,
-                obj_type: t.Optional[t.Type] = None) -> t.Tuple[t.Any, str]:
+def get_obj_att(
+    obj: t.Any, key: str, obj_type: t.Optional[t.Type] = None
+) -> t.Tuple[t.Any, str]:
     """Get the object associated with the key.
 
     Example::
@@ -41,7 +46,7 @@ def get_obj_att(obj: t.Any,
     :param obj_type:
     :return: the object and attribute name tuple
     """
-    obj_props = key.split('.')
+    obj_props = key.split(".")
     att = obj_props[-1]
     for part in obj_props[:-1]:
         try:
@@ -130,15 +135,17 @@ def get_state(obj: t.Any) -> t.Dict[str, t.Any]:
         for key, value in obj.items():
             result[key] = value.__getstate__()
 
-    elif hasattr(obj, '__getstate__'):
+    elif hasattr(obj, "__getstate__"):
         result = obj.__getstate__()
 
     return result
 
 
-def get_state_ids(obj: t.Any,
-                  parent_key_list: t.Optional[t.List[str]] = None,
-                  result: t.Optional[t.Dict[str, t.Any]] = None) -> t.Any:
+def get_state_ids(
+    obj: t.Any,
+    parent_key_list: t.Optional[t.List[str]] = None,
+    result: t.Optional[t.Dict[str, t.Any]] = None,
+) -> t.Any:
     """Retrieve a flat dictionary of the object attribute hierarchy.
 
     The dot-format is used as the key representation.
@@ -150,6 +157,7 @@ def get_state_ids(obj: t.Any,
     """
     if result is None:
         from collections import OrderedDict
+
         result = OrderedDict()
 
     if parent_key_list is None:
@@ -158,7 +166,7 @@ def get_state_ids(obj: t.Any,
     if isinstance(obj, dict):
         for key, value in obj.items():
             if isinstance(value, (str, int, float)):
-                key = '.'.join(parent_key_list) + '.' + key
+                key = ".".join(parent_key_list) + "." + key
                 result[key] = value
             else:
                 list(parent_key_list) + [key]
@@ -167,7 +175,7 @@ def get_state_ids(obj: t.Any,
     elif isinstance(obj, list):
         is_primitive = all([isinstance(value, (str, int, float)) for value in obj])
         if is_primitive:
-            key = '.'.join(parent_key_list)
+            key = ".".join(parent_key_list)
             result[key] = obj
         else:
             for i, value in enumerate(obj):
@@ -212,7 +220,9 @@ def copy_state(obj: t.Any) -> t.Dict[str, t.Any]:
         obj_att = getattr(obj, key)
         if obj_att is None:
             cpy_obj = None
-        elif hasattr(obj_att, 'copy'):  # TODO: PYXEL specific: this should be replaced with __copy__
+        elif hasattr(
+            obj_att, "copy"
+        ):  # TODO: PYXEL specific: this should be replaced with __copy__
             cpy_obj = obj_att.copy()
         else:
             cpy_obj = type(obj_att)(obj_att)
@@ -221,14 +231,16 @@ def copy_state(obj: t.Any) -> t.Dict[str, t.Any]:
     return kwargs
 
 
-def copy_processor(obj: t.Any) -> t.Any:  # TODO: PYXEL specific: to be renamed to copy_object
+def copy_processor(
+    obj: t.Any,
+) -> t.Any:  # TODO: PYXEL specific: to be renamed to copy_object
     """Create a deep copy of the object.
 
     :param obj:
     :return:
     """
     cls = type(obj)
-    if hasattr(obj, '__getstate__'):
+    if hasattr(obj, "__getstate__"):
         cpy_kwargs = {}
         for key, value in obj.__getstate__().items():
             cpy_kwargs[key] = copy_processor(value)
@@ -266,36 +278,36 @@ class ConfigObjects:
     def get(self, key: str) -> t.Any:
         """Object-model getter."""
         obj, att = get_obj_att(self, key)
-        if not hasattr(obj, '_' + att):
-            raise ValueError('Only properties may be get. att: %r' % att)
+        if not hasattr(obj, "_" + att):
+            raise ValueError("Only properties may be get. att: %r" % att)
 
         if self.enabled:
             name = att
         else:
-            name = '_' + att
+            name = "_" + att
 
         value = None
         try:
             value = getattr(obj, name)
         finally:
-            self.log.info('key: %s, name: %s, value: %r', key, name, value)
+            self.log.info("key: %s, name: %s, value: %r", key, name, value)
         return value
 
     def set(self, key: str, value: t.Any) -> None:
         """Object-model setter."""
         obj, att = get_obj_att(self, key)
-        if not hasattr(obj, '_' + att):
-            raise ValueError('Only properties may be set. att: %r' % att)
+        if not hasattr(obj, "_" + att):
+            raise ValueError("Only properties may be set. att: %r" % att)
 
         if self.enabled:
             name = att
         else:
-            name = '_' + att
+            name = "_" + att
 
         try:
             setattr(obj, name, value)
         finally:
-            self.log.info('key: %s, name: %s, value: %r', key, name, value)
+            self.log.info("key: %s, name: %s, value: %r", key, name, value)
 
     # def wait(self, key):
     #     """Object-model wait until operation is finished."""
@@ -357,4 +369,6 @@ class ConfigObjects:
         for config in self._configs:
             if config.__class__.__name__ == item:
                 return config
-        raise AttributeError('AttributeError: unknown %r attribute in ConfigObject' % item)
+        raise AttributeError(
+            "AttributeError: unknown %r attribute in ConfigObject" % item
+        )

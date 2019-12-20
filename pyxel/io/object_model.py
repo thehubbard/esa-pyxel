@@ -16,7 +16,7 @@ except ImportError:
     from yaml import SafeLoader  # type: ignore   # noqa
 
 
-__all__ = ['load', 'ObjectModelLoader']
+__all__ = ["load", "ObjectModelLoader"]
 
 
 class ObjectModelLoader(yaml.SafeLoader):
@@ -32,10 +32,7 @@ class ObjectModelLoader(yaml.SafeLoader):
     class_paths = []  # type: t.List[t.List[str]]
 
     @classmethod
-    def add_class(cls,
-                  klass: type,
-                  paths: list,
-                  is_list: bool = False) -> None:
+    def add_class(cls, klass: type, paths: list, is_list: bool = False) -> None:
         """TBW.
 
         :param klass:
@@ -57,11 +54,12 @@ class ObjectModelLoader(yaml.SafeLoader):
 
         path_to_obj = path_to_class[:-1]
 
-        cls.add_path_resolver('!Class', path_to_class)
-        cls.add_path_resolver('!Object', path_to_obj)
+        cls.add_path_resolver("!Class", path_to_class)
+        cls.add_path_resolver("!Object", path_to_obj)
 
-        cls.add_constructor('!Class', _constructor_class)
-        cls.add_constructor('!Object', _constructor_object)
+        cls.add_constructor("!Class", _constructor_class)
+        cls.add_constructor("!Object", _constructor_object)
+
 
 #
 # class ObjectModelDumper(yaml.SafeDumper):
@@ -88,13 +86,13 @@ def _constructor_object(loader: ObjectModelLoader, node: yaml.Node) -> t.Any:
         result = loader.construct_sequence(node, deep=True)
     else:
         result = loader.construct_mapping(node, deep=True)
-        if 'class' in result:
-            class_name = result.pop('class')
+        if "class" in result:
+            class_name = result.pop("class")
             try:
                 klass = evaluate_reference(class_name)
                 result = klass(**result)
             except TypeError as exc:
-                print('Cannot evaluate class: %s' % str(exc))
+                print("Cannot evaluate class: %s" % str(exc))
                 return
     return result
 
@@ -112,19 +110,21 @@ def _constructor_class(loader: ObjectModelLoader, node: yaml.ScalarNode) -> t.An
 class ClassConstructor:
     """TBW."""
 
-    def __init__(self,
-                 loader: t.Type[yaml.SafeLoader],
-                 klass: type,
-                 paths: t.List[str],
-                 is_list: bool = False) -> None:
+    def __init__(
+        self,
+        loader: t.Type[yaml.SafeLoader],
+        klass: type,
+        paths: t.List[str],
+        is_list: bool = False,
+    ) -> None:
         """TBW.
 
         :param klass:
         :param paths:
         :param is_list:
         """
-        loader.add_path_resolver('!%s' % klass.__name__, paths)
-        loader.add_constructor('!%s' % klass.__name__, self.__call__)
+        loader.add_path_resolver("!%s" % klass.__name__, paths)
+        loader.add_constructor("!%s" % klass.__name__, self.__call__)
         self.klass = klass
         self.paths = paths
         self.is_list = is_list
@@ -151,7 +151,7 @@ class ClassConstructor:
             obj = self.klass(**dct)
 
         else:
-            raise RuntimeError('Invalid node: %r' % node)
+            raise RuntimeError("Invalid node: %r" % node)
 
         return obj
 
@@ -163,10 +163,10 @@ def load(yaml_file: t.Union[str, Path]) -> t.Any:
     :return:
     """
     if isinstance(yaml_file, str):
-        with Path(yaml_file).open('r') as file_obj:
+        with Path(yaml_file).open("r") as file_obj:
             return load_yaml(file_obj)
     else:
-        with yaml_file.open('r') as file_obj:
+        with yaml_file.open("r") as file_obj:
             return load_yaml(file_obj)
 
 
