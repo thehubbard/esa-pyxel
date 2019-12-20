@@ -2,10 +2,16 @@ Changelog
 =========
 
 
-version 0.5 / 2019-MM-DD
+version 0.5 / 2019-12-20
 ------------------------
 
 * Clean-up code.
+* Remove any dependencies to esapy_config
+  (See `#54 https://gitlab.com/esa/pyxel/issues/54`_).
+* Refactor charge generation models to avoid code duplication
+  (See `#49 https://gitlab.com/esa/pyxel/issues/49`_).
+* Implement multi-threaded/multi-processing mode
+  (See `#44 https://gitlab.com/esa/pyxel/issues/44`_).
 
 
 version 0.4 / 2019-07-09
