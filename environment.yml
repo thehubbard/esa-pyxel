@@ -1,49 +1,16 @@
 # Create a new conda environment:
 #   $ cd pyxel
 #   $ conda env create -f environment.yml
-#   $ conda activate pyxel_dev
+#   $ conda activate pyxel-dev
 #   (pyxel_dev) $ pip install -e .
 
-name: pyxel_dev
+name: pyxel-dev
 channels:
   - conda-forge
-  - defaults
-dependencies:
-  - python=3.7
-  - pip
-  - astropy>=4
-  - dask>=2.9
-  - fsspec
-  - h5py
-  - ipywidgets>=7.5
-  - matplotlib>=3.1
-  - notebook>=6
   - numba
-  - numpy>=1.17
-  - pandas
-  - pygmo>=2.11
-  - pyyaml
-  - scipy
-  - tqdm
-# Development
-  - tox
-  - pytest
-  - mypy
-  - flake8
-  - pip:
-    - poppy>=0.9
-# Create a new conda environment:
-#   $ cd pyxel
-#   $ conda env create -f environment.yml
-#   $ conda activate pyxel_dev
-#   (pyxel_dev) $ pip install -e .
-
-name: pyxel_dev
-channels:
-  - conda-forge
   - defaults
 dependencies:
-  - python=3.7
+  - python
   - pip
   - astropy>=4
   - dask>=2.9
