@@ -4,6 +4,7 @@ pytest
 pytest-html
 pytest-cov
 pytest-pylint
+tox
 flake8
 flake8-docstrings
 pep8-naming

@@ -4,6 +4,9 @@
 Contributing to Pyxel
 *********************
 
+.. contents:: Table of contents:
+   :local:
+
 .. note::
 
   Large parts of this document came from the `Pandas Contributing
@@ -43,7 +46,7 @@ where you could start out.
 Once you've found an interesting issue, you can return here to get your development
 environment setup.
 
-Feel free to ask question on the `mailing list`<https://rssd-mgw.estec.esa.int:81/mailman/listinfo/pyxel>_ 
+Feel free to ask question on the `mailing list <https://rssd-mgw.estec.esa.int:81/mailman/listinfo/pyxel>`_ 
 or on `Gitter <https://gitter.im/pyxel-framework/community>`_
 
 .. _contributing.bug_reports:
@@ -131,11 +134,13 @@ Forking
 
 You will need your own fork to work on the code. Go to the `Pyxel project
 page <https://gitlab.com/esa/pyxel>`_ and hit the ``Fork`` button. You will
-want to clone your fork to your machine::
+want to clone your fork to your machine:
 
-    git clone https://gitlab.com/your-user-name/pyxel.git
-    cd pyxel
-    git remote add upstream https://gitlab.com/esa/pyxel.git
+.. code-block:: fish
+
+    $ git clone https://gitlab.com/your-user-name/pyxel.git
+    $ cd pyxel
+    $ git remote add upstream https://gitlab.com/esa/pyxel.git
 
 This creates the directory `Pyxel` and connects your repository to
 the upstream (main project) *Pyxel* repository.
@@ -153,8 +158,8 @@ documentation locally before pushing your changes.
 .. _contributing.dev_python:
 
 
-Creating a Python Environment
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Creating a Python Environment (conda)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Before starting any development, you'll need to create an isolated Pyxel
 development environment:
@@ -170,21 +175,24 @@ We'll now kick off a two-step process:
 1. Install the build dependencies
 2. Build and install Pyxel
 
-.. code-block:: none
+.. code-block:: fish
 
    # Create and activate the build environment
-   conda env create -f requirements.yml
-   conda activate pyxel-dev
+   $ conda env create -f requirements.yml
+   $ conda activate pyxel-dev
 
    # or with older versions of Anaconda:
-   source activate pyxel-dev
+   $ source activate pyxel-dev
 
-   # Build and install pyxel
-   pip install -e .
+   # Build and install Pyxel
+   $ pip install -e .
 
-At this point you should be able to import *Pyxel* from your locally built version::
+At this point you should be able to import *Pyxel* from your locally built version:
 
-   $ python  # start an interpreter
+.. code-block:: fish
+
+   # Start an interpreter
+   $ python  
    >>> import pyxel
    >>> pyxel.__version__
    '0.5+0.gcae5a0b'
@@ -192,39 +200,86 @@ At this point you should be able to import *Pyxel* from your locally built versi
 This will create the new environment, and not touch any of your existing environments,
 nor any existing Python installation.
 
-To view your environments::
+To view your environments:
 
-      conda info -e
+.. code-block:: fish
 
-To return to your root environment::
+      $ conda info -e
 
-      conda deactivate
+To return to your root environment:
+
+.. code-block:: fish
+
+      $ conda deactivate
 
 See the full conda docs `here <http://conda.pydata.org/docs>`__.
+
+
+Creating a Python Environment (pip)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If you aren't using conda for your development environment, follow these instructions:
+
+- You'll need to have at least python3.6 installed on your system.
+- Make sure that you have :ref:`cloned the repository <contributing.forking>`
+- ``cd`` to the *Pyxel* source directory
+
+
+.. code-block:: fish
+
+    # Create a virtual environment
+    # Use an ENV_DIR of your choice. We'll use ~/virtualenvs/pyxel-dev
+    # Any parent directories should already exist
+    $ python3 -m venv ~/virtualenvs/pyxel-dev
+    
+    # Activate the virtualenv
+    $ . ~/virtualenvs/pyxel-dev/bin/activate
+
+    # Install the build dependencies
+    $ python -m pip install -r requirements-dev.txt
+
+    # Build and install pandas    
+    $ python -m pip install -e .
+
+At this point you should be able to import *Pyxel* from your locally built version:
+
+.. code-block:: fish
+   
+   # Start an interpreter
+   $ python 
+   >>> import pyxel
+   >>> pyxel.__version__
+   '0.5+0.gcae5a0b'
 
 
 Creating a branch
 -----------------
 
 You want your master branch to reflect only production-ready code, so create a
-feature branch for making your changes. For example::
+feature branch for making your changes. For example:
 
-    git branch shiny-new-feature
-    git checkout shiny-new-feature
+.. code-block:: fish
 
-The above can be simplified to::
+    $ git branch shiny-new-feature
+    $ git checkout shiny-new-feature
 
-    git checkout -b shiny-new-feature
+The above can be simplified to:
+
+.. code-block:: fish
+
+    $ git checkout -b shiny-new-feature
 
 This changes your working directory to the shiny-new-feature branch.  Keep any
 changes in this branch specific to one bug or feature so it is clear
 what the branch brings to *Pyxel*. You can have many "shiny-new-features"
 and switch in between them using the ``git checkout`` command.
 
-To update this branch, you need to retrieve the changes from the master branch::
+To update this branch, you need to retrieve the changes from the master branch:
 
-    git fetch upstream
-    git rebase upstream/master
+.. code-block:: fish
+
+    $ git fetch upstream
+    $ git rebase upstream/master
 
 This will replay your commits on top of the latest *Pyxel* git master.  If this
 leads to merge conflicts, you must resolve these before submitting your merge
@@ -233,6 +288,7 @@ prior to updating.  This will effectively store your changes and they can be
 reapplied after updating.
 
 .. _contributing.documentation:
+
 
 Contributing to the documentation
 =================================
@@ -243,6 +299,9 @@ there are sections of the docs that are worse off after being written by
 experts. If something in the docs doesn't make sense to you, updating the
 relevant section after you figure it out is a great way to ensure it will help
 the next person.
+
+.. contents:: Documentation:
+   :local:
 
 
 About the *Pyxel* documentation
@@ -305,25 +364,27 @@ Requirements
 Make sure to follow the instructions on :ref:`creating a development environment above <contributing.dev_env>`, but
 to build the docs you need to use the environment file ``requirements.yml``.
 
-.. code-block:: none
+.. code-block:: fish
 
     # Create and activate the docs environment
-    conda env create -f requirements.yml
-    conda activate pyxel-dev
+    $ conda env create -f requirements.yml
+    $ conda activate pyxel-dev
 
     # or with older versions of Anaconda:
-    source activate pyxel-dev
+    $ source activate pyxel-dev
 
     # Build and install pyxel
-    pip install -e .
+    $ pip install -e .
 
 
 Building the documentation
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Navigate to your local ``pyxel/docs/`` directory in the console and run::
+Navigate to your local ``pyxel/docs/`` directory in the console and run:
 
-    tox -e docs
+.. code-block:: fish
+
+    $ tox -e docs
 
 Then you can find the HTML output in the folder ``pyxels/docs/html/``.
 
@@ -331,15 +392,27 @@ The first time you build the docs, it will take quite a while because it has to 
 all the code examples and build all the generated docstring pages. In subsequent
 evocations, sphinx will try to only build the pages that have been modified.
 
-If you want to do a full clean build, do::
+If you want to do a full clean build, do:
 
-    tox -e docs --recreate
+.. code-block:: fish
+
+    $ tox -e docs --recreate
+
+To view the documentation locally, you can also run:
+
+.. code-block:: fish
+
+    $ tox -e serve-docs
+
 
 
 .. _contributing.code:
 
 Contributing to the code base
 =============================
+
+.. contents:: Code Base:
+   :local:
 
 Code standards
 --------------
@@ -355,22 +428,31 @@ do not make sudden changes to the code that could have the potential to break
 a lot of user code as a result, that is, we need it to be as *backwards compatible*
 as possible to avoid mass breakages.
 
+
+.. _contributing.code_formatting:
+
 Code Formatting
 ~~~~~~~~~~~~~~~
 
 Pyxel uses `Flake8 <http://flake8.pycqa.org/en/latest/>`_ to ensure a consistent code
 format throughout the project. ``flake8`` can be installed with
-``pip``::
+``pip``:
 
-   pip install flake8
+.. code-block:: fish
 
-and then run from the root of the Pyxel repository::
+   $ pip install flake8
 
-   flake8
+and then run from the root of the Pyxel repository:
 
-or::
+.. code-block:: fish
 
-    tox -e flake8
+   $ flake8
+
+or:
+
+.. code-block:: fish
+
+    $ tox -e flake8
 
 Other recommended but optional tools for checking code quality (not currently
 enforced in CI):
@@ -399,55 +481,93 @@ Testing With Continuous Integration
 TBW.
 
 
+.. _contributing.test-driven-development-code-writing:
+
 Test-driven development/code writing
 ------------------------------------
 
-TBW.
+*Pytest* is serious about testing and strongly encourages contributors to embrace
+`test-driven development (TDD) <http://en.wikipedia.org/wiki/Test-driven_development>`_.
+This development process "relies on the repetition of a very short development cycle:
+first the developer writes an (initially failing) automated test case that defines a desired
+improvement or new function, then produces the minimum amount of code to pass that test."
+So, before actually writing any code, you should write your tests.  Often the test can be
+taken from the original GitLab issue.  However, it is always worth considering additional
+use cases and writing corresponding tests.
+
+Adding tests is one of the most common requests after code is pushed to *Pytest*.  Therefore,
+it is worth getting in the habit of writing tests ahead of time so this is never an issue.
+
+Like many packages, *Pytest* uses `pytest <http://doc.pytest.org/en/latest/>`_ and the convenient
+extensions in `numpy.testing <http://docs.scipy.org/doc/numpy/reference/routines.testing.html>`_.
 
 
 Writing tests
 ~~~~~~~~~~~~~
 
-TBW.
+All tests should go into the ``tests`` directory of the specific package.
+This folder contains many current examples of tests, and we suggest looking to these for
+inspiration.  If your test requires working with files or
+network connectivity, there is more information on the `testing page
+<https://gitlab.com/esa/pyxel/-/wikis/testing>`_ of the wiki.
 
 
 Using ``pytest``
 ~~~~~~~~~~~~~~~~
 
 The tests can then be run directly inside your Git clone (without having to
-install *Pyxel*) by typing::
+install *Pyxel*) by typing:
 
-    pytest pyxel
+.. code-block:: fish
 
-or::
+    $ pytest pyxel
 
-    tox -e py38
+or:
+
+.. code-block:: fish
+    
+    # For testing under Python 3.6
+    $ tox -e py36
+    
+    # For testing under Python 3.7
+    $ tox -e py37
+    
+    # For testing under Python 3.8
+    $ tox -e py38
 
 
 The tests suite is exhaustive and takes a few minutes.  Often it is
 worth running only a subset of tests first around your changes before running the
 entire suite.
 
-The easiest way to do this is with::
+The easiest way to do this is with:
 
-    pytest tests/path/to/test.py -k regex_matching_test_name
+.. code-block:: fish
 
-Or with one of the following constructs::
+    $ pytest tests/path/to/test.py -k regex_matching_test_name
 
-    pytest tests/[test-module].py
-    pytest tests/[test-module].py::[TestClass]
-    pytest tests/[test-module].py::[TestClass]::[test_method]
+Or with one of the following constructs:
+
+.. code-block:: fish
+
+    $ pytest tests/[test-module].py
+    $ pytest tests/[test-module].py::[TestClass]
+    $ pytest tests/[test-module].py::[TestClass]::[test_method]
 
 Using `pytest-xdist <https://pypi.python.org/pypi/pytest-xdist>`_, one can
 speed up local testing on multicore machines. To use this feature, you will
-need to install `pytest-xdist` via::
+need to install `pytest-xdist` via:
 
-    pip install pytest-xdist
+.. code-block:: fish
+
+    $ pip install pytest-xdist
 
 
 Then, run pytest with the optional -n argument:
 
-    pytest pyxel -n 4
+.. code-block:: fish
+
+    $ pytest -n 4
 
 This can significantly reduce the time it takes to locally run tests before
 submitting a merge request.
@@ -458,7 +578,50 @@ For more, see the `pytest <http://doc.pytest.org/en/latest/>`_ documentation.
 Running the test suite
 ----------------------
 
-TBW.
+The tests can then be run directly inside your Git clone (without having to install 
+*Pyxel*) by typing:
+
+.. code-block:: fish
+
+    $ pytest
+
+The tests suite is exhaustive and takes a few minutes.  Often it is
+worth running only a subset of tests first around your changes before running the
+entire suite.
+
+The easiest way to do this is with:
+
+.. code-block:: fish
+
+    $ pytest tests/path/to/test.py -k regex_matching_test_name
+
+Or with one of the following constructs:
+
+.. code-block:: fish
+
+    $ pytest tests/[test-module].py
+    $ pytest tests/[test-module].py::[TestClass]
+    $ pytest tests/[test-module].py::[TestClass]::[test_method]
+
+Using `pytest-xdist <https://pypi.python.org/pypi/pytest-xdist>`_, one can
+speed up local testing on multicore machines. To use this feature, you will
+need to install `pytest-xdist` via:
+
+.. code-block:: fish
+
+    $ pip install pytest-xdist
+
+
+Then, run pytest with the optional -n argument:
+
+.. code-block:: fish
+
+    $ pytest -n 4
+
+This can significantly reduce the time it takes to locally run tests before
+submitting a pull request.
+
+For more, see the `pytest <http://doc.pytest.org/en/latest/>`_ documentation.
 
 
 Running the performance test suite
@@ -466,10 +629,20 @@ Running the performance test suite
 
 TBW.
 
+.. _contributing.documenting_your_code:
+
 Documenting your code
 ---------------------
 
-TBW.
+Changes should be reflected in the release notes located in ``CHANGELOG.rst``.
+This file contains an ongoing change log for each release.  Add an entry to this file to
+document your fix, enhancement or (unavoidable) breaking change.  Make sure to include the
+GitLab issue number when adding your entry (using ``#1234``, where ``1234`` is the
+issue/merge request number).
+
+If your code is an enhancement, it is most likely necessary to add usage
+examples to the existing documentation.  This can be done following the section
+regarding documentation :ref:`above <contributing.documentation>`.
 
 Contributing your changes to *Pyxel*
 ====================================
@@ -477,24 +650,66 @@ Contributing your changes to *Pyxel*
 Committing your code
 --------------------
 
-TBW.
+Keep style fixes to a separate commit to make your pull request more readable.
+
+Once you've made changes, you can see them by typing:
+
+.. code-block:: fish
+
+    $ git status
+
+If you have created a new file, it is not being tracked by git. Add it by typing:
+
+.. code-block:: fish
+
+    $ git add path/to/file-to-be-added.py
+
+Doing 'git status' again should give something like:
+
+.. code-block:: fish
+
+    # On branch shiny-new-feature
+    #
+    #       modified:   /relative/path/to/file-you-added.py
+    #
+
+The following defines how a commit message should be structured:
+
+    * A subject line with `< 72` chars.
+    * One blank line.
+    * Optionally, a commit message body.
+
+Please reference the relevant GitLab issues in your commit message using ``#1234``.
+
+
+Now you can commit your changes in your local repository:
+
+.. code-block:: fish
+
+    $ git commit -m
 
 
 Pushing your changes
 --------------------
 
-When you want your changes to appear publicly on your GitHub page, push your
-forked feature branch's commits::
+When you want your changes to appear publicly on your GitLab page, push your
+forked feature branch's commits:
 
-    git push origin shiny-new-feature
+.. code-block:: fish
 
-Here ``origin`` is the default name given to your remote repository on GitHub.
-You can see the remote repositories::
+    $ git push origin shiny-new-feature
 
-    git remote -v
+Here ``origin`` is the default name given to your remote repository on GitLab.
+You can see the remote repositories:
+
+.. code-block:: fish
+
+    $ git remote -v
 
 If you added the upstream repository as described above you will see something
-like::
+like:
+
+.. code-block:: fish
 
     origin  git@gitlab.com:yourname/pyxel.git (fetch)
     origin  git@gitlab.com:yourname/pyxel.git (push)
@@ -502,7 +717,7 @@ like::
     upstream        git://gitlab.com/pydata/pyxel.git (push)
 
 Now your code is on GitLab, but it is not yet a part of the *Pyxel* project.  For that to
-happen, a merge request needs to be submitted on GitHub.
+happen, a merge request needs to be submitted on GitLab.
 
 
 Review your code
@@ -538,9 +753,11 @@ release.  To submit a merge request:
 This request then goes to the repository maintainers, and they will review
 the code. If you need to make more changes, you can make them in
 your branch, add them to a new commit, push them to GitLab, and the merge request
-will be automatically updated.  Pushing them to GitLab again is done by::
+will be automatically updated.  Pushing them to GitLab again is done by:
 
-    git push origin shiny-new-feature
+.. code-block:: fish
+
+    $ git push origin shiny-new-feature
 
 This will automatically update your merge request with the latest code and restart the
 :ref:`Continuous Integration <contributing.ci>` tests.
@@ -551,32 +768,54 @@ Delete your merged branch (optional)
 
 Once your feature branch is accepted into upstream, you'll probably want to get rid of
 the branch. First, merge upstream master into your branch so git knows it is safe to
-delete your branch::
+delete your branch:
 
-    git fetch upstream
-    git checkout master
-    git merge upstream/master
+.. code-block:: fish
 
-Then you can do::
+    $ git fetch upstream
+    $ git checkout master
+    $ git merge upstream/master
 
-    git branch -d shiny-new-feature
+Then you can do:
+
+.. code-block:: fish
+
+    $ git branch -d shiny-new-feature
 
 Make sure you use a lower-case ``-d``, or else git won't warn you if your feature
 branch has not actually been merged.
 
-The branch will still exist on GitLab, so to delete it there do::
+The branch will still exist on GitLab, so to delete it there do:
 
-    git push origin --delete shiny-new-feature
+.. code-block:: fish
 
-
-PR checklist
-------------
-
-TBW.
+    $ git push origin --delete shiny-new-feature
 
 
+Merge Request checklist
+-----------------------
 
-Adding new models
---------------------
+- **Properly comment and document your code.** See :ref:`"Documenting your code" <contributing.documenting_your_code>`.
+- **Test that the documentation builds correctly** by typing ``tox -e docs``. 
+  This is not strictly necessary, but this may be easier than waiting for CI to catch a mistake. 
+  See :ref:`"Contributing to the documentation" <_contributing.documentation>`.
+- **Test your code**.
 
-See the :ref:`Adding new models <new_model>` page.
+    - Write new tests if needed. See :ref:`"Test-driven development/code writing" <contributing.test-driven-development-code-writing>`.
+    - Test the code using `Pytest <http://doc.pytest.org/en/latest/>`_. 
+      Running all tests (type ``pytest`` in the root directory) takes a while, 
+      so feel free to only run the tests you think are needed based on 
+      your Merge Request (example: ``pytest tests/test_model_xxx.py``). 
+      CI will catch any failing tests.
+
+- **Properly format your code** and verify that it passes the formatting guidelines 
+  set by `Black <https://black.readthedocs.io/en/stable/>`_ and `Flake8 <http://flake8.pycqa.org/en/latest/>`_. 
+  See :ref:`"Code formatting" <contributing.code_formatting>`. 
+  You can use `pre-commit <https://pre-commit.com/>`_ to run these automatically on each commit.
+
+    - Run ``black .`` in the root directory. This may modify some files. Confirm and commit any formatting changes.
+    - Run ``flake8`` in the root directory. If this fails, it will log an error message.
+
+- **Push your code and** `create a Merge Request on GitLab <https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html>`_.
+- **Use a helpful title for your pull request** by summarizing the main contributions rather than using the latest commit message.
+  If this addresses an `issue <https://gitlab.com/esa/pyxel/issues>`_, please `reference it <https://docs.gitlab.com/ee/user/project/issues/crosslinking_issues.html>`_.
