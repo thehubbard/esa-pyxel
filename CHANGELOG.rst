@@ -1,6 +1,12 @@
 Changelog
 =========
 
+version 0.6 / 2020-MM-DD
+------------------------
+
+* Improved contributing guide
+  (See `#68 <https://gitlab.com/esa/pyxel/issues/68>`_).
+
 
 version 0.5 / 2019-12-20
 ------------------------
