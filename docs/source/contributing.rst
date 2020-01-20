@@ -259,7 +259,7 @@ these instructions:
     # Install the build dependencies
     $ python -m pip install -r requirements-dev.txt
 
-    # Build and install pandas
+    # Build and install Pyxel
     $ python -m pip install -e .
 
 At this point you should be able to import *Pyxel* from your locally
