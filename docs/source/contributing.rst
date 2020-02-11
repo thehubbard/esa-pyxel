@@ -185,7 +185,7 @@ We'll now kick off a two-step process:
 .. code-block:: fish
 
    # Create and activate the build environment
-   $ conda env create -f requirements.yml
+   $ conda env create -f environment.yml
    $ conda activate pyxel-dev
 
    # or with older versions of Anaconda:
