@@ -3,7 +3,7 @@ Authors
 
 Developers:
 
-* `David Lucsanyi <lucsanyid@gmail.com>`_
+* `David Lucsanyi`_
 * `Thibaut Prod'homme <thibaut.prodhomme@esa.int>`_
 * `Hans Smit <hans.smit@esa.int>`_
 * `Frederic Lemmel <frederic.lemmel@esa.int>`_
