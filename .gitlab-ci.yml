@@ -19,6 +19,8 @@ stages:
 
 
 before_script:
+  - python -V
+  - pip install tox
   - export TZ=Europe/Amsterdam
   - date
 
@@ -32,40 +34,22 @@ cache:
 # ###########################
 
 # Run pytest + coverage and create html report (pytest_report.html)
-anaconda3:
-  image: continuumio/anaconda3:latest
-  stage: test
-  script:
-    - pwd
-    - ls
-    - python -V
-    - python3 -V
-    - which python3
-    - pip install pytest
-    - pip install -r requirements.txt
-    - pip install -e ".[all]"
-    - pip freeze
-    - export PYTHONPATH=$PWD  # todo ?
-    - pytest
-  allow_failure: true
-
-
-# Run pytest + coverage and create html report (pytest_report.html)
-pytest-cov:
-  image: python:3.6
-  stage: test
-  script:
-    - pip install pytest pytest-cov pytest-html
-    - pip install -r requirements.txt
-    - pip install -e ".[all]"
-    - pytest --cov=pyxel --cov-report= --cov-report=html --html=pytest_report.html --self-contained-html --color=yes --full-trace --showlocals --verbose
-    - coverage report > coverage.out
-  artifacts:
-    paths:
-      - htmlcov
-      - pytest_report.html
-      - coverage.out
-  allow_failure: true
+#anaconda3:
+#  image: continuumio/anaconda3:latest
+#  stage: test
+#  script:
+#    - pwd
+#    - ls
+#    - python -V
+#    - python3 -V
+#    - which python3
+#    - pip install pytest
+#    - pip install -r requirements.txt
+#    - pip install -e ".[all]"
+#    - pip freeze
+#    - export PYTHONPATH=$PWD  # todo ?
+#    - pytest
+#  allow_failure: true
 
 
 # Run pytest for Python 3.7
@@ -76,7 +60,6 @@ python373:
     - python -V
     - pip install tox
     - tox -e py37-extra_all
-  allow_failure: false
 
 
 # Run pytest for Python 3.6
@@ -87,7 +70,6 @@ python36:
     - python -V
     - pip install tox
     - tox -e py36-extra_all
-  allow_failure: false
 
 
 # Run mypy
@@ -98,7 +80,6 @@ mypy:
     - python -V
     - pip install tox
     - tox -e mypy
-  allow_failure: true
 
 
 # Run pylint (with pytest) and generate HTML report
@@ -125,7 +106,6 @@ flake8:
     - python -V
     - pip install tox
     - tox -e flake8
-  allow_failure: false
 
 
 pydocstyle:
@@ -135,7 +115,6 @@ pydocstyle:
     - python -V
     - pip install tox
     - tox -e pydocstyle
-  allow_failure: false
 
 
 doc8:
@@ -145,7 +124,6 @@ doc8:
     - python -V
     - pip install tox
     - tox -e doc8
-  allow_failure: false
 
 
 # ###########################
@@ -165,6 +143,22 @@ doc8:
 #    paths:
 #      - coverage.svg
 #  allow_failure: false
+
+# Run pytest + coverage and create html report (pytest_report.html)
+coverage:
+  image: python:3.6
+  stage: build
+  script:
+    - pip install pytest pytest-cov pytest-html
+    - pip install -r requirements.txt
+    - pip install -e ".[all]"
+    - pytest --cov=pyxel --cov-report= --cov-report=html --html=pytest_report.html --self-contained-html --color=yes --full-trace --showlocals --verbose
+    - coverage report > coverage.out
+  artifacts:
+    paths:
+      - htmlcov
+      - pytest_report.html
+      - coverage.out
 
 # Scan sourcecode for licenses, copyrights & dependencies
 # experimental, latest version
@@ -215,7 +209,42 @@ doc:
     paths:
       - docs/html
       - documentation.svg
-  allow_failure: false
+  only:
+    - master
+
+website:
+  image: alpine
+  stage: build
+  script:
+    - wget https://esa.gitlab.io/pyxel-website/pyxel-website.tar.gz
+    - tar -xzvf pyxel-website.tar.gz
+    - ls html
+  artifacts:
+    paths:
+       - html
+  only:
+    - master
+
+## Generate the Sphinx documentation into 'doc/html'
+#doc:
+#  image: python:3.6
+#  stage: build
+#  script:
+#    - pip install -r docs/requirements-docs.txt
+#    - pip install -r requirements.txt
+#    - pip install -e ".[all]"
+#    - pip install doc8
+#    - export PYTHONPATH=$PWD
+#    - doc8 docs/source
+#    - sphinx-build docs/source docs/html -E -a -j 4
+#    - python badges.py -doc="passed"
+#  artifacts:
+#    paths:
+#      - docs/html
+#      - documentation.svg
+#  allow_failure: false
+#  only:
+#    - master
 
 #docker:
 #  stage: build
@@ -240,20 +269,37 @@ doc:
 # Deploy Stage
 # ###########################
 
+## Create the pages
+#pages:
+#  image: python:3
+#  stage: deploy
+#  script:
+#    - mkdir public
+#    - mv docs/html public/doc
+#    - mv htmlcov public/coverage
+#    - mv pytest_report.html public
+#    # - mv pylint_report.html public
+#    - mv documentation.svg public
+#    - mv license.json public
+#    - ls public
+#  artifacts:
+#    paths:
+#      - public
+#  allow_failure: false
+
 # Create the pages
 pages:
-  image: python:3
+  image: python:3.6
   stage: deploy
   script:
     - mkdir public
     - mv docs/html public/doc
-    - mv htmlcov public/coverage
-    - mv pytest_report.html public
-    # - mv pylint_report.html public
+    - mv html/* public
     - mv documentation.svg public
-    - mv license.json public
     - ls public
   artifacts:
     paths:
       - public
   allow_failure: false
+  only:
+    - master
