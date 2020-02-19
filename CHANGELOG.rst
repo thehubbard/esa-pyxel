@@ -8,6 +8,8 @@ version 0.6 / 2020-MM-DD
   (See `#68 <https://gitlab.com/esa/pyxel/issues/68>`_).
 * Remove file '.gitlab-ci-doc.yml'
   (See `#73 <https://gitlab.com/esa/pyxel/issues/73>`_).
+* Change license and add copyrights to all source files.
+  (See `#69 <https://gitlab.com/esa/pyxel/issues/69>`_).
 
 
 version 0.5 / 2019-12-20
