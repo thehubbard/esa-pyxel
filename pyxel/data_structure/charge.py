@@ -4,7 +4,6 @@ import typing as t
 import numpy as np
 import pandas as pd
 from astropy.units import cds
-
 from pyxel.data_structure.particle import Particle
 
 cds.enable()

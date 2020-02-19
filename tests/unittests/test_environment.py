@@ -1,6 +1,5 @@
 """Unittests for class `Environment`."""
 import pytest
-
 from pyxel.detectors.environment import Environment
 
 

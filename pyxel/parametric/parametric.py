@@ -5,7 +5,6 @@ import typing as t
 from copy import deepcopy
 
 import numpy as np
-
 from pyxel.parametric.parameter_values import ParameterValues
 from pyxel.state import get_obj_att, get_value
 

@@ -4,7 +4,6 @@ from pathlib import Path
 
 import numpy as np
 import pytest
-
 import pyxel.io as io
 from pyxel.calibration.util import (
     check_ranges,

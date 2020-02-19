@@ -14,7 +14,6 @@ import typing as t
 
 import numba
 import numpy as np
-
 from pyxel.detectors.ccd import CCD
 
 try:

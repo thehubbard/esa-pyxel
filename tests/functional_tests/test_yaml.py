@@ -1,5 +1,4 @@
 import pytest
-
 import pyxel.io as io
 
 try:
