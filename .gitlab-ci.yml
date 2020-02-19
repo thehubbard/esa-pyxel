@@ -209,8 +209,8 @@ doc:
     paths:
       - docs/html
       - documentation.svg
-  only:
-    - master
+#  only:
+#    - master
 
 website:
   image: alpine
@@ -301,5 +301,5 @@ pages:
     paths:
       - public
   allow_failure: false
-  only:
-    - master
+#  only:
+#    - master
