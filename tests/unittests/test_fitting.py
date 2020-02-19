@@ -3,7 +3,6 @@ from pathlib import Path
 
 import numpy as np
 import pytest
-
 import pyxel.io as io
 from pyxel.calibration.fitting import ModelFitting
 from pyxel.calibration.util import CalibrationMode, ResultType

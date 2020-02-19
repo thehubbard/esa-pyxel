@@ -4,7 +4,6 @@ import typing as t
 from pathlib import Path
 
 import numpy as np
-
 from pyxel.detectors.detector import Detector
 from pyxel.detectors.geometry import Geometry  # noqa: F401
 

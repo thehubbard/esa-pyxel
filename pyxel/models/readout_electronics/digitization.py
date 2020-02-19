@@ -3,7 +3,6 @@ import logging
 from pydoc import locate
 
 import numpy as np
-
 from pyxel.detectors.detector import Detector
 
 # from astropy import units as u

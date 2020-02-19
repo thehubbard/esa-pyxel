@@ -12,7 +12,6 @@ import h5py as h5
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-
 from pyxel import __version__ as version
 
 if t.TYPE_CHECKING:

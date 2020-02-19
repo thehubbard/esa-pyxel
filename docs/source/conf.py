@@ -19,9 +19,8 @@
 
 from pathlib import Path
 
-from setuptools.config import read_configuration
-
 import sphinx_rtd_theme
+from setuptools.config import read_configuration
 
 html_theme = "sphinx_rtd_theme"
 

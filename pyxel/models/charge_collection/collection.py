@@ -3,7 +3,6 @@ import logging
 
 import numba
 import numpy as np
-
 from pyxel.detectors.detector import Detector
 
 

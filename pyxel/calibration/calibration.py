@@ -6,7 +6,6 @@ from enum import Enum
 from pathlib import Path
 
 import numpy as np
-
 from pyxel.calibration.fitting import ModelFitting
 from pyxel.calibration.util import CalibrationMode, ResultType
 from pyxel.parametric.parameter_values import ParameterValues

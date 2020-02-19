@@ -12,10 +12,9 @@ import typing as t
 from pathlib import Path
 
 import numpy as np
+import pyxel.io as io
 from dask import delayed, distributed
 from dask.delayed import Delayed
-
-import pyxel.io as io
 from pyxel import __version__ as version
 from pyxel.detectors import CCD, CMOS
 from pyxel.parametric.parametric import Configuration
