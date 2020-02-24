@@ -4,7 +4,11 @@ from pathlib import Path
 import pytest
 import pyxel.io as io
 from pyxel.detectors import CCD
-from pyxel.parametric.parametric import Configuration, ParametricAnalysis
+from pyxel.parametric.parametric import (
+    Configuration,
+    ParametricAnalysis,
+    ParametricMode,
+)
 from pyxel.pipelines.processor import DetectionPipeline, Processor
 
 try:
@@ -42,11 +46,11 @@ expected_embedded = [
     "mode, expected",
     [
         # ('single', expected_single),
-        ("sequential", expected_sequential),
-        ("embedded", expected_embedded),
+        (ParametricMode.Sequential, expected_sequential),
+        (ParametricMode.Embedded, expected_embedded),
     ],
 )
-def test_pipeline_parametric_without_init_photon(mode, expected):
+def test_pipeline_parametric_without_init_photon(mode: ParametricMode, expected):
     input_filename = "tests/data/parametric.yaml"
     cfg = io.load(Path(input_filename))
 

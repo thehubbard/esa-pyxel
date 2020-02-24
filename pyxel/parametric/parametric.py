@@ -10,6 +10,7 @@ import itertools
 import logging
 import typing as t
 from copy import deepcopy
+from enum import Enum
 
 import numpy as np
 from pyxel.parametric.parameter_values import ParameterValues
@@ -19,6 +20,14 @@ if t.TYPE_CHECKING:
     from ..pipelines.processor import Processor
     from ..calibration.calibration import Calibration
     from ..util import Outputs
+
+
+class ParametricMode(Enum):
+    """TBW."""
+
+    Embedded = "embedded"
+    Sequential = "sequential"
+    Parallel = "parallel"
 
 
 # TODO: Use `Enum` for `parametric_mode` ?
@@ -33,7 +42,7 @@ class ParametricAnalysis:
         column_range: t.Optional[t.Tuple[int, int]] = None,
     ):
         """TBW."""
-        self.parametric_mode = parametric_mode
+        self.parametric_mode = ParametricMode(parametric_mode)  # type: ParametricMode
         self._parameters = parameters
         self.file = from_file
         self.data = None  # type: t.Optional[np.ndarray]
@@ -90,12 +99,12 @@ class ParametricAnalysis:
         :param processor:
         :return:
         """
-        for step in self.enabled_steps:
-            key = step.key
+        for step in self.enabled_steps:  # type: ParameterValues
+            key = step.key  # type : str
             for value in step:
                 # step.current = value
                 new_proc = deepcopy(processor)  # type: Processor
-                new_proc.set(key, value)
+                new_proc.set(key=key, value=value)
                 yield new_proc
 
     def _embedded(self, processor: "Processor") -> "t.Iterator[Processor]":
@@ -117,39 +126,45 @@ class ParametricAnalysis:
 
     def collect(self, processor: "Processor") -> "t.Iterator[Processor]":
         """TBW."""
-        for step in self.enabled_steps:
+        for step in self.enabled_steps:  # type: ParameterValues
 
             # TODO: the string literal expressions are difficult to maintain.
             #     Example: 'pipeline.', '.arguments', '.enabled'
             #     We may want to consider an API for this.
+            # Proposed API:
+            # value = operator.attrgetter(step.key)(processor)
             if "pipeline." in step.key:
-                model_name = step.key[: step.key.find(".arguments")]
+                model_name = step.key[: step.key.find(".arguments")]  # type: str
                 model_enabled = model_name + ".enabled"  # type: str
                 if not processor.get(model_enabled):
                     raise ValueError(
-                        'The "%s" model referenced in parametric configuration '
-                        "has not been enabled in yaml config!" % model_name
+                        f"The '{model_name}' model referenced in parametric configuration "
+                        f"has not been enabled in yaml config!"
                     )
 
             if (
                 any(x == "_" for x in step.values[:])
-                and self.parametric_mode != "parallel"
+                and self.parametric_mode != ParametricMode.Parallel
             ):
                 raise ValueError(
-                    'Either define "parallel" as parametric mode or '
-                    'do not use "_" character in "values" field'
+                    "Either define 'parallel' as parametric mode or "
+                    "do not use '_' character in 'values' field"
                 )
 
-        if self.parametric_mode == "embedded":
-            configs = self._embedded(processor)
-        elif self.parametric_mode == "sequential":
-            configs = self._sequential(processor)
-        elif self.parametric_mode == "parallel":
-            configs = self._parallel(processor)
-        else:
-            configs = iter([])
+        if self.parametric_mode == ParametricMode.Embedded:
+            configs_it = self._embedded(processor)  # type: t.Iterator[Processor]
 
-        return configs
+        elif self.parametric_mode == ParametricMode.Sequential:
+            configs_it = self._sequential(processor)
+
+        elif self.parametric_mode == ParametricMode.Parallel:
+            configs_it = self._parallel(processor)
+
+        else:
+            # configs_it = iter([])
+            raise NotImplementedError()
+
+        return configs_it
 
     def debug(self, processor: "Processor") -> list:
         """TBW."""
@@ -167,6 +182,9 @@ class ParametricAnalysis:
 
 
 # TODO: Use a `Enum` for 'mode' ?
+# TODO: Create several classes `ConfigurationSingle`, `ConfigurationParametric`,
+#       `ConfigurationCalibration` and `ConfigurationDynamic`
+# TODO: Move this class into its own file 'configuration.py'
 class Configuration:
     """TBW."""
 
@@ -180,18 +198,33 @@ class Configuration:
     ):
         """TBW.
 
-        :param mode:
-        :param parametric:
-        :param calibration:
+        Parameters
+        ----------
+        mode
+        outputs
+        parametric
+        calibration
+        dynamic
         """
-        if mode in ["single", "parametric", "calibration", "dynamic"]:
-            self.mode = mode
-        else:
+        if mode not in ["single", "parametric", "calibration", "dynamic"]:
             raise ValueError(
                 "Non-existing running mode defined for Pyxel in yaml config file."
             )
 
-        self.outputs = outputs
-        self.parametric = parametric
-        self.calibration = calibration
-        self.dynamic = dynamic
+        self.mode = mode  # type: str
+
+        self.outputs = outputs  # type: Outputs
+
+        self.parametric = parametric  # type: t.Optional[ParametricAnalysis]
+        self.calibration = calibration  # type: t.Optional[Calibration]
+        self.dynamic = dynamic  # type: t.Optional[dict]
+
+        if mode == "parametric":
+            assert self.parametric
+            self.outputs.params_func(self.parametric)
+
+    def __repr__(self) -> str:
+        """TBW."""
+        cls_name = self.__class__.__name__  # type: str
+
+        return f"{cls_name}<mode={self.mode!r}>"
