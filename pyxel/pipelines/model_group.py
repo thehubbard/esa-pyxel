@@ -6,6 +6,7 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """TBW."""
+import logging
 import typing as t  # noqa: F401
 from copy import deepcopy
 
@@ -27,6 +28,8 @@ class ModelGroup:
 
         :param models:
         """
+        self._log = logging.getLogger(__name__)
+
         self.models = models  # type: t.List[ModelFunction]
 
     def __repr__(self):
@@ -43,6 +46,12 @@ class ModelGroup:
         copied_models = deepcopy(self.models)
         return ModelGroup(models=copied_models)
 
+    def __iter__(self) -> t.Iterator[ModelFunction]:
+        """TBW."""
+        for model in self.models:
+            if model.enabled:
+                yield model
+
     # TODO: Why is this method returning a `bool` ?
     def run(
         self,
@@ -50,8 +59,20 @@ class ModelGroup:
         pipeline: "DetectionPipeline",
         abort_model: t.Optional[str] = None,
     ) -> bool:
-        """Execute each enabled model in this group."""
-        for model in self.models:
+        """Execute each enabled model in this group.
+
+        Parameters
+        ----------
+        detector : Detector
+        pipeline : DetectionPipeline
+        abort_model : str, optional
+
+        Returns
+        -------
+        bool
+            TBW.
+        """
+        for model in self.models:  # type: ModelFunction
             if model.name == abort_model:
                 return True
             if not pipeline.is_running:
@@ -59,7 +80,9 @@ class ModelGroup:
             else:
                 if model.enabled:
                     # TODO: Display here information about the executed model
-                    model.function(detector)
+                    self._log.info("Model: %r", model.name)
+                    model(detector)
+
         return False
 
     # TODO: Is it needed ? if yes then you could also implement

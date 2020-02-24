@@ -337,7 +337,7 @@ def test_split_and_update(yaml, parameter, expected_array):
         )
     ],
 )
-def test_detector_and_model_update(yaml, param_array):
+def test_detector_and_model_update(yaml: str, param_array: np.ndarray):
     """Test"""
     cfg = io.load(yaml)
 
