@@ -66,11 +66,21 @@ def test_pipeline_parametric_without_init_photon(mode, expected):
     detector = cfg["ccd_detector"]
     assert isinstance(detector, CCD)
 
+    assert detector.has_photon is False
+    with pytest.raises(
+        RuntimeError,
+        match=(
+            r"Photon array is not initialized ! "
+            r"Please use a 'Photon Generation' model"
+        ),
+    ):
+        _ = detector.photon
+
     pipeline = cfg["pipeline"]
     assert isinstance(pipeline, DetectionPipeline)
 
     processor = Processor(
-        detector, pipeline
+        detector=detector, pipeline=pipeline
     )  # type: pyxel.pipelines.processor.Processor
     result = parametric.debug(processor)
     assert result == expected
@@ -81,11 +91,4 @@ def test_pipeline_parametric_without_init_photon(mode, expected):
     for config in configs:
         assert isinstance(config, Processor)
 
-        with pytest.raises(
-            RuntimeError,
-            match=(
-                r"Photon array is not initialized ! "
-                r"Please use a 'Photon Generation' model"
-            ),
-        ):
-            config.run_pipeline()
+        config.run_pipeline()
