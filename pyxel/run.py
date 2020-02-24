@@ -18,24 +18,112 @@ import time
 import typing as t
 from pathlib import Path
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pyxel.io as io
 from dask import delayed, distributed
-from dask.delayed import Delayed
 from pyxel import __version__ as version
 from pyxel.detectors import CCD, CMOS
-from pyxel.parametric.parametric import Configuration
+from pyxel.parametric.parametric import Configuration, ParametricAnalysis
 from pyxel.pipelines.pipeline import DetectionPipeline
 from pyxel.pipelines.processor import Processor
 from pyxel.util import Outputs
+from pyxel.util.outputs import Result
+
+
+def single_mode(processor: Processor, out: Outputs) -> plt.Figure:
+    """TBW.
+
+    Parameters
+    ----------
+    processor
+    out
+
+    Returns
+    -------
+    Figure
+        TBW.
+    """
+    logging.info("Mode: Single")
+
+    _ = processor.run_pipeline()
+
+    out.single_output(processor)
+
+    return out.fig
+
+
+def parametric_mode(
+    processor: Processor,
+    parametric: ParametricAnalysis,
+    output: Outputs,
+    with_dask: bool = False,
+) -> t.Optional[plt.Figure]:
+    """TBW.
+
+    Parameters
+    ----------
+    processor
+    parametric
+    output
+    with_dask
+
+    Returns
+    -------
+    Optional `Figure`
+        TBW.
+    """
+    logging.info("Mode: Parametric")
+
+    if with_dask:
+        # use as few processes (and workers?) as possible with as many threads_per_worker as possible
+        # Dasbboard available on http://127.0.0.1:8787
+        # client = distributed.Client(processes=True)
+        # client = distributed.Client(n_workers=4, processes=False, threads_per_worker=4)
+        client = distributed.Client(processes=False)
+        logging.info(client)
+
+    processors_it = parametric.collect(processor)  # type: t.Iterator[Processor]
+    result_list = []  # type: t.List[Result]
+    # out.params_func(parametric)
+
+    for proc in processors_it:  # type: Processor
+
+        if not with_dask:
+            result_proc = proc.run_pipeline()  # type: Processor
+            result_val = output.extract_func(processor=result_proc)  # type: Result
+
+            output.save_to_file(processor=result_proc)
+
+        else:
+            result_proc = delayed(proc.run_pipeline)()
+            result_val = delayed(output.extract_func)(proc=result_proc)
+
+            raise NotImplementedError
+
+        result_list.append(result_val)
+
+    if not with_dask:
+        plot_array = output.merge_func(result_list)  # type: np.ndarray
+    else:
+        array = delayed(output.merge_func)(result_list)
+        plot_array = array.compute()
+
+    fig = None  # type: t.Optional[plt.Figure]
+    if output.parametric_plot is not None:
+        output.plotting_func(plot_array)
+        fig = output.fig
+
+    return fig
 
 
 def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
     """TBW.
 
-    :param input_filename:
-    :param random_seed:
-    :return:
+    Parameters
+    ----------
+    input_filename
+    random_seed
     """
     logging.info("Pyxel version %s", version)
     logging.info("Pipeline started.")
@@ -54,7 +142,6 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
     cfg = io.load(Path(input_filename))  # type: dict
 
     pipeline = cfg["pipeline"]  # type: DetectionPipeline
-
     simulation = cfg["simulation"]  # type: Configuration
 
     if "ccd_detector" in cfg:
@@ -68,15 +155,13 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
 
     out = simulation.outputs  # type: Outputs
     out.set_input_file(input_filename)
-    detector.set_output_dir(out.output_dir)
+
+    detector.set_output_dir(out.output_dir)  # TODO: Remove this
 
     # TODO: Create new separate functions 'run_single', 'run_calibration', 'run_parametric'
     #       and 'run_dynamic'. See issue #61.
     if simulation.mode == "single":
-        logging.info("Mode: Single")
-
-        processor.run_pipeline()
-        out.single_output(processor)
+        _ = single_mode(processor=processor, out=out)
 
     elif simulation.mode == "calibration":
         if not simulation.calibration:
@@ -93,26 +178,17 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
         if not simulation.parametric:
             raise RuntimeError("Missing 'Parametric' parameters.")
 
-        logging.info("Mode: Parametric")
+        parametric = simulation.parametric  # type: ParametricAnalysis
 
-        # client = distributed.Client(processes=True)
-        # client = distributed.Client(n_workers=4, processes=False, threads_per_worker=4)
-        client = distributed.Client(processes=False)
-        logging.info(client)
-        # use as few processes (and workers?) as possible with as many threads_per_worker as possible
-        # Dasbboard available on http://127.0.0.1:8787
+        # Check if all keys from 'parametric' are valid keys for object 'pipeline'
+        for param_value in parametric.enabled_steps:
+            key = param_value.key  # type: str
+            assert processor.has(key)
 
-        configs = simulation.parametric.collect(processor)
-        result_list = []
-        out.params_func(simulation.parametric)
-        for proc in configs:
-            result_proc = delayed(proc.run_pipeline)()
-            result_val = delayed(out.extract_func)(proc=result_proc)
-            result_list.append(result_val)
-        array = delayed(out.merge_func)(result_list)  # type: Delayed
-        plot_array = array.compute()
-        if out.parametric_plot is not None:
-            out.plotting_func(plot_array)
+        # TODO: This should be done during initializing of object `Configuration`
+        # out.params_func(parametric)
+
+        _ = parametric_mode(processor=processor, parametric=parametric, output=out)
 
     elif simulation.mode == "dynamic":
         if not simulation.dynamic:
@@ -151,6 +227,7 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
     # Closing the logger in order to be able to move the file in the output dir
     logging.shutdown()
     out.save_log_file()
+    plt.close()
 
 
 # TODO: Use library 'click' instead of 'parser' ? See issue #62

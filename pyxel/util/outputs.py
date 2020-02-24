@@ -6,15 +6,17 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """Utility functions for creating outputs."""
-import os
-import typing as t  # noqa: F401
+import logging
+import typing as t
 from copy import copy
 from glob import glob
+from numbers import Number
 from pathlib import Path
 from shutil import copy2
 from time import strftime
 
 import astropy.io.fits as fits
+import attr
 import h5py as h5
 import matplotlib.pyplot as plt
 import numpy as np
@@ -25,62 +27,166 @@ if t.TYPE_CHECKING:
     from ..pipelines.processor import Processor
     from ..detectors import Detector
     from ..parametric.parametric import ParametricAnalysis
+    from ..parametric.parameter_values import ParameterValues
+
+    class SaveToFile(t.Protocol):
+        """TBW."""
+
+        def __call__(self, data: np.ndarray, name: str) -> Path:
+            """TBW."""
+            ...
 
 
+@attr.s(auto_attribs=True, slots=True, frozen=True)
+class Result:
+    """TBW."""
+
+    result: np.ndarray  # TODO: Use a `DataFrame` ?
+    plot: np.ndarray
+
+
+@attr.s(auto_attribs=True, slots=True, frozen=True)
+class ParametricPlotArgs:
+    """TBW."""
+
+    title: t.Optional[str] = None
+    xscale: str = "linear"
+    yscale: str = "linear"
+    xlabel: t.Optional[str] = None
+    ylabel: t.Optional[str] = None
+    xlim: t.Tuple[t.Optional[float], t.Optional[float]] = (None, None)
+    ylim: t.Tuple[t.Optional[float], t.Optional[float]] = (None, None)
+    xticks: t.Any = None
+    yticks: t.Any = None
+    sci_x: bool = False
+    sci_y: bool = False
+    grid: bool = False
+    axis: t.Any = None
+    bins: t.Optional[int] = None  # TODO: This should not be here !
+
+    @classmethod
+    def from_dict(cls, dct: dict) -> "ParametricPlotArgs":
+        """TBW."""
+        return cls(**dct)
+
+    def to_dict(self) -> dict:
+        """TBW."""
+        return attr.asdict(self)
+
+
+@attr.s(auto_attribs=True, slots=True)
+class ParametricPlot:
+    """TBW."""
+
+    x: str
+    y: str
+    plot_args: ParametricPlotArgs
+
+    @classmethod
+    def from_dict(cls, dct: dict) -> "ParametricPlot":
+        """TBW."""
+        return cls(
+            x=dct["x"],
+            y=dct["y"],
+            plot_args=ParametricPlotArgs.from_dict(dct["plot_args"]),
+        )
+
+
+# TODO: Create a special Output class for 'parametric_plot', 'calibration_plot' and
+#       'single_plot' ?
+# TODO: Example
+#       >>> class ParametricOutputs:
+#       ...     def __init__(self, parametric, ...): ...
 class Outputs:
     """TBW."""
 
     def __init__(
         self,
         output_folder: t.Union[str, Path],
-        save_data_to_file: t.Optional[list] = None,
+        save_data_to_file: t.Optional[t.List[t.Dict[str, t.List[str]]]] = None,
         save_parameter_to_file: t.Optional[dict] = None,
         parametric_plot: t.Optional[dict] = None,
         calibration_plot: t.Optional[t.Dict[str, t.Any]] = None,
         single_plot: t.Optional[dict] = None,
     ):
         """TBW."""
-        self.input_file = None  # type: t.Optional[Path]
-        self.parametric_plot = parametric_plot  # type: t.Optional[dict]
-        self.calibration_plot = (
-            calibration_plot if calibration_plot else {}
-        )  # type: t.Dict[str, t.Any]
-        self.single_plot = single_plot  # type: t.Optional[dict]
-        self.user_plt_args = None  # type: t.Optional[dict]
+        self._log = logging.getLogger(__name__)
+
+        # Check number of inputs
+        num_inputs = sum(
+            [
+                parametric_plot is not None,
+                calibration_plot is not None,
+                single_plot is not None,
+            ]
+        )  # type: int
+        if num_inputs not in (0, 1):
+            raise ValueError(
+                "Too much parameters. You should have only parameter "
+                "'parametric_plot', 'calibration_plot' or 'single_plot'."
+            )
+
+        # self.input_file = None  # type: t.Optional[Path]
+
+        # Parameter(s) specific for 'Parametric'
+        self.parametric_plot = None  # type: t.Optional[ParametricPlot]
+        self.parameter_keys = []  # type: t.List[str]
+
+        if parametric_plot is not None:
+            self.parametric_plot = ParametricPlot.from_dict(parametric_plot)
+
+        # Parameter(s) specific for 'Calibration'
+        self.calibration_plot = None  # type: t.Optional[t.Dict[str, t.Any]]
+        if calibration_plot is not None:
+            self.calibration_plot = calibration_plot
+
+        # Parameter(s) specific for 'Single'
+        self.single_plot = None  # type: t.Optional[dict]
+        if single_plot is not None:
+            self.single_plot = single_plot
+
+        self.user_plt_args = None  # type: t.Optional[ParametricPlotArgs]
         self.save_parameter_to_file = save_parameter_to_file  # type: t.Optional[dict]
-        self.output_dir = Path(output_folder).joinpath(
-            "run_" + strftime("%Y%m%d_%H%M%S")
+        self.output_dir = (
+            Path(output_folder).joinpath("run_" + strftime("%Y%m%d_%H%M%S")).resolve()
         )  # type: Path
+
         # if save_data_to_file is None:
         #     self.save_data_to_file = [{'detector.image.array': ['fits']}]       # type: list
         # else:
-        self.save_data_to_file = save_data_to_file  # type: t.Optional[list]
+        # TODO: Not related to a plot. Use by 'single' and 'parametric' modes.
+        self.save_data_to_file = save_data_to_file or [
+            {"detector.image.array": ["fits"]}
+        ]  # type: t.List[t.Dict[str, t.List[str]]]
 
-        if not os.path.exists(self.output_dir):
-            os.makedirs(self.output_dir)
-        else:
+        if self.output_dir.exists():
             raise IsADirectoryError("Directory exists.")
 
-        self.default_ax_args = {
-            "xlabel": None,
-            "ylabel": None,
-            "title": None,
-            "axis": None,
-            "grid": False,
-            "xscale": "linear",
-            "yscale": "linear",
-            "xticks": None,
-            "yticks": None,
-            "xlim": [None, None],
-            "ylim": [None, None],
-            "sci_x": False,
-            "sci_y": False,
-        }  # type: dict
+        self.output_dir.mkdir(parents=True, exist_ok=True)
+
+        # self.default_ax_args = {
+        #     "xlabel": None,
+        #     "ylabel": None,
+        #     "title": None,
+        #     "axis": None,
+        #     "grid": False,
+        #     "xscale": "linear",
+        #     "yscale": "linear",
+        #     "xticks": None,
+        #     "yticks": None,
+        #     "xlim": [None, None],
+        #     "ylim": [None, None],
+        #     "sci_x": False,
+        #     "sci_y": False,
+        # }  # type: dict
+        self.default_ax_args = ParametricPlotArgs()
+
         self.default_plot_args = {
             "color": None,
             "marker": ".",
             "linestyle": "",
         }  # type: dict
+
         self.default_hist_args = {
             "bins": None,
             "range": None,
@@ -93,14 +199,50 @@ class Outputs:
         }  # type: dict
         self.default_scatter_args = {"size": None, "cbar_label": None}  # type: dict
 
-        self.plt_args = None  # type: t.Optional[dict]
-        self.parameter_keys = []  # type: list
-        plt.figure()
+        self.plt_args = {}  # type: dict
 
-    def set_input_file(self, filename: t.Union[str, Path]) -> None:
+        # TODO: Create an object self._fig here ?
+        fig, ax = plt.subplots(1, 1)
+
+        self._fig = fig
+        self._ax = ax
+
+        plt.close(self._fig)
+
+    def __repr__(self):
         """TBW."""
-        self.input_file = Path(filename)
-        copy2(self.input_file, self.output_dir)
+        cls_name = self.__class__.__name__  # type: str
+
+        if self.parametric_plot is not None:
+            mode = "parametric"
+        elif self.calibration_plot is not None:
+            mode = "calibration"
+        else:
+            mode = "single"
+
+        return f"{cls_name}<mode={mode!r}, output_dir={self.output_dir!r}>"
+
+    @property
+    def fig(self) -> plt.Figure:
+        """Get the current ``Figure``."""
+        return self._fig
+
+    # TODO: Rename this method to 'copy_config_file' ??
+    def set_input_file(self, filename: t.Union[str, Path]) -> Path:
+        """Copy a YAML configuration filename into its output directory.
+
+        Parameters
+        ----------
+        filename : str or Path
+            YAML filename to copy
+
+        Returns
+        -------
+        Path
+            Returns the copied YAML filename.
+        """
+        input_file = Path(filename)
+        copy2(input_file, self.output_dir)
 
         # TODO: sort filenames ?
         copied_input_file_it = self.output_dir.glob("*.yaml")  # type: t.Iterator[Path]
@@ -110,6 +252,8 @@ class Outputs:
             file.write("\n#########")
             file.write(f"\n# Pyxel version: {version}")
             file.write("\n#########")
+
+        return copied_input_file
 
     # TODO: the log file should directly write in 'output_dir'
     def save_log_file(self) -> None:
@@ -123,34 +267,63 @@ class Outputs:
         """TBW."""
         new_filename = self.output_dir.joinpath(filename)  # type: Path
         new_filename.touch()
+
         return new_filename
 
+    # TODO: Specific to 'single_plot' ?
     def save_to_png(self, data: np.ndarray, name: str) -> Path:
-        """Write array to bitmap PNG image file."""
+        """Write array to bitmap PNG image file.
+
+        Parameters
+        ----------
+        data : array
+        name : str
+
+        Returns
+        -------
+        Path
+            TBW.
+        """
         row, col = data.shape
         name = str(name).replace(".", "_")
         filename = apply_run_number(
-            self.output_dir.joinpath(name + "_??.png")
+            self.output_dir.joinpath(f"{name}_??.png")
         )  # type: Path
-        fig = plt.figure()
+
         dpi = 300
-        fig.set_size_inches(min(col / dpi, 10.0), min(row / dpi, 10.0))
-        ax = plt.Axes(fig, [0.0, 0.0, 1.0, 1.0])
-        ax.set_axis_off()
-        fig.add_axes(ax)
-        plt.imshow(data, cmap="gray", extent=[0, col, 0, row])
-        plt.savefig(filename, dpi=dpi)
+        self._fig.set_size_inches(min(col / dpi, 10.0), min(row / dpi, 10.0))
+
+        # ax = plt.Axes(fig, [0.0, 0.0, 1.0, 1.0])
+        # ax.set_axis_off()
+        #
+        # fig.add_axes(ax)
+        # plt.imshow(data, cmap="gray", extent=[0, col, 0, row])
+        self._fig.savefig(filename, dpi=dpi)
 
         return filename
 
     def save_to_fits(self, data: np.ndarray, name: str) -> Path:
-        """Write array to FITS file."""
+        """Write array to FITS file.
+
+        Parameters
+        ----------
+        data
+        name
+
+        Returns
+        -------
+        Path
+            TBW.
+        """
         name = str(name).replace(".", "_")
         filename = apply_run_number(
-            self.output_dir.joinpath(name + "_??.fits")
-        )  # type: Path
+            self.output_dir.joinpath(f"{name}_??.fits")
+        ).resolve()  # type: Path
+
+        self._log.info("Save to FITS - filename: '%s'", filename)
+
         hdu = fits.PrimaryHDU(data)
-        hdu.header["PYXEL_V"] = str(version)
+        hdu.header["PYXEL_V"] = (str(version), "Pyxel version")
         hdu.writeto(filename, overwrite=False, output_verify="exception")
 
         return filename
@@ -158,7 +331,7 @@ class Outputs:
     def save_to_hdf(self, data: "Detector", name: str) -> Path:
         """Write detector object to HDF5 file."""
         name = str(name).replace(".", "_")
-        filename = apply_run_number(self.output_dir.joinpath(name + "_??.h5"))
+        filename = apply_run_number(self.output_dir.joinpath(f"{name}_??.h5"))
         with h5.File(filename, "w") as h5file:
             h5file.attrs["pyxel-version"] = str(version)
             if name == "detector":
@@ -207,42 +380,70 @@ class Outputs:
         np.save(file=filename, arr=data)
         return filename
 
-    def save_plot(self, filename: str = "figure_??") -> None:
+    def save_plot(self, filename: str = "figure_??") -> Path:
         """Save plot figure in PNG format, close figure and create new canvas for next plot."""
         new_filename = self.output_dir.joinpath(filename + ".png")  # type: Path
-        output_filename = apply_run_number(new_filename)  # type: Path
+        output_filename = apply_run_number(new_filename).resolve()  # type: Path
 
-        plt.savefig(output_filename)
-        plt.close("all")
-        plt.figure()
+        self._log.info("Save plot in filename '%s'", output_filename)
+        self._fig.savefig(output_filename)
+        # plt.close('all')
+        # plt.figure()
+
+        return output_filename
 
     def plot_graph(
         self, x: np.ndarray, y: np.ndarray, args: t.Optional[dict] = None
     ) -> None:
-        """TBW."""
-        arg_tpl = self.update_args(plot_type="graph", new_args=args)
+        """TBW.
+
+        Parameters
+        ----------
+        x
+        y
+        args
+        """
+        assert self.user_plt_args is not None
+
+        arg_tpl = self.update_args(
+            plot_type="graph", new_args=args
+        )  # type: t.Tuple[dict, dict]
+
         ax_args, plt_args = self.update_args(
-            plot_type="graph", new_args=self.user_plt_args, def_args=arg_tpl
+            plot_type="graph", new_args=self.user_plt_args.to_dict(), def_args=arg_tpl
         )
-        plt.plot(
+
+        self._ax.plot(
             x,
             y,
             color=plt_args["color"],
             marker=plt_args["marker"],
             linestyle=plt_args["linestyle"],
         )
-        update_plot(ax_args)
-        plt.draw()
+        update_plot(ax_args=ax_args, ax=self._ax)
+        # plt.draw()
 
     def plot_histogram(self, data: np.ndarray, args: t.Optional[dict] = None) -> None:
-        """TBW."""
+        """TBW.
+
+        Parameters
+        ----------
+        data
+        args
+        """
+        assert self.user_plt_args is not None
+
+        # fig, ax = plt.subplots()
+        ax = self._fig.axes
+
         arg_tpl = self.update_args(plot_type="hist", new_args=args)
         ax_args, plt_args = self.update_args(
-            plot_type="hist", new_args=self.user_plt_args, def_args=arg_tpl
+            plot_type="hist", new_args=self.user_plt_args.to_dict(), def_args=arg_tpl
         )
         if isinstance(data, np.ndarray):
             data = data.flatten()
-        plt.hist(
+
+        ax.hist(
             x=data,
             bins=plt_args["bins"],
             range=plt_args["range"],
@@ -253,8 +454,8 @@ class Outputs:
             color=plt_args["color"],
             facecolor=plt_args["facecolor"],
         )
-        update_plot(ax_args)
-        plt.draw()
+
+        update_plot(ax_args=ax_args, ax=ax)
 
     def plot_scatter(
         self,
@@ -263,26 +464,106 @@ class Outputs:
         color: t.Optional[str] = None,
         args: t.Optional[dict] = None,
     ) -> None:
-        """TBW."""
+        """TBW.
+
+        Parameters
+        ----------
+        x
+        y
+        color
+        args
+        """
+        assert self.user_plt_args is not None
+
+        # fig, ax = plt.subplots()
+        ax = self._fig.axes  # type: plt.Axes
+
         arg_tpl = self.update_args(plot_type="scatter", new_args=args)
         ax_args, plt_args = self.update_args(
-            plot_type="scatter", new_args=self.user_plt_args, def_args=arg_tpl
+            plot_type="scatter", new_args=self.user_plt_args.to_dict(), def_args=arg_tpl
         )
-        fig = plt.gcf()
+
+        # fig = plt.gcf()
+        # ax = fig.axes
+
         if color is not None:
-            sp = plt.scatter(x, y, c=color, s=plt_args["size"])
-            cbar = fig.colorbar(sp)
+            sp = ax.scatter(x, y, c=color, s=plt_args["size"])
+            cbar = self._fig.colorbar(sp)
             cbar.set_label(plt_args["cbar_label"])
+
         else:
-            plt.scatter(x, y, s=plt_args["size"])
-        update_plot(ax_args)
-        plt.draw()
+            ax.scatter(x, y, s=plt_args["size"])
 
+        update_plot(ax_args=ax_args, ax=ax)
+        # plt.draw()
+        # fig.canvas.draw_idle()
+
+    # TODO: Specific to 'single_plot'
     def single_output(self, processor: "Processor") -> None:
-        """TBW."""
-        if self.save_data_to_file is None:
-            self.save_data_to_file = [{"detector.image.array": ["fits"]}]
+        """TBW.
 
+        Parameters
+        ----------
+        processor
+        """
+        assert self.single_plot is not None
+
+        # if not self.save_data_to_file:
+        #     self.save_data_to_file = [{"detector.image.array": ["fits"]}]
+
+        self.save_to_file(processor)
+
+        self.user_plt_args = None
+        x = processor.detector.photon.array  # todo: default plots with plot_args?
+        y = processor.detector.image.array
+        color = None
+
+        if "plot_args" in self.single_plot:
+            self.user_plt_args = ParametricPlotArgs.from_dict(
+                self.single_plot["plot_args"]
+            )
+
+        if "x" in self.single_plot:
+            x = processor.get(self.single_plot["x"])
+
+        if "y" in self.single_plot:
+            y = processor.get(self.single_plot["y"])
+
+        if "plot_type" not in self.single_plot:
+            raise NotImplementedError
+
+        assert isinstance(x, np.ndarray)
+        assert isinstance(y, np.ndarray)
+
+        x = x.flatten()
+        y = y.flatten()
+
+        if self.single_plot["plot_type"] == "graph":
+            self.plot_graph(x, y)  # type: plt.Figure
+            fname = "graph_??"
+
+        elif self.single_plot["plot_type"] == "histogram":
+            self.plot_histogram(y)
+            fname = "histogram_??"
+
+        elif self.single_plot["plot_type"] == "scatter":
+            self.plot_scatter(x, y, color)
+            fname = "scatter_??"
+
+        else:
+            raise KeyError()
+
+        self.save_plot(filename=fname)
+
+        # plt.close()
+
+    def save_to_file(self, processor: "Processor") -> None:
+        """Save outputs into file(s).
+
+        Parameters
+        ----------
+        processor : Processor
+        """
         save_methods = {
             "fits": self.save_to_fits,
             "hdf": self.save_to_hdf,
@@ -290,47 +571,22 @@ class Outputs:
             "txt": self.save_to_txt,
             "csv": self.save_to_csv,
             "png": self.save_to_png,
-        }
-        for item in self.save_data_to_file:
-            obj = next(iter(item.keys()))  # TODO: Simplify this ?
-            format_list = next(iter(item.values()))
-            data = processor.get(obj)
+        }  # type: t.Dict[str, SaveToFile]
+
+        for dct in self.save_data_to_file:  # type: t.Dict[str, t.List[str]]
+            # Get first entry of `dict` 'item'
+            first_item, *_ = dct.items()
+
+            obj, format_list = first_item
+
+            data = processor.get(obj)  # type: np.ndarray
+
             if format_list is not None:
-                [
-                    save_methods[out_format](data=data, name=obj)
-                    for out_format in format_list
-                ]
+                for out_format in format_list:
+                    func = save_methods[out_format]  # type: SaveToFile
+                    _ = func(data=data, name=obj)
 
-        self.user_plt_args = None
-        x = processor.detector.photon.array  # todo: default plots with plot_args?
-        y = processor.detector.image.array
-        color = None
-        if self.single_plot:
-            if "plot_args" in self.single_plot:
-                self.user_plt_args = self.single_plot["plot_args"]
-            if "x" in self.single_plot:
-                x = processor.get(self.single_plot["x"])
-            if "y" in self.single_plot:
-                y = processor.get(self.single_plot["y"])
-            if "plot_type" in self.single_plot:
-                if isinstance(x, np.ndarray):
-                    x = x.flatten()
-                if isinstance(y, np.ndarray):
-                    y = y.flatten()
-
-                if self.single_plot["plot_type"] == "graph":
-                    self.plot_graph(x, y)
-                    fname = "graph_??"
-                elif self.single_plot["plot_type"] == "histogram":
-                    self.plot_histogram(y)
-                    fname = "histogram_??"
-                elif self.single_plot["plot_type"] == "scatter":
-                    self.plot_scatter(x, y, color)
-                    fname = "scatter_??"
-                else:
-                    raise KeyError()
-                self.save_plot(fname)
-
+    # TODO: Specific to 'calibration_plot'
     def champions_plot(
         self, results: dict, champions_file: Path, island_id: int
     ) -> None:
@@ -344,40 +600,46 @@ class Outputs:
             plt_args = {"xlabel": "generation", "linestyle": "-", "sci_y": True}
             key = item[0]
             param_value = item[1]
-            param_name = key[key.rfind(".") + 1 :]  # noqa: E203
+            param_name = key[slice(key.rfind(".") + 1, None)]
             plt_args["ylabel"] = param_name
             if param_name == "fitness":
                 plt_args["title"] = "Champion fitness"
                 plt_args["color"] = "red"
                 plt_args["ylabel"] = "fitness"
+
             elif param_name == "island":
                 continue
+
             else:
                 if key.rfind(".arguments") == -1:
-                    mdn = key[: key.rfind("." + param_name)]  # noqa: E203
+                    mdn = key[: key.rfind("." + param_name)]
                 else:
-                    mdn = key[: key.rfind(".arguments")]  # noqa: E203
-                model_name = mdn[mdn.rfind(".") + 1 :]  # noqa: E203
+                    mdn = key[: key.rfind(".arguments")]
+                model_name = mdn[slice(mdn.rfind(".") + 1, None)]
                 plt_args["title"] = title + model_name + " / " + param_name
                 plt_args["ylabel"] = param_name
 
             b = 1
-            if isinstance(param_value, float) or isinstance(param_value, int):
+            if isinstance(param_value, Number):
                 column = data[:, a]
                 self.plot_graph(generations, column, args=plt_args)
+
             elif isinstance(param_value, np.ndarray):
                 b = len(param_value)
-                column = data[:, a : a + b]  # noqa: E203
+                column = data[:, slice(a, a + b)]
                 self.plot_graph(generations, column, args=plt_args)
-                plt.legend(["index " + str(i) for i in range(b)])
+                self._fig.legend(["index " + str(i) for i in range(b)])
 
-            self.save_plot("calibrated_" + str(param_name) + "_id" + str(island_id))
+            self.save_plot(filename=f"calibrated_{param_name!s}_id{island_id!s}")
             a += b
 
+    # TODO: Specific to 'calibration_plot' ??
     def population_plot(
         self, results: dict, population_file: Path, island_id: int
     ) -> None:
         """TBW."""
+        assert self.calibration_plot
+
         data = np.loadtxt(population_file)
         fitnesses = np.log10(data[:, 1])
         a, b = 2, 1  # 1st parameter and fitness
@@ -411,19 +673,25 @@ class Outputs:
             self.plot_scatter(x, y, args=plt_args)
         else:
             self.plot_scatter(x, y, color=fitnesses, args=plt_args)
-        self.save_plot("population_id" + str(island_id))
 
+        self.save_plot(filename=f"population_id{island_id}")
+
+    # TODO: Specific to 'single_plot'
     def calibration_outputs(self, processor_list) -> None:
         """TBW."""
         if self.save_data_to_file is not None:
             for processor in processor_list:
                 self.single_output(processor)
 
+    # TODO: Specific to 'calibration_plot'
     def calibration_plots(self, results: dict) -> None:
         """TBW."""
+        assert self.calibration_plot
+
         if self.calibration_plot:
             if "champions_plot" in self.calibration_plot:
-                self.user_plt_args = {}
+                self.user_plt_args = None
+
                 if self.calibration_plot["champions_plot"]:
                     if "plot_args" in self.calibration_plot["champions_plot"]:
                         self.user_plt_args = self.calibration_plot["champions_plot"][
@@ -438,7 +706,7 @@ class Outputs:
                     )
 
             if "population_plot" in self.calibration_plot:
-                self.user_plt_args = {}
+                self.user_plt_args = None
                 if self.calibration_plot["population_plot"]:
                     if "plot_args" in self.calibration_plot["population_plot"]:
                         self.user_plt_args = self.calibration_plot["population_plot"][
@@ -452,76 +720,113 @@ class Outputs:
                         results=results, population_file=file_pop, island_id=iid
                     )
 
+    # TODO: Specific to 'calibration_plot' ??
     def fitting_plot(
         self, target_data: np.ndarray, simulated_data: np.ndarray, data_i
     ) -> None:
         """TBW."""
+        assert self.calibration_plot
+
         if self.calibration_plot:
             if "fitting_plot" in self.calibration_plot:
-                plt.plot(target_data, ".-", label="target data #" + str(data_i))
-                plt.plot(simulated_data, ".-", label="simulated data #" + str(data_i))
-                plt.draw()
+                self._fig.plot(target_data, ".-", label="target data #" + str(data_i))
+                self._fig.plot(
+                    simulated_data, ".-", label="simulated data #" + str(data_i)
+                )
+                self._fig.canvas.draw_idle()
 
+    # TODO: Specific to 'calibration_plot' ??
     def fitting_plot_close(self, result_type, island) -> None:
         """TBW."""
+        assert self.calibration_plot
+
         if self.calibration_plot:
             if "fitting_plot" in self.calibration_plot:
                 self.user_plt_args = None
-                if self.calibration_plot["fitting_plot"]:
-                    if "plot_args" in self.calibration_plot["fitting_plot"]:
-                        self.user_plt_args = self.calibration_plot["fitting_plot"][
-                            "plot_args"
-                        ]
+                if "plot_args" not in self.calibration_plot["fitting_plot"]:
+                    raise RuntimeError
+
+                self.user_plt_args = self.calibration_plot["fitting_plot"]["plot_args"]
+
                 args = {
-                    "title": "Target and Simulated ("
-                    + result_type
-                    + ") data, island "
-                    + str(island)
+                    "title": (
+                        f"Target and Simulated ({result_type}) data, "
+                        f"island {island}"
+                    )
                 }
                 arg_tpl = self.update_args(plot_type="graph", new_args=args)
                 ax_args, plt_args = self.update_args(
-                    plot_type="graph", new_args=self.user_plt_args, def_args=arg_tpl
+                    plot_type="graph",
+                    new_args=self.user_plt_args.to_dict(),
+                    def_args=arg_tpl,
                 )
-                update_plot(ax_args)
-                plt.legend()
-                self.save_plot(filename="fitted_datasets_id" + str(island))
+                update_plot(ax_args=ax_args, ax=self._fig.axes)
+                # plt.legend()
+                self._fig.legend()
 
+                self.save_plot(filename=f"fitted_datasets_id{island}")
+
+    # TODO: Specific to 'parametric_plot' ?
     def params_func(self, param: "ParametricAnalysis") -> None:
-        """TBW."""
-        for var in param.enabled_steps:
+        """Extract all parametric keys from `param`."""
+        assert self.parameter_keys is not None
+
+        # TODO: Re-initialized 'self.parameters' ??
+
+        for var in param.enabled_steps:  # type: ParameterValues
             if var.key not in self.parameter_keys:
                 self.parameter_keys += [var.key]
-        if self.save_parameter_to_file:
-            if self.save_parameter_to_file["parameter"]:
-                for par in self.save_parameter_to_file["parameter"]:
-                    if par is not None and par not in self.parameter_keys:
-                        self.parameter_keys += [par]
 
-    def extract_func(self, proc: "Processor") -> dict:
+        if self.save_parameter_to_file and self.save_parameter_to_file["parameter"]:
+            for par in self.save_parameter_to_file["parameter"]:
+                if par is not None and par not in self.parameter_keys:
+                    self.parameter_keys += [par]
+
+    # TODO: This function should be moved in `ParametricAnalysis`
+    # TODO: Specific to 'parametric_plot' ?
+    def extract_func(self, processor: "Processor") -> Result:
         """TBW."""
+        assert self.parameter_keys is not None
+
         # self.single_output(processor.detector)    # TODO: extract other things (optional)
-        res_row = np.array([])
-        for key in self.parameter_keys:
-            res_row = np.append(res_row, proc.get(key))
-        plt_row = np.array([])
-        if self.parametric_plot:
-            for key in [self.parametric_plot["x"], self.parametric_plot["y"]]:
-                if key is not None:
-                    plt_row = np.append(plt_row, proc.get(key))
-        return {"result": res_row, "plot": plt_row}
 
-    def merge_func(self, result_list: list) -> np.ndarray:
+        res_row = []  # type: t.List[np.ndarray]
+        for key in self.parameter_keys:
+            value = processor.get(key)  # type: np.ndarray
+            res_row.append(value)
+
+        # Extract all parameters keys from 'proc'
+        # all_attr_getters = operator.attrgetter(self.parameter_keys)  # type: t.Callable
+        # res_row = all_attr_getters(processor)  # type: t.Tuple[t.Any, ...]
+
+        # TODO: Refactor this
+        plt_row = []  # type: t.List[np.ndarray]
+        if self.parametric_plot:
+            for key in [self.parametric_plot.x, self.parametric_plot.y]:
+                if key is not None:
+                    value = processor.get(key)
+                    plt_row.append(value)
+
+        return Result(
+            result=np.array(res_row, dtype=np.float),
+            plot=np.array(plt_row, dtype=np.float),
+        )
+
+    # TODO: Specific to 'parametric_mode' ?
+    def merge_func(self, result_list: t.List[Result]) -> np.ndarray:
         """TBW."""
-        result_array = np.array([k["result"] for k in result_list])
-        save_methods = {
-            "npy": self.save_to_npy,
-            "txt": self.save_to_txt,
-            "csv": self.save_to_csv,
-        }  # type: t.Dict[str, t.Callable[..., Path]]
+        assert self.parameter_keys is not None
 
         if self.save_parameter_to_file:
+            result_array = np.array([k.result for k in result_list])
+            save_methods = {
+                "npy": self.save_to_npy,
+                "txt": self.save_to_txt,
+                "csv": self.save_to_csv,
+            }  # type: t.Dict[str, SaveToFile]
+
             for out_format in self.save_parameter_to_file["file_format"]:
-                func = save_methods[out_format]  # type: t.Callable[..., Path]
+                func = save_methods[out_format]  # type: SaveToFile
                 file = func(data=result_array, name="parameters")  # type: Path
 
                 if file.suffix in (".txt", ".csv"):
@@ -534,29 +839,28 @@ class Outputs:
                             + "\n"
                             + content
                         )
-        plot_array = np.array([k["plot"] for k in result_list])  # type: np.ndarray
+        plot_array = np.array([k.plot for k in result_list])  # type: np.ndarray
         return plot_array
 
+    # TODO: Specific to 'parametric_plot' ?
     def plotting_func(self, plot_array: np.ndarray) -> None:
-        """TBW."""
-        self.user_plt_args = None
-        if self.parametric_plot:
-            if "x" in self.parametric_plot:
-                x_key = self.parametric_plot["x"]
-            else:
-                raise KeyError()
-            if "y" in self.parametric_plot:
-                y_key = self.parametric_plot["y"]
-            else:
-                raise KeyError()
-            if "plot_args" in self.parametric_plot:
-                self.user_plt_args = self.parametric_plot["plot_args"]
-        else:
-            raise KeyError()
-        x = plot_array[:, 0]
-        y = plot_array[:, 1]
+        """TBW.
 
-        # TODO: Refactor this
+        Parameters
+        ----------
+        plot_array : array
+        """
+        if not self.parametric_plot:
+            raise RuntimeError
+
+        x_key = self.parametric_plot.x  # type: str
+        y_key = self.parametric_plot.y  # type: str
+
+        self.user_plt_args = self.parametric_plot.plot_args
+
+        x = plot_array[:, 0]  # type: np.ndarray
+        y = plot_array[:, 1]  # type: np.ndarray
+
         par_name = x_key[
             x_key[: x_key[: x_key.rfind(".")].rfind(".")].rfind(".") + 1 :  # noqa: E203
         ]
@@ -565,23 +869,31 @@ class Outputs:
         ]
 
         args = {"xlabel": par_name, "ylabel": res_name}
+
         if isinstance(x, np.ndarray):
             x = x.flatten()
         if isinstance(y, np.ndarray):
             y = y.flatten()
+
         self.plot_graph(x, y, args=args)
-        self.save_plot("parametric_??")
+        self.save_plot(filename="parametric_??")
 
     def update_args(
         self,
         plot_type: str,
         new_args: t.Optional[dict] = None,
-        def_args: tuple = (None, None),
-    ) -> tuple:
+        def_args: t.Tuple[t.Optional[dict], t.Optional[dict]] = (None, None),
+    ) -> t.Tuple[dict, dict]:
         """TBW."""
-        ax_args, plt_args = def_args[0], def_args[1]
+        if new_args is None:
+            new_args = {}
+
+        # ax_args, plt_args = def_args[0], def_args[1]
+        ax_args, plt_args = def_args
+
         if ax_args is None:
-            ax_args = copy(self.default_ax_args)
+            ax_args = self.default_ax_args.to_dict()
+
         if plt_args is None:
             if plot_type == "hist":
                 plt_args = copy(self.default_hist_args)
@@ -592,14 +904,13 @@ class Outputs:
             else:
                 raise ValueError
 
-        if new_args:
-            for key in new_args:
-                if key in plt_args.keys():
-                    plt_args[key] = new_args[key]
-                elif key in ax_args.keys():
-                    ax_args[key] = new_args[key]
-                else:
-                    raise KeyError('Not valid plotting key in "plot_args": "%s"' % key)
+        for key in new_args:
+            if key in plt_args.keys():
+                plt_args[key] = new_args[key]
+            elif key in ax_args.keys():
+                ax_args[key] = new_args[key]
+            else:
+                raise KeyError('Not valid plotting key in "plot_args": "%s"' % key)
 
         return ax_args, plt_args
 
@@ -610,38 +921,54 @@ def show_plots() -> None:
     plt.show()
 
 
-def update_plot(ax_args: dict) -> None:
-    """TBW."""
-    plt.xlabel(ax_args["xlabel"])
-    plt.ylabel(ax_args["ylabel"])
-    plt.xscale(ax_args["xscale"])
-    plt.yscale(ax_args["yscale"])
-    plt.xlim(ax_args["xlim"][0], ax_args["xlim"][1])
-    plt.ylim(ax_args["ylim"][0], ax_args["ylim"][1])
-    plt.title(ax_args["title"])
+def update_plot(ax_args: dict, ax: plt.Axes) -> None:
+    """TBW.
+
+    Parameters
+    ----------
+    ax_args
+    ax
+    """
+    ax.set_xlabel(ax_args["xlabel"])
+    ax.set_ylabel(ax_args["ylabel"])
+
+    ax.set_xscale(ax_args["xscale"])
+    ax.set_yscale(ax_args["yscale"])
+
+    ax.set_xlim(ax_args["xlim"][0], ax_args["xlim"][1])
+    ax.set_ylim(ax_args["ylim"][0], ax_args["ylim"][1])
+
+    ax.set_title(ax_args["title"])
+
     if ax_args["axis"]:
-        plt.axis(ax_args["axis"])
+        # TODO: Fix this
+        raise NotImplementedError
+        # plt.axis(ax_args["axis"])
+
     if ax_args["xticks"]:
-        plt.xticks(ax_args["xticks"])
+        ax.set_xticks(ax_args["xticks"])
     if ax_args["yticks"]:
-        plt.yticks(ax_args["yticks"])
-    plt.grid(ax_args["grid"])
+        ax.set_yticks(ax_args["yticks"])
+
+    # TODO: Enable this
+    ax.grid(ax_args["grid"])
+
     if ax_args["sci_x"]:
-        plt.ticklabel_format(style="sci", axis="x", scilimits=(0, 0))
+        ax.ticklabel_format(style="sci", axis="x", scilimits=(0, 0))
     if ax_args["sci_y"]:
-        plt.ticklabel_format(style="sci", axis="y", scilimits=(0, 0))
+        ax.ticklabel_format(style="sci", axis="y", scilimits=(0, 0))
 
 
 # TODO: Refactor this function
 def update_fits_header(header: dict, key, value) -> None:
     """TBW.
 
-    :param header:
-    :param key:
-    :param value:
-    :return:
+    Parameters
+    ----------
+    header
+    key
+    value
     """
-
     if not isinstance(value, (str, int, float)):
         value = "%r" % value
     if isinstance(value, str):
@@ -652,29 +979,29 @@ def update_fits_header(header: dict, key, value) -> None:
     header[key] = value
 
 
-def apply_run_number(path: Path) -> Path:
+# TODO: Create unit tests
+# TODO: Refactor this in 'def apply_run_number(folder, template_filename) -> Path
+def apply_run_number(template_filename: Path) -> Path:
     """Convert the file name numeric placeholder to a unique number.
 
-    :param path:
+    :param template_filename:
     :return:
     """
-    path_str = str(path)
+    path_str = str(template_filename)
     if "?" in path_str:
         # TODO: Use method 'Path.glob'
         dir_list = sorted(glob(path_str))
+
         p_0 = path_str.find("?")
         p_1 = path_str.rfind("?")
-
-        start_idx = p_0
-        end_idx = p_1 + 1
-        template = path_str[start_idx:end_idx]
-
+        template = path_str[slice(p_0, p_1 + 1)]
         path_str = path_str.replace(template, "{:0%dd}" % len(template))
+
         last_num = 0
         if len(dir_list):
             path_last = dir_list[-1]
-
-            last_num = int(path_last[start_idx:end_idx])
+            last_num = int(path_last[slice(p_0, p_1 + 1)])
         last_num += 1
         path_str = path_str.format(last_num)
-    return type(path)(path_str)
+
+    return Path(path_str)
