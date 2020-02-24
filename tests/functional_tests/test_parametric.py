@@ -83,7 +83,9 @@ def test_pipeline_parametric_without_init_photon(mode, expected):
 
         with pytest.raises(
             RuntimeError,
-            match=r"Photon array is not initialized ! "
-            "Please use a 'Photon Generation' model",
+            match=(
+                r"Photon array is not initialized ! "
+                r"Please use a 'Photon Generation' model"
+            ),
         ):
             config.run_pipeline()

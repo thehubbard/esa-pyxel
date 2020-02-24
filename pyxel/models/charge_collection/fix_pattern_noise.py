@@ -15,7 +15,6 @@ from pyxel.detectors.detector import Detector
 from pyxel.detectors.geometry import Geometry
 
 
-
 # TODO: Fix this
 # @validators.validate
 # @config.argument(name='', label='', units='', validate=)

@@ -92,33 +92,33 @@ class Array:
         # self.type = value.dtype
         self._array = value
 
-    # # TODO: Is it necessary ? Maybe not if you implement method __array__
-    # @property
-    # def mean(self) -> np.ndarray:
-    #     """Return mean of all pixel values."""
-    #     return np.mean(self._array)
-    #
-    # @property
-    # def std_deviation(self) -> np.ndarray:
-    #     """Return standard deviation of all pixel values."""
-    #     return np.std(self._array)
-    #
-    # @property
-    # def max(self) -> np.ndarray:
-    #     """Return maximum of all pixel values."""
-    #     return np.max(self._array)
-    #
-    # @property
-    # def min(self) -> np.ndarray:
-    #     """Return minimum of all pixel values."""
-    #     return np.min(self._array)
-    #
-    # @property
-    # def peak_to_peak(self) -> np.ndarray:
-    #     """Return peak-to-peak value of all pixel values."""
-    #     return np.ptp(self._array)
-    #
-    # @property
-    # def sum(self) -> np.ndarray:
-    #     """Return sum of all pixel values."""
-    #     return np.sum(self._array)
+    # TODO: Is it necessary ? Maybe not if you implement method __array__
+    @property
+    def mean(self) -> np.ndarray:
+        """Return mean of all pixel values."""
+        return np.mean(self._array)
+
+    @property
+    def std_deviation(self) -> np.ndarray:
+        """Return standard deviation of all pixel values."""
+        return np.std(self._array)
+
+    @property
+    def max(self) -> np.ndarray:
+        """Return maximum of all pixel values."""
+        return np.max(self._array)
+
+    @property
+    def min(self) -> np.ndarray:
+        """Return minimum of all pixel values."""
+        return np.min(self._array)
+
+    @property
+    def peak_to_peak(self) -> np.ndarray:
+        """Return peak-to-peak value of all pixel values."""
+        return np.ptp(self._array)
+
+    @property
+    def sum(self) -> np.ndarray:
+        """Return sum of all pixel values."""
+        return np.sum(self._array)
