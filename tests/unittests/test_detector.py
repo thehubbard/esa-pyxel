@@ -90,7 +90,7 @@ def test_init(cls, geometry, environment, characteristics, material):
 
 
 @pytest.mark.parametrize(
-    "obj", [CCD(CCDGeometry(), Material(), Environment(), CCDCharacteristics()),]
+    "obj", [CCD(CCDGeometry(), Material(), Environment(), CCDCharacteristics())]
 )
 def test_copy(obj):
     """Test Detector.copy."""

@@ -11,7 +11,7 @@ except ImportError:
 
 @pytest.mark.skipif(not WITH_PYGMO, reason="Package 'pygmo' is not installed.")
 @pytest.mark.parametrize(
-    "yaml_file", ["tests/data/parametric.yaml", "tests/data/yaml.yaml",]
+    "yaml_file", ["tests/data/parametric.yaml", "tests/data/yaml.yaml"]
 )
 def test_yaml_load(yaml_file):
     cfg = io.load(yaml_file)

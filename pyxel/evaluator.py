@@ -89,6 +89,7 @@ def eval_range(values: t.Union[str, list, tuple]) -> list:
     return values_lst
 
 
+# TODO: Use 'numexpr.evaluate' ?
 def eval_entry(value) -> t.Any:
     """TBW.
 

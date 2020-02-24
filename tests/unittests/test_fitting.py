@@ -39,7 +39,7 @@ def configure(mf, sim):
 
 
 @pytest.mark.skipif(not WITH_PYGMO, reason="Package 'pygmo' is not installed.")
-@pytest.mark.parametrize("yaml_file", ["tests/data/calibrate.yaml",])
+@pytest.mark.parametrize("yaml_file", ["tests/data/calibrate.yaml"])
 def test_configure_params(yaml_file):
     """Test """
     cfg = io.load(yaml_file)
@@ -61,7 +61,7 @@ def test_configure_params(yaml_file):
 
 
 @pytest.mark.skipif(not WITH_PYGMO, reason="Package 'pygmo' is not installed.")
-@pytest.mark.parametrize("yaml", ["tests/data/calibrate_fits.yaml",])
+@pytest.mark.parametrize("yaml", ["tests/data/calibrate_fits.yaml"])
 def test_configure_fits_target(yaml):
     """Test """
     cfg = io.load(yaml)
@@ -88,7 +88,7 @@ def test_configure_fits_target(yaml):
 
 @pytest.mark.skipif(not WITH_PYGMO, reason="Package 'pygmo' is not installed.")
 @pytest.mark.parametrize(
-    "yaml", ["tests/data/calibrate.yaml", "tests/data/calibrate_fits.yaml",]
+    "yaml", ["tests/data/calibrate.yaml", "tests/data/calibrate_fits.yaml"]
 )
 def test_boundaries(yaml):
     """Test """
@@ -248,14 +248,20 @@ def test_custom_fitness(yaml, simulated, target, weighting):
 def test_fitness(yaml, parameter, expected_fitness):
     """Test"""
     cfg = io.load(yaml)
+
     detector = cfg["ccd_detector"]
     pipeline = cfg["pipeline"]
+
     processor = Processor(detector, pipeline)
     simulation = cfg["simulation"]
+
     mf = ModelFitting(processor, simulation.calibration.parameters)
+
     configure(mf, simulation)
+
     overall_fitness = mf.fitness(parameter)
     assert overall_fitness[0] == expected_fitness
+
     print("fitness: ", overall_fitness[0])
 
 
@@ -328,14 +334,16 @@ def test_split_and_update(yaml, parameter, expected_array):
                     150,
                 ]
             ),
-        ),
+        )
     ],
 )
 def test_detector_and_model_update(yaml, param_array):
     """Test"""
     cfg = io.load(yaml)
+
     detector = cfg["ccd_detector"]
     pipeline = cfg["pipeline"]
+
     processor = Processor(detector, pipeline)
     simulation = cfg["simulation"]
     mf = ModelFitting(processor, simulation.calibration.parameters)

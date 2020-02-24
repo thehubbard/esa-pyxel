@@ -42,9 +42,9 @@ def my_decorated_function(detector: Detector, func_std=2.0):
 
 registry_map = {
     "photon_generation": [
-        {"func": "pyxel.models.photon_generation.load_image.load_image",},
-        {"func": "pyxel.models.photon_generation.illumination.illumination",},
-        {"func": "pyxel.models.photon_generation.shot_noise.shot_noise",},
+        {"func": "pyxel.models.photon_generation.load_image.load_image"},
+        {"func": "pyxel.models.photon_generation.illumination.illumination"},
+        {"func": "pyxel.models.photon_generation.shot_noise.shot_noise"},
     ],
     "optics": [],
     "charge_generation": [
@@ -65,7 +65,7 @@ registry_map = {
         },
     ],
     "charge_transfer": [
-        {"func": "pyxel.models.charge_transfer.cdm.cdm", "type": "ccd",}
+        {"func": "pyxel.models.charge_transfer.cdm.cdm", "type": "ccd"}
     ],
     "charge_measurement": [
         {
@@ -76,7 +76,7 @@ registry_map = {
             "func": "pyxel.models.signal_transfer.nghxrg.nghxrg.ktc_bias_noise",
             "type": "cmos",
         },
-        {"func": "pyxel.models.signal_transfer.nghxrg.nghxrg.white_read_noise",},
+        {"func": "pyxel.models.signal_transfer.nghxrg.nghxrg.white_read_noise"},
     ],
     "signal_transfer": [
         {

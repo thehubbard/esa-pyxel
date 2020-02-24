@@ -27,10 +27,6 @@ Requirements
 * ``pygmo>=2.10 [optional]``
 * ``poppy>=0.8.0 [optional]``
 
-**Dependencies provided together with Pyxel:**
-
-* ``dependencies/esapy_config-*.whl``
-
 
 Before you begin
 ----------------
@@ -119,7 +115,7 @@ with Pyxel using ``pip``:
 .. code-block:: bash
 
   $ cd pyxel
-  $ python3.6 -m pip install -r requirements.txt
+  $ python3.7 -m pip install -r requirements.txt
 
 .. note::
   This command installs all packages that cannot be found in ``pypi.org``.
@@ -129,7 +125,7 @@ with Pyxel using ``pip``:
   To prevent breaking any system-wide packages (ie packages installed for all users)
   or to avoid using command ``$ sudo pip ...`` you can do a `user installation <https://pip.pypa.io/en/stable/user_guide/#user-installs>`_.
 
-  With the command: ``$ python3.6 -m pip install --user -r requirements.txt``
+  With the command: ``$ python3.7 -m pip install --user -r requirements.txt``
 
 
 Install Pyxel
@@ -141,10 +137,10 @@ the 4 different options below:
 
 .. code-block:: bash
 
-  $ python3.6 -m pip install -e ".[all]"            # Install everything (recommended)
-  $ python3.6 -m pip install -e ".[calibration]"    # Install dependencies for 'calibration mode' (pygmo)
-  $ python3.6 -m pip install -e ".[model]"          # Install dependencies for optional models (poppy)
-  $ python3.6 -m pip install -e .                   # Install without any optional dependencies
+  $ python3.7 -m pip install -e ".[all]"            # Install everything (recommended)
+  $ python3.7 -m pip install -e ".[calibration]"    # Install dependencies for 'calibration mode' (pygmo)
+  $ python3.7 -m pip install -e ".[model]"          # Install dependencies for optional models (poppy)
+  $ python3.7 -m pip install -e .                   # Install without any optional dependencies
 
 
 ..
@@ -154,32 +150,32 @@ the 4 different options below:
 
     .. code-block:: bash
 
-      $ python3.6 -m pip install -e ".[all]"
+      $ python3.7 -m pip install -e ".[all]"
 
     * To install ``pyxel`` and the optional dependencies for *calibration mode* (``pygmo``):
 
     .. code-block:: bash
 
-      $ python3.6 -m pip install -e ".[calibration]"
+      $ python3.7 -m pip install -e ".[calibration]"
 
     * To install ``pyxel`` and the optional models (``poppy``):
 
     .. code-block:: bash
 
-      $ python3.6 -m pip install -e ".[model]"
+      $ python3.7 -m pip install -e ".[model]"
 
     * To install ``pyxel`` without any optional dependency:
 
     .. code-block:: bash
 
-      $ python3.6 -m pip install -e .
+      $ python3.7 -m pip install -e .
 
 
 .. important::
   To prevent breaking any system-wide packages (ie packages installed for all users)
   or to avoid using command ``$ sudo pip ...`` you can do a `user installation <https://pip.pypa.io/en/stable/user_guide/#user-installs>`_.
-  Whenvever you see the command ``$ python3.6 -m pip install ...`` then replace it
-  by the command ``$ python3.6 -m pip install --user ...``.
+  Whenvever you see the command ``$ python3.7 -m pip install ...`` then replace it
+  by the command ``$ python3.7 -m pip install --user ...``.
 
   If ``pyxel`` is not available in your shell after installation, you will need to add
   the `user base <https://docs.python.org/3/library/site.html#site.USER_BASE>`_'s binary
@@ -192,7 +188,7 @@ the 4 different options below:
   You will need to set your PATH to include
   ``C:\Users\Username\AppData\Roaming\Python36\Scripts``.
   you can find the user base directory by running
-  ``python3.6 -m site --user-base`` and adding ``bin`` to the end.
+  ``python3.7 -m site --user-base`` and adding ``bin`` to the end.
 
 
 After the installation steps above,

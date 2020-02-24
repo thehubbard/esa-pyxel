@@ -40,6 +40,11 @@ class ParametricAnalysis:
         if column_range:
             self.columns = slice(*column_range)
 
+    def __repr__(self):
+        """TBW."""
+        cls_name = self.__class__.__name__  # type: str
+        return f"{cls_name}<mode={self.parametric_mode!s}>"
+
     @property
     def enabled_steps(self) -> t.List[ParameterValues]:
         """TBW."""

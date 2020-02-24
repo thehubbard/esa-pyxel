@@ -28,9 +28,12 @@ class ModelFunction:
     ):
         """TBW.
 
-        :param name:
-        :param enabled:
-        :param arguments:
+        Parameters
+        ----------
+        func
+        name
+        arguments
+        enabled
         """
         if callable(func):
             func = func.__module__ + "." + func.__name__
@@ -45,8 +48,10 @@ class ModelFunction:
 
     def __repr__(self) -> str:
         """TBW."""
-        return "ModelFunction(%(name)r, %(func)r, %(arguments)r, %(enabled)r)" % vars(
-            self
+        cls_name = self.__class__.__name__  # type: str
+        return (
+            f"{cls_name}(name={self.name!r}, func={self.func!r}, "
+            f"arguments={self.arguments!r}, enabled={self.enabled!r})"
         )
 
     # TODO: Is this method needed ?

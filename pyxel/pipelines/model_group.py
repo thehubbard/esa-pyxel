@@ -29,6 +29,15 @@ class ModelGroup:
         """
         self.models = models  # type: t.List[ModelFunction]
 
+    def __repr__(self):
+        """TBW."""
+        cls_name = self.__class__.__name__  # type: str
+        all_models = [
+            model.name for model in self.models if model.name
+        ]  # type: t.List[str]
+
+        return f"{cls_name}<models={all_models!r}>"
+
     def __deepcopy__(self, memo) -> "ModelGroup":
         """TBW."""
         copied_models = deepcopy(self.models)
