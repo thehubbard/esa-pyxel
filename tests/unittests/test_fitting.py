@@ -292,7 +292,7 @@ def test_fitness(yaml, parameter, expected_fitness):
                     15.0,
                 ]
             ),
-        ),
+        )
     ],
 )
 def test_split_and_update(yaml, parameter, expected_array):
