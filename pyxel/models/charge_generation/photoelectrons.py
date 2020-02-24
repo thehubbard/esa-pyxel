@@ -18,9 +18,11 @@ from pyxel.detectors.detector import Detector
 def simple_conversion(detector: Detector) -> None:
     """Generate charge from incident photon via photoelectric effect, simple statistical model.
 
-    :param detector: Pyxel Detector object
+    Parameters
+    ----------
+    detector : Detector
+        Pyxel Detector object.
     """
-    logging.info("")
     geo = detector.geometry
     ch = detector.characteristics
     ph = detector.photon

@@ -78,7 +78,6 @@ def optical_psf(
         Field Of View on detector plane in arcsec.
     """
     logging.getLogger("poppy").setLevel(logging.WARNING)
-    logging.info("")
 
     if fov_arcsec:  # TODO
         raise NotImplementedError

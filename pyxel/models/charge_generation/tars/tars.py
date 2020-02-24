@@ -21,7 +21,7 @@ from pyxel.models.charge_generation.tars.util import (  # , load_histogram_data
     interpolate_data,
     read_data,
 )
-from tqdm import tqdm
+from tqdm.auto import tqdm
 
 # from astropy import units as u
 
@@ -263,7 +263,7 @@ class TARS:
 
         self.sim_obj = Simulation(detector)
         self.charge_obj = detector.charge
-        self.log = logging.getLogger(__name__)
+        self._log = logging.getLogger(__name__)
 
     # TODO: Is it still used ?
     def set_simulation_mode(self, sim_mode: str) -> None:
@@ -410,8 +410,11 @@ class TARS:
             alpha=self.angle_alpha,
             beta=self.angle_beta,
         )
-        out_path = "data/"
-        for k in tqdm(range(0, self.particle_number)):
+
+        out_path = Path("data").resolve()
+        self._log.info("Save data in folder '%s'", out_path)
+
+        for k in tqdm(range(self.particle_number), desc="TARS", unit=" particle"):
             # for k in range(0, self.particle_number):
             err = None
             if self.sim_obj.energy_loss_data == "stepsize":  # TODO
@@ -420,52 +423,52 @@ class TARS:
                 err = self.sim_obj.event_generation_geant4()
             if k % 10 == 0:
                 np.save(
-                    out_path + "tars-e_num_lst_per_event.npy",
+                    f"{out_path}/tars-e_num_lst_per_event.npy",
                     self.sim_obj.e_num_lst_per_event,
                 )
                 np.save(
-                    out_path + "tars-sec_lst_per_event.npy",
+                    f"{out_path}/tars-sec_lst_per_event.npy",
                     self.sim_obj.sec_lst_per_event,
                 )
                 np.save(
-                    out_path + "tars-ter_lst_per_event.npy",
+                    f"{out_path}/tars-ter_lst_per_event.npy",
                     self.sim_obj.ter_lst_per_event,
                 )
                 np.save(
-                    out_path + "tars-track_length_lst_per_event.npy",
+                    f"{out_path}/tars-track_length_lst_per_event.npy",
                     self.sim_obj.track_length_lst_per_event,
                 )
                 np.save(
-                    out_path + "tars-p_energy_lst_per_event.npy",
+                    f"{out_path}/tars-p_energy_lst_per_event.npy",
                     self.sim_obj.p_energy_lst_per_event,
                 )
                 np.save(
-                    out_path + "tars-alpha_lst_per_event.npy",
+                    f"{out_path}/tars-alpha_lst_per_event.npy",
                     self.sim_obj.alpha_lst_per_event,
                 )
                 np.save(
-                    out_path + "tars-beta_lst_per_event.npy",
+                    f"{out_path}/tars-beta_lst_per_event.npy",
                     self.sim_obj.beta_lst_per_event,
                 )
 
                 np.save(
-                    out_path + "tars-e_num_lst_per_step.npy",
+                    f"{out_path}/tars-e_num_lst_per_step.npy",
                     self.sim_obj.e_num_lst_per_step,
                 )
-                np.save(out_path + "tars-e_pos0_lst.npy", self.sim_obj.e_pos0_lst)
-                np.save(out_path + "tars-e_pos1_lst.npy", self.sim_obj.e_pos1_lst)
-                np.save(out_path + "tars-e_pos2_lst.npy", self.sim_obj.e_pos2_lst)
+                np.save(f"{out_path}/tars-e_pos0_lst.npy", self.sim_obj.e_pos0_lst)
+                np.save(f"{out_path}/tars-e_pos1_lst.npy", self.sim_obj.e_pos1_lst)
+                np.save(f"{out_path}/tars-e_pos2_lst.npy", self.sim_obj.e_pos2_lst)
 
                 np.save(
-                    out_path + "tars-all_e_from_eloss.npy",
+                    f"{out_path}/tars-all_e_from_eloss.npy",
                     self.sim_obj.electron_number_from_eloss,
                 )
                 np.save(
-                    out_path + "tars-sec_e_from_eloss.npy",
+                    f"{out_path}/tars-sec_e_from_eloss.npy",
                     self.sim_obj.secondaries_from_eloss,
                 )
                 np.save(
-                    out_path + "tars-ter_e_from_eloss.npy",
+                    f"{out_path}/tars-ter_e_from_eloss.npy",
                     self.sim_obj.tertiaries_from_eloss,
                 )
             if err:

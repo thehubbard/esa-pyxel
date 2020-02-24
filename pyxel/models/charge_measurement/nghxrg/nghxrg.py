@@ -127,12 +127,13 @@ def nghxrg(
                     end_x_idx = window_position[0] + window_size[0]
 
                     detector.pixel.array[
-                        start_y_idx:end_y_idx, start_x_idx:end_x_idx,
+                        start_y_idx:end_y_idx, start_x_idx:end_x_idx
                     ] += result
         except TypeError:
             pass
 
 
+# TODO: This generates plot. It should be in class `Output`
 def display_noisepsd(
     array: np.ndarray,
     nb_output: float,
