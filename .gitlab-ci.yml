@@ -59,7 +59,8 @@ python36:
     - python -V
     - pip install tox
     - tox -e py36-extra_all
-    -
+
+
 # Run pytest for Python 3.7
 python373:
   image: python:3.7.3   # todo: should be 3.7, but tox or pytest or python3.7.4 causes segmentation fault
@@ -68,6 +69,7 @@ python373:
     - python -V
     - pip install tox
     - tox -e py37-extra_all
+
 
 # Run pytest for Python 3.8
 python38:
