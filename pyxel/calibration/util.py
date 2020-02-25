@@ -31,11 +31,11 @@ class ResultType(Enum):
 
 
 def read_single_data(filename: Path) -> np.ndarray:
-    """TBW.
+    """Read a numpy array from a FITS or NPY file
 
     Parameters
     ----------
-    filename
+    filename : Path
 
     Returns
     -------
@@ -79,27 +79,25 @@ def read_single_data(filename: Path) -> np.ndarray:
 
     # TODO: Is it the right manner ?
     if data is None:
-        raise IOError("Input file '{filename}' can not be read by Pyxel.")
+        raise IOError(f"Input file '{filename}' can not be read by Pyxel.")
 
     return data
 
 
 def read_data(filenames: t.Sequence[t.Union[str, Path]]) -> t.List[np.ndarray]:
-    """TBW.
+    """Read numpy array(s) from several FITS or NPY files.
 
     :param filenames:
     :return:
     """
-    output = []  # type: t.List[np.ndarray]
-
-    for filename in filenames:
-        data = read_single_data(Path(filename))
-
-        output += [data]
+    output = [
+        read_single_data(Path(filename)) for filename in filenames
+    ]  # type: t.List[np.ndarray]
 
     return output
 
 
+# TODO: Create unit tests for this function
 def list_to_slice(
     input_list: t.Optional[t.List[int]] = None,
 ) -> t.Union[slice, t.Tuple[slice, slice]]:
@@ -120,6 +118,7 @@ def list_to_slice(
         raise ValueError("Fitting range should have 2 or 4 values")
 
 
+# TODO: Write unit tests for this function
 def check_ranges(
     target_fit_range: t.List[int], out_fit_range: t.List[int], rows: int, cols: int
 ) -> None:

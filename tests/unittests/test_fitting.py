@@ -18,7 +18,7 @@ except ImportError:
     WITH_PYGMO = False
 
 
-def configure(mf, sim):
+def configure(mf: ModelFitting, sim: Configuration):
     """TBW."""
     pg.set_global_rng_seed(sim.calibration.seed)
     np.random.seed(sim.calibration.seed)
@@ -345,8 +345,8 @@ def test_detector_and_model_update(yaml: str, param_array: np.ndarray):
 
     processor = Processor(detector, pipeline)
     simulation = cfg["simulation"]
-    mf = ModelFitting(processor, simulation.calibration.parameters)
-    configure(mf, simulation)
+    mf = ModelFitting(processor=processor, variables=simulation.calibration.parameters)
+    configure(mf=mf, sim=simulation)
     mf.processor = mf.update_processor(param_array, processor)
     attributes = [
         mf.processor.detector.characteristics.amp,
@@ -358,7 +358,7 @@ def test_detector_and_model_update(yaml: str, param_array: np.ndarray):
         mf.processor.detector.environment.temperature,
     ]
     a = 0
-    for attr in attributes:
+    for idx, attr in enumerate(attributes):
         if isinstance(attr, np.ndarray):
             b = len(attr)
             np.testing.assert_array_equal(attr, param_array[a : a + b])

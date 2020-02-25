@@ -9,8 +9,6 @@
 import functools
 import inspect
 import typing as t
-from collections import abc
-from copy import deepcopy
 
 if t.TYPE_CHECKING:
     from pyxel.detectors import Detector
@@ -19,51 +17,51 @@ if t.TYPE_CHECKING:
 # Declare type variable
 T = t.TypeVar("T")
 
-
-class Arguments(abc.Mapping):
-    """TBW."""
-
-    def __init__(self, arguments: t.Optional[dict] = None):
-        """TBW."""
-        self._arguments = arguments or {}
-
-    def __repr__(self):
-        """TBW."""
-        return f"Arguments({self._arguments!r})"
-
-    def __contains__(self, key):
-        """TBW."""
-        return key in self._arguments
-
-    def __getitem__(self, key):
-        """TBW."""
-        if key not in self:
-            raise KeyError(f"Argument '{key}' does not exist.")
-
-        return self._arguments[key]
-
-    def __len__(self):
-        """TBW."""
-        return len(self._arguments)
-
-    def __iter__(self):
-        """TBW."""
-        return iter(self._arguments)
-
-    def __getattr__(self, name: str):
-        """TBW."""
-        if name not in self._arguments:
-            raise AttributeError(f"Argument {name!r} does not exist.")
-
-        return self._arguments[name]
-
-    def __dir__(self):
-        """TBW."""
-        return dir(type(self)) + list(self._arguments)
-
-    def __deepcopy__(self, memo) -> "Arguments":
-        """TBW."""
-        return Arguments(deepcopy(self._arguments))
+#
+# class Arguments(abc.Mapping):
+#     """TBW."""
+#
+#     def __init__(self, arguments: t.Optional[dict] = None):
+#         """TBW."""
+#         self._arguments = arguments or {}
+#
+#     def __repr__(self):
+#         """TBW."""
+#         return f"Arguments({self._arguments!r})"
+#
+#     def __contains__(self, key):
+#         """TBW."""
+#         return key in self._arguments
+#
+#     def __getitem__(self, key):
+#         """TBW."""
+#         if key not in self:
+#             raise KeyError(f"Argument '{key}' does not exist.")
+#
+#         return self._arguments[key]
+#
+#     def __len__(self):
+#         """TBW."""
+#         return len(self._arguments)
+#
+#     def __iter__(self):
+#         """TBW."""
+#         return iter(self._arguments)
+#
+#     def __getattr__(self, name: str):
+#         """TBW."""
+#         if name not in self._arguments:
+#             raise AttributeError(f"Argument {name!r} does not exist.")
+#
+#         return self._arguments[name]
+#
+#     def __dir__(self):
+#         """TBW."""
+#         return dir(type(self)) + list(self._arguments)
+#
+#     def __deepcopy__(self, memo) -> "Arguments":
+#         """TBW."""
+#         return Arguments(deepcopy(self._arguments))
 
 
 # TODO: What is `ModelFunction` ?
@@ -121,7 +119,8 @@ class ModelFunction:
         self._func = func  # type: t.Callable
         self._name = name
         self.enabled = enabled  # type: bool
-        self._arguments = Arguments(arguments)
+        # self._arguments = Arguments(arguments)
+        self._arguments = arguments or {}  # type: dict
         # self.group = None               # TODO
 
     def __repr__(self) -> str:
@@ -140,7 +139,7 @@ class ModelFunction:
         return self._name
 
     @property
-    def arguments(self) -> Arguments:
+    def arguments(self) -> dict:
         """TBW."""
         return self._arguments
 

@@ -89,7 +89,7 @@ class ModelFitting:
         fitness_func: t.Callable,
         population_size: int,
         generations: int,
-        file_path: Path,
+        file_path: t.Optional[Path],
         target_fit_range: t.List[int],
         out_fit_range: t.List[int],
         target_output: t.List[Path],
@@ -364,13 +364,13 @@ class ModelFitting:
         for var in self.variables:
             if var.values == "_":
                 b = 1
-                new_processor.set(var.key, parameter[a])
+                new_processor.set(key=var.key, value=parameter[a])
             elif isinstance(var.values, list):
                 b = len(var.values)
 
                 start = a
                 stop = a + b
-                new_processor.set(var.key, parameter[start:stop])
+                new_processor.set(key=var.key, value=parameter[start:stop])
             a += b
         return new_processor
 
