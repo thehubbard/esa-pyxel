@@ -11,6 +11,7 @@ from .object_model import load  # noqa: F401
 import typing as t
 from functools import partial
 from pyxel.evaluator import evaluate_reference
+from pyxel.pipelines import ModelFunction
 
 
 def build_callable(func: str, arguments: t.Optional[dict] = None) -> t.Callable:
@@ -37,13 +38,30 @@ def build_callable(func: str, arguments: t.Optional[dict] = None) -> t.Callable:
     return partial(func_callable, **arguments)
 
 
+def build_model_function(
+    func: str, name: str, arguments: t.Optional[dict] = None, enabled: bool = True
+) -> ModelFunction:
+    """Create a ``ModelFunction`` instance."""
+    assert isinstance(func, str)
+    assert isinstance(name, str)
+    assert arguments is None or isinstance(arguments, dict)
+    assert isinstance(enabled, bool)
+
+    func_callable = evaluate_reference(func)  # type: t.Callable
+    if arguments is None:
+        arguments = {}
+
+    return ModelFunction(
+        func=func_callable, name=name, arguments=arguments, enabled=enabled
+    )
+
+
 # TODO: Re-develop the YAML loader and representer. See Issue #59.
 def pyxel_yaml_loader():
     """TBW."""
     from pyxel.parametric.parametric import Configuration
     from pyxel.parametric.parametric import ParametricAnalysis
     from pyxel.parametric.parameter_values import ParameterValues
-    from pyxel.pipelines import ModelFunction
     from pyxel.pipelines import ModelGroup
     from pyxel.util import Outputs
 
@@ -98,7 +116,7 @@ def pyxel_yaml_loader():
     ObjectModelLoader.add_class(DetectionPipeline, ["pipeline"])
 
     ObjectModelLoader.add_class(ModelGroup, ["pipeline", None])
-    ObjectModelLoader.add_class(ModelFunction, ["pipeline", None, None])
+    ObjectModelLoader.add_class(build_model_function, ["pipeline", None, None])
 
     ObjectModelLoader.add_class(Configuration, ["simulation"])
 
