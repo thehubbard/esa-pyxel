@@ -7,6 +7,7 @@
 
 """TBW."""
 import functools
+import inspect
 import typing as t
 
 from pyxel.evaluator import evaluate_reference
@@ -14,6 +15,9 @@ from pyxel.evaluator import evaluate_reference
 if t.TYPE_CHECKING:
     from pyxel.detectors import Detector
 
+
+# Declare type variable
+T = t.TypeVar("T")
 
 # class Arguments(abc.Mapping):
 #     """TBW."""
@@ -75,7 +79,7 @@ class ModelFunction:
     def __init__(
         self,
         func: t.Union[t.Callable, str],  # TODO: Replace by 'func: t.Callable'
-        name: t.Optional[str] = None,
+        name: str,
         arguments: t.Optional[dict] = None,
         enabled: bool = True,
     ):
@@ -91,8 +95,8 @@ class ModelFunction:
         if callable(func):
             func = func.__module__ + "." + func.__name__
 
-        self.func = func  # type: str
-        self.name = name
+        self._func = evaluate_reference(func)  # type: t.Callable
+        self._name = name
         self.enabled = enabled  # type: bool
         self._arguments = arguments or {}  # type: dict
         # self.group = None               # TODO
@@ -100,37 +104,50 @@ class ModelFunction:
     def __repr__(self) -> str:
         """TBW."""
         cls_name = self.__class__.__name__  # type: str
+        func_name = self._func.__module__ + "." + self._func.__name__
+
         return (
-            f"{cls_name}(name={self.name!r}, func={self.func!r}, "
+            f"{cls_name}(name={self.name!r}, func={func_name}, "
             f"arguments={self.arguments!r}, enabled={self.enabled!r})"
         )
+
+    @property
+    def name(self) -> str:
+        """TBW."""
+        return self._name
 
     @property
     def arguments(self) -> dict:
         """TBW."""
         return self._arguments
 
-    # TODO: Replace this by __call__ ?
-    @property
-    def function(self) -> t.Callable:
+    # # TODO: Replace this by __call__ ?
+    # @property
+    # def function(self) -> t.Callable:
+    #     """TBW."""
+    #     func_ref = evaluate_reference(self.func)  # type: t.Callable
+    #     if isinstance(func_ref, type):
+    #         # this is a class type, instantiate it using default arguments.
+    #         func_ref = func_ref()
+    #         # TODO: should check whether or not it's callable.
+    #     func = functools.partial(func_ref, **self.arguments)
+    #     return func
+
+    def __call__(self, detector: "Detector") -> T:
         """TBW."""
-        func_ref = evaluate_reference(self.func)  # type: t.Callable
-        if isinstance(func_ref, type):
-            # this is a class type, instantiate it using default arguments.
-            func_ref = func_ref()
-            # TODO: should check whether or not it's callable.
-        func = functools.partial(func_ref, **self.arguments)
-        return func
+        # func_ref = evaluate_reference(self.func)  # type: t.Callable
 
-    def __call__(self, detector: "Detector") -> None:
-        """TBW."""
-        func_ref = evaluate_reference(self.func)  # type: t.Callable
-
-        if isinstance(func_ref, type):
+        if inspect.isclass(self._func):
             # this is a class type, instantiate it using default arguments.
-            func_ref = func_ref()
+            func_ref = self._func()
             # TODO: should check whether or not it's callable.
+            raise NotImplementedError
+
+        else:
+            func_ref = self._func
 
         func = functools.partial(func_ref, **self.arguments)
 
-        _ = func(detector)
+        result = func(detector)  # type: T
+
+        return result
