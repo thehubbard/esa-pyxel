@@ -84,14 +84,14 @@ def read_single_data(filename: Path) -> np.ndarray:
     return data
 
 
-def read_data(filenames: t.Sequence[t.Union[str, Path]]) -> t.List[np.ndarray]:
+def read_data(filenames: t.Sequence[Path]) -> t.List[np.ndarray]:
     """Read numpy array(s) from several FITS or NPY files.
 
     :param filenames:
     :return:
     """
     output = [
-        read_single_data(Path(filename)) for filename in filenames
+        read_single_data(filename) for filename in filenames
     ]  # type: t.List[np.ndarray]
 
     return output

@@ -522,7 +522,7 @@ class Outputs:
         ----------
         processor
         """
-        assert self.single_plot is not None
+        assert self.single_plot is not None or self.calibration_plot is not None
 
         # if not self.save_data_to_file:
         #     self.save_data_to_file = [{"detector.image.array": ["fits"]}]
@@ -693,7 +693,7 @@ class Outputs:
         self.save_plot(filename=f"population_id{island_id}")
 
     # TODO: Specific to 'single_plot'
-    def calibration_outputs(self, processor_list) -> None:
+    def calibration_outputs(self, processor_list: "t.List[Processor]") -> None:
         """TBW."""
         if self.save_data_to_file is not None:
             for processor in processor_list:

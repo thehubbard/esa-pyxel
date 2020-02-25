@@ -169,12 +169,13 @@ def load(yaml_file: t.Union[str, Path]) -> t.Any:
     :param yaml_file:
     :return:
     """
-    if isinstance(yaml_file, str):
-        with Path(yaml_file).open("r") as file_obj:
-            return load_yaml(file_obj)
-    else:
-        with yaml_file.open("r") as file_obj:
-            return load_yaml(file_obj)
+    filename = Path(yaml_file).resolve()
+
+    if not filename.exists():
+        raise FileNotFoundError(f"Cannot find configuration file '{filename}'.")
+
+    with filename.open("r") as file_obj:
+        return load_yaml(file_obj)
 
 
 def load_yaml(stream: t.Union[str, t.IO]) -> t.Any:
