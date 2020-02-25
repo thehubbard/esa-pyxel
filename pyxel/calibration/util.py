@@ -31,7 +31,7 @@ class ResultType(Enum):
 
 
 def read_single_data(filename: Path) -> np.ndarray:
-    """Read a numpy array from a FITS or NPY file
+    """Read a numpy array from a FITS or NPY file.
 
     Parameters
     ----------
