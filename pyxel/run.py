@@ -25,8 +25,7 @@ from dask import delayed, distributed
 from pyxel import __version__ as version
 from pyxel.detectors import CCD, CMOS
 from pyxel.parametric.parametric import Configuration, ParametricAnalysis
-from pyxel.pipelines.pipeline import DetectionPipeline
-from pyxel.pipelines.processor import Processor
+from pyxel.pipelines import DetectionPipeline, Processor
 from pyxel.util import Outputs
 from pyxel.util.outputs import Result
 

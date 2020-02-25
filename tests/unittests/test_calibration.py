@@ -13,8 +13,7 @@ from pyxel.calibration.util import (
 )
 from pyxel.detectors import CCD
 from pyxel.parametric.parametric import Configuration
-from pyxel.pipelines.pipeline import DetectionPipeline
-from pyxel.pipelines.processor import Processor
+from pyxel.pipelines import DetectionPipeline, Processor
 
 try:
     import pygmo as pg

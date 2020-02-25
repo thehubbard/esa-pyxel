@@ -8,8 +8,7 @@
 """TBW."""
 import typing as t
 
-from pyxel.pipelines.model_function import ModelFunction
-from pyxel.pipelines.model_group import ModelGroup
+from pyxel.pipelines import ModelFunction, ModelGroup
 
 
 class DetectionPipeline:

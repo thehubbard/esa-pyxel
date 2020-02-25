@@ -11,11 +11,11 @@ import typing as t  # noqa: F401
 from copy import deepcopy
 
 from pyxel import util
-from pyxel.pipelines.model_function import ModelFunction
+from pyxel.pipelines import ModelFunction
 
 if t.TYPE_CHECKING:
     from ..detectors import Detector
-    from ..pipelines.pipeline import DetectionPipeline
+    from ..pipelines import DetectionPipeline
 
 
 # TODO: These methods could also be as a `abc.Sequence` with magical methods:

@@ -17,8 +17,7 @@ import numpy as np
 from pyxel.calibration.fitting import ModelFitting
 from pyxel.calibration.util import CalibrationMode, ResultType
 from pyxel.parametric.parameter_values import ParameterValues
-from pyxel.pipelines.model_function import ModelFunction
-from pyxel.pipelines.processor import Processor
+from pyxel.pipelines import ModelFunction, Processor
 
 from ..util.outputs import Outputs
 

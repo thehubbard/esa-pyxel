@@ -24,7 +24,7 @@ import pandas as pd
 from pyxel import __version__ as version
 
 if t.TYPE_CHECKING:
-    from ..pipelines.processor import Processor
+    from ..pipelines import Processor
     from ..detectors import Detector
     from ..parametric.parametric import ParametricAnalysis
     from ..parametric.parameter_values import ParameterValues

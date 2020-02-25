@@ -9,7 +9,7 @@ from pyxel.parametric.parametric import (
     ParametricAnalysis,
     ParametricMode,
 )
-from pyxel.pipelines.processor import DetectionPipeline, Processor
+from pyxel.pipelines import DetectionPipeline, Processor
 
 try:
     import pygmo as pg
