@@ -9,6 +9,7 @@
 import logging
 import operator
 import typing as t
+from copy import deepcopy
 
 import numpy as np
 from pyxel.detectors.ccd import CCD
@@ -39,6 +40,13 @@ class Processor:
         """TBW."""
         cls_name = self.__class__.__name__  # type: str
         return f"{cls_name}<detector={self.detector!r}, pipeline={self.pipeline!r}>"
+
+    def __deepcopy__(self, memodict) -> "Processor":
+        """Make a deep copy of this object."""
+        return Processor(
+            detector=deepcopy(self.detector, memo=memodict),
+            pipeline=deepcopy(self.pipeline, memo=memodict),
+        )
 
     # TODO: Could it be renamed '__contains__' ?
     # TODO: reimplement this method.
