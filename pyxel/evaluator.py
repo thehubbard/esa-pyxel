@@ -16,7 +16,7 @@ import numpy as np
 __all__ = ["evaluate_reference", "eval_range", "eval_entry"]
 
 
-def evaluate_reference(reference_str):
+def evaluate_reference(reference_str) -> t.Callable:
     """Evaluate a module's class, function, or constant.
 
     :param str reference_str: the python expression to
@@ -24,7 +24,7 @@ def evaluate_reference(reference_str):
         This is usually a reference to a class or a function.
     :return: the module attribute or object.
     :rtype: object
-    :raises ImportError: if reference_str cannot be evaulated to a callable.
+    :raises ImportError: if reference_str cannot be evaluated to a callable.
     """
     if not reference_str:
         raise ImportError("Empty string cannot be evaluated")
@@ -40,7 +40,9 @@ def evaluate_reference(reference_str):
         raise ImportError("Cannot import module: %r. exc: %s" % (module_str, str(exc)))
 
     try:
-        reference = getattr(module, function_str)
+        reference = getattr(module, function_str)  # type: t.Callable
+        assert callable(reference)
+
         # if isinstance(reference, type):
         #     # this is a class type, instantiate it using default arguments.
         #     reference = reference()

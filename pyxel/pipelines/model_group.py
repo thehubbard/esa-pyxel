@@ -52,6 +52,18 @@ class ModelGroup:
             if model.enabled:
                 yield model
 
+    def __getattr__(self, item: str) -> ModelFunction:
+        """TBW."""
+        for model in self.models:
+            if model.name == item:
+                return model
+        else:
+            raise AttributeError(f"Cannot find model {item!r}.")
+
+    def __dir__(self):
+        """TBW."""
+        return dir(type(self)) + [model.name for model in self.models]
+
     # TODO: Why is this method returning a `bool` ?
     def run(
         self,
@@ -84,12 +96,3 @@ class ModelGroup:
                     model(detector)
 
         return False
-
-    # TODO: Is it needed ? if yes then you could also implement
-    #       the magic method '__dir__'. It is useful for auto-completion
-    def __getattr__(self, item: str) -> t.Optional[ModelFunction]:
-        """TBW."""
-        for model in self.models:
-            if model.name == item:
-                return model
-        return None
