@@ -522,7 +522,7 @@ class Outputs:
         ----------
         processor
         """
-        assert self.single_plot is not None or self.calibration_plot is not None
+        assert self.single_plot is not None
 
         # if not self.save_data_to_file:
         #     self.save_data_to_file = [{"detector.image.array": ["fits"]}]
