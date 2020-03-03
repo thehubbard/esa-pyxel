@@ -6,7 +6,6 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """Pyxel photon generator models: photon shot noise."""
-import logging
 import typing as t
 
 import numpy as np
@@ -22,7 +21,6 @@ def shot_noise(detector: Detector, random_seed: t.Optional[int] = None) -> None:
     :param detector: Pyxel Detector object
     :param random_seed: int seed
     """
-    logging.info("")
     if random_seed:
         np.random.seed(random_seed)
 

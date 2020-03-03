@@ -6,8 +6,6 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """Pyxel photon generator models."""
-import logging
-
 from pyxel.data_structure import Photon
 from pyxel.detectors import Detector
 
@@ -19,8 +17,6 @@ def alignment(detector: Detector) -> None:
 
     :param detector: Pyxel Detector object
     """
-    logging.info("")
-
     geo = detector.geometry
     rows, cols = detector.photon.array.shape
     row0 = int((rows - geo.row) / 2)

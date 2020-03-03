@@ -6,7 +6,6 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """Pyxel photon generator models."""
-import logging
 import typing as t
 
 import numpy as np
@@ -25,7 +24,7 @@ def illumination(
     detector: Detector,
     level: int,
     option: str = "uniform",
-    array_size: t.Optional[t.List[int]] = None,
+    array_size: t.Optional[t.Tuple[int, int]] = None,
     hole_size: t.Optional[t.List[int]] = None,
     hole_center: t.Optional[t.List[int]] = None,
 ) -> None:
@@ -51,17 +50,14 @@ def illumination(
     hole_center: list, optional
         List of integers defining the center of the elliptic or rectangular hole.
     """
-    logging.info("")
-
     if array_size is None:
-        try:
-            shape = detector.photon.array.shape
-        except AttributeError:
+        if not detector.has_photon:
             geo = detector.geometry
             detector.photon = Photon(np.zeros((geo.row, geo.col), dtype=int))
-            shape = detector.photon.array.shape
+
+        shape = detector.photon.array.shape  # type: t.Tuple[int, int]
     else:
-        shape = tuple(array_size)
+        shape = array_size
 
     if option == "uniform":
         photon_array = np.ones(shape, dtype=int) * level

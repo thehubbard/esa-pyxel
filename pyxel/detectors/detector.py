@@ -52,8 +52,8 @@ class Detector:
         self._signal = None  # type: t.Optional[Signal]
         self._image = None  # type: t.Optional[Image]
 
-        self.input_image = None
-        self._output_dir = None  # type: t.Optional[Path]
+        self.input_image = None  # type: t.Optional[np.ndarray]
+        self._output_dir = None  # type: t.Optional[Path]  # TODO: Is it really needed ?
 
         self.start_time = 0.0  # type: float
         self.end_time = 0.0  # type: float
@@ -74,6 +74,11 @@ class Detector:
     def characteristics(self):
         """TBW."""
         raise NotImplementedError
+
+    @property
+    def has_photon(self) -> bool:
+        """TBW."""
+        return self._photon is not None
 
     @property
     def photon(self) -> Photon:
@@ -131,10 +136,14 @@ class Detector:
             self._signal = Signal(self.geometry)
             self._image = Image(self.geometry)
 
+    # TODO: Set an `Output` object ?
+    # TODO: Is it really needed ?
     def set_output_dir(self, path: t.Union[str, Path]) -> None:
         """Set output directory path."""
         self._output_dir = Path(path)
 
+    # TODO: Get an `Output object ?
+    # TODO: Is it really needed ?
     @property
     def output_dir(self) -> Path:
         """Output directory path."""

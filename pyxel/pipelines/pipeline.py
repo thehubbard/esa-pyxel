@@ -65,6 +65,29 @@ class DetectionPipeline:
             "readout_electronics",
         )  # type: t.Tuple[str, ...]
 
+    def __repr__(self) -> str:
+        """TBW."""
+        cls_name = self.__class__.__name__  # type: str
+        return f"{cls_name}<is_running={self._is_running!r}, doc={self.doc!r}>"
+
+    def __iter__(self) -> t.Iterable[ModelFunction]:
+        """TBW."""
+        for model in self.MODEL_GROUPS:
+            models_grp = getattr(self, model)  # type: t.Optional[ModelGroup]
+            if models_grp:
+                yield from models_grp
+
+    # def run(self, detector, abort_before: t.Optional[str]=None) -> None:
+    #     """TBW."""
+    #     self._is_running = True
+    #     for model_func in iter(self):
+    #         if model_func.name == abort_before:
+    #             break
+    #
+    #         model_func(detector)
+    #
+    #     self._is_running = False
+
     # def __getstate__(self):
     #     """TBW."""
     #     return {
@@ -93,6 +116,7 @@ class DetectionPipeline:
         """TBW."""
         self._is_running = False
 
+    # TODO: Is this method used ?
     def get_model(self, name: str) -> ModelFunction:
         """TBW.
 

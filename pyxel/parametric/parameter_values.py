@@ -40,6 +40,12 @@ class ParameterValues:
         self.logarithmic = logarithmic  # type: bool
         self.boundaries = boundaries  # type: t.Optional[t.Tuple[float, float]]
 
+    def __repr__(self) -> str:
+        """TBW."""
+        cls_name = self.__class__.__name__  # type: str
+
+        return f"{cls_name}<key={self.key!r}, values={self.values!r}, enabled={self.enabled!r}>"
+
     def __len__(self) -> int:
         """TBW."""
         values = eval_range(self.values)  # type: list

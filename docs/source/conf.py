@@ -178,7 +178,7 @@ latex_documents = [
         metadata["name"] + " Documentation",
         metadata["author"],
         "manual",
-    ),
+    )
 ]
 
 

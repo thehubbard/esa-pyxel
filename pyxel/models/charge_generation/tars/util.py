@@ -119,7 +119,11 @@ def read_data(file_name: Path) -> np.ndarray:
     :param file_name:
     :return:
     """
-    data = np.loadtxt(file_name, "float", "#")
+    full_path = file_name.resolve()
+    if not full_path.exists():
+        raise FileNotFoundError(f"Cannot find file '{full_path}' !")
+
+    data = np.loadtxt(full_path, "float", "#")
     return data
 
 

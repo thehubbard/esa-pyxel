@@ -8,6 +8,7 @@
 """Simple model to load charge profiles."""
 import logging
 import typing as t
+from pathlib import Path
 
 import numpy as np
 from pyxel.detectors.detector import Detector
@@ -32,10 +33,12 @@ def charge_profile(
     logging.info("")
     geo = detector.geometry
 
+    full_path = Path(txt_file).resolve()
+
     # All pixels has zero charge by default
     detector_charge = np.zeros((geo.row, geo.col))
     # Load 2d charge profile (which can be smaller or larger in dimensions than detector imaging area)
-    charge_from_file = np.loadtxt(txt_file, ndmin=2)
+    charge_from_file = np.loadtxt(full_path, ndmin=2)
     if fit_profile_to_det:
         # Crop 2d charge profile, so it is not larger in dimensions than detector imaging area)
         charge_from_file = charge_from_file[slice(0, geo.row), slice(0, geo.col)]

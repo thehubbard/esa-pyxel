@@ -6,13 +6,17 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """TBW."""
+import logging
+import operator
 import typing as t
+from copy import deepcopy
 
+import numpy as np
 from pyxel.detectors.ccd import CCD
 from pyxel.detectors.cmos import CMOS
 from pyxel.evaluator import eval_entry
 from pyxel.pipelines.pipeline import DetectionPipeline, ModelGroup
-from pyxel.state import get_obj_att, get_value
+from pyxel.state import get_obj_att
 
 
 # TODO: Is this class needed ?
@@ -22,25 +26,41 @@ class Processor:
     def __init__(self, detector: t.Union[CCD, CMOS], pipeline: DetectionPipeline):
         """TBW.
 
-        :param detector:
-        :param pipeline:
+        Parameters
+        ----------
+        detector
+        pipeline
         """
+        self._log = logging.getLogger(__name__)
+
         self.detector = detector
         self.pipeline = pipeline
 
-    # def __getstate__(self):
-    #     """TBW."""
-    #     return {
-    #         'detector': self.detector,
-    #         'pipeline': self.pipeline,
-    #     }
+    def __repr__(self) -> str:
+        """TBW."""
+        cls_name = self.__class__.__name__  # type: str
+        return f"{cls_name}<detector={self.detector!r}, pipeline={self.pipeline!r}>"
+
+    def __deepcopy__(self, memodict) -> "Processor":
+        """Make a deep copy of this object."""
+        return Processor(
+            detector=deepcopy(self.detector, memo=memodict),
+            pipeline=deepcopy(self.pipeline, memo=memodict),
+        )
 
     # TODO: Could it be renamed '__contains__' ?
+    # TODO: reimplement this method.
     def has(self, key: str) -> bool:
         """TBW.
 
-        :param key:
-        :return:
+        Parameters
+        ----------
+        key : str
+
+        Returns
+        -------
+        bool
+            TBW.
         """
         found = False
         obj, att = get_obj_att(self, key)
@@ -51,22 +71,34 @@ class Processor:
         return found
 
     # TODO: Could it be renamed '__getitem__' ?
-    def get(self, key: str) -> t.Any:
+    # TODO: Is it really needed ?
+    def get(self, key: str) -> np.ndarray:
         """TBW.
 
-        :param key:
-        :return:
+        Parameters
+        ----------
+        key : str
+
+        Returns
+        -------
+        TBW.
         """
-        return get_value(self, key)
+        # return get_value(self, key)
+
+        func = operator.attrgetter(key)  # type: t.Callable
+        result = func(self)
+
+        return np.asarray(result, dtype=np.float)
 
     # TODO: Could it be renamed '__setitem__' ?
     def set(self, key: str, value: t.Any, convert_value: bool = True) -> None:
         """TBW.
 
-        :param key:
-        :param value:
-        :param convert_value:
-        :return:
+        Parameters
+        ----------
+        key : str
+        value
+        convert_value : bool
         """
         if convert_value:  # and value:
             # convert the string based value to a number
@@ -84,16 +116,38 @@ class Processor:
         else:
             setattr(obj, att, value)
 
+    # TODO: Create a method `DetectionPipeline.run`
     def run_pipeline(self, abort_before: t.Optional[str] = None) -> "Processor":
-        """TBW.
+        """Run a pipeline with all its models in the right order.
 
-        :param abort_before: str, model name, the pipeline should be aborted before this
-        :return:
+        Parameters
+        ----------
+        abort_before : str
+            model name, the pipeline should be aborted before this
+
+        Returns
+        -------
+        Processor
+            TBW.
+
+        Notes
+        -----
+        The ``Processors`` instance with method '.run_pipeline' is modified.
         """
+        self._log.info("Start pipeline")
+
+        # TODO: Use with-statement to set/unset ._is_running
         self.pipeline._is_running = True
+
         for group_name in self.pipeline.model_group_names:
-            models_grp = getattr(self.pipeline, group_name)  # type: ModelGroup
+            # Get a group of models
+            models_grp = getattr(
+                self.pipeline, group_name
+            )  # type: t.Optional[ModelGroup]
+
             if models_grp:
+                self._log.info("Processing group: %r", group_name)
+
                 abort_flag = models_grp.run(
                     detector=self.detector,
                     pipeline=self.pipeline,
@@ -101,6 +155,7 @@ class Processor:
                 )
                 if abort_flag:
                     break
+
         self.pipeline._is_running = False
 
         # TODO: Is is necessary to return 'self' ??

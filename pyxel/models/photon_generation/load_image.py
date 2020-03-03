@@ -6,9 +6,10 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """Pyxel photon generator models."""
-import logging
 import typing as t
+from pathlib import Path
 
+import numpy as np
 from astropy.io import fits
 from pyxel.data_structure import Photon
 from pyxel.detectors import Detector
@@ -36,8 +37,12 @@ def load_image(
         photon numbers for each pixel using the Photon Transfer Function:
         :math:`PTF = QE \cdot \eta \cdot S_{v} \cdot amp \cdot a_{1} \cdot a_{2}`
     """
-    logging.info("")
-    image = fits.getdata(image_file)
+    filename = Path(image_file).resolve()
+
+    if not Path(filename).exists():
+        raise FileNotFoundError(f"Image file '{filename}' does not exist !")
+
+    image = fits.getdata(filename)  # type: np.ndarray
 
     if fit_image_to_det:
         geo = detector.geometry

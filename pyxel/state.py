@@ -20,6 +20,7 @@ __all__ = [
 ]
 
 
+# TODO: Remove this function ?
 def get_obj_by_type(obj: t.Any, key: str, obj_type: t.Optional[t.Type] = None) -> t.Any:
     """Get the object associated with the class type following the key chain.
 
@@ -34,6 +35,7 @@ def get_obj_by_type(obj: t.Any, key: str, obj_type: t.Optional[t.Type] = None) -
             return obj
 
 
+# TODO: Remove this function ?
 def get_obj_att(
     obj: t.Any, key: str, obj_type: t.Optional[t.Type] = None
 ) -> t.Tuple[t.Any, str]:
@@ -190,6 +192,7 @@ def get_state_ids(
     return result
 
 
+# TODO: Remove this function ?
 def get_value(obj: t.Any, key: str) -> t.Any:
     """Retrieve the attribute value of the object given the attribute dot formatted key chain.
 
