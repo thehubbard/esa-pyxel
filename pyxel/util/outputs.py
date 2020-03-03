@@ -8,7 +8,7 @@
 """Utility functions for creating outputs."""
 import logging
 import typing as t
-from copy import copy
+from enum import Enum
 from glob import glob
 from numbers import Number
 from pathlib import Path
@@ -24,7 +24,7 @@ import pandas as pd
 from pyxel import __version__ as version
 
 if t.TYPE_CHECKING:
-    from ..pipelines.processor import Processor
+    from ..pipelines import Processor
     from ..detectors import Detector
     from ..parametric.parametric import ParametricAnalysis
     from ..parametric.parameter_values import ParameterValues
@@ -90,6 +90,14 @@ class ParametricPlot:
             y=dct["y"],
             plot_args=ParametricPlotArgs.from_dict(dct["plot_args"]),
         )
+
+
+class PlotType(Enum):
+    """TBW."""
+
+    Histogram = "hist"
+    Graph = "graph"
+    Scatter = "scatter"
 
 
 # TODO: Create a special Output class for 'parametric_plot', 'calibration_plot' and
@@ -405,12 +413,13 @@ class Outputs:
         """
         assert self.user_plt_args is not None
 
-        arg_tpl = self.update_args(
-            plot_type="graph", new_args=args
-        )  # type: t.Tuple[dict, dict]
+        ax_args0, plt_args0 = self.update_args(plot_type=PlotType.Graph, new_args=args)
 
         ax_args, plt_args = self.update_args(
-            plot_type="graph", new_args=self.user_plt_args.to_dict(), def_args=arg_tpl
+            plot_type=PlotType.Graph,
+            new_args=self.user_plt_args.to_dict(),
+            ax_args=ax_args0,
+            plt_args=plt_args0,
         )
 
         self._ax.plot(
@@ -433,17 +442,19 @@ class Outputs:
         """
         assert self.user_plt_args is not None
 
-        # fig, ax = plt.subplots()
-        ax = self._fig.axes
-
-        arg_tpl = self.update_args(plot_type="hist", new_args=args)
+        ax_args0, plt_args0 = self.update_args(
+            plot_type=PlotType.Histogram, new_args=args
+        )
         ax_args, plt_args = self.update_args(
-            plot_type="hist", new_args=self.user_plt_args.to_dict(), def_args=arg_tpl
+            plot_type=PlotType.Histogram,
+            new_args=self.user_plt_args.to_dict(),
+            ax_args=ax_args0,
+            plt_args=plt_args0,
         )
         if isinstance(data, np.ndarray):
             data = data.flatten()
 
-        ax.hist(
+        self._ax.hist(
             x=data,
             bins=plt_args["bins"],
             range=plt_args["range"],
@@ -455,7 +466,7 @@ class Outputs:
             facecolor=plt_args["facecolor"],
         )
 
-        update_plot(ax_args=ax_args, ax=ax)
+        update_plot(ax_args=ax_args, ax=self._ax)
 
     def plot_scatter(
         self,
@@ -478,9 +489,14 @@ class Outputs:
         # fig, ax = plt.subplots()
         ax = self._fig.axes  # type: plt.Axes
 
-        arg_tpl = self.update_args(plot_type="scatter", new_args=args)
+        ax_args0, plt_args0 = self.update_args(
+            plot_type=PlotType.Scatter, new_args=args
+        )
         ax_args, plt_args = self.update_args(
-            plot_type="scatter", new_args=self.user_plt_args.to_dict(), def_args=arg_tpl
+            plot_type=PlotType.Scatter,
+            new_args=self.user_plt_args.to_dict(),
+            ax_args=ax_args0,
+            plt_args=plt_args0,
         )
 
         # fig = plt.gcf()
@@ -754,11 +770,14 @@ class Outputs:
                         f"island {island}"
                     )
                 }
-                arg_tpl = self.update_args(plot_type="graph", new_args=args)
+                ax_args0, plt_args0 = self.update_args(
+                    plot_type=PlotType.Graph, new_args=args
+                )
                 ax_args, plt_args = self.update_args(
-                    plot_type="graph",
+                    plot_type=PlotType.Graph,
                     new_args=self.user_plt_args.to_dict(),
-                    def_args=arg_tpl,
+                    ax_args=ax_args0,
+                    plt_args=plt_args0,
                 )
                 update_plot(ax_args=ax_args, ax=self._fig.axes)
                 # plt.legend()
@@ -880,27 +899,25 @@ class Outputs:
 
     def update_args(
         self,
-        plot_type: str,
+        plot_type: PlotType,
         new_args: t.Optional[dict] = None,
-        def_args: t.Tuple[t.Optional[dict], t.Optional[dict]] = (None, None),
+        ax_args: t.Optional[dict] = None,
+        plt_args: t.Optional[dict] = None,
     ) -> t.Tuple[dict, dict]:
         """TBW."""
         if new_args is None:
             new_args = {}
 
-        # ax_args, plt_args = def_args[0], def_args[1]
-        ax_args, plt_args = def_args
-
         if ax_args is None:
             ax_args = self.default_ax_args.to_dict()
 
         if plt_args is None:
-            if plot_type == "hist":
-                plt_args = copy(self.default_hist_args)
-            elif plot_type == "graph":
-                plt_args = copy(self.default_plot_args)
-            elif plot_type == "scatter":
-                plt_args = copy(self.default_scatter_args)
+            if plot_type is PlotType.Histogram:
+                plt_args = self.default_hist_args.copy()
+            elif plot_type is PlotType.Graph:
+                plt_args = self.default_plot_args.copy()
+            elif plot_type is PlotType.Scatter:
+                plt_args = self.default_scatter_args.copy()
             else:
                 raise ValueError
 

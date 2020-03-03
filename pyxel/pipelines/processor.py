@@ -15,7 +15,7 @@ import numpy as np
 from pyxel.detectors.ccd import CCD
 from pyxel.detectors.cmos import CMOS
 from pyxel.evaluator import eval_entry
-from pyxel.pipelines.pipeline import DetectionPipeline, ModelGroup
+from pyxel.pipelines import DetectionPipeline, ModelGroup
 from pyxel.state import get_obj_att
 
 

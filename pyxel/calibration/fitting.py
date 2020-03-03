@@ -14,7 +14,7 @@ import logging
 import math
 import os
 import re
-import typing as t  # noqa: F401
+import typing as t
 from collections import OrderedDict
 from copy import deepcopy
 from operator import add
@@ -31,8 +31,7 @@ from pyxel.calibration.util import (
     read_data,
 )
 from pyxel.parametric.parameter_values import ParameterValues
-from pyxel.pipelines.model_function import ModelFunction
-from pyxel.pipelines.processor import Processor
+from pyxel.pipelines import Processor
 
 
 class ModelFitting:
@@ -50,7 +49,7 @@ class ModelFitting:
 
         self.all_target_data = []  # type: t.List[t.List[t.Any]]
         self.weighting = None  # type: t.Optional[np.ndarray]
-        self.fitness_func = None  # type: t.Optional[ModelFunction]
+        self.fitness_func = None  # type: t.Optional[t.Callable]
         self.sim_output = None  # type: t.Optional[ResultType]
         # self.fitted_model = None            # type: t.Optional['ModelFunction']
         self.param_processor_list = []  # type: t.List[Processor]
@@ -87,10 +86,10 @@ class ModelFitting:
         self,
         calibration_mode: CalibrationMode,
         simulation_output: ResultType,
-        fitness_func: ModelFunction,
+        fitness_func: t.Callable,
         population_size: int,
         generations: int,
-        file_path: Path,
+        file_path: t.Optional[Path],
         target_fit_range: t.List[int],
         out_fit_range: t.List[int],
         target_output: t.List[Path],
@@ -275,9 +274,9 @@ class ModelFitting:
         :return:
         """
         # TODO: Remove 'assert'
-        assert isinstance(self.fitness_func, ModelFunction)
+        assert self.fitness_func is not None
 
-        fitness = self.fitness_func.function(
+        fitness = self.fitness_func(
             simulated=simulated_data, target=target_data, weighting=self.weighting
         )  # type: float
 
@@ -365,13 +364,13 @@ class ModelFitting:
         for var in self.variables:
             if var.values == "_":
                 b = 1
-                new_processor.set(var.key, parameter[a])
+                new_processor.set(key=var.key, value=parameter[a])
             elif isinstance(var.values, list):
                 b = len(var.values)
 
                 start = a
                 stop = a + b
-                new_processor.set(var.key, parameter[start:stop])
+                new_processor.set(key=var.key, value=parameter[start:stop])
             a += b
         return new_processor
 

@@ -39,7 +39,7 @@ class ObjectModelLoader(yaml.SafeLoader):
     class_paths = []  # type: t.List[t.List[str]]
 
     @classmethod
-    def add_class(cls, klass: type, paths: list, is_list: bool = False) -> None:
+    def add_class(cls, klass: t.Callable, paths: list, is_list: bool = False) -> None:
         """TBW.
 
         :param klass:
@@ -120,7 +120,7 @@ class ClassConstructor:
     def __init__(
         self,
         loader: t.Type[yaml.SafeLoader],
-        klass: type,
+        klass: t.Callable,
         paths: t.List[str],
         is_list: bool = False,
     ) -> None:
