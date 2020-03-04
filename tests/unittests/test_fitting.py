@@ -18,8 +18,10 @@ except ImportError:
     WITH_PYGMO = False
 
 
-def configure(mf: ModelFitting, sim: Configuration):
+def configure(mf: ModelFitting, sim: Configuration) -> None:
     """TBW."""
+    assert sim.calibration is not None
+
     pg.set_global_rng_seed(sim.calibration.seed)
     np.random.seed(sim.calibration.seed)
 
@@ -206,6 +208,8 @@ def test_custom_fitness(yaml, simulated, target, weighting):
     simulation = cfg["simulation"]
     assert isinstance(simulation, Configuration)
 
+    assert simulation.calibration is not None
+
     mf = ModelFitting(processor, variables=simulation.calibration.parameters)
     configure(mf=mf, sim=simulation)
 
@@ -348,6 +352,10 @@ def test_detector_and_model_update(yaml: str, param_array: np.ndarray):
     mf = ModelFitting(processor=processor, variables=simulation.calibration.parameters)
     configure(mf=mf, sim=simulation)
     mf.processor = mf.update_processor(param_array, processor)
+
+    assert mf.processor.pipeline.charge_transfer is not None
+    assert mf.processor.pipeline.charge_measurement is not None
+
     attributes = [
         mf.processor.detector.characteristics.amp,
         mf.processor.pipeline.charge_transfer.models[0].arguments["tr_p"],

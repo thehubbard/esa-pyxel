@@ -187,5 +187,6 @@ def test_run_calibration(yaml):
     simulation = cfg["simulation"]
     assert isinstance(simulation, Configuration)
 
+    assert simulation.calibration is not None
     result = simulation.calibration.run_calibration(processor)
     # assert result == 1         # TODO
