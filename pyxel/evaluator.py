@@ -10,13 +10,14 @@ import importlib
 import logging
 import typing as t
 from ast import literal_eval
+from numbers import Number
 
 import numpy as np
 
 __all__ = ["evaluate_reference", "eval_range", "eval_entry"]
 
 
-def evaluate_reference(reference_str) -> t.Callable:
+def evaluate_reference(reference_str: str) -> t.Callable:
     """Evaluate a module's class, function, or constant.
 
     :param str reference_str: the python expression to
@@ -92,12 +93,18 @@ def eval_range(values: t.Union[str, list, tuple]) -> list:
 
 
 # TODO: Use 'numexpr.evaluate' ?
-def eval_entry(value) -> t.Any:
+def eval_entry(value: t.Union[str, Number, np.ndarray]) -> t.Union[Number, np.ndarray]:
     """TBW.
 
     :param value:
     :return:
     """
+    assert (
+        isinstance(value, str)
+        or isinstance(value, Number)
+        or isinstance(value, np.ndarray)
+    )
+
     if isinstance(value, str):
         try:
             literal_eval(value)
@@ -111,4 +118,6 @@ def eval_entry(value) -> t.Any:
                 value = '"' + value + '"'
 
         value = literal_eval(value)
+        assert isinstance(value, Number) or isinstance(value, np.ndarray)
+
     return value

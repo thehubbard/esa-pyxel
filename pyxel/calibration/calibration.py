@@ -74,7 +74,7 @@ class Algorithm:
         ftol_rel: float = 0.0,
         ftol_abs: float = 0.0,
         stopval: float = -math.inf,
-        local_optimizer=None,
+        local_optimizer: t.Optional[pg.nlopt] = None,
         replacement: str = "best",
         nlopt_selection: str = "best",
     ):
@@ -126,7 +126,7 @@ class Algorithm:
         self._ftol_rel = ftol_rel
         self._ftol_abs = ftol_abs
         self._stopval = stopval
-        self._local_optimizer = local_optimizer
+        self._local_optimizer = local_optimizer  # type: t.Optional[pg.nlopt]
         self._replacement = replacement
         self._nlopt_selection = nlopt_selection
 
@@ -396,12 +396,12 @@ class Algorithm:
         self._stopval = value
 
     @property
-    def local_optimizer(self):
+    def local_optimizer(self) -> t.Optional[pg.nlopt]:
         """TBW."""
         return self._local_optimizer
 
     @local_optimizer.setter
-    def local_optimizer(self, value) -> None:
+    def local_optimizer(self, value: t.Optional[pg.nlopt]) -> None:
         """TBW."""
         self._local_optimizer = value
 
@@ -745,8 +745,8 @@ class Calibration:
             archi.evolve()
             logging.info(archi)
             archi.wait_check()
-            champion_f = archi.get_champions_f()
-            champion_x = archi.get_champions_x()
+            champion_f = archi.get_champions_f()  # type: t.List[np.ndarray]
+            champion_x = archi.get_champions_x()  # type: t.List[np.ndarray]
         else:
             pop = pg.population(prob=prob, size=self.algorithm.population_size)
             pop = algo.evolve(pop)
@@ -761,15 +761,15 @@ class Calibration:
         logging.info("Calibration ended.")
         return res
 
-    def post_processing(self, calib_results: list, output: Outputs) -> None:
+    def post_processing(
+        self, calib_results: t.List[t.Tuple[t.Any, t.Any]], output: Outputs
+    ) -> None:
         """TBW."""
-        for item in calib_results:
-            proc_list = item[0]
-            result_dict = item[1]
+        for proc_list, result_dict in calib_results:
 
             output.calibration_outputs(processor_list=proc_list)
 
-            ii = 0
+            ii = 0  # type: int
             for processor, target_data in zip(proc_list, self.fitting.all_target_data):
                 simulated_data = self.fitting.get_simulated_data(processor)
                 output.fitting_plot(

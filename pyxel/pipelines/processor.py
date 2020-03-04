@@ -10,6 +10,7 @@ import logging
 import operator
 import typing as t
 from copy import deepcopy
+from numbers import Number
 
 import numpy as np
 from pyxel.detectors.ccd import CCD
@@ -41,7 +42,7 @@ class Processor:
         cls_name = self.__class__.__name__  # type: str
         return f"{cls_name}<detector={self.detector!r}, pipeline={self.pipeline!r}>"
 
-    def __deepcopy__(self, memodict) -> "Processor":
+    def __deepcopy__(self, memodict: dict) -> "Processor":
         """Make a deep copy of this object."""
         return Processor(
             detector=deepcopy(self.detector, memo=memodict),
@@ -91,7 +92,14 @@ class Processor:
         return np.asarray(result, dtype=np.float)
 
     # TODO: Could it be renamed '__setitem__' ?
-    def set(self, key: str, value: t.Any, convert_value: bool = True) -> None:
+    def set(
+        self,
+        key: str,
+        value: t.Union[
+            str, Number, np.ndarray, t.List[t.Union[str, Number, np.ndarray]]
+        ],
+        convert_value: bool = True,
+    ) -> None:
         """TBW.
 
         Parameters
@@ -101,6 +109,7 @@ class Processor:
         convert_value : bool
         """
         if convert_value:  # and value:
+            # TODO: Refactor this
             # convert the string based value to a number
             if isinstance(value, list):
                 for i, val in enumerate(value):

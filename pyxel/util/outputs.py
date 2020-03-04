@@ -22,6 +22,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from pyxel import __version__ as version
+from pyxel.calibration.util import ResultType
 
 if t.TYPE_CHECKING:
     from ..pipelines import Processor
@@ -65,7 +66,7 @@ class ParametricPlotArgs:
     bins: t.Optional[int] = None  # TODO: This should not be here !
 
     @classmethod
-    def from_dict(cls, dct: dict) -> "ParametricPlotArgs":
+    def from_dict(cls, dct: t.Dict[str, t.Any]) -> "ParametricPlotArgs":
         """TBW."""
         return cls(**dct)
 
@@ -738,23 +739,22 @@ class Outputs:
 
     # TODO: Specific to 'calibration_plot' ??
     def fitting_plot(
-        self, target_data: np.ndarray, simulated_data: np.ndarray, data_i
+        self, target_data: np.ndarray, simulated_data: np.ndarray, data_i: int
     ) -> None:
         """TBW."""
         assert self.calibration_plot
 
         if self.calibration_plot:
             if "fitting_plot" in self.calibration_plot:
-                self._fig.plot(target_data, ".-", label="target data #" + str(data_i))
-                self._fig.plot(
-                    simulated_data, ".-", label="simulated data #" + str(data_i)
-                )
+                self._fig.plot(target_data, ".-", label=f"target data #{data_i}")
+                self._fig.plot(simulated_data, ".-", label=f"simulated data #{data_i}")
                 self._fig.canvas.draw_idle()
 
     # TODO: Specific to 'calibration_plot' ??
-    def fitting_plot_close(self, result_type, island) -> None:
+    def fitting_plot_close(self, result_type: ResultType, island: int) -> None:
         """TBW."""
         assert self.calibration_plot
+        assert isinstance(island, int)
 
         if self.calibration_plot:
             if "fitting_plot" in self.calibration_plot:
@@ -977,7 +977,9 @@ def update_plot(ax_args: dict, ax: plt.Axes) -> None:
 
 
 # TODO: Refactor this function
-def update_fits_header(header: dict, key, value) -> None:
+def update_fits_header(
+    header: dict, key: t.Union[str, list, tuple], value: t.Any
+) -> None:
     """TBW.
 
     Parameters
@@ -986,12 +988,17 @@ def update_fits_header(header: dict, key, value) -> None:
     key
     value
     """
-    if not isinstance(value, (str, int, float)):
-        value = "%r" % value
-    if isinstance(value, str):
-        value = value[0:24]
+    if isinstance(value, (str, int, float)):
+        result = value  # type: t.Union[str, int, float]
+    else:
+        result = repr(value)
+
+    if isinstance(result, str):
+        result = result[0:24]
+
     if isinstance(key, (list, tuple)):
         key = "/".join(key)
+
     key = key.replace(".", "/")[0:36]
     header[key] = value
 

@@ -19,7 +19,7 @@ import pandas as pd
 class Particle:
     """Class defining and storing information of all particles with their position, velocity, energy, etc."""
 
-    def __init__(self) -> None:
+    def __init__(self):
         """TBW."""
         # TODO: This should be a class variable
         self.EMPTY_FRAME = pd.DataFrame()  # type: pd.DataFrame

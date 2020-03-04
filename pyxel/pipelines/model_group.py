@@ -41,7 +41,7 @@ class ModelGroup:
 
         return f"{cls_name}<models={all_models!r}>"
 
-    def __deepcopy__(self, memo) -> "ModelGroup":
+    def __deepcopy__(self, memo: dict) -> "ModelGroup":
         """TBW."""
         copied_models = deepcopy(self.models)
         return ModelGroup(models=copied_models)

@@ -53,8 +53,8 @@ class Charge(Particle):
 
     def add_charge(
         self,
-        particle_type: str,
-        particles_per_cluster: list,
+        particle_type: str,  # TODO: Use Enum
+        particles_per_cluster: t.List[float],
         init_energy: t.List[float],
         init_ver_position: t.List[float],
         init_hor_position: t.List[float],
@@ -117,7 +117,7 @@ class Charge(Particle):
             "velocity_ver": init_ver_velocity,
             "velocity_hor": init_hor_velocity,
             "velocity_z": init_z_velocity,
-        }  # type: dict
+        }
 
         new_charge_df = pd.DataFrame(
             new_charge, index=range(self.nextid, self.nextid + elements)

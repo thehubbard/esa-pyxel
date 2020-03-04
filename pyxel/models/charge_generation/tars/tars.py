@@ -481,15 +481,15 @@ class TARS:
         self.sim_obj.e_vel2_lst = [0.0] * size
 
         self.charge_obj.add_charge(
-            "e",
-            self.sim_obj.e_num_lst_per_step,
-            self.sim_obj.e_energy_lst,
-            self.sim_obj.e_pos0_lst,
-            self.sim_obj.e_pos1_lst,
-            self.sim_obj.e_pos2_lst,
-            self.sim_obj.e_vel0_lst,
-            self.sim_obj.e_vel1_lst,
-            self.sim_obj.e_vel2_lst,
+            particle_type="e",
+            particles_per_cluster=self.sim_obj.e_num_lst_per_step,
+            init_energy=self.sim_obj.e_energy_lst,
+            init_ver_position=self.sim_obj.e_pos0_lst,
+            init_hor_position=self.sim_obj.e_pos1_lst,
+            init_z_position=self.sim_obj.e_pos2_lst,
+            init_ver_velocity=self.sim_obj.e_vel0_lst,
+            init_hor_velocity=self.sim_obj.e_vel1_lst,
+            init_z_velocity=self.sim_obj.e_vel2_lst,
         )
 
     def run_mod(self) -> None:

@@ -64,7 +64,7 @@ class Simulation:
         )
         self.energy_cut = 1.0e-5  # MeV
 
-        self.e_num_lst_per_step = []  # type: t.List[int]
+        self.e_num_lst_per_step = []  # type: t.List[float]
         self.e_energy_lst = []  # type: t.List[float]
         self.e_pos0_lst = []  # type: t.List[float]
         self.e_pos1_lst = []  # type: t.List[float]

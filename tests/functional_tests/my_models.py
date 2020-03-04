@@ -1,27 +1,26 @@
 # import pyxel
 from pyxel.detectors.detector import Detector
 
-
 # @pyxel.register(group='charge_generation', name='my_class_model')
-class MyClassModel:
-    def __call__(self, detector: Detector, level: int, noise: float = 2.0):
-        setattr(detector, "level", level)
-        setattr(detector, "noise", noise)
-        return detector
+# class MyClassModel:
+#     def __call__(self, detector: Detector, level: int, noise: float = 2.0) -> Detector:
+#         setattr(detector, "level", level)
+#         setattr(detector, "noise", noise)
+#         return detector
 
 
 # @pyxel.register(group='charge_generation', name='my_other_class_model')
-class MyOtherClassModel:
-    def __call__(self, detector: Detector, std: float = 2.0):
-        setattr(detector, "std", std)
-        return detector
+# class MyOtherClassModel:
+#     def __call__(self, detector: Detector, std: float = 2.0) -> Detector:
+#         setattr(detector, "std", std)
+#         return detector
 
 
-def my_function_model(detector: Detector, level, noise: float = 2.0):
-    # set a new attribute so it can be checked later
-    setattr(detector, "level", level)
-    setattr(detector, "noise", noise)
-    return detector
+# def my_function_model(detector: Detector, level, noise: float = 2.0) -> Detector:
+#     # set a new attribute so it can be checked later
+#     setattr(detector, "level", level)
+#     setattr(detector, "noise", noise)
+#     return detector
 
 
 # pyxel.register(group='charge_generation', maybe_func=my_function_model)
@@ -35,9 +34,9 @@ class MyDecoratedModel:
 
 
 # @pyxel.register(group='charge_generation', name='my_dec_model_func')
-def my_decorated_function(detector: Detector, func_std=2.0):
-    setattr(detector, "func_std", func_std)
-    return detector
+# def my_decorated_function(detector: Detector, func_std=2.0):
+#     setattr(detector, "func_std", func_std)
+#     return detector
 
 
 registry_map = {

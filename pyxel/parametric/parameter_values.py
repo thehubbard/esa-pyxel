@@ -20,7 +20,7 @@ class ParameterValues:
         values: t.List[t.Union[float, int, str]],
         boundaries: t.Optional[t.Tuple[float, float]] = None,
         enabled: bool = True,
-        current=None,
+        # current=None,
         logarithmic: bool = False,
     ):
         """TBW.
@@ -36,7 +36,7 @@ class ParameterValues:
         self.key = key  # unique identifier to the step. example: detector.geometry.row
         self.values = values  # type: t.List[t.Union[float, int, str]]
         self.enabled = enabled  # type: bool
-        self.current = current
+        # self.current = current
         self.logarithmic = logarithmic  # type: bool
         self.boundaries = boundaries  # type: t.Optional[t.Tuple[float, float]]
 

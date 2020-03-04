@@ -27,13 +27,17 @@ __all__ = [
 class PipelineAborted(Exception):
     """Exception to force the pipeline to stop processing."""
 
-    def __init__(self, message: t.Optional[str] = None, errors=None):
+    def __init__(
+        self,
+        message: t.Optional[str] = None,
+        # errors=None
+    ):
         """TBW."""
         super().__init__(message)
-        self.errors = errors
+        # self.errors = errors
 
 
-def round_convert_to_int(input_array: np.ndarray):
+def round_convert_to_int(input_array: np.ndarray) -> np.ndarray:
     """Round list of floats in numpy array and convert to integers.
 
     Use on data before adding into DataFrame.
@@ -47,7 +51,7 @@ def round_convert_to_int(input_array: np.ndarray):
     return array
 
 
-def convert_to_int(input_array: np.ndarray):
+def convert_to_int(input_array: np.ndarray) -> np.ndarray:
     """Convert numpy array to integer.
 
     Use on data after getting it from DataFrame.
