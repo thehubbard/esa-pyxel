@@ -58,7 +58,7 @@ def parametric_mode(
     output: Outputs,
     with_dask: bool = False,
 ) -> t.Optional[plt.Figure]:
-    """TBW.
+    """Run a 'parametric' pipeline.
 
     Parameters
     ----------
@@ -72,7 +72,15 @@ def parametric_mode(
     Optional `Figure`
         TBW.
     """
+    if with_dask:
+        raise NotImplementedError
+
     logging.info("Mode: Parametric")
+
+    # Check if all keys from 'parametric' are valid keys for object 'pipeline'
+    for param_value in parametric.enabled_steps:
+        key = param_value.key  # type: str
+        assert processor.has(key)
 
     if with_dask:
         # use as few processes (and workers?) as possible with as many threads_per_worker as possible
@@ -86,6 +94,7 @@ def parametric_mode(
     result_list = []  # type: t.List[Result]
     # out.params_func(parametric)
 
+    # Run all pipelines
     for proc in processors_it:  # type: Processor
 
         if not with_dask:
@@ -178,11 +187,6 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
             raise RuntimeError("Missing 'Parametric' parameters.")
 
         parametric = simulation.parametric  # type: ParametricAnalysis
-
-        # Check if all keys from 'parametric' are valid keys for object 'pipeline'
-        for param_value in parametric.enabled_steps:
-            key = param_value.key  # type: str
-            assert processor.has(key)
 
         # TODO: This should be done during initializing of object `Configuration`
         # out.params_func(parametric)

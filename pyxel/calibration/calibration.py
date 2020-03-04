@@ -478,7 +478,7 @@ class Algorithm:
 
 def to_path_list(values: t.Sequence[t.Union[str, Path]]) -> t.List[Path]:
     """TBW."""
-    return [Path(obj) for obj in values]
+    return [Path(obj).resolve() for obj in values]
 
 
 class Calibration:
