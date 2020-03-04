@@ -6,7 +6,6 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """TBW."""
-import logging
 import typing as t
 
 __all__ = [
@@ -14,9 +13,9 @@ __all__ = [
     "get_obj_by_type",
     "get_value",
     "get_state_ids",
-    "copy_processor",
+    # "copy_processor",
     "copy_state",
-    "ConfigObjects",
+    # "ConfigObjects",
 ]
 
 
@@ -241,144 +240,145 @@ def copy_state(obj: t.Any) -> t.Dict[str, t.Any]:
     return kwargs
 
 
-def copy_processor(
-    obj: t.Any,
-) -> t.Any:  # TODO: PYXEL specific: to be renamed to copy_object
-    """Create a deep copy of the object.
+# # TODO: Is it still used ?
+# def copy_processor(
+#     obj: t.Any,
+# ) -> t.Any:  # TODO: PYXEL specific: to be renamed to copy_object
+#     """Create a deep copy of the object.
+#
+#     :param obj:
+#     :return:
+#     """
+#     cls = type(obj)
+#     if hasattr(obj, "__getstate__"):
+#         cpy_kwargs = {}
+#         for key, value in obj.__getstate__().items():
+#             cpy_kwargs[key] = copy_processor(value)
+#         obj = cls(**cpy_kwargs)
+#
+#     elif isinstance(obj, dict):
+#         cpy_obj = cls()
+#         for key, value in obj.items():
+#             cpy_obj[key] = copy_processor(value)
+#         obj = cpy_obj
+#
+#     elif isinstance(obj, list):
+#         cpy_obj = cls()
+#         for value in obj:
+#             cpy_obj.append(copy_processor(value))
+#         obj = cpy_obj
+#
+#     return obj
 
-    :param obj:
-    :return:
-    """
-    cls = type(obj)
-    if hasattr(obj, "__getstate__"):
-        cpy_kwargs = {}
-        for key, value in obj.__getstate__().items():
-            cpy_kwargs[key] = copy_processor(value)
-        obj = cls(**cpy_kwargs)
-
-    elif isinstance(obj, dict):
-        cpy_obj = cls()
-        for key, value in obj.items():
-            cpy_obj[key] = copy_processor(value)
-        obj = cpy_obj
-
-    elif isinstance(obj, list):
-        cpy_obj = cls()
-        for value in obj:
-            cpy_obj.append(copy_processor(value))
-        obj = cpy_obj
-
-    return obj
-
-
-class ConfigObjects:
-    """A list of Config objects that can be de-referenced using unique 'class.attribute' keys."""
-
-    def __init__(self, configs: t.Optional[t.List[t.Any]] = None) -> None:
-        """TBW.
-
-        :param configs:
-        """
-        self._configs = []  # type: t.List[t.Any]
-        self.enabled = True
-        self.log = logging.getLogger(__name__)
-        if configs:
-            self._configs.extend(configs)
-
-    def get(self, key: str) -> t.Any:
-        """Object-model getter."""
-        obj, att = get_obj_att(self, key)
-        if not hasattr(obj, "_" + att):
-            raise ValueError("Only properties may be get. att: %r" % att)
-
-        if self.enabled:
-            name = att
-        else:
-            name = "_" + att
-
-        value = None
-        try:
-            value = getattr(obj, name)
-        finally:
-            self.log.info("key: %s, name: %s, value: %r", key, name, value)
-        return value
-
-    def set(self, key: str, value: t.Any) -> None:
-        """Object-model setter."""
-        obj, att = get_obj_att(self, key)
-        if not hasattr(obj, "_" + att):
-            raise ValueError("Only properties may be set. att: %r" % att)
-
-        if self.enabled:
-            name = att
-        else:
-            name = "_" + att
-
-        try:
-            setattr(obj, name, value)
-        finally:
-            self.log.info("key: %s, name: %s, value: %r", key, name, value)
-
-    # def wait(self, key):
-    #     """Object-model wait until operation is finished."""
-    #     obj, att = om.get_obj_att(self, key)
-    #     if hasattr(obj, 'wait'):
-    #         getattr(obj, 'wait')()
-    #
-    # def call_action(self, key):
-    #     """TBW."""
-    #     args = []
-    #     obj, att = om.get_obj_att(self, key)
-    #     action_handler = om.get_meta_data_value(obj, att, 'on_action')
-    #     if callable(action_handler):
-    #         func = action_handler
-    #         args = [obj]
-    #     elif isinstance(action_handler, str):
-    #         func = getattr(obj, action_handler)
-    #     else:
-    #         msg = '%s: invalid action_handler' % key
-    #         self.log.error(msg)
-    #         # signals.progress(key, {'value': 'error: %s' % msg, 'state': -1})
-    #         return
-    #
-    #     func(*args)
-
-    def append(self, config) -> None:
-        """TBW."""
-        self._configs.append(config)
-
-    def __len__(self) -> int:
-        """Retrieve the number of config objects."""
-        return len(self._configs)
-
-    def __iter__(self) -> t.Iterator:
-        """Retrieve the iterator for the config objects."""
-        return iter(self._configs)
-
-    def __getstate__(self) -> t.Dict[str, t.Any]:
-        """TBW."""
-        result = {}
-        for config in self._configs:
-            result[config.__class__.__name__] = config
-        return result
-
-    def __contains__(self, item: str) -> t.Any:
-        """Test if item id is contained in one of the Config objects."""
-        try:
-            getattr(self, item)
-            return True
-        except AttributeError:
-            return False
-
-    def __getitem__(self, item: str) -> t.Any:
-        """Enable the retrieval of the Config object by class name."""
-        return getattr(self, item)
-
-    def __getattr__(self, item: str) -> t.Any:
-        """Enable the retrieval of the Config object by class name."""
-        for config in self._configs:
-            if config.__class__.__name__ == item:
-                return config
-        raise AttributeError(
-            "AttributeError: unknown %r attribute in ConfigObject" % item
-        )
+#
+# class ConfigObjects:
+#     """A list of Config objects that can be de-referenced using unique 'class.attribute' keys."""
+#
+#     def __init__(self, configs: t.Optional[t.List[t.Any]] = None) -> None:
+#         """TBW.
+#
+#         :param configs:
+#         """
+#         self._configs = []  # type: t.List[t.Any]
+#         self.enabled = True
+#         self.log = logging.getLogger(__name__)
+#         if configs:
+#             self._configs.extend(configs)
+#
+#     def get(self, key: str) -> t.Any:
+#         """Object-model getter."""
+#         obj, att = get_obj_att(self, key)
+#         if not hasattr(obj, "_" + att):
+#             raise ValueError("Only properties may be get. att: %r" % att)
+#
+#         if self.enabled:
+#             name = att
+#         else:
+#             name = "_" + att
+#
+#         value = None
+#         try:
+#             value = getattr(obj, name)
+#         finally:
+#             self.log.info("key: %s, name: %s, value: %r", key, name, value)
+#         return value
+#
+#     def set(self, key: str, value: t.Any) -> None:
+#         """Object-model setter."""
+#         obj, att = get_obj_att(self, key)
+#         if not hasattr(obj, "_" + att):
+#             raise ValueError("Only properties may be set. att: %r" % att)
+#
+#         if self.enabled:
+#             name = att
+#         else:
+#             name = "_" + att
+#
+#         try:
+#             setattr(obj, name, value)
+#         finally:
+#             self.log.info("key: %s, name: %s, value: %r", key, name, value)
+#
+#     # def wait(self, key):
+#     #     """Object-model wait until operation is finished."""
+#     #     obj, att = om.get_obj_att(self, key)
+#     #     if hasattr(obj, 'wait'):
+#     #         getattr(obj, 'wait')()
+#     #
+#     # def call_action(self, key):
+#     #     """TBW."""
+#     #     args = []
+#     #     obj, att = om.get_obj_att(self, key)
+#     #     action_handler = om.get_meta_data_value(obj, att, 'on_action')
+#     #     if callable(action_handler):
+#     #         func = action_handler
+#     #         args = [obj]
+#     #     elif isinstance(action_handler, str):
+#     #         func = getattr(obj, action_handler)
+#     #     else:
+#     #         msg = '%s: invalid action_handler' % key
+#     #         self.log.error(msg)
+#     #         # signals.progress(key, {'value': 'error: %s' % msg, 'state': -1})
+#     #         return
+#     #
+#     #     func(*args)
+#
+#     def append(self, config) -> None:
+#         """TBW."""
+#         self._configs.append(config)
+#
+#     def __len__(self) -> int:
+#         """Retrieve the number of config objects."""
+#         return len(self._configs)
+#
+#     def __iter__(self) -> t.Iterator:
+#         """Retrieve the iterator for the config objects."""
+#         return iter(self._configs)
+#
+#     def __getstate__(self) -> t.Dict[str, t.Any]:
+#         """TBW."""
+#         result = {}
+#         for config in self._configs:
+#             result[config.__class__.__name__] = config
+#         return result
+#
+#     def __contains__(self, item: str) -> t.Any:
+#         """Test if item id is contained in one of the Config objects."""
+#         try:
+#             getattr(self, item)
+#             return True
+#         except AttributeError:
+#             return False
+#
+#     def __getitem__(self, item: str) -> t.Any:
+#         """Enable the retrieval of the Config object by class name."""
+#         return getattr(self, item)
+#
+#     def __getattr__(self, item: str) -> t.Any:
+#         """Enable the retrieval of the Config object by class name."""
+#         for config in self._configs:
+#             if config.__class__.__name__ == item:
+#                 return config
+#         raise AttributeError(
+#             "AttributeError: unknown %r attribute in ConfigObject" % item
+#         )

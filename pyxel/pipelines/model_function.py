@@ -22,7 +22,7 @@ T = t.TypeVar("T")
 class Arguments(dict):
     """TBW."""
 
-    def __getattr__(self, name: str):
+    def __getattr__(self, name: str) -> t.Union[int, float]:
         """TBW."""
         if name not in self:
             raise AttributeError(f"Argument {name!r} does not exist.")

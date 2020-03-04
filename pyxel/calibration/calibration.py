@@ -745,8 +745,8 @@ class Calibration:
             archi.evolve()
             logging.info(archi)
             archi.wait_check()
-            champion_f = archi.get_champions_f()
-            champion_x = archi.get_champions_x()
+            champion_f = archi.get_champions_f()  # type: t.List[np.ndarray]
+            champion_x = archi.get_champions_x()  # type: t.List[np.ndarray]
         else:
             pop = pg.population(prob=prob, size=self.algorithm.population_size)
             pop = algo.evolve(pop)
@@ -761,11 +761,11 @@ class Calibration:
         logging.info("Calibration ended.")
         return res
 
-    def post_processing(self, calib_results: list, output: Outputs) -> None:
+    def post_processing(
+        self, calib_results: t.List[t.Tuple[t.Any, t.Any]], output: Outputs
+    ) -> None:
         """TBW."""
-        for item in calib_results:
-            proc_list = item[0]
-            result_dict = item[1]
+        for proc_list, result_dict in calib_results:
 
             output.calibration_outputs(processor_list=proc_list)
 

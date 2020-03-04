@@ -353,7 +353,9 @@ class ModelFitting:
             a += b
         return parameter
 
-    def update_processor(self, parameter: list, new_processor: Processor) -> Processor:
+    def update_processor(
+        self, parameter: np.ndarray, new_processor: Processor
+    ) -> Processor:
         """TBW.
 
         :param parameter:
@@ -413,14 +415,14 @@ class ModelFitting:
 
     def get_results(
         self, overall_fitness: np.ndarray, parameter: np.ndarray
-    ) -> t.Tuple[t.List[Processor], dict]:
+    ) -> t.Tuple[t.List[Processor], t.Dict[str, t.Union[int, float]]]:
         """TBW.
 
         :param overall_fitness:
         :param parameter:
         :return:
         """
-        results = OrderedDict()  # type: t.Dict[str, t.Any]
+        results = OrderedDict()  # type: t.Dict[str, t.Union[int, float]]
         results["fitness"] = overall_fitness[0]
 
         # TODO: Apply a copy of 'parameter' in 'self.update_parameter' ??
@@ -441,7 +443,7 @@ class ModelFitting:
                 .replace("]]", "")
             )
             sss = sss.split(" ")
-            island = -1
+            island = -1  # type: int
             for k, v in self.match.items():
                 if sss == v:
                     island = k
@@ -459,8 +461,10 @@ class ModelFitting:
 
         champion_list = deepcopy(self.param_processor_list)  # type: t.List[Processor]
         for processor in champion_list:
-            processor = self.update_processor(parameter, processor)
-            if self.calibration_mode == "pipeline":
+            processor = self.update_processor(
+                parameter=parameter, new_processor=processor
+            )
+            if self.calibration_mode is CalibrationMode.Pipeline:
                 processor.run_pipeline()
 
         a, b = 0, 0

@@ -41,7 +41,7 @@ class Processor:
         cls_name = self.__class__.__name__  # type: str
         return f"{cls_name}<detector={self.detector!r}, pipeline={self.pipeline!r}>"
 
-    def __deepcopy__(self, memodict) -> "Processor":
+    def __deepcopy__(self, memodict: dict) -> "Processor":
         """Make a deep copy of this object."""
         return Processor(
             detector=deepcopy(self.detector, memo=memodict),
@@ -91,7 +91,12 @@ class Processor:
         return np.asarray(result, dtype=np.float)
 
     # TODO: Could it be renamed '__setitem__' ?
-    def set(self, key: str, value: t.Any, convert_value: bool = True) -> None:
+    def set(
+        self,
+        key: str,
+        value: t.Union[str, int, float, t.List[t.Union[str, int, float]]],
+        convert_value: bool = True,
+    ) -> None:
         """TBW.
 
         Parameters

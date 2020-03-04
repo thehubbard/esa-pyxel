@@ -217,7 +217,7 @@ class Configuration:
 
         self.parametric = parametric  # type: t.Optional[ParametricAnalysis]
         self.calibration = calibration  # type: t.Optional[Calibration]
-        self.dynamic = dynamic  # type: t.Optional[dict]
+        self.dynamic = dynamic  # type: t.Optional[t.Dict[str, t.Any]]
 
         if mode == "parametric":
             assert self.parametric

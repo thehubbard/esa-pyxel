@@ -65,7 +65,7 @@ class ParametricPlotArgs:
     bins: t.Optional[int] = None  # TODO: This should not be here !
 
     @classmethod
-    def from_dict(cls, dct: dict) -> "ParametricPlotArgs":
+    def from_dict(cls, dct: t.Dict[str, t.Any]) -> "ParametricPlotArgs":
         """TBW."""
         return cls(**dct)
 

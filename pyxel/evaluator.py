@@ -16,7 +16,7 @@ import numpy as np
 __all__ = ["evaluate_reference", "eval_range", "eval_entry"]
 
 
-def evaluate_reference(reference_str) -> t.Callable:
+def evaluate_reference(reference_str: str) -> t.Callable:
     """Evaluate a module's class, function, or constant.
 
     :param str reference_str: the python expression to
@@ -92,12 +92,14 @@ def eval_range(values: t.Union[str, list, tuple]) -> list:
 
 
 # TODO: Use 'numexpr.evaluate' ?
-def eval_entry(value) -> t.Any:
+def eval_entry(value: t.Union[str, int, float]) -> t.Union[int, float]:
     """TBW.
 
     :param value:
     :return:
     """
+    assert isinstance(value, str) or isinstance(value, int) or isinstance(value, float)
+
     if isinstance(value, str):
         try:
             literal_eval(value)

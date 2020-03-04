@@ -136,7 +136,9 @@ class ClassConstructor:
         self.paths = paths
         self.is_list = is_list
 
-    def __call__(self, loader, node) -> t.Union[list, dict, t.Any]:
+    def __call__(
+        self, loader: ObjectModelLoader, node: yaml.Node
+    ) -> t.Union[list, dict, t.Any]:
         """TBW.
 
         :param loader:
