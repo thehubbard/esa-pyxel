@@ -74,7 +74,7 @@ class Algorithm:
         ftol_rel: float = 0.0,
         ftol_abs: float = 0.0,
         stopval: float = -math.inf,
-        local_optimizer=None,
+        local_optimizer: t.Optional[pg.nlopt] = None,
         replacement: str = "best",
         nlopt_selection: str = "best",
     ):
@@ -126,7 +126,7 @@ class Algorithm:
         self._ftol_rel = ftol_rel
         self._ftol_abs = ftol_abs
         self._stopval = stopval
-        self._local_optimizer = local_optimizer
+        self._local_optimizer = local_optimizer  # type: t.Optional[pg.nlopt]
         self._replacement = replacement
         self._nlopt_selection = nlopt_selection
 
@@ -396,12 +396,12 @@ class Algorithm:
         self._stopval = value
 
     @property
-    def local_optimizer(self):
+    def local_optimizer(self) -> t.Optional[pg.nlopt]:
         """TBW."""
         return self._local_optimizer
 
     @local_optimizer.setter
-    def local_optimizer(self, value) -> None:
+    def local_optimizer(self, value: t.Optional[pg.nlopt]) -> None:
         """TBW."""
         self._local_optimizer = value
 
@@ -769,7 +769,7 @@ class Calibration:
 
             output.calibration_outputs(processor_list=proc_list)
 
-            ii = 0
+            ii = 0  # type: int
             for processor, target_data in zip(proc_list, self.fitting.all_target_data):
                 simulated_data = self.fitting.get_simulated_data(processor)
                 output.fitting_plot(

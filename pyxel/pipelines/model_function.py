@@ -27,7 +27,10 @@ class Arguments(dict):
         if name not in self:
             raise AttributeError(f"Argument {name!r} does not exist.")
 
-        return self[name]
+        result = self[name]
+        assert isinstance(result, int) or isinstance(result, float)
+
+        return result
 
     def __dir__(self):
         """TBW."""

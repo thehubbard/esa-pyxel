@@ -113,4 +113,6 @@ def eval_entry(value: t.Union[str, int, float]) -> t.Union[int, float]:
                 value = '"' + value + '"'
 
         value = literal_eval(value)
+        assert isinstance(value, int) or isinstance(value, float)
+
     return value
