@@ -91,7 +91,7 @@ def read_data(filenames: t.Sequence[Path]) -> t.List[np.ndarray]:
     :return:
     """
     output = [
-        read_single_data(filename) for filename in filenames
+        read_single_data(Path(filename)) for filename in filenames
     ]  # type: t.List[np.ndarray]
 
     return output
