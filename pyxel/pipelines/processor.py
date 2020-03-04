@@ -10,6 +10,7 @@ import logging
 import operator
 import typing as t
 from copy import deepcopy
+from numbers import Number
 
 import numpy as np
 from pyxel.detectors.ccd import CCD
@@ -94,7 +95,9 @@ class Processor:
     def set(
         self,
         key: str,
-        value: t.Union[str, int, float, t.List[t.Union[str, int, float]]],
+        value: t.Union[
+            str, Number, np.ndarray, t.List[t.Union[str, Number, np.ndarray]]
+        ],
         convert_value: bool = True,
     ) -> None:
         """TBW.
@@ -106,6 +109,7 @@ class Processor:
         convert_value : bool
         """
         if convert_value:  # and value:
+            # TODO: Refactor this
             # convert the string based value to a number
             if isinstance(value, list):
                 for i, val in enumerate(value):

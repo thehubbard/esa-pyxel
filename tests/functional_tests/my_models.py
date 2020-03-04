@@ -1,7 +1,6 @@
 # import pyxel
 from pyxel.detectors.detector import Detector
 
-
 # @pyxel.register(group='charge_generation', name='my_class_model')
 # class MyClassModel:
 #     def __call__(self, detector: Detector, level: int, noise: float = 2.0) -> Detector:

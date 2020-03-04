@@ -10,6 +10,7 @@ import importlib
 import logging
 import typing as t
 from ast import literal_eval
+from numbers import Number
 
 import numpy as np
 
@@ -92,13 +93,17 @@ def eval_range(values: t.Union[str, list, tuple]) -> list:
 
 
 # TODO: Use 'numexpr.evaluate' ?
-def eval_entry(value: t.Union[str, int, float]) -> t.Union[int, float]:
+def eval_entry(value: t.Union[str, Number, np.ndarray]) -> t.Union[Number, np.ndarray]:
     """TBW.
 
     :param value:
     :return:
     """
-    assert isinstance(value, str) or isinstance(value, int) or isinstance(value, float)
+    assert (
+        isinstance(value, str)
+        or isinstance(value, Number)
+        or isinstance(value, np.ndarray)
+    )
 
     if isinstance(value, str):
         try:
@@ -113,6 +118,6 @@ def eval_entry(value: t.Union[str, int, float]) -> t.Union[int, float]:
                 value = '"' + value + '"'
 
         value = literal_eval(value)
-        assert isinstance(value, int) or isinstance(value, float)
+        assert isinstance(value, Number) or isinstance(value, np.ndarray)
 
     return value
