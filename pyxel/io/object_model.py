@@ -1,3 +1,10 @@
+#  Copyright (c) European Space Agency, 2017, 2018, 2019, 2020.
+#
+#  This file is subject to the terms and conditions defined in file 'LICENCE.txt', which
+#  is part of this Pyxel package. No part of the package, including
+#  this file, may be copied, modified, propagated, or distributed except according to
+#  the terms contained in the file ‘LICENCE.txt’.
+
 """TBW."""
 import typing as t
 from pathlib import Path
@@ -14,12 +21,7 @@ try:
     from yaml import CSafeLoader as SafeLoader
 except ImportError:
     from yaml import SafeLoader  # type: ignore   # noqa
-#  Copyright (c) European Space Agency, 2017, 2018, 2019, 2020.
-#
-#  This file is subject to the terms and conditions defined in file 'LICENCE.txt', which
-#  is part of this Pyxel package. No part of the package, including
-#  this file, may be copied, modified, propagated, or distributed except according to
-#  the terms contained in the file ‘LICENCE.txt’.
+
 
 """TBW."""
 
