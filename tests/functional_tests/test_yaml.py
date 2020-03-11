@@ -6,7 +6,7 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 import pytest
-import pyxel.io as io
+import pyxel.inputs_outputs as io
 
 try:
     import pygmo as pg

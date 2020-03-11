@@ -2,7 +2,7 @@ from collections import abc
 from pathlib import Path
 
 import pytest
-import pyxel.io as io
+import pyxel.inputs_outputs as io
 from pyxel.detectors import CCD
 from pyxel.parametric.parametric import (
     Configuration,

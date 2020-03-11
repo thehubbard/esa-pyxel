@@ -20,7 +20,7 @@ from pathlib import Path
 
 import matplotlib.pyplot as plt
 import numpy as np
-import pyxel.io as io
+import pyxel.inputs_outputs as io
 from dask import delayed, distributed
 from pyxel import __version__ as version
 from pyxel.detectors import CCD, CMOS
