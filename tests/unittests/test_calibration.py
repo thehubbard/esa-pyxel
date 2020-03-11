@@ -11,7 +11,7 @@ from pathlib import Path
 
 import numpy as np
 import pytest
-import pyxel.io as io
+import pyxel.inputs_outputs as io
 from pyxel.calibration.util import (
     check_ranges,
     list_to_slice,
@@ -179,7 +179,7 @@ def test_check_ranges(targ_range, out_range, row, col):
 @pytest.mark.parametrize("yaml", ["tests/data/calibrate_models.yaml"])
 def test_run_calibration(yaml):
     """Test """
-    cfg = io.load(yaml)
+    cfg = inputs_outputs.load(yaml)
     assert isinstance(cfg, dict)
 
     detector = cfg["ccd_detector"]
