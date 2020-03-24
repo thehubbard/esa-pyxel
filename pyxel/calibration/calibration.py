@@ -507,6 +507,8 @@ class Calibration:
         if islands not in range(101):
             raise ValueError("'islands' must be between 0 and 100.")
 
+        self._log = logging.getLogger(__name__)
+
         self._output_dir = output_dir
         self._fitting = fitting
         self._calibration_mode = CalibrationMode(
@@ -694,7 +696,7 @@ class Calibration:
         :return:
         """
         pg.set_global_rng_seed(seed=self.seed)
-        logging.info("Seed: %d", self.seed)
+        self._log.info("Seed: %d", self.seed)
 
         self.output_dir = output_dir
         self.fitting = ModelFitting(processor=processor, variables=self.parameters)
@@ -743,12 +745,15 @@ class Calibration:
                 udi=pg.mp_island(),
             )
             archi.evolve()
-            logging.info(archi)
+            self._log.info(archi)
             archi.wait_check()
             champion_f = archi.get_champions_f()  # type: t.List[np.ndarray]
             champion_x = archi.get_champions_x()  # type: t.List[np.ndarray]
         else:
+            self._log.info("Initialize optimization algorithm")
             pop = pg.population(prob=prob, size=self.algorithm.population_size)
+
+            self._log.info("Start optimization algorithm")
             pop = algo.evolve(pop)
             champion_f = [pop.champion_f]
             champion_x = [pop.champion_x]
@@ -758,7 +763,7 @@ class Calibration:
         for f, x in zip(champion_f, champion_x):
             res += [self.fitting.get_results(overall_fitness=f, parameter=x)]
 
-        logging.info("Calibration ended.")
+        self._log.info("Calibration ended.")
         return res
 
     def post_processing(

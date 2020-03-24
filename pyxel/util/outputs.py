@@ -575,7 +575,7 @@ class Outputs:
         y = y.flatten()
 
         if self._single_plot["plot_type"] == "graph":
-            self.plot_graph(x, y)  # type: plt.Figure
+            self.plot_graph(x=x, y=y)  # type: plt.Figure
             fname = "graph_??"
 
         elif self._single_plot["plot_type"] == "histogram":
@@ -658,12 +658,12 @@ class Outputs:
             b = 1
             if isinstance(param_value, Number):
                 column = data[:, a]
-                self.plot_graph(generations, column, args=plt_args)
+                self.plot_graph(x=generations, y=column, args=plt_args)
 
             elif isinstance(param_value, np.ndarray):
                 b = len(param_value)
                 column = data[:, slice(a, a + b)]
-                self.plot_graph(generations, column, args=plt_args)
+                self.plot_graph(x=generations, y=column, args=plt_args)
                 self._fig.legend(["index " + str(i) for i in range(b)])
 
             self.save_plot(filename=f"calibrated_{param_name!s}_id{island_id!s}")
@@ -916,7 +916,7 @@ class Outputs:
         if isinstance(y, np.ndarray):
             y = y.flatten()
 
-        self.plot_graph(x, y, args=args)
+        self.plot_graph(x=x, y=y, args=args)
         self.save_plot(filename="parametric_??")
 
     def update_args(
