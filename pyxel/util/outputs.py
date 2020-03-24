@@ -8,6 +8,7 @@
 """Utility functions for creating outputs."""
 import logging
 import typing as t
+import warnings
 from enum import Enum
 from glob import glob
 from numbers import Number
@@ -516,19 +517,37 @@ class Outputs:
         # fig.canvas.draw_idle()
 
     # TODO: Specific to 'single_plot'
+    # TODO: This function is doing too much.
     def single_output(self, processor: "Processor") -> None:
-        """TBW.
+        """Save data into a file and/or generate pictures.
 
         Parameters
         ----------
         processor
         """
+        warnings.warn(
+            "Use function 'save_to_file' and 'single_plot'.", DeprecationWarning
+        )
+
         assert self.single_plot is not None
 
         # if not self.save_data_to_file:
         #     self.save_data_to_file = [{"detector.image.array": ["fits"]}]
 
         self.save_to_file(processor)
+
+        self.single_plot(processor)
+
+    # TODO: Specific to 'single_plot'
+    # TODO: This function is doing too much.
+    def single_plot(self, processor: "Processor") -> None:
+        """Generate picture(s).
+
+        Parameters
+        ----------
+        processor
+        """
+        assert self.single_plot is not None
 
         self.user_plt_args = None
         x = processor.detector.photon.array  # todo: default plots with plot_args?
