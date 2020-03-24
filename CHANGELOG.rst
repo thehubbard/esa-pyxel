@@ -12,6 +12,8 @@ version 0.6 / 2020-MM-DD
   (See `#69 <https://gitlab.com/esa/pyxel/issues/69>`_).
 * Fix issues with example file 'examples/calibration_CDM_beta.yaml'.
   (See `#75 <https://gitlab.com/esa/pyxel/issues/75>`_).
+* Fix issues with example file 'examples/calibration_CDM_irrad.yaml'.
+  (See `#76 <https://gitlab.com/esa/pyxel/issues/76>`_).
 
 
 version 0.5 / 2019-12-20
