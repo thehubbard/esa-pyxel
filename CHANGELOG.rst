@@ -10,6 +10,8 @@ version 0.6 / 2020-MM-DD
   (See `#73 <https://gitlab.com/esa/pyxel/issues/73>`_).
 * Change license and add copyrights to all source files.
   (See `#69 <https://gitlab.com/esa/pyxel/issues/69>`_).
+* Fix issues with example file 'examples/calibration_CDM_beta.yaml'.
+  (See `#75 <https://gitlab.com/esa/pyxel/issues/75>`_).
 
 
 version 0.5 / 2019-12-20
