@@ -22,6 +22,7 @@ import h5py as h5
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from matplotlib.ticker import ScalarFormatter
 from pyxel import __version__ as version
 from pyxel.calibration.util import ResultType
 
@@ -115,9 +116,9 @@ class Outputs:
         output_folder: t.Union[str, Path],
         save_data_to_file: t.Optional[t.List[t.Dict[str, t.List[str]]]] = None,
         save_parameter_to_file: t.Optional[dict] = None,
-        parametric_plot: t.Optional[dict] = None,
-        calibration_plot: t.Optional[t.Dict[str, t.Any]] = None,
-        single_plot: t.Optional[dict] = None,
+        parametric_plot: t.Optional[dict] = None,  # TODO: See issue #80
+        calibration_plot: t.Optional[t.Dict[str, t.Any]] = None,  # TODO: See issue #79
+        single_plot: t.Optional[dict] = None,  # TODO: See issue #78
     ):
         """TBW."""
         self._log = logging.getLogger(__name__)
@@ -155,7 +156,8 @@ class Outputs:
         if single_plot is not None:
             self._single_plot = single_plot
 
-        self.user_plt_args = None  # type: t.Optional[ParametricPlotArgs]
+        # TODO: Improve this. See issue #77.
+        self.user_plt_args = None  # type: t.Union[None, dict, ParametricPlotArgs]
         self.save_parameter_to_file = save_parameter_to_file  # type: t.Optional[dict]
         self.output_dir = (
             Path(output_folder).joinpath("run_" + strftime("%Y%m%d_%H%M%S")).resolve()
@@ -415,9 +417,12 @@ class Outputs:
         """
         ax_args0, plt_args0 = self.update_args(plot_type=PlotType.Graph, new_args=args)
 
+        # Improve this. See issue #77.
         user_plt_args_dct = None  # type: t.Optional[dict]
-        if self.user_plt_args:
+        if isinstance(self.user_plt_args, ParametricPlotArgs):
             user_plt_args_dct = self.user_plt_args.to_dict()
+        elif isinstance(self.user_plt_args, dict):
+            user_plt_args_dct = dict(self.user_plt_args)
 
         ax_args, plt_args = self.update_args(
             plot_type=PlotType.Graph,
@@ -446,12 +451,19 @@ class Outputs:
         """
         assert self.user_plt_args is not None
 
+        # Improve this. See issue #77.
+        user_plt_args_dct = None  # type: t.Optional[dict]
+        if isinstance(self.user_plt_args, ParametricPlotArgs):
+            user_plt_args_dct = self.user_plt_args.to_dict()
+        elif isinstance(self.user_plt_args, dict):
+            user_plt_args_dct = dict(self.user_plt_args)
+
         ax_args0, plt_args0 = self.update_args(
             plot_type=PlotType.Histogram, new_args=args
         )
         ax_args, plt_args = self.update_args(
             plot_type=PlotType.Histogram,
-            new_args=self.user_plt_args.to_dict(),
+            new_args=user_plt_args_dct,
             ax_args=ax_args0,
             plt_args=plt_args0,
         )
@@ -489,8 +501,12 @@ class Outputs:
         args
         """
         user_plt_args_dct = None  # type: t.Optional[dict]
-        if self.user_plt_args:
+
+        # TODO: Fix this. See issue #77.
+        if isinstance(self.user_plt_args, ParametricPlotArgs):
             user_plt_args_dct = self.user_plt_args.to_dict()
+        elif isinstance(self.user_plt_args, dict):
+            user_plt_args_dct = dict(self.user_plt_args)
 
         ax_args0, plt_args0 = self.update_args(
             plot_type=PlotType.Scatter, new_args=args
@@ -786,6 +802,13 @@ class Outputs:
 
                 self.user_plt_args = self.calibration_plot["fitting_plot"]["plot_args"]
 
+                # Improve this. See issue #77.
+                user_plt_args_dct = None  # type: t.Optional[dict]
+                if isinstance(self.user_plt_args, ParametricPlotArgs):
+                    user_plt_args_dct = self.user_plt_args.to_dict()
+                elif isinstance(self.user_plt_args, dict):
+                    user_plt_args_dct = dict(self.user_plt_args)
+
                 args = {
                     "title": (
                         f"Target and Simulated ({result_type}) data, "
@@ -797,7 +820,7 @@ class Outputs:
                 )
                 ax_args, plt_args = self.update_args(
                     plot_type=PlotType.Graph,
-                    new_args=self.user_plt_args.to_dict(),
+                    new_args=user_plt_args_dct,
                     ax_args=ax_args0,
                     plt_args=plt_args0,
                 )
@@ -993,9 +1016,11 @@ def update_plot(ax_args: dict, ax: plt.Axes) -> None:
     ax.grid(ax_args["grid"])
 
     if ax_args["sci_x"]:
-        ax.ticklabel_format(style="sci", axis="x", scilimits=(0, 0))
+        ax.xaxis.set_major_formatter(ScalarFormatter())
+        ax.ticklabel_format(style="scientific", axis="x", scilimits=(0, 0))
     if ax_args["sci_y"]:
-        ax.ticklabel_format(style="sci", axis="y", scilimits=(0, 0))
+        ax.yaxis.set_major_formatter(ScalarFormatter())
+        ax.ticklabel_format(style="scientific", axis="y", scilimits=(0, 0))
 
 
 # TODO: Refactor this function
