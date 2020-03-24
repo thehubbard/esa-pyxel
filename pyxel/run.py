@@ -47,7 +47,8 @@ def single_mode(processor: Processor, out: Outputs) -> plt.Figure:
 
     _ = processor.run_pipeline()
 
-    out.single_output(processor)
+    out.save_to_file(processor)
+    out.single_to_plot(processor)
 
     return out.fig
 

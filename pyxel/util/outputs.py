@@ -151,9 +151,9 @@ class Outputs:
             self.calibration_plot = calibration_plot
 
         # Parameter(s) specific for 'Single'
-        self.single_plot = None  # type: t.Optional[dict]
+        self._single_plot = None  # type: t.Optional[dict]
         if single_plot is not None:
-            self.single_plot = single_plot
+            self._single_plot = single_plot
 
         self.user_plt_args = None  # type: t.Optional[ParametricPlotArgs]
         self.save_parameter_to_file = save_parameter_to_file  # type: t.Optional[dict]
@@ -413,13 +413,15 @@ class Outputs:
         y
         args
         """
-        assert self.user_plt_args is not None
-
         ax_args0, plt_args0 = self.update_args(plot_type=PlotType.Graph, new_args=args)
+
+        user_plt_args_dct = None  # type: t.Optional[dict]
+        if self.user_plt_args:
+            user_plt_args_dct = self.user_plt_args.to_dict()
 
         ax_args, plt_args = self.update_args(
             plot_type=PlotType.Graph,
-            new_args=self.user_plt_args.to_dict(),
+            new_args=user_plt_args_dct,
             ax_args=ax_args0,
             plt_args=plt_args0,
         )
@@ -486,17 +488,16 @@ class Outputs:
         color
         args
         """
-        assert self.user_plt_args is not None
-
-        # fig, ax = plt.subplots()
-        ax = self._fig.axes  # type: plt.Axes
+        user_plt_args_dct = None  # type: t.Optional[dict]
+        if self.user_plt_args:
+            user_plt_args_dct = self.user_plt_args.to_dict()
 
         ax_args0, plt_args0 = self.update_args(
             plot_type=PlotType.Scatter, new_args=args
         )
         ax_args, plt_args = self.update_args(
             plot_type=PlotType.Scatter,
-            new_args=self.user_plt_args.to_dict(),
+            new_args=user_plt_args_dct,
             ax_args=ax_args0,
             plt_args=plt_args0,
         )
@@ -505,14 +506,14 @@ class Outputs:
         # ax = fig.axes
 
         if color is not None:
-            sp = ax.scatter(x, y, c=color, s=plt_args["size"])
+            sp = self._ax.scatter(x, y, c=color, s=plt_args["size"])
             cbar = self._fig.colorbar(sp)
             cbar.set_label(plt_args["cbar_label"])
 
         else:
-            ax.scatter(x, y, s=plt_args["size"])
+            self._ax.scatter(x, y, s=plt_args["size"])
 
-        update_plot(ax_args=ax_args, ax=ax)
+        update_plot(ax_args=ax_args, ax=self._ax)
         # plt.draw()
         # fig.canvas.draw_idle()
 
@@ -529,43 +530,42 @@ class Outputs:
             "Use function 'save_to_file' and 'single_plot'.", DeprecationWarning
         )
 
-        assert self.single_plot is not None
+        assert self._single_plot is not None
 
         # if not self.save_data_to_file:
         #     self.save_data_to_file = [{"detector.image.array": ["fits"]}]
 
         self.save_to_file(processor)
 
-        self.single_plot(processor)
+        self.single_to_plot(processor)
 
     # TODO: Specific to 'single_plot'
-    # TODO: This function is doing too much.
-    def single_plot(self, processor: "Processor") -> None:
+    def single_to_plot(self, processor: "Processor") -> None:
         """Generate picture(s).
 
         Parameters
         ----------
         processor
         """
-        assert self.single_plot is not None
+        assert self._single_plot is not None
 
         self.user_plt_args = None
         x = processor.detector.photon.array  # todo: default plots with plot_args?
         y = processor.detector.image.array
         color = None
 
-        if "plot_args" in self.single_plot:
+        if "plot_args" in self._single_plot:
             self.user_plt_args = ParametricPlotArgs.from_dict(
-                self.single_plot["plot_args"]
+                self._single_plot["plot_args"]
             )
 
-        if "x" in self.single_plot:
-            x = processor.get(self.single_plot["x"])
+        if "x" in self._single_plot:
+            x = processor.get(self._single_plot["x"])
 
-        if "y" in self.single_plot:
-            y = processor.get(self.single_plot["y"])
+        if "y" in self._single_plot:
+            y = processor.get(self._single_plot["y"])
 
-        if "plot_type" not in self.single_plot:
+        if "plot_type" not in self._single_plot:
             raise NotImplementedError
 
         assert isinstance(x, np.ndarray)
@@ -574,15 +574,15 @@ class Outputs:
         x = x.flatten()
         y = y.flatten()
 
-        if self.single_plot["plot_type"] == "graph":
+        if self._single_plot["plot_type"] == "graph":
             self.plot_graph(x, y)  # type: plt.Figure
             fname = "graph_??"
 
-        elif self.single_plot["plot_type"] == "histogram":
+        elif self._single_plot["plot_type"] == "histogram":
             self.plot_histogram(y)
             fname = "histogram_??"
 
-        elif self.single_plot["plot_type"] == "scatter":
+        elif self._single_plot["plot_type"] == "scatter":
             self.plot_scatter(x, y, color)
             fname = "scatter_??"
 
@@ -717,7 +717,10 @@ class Outputs:
         """TBW."""
         if self.save_data_to_file is not None:
             for processor in processor_list:
-                self.single_output(processor)
+                self.save_to_file(processor)
+
+                if self._single_plot:
+                    self.single_to_plot(processor)
 
     # TODO: Specific to 'calibration_plot'
     def calibration_plots(self, results: dict) -> None:
