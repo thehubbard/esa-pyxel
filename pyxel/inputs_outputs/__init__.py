@@ -16,7 +16,6 @@ from ..pipelines import ModelFunction
 from ..util import PlotArguments, SinglePlot
 
 
-
 def build_callable(func: str, arguments: t.Optional[dict] = None) -> t.Callable:
     """Create a callable.
 
