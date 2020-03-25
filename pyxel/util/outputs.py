@@ -89,9 +89,7 @@ class ParametricPlot:
     @classmethod
     def from_dict(cls, dct: dict) -> "ParametricPlot":
         """TBW."""
-        return cls(
-            x=dct["x"], y=dct["y"], plot_args=PlotArguments.from_dict(dct["plot_args"]),
-        )
+        return cls(x=dct["x"], y=dct["y"], plot_args=dct["plot_args"],)
 
 
 class PlotType(Enum):
@@ -560,7 +558,8 @@ class Outputs:
         color = None
 
         if "plot_args" in self._single_plot:
-            self.user_plt_args = PlotArguments.from_dict(self._single_plot["plot_args"])
+            plot_args = self._single_plot["plot_args"]  # type: PlotArguments
+            self.user_plt_args = plot_args
 
         if "x" in self._single_plot:
             x = processor.get(self._single_plot["x"])
