@@ -110,6 +110,38 @@ class ParametricPlot:
         return cls(x=dct["x"], y=dct["y"], plot_args=dct["plot_args"])
 
 
+# Specific for CalibrationPlot
+@attr.s(auto_attribs=True, slots=True, frozen=True)
+class ChampionsPlot:
+    """TBW."""
+
+    plot_args: t.Optional[PlotArguments] = None
+
+
+@attr.s(auto_attribs=True, slots=True, frozen=True)
+class PopulationPlot:
+    """TBW."""
+
+    columns: t.Optional[t.Tuple[int, int]] = None  # TODO: Check this, with validator ?
+    plot_args: t.Optional[PlotArguments] = None
+
+
+@attr.s(auto_attribs=True, slots=True, frozen=True)
+class FittingPlot:
+    """TBW."""
+
+    plot_args: t.Optional[PlotArguments] = None
+
+
+@attr.s(auto_attribs=True, slots=True, frozen=True)
+class CalibrationPlot:
+    """TBW."""
+
+    champions_plot: t.Optional[ChampionsPlot] = None
+    population_plot: t.Optional[PopulationPlot] = None
+    fitting_plot: t.Optional[FittingPlot] = None
+
+
 # TODO: Create a special Output class for 'parametric_plot', 'calibration_plot' and
 #       'single_plot' ?
 # TODO: Example
@@ -124,7 +156,7 @@ class Outputs:
         save_data_to_file: t.Optional[t.List[t.Dict[str, t.List[str]]]] = None,
         save_parameter_to_file: t.Optional[dict] = None,
         parametric_plot: t.Optional[dict] = None,  # TODO: See issue #80
-        calibration_plot: t.Optional[t.Dict[str, t.Any]] = None,  # TODO: See issue #79
+        calibration_plot: t.Optional[CalibrationPlot] = None,
         single_plot: t.Optional[SinglePlot] = None,
     ):
         """TBW."""
@@ -154,7 +186,7 @@ class Outputs:
             self.parametric_plot = ParametricPlot.from_dict(parametric_plot)
 
         # Parameter(s) specific for 'Calibration'
-        self.calibration_plot = None  # type: t.Optional[t.Dict[str, t.Any]]
+        self.calibration_plot = None  # type: t.Optional[CalibrationPlot]
         if calibration_plot is not None:
             self.calibration_plot = calibration_plot
 
@@ -681,9 +713,9 @@ class Outputs:
         data = np.loadtxt(population_file)
         fitnesses = np.log10(data[:, 1])
         a, b = 2, 1  # 1st parameter and fitness
-        if self.calibration_plot["population_plot"]:
-            if "columns" in self.calibration_plot["population_plot"]:
-                col = self.calibration_plot["population_plot"]["columns"]
+        if self.calibration_plot.population_plot:
+            if self.calibration_plot.population_plot.columns:
+                col = self.calibration_plot.population_plot.columns
                 a, b = col[0], col[1]
         x = data[:, a]
         y = data[:, b]
@@ -730,14 +762,11 @@ class Outputs:
         assert self.calibration_plot
 
         if self.calibration_plot:
-            if "champions_plot" in self.calibration_plot:
+            if self.calibration_plot.champions_plot:
                 self.user_plt_args = None
 
-                if self.calibration_plot["champions_plot"]:
-                    if "plot_args" in self.calibration_plot["champions_plot"]:
-                        self.user_plt_args = self.calibration_plot["champions_plot"][
-                            "plot_args"
-                        ]
+                if self.calibration_plot.champions_plot.plot_args:
+                    self.user_plt_args = self.calibration_plot.champions_plot.plot_args
 
                 for iid, file_ch in enumerate(
                     self.output_dir.glob("champions_id*.out")
@@ -746,13 +775,10 @@ class Outputs:
                         results=results, champions_file=file_ch, island_id=iid
                     )
 
-            if "population_plot" in self.calibration_plot:
+            if self.calibration_plot.population_plot:
                 self.user_plt_args = None
-                if self.calibration_plot["population_plot"]:
-                    if "plot_args" in self.calibration_plot["population_plot"]:
-                        self.user_plt_args = self.calibration_plot["population_plot"][
-                            "plot_args"
-                        ]
+                if self.calibration_plot.population_plot.plot_args:
+                    self.user_plt_args = self.calibration_plot.population_plot.plot_args
 
                 for iid, file_pop in enumerate(
                     self.output_dir.glob("population_id*.out")
@@ -768,11 +794,10 @@ class Outputs:
         """TBW."""
         assert self.calibration_plot
 
-        if self.calibration_plot:
-            if "fitting_plot" in self.calibration_plot:
-                self._fig.plot(target_data, ".-", label=f"target data #{data_i}")
-                self._fig.plot(simulated_data, ".-", label=f"simulated data #{data_i}")
-                self._fig.canvas.draw_idle()
+        if self.calibration_plot.fitting_plot:
+            self._fig.plot(target_data, ".-", label=f"target data #{data_i}")
+            self._fig.plot(simulated_data, ".-", label=f"simulated data #{data_i}")
+            self._fig.canvas.draw_idle()
 
     # TODO: Specific to 'calibration_plot' ??
     def fitting_plot_close(self, result_type: ResultType, island: int) -> None:
@@ -780,38 +805,36 @@ class Outputs:
         assert self.calibration_plot
         assert isinstance(island, int)
 
-        if self.calibration_plot:
-            if "fitting_plot" in self.calibration_plot:
-                self.user_plt_args = None
-                if "plot_args" not in self.calibration_plot["fitting_plot"]:
-                    raise RuntimeError
+        if self.calibration_plot.fitting_plot:
+            self.user_plt_args = None
+            if self.calibration_plot.fitting_plot.plot_args is None:
+                raise RuntimeError
 
-                self.user_plt_args = self.calibration_plot["fitting_plot"]["plot_args"]
+            self.user_plt_args = self.calibration_plot.fitting_plot.plot_args
 
-                user_plt_args_dct = None  # type: t.Optional[dict]
-                if isinstance(self.user_plt_args, PlotArguments):
-                    user_plt_args_dct = self.user_plt_args.to_dict()
+            user_plt_args_dct = None  # type: t.Optional[dict]
+            if isinstance(self.user_plt_args, PlotArguments):
+                user_plt_args_dct = self.user_plt_args.to_dict()
 
-                args = {
-                    "title": (
-                        f"Target and Simulated ({result_type}) data, "
-                        f"island {island}"
-                    )
-                }
-                ax_args0, plt_args0 = self.update_args(
-                    plot_type=PlotType.Graph, new_args=args
+            args = {
+                "title": (
+                    f"Target and Simulated ({result_type}) data, " f"island {island}"
                 )
-                ax_args, plt_args = self.update_args(
-                    plot_type=PlotType.Graph,
-                    new_args=user_plt_args_dct,
-                    ax_args=ax_args0,
-                    plt_args=plt_args0,
-                )
-                update_plot(ax_args=ax_args, ax=self._fig.axes)
-                # plt.legend()
-                self._fig.legend()
+            }
+            ax_args0, plt_args0 = self.update_args(
+                plot_type=PlotType.Graph, new_args=args
+            )
+            ax_args, plt_args = self.update_args(
+                plot_type=PlotType.Graph,
+                new_args=user_plt_args_dct,
+                ax_args=ax_args0,
+                plt_args=plt_args0,
+            )
+            update_plot(ax_args=ax_args, ax=self._fig.axes)
+            # plt.legend()
+            self._fig.legend()
 
-                self.save_plot(filename=f"fitted_datasets_id{island}")
+            self.save_plot(filename=f"fitted_datasets_id{island}")
 
     # TODO: Specific to 'parametric_plot' ?
     def params_func(self, param: "ParametricAnalysis") -> None:

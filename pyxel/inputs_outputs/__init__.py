@@ -13,8 +13,14 @@ from functools import partial
 from .object_model import ObjectModelLoader, load
 from ..evaluator import evaluate_reference
 from ..pipelines import ModelFunction
-from ..util import PlotArguments, SinglePlot
-
+from ..util import (
+    PlotArguments,
+    SinglePlot,
+    ChampionsPlot,
+    PopulationPlot,
+    CalibrationPlot,
+    FittingPlot,
+)
 
 def build_callable(func: str, arguments: t.Optional[dict] = None) -> t.Callable:
     """Create a callable.
@@ -141,6 +147,32 @@ def pyxel_yaml_loader():
     ObjectModelLoader.add_class(ParametricAnalysis, ["simulation", "parametric"])
     ObjectModelLoader.add_class(
         ParameterValues, ["simulation", "parametric", "parameters"], is_list=True
+    )
+
+    # Builder for `CalibrationPlot`
+    ObjectModelLoader.add_class(
+        ChampionsPlot, ["simulation", "outputs", "calibration_plot", "champions_plot"]
+    )
+    ObjectModelLoader.add_class(
+        PlotArguments,
+        ["simulation", "outputs", "calibration_plot", "champions_plot", "plot_args"],
+    )
+    ObjectModelLoader.add_class(
+        PopulationPlot, ["simulation", "outputs", "calibration_plot", "population_plot"]
+    )
+    ObjectModelLoader.add_class(
+        PlotArguments,
+        ["simulation", "outputs", "calibration_plot", "population_plot", "plot_args"],
+    )
+    ObjectModelLoader.add_class(
+        FittingPlot, ["simulation", "outputs", "calibration_plot", "fitting_plot"]
+    )
+    ObjectModelLoader.add_class(
+        FittingPlot,
+        ["simulation", "outputs", "calibration_plot", "fitting_plot", "plot_args"],
+    )
+    ObjectModelLoader.add_class(
+        CalibrationPlot, ["simulation", "outputs", "calibration_plot"]
     )
 
 
