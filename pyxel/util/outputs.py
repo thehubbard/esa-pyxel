@@ -91,8 +91,8 @@ class SinglePlot:
     """TBW."""
 
     plot_type: PlotType = attr.ib(converter=PlotType)
-    x: t.Optional[str] = None  # TODO: Check if the value is valid
-    y: t.Optional[str] = None  # TODO: Check if the value is valid
+    x: str = "detector.photon.array"  # TODO: Check if the value is valid
+    y: str = "detector.image.array"  # TODO: Check if the value is valid
     plot_args: t.Optional[PlotArguments] = None
 
 
@@ -564,22 +564,14 @@ class Outputs:
 
         self.user_plt_args = None
         # todo: default plots with plot_args?
-        x = processor.detector.photon.array  # type: np.ndarray
-        y = processor.detector.image.array  # type: np.ndarray
         color = None
 
         if self._single_plot.plot_args:
             plot_args = self._single_plot.plot_args  # type: PlotArguments
             self.user_plt_args = plot_args
 
-        if self._single_plot.x:
-            x = processor.get(self._single_plot.x)
-
-        if self._single_plot.y:
-            y = processor.get(self._single_plot.y)
-
-        # assert isinstance(x, np.ndarray)
-        # assert isinstance(y, np.ndarray)
+        x = processor.get(self._single_plot.x)
+        y = processor.get(self._single_plot.y)
 
         x = x.flatten()
         y = y.flatten()
