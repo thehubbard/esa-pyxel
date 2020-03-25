@@ -20,6 +20,7 @@ from ..util import (
     PopulationPlot,
     CalibrationPlot,
     FittingPlot,
+    ParametricPlot,
 )
 
 
@@ -141,9 +142,6 @@ def pyxel_yaml_loader():
         PlotArguments,
         ["simulation", "outputs", "calibration_plot", "population_plot", "plot_args"],
     )
-    ObjectModelLoader.add_class(
-        PlotArguments, ["simulation", "outputs", "parametric_plot", "plot_args"]
-    )
 
     ObjectModelLoader.add_class(ParametricAnalysis, ["simulation", "parametric"])
     ObjectModelLoader.add_class(
@@ -174,6 +172,14 @@ def pyxel_yaml_loader():
     )
     ObjectModelLoader.add_class(
         CalibrationPlot, ["simulation", "outputs", "calibration_plot"]
+    )
+
+    # Builder for `ParametricPlot`
+    ObjectModelLoader.add_class(
+        ParametricPlot, ["simulation", "outputs", "parametric_plot"]
+    )
+    ObjectModelLoader.add_class(
+        PlotArguments, ["simulation", "outputs", "parametric_plot", "plot_args"],
     )
 
 
