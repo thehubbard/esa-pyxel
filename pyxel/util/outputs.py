@@ -142,6 +142,38 @@ class CalibrationPlot:
     fitting_plot: t.Optional[FittingPlot] = None
 
 
+# Specific for CalibrationPlot
+@attr.s(auto_attribs=True, slots=True, frozen=True)
+class ChampionsPlot:
+    """TBW."""
+
+    plot_args: t.Optional[PlotArguments] = None
+
+
+@attr.s(auto_attribs=True, slots=True, frozen=True)
+class PopulationPlot:
+    """TBW."""
+
+    columns: t.Optional[t.Tuple[int, int]] = None  # TODO: Check this, with validator ?
+    plot_args: t.Optional[PlotArguments] = None
+
+
+@attr.s(auto_attribs=True, slots=True, frozen=True)
+class FittingPlot:
+    """TBW."""
+
+    plot_args: t.Optional[PlotArguments] = None
+
+
+@attr.s(auto_attribs=True, slots=True, frozen=True)
+class CalibrationPlot:
+    """TBW."""
+
+    champions_plot: t.Optional[ChampionsPlot] = None
+    population_plot: t.Optional[PopulationPlot] = None
+    fitting_plot: t.Optional[FittingPlot] = None
+
+
 # TODO: Create a special Output class for 'parametric_plot', 'calibration_plot' and
 #       'single_plot' ?
 # TODO: Example
