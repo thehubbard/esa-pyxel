@@ -11,7 +11,7 @@ import numpy as np
 import logging
 
 # from pyxel.util.outputs import image, numpy_array, hist_plot, graph_plot, show_plots
-from pyxel.util.outputs import Outputs, apply_run_number
+from pyxel.util.outputs import Outputs, apply_run_number, PlotArguments
 import typing as t
 
 __all__ = [

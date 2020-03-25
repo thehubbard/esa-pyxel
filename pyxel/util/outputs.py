@@ -50,7 +50,7 @@ class Result:
 
 
 @attr.s(auto_attribs=True, slots=True, frozen=True)
-class ParametricPlotArgs:
+class PlotArguments:
     """TBW."""
 
     title: t.Optional[str] = None
@@ -69,7 +69,7 @@ class ParametricPlotArgs:
     bins: t.Optional[int] = None  # TODO: This should not be here !
 
     @classmethod
-    def from_dict(cls, dct: t.Dict[str, t.Any]) -> "ParametricPlotArgs":
+    def from_dict(cls, dct: t.Dict[str, t.Any]) -> "PlotArguments":
         """TBW."""
         return cls(**dct)
 
@@ -84,15 +84,13 @@ class ParametricPlot:
 
     x: str
     y: str
-    plot_args: ParametricPlotArgs
+    plot_args: PlotArguments
 
     @classmethod
     def from_dict(cls, dct: dict) -> "ParametricPlot":
         """TBW."""
         return cls(
-            x=dct["x"],
-            y=dct["y"],
-            plot_args=ParametricPlotArgs.from_dict(dct["plot_args"]),
+            x=dct["x"], y=dct["y"], plot_args=PlotArguments.from_dict(dct["plot_args"]),
         )
 
 
@@ -157,8 +155,7 @@ class Outputs:
         if single_plot is not None:
             self._single_plot = single_plot
 
-        # TODO: Improve this. See issue #77.
-        self.user_plt_args = None  # type: t.Union[None, dict, ParametricPlotArgs]
+        self.user_plt_args = None  # type: t.Optional[PlotArguments]
         self.save_parameter_to_file = save_parameter_to_file  # type: t.Optional[dict]
         self.output_dir = (
             Path(output_folder).joinpath("run_" + strftime("%Y%m%d_%H%M%S")).resolve()
@@ -192,7 +189,7 @@ class Outputs:
         #     "sci_x": False,
         #     "sci_y": False,
         # }  # type: dict
-        self.default_ax_args = ParametricPlotArgs()
+        self.default_ax_args = PlotArguments()
 
         self.default_plot_args = {
             "color": None,
@@ -418,12 +415,9 @@ class Outputs:
         """
         ax_args0, plt_args0 = self.update_args(plot_type=PlotType.Graph, new_args=args)
 
-        # Improve this. See issue #77.
         user_plt_args_dct = None  # type: t.Optional[dict]
-        if isinstance(self.user_plt_args, ParametricPlotArgs):
+        if isinstance(self.user_plt_args, PlotArguments):
             user_plt_args_dct = self.user_plt_args.to_dict()
-        elif isinstance(self.user_plt_args, dict):
-            user_plt_args_dct = dict(self.user_plt_args)
 
         ax_args, plt_args = self.update_args(
             plot_type=PlotType.Graph,
@@ -452,12 +446,9 @@ class Outputs:
         """
         assert self.user_plt_args is not None
 
-        # Improve this. See issue #77.
         user_plt_args_dct = None  # type: t.Optional[dict]
-        if isinstance(self.user_plt_args, ParametricPlotArgs):
+        if isinstance(self.user_plt_args, PlotArguments):
             user_plt_args_dct = self.user_plt_args.to_dict()
-        elif isinstance(self.user_plt_args, dict):
-            user_plt_args_dct = dict(self.user_plt_args)
 
         ax_args0, plt_args0 = self.update_args(
             plot_type=PlotType.Histogram, new_args=args
@@ -503,11 +494,8 @@ class Outputs:
         """
         user_plt_args_dct = None  # type: t.Optional[dict]
 
-        # TODO: Fix this. See issue #77.
-        if isinstance(self.user_plt_args, ParametricPlotArgs):
+        if isinstance(self.user_plt_args, PlotArguments):
             user_plt_args_dct = self.user_plt_args.to_dict()
-        elif isinstance(self.user_plt_args, dict):
-            user_plt_args_dct = dict(self.user_plt_args)
 
         ax_args0, plt_args0 = self.update_args(
             plot_type=PlotType.Scatter, new_args=args
@@ -572,9 +560,7 @@ class Outputs:
         color = None
 
         if "plot_args" in self._single_plot:
-            self.user_plt_args = ParametricPlotArgs.from_dict(
-                self._single_plot["plot_args"]
-            )
+            self.user_plt_args = PlotArguments.from_dict(self._single_plot["plot_args"])
 
         if "x" in self._single_plot:
             x = processor.get(self._single_plot["x"])
@@ -803,12 +789,9 @@ class Outputs:
 
                 self.user_plt_args = self.calibration_plot["fitting_plot"]["plot_args"]
 
-                # Improve this. See issue #77.
                 user_plt_args_dct = None  # type: t.Optional[dict]
-                if isinstance(self.user_plt_args, ParametricPlotArgs):
+                if isinstance(self.user_plt_args, PlotArguments):
                     user_plt_args_dct = self.user_plt_args.to_dict()
-                elif isinstance(self.user_plt_args, dict):
-                    user_plt_args_dct = dict(self.user_plt_args)
 
                 args = {
                     "title": (
