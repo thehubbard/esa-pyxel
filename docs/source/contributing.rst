@@ -136,21 +136,31 @@ your local repository and GitLab.
 
 .. _contributing.forking:
 
-Forking
--------
+Get the source code by forking
+------------------------------
 
-You will need your own fork to work on the code. Go to the `Pyxel project
-page <https://gitlab.com/esa/pyxel>`_ and hit the ``Fork`` button. You will
-want to clone your fork to your machine:
+You will need your own fork to work on the code.
+Go to the `Pyxel project page <https://gitlab.com/esa/pyxel>`_ and
+hit the ``Fork`` button (top right). You have to do this operation only once.
+
+After that you will want to clone your fork to your machine.
+The following command creates the directory `Pyxel`.
 
 .. code-block:: fish
 
-    $ git clone https://gitlab.com/your-user-name/pyxel.git
+    $ git clone https://gitlab.com/YOUR-USER-NAME/pyxel.git
     $ cd pyxel
+
+Then the following command connects your repository to upstream (main project)
+*Pyxel* repository.
+
+.. code-block:: fish
+
     $ git remote add upstream https://gitlab.com/esa/pyxel.git
 
-This creates the directory `Pyxel` and connects your repository to
-the upstream (main project) *Pyxel* repository.
+
+Now you can push/pull your _fork_ with `git push` and `git pull`.
+
 
 .. _contributing.dev_env:
 
@@ -171,9 +181,9 @@ Creating a Python Environment (conda)
 Before starting any development, you'll need to create an isolated Pyxel
 development environment:
 
-- Install either `Anaconda <https://www.anaconda.com/download/>`_ or `miniconda
+- Install either `Anaconda3 <https://www.anaconda.com/download/>`_ or `miniconda3
   <https://conda.io/miniconda.html>`_
-- Make sure your conda is up to date (``conda update conda``)
+- Make sure your conda is up to date (launch command ``conda update conda``)
 - Make sure that you have :ref:`cloned the repository <contributing.forking>`
 - ``cd`` to the *Pyxel* source directory
 
@@ -184,15 +194,17 @@ We'll now kick off a two-step process:
 
 .. code-block:: fish
 
-   # Create and activate the build environment
+   # Create the new build environment (once)
    $ conda env create -f environment.yml
+
+   # Activate the build environment
    $ conda activate pyxel-dev
 
    # or with older versions of Anaconda:
    $ source activate pyxel-dev
 
-   # Build and install Pyxel
-   $ pip install -e .
+   # Build and install Pyxel in the new environment
+   (pyxel-dev) $ pip install -e .
 
 At this point you should be able to import *Pyxel* from your
 locally built version:
