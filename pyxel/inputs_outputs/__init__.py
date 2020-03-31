@@ -6,11 +6,13 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """TBW."""
-from .object_model import ObjectModelLoader, load
 import typing as t
 from functools import partial
-from pyxel.evaluator import evaluate_reference
-from pyxel.pipelines import ModelFunction
+
+# flake8: noqa
+from .object_model import ObjectModelLoader, load
+from ..evaluator import evaluate_reference
+from ..pipelines import ModelFunction
 
 
 def build_callable(func: str, arguments: t.Optional[dict] = None) -> t.Callable:
