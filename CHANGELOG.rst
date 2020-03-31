@@ -14,6 +14,8 @@ version 0.6 / 2020-MM-DD
   (See `#75 <https://gitlab.com/esa/pyxel/issues/75>`_).
 * Fix issues with example file 'examples/calibration_CDM_irrad.yaml'.
   (See `#76 <https://gitlab.com/esa/pyxel/issues/76>`_).
+* Updated Jupyter notebooks examples.
+  (See `#87 <https://gitlab.com/esa/pyxel/issues/87>`_).
 
 
 version 0.5 / 2019-12-20
