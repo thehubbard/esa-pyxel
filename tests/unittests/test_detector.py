@@ -10,6 +10,7 @@
 from copy import deepcopy
 
 import pytest
+
 from pyxel.detectors.ccd import CCD
 from pyxel.detectors.ccd_characteristics import CCDCharacteristics
 from pyxel.detectors.ccd_geometry import CCDGeometry

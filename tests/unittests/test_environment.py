@@ -7,6 +7,7 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 import pytest
+
 from pyxel.detectors.environment import Environment
 
 

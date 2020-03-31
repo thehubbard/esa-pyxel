@@ -6,6 +6,7 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 import pytest
+
 import pyxel.inputs_outputs as io
 
 try:

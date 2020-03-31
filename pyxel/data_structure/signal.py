@@ -11,6 +11,7 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 from astropy.units import cds
+
 from pyxel.data_structure.array import Array
 
 if TYPE_CHECKING:

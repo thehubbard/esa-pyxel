@@ -9,6 +9,7 @@
 
 import numpy as np
 from astropy.units import cds
+
 from pyxel.data_structure import Array
 
 # if TYPE_CHECKING:

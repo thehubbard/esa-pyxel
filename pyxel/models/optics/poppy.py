@@ -12,9 +12,10 @@ import typing as t
 import matplotlib.pyplot as plt
 import numpy as np
 import poppy as op
+from scipy import signal
+
 from pyxel.data_structure import Photon
 from pyxel.detectors import Detector
-from scipy import signal
 
 
 # @validators.validate
