@@ -6,8 +6,7 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """TBW."""
-from .object_model import ObjectModelLoader
-from .object_model import load  # noqa: F401
+from .object_model import ObjectModelLoader, load
 import typing as t
 from functools import partial
 from pyxel.evaluator import evaluate_reference

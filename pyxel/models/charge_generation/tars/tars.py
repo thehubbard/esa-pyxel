@@ -411,7 +411,10 @@ class TARS:
             beta=self.angle_beta,
         )
 
+        # Get output folder and create it (if needed)
         out_path = Path("data").resolve()
+        out_path.mkdir(parents=True, exist_ok=True)
+
         self._log.info("Save data in folder '%s'", out_path)
 
         for k in tqdm(range(self.particle_number), desc="TARS", unit=" particle"):
