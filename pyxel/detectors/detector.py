@@ -12,6 +12,7 @@ from math import sqrt
 from pathlib import Path
 
 import numpy as np
+
 from pyxel.data_structure.charge import Charge
 from pyxel.data_structure.image import Image
 from pyxel.data_structure.photon import Photon

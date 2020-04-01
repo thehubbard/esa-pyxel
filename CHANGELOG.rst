@@ -16,6 +16,7 @@ version 0.6 / 2020-MM-DD
   (See `#76 <https://gitlab.com/esa/pyxel/issues/76>`_).
 * Updated Jupyter notebooks examples.
   (See `#87 <https://gitlab.com/esa/pyxel/issues/87>`_).
+* Apply command 'isort' to the code base.
 
 
 version 0.5 / 2019-12-20

@@ -13,6 +13,7 @@ from copy import deepcopy
 from numbers import Number
 
 import numpy as np
+
 from pyxel.detectors.ccd import CCD
 from pyxel.detectors.cmos import CMOS
 from pyxel.evaluator import eval_entry

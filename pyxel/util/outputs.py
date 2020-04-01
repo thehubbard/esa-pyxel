@@ -23,6 +23,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from matplotlib.ticker import ScalarFormatter
+
 from pyxel import __version__ as version
 from pyxel.calibration.util import ResultType
 

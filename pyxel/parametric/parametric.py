@@ -13,6 +13,7 @@ from copy import deepcopy
 from enum import Enum
 
 import numpy as np
+
 from pyxel.parametric.parameter_values import ParameterValues
 from pyxel.state import get_obj_att, get_value
 

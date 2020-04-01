@@ -11,6 +11,7 @@ from pathlib import Path
 
 import numpy as np
 from astropy.io import fits
+
 from pyxel.data_structure import Photon
 from pyxel.detectors import Detector
 

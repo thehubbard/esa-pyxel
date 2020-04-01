@@ -14,6 +14,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+
 from pyxel.detectors.detector import Detector
 from pyxel.models.charge_generation.tars.particle import Particle
 from pyxel.models.charge_generation.tars.util import (
