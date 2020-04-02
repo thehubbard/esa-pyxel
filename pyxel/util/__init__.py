@@ -7,12 +7,14 @@
 
 """Utility functions."""
 
-import numpy as np
 import logging
-
-# from pyxel.util.outputs import image, numpy_array, hist_plot, graph_plot, show_plots
-from pyxel.util.outputs import Outputs, apply_run_number
 import typing as t
+
+import numpy as np
+
+# flake8: noqa
+# from pyxel.util.outputs import image, numpy_array, hist_plot, graph_plot, show_plots
+from pyxel.util.outputs import Outputs, apply_run_number, PlotArguments
 
 __all__ = [
     "convert_to_int",
