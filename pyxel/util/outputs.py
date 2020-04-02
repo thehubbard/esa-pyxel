@@ -89,7 +89,7 @@ class ParametricPlot:
     @classmethod
     def from_dict(cls, dct: dict) -> "ParametricPlot":
         """TBW."""
-        return cls(x=dct["x"], y=dct["y"], plot_args=dct["plot_args"],)
+        return cls(x=dct["x"], y=dct["y"], plot_args=dct["plot_args"])
 
 
 class PlotType(Enum):

@@ -15,6 +15,7 @@ from ..evaluator import evaluate_reference
 from ..pipelines import ModelFunction
 from ..util import PlotArguments
 
+
 def build_callable(func: str, arguments: t.Optional[dict] = None) -> t.Callable:
     """Create a callable.
 

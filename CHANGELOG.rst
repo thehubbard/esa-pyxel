@@ -17,6 +17,8 @@ version 0.6 / 2020-MM-DD
 * Updated Jupyter notebooks examples.
   (See `#87 <https://gitlab.com/esa/pyxel/issues/87>`_).
 * Apply command 'isort' to the code base.
+* Refactor class `ParametricPlotArgs`.
+  (See `#77 <https://gitlab.com/esa/pyxel/issues/77>`_).
 
 
 version 0.5 / 2019-12-20
