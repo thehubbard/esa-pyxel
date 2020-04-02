@@ -21,6 +21,8 @@ version 0.6 / 2020-MM-DD
   (See `#77 <https://gitlab.com/esa/pyxel/issues/77>`_).
 * Create class `SinglePlot`.
   (See `#78 <https://gitlab.com/esa/pyxel/issues/78>`_).
+* Create class `CalibrationPlot`.
+  (See `#79 <https://gitlab.com/esa/pyxel/issues/79>`_).
 
 
 version 0.5 / 2019-12-20
