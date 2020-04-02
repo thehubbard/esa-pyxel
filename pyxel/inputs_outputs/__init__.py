@@ -22,6 +22,7 @@ from ..util import (
     FittingPlot,
 )
 
+
 def build_callable(func: str, arguments: t.Optional[dict] = None) -> t.Callable:
     """Create a callable.
 
