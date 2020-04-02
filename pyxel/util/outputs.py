@@ -78,6 +78,24 @@ class PlotArguments:
         return attr.asdict(self)
 
 
+class PlotType(Enum):
+    """TBW."""
+
+    Histogram = "histogram"
+    Graph = "graph"
+    Scatter = "scatter"
+
+
+@attr.s(auto_attribs=True, slots=True, frozen=True)
+class SinglePlot:
+    """TBW."""
+
+    plot_type: PlotType = attr.ib(converter=PlotType)
+    x: str = "detector.photon.array"  # TODO: Check if the value is valid
+    y: str = "detector.image.array"  # TODO: Check if the value is valid
+    plot_args: t.Optional[PlotArguments] = None
+
+
 @attr.s(auto_attribs=True, slots=True)
 class ParametricPlot:
     """TBW."""
@@ -90,14 +108,6 @@ class ParametricPlot:
     def from_dict(cls, dct: dict) -> "ParametricPlot":
         """TBW."""
         return cls(x=dct["x"], y=dct["y"], plot_args=dct["plot_args"])
-
-
-class PlotType(Enum):
-    """TBW."""
-
-    Histogram = "hist"
-    Graph = "graph"
-    Scatter = "scatter"
 
 
 # TODO: Create a special Output class for 'parametric_plot', 'calibration_plot' and
@@ -115,7 +125,7 @@ class Outputs:
         save_parameter_to_file: t.Optional[dict] = None,
         parametric_plot: t.Optional[dict] = None,  # TODO: See issue #80
         calibration_plot: t.Optional[t.Dict[str, t.Any]] = None,  # TODO: See issue #79
-        single_plot: t.Optional[dict] = None,  # TODO: See issue #78
+        single_plot: t.Optional[SinglePlot] = None,
     ):
         """TBW."""
         self._log = logging.getLogger(__name__)
@@ -149,8 +159,8 @@ class Outputs:
             self.calibration_plot = calibration_plot
 
         # Parameter(s) specific for 'Single'
-        self._single_plot = None  # type: t.Optional[dict]
-        if single_plot is not None:
+        self._single_plot = None  # type: t.Optional[SinglePlot]
+        if single_plot:
             self._single_plot = single_plot
 
         self.user_plt_args = None  # type: t.Optional[PlotArguments]
@@ -553,43 +563,33 @@ class Outputs:
         assert self._single_plot is not None
 
         self.user_plt_args = None
-        x = processor.detector.photon.array  # todo: default plots with plot_args?
-        y = processor.detector.image.array
+        # todo: default plots with plot_args?
         color = None
 
-        if "plot_args" in self._single_plot:
-            plot_args = self._single_plot["plot_args"]  # type: PlotArguments
+        if self._single_plot.plot_args:
+            plot_args = self._single_plot.plot_args  # type: PlotArguments
             self.user_plt_args = plot_args
 
-        if "x" in self._single_plot:
-            x = processor.get(self._single_plot["x"])
-
-        if "y" in self._single_plot:
-            y = processor.get(self._single_plot["y"])
-
-        if "plot_type" not in self._single_plot:
-            raise NotImplementedError
-
-        assert isinstance(x, np.ndarray)
-        assert isinstance(y, np.ndarray)
+        x = processor.get(self._single_plot.x)
+        y = processor.get(self._single_plot.y)
 
         x = x.flatten()
         y = y.flatten()
 
-        if self._single_plot["plot_type"] == "graph":
+        if self._single_plot.plot_type is PlotType.Graph:
             self.plot_graph(x=x, y=y)  # type: plt.Figure
-            fname = "graph_??"
+            fname = "graph_??"  # type: str
 
-        elif self._single_plot["plot_type"] == "histogram":
+        elif self._single_plot.plot_type is PlotType.Histogram:
             self.plot_histogram(y)
             fname = "histogram_??"
 
-        elif self._single_plot["plot_type"] == "scatter":
+        elif self._single_plot.plot_type is PlotType.Scatter:
             self.plot_scatter(x, y, color)
             fname = "scatter_??"
 
         else:
-            raise KeyError()
+            raise NotImplementedError
 
         self.save_plot(filename=fname)
 

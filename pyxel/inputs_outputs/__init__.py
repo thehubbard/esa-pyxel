@@ -13,7 +13,7 @@ from functools import partial
 from .object_model import ObjectModelLoader, load
 from ..evaluator import evaluate_reference
 from ..pipelines import ModelFunction
-from ..util import PlotArguments
+from ..util import PlotArguments, SinglePlot
 
 
 def build_callable(func: str, arguments: t.Optional[dict] = None) -> t.Callable:
@@ -123,6 +123,10 @@ def pyxel_yaml_loader():
     ObjectModelLoader.add_class(Configuration, ["simulation"])
 
     ObjectModelLoader.add_class(Outputs, ["simulation", "outputs"])
+
+    ObjectModelLoader.add_class(SinglePlot, ["simulation", "outputs", "single_plot"])
+
+    # Builder for `PlotArguments`
     ObjectModelLoader.add_class(
         PlotArguments, ["simulation", "outputs", "single_plot", "plot_args"]
     )

@@ -228,4 +228,4 @@ class Configuration:
         """TBW."""
         cls_name = self.__class__.__name__  # type: str
 
-        return f"{cls_name}<mode={self.mode!r}>"
+        return f"{cls_name}<mode={self.mode!r}, outputs={self.outputs!r}>"
