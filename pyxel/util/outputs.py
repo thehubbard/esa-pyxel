@@ -155,7 +155,7 @@ class Outputs:
         output_folder: t.Union[str, Path],
         save_data_to_file: t.Optional[t.List[t.Dict[str, t.List[str]]]] = None,
         save_parameter_to_file: t.Optional[dict] = None,
-        parametric_plot: t.Optional[dict] = None,  # TODO: See issue #80
+        parametric_plot: t.Optional[ParametricPlot] = None,
         calibration_plot: t.Optional[CalibrationPlot] = None,
         single_plot: t.Optional[SinglePlot] = None,
     ):
@@ -180,10 +180,10 @@ class Outputs:
 
         # Parameter(s) specific for 'Parametric'
         self.parametric_plot = None  # type: t.Optional[ParametricPlot]
-        self.parameter_keys = []  # type: t.List[str]
-
         if parametric_plot is not None:
-            self.parametric_plot = ParametricPlot.from_dict(parametric_plot)
+            self.parametric_plot = parametric_plot
+
+        self.parameter_keys = []  # type: t.List[str]
 
         # Parameter(s) specific for 'Calibration'
         self.calibration_plot = None  # type: t.Optional[CalibrationPlot]

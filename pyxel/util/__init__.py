@@ -23,6 +23,7 @@ from pyxel.util.outputs import (
     PopulationPlot,
     CalibrationPlot,
     FittingPlot,
+    ParametricPlot,
 )
 
 __all__ = [
