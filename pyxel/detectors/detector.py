@@ -199,6 +199,7 @@ class Detector:
     # TODO: This method is used in 'run.py'. We could implement this as an iterator.
     def elapse_time(self) -> float:
         """TBW."""
+        print (self._all_time_steps_it)
         try:
             self._time = float(next(self._all_time_steps_it))
         except StopIteration:

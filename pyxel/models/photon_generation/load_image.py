@@ -63,4 +63,4 @@ def load_image(
             cht.qe * cht.eta * cht.sv * cht.amp * cht.a1 * cht.a2
         )
 
-    detector.photon = Photon(photon_array)
+    detector.photon = Photon(photon_array/1000.0)
