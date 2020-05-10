@@ -12,7 +12,6 @@ import numpy as np
 
 from pyxel.detectors import Detector
 
-
 # TODO: Fix this
 # @validators.validate
 # @config.argument(name='', label='', units='', validate=)
