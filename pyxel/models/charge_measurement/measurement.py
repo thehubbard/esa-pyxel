@@ -27,3 +27,17 @@ def simple_measurement(detector: Detector) -> None:
 
     array = detector.pixel.array * char.sv
     detector.signal.array = array.astype("float64")
+
+
+def simple_em(detector: Detector, gain: int) -> None:
+    """Create signal array from pixel array.
+
+    detector Signal unit: Volt
+
+    :param detector: Pyxel Detector object
+    """
+    logging.info("")
+    char = detector.characteristics
+
+    array = detector.pixel.array * char.sv * gain
+    detector.signal.array = array.astype("float64")

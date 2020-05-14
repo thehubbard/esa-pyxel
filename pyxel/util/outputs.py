@@ -656,7 +656,7 @@ class Outputs:
             first_item, *_ = dct.items()
 
             obj, format_list = first_item
-
+            print(obj, format_list)
             data = processor.get(obj)  # type: np.ndarray
 
             if format_list is not None:
