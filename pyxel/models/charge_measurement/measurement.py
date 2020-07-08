@@ -29,7 +29,7 @@ def simple_measurement(detector: Detector) -> None:
     detector.signal.array = array.astype("float64")
 
 
-def simple_em(detector: Detector, gain: int) -> None:
+def simple_test(detector: Detector, gain: int) -> None:
     """Create signal array from pixel array.
 
     detector Signal unit: Volt

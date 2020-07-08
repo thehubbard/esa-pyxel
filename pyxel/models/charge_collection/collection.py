@@ -46,13 +46,14 @@ def simple_collection(detector: Detector) -> None:
                                         pixel_index_ver,
                                         pixel_index_hor
                                         ).astype(np.int32)
-    """
-    Each time the charges are collected in the pixel, the charge array is reset
+                                        
+def empty_charge(detector: Detector) -> None:
+    """ Each time the charges are collected in the pixel, the charge array is reset
     using Charge(). This allows to limit memory leaks due to long exposure.
     There will still be a problem for very large charge array due to very high flux
-    in simulation
-    """
+    in simulation """
     detector._charge = Charge()
+
 
 # TODO: Is it needed not better to first create a copy of 'array' and then work with this copy ??
 @numba.jit(nopython=True)
