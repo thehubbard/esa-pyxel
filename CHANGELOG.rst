@@ -25,6 +25,8 @@ version 0.6 / 2020-MM-DD
   (See `#79 <https://gitlab.com/esa/pyxel/issues/79>`_).
 * Create class `ParametricPlot`.
   (See `#80 <https://gitlab.com/esa/pyxel/issues/80>`_).
+* Add templates for bug report, feature request and merge request.
+  (See `#105 <https://gitlab.com/esa/pyxel/issues/105>`_).
 
 
 version 0.5 / 2019-12-20

@@ -31,9 +31,9 @@ Bug reports that follow these guidelines are easier to diagnose, and so are ofte
 
 **Environment**:
 
-<details><summary>Output of <tt>xr.show_versions()</tt></summary>
+<details><summary>Output of <tt>pyxel.show_versions()</tt></summary>
 
-<!-- Paste the output here xr.show_versions() here -->
+<!-- Paste the output here pyxel.show_versions() here -->
 
 
 </details>
