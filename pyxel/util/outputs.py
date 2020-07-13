@@ -16,22 +16,22 @@ from pathlib import Path
 from shutil import copy2
 from time import strftime
 
-import astropy.io.fits as fits
 import attr
 import h5py as h5
-import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from astropy.io import fits as fits
+from matplotlib import pyplot as plt
 from matplotlib.ticker import ScalarFormatter
 
 from pyxel import __version__ as version
 from pyxel.calibration.util import ResultType
 
 if t.TYPE_CHECKING:
-    from ..pipelines import Processor
     from ..detectors import Detector
-    from ..parametric.parametric import ParametricAnalysis
     from ..parametric.parameter_values import ParameterValues
+    from ..parametric.parametric import ParametricAnalysis
+    from ..pipelines import Processor
 
     class SaveToFile(t.Protocol):
         """TBW."""

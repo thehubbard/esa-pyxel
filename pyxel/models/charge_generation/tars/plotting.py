@@ -17,7 +17,7 @@ if t.TYPE_CHECKING:
     from pyxel.models.charge_generation.tars.tars import TARS
 
 try:
-    import matplotlib.pyplot as plt
+    from matplotlib import pyplot as plt
     from mpl_toolkits.mplot3d import Axes3D  # noqa: F401
 except ImportError:
     # raise Warning('Matplotlib cannot be imported')

@@ -12,7 +12,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-import pyxel.inputs_outputs as io
+from pyxel import inputs_outputs as io
 from pyxel.calibration.util import (
     check_ranges,
     list_to_slice,

@@ -2,5 +2,9 @@
 
  - [ ] Closes #xxxx
  - [ ] Tests added / passed
- - [ ] Passes `isort -rc . && black . && mypy . && flake8`
- - [ ] User visible changes (including notable bug fixes) are documented in `changelog.rst`
+ - [ ] Passes in this order
+   - [ ] isort .
+   - [ ] black .
+   - [ ] mypy . 
+   - [ ] flake8 .
+ - [ ] User visible changes (including notable bug fixes) are documented in `CHANGELOG.rst`
