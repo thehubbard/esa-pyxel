@@ -1,8 +1,20 @@
 # Create a new conda environment:
 #   $ cd pyxel
+#   $ conda update conda
 #   $ conda env create -f environment.yml
 #   $ conda activate pyxel-dev
 #   (pyxel_dev) $ pip install -e .
+
+# Get a list of all the environments:
+#  $ conda env list -v
+
+# Upgrade a conda environment
+#  $ conda update -f environment.yml [-n CONDA_ENV_NAME]
+#  $ conda update [-n CONDA_ENV_NAME] --all
+
+# Remove a conda environment
+#  $ conda remove --name MYENV --all
+
 
 name: pyxel-dev
 channels:
@@ -10,26 +22,35 @@ channels:
   - numba
   - defaults
 dependencies:
+# Python
   - python
   - pip
-  - astropy>=4
-  - dask>=2.9
-  - fsspec
-  - h5py
-  - ipywidgets>=7.5
-  - matplotlib>=3.1
-  - notebook>=6
+# Scientific computing
   - numba
   - numpy>=1.17
   - pandas
-  - pygmo>=2.11
-  - pyyaml
   - scipy
+# Plotting
+  - matplotlib>=3.1
+# Parallel computing
+  - dask>=2.9
+# Jupyter notebook
+  - ipywidgets>=7.5
+  - notebook>=6
+# Input/Output
+  - astropy>=4
+  - fsspec
+  - h5py
+  - pyyaml
+# Others
   - tqdm
+  - pygmo>=2.11
 # Development
-  - tox
-  - pytest
-  - mypy
   - flake8
+  - isort>=5
+  - mypy
+  - pytest
+  - tox
+# Pip packages
   - pip:
     - poppy>=0.9

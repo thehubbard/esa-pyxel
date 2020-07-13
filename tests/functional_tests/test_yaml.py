@@ -7,7 +7,7 @@
 
 import pytest
 
-import pyxel.inputs_outputs as io
+from pyxel import inputs_outputs as io
 
 try:
     import pygmo as pg

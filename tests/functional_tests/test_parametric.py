@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest
 
-import pyxel.inputs_outputs as io
+from pyxel import inputs_outputs as io
 from pyxel.detectors import CCD
 from pyxel.parametric.parametric import (
     Configuration,

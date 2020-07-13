@@ -18,12 +18,12 @@ import time
 import typing as t
 from pathlib import Path
 
-import matplotlib.pyplot as plt
 import numpy as np
 from dask import delayed, distributed
+from matplotlib import pyplot as plt
 
-import pyxel.inputs_outputs as io
 from pyxel import __version__ as version
+from pyxel import inputs_outputs as io
 from pyxel.detectors import CCD, CMOS
 from pyxel.parametric.parametric import Configuration, ParametricAnalysis
 from pyxel.pipelines import DetectionPipeline, Processor

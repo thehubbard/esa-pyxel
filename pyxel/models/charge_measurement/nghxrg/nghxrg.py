@@ -146,7 +146,7 @@ def display_noisepsd(
 ) -> t.Tuple[t.Any, np.ndarray]:
     """Display noise PSD from the generated FITS file."""
     import numpy as np
-    import matplotlib.pyplot as plt
+    from matplotlib import pyplot as plt
     from scipy import signal
 
     # Conversion gain

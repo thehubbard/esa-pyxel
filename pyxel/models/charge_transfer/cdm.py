@@ -25,7 +25,7 @@ import numpy as np
 from pyxel.detectors.ccd import CCD
 
 try:
-    import matplotlib.pyplot as plt
+    from matplotlib import pyplot as plt
 except ImportError:
     # raise Warning('Matplotlib cannot be imported')
     pass

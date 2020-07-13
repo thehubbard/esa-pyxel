@@ -18,8 +18,8 @@ from pyxel.parametric.parameter_values import ParameterValues
 from pyxel.state import get_obj_att, get_value
 
 if t.TYPE_CHECKING:
-    from ..pipelines import Processor
     from ..calibration.calibration import Calibration
+    from ..pipelines import Processor
     from ..util import Outputs
 
 
