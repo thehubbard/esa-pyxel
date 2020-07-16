@@ -29,7 +29,6 @@ class ParameterValues:
         ],
         boundaries: t.Optional[t.Tuple[float, float]] = None,
         enabled: bool = True,
-        # current=None,
         logarithmic: bool = False,
     ):
         """TBW.
@@ -38,7 +37,6 @@ class ParameterValues:
         :param values:
         :param boundaries:
         :param enabled:
-        :param current:
         :param logarithmic:
         """
         # TODO: should these values be checked ?
@@ -58,9 +56,10 @@ class ParameterValues:
         )  # type: t.Union[Literal['_'], t.Sequence[Literal['_']], t.Sequence[str], t.Sequence[t.Union[Number]]]
 
         self._enabled = enabled  # type: bool
-        self._current = None  # type: t.Optional[t.Union[Literal['_'], str, Number]]
         self._logarithmic = logarithmic  # type: bool
         self._boundaries = boundaries  # type: t.Optional[t.Tuple[float, float]]
+
+        self._current = None  # type: t.Optional[t.Union[Literal['_'], str, Number]]
 
     def __repr__(self) -> str:
         """TBW."""

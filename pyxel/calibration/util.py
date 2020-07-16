@@ -42,7 +42,6 @@ def read_single_data(filename: Path) -> np.ndarray:
     array
         TBW.
     """
-
     if not filename.exists():
         raise FileNotFoundError(f"Input file '{filename}' can not be found.")
 
