@@ -18,8 +18,9 @@ import time
 import typing as t
 from pathlib import Path
 
+import dask
 import numpy as np
-from dask import delayed, distributed
+from dask import delayed
 from matplotlib import pyplot as plt
 
 from pyxel import __version__ as version
@@ -74,9 +75,6 @@ def parametric_mode(
     Optional `Figure`
         TBW.
     """
-    if with_dask:
-        raise NotImplementedError
-
     logging.info("Mode: Parametric")
 
     # Check if all keys from 'parametric' are valid keys for object 'pipeline'
@@ -84,16 +82,11 @@ def parametric_mode(
         key = param_value.key  # type: str
         assert processor.has(key)
 
-    if with_dask:
-        # use as few processes (and workers?) as possible with as many threads_per_worker as possible
-        # Dasbboard available on http://127.0.0.1:8787
-        # client = distributed.Client(processes=True)
-        # client = distributed.Client(n_workers=4, processes=False, threads_per_worker=4)
-        client = distributed.Client(processes=False)
-        logging.info(client)
-
     processors_it = parametric.collect(processor)  # type: t.Iterator[Processor]
+
     result_list = []  # type: t.List[Result]
+    output_filenames = []  # type: t.List[t.List[Path]]
+
     # out.params_func(parametric)
 
     # Run all pipelines
@@ -103,22 +96,24 @@ def parametric_mode(
             result_proc = proc.run_pipeline()  # type: Processor
             result_val = output.extract_func(processor=result_proc)  # type: Result
 
-            output.save_to_file(processor=result_proc)
+            filenames = output.save_to_file(processor=result_proc)  # type: t.List[Path]
 
         else:
             result_proc = delayed(proc.run_pipeline)()
-            result_val = delayed(output.extract_func)(proc=result_proc)
+            result_val = delayed(output.extract_func)(processor=result_proc)
 
-            raise NotImplementedError
+            filenames = delayed(output.save_to_file)(processor=result_proc)
 
         result_list.append(result_val)
+        output_filenames.append(filenames)
 
     if not with_dask:
         plot_array = output.merge_func(result_list)  # type: np.ndarray
     else:
         array = delayed(output.merge_func)(result_list)
-        plot_array = array.compute()
+        plot_array, _ = dask.compute(array, output_filenames)
 
+    # TODO: Plot with dask ?
     fig = None  # type: t.Optional[plt.Figure]
     if output.parametric_plot is not None:
         output.plotting_func(plot_array)

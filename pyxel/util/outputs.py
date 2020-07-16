@@ -609,7 +609,7 @@ class Outputs:
         y = y.flatten()
 
         if self._single_plot.plot_type is PlotType.Graph:
-            self.plot_graph(x=x, y=y)  # type: plt.Figure
+            self.plot_graph(x=x, y=y)
             fname = "graph_??"  # type: str
 
         elif self._single_plot.plot_type is PlotType.Histogram:
@@ -627,12 +627,18 @@ class Outputs:
 
         # plt.close()
 
-    def save_to_file(self, processor: "Processor") -> None:
+    def save_to_file(self, processor: "Processor") -> t.List[Path]:
         """Save outputs into file(s).
 
         Parameters
         ----------
         processor : Processor
+
+
+        Returns
+        -------
+        list of ``Path``
+            TBW.
         """
         save_methods = {
             "fits": self.save_to_fits,
@@ -642,6 +648,8 @@ class Outputs:
             "csv": self.save_to_csv,
             "png": self.save_to_png,
         }  # type: t.Dict[str, SaveToFile]
+
+        filenames = []  # type: t.List[Path]
 
         for dct in self.save_data_to_file:  # type: t.Dict[str, t.List[str]]
             # Get first entry of `dict` 'item'
@@ -654,7 +662,11 @@ class Outputs:
             if format_list is not None:
                 for out_format in format_list:
                     func = save_methods[out_format]  # type: SaveToFile
-                    _ = func(data=data, name=obj)
+                    filename = func(data=data, name=obj)  # type: Path
+
+                    filenames.append(filename)
+
+        return filenames
 
     # TODO: Specific to 'calibration_plot'
     def champions_plot(
