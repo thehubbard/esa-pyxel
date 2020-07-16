@@ -121,7 +121,7 @@ def check_ranges(
     target_fit_range: t.Sequence[int],
     out_fit_range: t.Sequence[int],
     rows: int,
-    cols: int,
+    cols: t.Optional[int] = None,
 ) -> None:
     """TBW."""
     if target_fit_range:

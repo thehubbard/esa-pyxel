@@ -10,6 +10,7 @@ import importlib
 import logging
 import typing as t
 from ast import literal_eval
+from collections import abc
 from numbers import Number
 
 import numpy as np
@@ -55,7 +56,7 @@ def evaluate_reference(reference_str: str) -> t.Callable:
     return reference
 
 
-def eval_range(values: t.Union[str, list, tuple]) -> t.Sequence:
+def eval_range(values: t.Union[str, t.Sequence]) -> t.Sequence:
     """Evaluate a string representation of a list or numpy array.
 
     :param values:
@@ -82,7 +83,7 @@ def eval_range(values: t.Union[str, list, tuple]) -> t.Sequence:
             obj = eval(values)
             values_lst = list(obj)
 
-    elif isinstance(values, (list, tuple)):
+    elif isinstance(values, abc.Sequence):
         values_lst = list(values)
 
     else:
@@ -108,8 +109,10 @@ def eval_entry(
             literal_eval(value)
         except (SyntaxError, ValueError, NameError):
             # ensure quotes in case of string literal value
-            first, *_, last = value
-            if first == last and first in ["'", '"']:
+            first_char = value[0]
+            last_char = value[-1]
+
+            if first_char == last_char and first_char in ["'", '"']:
                 pass
             else:
                 value = '"' + value + '"'

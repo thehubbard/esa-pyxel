@@ -435,7 +435,7 @@ class Algorithm:
         :return:
         """
         if self.type is AlgorithmType.Sade:
-            opt_algorithm = pg.sade(
+            sade_algorithm = pg.sade(
                 gen=self.generations,
                 variant=self.variant,
                 variant_adptv=self.variant_adptv,
@@ -444,9 +444,11 @@ class Algorithm:
                 memory=self.memory,
             )  # type: pg.sade
 
+            return sade_algorithm
+
         elif self.type is AlgorithmType.Sga:
             # mutation parameter
-            opt_algorithm = pg.sga(
+            sga_algorithm = pg.sga(
                 gen=self.generations,
                 cr=self.cr,  # crossover probability
                 crossover=self.crossover,  # single, exponential, binomial, sbx
@@ -457,6 +459,8 @@ class Algorithm:
                 eta_c=self.eta_c,  # distribution index for sbx crossover
                 param_m=self.param_m,
             )  # type: pg.sga
+
+            return sga_algorithm
 
         elif self.type is AlgorithmType.Nlopt:
             opt_algorithm = pg.nlopt(self.nlopt_solver)  # type: pg.nlopt
@@ -475,10 +479,10 @@ class Algorithm:
             opt_algorithm.replacement = self.replacement
             opt_algorithm.selection = self.nlopt_selection
 
+            return opt_algorithm
+
         else:
             raise NotImplementedError
-
-        return opt_algorithm
 
 
 def to_path_list(values: t.Sequence[t.Union[str, Path]]) -> t.List[Path]:
@@ -770,8 +774,8 @@ class Calibration:
 
             self._log.info("Start optimization algorithm")
             pop = algo.evolve(pop)
-            champion_f = [pop.champion_f]  # type: t.Sequence[np.ndarray]
-            champion_x = [pop.champion_x]  # type: t.Sequence[np.ndarray]
+            champion_f = [pop.champion_f]
+            champion_x = [pop.champion_x]
 
         self.fitting.file_matching_renaming()
         res = (
@@ -802,9 +806,11 @@ class Calibration:
                     target_data=target_data, simulated_data=simulated_data, data_i=ii
                 )
                 ii += 1
-            output.fitting_plot_close(
-                result_type=self.result_type, island=result_dict["island"]
-            )
+
+            island = result_dict["island"]
+            assert isinstance(island, int)
+
+            output.fitting_plot_close(result_type=self.result_type, island=island)
 
         results = calib_results[0][1]  # type: t.Dict[str, t.Union[int, float]]
         output.calibration_plots(results)

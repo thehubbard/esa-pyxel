@@ -9,7 +9,6 @@
 
 https://esa.github.io/pagmo2/index.html
 """
-
 import logging
 import math
 import os
@@ -17,12 +16,14 @@ import re
 import typing as t
 from collections import OrderedDict
 from copy import deepcopy
+from numbers import Number
 from operator import add
 from pathlib import Path
 
 import numpy as np
 from dask import delayed
 from dask.delayed import Delayed
+from typing_extensions import Literal
 
 from pyxel.calibration.util import (
     CalibrationMode,
@@ -144,9 +145,9 @@ class ModelFitting:
                 for step in input_arguments:  # type: ParameterValues
                     assert step.values != "_"
 
-                    step.current = step.values[
-                        i
-                    ]  # type: t.Union[t.Sequence[Literal['_']], t.Sequence[str], t.Sequence[t.Union[float, int]]]
+                    value = step.values[i]  # type: t.Union[t.Literal['_'], str, Number]
+
+                    step.current = value
                     new_processor.set(key=step.key, value=step.current)
                 self.param_processor_list += [new_processor]
         else:
