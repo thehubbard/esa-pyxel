@@ -55,7 +55,7 @@ def evaluate_reference(reference_str: str) -> t.Callable:
     return reference
 
 
-def eval_range(values: t.Union[str, list, tuple]) -> list:
+def eval_range(values: t.Union[str, list, tuple]) -> t.Sequence:
     """Evaluate a string representation of a list or numpy array.
 
     :param values:
@@ -93,31 +93,28 @@ def eval_range(values: t.Union[str, list, tuple]) -> list:
 
 
 # TODO: Use 'numexpr.evaluate' ?
-def eval_entry(value: t.Union[str, Number, np.ndarray]) -> t.Union[Number, np.ndarray]:
+def eval_entry(
+    value: t.Union[str, Number, np.ndarray]
+) -> t.Union[str, Number, np.ndarray]:
     """TBW.
 
     :param value:
     :return:
     """
-    assert (
-        isinstance(value, str)
-        or isinstance(value, Number)
-        or isinstance(value, np.ndarray)
-    )
+    assert isinstance(value, (str, Number, np.ndarray))
 
     if isinstance(value, str):
         try:
             literal_eval(value)
         except (SyntaxError, ValueError, NameError):
             # ensure quotes in case of string literal value
-            if value[0] == "'" and value[-1] == "'":
-                pass
-            elif value[0] == '"' and value[-1] == '"':
+            first, *_, last = value
+            if first == last and first in ["'", '"']:
                 pass
             else:
                 value = '"' + value + '"'
 
         value = literal_eval(value)
-        assert isinstance(value, Number) or isinstance(value, np.ndarray)
+        assert isinstance(value, (str, Number, np.ndarray))
 
     return value

@@ -38,17 +38,17 @@ from pyxel.pipelines import Processor
 class ModelFitting:
     """Pygmo problem class to fit data with any model in Pyxel."""
 
-    def __init__(self, processor: Processor, variables: t.List[ParameterValues]):
+    def __init__(self, processor: Processor, variables: t.Sequence[ParameterValues]):
         """TBW."""
         self.processor = processor  # type: Processor
-        self.variables = variables  # type: t.List[ParameterValues]
+        self.variables = variables  # type: t.Sequence[ParameterValues]
 
         self.calibration_mode = None  # type: t.Optional[CalibrationMode]
         self.original_processor = None  # type: t.Optional[Processor]
         self.generations = None  # type: t.Optional[int]
         self.pop = None  # type: t.Optional[int]
 
-        self.all_target_data = []  # type: t.List[t.List[t.Any]]
+        self.all_target_data = []  # type: t.List[np.ndarray]
         self.weighting = None  # type: t.Optional[np.ndarray]
         self.fitness_func = None  # type: t.Optional[t.Callable]
         self.sim_output = None  # type: t.Optional[ResultType]
@@ -76,7 +76,7 @@ class ModelFitting:
         # self.normalization = False
         # self.target_data_norm = []
 
-    def get_bounds(self) -> t.Tuple[t.List[float], t.List[float]]:
+    def get_bounds(self) -> t.Tuple[t.Sequence[float], t.Sequence[float]]:
         """TBW.
 
         :return:
@@ -91,11 +91,11 @@ class ModelFitting:
         population_size: int,
         generations: int,
         file_path: t.Optional[Path],
-        target_fit_range: t.List[int],
-        out_fit_range: t.List[int],
-        target_output: t.List[Path],
-        input_arguments: t.Optional[list] = None,
-        weighting: t.Optional[t.List[Path]] = None,
+        target_fit_range: t.Sequence[int],
+        out_fit_range: t.Sequence[int],
+        target_output: t.Sequence[Path],
+        input_arguments: t.Optional[t.Sequence[ParameterValues]] = None,
+        weighting: t.Optional[t.Sequence[Path]] = None,
     ) -> None:
         """TBW.
 
@@ -120,7 +120,7 @@ class ModelFitting:
         self.generations = generations
 
         # TODO: Remove 'assert'
-        assert isinstance(self.pop, int)
+        # assert isinstance(self.pop, int)
 
         # if self.calibration_mode == 'single_model':           # TODO update
         #     self.single_model_calibration()
@@ -141,26 +141,32 @@ class ModelFitting:
                 )
             for i in range(min_val):
                 new_processor = deepcopy(self.processor)  # type: Processor
-                for step in input_arguments:
-                    step.current = step.values[i]
-                    new_processor.set(step.key, step.current)
+                for step in input_arguments:  # type: ParameterValues
+                    assert step.values != "_"
+
+                    step.current = step.values[
+                        i
+                    ]  # type: t.Union[t.Sequence[Literal['_']], t.Sequence[str], t.Sequence[t.Union[float, int]]]
+                    new_processor.set(key=step.key, value=step.current)
                 self.param_processor_list += [new_processor]
         else:
             self.param_processor_list = [deepcopy(self.processor)]
 
-        params = 0
+        params = 0  # type: int
         for var in self.variables:  # type: ParameterValues
-            b = 1
             if isinstance(var.values, list):
                 b = len(var.values)
+            else:
+                b = 1
+
             params += b
         self.champion_f_list = np.zeros((1, 1))
         self.champion_x_list = np.zeros((1, params))
         self.file_path = file_path
 
-        target_list = read_data(filenames=target_output)  # type: t.List[np.ndarray]
+        target_list = read_data(filenames=target_output)  # type: t.Sequence[np.ndarray]
         try:
-            rows, cols = target_list[0].shape
+            rows, cols = target_list[0].shape  # type: t.Tuple[int, t.Optional[int]]
         except AttributeError:
             rows = len(target_list[0])
             cols = None
@@ -172,7 +178,7 @@ class ModelFitting:
         )
         self.targ_fit_range = list_to_slice(target_fit_range)
         self.sim_fit_range = list_to_slice(out_fit_range)
-        for target in target_list:
+        for target in target_list:  # type: np.ndarray
             self.all_target_data += [target[self.targ_fit_range]]
 
         if weighting:
@@ -198,7 +204,7 @@ class ModelFitting:
         self.ubd = []
         for var in self.variables:  # type: ParameterValues
             assert var.boundaries
-            low_val, high_val = var.boundaries
+            low_val, high_val = var.boundaries  # type: t.Tuple[float, float]
 
             if var.logarithmic:
                 low_val = math.log10(low_val)
@@ -222,6 +228,7 @@ class ModelFitting:
             simulated_data = processor.detector.image.array[
                 self.sim_fit_range
             ]  # type: np.ndarray
+
         elif self.sim_output == ResultType.Signal:
             simulated_data = processor.detector.signal.array[self.sim_fit_range]
         elif self.sim_output == ResultType.Pixel:
@@ -283,7 +290,7 @@ class ModelFitting:
 
         return fitness
 
-    def fitness(self, parameter: np.ndarray) -> t.List[float]:
+    def fitness(self, parameter: np.ndarray) -> t.Sequence[float]:
         """Call the fitness function, elements of parameter array could be logarithmic values.
 
         :param parameter: 1d np.array
@@ -405,7 +412,7 @@ class ModelFitting:
                     raise ValueError(f"Cannot extract information from '{result}'.")
                 aw = result[0]  # type: str
 
-                fid = aw.split("_")[-1]
+                fid = aw.split("_")[-1]  # type: str
                 popfiles = list(
                     self.file_path.glob(f"population_id_{fid}.out")
                 )  # type: t.List[Path]
@@ -431,22 +438,27 @@ class ModelFitting:
 
         if self.file_path:
             # TODO: Use 'np.ravel(parameter)' instead of 'parameter.reshape(1, len(parameter))' ?
-            s = np.c_[
+            arr_2d = np.c_[
                 overall_fitness, parameter.reshape(1, len(parameter))
             ]  # type: np.ndarray
-            np.set_printoptions(formatter={"float": "{: .6E}".format}, suppress=False)
-            sss = np.array2string(s, separator="", suppress_small=False)
-            sss = (
-                sss.replace("\n", "")
+
+            with np.printoptions(formatter={"float": "{: .6E}".format}, suppress=False):
+                arr_str = np.array2string(
+                    arr_2d, separator="", suppress_small=False
+                )  # type: str
+
+            arr_str = (
+                arr_str.replace("\n", "")
                 .replace("   ", " ")
                 .replace("  ", " ")
                 .replace("[[ ", "")
                 .replace("]]", "")
             )
-            sss = sss.split(" ")
+
+            lst_str = arr_str.split(" ")  # type: t.Sequence[str]
             island = -1  # type: int
             for k, v in self.match.items():
-                if sss == v:
+                if lst_str == v:
                     island = k
                     break
             if island == -1:
@@ -483,7 +495,7 @@ class ModelFitting:
 
         return champion_list, results
 
-    def champion_to_file(self, parameter: list) -> None:
+    def champion_to_file(self, parameter: np.ndarray) -> None:
         """Get champion of each generation and write it to output files together with last population.
 
         :return:
@@ -508,7 +520,7 @@ class ModelFitting:
                 "'population' was not initialized with method '.configure(...)'."
             )
 
-        best_index = np.argmin(self.fitness_array)
+        best_index = np.argmin(self.fitness_array)  # type: int
 
         if self.g == 0:
             self.champion_f_list[self.g] = self.fitness_array[best_index]
@@ -538,7 +550,7 @@ class ModelFitting:
             self.add_to_champ_file(parameter)
             self.add_to_pop_file(parameter)
 
-    def save_population(self, parameter: list, overall_fitness: float) -> None:
+    def save_population(self, parameter: np.ndarray, overall_fitness: float) -> None:
         """Save population of each generation to get champions.
 
         :param parameter: 1d np.array

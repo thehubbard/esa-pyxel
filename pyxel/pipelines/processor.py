@@ -97,7 +97,7 @@ class Processor:
         self,
         key: str,
         value: t.Union[
-            str, Number, np.ndarray, t.List[t.Union[str, Number, np.ndarray]]
+            str, Number, np.ndarray, t.Sequence[t.Union[str, Number, np.ndarray]]
         ],
         convert_value: bool = True,
     ) -> None:

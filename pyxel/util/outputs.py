@@ -73,7 +73,7 @@ class PlotArguments:
         """TBW."""
         return cls(**dct)
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> t.Dict[str, t.Any]:
         """TBW."""
         return attr.asdict(self)
 
@@ -254,8 +254,8 @@ class Outputs:
         # TODO: Create an object self._fig here ?
         fig, ax = plt.subplots(1, 1)
 
-        self._fig = fig
-        self._ax = ax
+        self._fig = fig  # type: plt.Figure
+        self._ax = ax  # type: plt.Axes
 
         plt.close(self._fig)
 
@@ -807,8 +807,8 @@ class Outputs:
         assert self.calibration_plot
 
         if self.calibration_plot.fitting_plot:
-            self._fig.plot(target_data, ".-", label=f"target data #{data_i}")
-            self._fig.plot(simulated_data, ".-", label=f"simulated data #{data_i}")
+            self._ax.plot(target_data, ".-", label=f"target data #{data_i}")
+            self._ax.plot(simulated_data, ".-", label=f"simulated data #{data_i}")
             self._fig.canvas.draw_idle()
 
     # TODO: Specific to 'calibration_plot' ??
@@ -824,14 +824,14 @@ class Outputs:
 
             self.user_plt_args = self.calibration_plot.fitting_plot.plot_args
 
-            user_plt_args_dct = None  # type: t.Optional[dict]
+            user_plt_args_dct = None  # type: t.Optional[t.Dict[str, t.Any]]
             if isinstance(self.user_plt_args, PlotArguments):
                 user_plt_args_dct = self.user_plt_args.to_dict()
 
             args = {
-                "title": (
-                    f"Target and Simulated ({result_type}) data, " f"island {island}"
-                )
+                "title": f"Target and Simulated ({result_type}) "
+                f"data, "
+                f"island {island}"
             }
             ax_args0, plt_args0 = self.update_args(
                 plot_type=PlotType.Graph, new_args=args
@@ -842,7 +842,7 @@ class Outputs:
                 ax_args=ax_args0,
                 plt_args=plt_args0,
             )
-            update_plot(ax_args=ax_args, ax=self._fig.axes)
+            update_plot(ax_args=ax_args, ax=self._ax)
             # plt.legend()
             self._fig.legend()
 
