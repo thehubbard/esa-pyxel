@@ -64,11 +64,9 @@ RUN conda activate pyxel-dev && \
     jupyter labextension install @jupyter-widgets/jupyterlab-manager && \
     conda deactivate
 
-# RUN echo "conda activate pyxel-dev" >> ~/.bashrc \ 
-#     && echo "alias ll='ls -alF'" >> ~/.bashrc \
-#     && echo "alias ls='ls --color=auto'" >> ~/.bashrc
-
-
+# Add aliases
+RUN echo "alias ll='ls -alF'" >> ~/.bashrc \
+    && echo "alias ls='ls --color=auto'" >> ~/.bashrc
 
 # Expose Jupyter notebook port
 EXPOSE 8888

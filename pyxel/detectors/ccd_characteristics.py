@@ -44,7 +44,7 @@ class CCDCharacteristics(Characteristics):
         st: float
             Serial transfer period. Unit: s
         """
-        if fwc_serial not in range(10000001):
+        if fwc_serial not in range(10_000_001):
             raise ValueError("'fwc_serial' must be between 0 and 1e+7.")
 
         if not (0.0 <= svg <= 1.0):
@@ -76,7 +76,7 @@ class CCDCharacteristics(Characteristics):
     @fwc_serial.setter
     def fwc_serial(self, value: int) -> None:
         """Set Full well capacity (serial register)."""
-        if value not in range(10000001):
+        if value not in range(10_000_001):
             raise ValueError("'fwc_serial' must be between 0 and 1e+7.")
 
         self._fwc_serial = value

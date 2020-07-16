@@ -9,4 +9,3 @@ services:
       - "8888:8888"
     volumes:
       - "./volumes/notebooks:/home/pyxel/notebooks"
-
