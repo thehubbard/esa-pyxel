@@ -28,25 +28,49 @@ RUN mkdir -p $PYXEL_HOME \
 USER pyxel
 WORKDIR $PYXEL_HOME
 
+# Install miniconda
 RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh \
     && /bin/bash ~/miniconda.sh -b -u -p ~/.local \
     && rm ~/miniconda.sh \
     && ~/.local/bin/conda clean -tipsy \
     && ~/.local/bin/conda init
 
-# Install Pyxel environment
-RUN ~/.local/bin/conda env create -f ~/src/environment.yml
+# Make 'bash' the default shell
+SHELL [ "/bin/bash", "--login", "-c" ]
 
-RUN echo "conda activate pyxel-dev" >> ~/.bashrc \ 
-    && echo "alias ll='ls -alF'" >> ~/.bashrc \
-    && echo "alias ls='ls --color=auto'" >> ~/.bashrc
+# Make non-activate conda commands available
+ENV PATH=~/.local/bin:$PATH
+
+# make conda activate command available from /bin/bash --login shells
+RUN echo ". ~/.local/etc/profile.d/conda.sh" >> ~/.profile
+
+# make conda activate command available from /bin/bash --interative shells
+RUN conda init bash
+
+# Build the conda environment
+RUN conda env create -f ~/src/environment.yml
 
 # Install Pyxel from the source code
-RUN ~/.local/envs/pyxel-dev/bin/python -m pip install -e ~/src
+RUN conda activate pyxel-dev && \
+    pip install -e ~/src && \
+    conda deactivate
 
-#RUN ~/.local/envs/pyxel-dev/bin/python -c "import pyxel; print('Pyxel version:', pyxel.__version__)"
+RUN conda activate pyxel-dev && \
+    python -c "import pyxel; print('Pyxel version:', pyxel.__version__)" && \
+    conda deactivate
+
+# Install Jupyterlab extensions
+RUN conda activate pyxel-dev && \
+    jupyter labextension install @jupyter-widgets/jupyterlab-manager && \
+    conda deactivate
+
+# RUN echo "conda activate pyxel-dev" >> ~/.bashrc \ 
+#     && echo "alias ll='ls -alF'" >> ~/.bashrc \
+#     && echo "alias ls='ls --color=auto'" >> ~/.bashrc
+
+
 
 # Expose Jupyter notebook port
 EXPOSE 8888
-
-CMD ~/.local/envs/pyxel-dev/bin/jupyter notebook --ip=0.0.0.0 --no-browser --notebook-dir=~/notebooks --NotebookApp.quit_button=True
+CMD conda activate pyxel-dev && \
+    jupyter lab --ip=0.0.0.0 --no-browser --NotebookApp.quit_button=True --notebook-dir=~/notebooks 
