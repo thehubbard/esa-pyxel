@@ -142,7 +142,7 @@ class Processor:
 
         Notes
         -----
-        The ``Processors`` instance with method '.run_pipeline' is modified.
+        The ``Processor`` instance with method '.run_pipeline' is modified.
         """
         self._log.info("Start pipeline")
 
