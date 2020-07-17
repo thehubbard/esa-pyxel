@@ -31,6 +31,8 @@ version 0.6 / 2020-MM-DD
   (See `#111 <https://gitlab.com/esa/pyxel/issues/111>`_).
 * Improved docker image.
   (See `#96 <https://gitlab.com/esa/pyxel/issues/96>`_).
+* Fix calibration pipeline.
+  (See `#113 <https://gitlab.com/esa/pyxel/issues/113>`_).
 
 
 version 0.5 / 2019-12-20
