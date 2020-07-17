@@ -23,6 +23,7 @@ from pathlib import Path
 import numpy as np
 from dask import delayed
 from dask.delayed import Delayed
+from typing_extensions import Literal
 
 from pyxel.calibration.util import (
     CalibrationMode,
@@ -144,7 +145,7 @@ class ModelFitting:
                 for step in input_arguments:  # type: ParameterValues
                     assert step.values != "_"
 
-                    value = step.values[i]  # type: t.Union[t.Literal['_'], str, Number]
+                    value = step.values[i]  # type: t.Union[Literal['_'], str, Number]
 
                     step.current = value
                     new_processor.set(key=step.key, value=step.current)
