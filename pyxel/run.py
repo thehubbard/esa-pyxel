@@ -22,6 +22,7 @@ import dask
 import numpy as np
 from dask import delayed
 from matplotlib import pyplot as plt
+from tqdm.auto import tqdm
 
 from pyxel import __version__ as version
 from pyxel import inputs_outputs as io
@@ -90,7 +91,7 @@ def parametric_mode(
     # out.params_func(parametric)
 
     # Run all pipelines
-    for proc in processors_it:  # type: Processor
+    for proc in tqdm(processors_it):  # type: Processor
 
         if not with_dask:
             result_proc = proc.run_pipeline()  # type: Processor

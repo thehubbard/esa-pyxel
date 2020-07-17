@@ -1,0 +1,6 @@
+# Docker file
+Dockerfile*
+docker-compose.yml
+
+# VIM files
+.*.swp

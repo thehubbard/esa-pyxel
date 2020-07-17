@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+
+  pyxel:
+    restart: always
+    build: .
+    ports:
+      - "8888:8888"
+    volumes:
+      - "./volumes/notebooks:/home/pyxel/notebooks"

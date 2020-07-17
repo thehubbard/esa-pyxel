@@ -37,6 +37,8 @@ dependencies:
 # Jupyter notebook
   - ipywidgets>=7.5
   - notebook>=6
+  - jupyterlab
+  - nodejs
 # Input/Output
   - astropy>=4
   - fsspec

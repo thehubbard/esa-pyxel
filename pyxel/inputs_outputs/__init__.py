@@ -179,7 +179,7 @@ def pyxel_yaml_loader():
         ParametricPlot, ["simulation", "outputs", "parametric_plot"]
     )
     ObjectModelLoader.add_class(
-        PlotArguments, ["simulation", "outputs", "parametric_plot", "plot_args"],
+        PlotArguments, ["simulation", "outputs", "parametric_plot", "plot_args"]
     )
 
 
