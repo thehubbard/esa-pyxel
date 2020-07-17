@@ -10,6 +10,7 @@ import importlib
 import logging
 import typing as t
 from ast import literal_eval
+from collections import abc
 from numbers import Number
 
 import numpy as np
@@ -55,7 +56,7 @@ def evaluate_reference(reference_str: str) -> t.Callable:
     return reference
 
 
-def eval_range(values: t.Union[str, list, tuple]) -> list:
+def eval_range(values: t.Union[str, t.Sequence]) -> t.Sequence:
     """Evaluate a string representation of a list or numpy array.
 
     :param values:
@@ -82,7 +83,7 @@ def eval_range(values: t.Union[str, list, tuple]) -> list:
             obj = eval(values)
             values_lst = list(obj)
 
-    elif isinstance(values, (list, tuple)):
+    elif isinstance(values, abc.Sequence):
         values_lst = list(values)
 
     else:
@@ -93,31 +94,30 @@ def eval_range(values: t.Union[str, list, tuple]) -> list:
 
 
 # TODO: Use 'numexpr.evaluate' ?
-def eval_entry(value: t.Union[str, Number, np.ndarray]) -> t.Union[Number, np.ndarray]:
+def eval_entry(
+    value: t.Union[str, Number, np.ndarray]
+) -> t.Union[str, Number, np.ndarray]:
     """TBW.
 
     :param value:
     :return:
     """
-    assert (
-        isinstance(value, str)
-        or isinstance(value, Number)
-        or isinstance(value, np.ndarray)
-    )
+    assert isinstance(value, (str, Number, np.ndarray))
 
     if isinstance(value, str):
         try:
             literal_eval(value)
         except (SyntaxError, ValueError, NameError):
             # ensure quotes in case of string literal value
-            if value[0] == "'" and value[-1] == "'":
-                pass
-            elif value[0] == '"' and value[-1] == '"':
+            first_char = value[0]
+            last_char = value[-1]
+
+            if first_char == last_char and first_char in ["'", '"']:
                 pass
             else:
                 value = '"' + value + '"'
 
         value = literal_eval(value)
-        assert isinstance(value, Number) or isinstance(value, np.ndarray)
+        assert isinstance(value, (str, Number, np.ndarray))
 
     return value

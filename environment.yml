@@ -46,6 +46,7 @@ dependencies:
   - pyyaml
 # Others
   - tqdm
+  - typing-extensions
   - pygmo>=2.11
 # Development
   - flake8

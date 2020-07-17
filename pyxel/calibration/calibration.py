@@ -15,8 +15,8 @@ from pathlib import Path
 
 import numpy as np
 
+from pyxel.calibration import CalibrationMode, CalibrationResult, ResultType
 from pyxel.calibration.fitting import ModelFitting
-from pyxel.calibration.util import CalibrationMode, ResultType
 from pyxel.parametric.parameter_values import ParameterValues
 from pyxel.pipelines import ModelFunction, Processor
 
@@ -429,22 +429,26 @@ class Algorithm:
     # NLOPT #####
 
     # TODO: This could be refactored for each if-statement
-    def get_algorithm(self) -> t.Any:
+    def get_algorithm(self) -> t.Union[pg.sade, pg.sga, pg.nlopt]:
         """TBW.
 
         :return:
         """
         if self.type is AlgorithmType.Sade:
-            opt_algorithm = pg.sade(
+            sade_algorithm = pg.sade(
                 gen=self.generations,
                 variant=self.variant,
                 variant_adptv=self.variant_adptv,
                 ftol=self.ftol,
                 xtol=self.xtol,
                 memory=self.memory,
-            )
+            )  # type: pg.sade
+
+            return sade_algorithm
+
         elif self.type is AlgorithmType.Sga:
-            opt_algorithm = pg.sga(
+            # mutation parameter
+            sga_algorithm = pg.sga(
                 gen=self.generations,
                 cr=self.cr,  # crossover probability
                 crossover=self.crossover,  # single, exponential, binomial, sbx
@@ -454,9 +458,12 @@ class Algorithm:
                 selection=self.selection,  # tournament, truncated
                 eta_c=self.eta_c,  # distribution index for sbx crossover
                 param_m=self.param_m,
-            )  # mutation parameter
+            )  # type: pg.sga
+
+            return sga_algorithm
+
         elif self.type is AlgorithmType.Nlopt:
-            opt_algorithm = pg.nlopt(self.nlopt_solver)
+            opt_algorithm = pg.nlopt(self.nlopt_solver)  # type: pg.nlopt
             opt_algorithm.maxtime = (
                 self.maxtime
             )  # stop when the optimization time (in seconds) exceeds maxtime
@@ -471,10 +478,11 @@ class Algorithm:
             opt_algorithm.local_optimizer = self.local_optimizer
             opt_algorithm.replacement = self.replacement
             opt_algorithm.selection = self.nlopt_selection
+
+            return opt_algorithm
+
         else:
             raise NotImplementedError
-
-        return opt_algorithm
 
 
 def to_path_list(values: t.Sequence[t.Union[str, Path]]) -> t.List[Path]:
@@ -491,16 +499,16 @@ class Calibration:
         fitting: t.Optional[ModelFitting] = None,
         calibration_mode: CalibrationMode = CalibrationMode.Pipeline,
         result_type: ResultType = ResultType.Image,
-        result_fit_range: t.Optional[t.List[int]] = None,
-        result_input_arguments: t.Optional[list] = None,
-        target_data_path: t.Optional[t.List[Path]] = None,
-        target_fit_range: t.Optional[t.List[int]] = None,
+        result_fit_range: t.Optional[t.Sequence[int]] = None,
+        result_input_arguments: t.Optional[t.Sequence[ParameterValues]] = None,
+        target_data_path: t.Optional[t.Sequence[Path]] = None,
+        target_fit_range: t.Optional[t.Sequence[int]] = None,
         fitness_function: t.Optional[ModelFunction] = None,
         algorithm: t.Optional[Algorithm] = None,
-        parameters: t.Optional[t.List[ParameterValues]] = None,
+        parameters: t.Optional[t.Sequence[ParameterValues]] = None,
         seed: t.Optional[int] = None,
         islands: int = 0,
-        weighting_path: t.Optional[list] = None,
+        weighting_path: t.Optional[t.Sequence[Path]] = None,
     ):
         if seed is not None and seed not in range(100001):
             raise ValueError("'seed' must be between 0 and 100000.")
@@ -510,26 +518,32 @@ class Calibration:
 
         self._log = logging.getLogger(__name__)
 
-        self._output_dir = output_dir
-        self._fitting = fitting
+        self._output_dir = output_dir  # type:t.Optional[Path]
+        self._fitting = fitting  # type: t.Optional[ModelFitting]
         self._calibration_mode = CalibrationMode(
             calibration_mode
         )  # type: CalibrationMode
         self._result_type = ResultType(result_type)  # type: ResultType
-        self._result_fit_range = result_fit_range if result_fit_range else []
+        self._result_fit_range = (
+            result_fit_range if result_fit_range else []
+        )  # type: t.Sequence[int]
         self._result_input_arguments = (
             result_input_arguments if result_input_arguments else []
-        )
+        )  # type: t.Sequence[ParameterValues]
         self._target_data_path = (
             to_path_list(target_data_path) if target_data_path else []
         )  # type: t.List[Path]
-        self._target_fit_range = target_fit_range if target_fit_range else []
-        self._fitness_function = fitness_function
-        self._algorithm = algorithm
-        self._parameters = parameters if parameters else []
+        self._target_fit_range = (
+            target_fit_range if target_fit_range else []
+        )  # type: t.Sequence[int]
+        self._fitness_function = fitness_function  # type: t.Optional[ModelFunction]
+        self._algorithm = algorithm  # type: t.Optional[Algorithm]
+        self._parameters = (
+            parameters if parameters else []
+        )  # type: t.Sequence[ParameterValues]
         self._seed = np.random.randint(0, 100000) if seed is None else seed  # type: int
-        self._islands = islands
-        self._weighting_path = weighting_path
+        self._islands = islands  # type: int
+        self._weighting_path = weighting_path  # type: t.Optional[t.Sequence[Path]]
 
     @property
     def output_dir(self) -> Path:
@@ -578,22 +592,22 @@ class Calibration:
         self._result_type = value
 
     @property
-    def result_fit_range(self) -> t.List[int]:
+    def result_fit_range(self) -> t.Sequence[int]:
         """TBW."""
         return self._result_fit_range
 
     @result_fit_range.setter
-    def result_fit_range(self, value: list) -> None:
+    def result_fit_range(self, value: t.Sequence[int]) -> None:
         """TBW."""
         self._result_fit_range = value
 
     @property
-    def result_input_arguments(self) -> list:
+    def result_input_arguments(self) -> t.Sequence[ParameterValues]:
         """TBW."""
         return self._result_input_arguments
 
     @result_input_arguments.setter
-    def result_input_arguments(self, value: list) -> None:
+    def result_input_arguments(self, value: t.Sequence[ParameterValues]) -> None:
         """TBW."""
         self._result_input_arguments = value
 
@@ -608,12 +622,12 @@ class Calibration:
         self._target_data_path = value
 
     @property
-    def target_fit_range(self) -> t.List[int]:
+    def target_fit_range(self) -> t.Sequence[int]:
         """TBW."""
         return self._target_fit_range
 
     @target_fit_range.setter
-    def target_fit_range(self, value: list) -> None:
+    def target_fit_range(self, value: t.Sequence[int]) -> None:
         """TBW."""
         self._target_fit_range = value
 
@@ -644,12 +658,12 @@ class Calibration:
         self._algorithm = value
 
     @property
-    def parameters(self) -> t.List[ParameterValues]:
+    def parameters(self) -> t.Sequence[ParameterValues]:
         """TBW."""
         return self._parameters
 
     @parameters.setter
-    def parameters(self, value: t.List[ParameterValues]) -> None:
+    def parameters(self, value: t.Sequence[ParameterValues]) -> None:
         """TBW."""
         self._parameters = value
 
@@ -680,16 +694,18 @@ class Calibration:
         self._islands = value
 
     @property
-    def weighting_path(self) -> t.Optional[list]:
+    def weighting_path(self) -> t.Optional[t.Sequence[Path]]:
         """TBW."""
         return self._weighting_path
 
     @weighting_path.setter
-    def weighting_path(self, value: list) -> None:
+    def weighting_path(self, value: t.Sequence[Path]) -> None:
         """TBW."""
         self._weighting_path = value
 
-    def run_calibration(self, processor: Processor, output_dir: Path) -> list:
+    def run_calibration(
+        self, processor: Processor, output_dir: Path
+    ) -> t.Sequence[CalibrationResult]:
         """TBW.
 
         :param processor: Processor object
@@ -716,9 +732,11 @@ class Calibration:
             file_path=output_dir,
         )
 
-        prob = pg.problem(self.fitting)
-        opt_algorithm = self.algorithm.get_algorithm()
-        algo = pg.algorithm(opt_algorithm)
+        prob = pg.problem(self.fitting)  # type: pg.problem
+        opt_algorithm = (
+            self.algorithm.get_algorithm()
+        )  # type: t.Union[pg.sade, pg.sga, pg.nlopt]
+        algo = pg.algorithm(opt_algorithm)  # type: pg.algorithm
 
         # try:
         #     bfe = pg.bfe(udbfe=pg.member_bfe())
@@ -760,7 +778,8 @@ class Calibration:
             champion_x = [pop.champion_x]
 
         self.fitting.file_matching_renaming()
-        res = []  # type: list
+        res = []  # type: t.List[CalibrationResult]
+
         for f, x in zip(champion_f, champion_x):
             res += [self.fitting.get_results(overall_fitness=f, parameter=x)]
 
@@ -768,22 +787,26 @@ class Calibration:
         return res
 
     def post_processing(
-        self, calib_results: t.List[t.Tuple[t.Any, t.Any]], output: Outputs
+        self, calib_results: t.Sequence[CalibrationResult], output: Outputs,
     ) -> None:
         """TBW."""
-        for proc_list, result_dict in calib_results:
+        for one_calib_result in calib_results:  # type: CalibrationResult
 
-            output.calibration_outputs(processor_list=proc_list)
+            output.calibration_outputs(processor_list=one_calib_result.processors)
 
-            ii = 0  # type: int
-            for processor, target_data in zip(proc_list, self.fitting.all_target_data):
+            for idx, (processor, target_data) in enumerate(
+                zip(one_calib_result.processors, self.fitting.all_target_data)
+            ):
                 simulated_data = self.fitting.get_simulated_data(processor)
                 output.fitting_plot(
-                    target_data=target_data, simulated_data=simulated_data, data_i=ii
+                    target_data=target_data, simulated_data=simulated_data, data_i=idx
                 )
-                ii += 1
+
             output.fitting_plot_close(
-                result_type=self.result_type, island=result_dict["island"]
+                result_type=self.result_type, island=one_calib_result.island
             )
 
-        output.calibration_plots(calib_results[0][1])
+        first_calib_result = calib_results[0]  # type: CalibrationResult
+        output.calibration_plots(
+            results=first_calib_result.results, fitness=first_calib_result.fitness
+        )

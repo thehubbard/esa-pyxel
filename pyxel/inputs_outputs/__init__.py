@@ -138,11 +138,6 @@ def pyxel_yaml_loader():
     ObjectModelLoader.add_class(
         PlotArguments, ["simulation", "outputs", "single_plot", "plot_args"]
     )
-    ObjectModelLoader.add_class(
-        PlotArguments,
-        ["simulation", "outputs", "calibration_plot", "population_plot", "plot_args"],
-    )
-
     ObjectModelLoader.add_class(ParametricAnalysis, ["simulation", "parametric"])
     ObjectModelLoader.add_class(
         ParameterValues, ["simulation", "parametric", "parameters"], is_list=True
@@ -164,10 +159,10 @@ def pyxel_yaml_loader():
         ["simulation", "outputs", "calibration_plot", "population_plot", "plot_args"],
     )
     ObjectModelLoader.add_class(
-        FittingPlot, ["simulation", "outputs", "calibration_plot", "fitting_plot"]
+        FittingPlot, ["simulation", "outputs", "calibration_plot", "fitting_plot"],
     )
     ObjectModelLoader.add_class(
-        FittingPlot,
+        PlotArguments,
         ["simulation", "outputs", "calibration_plot", "fitting_plot", "plot_args"],
     )
     ObjectModelLoader.add_class(

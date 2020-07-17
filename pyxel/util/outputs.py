@@ -25,9 +25,9 @@ from matplotlib import pyplot as plt
 from matplotlib.ticker import ScalarFormatter
 
 from pyxel import __version__ as version
-from pyxel.calibration.util import ResultType
 
 if t.TYPE_CHECKING:
+    from ..calibration import ResultType
     from ..detectors import Detector
     from ..parametric.parameter_values import ParameterValues
     from ..parametric.parametric import ParametricAnalysis
@@ -73,7 +73,7 @@ class PlotArguments:
         """TBW."""
         return cls(**dct)
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> t.Dict[str, t.Any]:
         """TBW."""
         return attr.asdict(self)
 
@@ -254,8 +254,8 @@ class Outputs:
         # TODO: Create an object self._fig here ?
         fig, ax = plt.subplots(1, 1)
 
-        self._fig = fig
-        self._ax = ax
+        self._fig = fig  # type: plt.Figure
+        self._ax = ax  # type: plt.Axes
 
         plt.close(self._fig)
 
@@ -670,20 +670,23 @@ class Outputs:
 
     # TODO: Specific to 'calibration_plot'
     def champions_plot(
-        self, results: dict, champions_file: Path, island_id: int
+        self,
+        results: t.Dict[str, t.Union[Number, np.ndarray]],
+        champions_file: Path,
+        island_id: int,
     ) -> None:
         """TBW."""
         data = np.loadtxt(champions_file)
         generations = data[:, 0].astype(int)
         title = "Calibrated parameter: "
-        items = list(results.items())
+
         a = 1
-        for item in items:
+        for key, param_value in results.items():
             plt_args = {"xlabel": "generation", "linestyle": "-", "sci_y": True}
-            key = item[0]
-            param_value = item[1]
+
             param_name = key[slice(key.rfind(".") + 1, None)]
             plt_args["ylabel"] = param_name
+
             if param_name == "fitness":
                 plt_args["title"] = "Champion fitness"
                 plt_args["color"] = "red"
@@ -710,19 +713,22 @@ class Outputs:
                 b = len(param_value)
                 column = data[:, slice(a, a + b)]
                 self.plot_graph(x=generations, y=column, args=plt_args)
-                self._fig.legend(["index " + str(i) for i in range(b)])
+                self._fig.legend([f"index {i}" for i in range(b)])
 
             self.save_plot(filename=f"calibrated_{param_name!s}_id{island_id!s}")
             a += b
 
     # TODO: Specific to 'calibration_plot' ??
     def population_plot(
-        self, results: dict, population_file: Path, island_id: int
+        self,
+        # results: dict,
+        population_file: Path,
+        island_id: int,
     ) -> None:
         """TBW."""
         assert self.calibration_plot
 
-        data = np.loadtxt(population_file)
+        data = np.loadtxt(population_file)  # type: np.ndarray
         fitnesses = np.log10(data[:, 1])
         a, b = 2, 1  # 1st parameter and fitness
         if self.calibration_plot.population_plot:
@@ -743,6 +749,7 @@ class Outputs:
             plt_args["ylabel"] = "fitness"
         else:
             plt_args["ylabel"] = "champions file column #" + str(b)
+
         if a == 0:
             plt_args["xlabel"] = "generation"
         elif a == 1:
@@ -759,7 +766,7 @@ class Outputs:
         self.save_plot(filename=f"population_id{island_id}")
 
     # TODO: Specific to 'single_plot'
-    def calibration_outputs(self, processor_list: "t.List[Processor]") -> None:
+    def calibration_outputs(self, processor_list: "t.Sequence[Processor]") -> None:
         """TBW."""
         if self.save_data_to_file is not None:
             for processor in processor_list:
@@ -769,7 +776,7 @@ class Outputs:
                     self.single_to_plot(processor)
 
     # TODO: Specific to 'calibration_plot'
-    def calibration_plots(self, results: dict) -> None:
+    def calibration_plots(self, results: dict, fitness: float) -> None:
         """TBW."""
         assert self.calibration_plot
 
@@ -784,7 +791,9 @@ class Outputs:
                     self.output_dir.glob("champions_id*.out")
                 ):
                     self.champions_plot(
-                        results=results, champions_file=file_ch, island_id=iid
+                        results={"fitness": fitness, **results},
+                        champions_file=file_ch,
+                        island_id=iid,
                     )
 
             if self.calibration_plot.population_plot:
@@ -796,7 +805,9 @@ class Outputs:
                     self.output_dir.glob("population_id*.out")
                 ):
                     self.population_plot(
-                        results=results, population_file=file_pop, island_id=iid
+                        # results=results,
+                        population_file=file_pop,
+                        island_id=iid,
                     )
 
     # TODO: Specific to 'calibration_plot' ??
@@ -807,12 +818,12 @@ class Outputs:
         assert self.calibration_plot
 
         if self.calibration_plot.fitting_plot:
-            self._fig.plot(target_data, ".-", label=f"target data #{data_i}")
-            self._fig.plot(simulated_data, ".-", label=f"simulated data #{data_i}")
+            self._ax.plot(target_data, ".-", label=f"target data #{data_i}")
+            self._ax.plot(simulated_data, ".-", label=f"simulated data #{data_i}")
             self._fig.canvas.draw_idle()
 
     # TODO: Specific to 'calibration_plot' ??
-    def fitting_plot_close(self, result_type: ResultType, island: int) -> None:
+    def fitting_plot_close(self, result_type: "ResultType", island: int) -> None:
         """TBW."""
         assert self.calibration_plot
         assert isinstance(island, int)
@@ -824,14 +835,14 @@ class Outputs:
 
             self.user_plt_args = self.calibration_plot.fitting_plot.plot_args
 
-            user_plt_args_dct = None  # type: t.Optional[dict]
+            user_plt_args_dct = None  # type: t.Optional[t.Dict[str, t.Any]]
             if isinstance(self.user_plt_args, PlotArguments):
                 user_plt_args_dct = self.user_plt_args.to_dict()
 
             args = {
-                "title": (
-                    f"Target and Simulated ({result_type}) data, " f"island {island}"
-                )
+                "title": f"Target and Simulated ({result_type}) "
+                f"data, "
+                f"island {island}"
             }
             ax_args0, plt_args0 = self.update_args(
                 plot_type=PlotType.Graph, new_args=args
@@ -842,7 +853,7 @@ class Outputs:
                 ax_args=ax_args0,
                 plt_args=plt_args0,
             )
-            update_plot(ax_args=ax_args, ax=self._fig.axes)
+            update_plot(ax_args=ax_args, ax=self._ax)
             # plt.legend()
             self._fig.legend()
 

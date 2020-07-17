@@ -93,22 +93,22 @@ def test_read_data(input_data):
 @pytest.mark.parametrize(
     "input_data",
     [
-        pytest.param(
-            [Path("tests/data/calibrate-data.npy")],
-            marks=pytest.mark.xfail(raises=TypeError),
-        ),
-        pytest.param(
-            [Path("tests/data/calibrate-data.txt")],
-            marks=pytest.mark.xfail(raises=TypeError),
-        ),
-        pytest.param(
-            [Path("tests/data/ascii_input_3.data")],
-            marks=pytest.mark.xfail(raises=TypeError),
-        ),
-        pytest.param(
-            [Path("tests/data/ascii_input_4.data")],
-            marks=pytest.mark.xfail(raises=TypeError),
-        ),
+        # pytest.param(
+        #     [Path("tests/data/calibrate-data.npy")],
+        #     marks=pytest.mark.xfail(raises=TypeError),
+        # ),
+        # pytest.param(
+        #     [Path("tests/data/calibrate-data.txt")],
+        #     marks=pytest.mark.xfail(raises=TypeError),
+        # ),
+        # pytest.param(
+        #     [Path("tests/data/ascii_input_3.data")],
+        #     marks=pytest.mark.xfail(raises=TypeError),
+        # ),
+        # pytest.param(
+        #     [Path("tests/data/ascii_input_4.data")],
+        #     marks=pytest.mark.xfail(raises=TypeError),
+        # ),
         Path("tests/data/calibrate-data.npy"),
         Path("tests/data/calibrate-data.txt"),
         Path("tests/data/ascii_input_1.data"),

@@ -11,8 +11,30 @@ import typing as t
 from enum import Enum
 from pathlib import Path
 
+import attr
 import numpy as np
 from astropy.io import fits
+
+from pyxel.pipelines import Processor
+
+__all__ = [
+    "CalibrationResult",
+    "CalibrationMode",
+    "ResultType",
+    "check_ranges",
+    "list_to_slice",
+    "read_data",
+]
+
+
+@attr.s(frozen=True, auto_attribs=True, slots=True)
+class CalibrationResult:
+    """TBW."""
+
+    processors: t.Sequence[Processor]
+    fitness: float
+    island: int
+    results: t.Dict[str, t.Union[int, float]]
 
 
 class CalibrationMode(Enum):
@@ -42,9 +64,6 @@ def read_single_data(filename: Path) -> np.ndarray:
     array
         TBW.
     """
-    if not isinstance(filename, Path):
-        raise TypeError("Expecting a `Path` object.")
-
     if not filename.exists():
         raise FileNotFoundError(f"Input file '{filename}' can not be found.")
 
@@ -79,12 +98,12 @@ def read_single_data(filename: Path) -> np.ndarray:
 
     # TODO: Is it the right manner ?
     if data is None:
-        raise IOError(f"Input file '{filename}' can not be read by Pyxel.")
+        raise OSError(f"Input file '{filename}' can not be read by Pyxel.")
 
     return data
 
 
-def read_data(filenames: t.Sequence[Path]) -> t.List[np.ndarray]:
+def read_data(filenames: t.Sequence[Path]) -> t.Sequence[np.ndarray]:
     """Read numpy array(s) from several FITS or NPY files.
 
     :param filenames:
@@ -92,14 +111,14 @@ def read_data(filenames: t.Sequence[Path]) -> t.List[np.ndarray]:
     """
     output = [
         read_single_data(Path(filename)) for filename in filenames
-    ]  # type: t.List[np.ndarray]
+    ]  # type: t.Sequence[np.ndarray]
 
     return output
 
 
 # TODO: Create unit tests for this function
 def list_to_slice(
-    input_list: t.Optional[t.List[int]] = None,
+    input_list: t.Optional[t.Sequence[int]] = None,
 ) -> t.Union[slice, t.Tuple[slice, slice]]:
     """TBW.
 
@@ -120,7 +139,10 @@ def list_to_slice(
 
 # TODO: Write unit tests for this function
 def check_ranges(
-    target_fit_range: t.List[int], out_fit_range: t.List[int], rows: int, cols: int
+    target_fit_range: t.Sequence[int],
+    out_fit_range: t.Sequence[int],
+    rows: int,
+    cols: t.Optional[int] = None,
 ) -> None:
     """TBW."""
     if target_fit_range:
