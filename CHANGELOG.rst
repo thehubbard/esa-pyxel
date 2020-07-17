@@ -27,8 +27,10 @@ version 0.6 / 2020-MM-DD
   (See `#80 <https://gitlab.com/esa/pyxel/issues/80>`_).
 * Add templates for bug report, feature request and merge request.
   (See `#105 <https://gitlab.com/esa/pyxel/issues/105>`_).
-* Parallel computing for 'parametric' mode
+* Parallel computing for 'parametric' mode.
   (See `#111 <https://gitlab.com/esa/pyxel/issues/111>`_).
+* Improved docker image.
+  (See `#96 <https://gitlab.com/esa/pyxel/issues/96>`_).
 
 
 version 0.5 / 2019-12-20
