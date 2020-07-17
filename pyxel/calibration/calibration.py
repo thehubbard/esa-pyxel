@@ -15,8 +15,8 @@ from pathlib import Path
 
 import numpy as np
 
+from pyxel.calibration import CalibrationMode, CalibrationResult, ResultType
 from pyxel.calibration.fitting import ModelFitting
-from pyxel.calibration.util import CalibrationMode, ResultType
 from pyxel.parametric.parameter_values import ParameterValues
 from pyxel.pipelines import ModelFunction, Processor
 
@@ -705,7 +705,7 @@ class Calibration:
 
     def run_calibration(
         self, processor: Processor, output_dir: Path
-    ) -> t.Sequence[t.Tuple[t.List[Processor], t.Dict[str, t.Union[int, float]]]]:
+    ) -> t.Sequence[CalibrationResult]:
         """TBW.
 
         :param processor: Processor object
@@ -778,9 +778,8 @@ class Calibration:
             champion_x = [pop.champion_x]
 
         self.fitting.file_matching_renaming()
-        res = (
-            []
-        )  # type: t.List[t.Tuple[t.List[Processor], t.Dict[str, t.Union[int, float]]]]
+        res = []  # type: t.List[CalibrationResult]
+
         for f, x in zip(champion_f, champion_x):
             res += [self.fitting.get_results(overall_fitness=f, parameter=x)]
 
@@ -788,29 +787,26 @@ class Calibration:
         return res
 
     def post_processing(
-        self,
-        calib_results: t.Sequence[
-            t.Tuple[t.List[Processor], t.Dict[str, t.Union[int, float]]]
-        ],
-        output: Outputs,
+        self, calib_results: t.Sequence[CalibrationResult], output: Outputs,
     ) -> None:
         """TBW."""
-        for proc_list, result_dict in calib_results:
+        for one_calib_result in calib_results:  # type: CalibrationResult
 
-            output.calibration_outputs(processor_list=proc_list)
+            output.calibration_outputs(processor_list=one_calib_result.processors)
 
-            ii = 0  # type: int
-            for processor, target_data in zip(proc_list, self.fitting.all_target_data):
+            for idx, (processor, target_data) in enumerate(
+                zip(one_calib_result.processors, self.fitting.all_target_data)
+            ):
                 simulated_data = self.fitting.get_simulated_data(processor)
                 output.fitting_plot(
-                    target_data=target_data, simulated_data=simulated_data, data_i=ii
+                    target_data=target_data, simulated_data=simulated_data, data_i=idx
                 )
-                ii += 1
 
-            island = result_dict["island"]
-            assert isinstance(island, int)
+            output.fitting_plot_close(
+                result_type=self.result_type, island=one_calib_result.island
+            )
 
-            output.fitting_plot_close(result_type=self.result_type, island=island)
-
-        results = calib_results[0][1]  # type: t.Dict[str, t.Union[int, float]]
-        output.calibration_plots(results)
+        first_calib_result = calib_results[0]  # type: CalibrationResult
+        output.calibration_plots(
+            results=first_calib_result.results, fitness=first_calib_result.fitness
+        )

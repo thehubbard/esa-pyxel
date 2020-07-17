@@ -11,8 +11,30 @@ import typing as t
 from enum import Enum
 from pathlib import Path
 
+import attr
 import numpy as np
 from astropy.io import fits
+
+from pyxel.pipelines import Processor
+
+__all__ = [
+    "CalibrationResult",
+    "CalibrationMode",
+    "ResultType",
+    "check_ranges",
+    "list_to_slice",
+    "read_data",
+]
+
+
+@attr.s(frozen=True, auto_attribs=True, slots=True)
+class CalibrationResult:
+    """TBW."""
+
+    processors: t.Sequence[Processor]
+    fitness: float
+    island: int
+    results: t.Dict[str, t.Union[int, float]]
 
 
 class CalibrationMode(Enum):

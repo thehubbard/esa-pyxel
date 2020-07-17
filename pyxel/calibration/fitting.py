@@ -14,7 +14,6 @@ import math
 import os
 import re
 import typing as t
-from collections import OrderedDict
 from copy import deepcopy
 from numbers import Number
 from operator import add
@@ -25,8 +24,9 @@ from dask import delayed
 from dask.delayed import Delayed
 from typing_extensions import Literal
 
-from pyxel.calibration.util import (
+from pyxel.calibration import (
     CalibrationMode,
+    CalibrationResult,
     ResultType,
     check_ranges,
     list_to_slice,
@@ -424,15 +424,15 @@ class ModelFitting:
 
     def get_results(
         self, overall_fitness: np.ndarray, parameter: np.ndarray
-    ) -> t.Tuple[t.List[Processor], t.Dict[str, t.Union[int, float]]]:
+    ) -> CalibrationResult:
         """TBW.
 
         :param overall_fitness:
         :param parameter:
         :return:
         """
-        results = OrderedDict()  # type: t.Dict[str, t.Union[int, float]]
-        results["fitness"] = overall_fitness[0]
+        results = {}  # type: t.Dict[str, t.Union[int, float]]
+        fitness = overall_fitness[0]  # type: float
 
         # TODO: Apply a copy of 'parameter' in 'self.update_parameter' ??
         parameter = self.update_parameter(parameter)
@@ -466,11 +466,9 @@ class ModelFitting:
                 raise RuntimeError()
         else:
             island = 0
-        results["island"] = island
+
         logging.info(
-            "Post-processing island %d, champion fitness: %1.5e",
-            island,
-            overall_fitness[0],
+            "Post-processing island %d, champion fitness: %1.5e", island, fitness,
         )
 
         champion_list = deepcopy(self.param_processor_list)  # type: t.List[Processor]
@@ -494,7 +492,9 @@ class ModelFitting:
                 results[var.key] = parameter[start:stop]
             a += b
 
-        return champion_list, results
+        return CalibrationResult(
+            processors=champion_list, fitness=fitness, island=island, results=results
+        )
 
     def champion_to_file(self, parameter: np.ndarray) -> None:
         """Get champion of each generation and write it to output files together with last population.
