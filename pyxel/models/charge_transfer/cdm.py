@@ -22,7 +22,7 @@ import typing as t
 import numba
 import numpy as np
 
-from pyxel.detectors.ccd import CCD
+from pyxel.detectors import CCD
 
 try:
     from matplotlib import pyplot as plt

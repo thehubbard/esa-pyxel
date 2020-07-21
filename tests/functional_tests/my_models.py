@@ -1,5 +1,5 @@
 # import pyxel
-from pyxel.detectors.detector import Detector
+from pyxel.detectors import Detector
 
 # @pyxel.register(group='charge_generation', name='my_class_model')
 # class MyClassModel:

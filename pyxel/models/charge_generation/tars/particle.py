@@ -11,7 +11,7 @@ import typing as t
 
 import numpy as np
 
-from pyxel.detectors.detector import Detector
+from pyxel.detectors import Detector
 from pyxel.models.charge_generation.tars.util import sampling_distribution
 
 

@@ -10,7 +10,7 @@ import logging
 
 import numpy as np
 
-from pyxel.detectors.cmos import CMOS
+from pyxel.detectors import CMOS
 
 
 # TODO: Fix this

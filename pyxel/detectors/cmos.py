@@ -6,18 +6,12 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """CMOS detector modeling class."""
+import typing as t
 
-from pyxel.detectors.cmos_characteristics import CMOSCharacteristics
-from pyxel.detectors.cmos_geometry import CMOSGeometry
-from pyxel.detectors.detector import Detector
-from pyxel.detectors.environment import Environment
-from pyxel.detectors.material import Material
+from pyxel.detectors import Detector
 
-# from pyxel.data_structure.charge import Charge
-# from pyxel.data_structure.photon import Photon
-# from pyxel.data_structure.pixel import Pixel
-# from pyxel.data_structure.signal import Signal
-# from pyxel.data_structure.image import Image
+if t.TYPE_CHECKING:
+    from pyxel.detectors import CMOSCharacteristics, CMOSGeometry, Environment, Material
 
 
 class CMOS(Detector):
@@ -25,15 +19,10 @@ class CMOS(Detector):
 
     def __init__(
         self,
-        geometry: CMOSGeometry,
-        material: Material,
-        environment: Environment,
-        characteristics: CMOSCharacteristics,
-        # photon: t.Optional[Photon] = None,
-        # charge: t.Optional[Charge] = None,
-        # pixel: t.Optional[Pixel] = None,
-        # signal: t.Optional[Signal] = None,
-        # image: t.Optional[Image] = None
+        geometry: "CMOSGeometry",
+        material: "Material",
+        environment: "Environment",
+        characteristics: "CMOSCharacteristics",
     ):
         """TBW.
 
@@ -49,11 +38,11 @@ class CMOS(Detector):
         super().initialize()
 
     @property
-    def geometry(self) -> CMOSGeometry:
+    def geometry(self) -> "CMOSGeometry":
         """TBW."""
         return self._geometry
 
     @property
-    def characteristics(self) -> CMOSCharacteristics:
+    def characteristics(self) -> "CMOSCharacteristics":
         """TBW."""
         return self._characteristics

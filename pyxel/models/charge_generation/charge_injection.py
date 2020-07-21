@@ -11,7 +11,7 @@ import typing as t
 
 import numpy as np
 
-from pyxel.detectors.ccd import CCD
+from pyxel.detectors import CCD
 
 
 # TODO: Fix this

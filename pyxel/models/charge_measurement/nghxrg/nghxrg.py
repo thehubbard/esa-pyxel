@@ -13,7 +13,7 @@ from pathlib import Path
 
 import numpy as np
 
-from pyxel.detectors.cmos import CMOS, CMOSGeometry
+from pyxel.detectors import CMOS, CMOSGeometry
 from pyxel.models.charge_measurement.nghxrg.nghxrg_beta import HXRGNoise
 
 

@@ -13,13 +13,10 @@ from pathlib import Path
 
 import numpy as np
 
-from pyxel.data_structure.charge import Charge
-from pyxel.data_structure.image import Image
-from pyxel.data_structure.photon import Photon
-from pyxel.data_structure.pixel import Pixel
-from pyxel.data_structure.signal import Signal
-from pyxel.detectors.environment import Environment
-from pyxel.detectors.material import Material
+from pyxel.data_structure import Charge, Image, Photon, Pixel, Signal
+from pyxel.detectors import Environment, Material
+
+__all__ = ["Detector"]
 
 
 # TODO: Add methods to save/load a `Detector` instance to the filesystem

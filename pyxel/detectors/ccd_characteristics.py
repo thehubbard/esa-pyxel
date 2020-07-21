@@ -6,7 +6,7 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """TBW."""
-from pyxel.detectors.characteristics import Characteristics
+from pyxel.detectors import Characteristics
 
 
 # TODO: 'svg' should be the full volume and not the half

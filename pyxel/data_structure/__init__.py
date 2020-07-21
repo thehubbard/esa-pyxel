@@ -9,6 +9,9 @@
 
 # flake8: noqa
 from .array import Array
+from .particle import Particle
 from .photon import Photon
 from .pixel import Pixel
 from .signal import Signal
+from .charge import Charge
+from .image import Image
