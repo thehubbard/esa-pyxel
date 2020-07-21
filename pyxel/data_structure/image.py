@@ -12,10 +12,10 @@ from typing import TYPE_CHECKING
 import numpy as np
 from astropy.units import cds
 
-from pyxel.data_structure.array import Array
+from pyxel.data_structure import Array
 
 if TYPE_CHECKING:
-    from pyxel.detectors.geometry import Geometry
+    from pyxel.detectors import Geometry
 
 cds.enable()
 

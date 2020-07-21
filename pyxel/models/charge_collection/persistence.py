@@ -5,7 +5,7 @@
 """Pyxel persistence model."""
 import logging
 
-from pyxel.detectors.cmos import CMOS
+from pyxel.detectors import CMOS
 
 # import numpy as np
 

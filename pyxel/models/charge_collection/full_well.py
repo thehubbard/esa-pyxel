@@ -8,7 +8,7 @@
 """Pyxel full well models."""
 import logging
 
-from pyxel.detectors.detector import Detector
+from pyxel.detectors import Detector
 
 
 # @pyxel.validate

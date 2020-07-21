@@ -10,7 +10,7 @@ import logging
 
 import numpy as np
 
-from pyxel.detectors.detector import Detector
+from pyxel.detectors import Detector
 
 
 # TODO: Fix this

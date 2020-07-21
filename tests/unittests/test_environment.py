@@ -8,7 +8,7 @@
 
 import pytest
 
-from pyxel.detectors.environment import Environment
+from pyxel.detectors import Environment
 
 
 @pytest.mark.parametrize(

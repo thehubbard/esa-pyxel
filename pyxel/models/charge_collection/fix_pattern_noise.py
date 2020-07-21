@@ -12,8 +12,7 @@ from pathlib import Path
 
 import numpy as np
 
-from pyxel.detectors.detector import Detector
-from pyxel.detectors.geometry import Geometry
+from pyxel.detectors import Detector, Geometry
 
 
 # TODO: Fix this

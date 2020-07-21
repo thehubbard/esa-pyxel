@@ -8,7 +8,7 @@
 """Non-Destructive Readout modes for CMOS-based detectors."""
 import logging
 
-from pyxel.detectors.cmos import CMOS
+from pyxel.detectors import CMOS
 
 
 # TODO: Fix this

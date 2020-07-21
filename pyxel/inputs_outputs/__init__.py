@@ -101,8 +101,8 @@ def pyxel_yaml_loader():
 
     from pyxel.detectors import CCD, CMOS, Detector
     from pyxel.detectors import Geometry, Characteristics, Material, Environment
-    from pyxel.detectors.ccd import CCDGeometry, CCDCharacteristics
-    from pyxel.detectors.cmos import CMOSGeometry, CMOSCharacteristics
+    from pyxel.detectors import CCDGeometry, CCDCharacteristics
+    from pyxel.detectors import CMOSGeometry, CMOSCharacteristics
 
     from pyxel.pipelines import DetectionPipeline
 

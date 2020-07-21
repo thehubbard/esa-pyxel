@@ -11,14 +11,14 @@
 # Warning: Import order matters
 from .material import Material
 from .environment import Environment
+from .detector import Detector
 from .ccd import CCD
 from .cmos import CMOS
 from .geometry import Geometry
+from .ccd_geometry import CCDGeometry
+from .cmos_geometry import CMOSGeometry
 from .characteristics import Characteristics
-from .detector import Detector
+from .ccd_characteristics import CCDCharacteristics
+from .cmos_characteristics import CMOSCharacteristics
 from .optics import Optics
 
-
-# TODO: Is '__all__' really necessary ?
-# __all__ = ['Detector', 'CCD', 'CMOS',
-#            'Geometry', 'Characteristics', 'Material', 'Environment', 'Optics']
