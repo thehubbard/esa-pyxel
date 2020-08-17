@@ -54,9 +54,8 @@ def get_obj_att(
     :param obj_type:
     :return: the object and attribute name tuple
     """
-    obj_props = key.split(".")
-    att = obj_props[-1]
-    for part in obj_props[:-1]:
+    *body, tail = key.split(".")
+    for part in body:
         try:
             if isinstance(obj, dict):
                 obj = obj[part]
@@ -70,20 +69,22 @@ def get_obj_att(
                             obj = getattr(obj_i, part)
                             break
                         elif obj_i.__class__.__name__ == part:
-                            if hasattr(obj_i, att):
+                            if hasattr(obj_i, tail):
                                 obj = obj_i
                                 break
-            else:
+            elif hasattr(obj, part):
                 obj = getattr(obj, part)
+            else:
+                raise NotImplementedError
 
             if obj_type and isinstance(obj, obj_type):
-                return obj, att
+                return obj, tail
 
         except AttributeError:
             # logging.error('Cannot find attribute %r in key %r', part, key)
             obj = None
             break
-    return obj, att
+    return obj, tail
 
 
 #  t.Any) -> t.Union[t.List[t.Any], t.Dict[str, t.Any]]:
@@ -126,7 +127,7 @@ def get_obj_att(
 #     return result
 
 
-def get_state(obj: t.Any) -> t.Dict[str, t.Any]:
+def get_state(obj: t.Any) -> t.Mapping[str, t.Any]:
     """Convert the config object to a embedded dict object.
 
     The returned value will be a dictionary tree that is JSON
@@ -151,7 +152,7 @@ def get_state(obj: t.Any) -> t.Dict[str, t.Any]:
 
 def get_state_ids(
     obj: t.Any,
-    parent_key_list: t.Optional[t.List[str]] = None,
+    parent_key_list: t.Optional[t.Sequence[str]] = None,
     result: t.Optional[t.Dict[str, t.Any]] = None,
 ) -> t.Any:
     """Retrieve a flat dictionary of the object attribute hierarchy.
@@ -218,7 +219,7 @@ def get_value(obj: t.Any, key: str) -> t.Any:
     return value
 
 
-def copy_state(obj: t.Any) -> t.Dict[str, t.Any]:
+def copy_state(obj: t.Any) -> t.Mapping[str, t.Any]:
     """Deep copy the object as a attribute name/value pairs dictionary.
 
     :param obj:

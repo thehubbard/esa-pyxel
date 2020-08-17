@@ -26,8 +26,8 @@ def illumination(
     level: int,
     option: str = "uniform",
     array_size: t.Optional[t.Tuple[int, int]] = None,
-    hole_size: t.Optional[t.List[int]] = None,
-    hole_center: t.Optional[t.List[int]] = None,
+    hole_size: t.Optional[t.Sequence[int]] = None,
+    hole_center: t.Optional[t.Sequence[int]] = None,
 ) -> None:
     """Generate photon uniformly over the entire array or hole.
 

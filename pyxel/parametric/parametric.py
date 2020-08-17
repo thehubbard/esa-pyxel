@@ -38,7 +38,7 @@ class ParametricAnalysis:
     def __init__(
         self,
         parametric_mode: str,
-        parameters: t.List[ParameterValues],
+        parameters: t.Sequence[ParameterValues],
         from_file: t.Optional[str] = None,
         column_range: t.Optional[t.Tuple[int, int]] = None,
     ):
@@ -54,7 +54,7 @@ class ParametricAnalysis:
         return f"{cls_name}<mode={self.parametric_mode!s}>"
 
     @property
-    def enabled_steps(self) -> t.List[ParameterValues]:
+    def enabled_steps(self) -> t.Sequence[ParameterValues]:
         """TBW."""
         return [step for step in self._parameters if step.enabled]
 

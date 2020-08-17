@@ -36,7 +36,7 @@ class CalibrationResult:
     processors: t.Sequence[Processor]
     fitness: float
     island: int
-    results: t.Dict[str, t.Union[int, float]]
+    results: t.Mapping[str, t.Union[int, float]]
 
 
 class CalibrationMode(Enum):

@@ -14,6 +14,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+from typing_extensions import Literal
 
 from pyxel.detectors import Detector
 from pyxel.models.charge_generation.tars.particle import Particle
@@ -33,12 +34,16 @@ class Simulation:
         :param Detector detector: Detector object(from CCD/CMSO library) containing all the simulated detector specs
         """
         self.detector = detector
-        self.simulation_mode = None  # type: t.Optional[str]
+        self.simulation_mode = (
+            None
+        )  # type: t.Optional[Literal["cosmic_ray", "cosmics","radioactive_decay", "snowflakes"]]
 
         self.flux_dist = None  # type: t.Optional[np.ndarray]
         self.spectrum_cdf = None  # type: t.Optional[np.ndarray]
 
-        self.energy_loss_data = None  # type: t.Optional[str]
+        self.energy_loss_data = (
+            None
+        )  # type: t.Optional[Literal['stopping', 'stepsize', 'geant4']]
 
         self.elec_number_dist = pd.DataFrame()
         self.elec_number_cdf = np.zeros((1, 2))
@@ -53,8 +58,12 @@ class Simulation:
 
         self.particle = None  # type: t.Optional[Particle]
 
-        self.particle_type = None  # type: t.Optional[str]
-        self.initial_energy = None  # type: t.Optional[t.Union[str, float]]
+        self.particle_type = (
+            None
+        )  # type: t.Optional[Literal["proton", "ion", "alpha", "beta", "electron", "gamma", "x-ray"]]
+        self.initial_energy = (
+            None
+        )  # type: t.Optional[t.Union[int, float, Literal['random']]]
         self.position_ver = None  # type: t.Optional[str]
         self.position_hor = None  # type: t.Optional[str]
         self.position_z = None  # type: t.Optional[str]
@@ -90,9 +99,11 @@ class Simulation:
 
     def parameters(
         self,
-        sim_mode: str,
-        part_type: str,
-        init_energy: t.Union[str, float],
+        sim_mode: Literal["cosmic_ray", "cosmics", "radioactive_decay", "snowflakes"],
+        part_type: Literal[
+            "proton", "ion", "alpha", "beta", "electron", "gamma", "x-ray"
+        ],
+        init_energy: t.Union[int, float, Literal["random"]],
         pos_ver: str,
         pos_hor: str,
         pos_z: str,
@@ -124,7 +135,9 @@ class Simulation:
 
         :return:
         """
-        sorted_list = sorted(self.data_library[column].unique())  # type: t.List[float]
+        sorted_list = sorted(
+            self.data_library[column].unique()
+        )  # type: t.Sequence[float]
         index = bisect(sorted_list, value) - 1
         if index < 0:
             index = 0
@@ -135,7 +148,9 @@ class Simulation:
 
         :return:
         """
-        sorted_list = sorted(self.data_library[column].unique())  # type: t.List[float]
+        sorted_list = sorted(
+            self.data_library[column].unique()
+        )  # type: t.Sequence[float]
         index = bisect(sorted_list, value)
         if index > len(sorted_list) - 1:
             index = len(sorted_list) - 1
@@ -146,7 +161,9 @@ class Simulation:
 
         :return:
         """
-        sorted_list = sorted(self.data_library[column].unique())  # type: t.List[float]
+        sorted_list = sorted(
+            self.data_library[column].unique()
+        )  # type: t.Sequence[float]
         index_smaller = bisect(sorted_list, value) - 1
         index_larger = bisect(sorted_list, value)
 

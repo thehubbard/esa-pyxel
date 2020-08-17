@@ -10,6 +10,7 @@
 import typing as t
 
 import numpy as np
+from typing_extensions import Literal
 
 from pyxel.detectors import Detector
 from pyxel.models.charge_generation.tars.util import sampling_distribution
@@ -21,9 +22,13 @@ class Particle:
     def __init__(
         self,
         detector: Detector,
-        simulation_mode: str,
-        particle_type: str,
-        input_energy: t.Union[int, float, str],
+        simulation_mode: Literal[
+            "cosmic_ray", "cosmics", "radioactive_decay", "snowflakes"
+        ],
+        particle_type: Literal[
+            "proton", "ion", "alpha", "beta", "electron", "gamma", "x-ray"
+        ],
+        input_energy: t.Union[int, float, Literal["random"]],
         spectrum_cdf: np.ndarray,
         starting_pos_ver: t.Union[str, np.ndarray],
         starting_pos_hor: t.Union[str, np.ndarray],
@@ -124,7 +129,7 @@ class Particle:
         self.trajectory = np.copy(self.starting_position)
 
         if input_energy == "random":
-            self.energy = sampling_distribution(spectrum_cdf)
+            self.energy = sampling_distribution(spectrum_cdf)  # type: float
         elif isinstance(input_energy, int) or isinstance(input_energy, float):
             self.energy = input_energy
         else:

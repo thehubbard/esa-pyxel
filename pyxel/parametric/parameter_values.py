@@ -22,10 +22,7 @@ class ParameterValues:
         self,
         key: str,
         values: t.Union[
-            Literal["_"],
-            t.Sequence[Literal["_"]],
-            t.Sequence[str],
-            t.Sequence[t.Union[Number]],
+            Literal["_"], t.Sequence[Literal["_"]], t.Sequence[Number], t.Sequence[str]
         ],
         boundaries: t.Optional[t.Tuple[float, float]] = None,
         enabled: bool = True,
@@ -45,13 +42,13 @@ class ParameterValues:
         self._key = key  # type: str
         self._values = (
             values
-        )  # type: t.Union[Literal['_'], t.Sequence[Literal['_']], t.Sequence[str], t.Sequence[t.Union[Number]]]
+        )  # type: t.Union[Literal['_'], t.Sequence[Literal['_']],  t.Sequence[Number]]
 
         self._enabled = enabled  # type: bool
         self._logarithmic = logarithmic  # type: bool
         self._boundaries = boundaries  # type: t.Optional[t.Tuple[float, float]]
 
-        self._current = None  # type: t.Optional[t.Union[Literal['_'], str, Number]]
+        self._current = None  # type: t.Optional[t.Union[Literal['_'], Number]]
 
     def __repr__(self) -> str:
         cls_name = self.__class__.__name__  # type: str
@@ -77,10 +74,7 @@ class ParameterValues:
     def values(
         self,
     ) -> t.Union[
-        Literal["_"],
-        t.Sequence[Literal["_"]],
-        t.Sequence[str],
-        t.Sequence[t.Union[Number]],
+        Literal["_"], t.Sequence[Literal["_"]], t.Sequence[Number],
     ]:
         """TBW."""
         return self._values
@@ -91,12 +85,12 @@ class ParameterValues:
         return self._enabled
 
     @property
-    def current(self) -> t.Optional[t.Union[Literal["_"], str, Number]]:
+    def current(self) -> t.Optional[t.Union[Literal["_"], Number]]:
         """TBW."""
         return self._current
 
     @current.setter
-    def current(self, value: t.Union[Literal["_"], str, Number]) -> None:
+    def current(self, value: t.Union[Literal["_"], Number]) -> None:
         """TBW."""
         self._current = value
 

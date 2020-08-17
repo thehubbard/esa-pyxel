@@ -90,8 +90,8 @@ class ModelFitting(ProblemSingleObjective):
         self.champion_f_list = None  # type: t.Optional[np.ndarray]
         self.champion_x_list = None  # type: t.Optional[np.ndarray]
 
-        self.lbd = []  # type: t.List[float]  # lower boundary
-        self.ubd = []  # type: t.List[float]  # upper boundary
+        self.lbd = []  # type: t.Sequence[float]  # lower boundary
+        self.ubd = []  # type: t.Sequence[float]  # upper boundary
 
         self.sim_fit_range = slice(None)  # type: t.Union[slice, t.Tuple[slice, slice]]
         self.targ_fit_range = slice(None)  # type: t.Union[slice, t.Tuple[slice, slice]]
@@ -451,7 +451,7 @@ class ModelFitting(ProblemSingleObjective):
                     *_, lastline = fh.readlines()
 
                 cleaned_lastline = lastline.replace("\n", "")  # type: str
-                columns = cleaned_lastline.split(" ")  # type: t.List[str]
+                columns = cleaned_lastline.split(" ")  # type: t.Sequence[str]
 
                 _, *other_columns = columns
                 self.match[ii] = other_columns
@@ -468,7 +468,7 @@ class ModelFitting(ProblemSingleObjective):
                 fid = aw.split("_")[-1]  # type: str
                 popfiles = list(
                     self.file_path.glob(f"population_id_{fid}.out")
-                )  # type: t.List[Path]
+                )  # type: t.Sequence[Path]
 
                 popfile = popfiles[0]  # type: Path
 
@@ -525,7 +525,9 @@ class ModelFitting(ProblemSingleObjective):
             fitness,
         )
 
-        champion_list = deepcopy(self.param_processor_list)  # type: t.List[Processor]
+        champion_list = deepcopy(
+            self.param_processor_list
+        )  # type: t.Sequence[Processor]
         for processor in champion_list:
             processor = self.update_processor(
                 parameter=parameter, new_processor=processor
