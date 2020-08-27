@@ -176,7 +176,7 @@ class Simulation:
 
     def select_stepsize_data(
         self, p_type: str, p_energy: float, p_track_length: float
-    ) -> pd.DataFrame:
+    ) -> Path:
         """TBW.
 
         :param p_type: str
@@ -189,9 +189,14 @@ class Simulation:
         distance = self.find_larger_neighbor(column="thickness", value=p_track_length)
         energy = self.find_closest_neighbor(column="energy", value=p_energy)
 
-        return df[
+        df_filtered = df[
             (df.type == p_type) & (df.energy == energy) & (df.thickness == distance)
-        ].path.values[0]
+        ]  # type: pd.DataFrame
+
+        serie = df_filtered["path"]  # type: pd.Series
+        filename = serie.values[0]  # type: Path
+
+        return filename
 
     def set_stepsize_distribution(self, step_size_file: Path) -> None:
         """TBW.
