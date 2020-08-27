@@ -56,8 +56,6 @@ python36:
   image: python:3.6
   stage: test
   script:
-    - python -V
-    - pip install tox
     - tox -e py36-extra_all
 
 
@@ -69,7 +67,7 @@ python37:
     - tox -e py37-extra_all
 
 
-# Run pytest for Python 3.8 withou anaconda
+# Run pytest for Python 3.8 without anaconda
 python38:
   image: python:3.8
   stage: test
