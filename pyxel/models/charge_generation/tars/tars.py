@@ -39,7 +39,7 @@ def run_tars(
         Literal["stopping", "stepsize", "geant4", "plotting"]
     ] = None,
     particle_type: t.Optional[Literal["proton", "alpha", "ion"]] = None,
-    initial_energy: t.Optional[t.Union[int, float, t.Literal["random"]]] = None,
+    initial_energy: t.Optional[t.Union[int, float, Literal["random"]]] = None,
     particle_number: t.Optional[int] = None,
     incident_angles: t.Optional[t.Tuple[str, str]] = None,
     starting_position: t.Optional[t.Tuple[str, str, str]] = None,
