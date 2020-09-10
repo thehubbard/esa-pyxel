@@ -14,6 +14,7 @@ from astropy.io import fits
 
 from pyxel.data_structure import Photon
 from pyxel.detectors import Detector
+from pyxel import inputs_outputs
 
 
 # TODO: Fix this
@@ -43,7 +44,7 @@ def load_image(
     if not Path(filename).exists():
         raise FileNotFoundError(f"Image file '{filename}' does not exist !")
 
-    image = fits.getdata(filename)  # type: np.ndarray
+    image = inputs_outputs.load_image(filename)  # type: np.ndarray
 
     if fit_image_to_det:
         geo = detector.geometry
