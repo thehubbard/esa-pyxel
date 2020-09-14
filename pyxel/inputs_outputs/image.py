@@ -41,7 +41,7 @@ def load_image(filename: t.Union[str, Path]) -> np.ndarray:
     elif ".npy" in filename_path.suffix:
         data_2d = np.load(filename_path)
 
-    elif ".txt" in filename_path.suffix:
+    elif ".txt" in filename_path.suffix or ".data" in filename_path.suffix:
         # TODO: this is a convoluted implementation. Change to:
         # for sep in [' ', ',', '|', ';']:
         #     try:
@@ -63,6 +63,6 @@ def load_image(filename: t.Union[str, Path]) -> np.ndarray:
                     break
 
     else:
-        raise NotImplementedError("Only .npy and .fits implemented.")
+        raise NotImplementedError("Only .npy, .fits, .txt and .data implemented.")
 
     return data_2d
