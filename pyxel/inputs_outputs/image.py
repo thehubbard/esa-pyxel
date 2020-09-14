@@ -1,9 +1,20 @@
+#  Copyright (c) European Space Agency, 2017, 2018, 2019, 2020.
+#
+#  This file is subject to the terms and conditions defined in file 'LICENCE.txt', which
+#  is part of this Pyxel package. No part of the package, including
+#  this file, may be copied, modified, propagated, or distributed except according to
+#  the terms contained in the file ‘LICENCE.txt’.
+
+"""TBW."""
+
+import typing as t
 from pathlib import Path
 
 import numpy as np
 from astropy.io import fits
 
-def load_image(filename: str) -> np.ndarray:
+
+def load_image(filename: t.Union[str,Path]) -> np.ndarray:
     """
     TBW.
 
@@ -16,7 +27,7 @@ def load_image(filename: str) -> np.ndarray:
 
     """
 
-    filename_path = Path(filename)
+    filename_path = Path(filename).resolve()
 
     if not filename_path.exists():
         raise FileNotFoundError(f"Input file '{filename_path}' can not be found.")
