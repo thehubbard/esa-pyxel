@@ -13,7 +13,6 @@ from pathlib import Path
 
 import attr
 import numpy as np
-from astropy.io import fits
 
 from pyxel.inputs_outputs import load_image
 from pyxel.pipelines import Processor

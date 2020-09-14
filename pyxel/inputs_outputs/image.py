@@ -33,15 +33,15 @@ def load_image(filename: t.Union[str, Path]) -> np.ndarray:
     if not filename_path.exists():
         raise FileNotFoundError(f"Input file '{filename_path}' can not be found.")
 
-    # TODO: change to Path(path).suffix.lower().startswith('.fit')
-    #       Same applies to `.npy`.
-    if ".fits" in filename_path.suffix:
+    suffix = filename_path.suffix.lower()
+
+    if suffix.startswith(".fits"):
         data_2d = fits.getdata(filename_path)  # type: np.ndarray
 
-    elif ".npy" in filename_path.suffix:
+    elif suffix.startswith(".npy"):
         data_2d = np.load(filename_path)
 
-    elif ".txt" in filename_path.suffix or ".data" in filename_path.suffix:
+    elif suffix.startswith(".txt") or suffix.startswith(".data"):
         # TODO: this is a convoluted implementation. Change to:
         # for sep in [' ', ',', '|', ';']:
         #     try:
