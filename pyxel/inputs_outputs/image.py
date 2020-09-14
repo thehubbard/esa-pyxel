@@ -14,7 +14,7 @@ import numpy as np
 from astropy.io import fits
 
 
-def load_image(filename: t.Union[str,Path]) -> np.ndarray:
+def load_image(filename: t.Union[str, Path]) -> np.ndarray:
     """
     TBW.
 
@@ -24,6 +24,7 @@ def load_image(filename: t.Union[str,Path]) -> np.ndarray:
 
     Returns
     -------
+    array
 
     """
 
