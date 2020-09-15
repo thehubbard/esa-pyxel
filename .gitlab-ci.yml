@@ -56,8 +56,6 @@ python36:
   image: python:3.6
   stage: test
   script:
-    - python -V
-    - pip install tox
     - tox -e py36-extra_all
 
 
@@ -66,19 +64,15 @@ python37:
   image: python:3.7
   stage: test
   script:
-    - python -V
-    - pip install tox
     - tox -e py37-extra_all
 
 
 # Run pytest for Python 3.8
-#python38:
-#  image: python:3.8
-#  stage: test
-#  script:
-#    - python -V
-#    - pip install tox
-#    - tox -e py38-extra_all
+python38:
+  image: python:3.8
+  stage: test
+  script:
+    - tox -e py38-extra_all
 
 
 # Run mypy
@@ -86,8 +80,6 @@ mypy:
   image: python:3.7
   stage: test
   script:
-    - python -V
-    - pip install tox
     - tox -e mypy
 
 
@@ -112,8 +104,6 @@ flake8:
   image: python:3
   stage: test
   script:
-    - python -V
-    - pip install tox
     - tox -e flake8
 
 
@@ -121,8 +111,6 @@ pydocstyle:
   image: python:3
   stage: test
   script:
-    - python -V
-    - pip install tox
     - tox -e pydocstyle
 
 
@@ -130,8 +118,6 @@ doc8:
   image: python:3
   stage: test
   script:
-    - python -V
-    - pip install tox
     - tox -e doc8
 
 
@@ -172,54 +158,29 @@ coverage:
 # Scan sourcecode for licenses, copyrights & dependencies
 # experimental, latest version
 licenses-latest:
-  image: python:2.7.15
+  image: python:3
   stage: build
-  allow_failure: true
   script:
-    - python --version
-    - pwd
-    - pip install scancode-toolkit
-    - pip freeze
-    - scancode --help
-    - scancode --examples
-    - ls
-    - scancode -n 4 --verbose --ignore "*.fits" --ignore "*.npy" --ignore "*.ascii" --ignore "*.data" --ignore "*.txt" --ignore "*.cfg" --license --copyright --json-pp license.json /builds/sci-fv/pyxel-mirror/pyxel || true
-    - ls
+    - tox -e licenses
   artifacts:
     paths:
-      - license.json
+      - license.html
 
-# Scan sourcecode for licenses, copyrights & dependencies
-#licenses:
-#  image: python:2.7.14
-#  stage: build
-#  allow_failure: true
-#  script:
-#    - pwd
-#    - pip install scancode-toolkit==2.2.1    # worked
-#    - pip freeze
-#    - scancode --help
-#    - scancode -n 4 --ignore *.fits --ignore *.npy --format html-app --diag . license_report.html    # v2.2.1   worked
-#    - ls
-#  artifacts:
-#    paths:
-#      - license_report_files
-#      - license_report.html
 
 # Generate the Sphinx documentation into 'doc/html'
 doc:
   image: python:3.7
   stage: build
   script:
-    - pip install tox
     - tox -e docs
     - python badges.py -doc="passed"
   artifacts:
     paths:
       - docs/html
       - documentation.svg
-  only:
-    - master
+  rules:
+    - if: $CI_COMMIT_BRANCH == "master"
+
 
 website:
   image: python:3
@@ -231,8 +192,9 @@ website:
   artifacts:
     paths:
        - html
-  only:
-    - master
+  rules:
+    - if: $CI_COMMIT_BRANCH == "master"
+
 
 ## Generate the Sphinx documentation into 'doc/html'
 #doc:
@@ -310,5 +272,5 @@ pages:
     paths:
       - public
   allow_failure: false
-  only:
-    - master
+  rules:
+    - if: $CI_COMMIT_BRANCH == "master"
