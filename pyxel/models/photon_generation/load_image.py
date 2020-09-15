@@ -11,9 +11,9 @@ from pathlib import Path
 
 import numpy as np
 
+from pyxel import inputs_outputs
 from pyxel.data_structure import Photon
 from pyxel.detectors import Detector
-from pyxel import inputs_outputs
 
 
 # TODO: Fix this

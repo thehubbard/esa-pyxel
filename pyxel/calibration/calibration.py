@@ -787,7 +787,9 @@ class Calibration:
         return res
 
     def post_processing(
-        self, calib_results: t.Sequence[CalibrationResult], output: Outputs,
+        self,
+        calib_results: t.Sequence[CalibrationResult],
+        output: Outputs,
     ) -> None:
         """TBW."""
         for one_calib_result in calib_results:  # type: CalibrationResult
