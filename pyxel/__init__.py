@@ -7,7 +7,7 @@
 
 """Pyxel detector simulation framework."""
 from ._version import get_versions
-
+from .show_versions import show_versions
 
 __version__ = get_versions()["version"]
 del get_versions
