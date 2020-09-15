@@ -68,6 +68,14 @@ python37:
 
 
 # Run pytest for Python 3.8
+python38:
+  image: python:3.8
+  stage: test
+  script:
+    - tox -e py38-extra_all
+
+
+# Run pytest for Python 3.8
 #python38:
 #  image: python:3.8
 #  stage: test
