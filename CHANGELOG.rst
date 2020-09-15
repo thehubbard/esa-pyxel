@@ -33,6 +33,8 @@ version 0.6 / 2020-MM-DD
   (See `#96 <https://gitlab.com/esa/pyxel/issues/96>`_).
 * Fix calibration pipeline.
   (See `#113 <https://gitlab.com/esa/pyxel/issues/113>`_).
+* CI/CD pipeline 'licenses-latests' fails.
+  (See `#125 <https://gitlab.com/esa/pyxel/issues/125>`_).
 
 
 version 0.5 / 2019-12-20
