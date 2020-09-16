@@ -12,6 +12,8 @@ import typing as t
 import numpy as np
 import pandas as pd
 
+from pyxel.util.memory import get_size
+
 # from astropy.units import cds
 # cds.enable()
 
@@ -59,3 +61,15 @@ class Particle:
             self.frame.query("index not in %s" % id_list, inplace=True)
         else:
             self.frame = self.EMPTY_FRAME.copy()
+
+    @property
+    def nbytes(self) -> int:
+        """Recursively calculates object size in bytes using Pympler library.
+
+        Returns
+        -------
+        int
+            Size of the object in bytes.
+        """
+        return get_size(self)
+

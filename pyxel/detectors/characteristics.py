@@ -7,6 +7,7 @@
 
 """TBW."""
 
+from pyxel.util.memory import get_size
 
 # TODO: 'vg' should be the full volume and not the half
 class Characteristics:
@@ -197,3 +198,14 @@ class Characteristics:
             raise ValueError("'dt' must be between 0.0 and 10.0.")
 
         self._dt = value
+
+    @property
+    def nbytes(self) -> int:
+        """Recursively calculates object size in bytes using Pympler library.
+
+        Returns
+        -------
+        int
+            Size of the object in bytes.
+        """
+        return get_size(self)

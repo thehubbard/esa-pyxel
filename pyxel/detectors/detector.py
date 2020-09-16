@@ -15,6 +15,7 @@ import numpy as np
 
 from pyxel.data_structure import Charge, Image, Photon, Pixel, Signal
 from pyxel.detectors import Environment, Material
+from pyxel.util.memory import get_size, memory_usage_details
 
 __all__ = ["Detector"]
 
@@ -207,3 +208,25 @@ class Detector:
         except StopIteration:
             self._time = 0.0
         return self._time
+
+    @property
+    def nbytes(self) -> int:
+        """Recursively calculates object size in bytes using Pympler library.
+
+        Returns
+        -------
+        int
+            Size of the object in bytes.
+        """
+        return get_size(self)
+
+    def memory_usage(self, print_result=True, human_readable=True) -> dict:
+        """TBW.
+
+        Returns
+        -------
+        dict
+            Dictionary of attribute memory usage
+        """
+        attributes=["_photon","_charge","_pixel","_signal","_image","material","environment","_geometry", "_characteristics"]
+        return memory_usage_details(self, print_result, human_readable, attributes)

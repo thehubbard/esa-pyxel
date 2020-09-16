@@ -18,6 +18,7 @@ from pyxel.detectors import CCD, CMOS
 from pyxel.evaluator import eval_entry
 from pyxel.pipelines import DetectionPipeline, ModelGroup
 from pyxel.state import get_obj_att
+from pyxel.util.memory import get_size
 
 
 # TODO: Is this class needed ?
@@ -160,3 +161,15 @@ class Processor:
 
         # TODO: Is is necessary to return 'self' ??
         return self
+
+    @property
+    def nbytes(self) -> int:
+        """Recursively calculates object size in bytes using Pympler library.
+
+        Returns
+        -------
+        int
+            Size of the object in bytes.
+        """
+        return get_size(self)
+

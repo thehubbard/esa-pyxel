@@ -13,6 +13,7 @@ from pathlib import Path
 
 import numpy as np
 
+from pyxel.util.memory import get_size
 
 class MaterialType(Enum):
     """TBW."""
@@ -207,6 +208,17 @@ class Material:
             raise ValueError("'e_effective_mass' must be between 0.0 and 1.e-10.")
 
         self._e_effective_mass = value
+
+    @property
+    def nbytes(self) -> int:
+        """Recursively calculates object size in bytes using Pympler library.
+
+        Returns
+        -------
+        int
+            Size of the object in bytes.
+        """
+        return get_size(self)
 
     # TODO create func for compound materials
     # def set_material(self, material):

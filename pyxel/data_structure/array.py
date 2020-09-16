@@ -12,6 +12,8 @@ import typing as t  # noqa: F401
 import numpy as np
 from astropy.units import cds
 
+from pyxel.util.memory import get_size
+
 # TODO: Is it possible to move this to `data_structure/__init__.py' ?
 cds.enable()
 
@@ -120,3 +122,8 @@ class Array:
     def sum(self) -> np.ndarray:
         """Return sum of all pixel values."""
         return np.sum(self._array)
+
+    @property
+    def nbytes(self) -> int:
+        return get_size(self)
+
