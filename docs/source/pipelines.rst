@@ -1,11 +1,12 @@
 .. _pipelines:
 
+#########
 Pipelines
-===========
+#########
 
 The core algorithm of the architecture is the Detection pipeline allowing to
 host any type of models in an arbitrary number. This is either a
-*CCDDetectionPipeline** or a *CMOSDetectionPipeline* inheriting
+*CCDDetectionPipeline* or a *CMOSDetectionPipeline* inheriting
 subclasses, properties and functions from a general *DetectionPipeline* class.
 
 Inside the pipeline the models are grouped into 7 different levels per
@@ -24,10 +25,10 @@ output files from results.
 .. _ccd_pipeline:
 
 CCD Pipeline
---------------
+============
 
 
 .. _cmos_pipeline:
 
 CMOS Pipeline
---------------
+=============

@@ -6,3 +6,8 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """TBW."""
+
+# flake8: noqa
+from .collection import simple_collection
+from .fix_pattern_noise import fix_pattern_noise
+from .full_well import simple_full_well

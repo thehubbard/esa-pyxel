@@ -6,3 +6,8 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """TBW."""
+
+# flake8: noqa
+from .illumination import illumination
+from .load_image import load_image
+from .shot_noise import shot_noise

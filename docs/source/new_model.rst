@@ -27,7 +27,7 @@ You should copy the python file including your function in the folder
 
     photon_generation:
       - name: illumination
-        func: pyxel.models.photon_generation.illumination.illumination
+        func: pyxel.models.photon_generation.illumination
         enabled: true
         arguments:
           level: 1000
@@ -42,7 +42,7 @@ You should copy the python file including your function in the folder
       #######################################################################
 
       - name: shot_noise
-        func: pyxel.models.photon_generation.shot_noise.shot_noise
+        func: pyxel.models.photon_generation.shot_noise
         enabled: false
 
 

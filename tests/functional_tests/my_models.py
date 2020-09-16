@@ -41,34 +41,32 @@ class MyDecoratedModel:
 
 registry_map = {
     "photon_generation": [
-        {"func": "pyxel.models.photon_generation.load_image.load_image"},
-        {"func": "pyxel.models.photon_generation.illumination.illumination"},
-        {"func": "pyxel.models.photon_generation.shot_noise.shot_noise"},
+        {"func": "pyxel.models.photon_generation.load_image"},
+        {"func": "pyxel.models.photon_generation.illumination"},
+        {"func": "pyxel.models.photon_generation.shot_noise"},
     ],
     "optics": [],
     "charge_generation": [
         {
-            "func": "pyxel.models.charge_generation.photoelectrons.simple_conversion",
+            "func": "pyxel.models.charge_generation.simple_conversion",
             "name": "photoelectrons",
         },
-        {"func": "pyxel.models.tars.tars.run_tars", "name": "tars"},
+        {"func": "pyxel.models.run_tars", "name": "tars"},
     ],
     "charge_collection": [
         {
-            "func": "pyxel.models.charge_collection.fix_pattern_noise.fix_pattern_noise",
+            "func": "pyxel.models.charge_collection.fix_pattern_noise",
             "type": "ccd",
         },
         {
-            "func": "pyxel.models.charge_collection.full_well.simple_full_well",
+            "func": "pyxel.models.charge_collection.simple_full_well",
             "name": "full_well",
         },
     ],
-    "charge_transfer": [
-        {"func": "pyxel.models.charge_transfer.cdm.cdm", "type": "ccd"}
-    ],
+    "charge_transfer": [{"func": "pyxel.models.charge_transfercdm", "type": "ccd"}],
     "charge_measurement": [
         {
-            "func": "pyxel.models.charge_measurement.readout_noise.output_node_noise",
+            "func": "pyxel.models.charge_measurement.output_node_noise",
             "type": "ccd",
         },
         {
