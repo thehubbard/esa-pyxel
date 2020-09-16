@@ -50,6 +50,7 @@ dependencies:
   - tqdm
   - typing-extensions
   - pygmo>=2.11
+  - pympler
   - pillow
 # Development
   - flake8
