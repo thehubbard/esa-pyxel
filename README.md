@@ -6,7 +6,7 @@ Pyxel detector simulation framework
 [![docs](https://esa.gitlab.io/pyxel/documentation.svg)](https://esa.gitlab.io/pyxel/doc)
 [![gitter](https://badges.gitter.im/pyxel-framework/community.svg)](https://gitter.im/pyxel-framework/community)
 [![coverage](https://gitlab.com/esa/pyxel/badges/master/coverage.svg)](http://sci-fv.io.esa.int/pyxel-mirror/coverage/)
-
+[![doi](https://zenodo.org/badge/DOI/10.1117/12.2314047.svg)](https://doi.org/10.1117/12.2314047)
 
 ## What is it?
 
