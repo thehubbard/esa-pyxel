@@ -9,6 +9,7 @@
 
 from pyxel.util.memory import get_size
 
+
 class Environment:
     """Environmental attributes of the detector."""
 
@@ -89,7 +90,6 @@ class Environment:
 
         self._total_non_ionising_dose = value
 
-    @property
     def nbytes(self) -> int:
         """Recursively calculates object size in bytes using Pympler library.
 
@@ -99,4 +99,3 @@ class Environment:
             Size of the object in bytes.
         """
         return get_size(self)
-

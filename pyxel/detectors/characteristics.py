@@ -9,6 +9,7 @@
 
 from pyxel.util.memory import get_size
 
+
 # TODO: 'vg' should be the full volume and not the half
 class Characteristics:
     """Characteristical attributes of the detector."""
@@ -199,7 +200,6 @@ class Characteristics:
 
         self._dt = value
 
-    @property
     def nbytes(self) -> int:
         """Recursively calculates object size in bytes using Pympler library.
 

@@ -209,7 +209,6 @@ class Detector:
             self._time = 0.0
         return self._time
 
-    @property
     def nbytes(self) -> int:
         """Recursively calculates object size in bytes using Pympler library.
 
@@ -220,7 +219,9 @@ class Detector:
         """
         return get_size(self)
 
-    def memory_usage(self, print_result=True, human_readable=True) -> dict:
+    def memory_usage(
+        self, print_result: bool = True, human_readable: bool = True
+    ) -> dict:
         """TBW.
 
         Returns
@@ -228,5 +229,18 @@ class Detector:
         dict
             Dictionary of attribute memory usage
         """
-        attributes=["_photon","_charge","_pixel","_signal","_image","material","environment","_geometry", "_characteristics"]
-        return memory_usage_details(self, print_result, human_readable, attributes)
+        attributes = [
+            "_photon",
+            "_charge",
+            "_pixel",
+            "_signal",
+            "_image",
+            "material",
+            "environment",
+            "_geometry",
+            "_characteristics",
+        ]
+
+        return memory_usage_details(
+            self, attributes, print_result=print_result, human_readable=human_readable
+        )

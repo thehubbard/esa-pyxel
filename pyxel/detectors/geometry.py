@@ -10,6 +10,7 @@ import numpy as np
 
 from pyxel.util.memory import get_size
 
+
 class Geometry:
     """Geometrical attributes of the detector."""
 
@@ -169,7 +170,6 @@ class Geometry:
         init_hor_position += self.pixel_horz_size / 2.0
         return np.tile(init_hor_position, self.row)
 
-    @property
     def nbytes(self) -> int:
         """Recursively calculates object size in bytes using Pympler library.
 
@@ -179,4 +179,3 @@ class Geometry:
             Size of the object in bytes.
         """
         return get_size(self)
-

@@ -62,7 +62,6 @@ class Particle:
         else:
             self.frame = self.EMPTY_FRAME.copy()
 
-    @property
     def nbytes(self) -> int:
         """Recursively calculates object size in bytes using Pympler library.
 
@@ -72,4 +71,3 @@ class Particle:
             Size of the object in bytes.
         """
         return get_size(self)
-

@@ -123,7 +123,12 @@ class Array:
         """Return sum of all pixel values."""
         return np.sum(self._array)
 
-    @property
     def nbytes(self) -> int:
-        return get_size(self)
+        """Recursively calculates object size in bytes using Pympler library.
 
+        Returns
+        -------
+        int
+            Size of the object in bytes.
+        """
+        return get_size(self)

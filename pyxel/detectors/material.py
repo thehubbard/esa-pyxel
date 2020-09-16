@@ -15,6 +15,7 @@ import numpy as np
 
 from pyxel.util.memory import get_size
 
+
 class MaterialType(Enum):
     """TBW."""
 
@@ -209,7 +210,6 @@ class Material:
 
         self._e_effective_mass = value
 
-    @property
     def nbytes(self) -> int:
         """Recursively calculates object size in bytes using Pympler library.
 

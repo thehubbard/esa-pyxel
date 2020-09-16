@@ -162,7 +162,6 @@ class Processor:
         # TODO: Is is necessary to return 'self' ??
         return self
 
-    @property
     def nbytes(self) -> int:
         """Recursively calculates object size in bytes using Pympler library.
 
@@ -172,4 +171,3 @@ class Processor:
             Size of the object in bytes.
         """
         return get_size(self)
-
