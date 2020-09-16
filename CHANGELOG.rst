@@ -1,7 +1,7 @@
 Changelog
 =========
 
-version 0.6 / 2020-MM-DD
+version 0.6 / 2020-09-16
 ------------------------
 
 * Improved contributing guide
