@@ -63,7 +63,7 @@ registry_map = {
             "name": "full_well",
         },
     ],
-    "charge_transfer": [{"func": "pyxel.models.charge_transfer.cdm", "type": "ccd"}],
+    "charge_transfer": [{"func": "pyxel.models.charge_transfercdm", "type": "ccd"}],
     "charge_measurement": [
         {
             "func": "pyxel.models.charge_measurement.output_node_noise",
