@@ -750,9 +750,11 @@ class Calibration:
 
         # Create a Pygmo problem
         prob = pg.problem(self.fitting)  # type: pg.problem
+        self._log.info(prob)
 
         # Create a Pygmo algorithm
         algo = pg.algorithm(self.algorithm.get_algorithm())  # type: pg.algorithm
+        self._log.info(algo)
 
         # try:
         #     bfe = pg.bfe(udbfe=pg.member_bfe())
@@ -776,6 +778,9 @@ class Calibration:
         if island is Island.MultiProcessing:
             user_defined_island = pg.mp_island()
         elif island is Island.MultiThreading:
+            # NOTE: It is not possible to use a problem implemented in Python with
+            #       'thread_island'. This is related to thread safety.
+            #       See: https://esa.github.io/pygmo2/misc.html#pygmo.thread_safety
             user_defined_island = pg.thread_island()
         elif island is Island.IPyParallel:
             user_defined_island = pg.ipyparallel_island()
@@ -791,6 +796,7 @@ class Calibration:
             )
 
             # Call all 'evolve()' methods on all the islands
+
             archi.evolve()
             self._log.info(archi)
 

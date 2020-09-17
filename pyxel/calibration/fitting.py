@@ -290,26 +290,32 @@ class ModelFitting(ProblemSingleObjective):
             overall_fitness = 0.0
             parameter = self.update_parameter([parameter])
             processor_list = deepcopy(self.param_processor_list)
+
             for processor, target_data in zip(processor_list, self.all_target_data):
-                # processor = self.update_processor(parameter, processor)
-                processor = delayed(self.update_processor)(parameter, processor)
-                # result_proc = processor.run_pipeline()
-                result_proc = delayed(processor.run_pipeline)()
-                # simulated_data = self.get_simulated_data(result_proc)
-                simulated_data = delayed(self.get_simulated_data)(result_proc)
-                # fitness = self.calculate_fitness(simulated_data, target_data)
-                fitness = delayed(self.calculate_fitness)(simulated_data, target_data)
-                # overall_fitness = add(overall_fitness, fitness)
-                overall_fitness = delayed(add)(overall_fitness, fitness)
+                processor = self.update_processor(parameter, processor)
+                # processor = delayed(self.update_processor)(parameter, processor)
+
+                result_proc = processor.run_pipeline()
+                # result_proc = delayed(processor.run_pipeline)()
+
+                simulated_data = self.get_simulated_data(result_proc)
+                # simulated_data = delayed(self.get_simulated_data)(result_proc)
+
+                fitness = self.calculate_fitness(simulated_data, target_data)
+                # fitness = delayed(self.calculate_fitness)(simulated_data, target_data)
+
+                overall_fitness = add(overall_fitness, fitness)
+                # overall_fitness = delayed(add)(overall_fitness, fitness)
 
             fitness_vector.append(
                 overall_fitness
             )  # overall fitness per individual for the full population
 
-        # fitness_vector = self.merge(fitness_vector)
-        fitness_vector_delayed = delayed(merge_fitness)(fitness_vector)  # type: Delayed
-        # population_fitness_vector = fitness_vector
-        population_fitness_vector = fitness_vector_delayed.compute()
+        fitness_vector = self.merge(fitness_vector)
+        # fitness_vector_delayed = delayed(merge_fitness)(fitness_vector)  # type: Delayed
+
+        population_fitness_vector = fitness_vector
+        # population_fitness_vector = fitness_vector_delayed.compute()
 
         return population_fitness_vector
 
@@ -331,6 +337,7 @@ class ModelFitting(ProblemSingleObjective):
 
         return fitness
 
+    # TODO: If possible, use 'numba' for this method
     def fitness(self, parameter: np.ndarray) -> t.Sequence[float]:
         """Call the fitness function, elements of parameter array could be logarithmic values.
 
