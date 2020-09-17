@@ -520,28 +520,37 @@ class Calibration:
 
         self._output_dir = output_dir  # type:t.Optional[Path]
         self._fitting = fitting  # type: t.Optional[ModelFitting]
-        self._calibration_mode = CalibrationMode(
-            calibration_mode
-        )  # type: CalibrationMode
+
+        self._calibration_mode = CalibrationMode(calibration_mode)
+
         self._result_type = ResultType(result_type)  # type: ResultType
+
         self._result_fit_range = (
             result_fit_range if result_fit_range else []
         )  # type: t.Sequence[int]
+
         self._result_input_arguments = (
             result_input_arguments if result_input_arguments else []
         )  # type: t.Sequence[ParameterValues]
+
         self._target_data_path = (
             to_path_list(target_data_path) if target_data_path else []
         )  # type: t.List[Path]
+
         self._target_fit_range = (
             target_fit_range if target_fit_range else []
         )  # type: t.Sequence[int]
+
         self._fitness_function = fitness_function  # type: t.Optional[ModelFunction]
         self._algorithm = algorithm  # type: t.Optional[Algorithm]
+
         self._parameters = (
             parameters if parameters else []
         )  # type: t.Sequence[ParameterValues]
+
         self._seed = np.random.randint(0, 100000) if seed is None else seed  # type: int
+
+        # TODO: Rename to '_num_islands'
         self._islands = islands  # type: int
         self._weighting_path = weighting_path  # type: t.Optional[t.Sequence[Path]]
 
@@ -680,6 +689,7 @@ class Calibration:
 
         self._seed = value
 
+    # TODO: Rename this to 'num_islands'
     @property
     def islands(self) -> int:
         """TBW."""
@@ -732,11 +742,11 @@ class Calibration:
             file_path=output_dir,
         )
 
+        # Create a Pygmo problem
         prob = pg.problem(self.fitting)  # type: pg.problem
-        opt_algorithm = (
-            self.algorithm.get_algorithm()
-        )  # type: t.Union[pg.sade, pg.sga, pg.nlopt]
-        algo = pg.algorithm(opt_algorithm)  # type: pg.algorithm
+
+        # Create a Pygmo algorithm
+        algo = pg.algorithm(self.algorithm.get_algorithm())  # type: pg.algorithm
 
         # try:
         #     bfe = pg.bfe(udbfe=pg.member_bfe())
@@ -755,32 +765,48 @@ class Calibration:
         # except TypeError:
         #     pop = pg.population(prob=prob, size=self.algorithm.population_size)
 
+        # Set user-defined island
+        user_defined_island = pg.mp_island()  # use multi-processing
+        # user_defined_island = pg.ipyparallel_island()  # use IPython Parallel
+        # user_defined_island = pg.thread_island()  # use multi-threads
+
         if self.islands > 1:  # default
+            # Create a collection of islands
             archi = pg.archipelago(
                 n=self.islands,
                 algo=algo,
                 prob=prob,
                 pop_size=self.algorithm.population_size,
-                udi=pg.mp_island(),
+                udi=user_defined_island,
             )
+
+            # Call all 'evolve()' methods on all the islands
             archi.evolve()
             self._log.info(archi)
+
+            # Block until all evolutions have finished and raise the first exception
+            # that was encountered
             archi.wait_check()
-            champion_f = archi.get_champions_f()  # type: t.List[np.ndarray]
-            champion_x = archi.get_champions_x()  # type: t.List[np.ndarray]
+
+            # Get fitness and decision vectors of the islands' champions
+            champions_1d_fitness = archi.get_champions_f()  # type: t.List[np.ndarray]
+            champions_1d_decision = archi.get_champions_x()  # type: t.List[np.ndarray]
         else:
             self._log.info("Initialize optimization algorithm")
             pop = pg.population(prob=prob, size=self.algorithm.population_size)
 
             self._log.info("Start optimization algorithm")
+
             pop = algo.evolve(pop)
-            champion_f = [pop.champion_f]
-            champion_x = [pop.champion_x]
+
+            # Get fitness and decision vector of the population champion
+            champions_1d_fitness = [pop.champion_f]
+            champions_1d_decision = [pop.champion_x]
 
         self.fitting.file_matching_renaming()
         res = []  # type: t.List[CalibrationResult]
 
-        for f, x in zip(champion_f, champion_x):
+        for f, x in zip(champions_1d_fitness, champions_1d_decision):
             res += [self.fitting.get_results(overall_fitness=f, parameter=x)]
 
         self._log.info("Calibration ended.")
