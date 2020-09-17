@@ -10,12 +10,17 @@
 import logging
 import math
 import typing as t
-from enum import Enum
 from pathlib import Path
 
 import numpy as np
 
-from pyxel.calibration import CalibrationMode, CalibrationResult, ResultType
+from pyxel.calibration import (
+    AlgorithmType,
+    CalibrationMode,
+    CalibrationResult,
+    Island,
+    ResultType,
+)
 from pyxel.calibration.fitting import ModelFitting
 from pyxel.parametric.parameter_values import ParameterValues
 from pyxel.pipelines import ModelFunction, Processor
@@ -28,14 +33,6 @@ except ImportError:
     import warnings
 
     warnings.warn("Cannot import 'pygmo", RuntimeWarning, stacklevel=2)
-
-
-class AlgorithmType(Enum):
-    """TBW."""
-
-    Sade = "sade"
-    Sga = "sga"
-    Nlopt = "nlopt"
 
 
 # TODO: Put classes `Algorithm` and `Calibration` in separated files.
@@ -714,13 +711,22 @@ class Calibration:
         self._weighting_path = value
 
     def run_calibration(
-        self, processor: Processor, output_dir: Path
+        self,
+        processor: Processor,
+        output_dir: Path,
+        island: Island = Island.MultiProcessing,
     ) -> t.Sequence[CalibrationResult]:
         """TBW.
 
-        :param processor: Processor object
-        :param output_dir: Output object
-        :return:
+        Parameters
+        ----------
+        processor
+        output_dir
+        island
+
+        Returns
+        -------
+        Sequence of `CalibrationResult`
         """
         pg.set_global_rng_seed(seed=self.seed)
         self._log.info("Seed: %d", self.seed)
@@ -765,10 +771,14 @@ class Calibration:
         # except TypeError:
         #     pop = pg.population(prob=prob, size=self.algorithm.population_size)
 
+        # TODO: Move this into class `Island`
         # Set user-defined island
-        user_defined_island = pg.mp_island()  # use multi-processing
-        # user_defined_island = pg.ipyparallel_island()  # use IPython Parallel
-        # user_defined_island = pg.thread_island()  # use multi-threads
+        if island is Island.MultiProcessing:
+            user_defined_island = pg.mp_island()
+        elif island is Island.MultiThreading:
+            user_defined_island = pg.thread_island()
+        elif island is Island.IPyParallel:
+            user_defined_island = pg.ipyparallel_island()
 
         if self.islands > 1:  # default
             # Create a collection of islands

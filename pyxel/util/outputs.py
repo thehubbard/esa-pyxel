@@ -904,7 +904,7 @@ class Outputs:
         )
 
     # TODO: Specific to 'parametric_mode' ?
-    def merge_func(self, result_list: t.List[Result]) -> np.ndarray:
+    def merge_func(self, result_list: t.Sequence[Result]) -> np.ndarray:
         """TBW."""
         assert self.parameter_keys is not None
 

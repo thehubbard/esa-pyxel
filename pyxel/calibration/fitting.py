@@ -42,19 +42,25 @@ class ProblemSingleObjective(Protocol):
     A single objective is a deterministic, derivative-free, unconstrained
     optimization problem.
 
-    See https://esa.github.io/pygmo2/problem.html#pygmo.problem."""
+    See https://esa.github.io/pygmo2/problem.html#pygmo.problem.
+    """
 
     def fitness(self, parameter: np.ndarray) -> t.Sequence[float]:
-        """Return the fitness of the input decision vector (concatenating
-        the objectives, the equality and the inequality constraints)."""
+        """Return the fitness of the input decision vector.
+
+        Concatenate the objectives, the equality and the inequality constraints.
+        """
         ...
 
     def get_bounds(self) -> t.Tuple[t.Sequence[float], t.Sequence[float]]:
-        """Get the box bounds of the problem (lower_boundary, upper_boundary),
-        which also implicitly define the dimension of the problem."""
+        """Get the box bounds of the problem (lower_boundary, upper_boundary).
+
+        It also implicitly defines the dimension of the problem.
+        """
         ...
 
-    # TODO: Add something about 'batch_fitness' (see https://esa.github.io/pygmo2/problem.html#pygmo.problem.batch_fitness)
+    # TODO: Add something about 'batch_fitness'
+    #       (see https://esa.github.io/pygmo2/problem.html#pygmo.problem.batch_fitness)
 
 
 class ModelFitting(ProblemSingleObjective):
@@ -98,8 +104,9 @@ class ModelFitting(ProblemSingleObjective):
         # self.target_data_norm = []
 
     def get_bounds(self) -> t.Tuple[t.Sequence[float], t.Sequence[float]]:
-        """Get the box bounds of the problem (lower_boundary, upper_boundary),
-        which also implicitly define the dimension of the problem.
+        """Get the box bounds of the problem (lower_boundary, upper_boundary).
+
+        It also implicitly defines the dimension of the problem.
 
         Returns
         -------
@@ -260,19 +267,20 @@ class ModelFitting(ProblemSingleObjective):
 
         return simulated_data
 
-    def batch_fitness(self, population_parameter_vector) -> np.ndarray:
+    def batch_fitness(self, population_parameter_vector: np.ndarray) -> np.ndarray:
         """Batch Fitness Evaluation.
 
         PYGMO BFE IS STILL NOT FULLY IMPLEMENTED, THEREFORE THIS FUNC CAN NOT BE USED YET.
 
         Parameters
         ----------
-        population_parameter_vector
+        population_parameter_vector : array-like
+            The decision vectors (chromosomes) to be evaluated in batch mode
 
         Returns
         -------
         array : 1D numpy float array
-            The fitness vectors of dvs
+            The fitness vectors of input 'population_parameter_vector'.
         """
         logger = logging.getLogger("pyxel")
         logger.info("batch_fitness() called with %s " % population_parameter_vector)
@@ -324,8 +332,7 @@ class ModelFitting(ProblemSingleObjective):
         return fitness
 
     def fitness(self, parameter: np.ndarray) -> t.Sequence[float]:
-        """Call the fitness function, elements of parameter array could be
-        logarithmic values.
+        """Call the fitness function, elements of parameter array could be logarithmic values.
 
         Parameters
         ----------
