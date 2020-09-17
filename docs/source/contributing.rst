@@ -465,13 +465,18 @@ format throughout the project. ``flake8`` can be installed with
 
 .. code-block:: fish
 
-   $ pip install flake8
+   $ pip install flake8 black isort mypy blackdoc
 
 and then run from the root of the Pyxel repository:
 
 .. code-block:: fish
 
+   $ isort .
+   $ black .
+   $ blackdoc .
    $ flake8
+   $ mypy .
+
 
 or:
 

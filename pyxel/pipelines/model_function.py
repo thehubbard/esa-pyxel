@@ -51,8 +51,11 @@ class ModelFunction:
     Examples
     --------
     >>> from pyxel.models.photon_generation.illumination import illumination
-    >>> model_func = ModelFunction(func=illumination, name='illumination',
-    ...                            arguments={'level': 1, 'option': 'foo'})
+    >>> model_func = ModelFunction(
+    ...     func=illumination,
+    ...     name="illumination",
+    ...     arguments={"level": 1, "option": "foo"},
+    ... )
 
     Access basic parameters
     >>> model_func.name
@@ -65,9 +68,9 @@ class ModelFunction:
     Access the arguments with a ``dict`` interface
     >>> list(model_func.arguments)
     ['level', 'option']
-    >>> model_func.arguments['level']
+    >>> model_func.arguments["level"]
     1
-    >>> model_func.arguments['level'] = 2
+    >>> model_func.arguments["level"] = 2
     TypeError: 'Arguments' object does not support item assignment
 
     Access the arguments with an attribute interface
