@@ -49,7 +49,7 @@ class ModelGroup:
         """TBW."""
         return tuple(self.models)
 
-    def __setstate__(self, state: tuple):
+    def __setstate__(self, state: tuple) -> None:
         """TBW."""
         self.models = list(state)
 
