@@ -715,6 +715,7 @@ class Calibration:
         processor: Processor,
         output_dir: Path,
         island: Island = Island.MultiProcessing,
+        # island: Island = Island.IPyParallel,
     ) -> t.Sequence[CalibrationResult]:
         """TBW.
 
