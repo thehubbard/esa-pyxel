@@ -20,8 +20,6 @@ from operator import add
 from pathlib import Path
 
 import numpy as np
-from dask import delayed
-from dask.delayed import Delayed
 from typing_extensions import Literal, Protocol
 
 from pyxel.calibration import (
@@ -285,7 +283,7 @@ class ModelFitting(ProblemSingleObjective):
         logger = logging.getLogger("pyxel")
         logger.info("batch_fitness() called with %s " % population_parameter_vector)
 
-        fitness_vector = []
+        fitness_vector = []  # type: t.List[float]
         for parameter in population_parameter_vector:
             overall_fitness = 0.0
             parameter = self.update_parameter([parameter])
@@ -311,7 +309,7 @@ class ModelFitting(ProblemSingleObjective):
                 overall_fitness
             )  # overall fitness per individual for the full population
 
-        fitness_vector = self.merge(fitness_vector)
+        fitness_vector = merge_fitness(fitness_vector)
         # fitness_vector_delayed = delayed(merge_fitness)(fitness_vector)  # type: Delayed
 
         population_fitness_vector = fitness_vector
