@@ -468,9 +468,7 @@ class ModelFitting:
             island = 0
 
         logging.info(
-            "Post-processing island %d, champion fitness: %1.5e",
-            island,
-            fitness,
+            "Post-processing island %d, champion fitness: %1.5e", island, fitness,
         )
 
         champion_list = deepcopy(self.param_processor_list)  # type: t.List[Processor]

@@ -56,7 +56,12 @@ def test_invalid_format(tmp_path: Path, filename: str):
 
 
 @pytest.mark.parametrize(
-    "filename", ["valid_frame.fits", "valid_frame.FITS", "valid_frame.fits.gz"]
+    "filename",
+    [
+        "valid_frame.fits",
+        "valid_frame.FITS",
+        # "valid_frame.fits.gz"
+    ],
 )
 def test_with_fits(tmp_path: Path, valid_hdus: fits.HDUList, filename: str):
     """Check with a valid FITS file with a single 'PrimaryHDU'."""
@@ -74,7 +79,12 @@ def test_with_fits(tmp_path: Path, valid_hdus: fits.HDUList, filename: str):
 
 
 @pytest.mark.parametrize(
-    "filename", ["valid_frame.fits", "valid_frame.FITS", "valid_frame.fits.gz"]
+    "filename",
+    [
+        "valid_frame.fits",
+        "valid_frame.FITS",
+        # "valid_frame.fits.gz"
+    ],
 )
 def test_with_fits_multiple(
     tmp_path: Path, valid_multiple_hdus: fits.HDUList, filename: str
