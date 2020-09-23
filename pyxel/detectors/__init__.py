@@ -21,4 +21,3 @@ from .characteristics import Characteristics
 from .ccd_characteristics import CCDCharacteristics
 from .cmos_characteristics import CMOSCharacteristics
 from .optics import Optics
-

@@ -10,9 +10,11 @@ Core
 
 * Update .gitignore file.
   (See `!123 <https://gitlab.com/esa/pyxel/-/merge_requests/123>`_).
+* Added capability to load more image formats and tests
+  (See `#115 <https://gitlab.com/esa/pyxel/issues/115>`_).
 
 
-version 0.6 / 2020-09-16
+version 0.6 / 2020-09-15
 ------------------------
 
 * Improved contributing guide

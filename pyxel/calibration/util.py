@@ -13,8 +13,8 @@ from pathlib import Path
 
 import attr
 import numpy as np
-from astropy.io import fits
 
+from pyxel.inputs_outputs import load_image
 from pyxel.pipelines import Processor
 
 __all__ = [
@@ -64,41 +64,12 @@ def read_single_data(filename: Path) -> np.ndarray:
     array
         TBW.
     """
-    if not filename.exists():
-        raise FileNotFoundError(f"Input file '{filename}' can not be found.")
 
-    # TODO: change to Path(path).suffix.lower().startswith('.fit')
-    #       Same applies to `.npy`.
-    if ".fits" in filename.suffix:
-        data = fits.getdata(filename)  # type: np.ndarray
+    data = load_image(filename)
 
-    elif ".npy" in filename.suffix:
-        data = np.load(filename)
-
-    else:
-        # TODO: this is a convoluted implementation. Change to:
-        # for sep in [' ', ',', '|', ';']:
-        #     try:
-        #         data = np.loadtxt(path, delimiter=sep[ii])
-        #     except ValueError:
-        #         pass
-        #     else:
-        #         break
-        sep = [" ", ",", "|", ";"]
-        ii, jj = 0, 1
-        while jj:
-            try:
-                jj -= 1
-                data = np.loadtxt(filename, delimiter=sep[ii])
-            except ValueError:
-                ii += 1
-                jj += 1
-                if ii >= len(sep):
-                    break
-
-    # TODO: Is it the right manner ?
-    if data is None:
-        raise OSError(f"Input file '{filename}' can not be read by Pyxel.")
+    # # TODO: Is it the right manner ?
+    # if data is None:
+    #     raise OSError(f"Input file '{filename}' can not be read by Pyxel.")
 
     return data
 
