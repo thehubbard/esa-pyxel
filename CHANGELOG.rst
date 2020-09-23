@@ -8,10 +8,8 @@ version 0.7 / 2020-MM-DD
 Core
 ~~~~
 
-
-Detector
-~~~~~~~~
-
+* Update .gitignore file.
+  (See `!123 <https://gitlab.com/esa/pyxel/-/merge_requests/123>`_).
 
 
 version 0.6 / 2020-09-16

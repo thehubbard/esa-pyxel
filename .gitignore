@@ -8,8 +8,6 @@ outputs/*
 *.png
 *.jpg
 demo/*
-examples/*/
-*.yaml
 *.log
 
 # Geant4 i/o files
@@ -23,7 +21,7 @@ pyxel/models/charge_generation/tars/data/*
 *.pyc
 .idea/
 
-# OSX
+# MacOS
 .DS_Store
 
 # Visual Studio Code
@@ -45,7 +43,6 @@ blog/public/
 .coverage
 .coverage.
 *.cache
-.mypy_cache/
 .pytest_cache/
 htmlcov/
 pytest_report.html
@@ -67,3 +64,5 @@ Pipfile.lock
 
 # Dask
 dask-worker-space/
+*.lock
+*.dirlock
