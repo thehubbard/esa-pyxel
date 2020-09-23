@@ -5,7 +5,7 @@
 #  this file, may be copied, modified, propagated, or distributed except according to
 #  the terms contained in the file ‘LICENCE.txt’.
 
-"""TBW."""
+"""Subpackage to load images."""
 
 import typing as t
 from pathlib import Path
@@ -15,19 +15,34 @@ from astropy.io import fits
 
 
 def load_image(filename: t.Union[str, Path]) -> np.ndarray:
-    """
-    TBW.
+    """Load a 2D image.
 
     Parameters
     ----------
-    filename
+    filename : str or Path
+        Filename to read an image. '.fits', '.npy' and '.txt' are accepted.
 
     Returns
     -------
-    array
+    array : ndarray
+        A 2D array.
 
+    Raises
+    ------
+    FileNotFoundError
+        If an image is not found.
+    NotImplementedError
+        When the extension of the filename is unknown.
+
+    Examples
+    --------
+    >>> from pyxel.inputs_outputs import load_image
+    >>> load_image('frame.fits')
+    array([[-0.66328494, -0.63205819, ...]])
+
+    >>> load_image('another_frame.npy')
+    array([[-1.10136521, -0.93890239, ...]])
     """
-
     filename_path = Path(filename).resolve()
 
     if not filename_path.exists():
