@@ -38,7 +38,7 @@ def load_image(
         photon numbers for each pixel using the Photon Transfer Function:
         :math:`PTF = QE \cdot \eta \cdot S_{v} \cdot amp \cdot a_{1} \cdot a_{2}`
     """
-    filename = Path(image_file).resolve()
+    filename = Path(image_file).expanduser().resolve()
 
     if not Path(filename).exists():
         raise FileNotFoundError(f"Image file '{filename}' does not exist !")
