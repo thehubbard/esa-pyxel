@@ -15,16 +15,17 @@ Core
 * Create a function 'pyxel.show_versions().
   (See `!114 <https://gitlab.com/esa/pyxel/-/merge_requests/114>`_).
 * Shorter path to import/reference the models.
-  (See `!131 <https://gitlab.com/esa/pyxel/-/merge_requests/131>`_).
+  (See `!126 <https://gitlab.com/esa/pyxel/-/merge_requests/126>`_).
 * Remove deprecated methods from Photon class.
   (See `!119 <https://gitlab.com/esa/pyxel/-/merge_requests/119>`_).
+* Instances of 'DetectionPipeline' are not serializable.
+  (See `!120 <https://gitlab.com/esa/pyxel/-/merge_requests/120>`_).
 
 Documentation
 ~~~~~~~~~~~~~
 
 * Remove comments for magic methods.
-  (See `!134 <https://gitlab.com/esa/pyxel/-/merge_requests/134>`_).
-
+  (See `!127 <https://gitlab.com/esa/pyxel/-/merge_requests/127>`_).
 
 
 version 0.6 / 2020-09-16
