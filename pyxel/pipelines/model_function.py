@@ -101,6 +101,16 @@ class ModelFunction:
             f"arguments={self.arguments!r}, enabled={self.enabled!r})"
         )
 
+    @property
+    def name(self) -> str:
+        """TBW."""
+        return self._name
+
+    @property
+    def arguments(self) -> dict:
+        """TBW."""
+        return self._arguments
+
     # # TODO: Replace this by __call__ ?
     # @property
     # def function(self) -> t.Callable:
@@ -131,13 +141,3 @@ class ModelFunction:
         result = func(detector)  # type: T
 
         return result
-
-    @property
-    def name(self) -> str:
-        """TBW."""
-        return self._name
-
-    @property
-    def arguments(self) -> dict:
-        """TBW."""
-        return self._arguments
