@@ -5,11 +5,9 @@
 #  this file, may be copied, modified, propagated, or distributed except according to
 #  the terms contained in the file ‘LICENCE.txt’.
 
-"""Pyxel detector simulation framework."""
+from pyxel import show_versions
 
-# flake8: noqa
-from ._version import get_versions
-from .show_versions import show_versions
 
-__version__ = get_versions()["version"]
-del get_versions
+def test_show_versions():
+    """Test function 'show_versions()'."""
+    show_versions()
