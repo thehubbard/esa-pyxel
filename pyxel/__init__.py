@@ -6,6 +6,8 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """Pyxel detector simulation framework."""
+
+# flake8: noqa
 from ._version import get_versions
 from .show_versions import show_versions
 

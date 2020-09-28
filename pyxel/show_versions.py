@@ -4,6 +4,8 @@
 #  is part of this Pyxel package. No part of the package, including
 #  this file, may be copied, modified, propagated, or distributed except according to
 #  the terms contained in the file ‘LICENCE.txt’.
+
+"""Subpackage used to display the versions of all dependencies."""
 import importlib
 import locale
 import os
@@ -134,7 +136,7 @@ def show_versions():
         else:
             try:
                 # Try to get a version
-                version = getattr(module, "__version__")
+                version = module.__version__  # type: ignore
                 dependencies[module_name] = version
             except Exception:
                 dependencies[module_name] = "installed"
