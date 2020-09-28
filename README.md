@@ -2,7 +2,7 @@ Pyxel detector simulation framework
 ===================================
 
 [![pipeline status](https://gitlab.com/esa/pyxel/badges/master/pipeline.svg)](https://gitlab.esa.int/sci-fv/pyxel-mirror/pipelines)
-[![License](https://img.shields.io/badge/license-ESA%20Public%20License--2.3-green)](https://gitlab.com/esa/pyxel/blob/master/LICENSE)
+[![License](https://img.shields.io/badge/license-ESA%20Public%20License--2.3-brightgreen)](https://gitlab.com/esa/pyxel/blob/master/LICENSE)
 [![docs](https://esa.gitlab.io/pyxel/documentation.svg)](https://esa.gitlab.io/pyxel/doc)
 [![gitter](https://badges.gitter.im/pyxel-framework/community.svg)](https://gitter.im/pyxel-framework/community)
 [![coverage](https://gitlab.com/esa/pyxel/badges/master/coverage.svg)](http://sci-fv.io.esa.int/pyxel-mirror/coverage/)
