@@ -37,7 +37,6 @@ class Photon(Array):
     )
 
     def __init__(self, value: np.ndarray):
-        """TBW."""
         cls_name = self.__class__.__name__  # type: str
 
         if not isinstance(value, np.ndarray):

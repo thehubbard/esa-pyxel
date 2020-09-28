@@ -28,7 +28,6 @@ class Array:
 
     # TODO: Add units ?
     def __init__(self, value: np.ndarray):
-        """TBW."""
         self.validate_type(value)
 
         self._array = value  # type: np.ndarray
@@ -39,7 +38,6 @@ class Array:
         # TODO: Implement a method to initialized 'self._array' ???
 
     def __repr__(self) -> str:
-        """TBW."""
         cls_name = self.__class__.__name__
         shape = self._array.shape
         dtype = self._array.dtype

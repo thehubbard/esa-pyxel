@@ -27,18 +27,6 @@ class DetectionPipeline:
         readout_electronics: t.Optional[ModelGroup] = None,
         doc: t.Optional[str] = None,
     ):
-        """TBW.
-
-        :param photon_generation:
-        :param optics:
-        :param charge_generation:
-        :param charge_collection:
-        :param charge_transfer:
-        :param charge_measurement:
-        :param signal_transfer:
-        :param readout_electronics:
-        :param doc:
-        """
         self._is_running = False
         self.doc = doc
 
@@ -65,12 +53,10 @@ class DetectionPipeline:
         )  # type: t.Tuple[str, ...]
 
     def __repr__(self) -> str:
-        """TBW."""
         cls_name = self.__class__.__name__  # type: str
         return f"{cls_name}<is_running={self._is_running!r}, doc={self.doc!r}>"
 
     def __iter__(self) -> t.Iterable[ModelFunction]:
-        """TBW."""
         for model in self.MODEL_GROUPS:
             models_grp = getattr(self, model)  # type: t.Optional[ModelGroup]
             if models_grp:

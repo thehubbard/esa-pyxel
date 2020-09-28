@@ -24,13 +24,6 @@ class CCD(Detector):
         environment: "Environment",
         characteristics: "CCDCharacteristics",
     ):
-        """TBW.
-
-        :param geometry:
-        :param material:
-        :param environment:
-        :param characteristics:
-        """
         self._geometry = geometry  # type: CCDGeometry
         self._characteristics = characteristics  # type: CCDCharacteristics
 

@@ -34,13 +34,6 @@ class PlottingTARS:
         save_plots: bool = False,
         file_format: str = "png",
     ) -> None:
-        """TBW.
-
-        :param tars:
-        :param draw_plots:
-        :param save_plots:
-        :param file_format:
-        """
         self.tars = tars
 
         self.draw_plots = draw_plots

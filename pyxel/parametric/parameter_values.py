@@ -31,14 +31,6 @@ class ParameterValues:
         enabled: bool = True,
         logarithmic: bool = False,
     ):
-        """TBW.
-
-        :param key:
-        :param values:
-        :param boundaries:
-        :param enabled:
-        :param logarithmic:
-        """
         # TODO: should these values be checked ?
         assert values == "_" or (
             isinstance(values, collections.Sequence)
@@ -62,19 +54,16 @@ class ParameterValues:
         self._current = None  # type: t.Optional[t.Union[Literal['_'], str, Number]]
 
     def __repr__(self) -> str:
-        """TBW."""
         cls_name = self.__class__.__name__  # type: str
 
         return f"{cls_name}<key={self.key!r}, values={self.values!r}, enabled={self.enabled!r}>"
 
     def __len__(self) -> int:
-        """TBW."""
         values = eval_range(self.values)  # type: t.Sequence
         return len(values)
 
     # TODO: Is method '__contains__' needed ? If yes then this class will act as a `Collections.abc.Sequence`
     def __iter__(self) -> t.Iterator[Number]:
-        """TBW."""
         values = eval_range(self.values)
         for value in values:
             yield value

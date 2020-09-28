@@ -40,7 +40,6 @@ class ModelFitting:
     """Pygmo problem class to fit data with any model in Pyxel."""
 
     def __init__(self, processor: Processor, variables: t.Sequence[ParameterValues]):
-        """TBW."""
         self.processor = processor  # type: Processor
         self.variables = variables  # type: t.Sequence[ParameterValues]
 

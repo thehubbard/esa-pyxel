@@ -24,16 +24,11 @@ class ModelGroup:
     """TBW."""
 
     def __init__(self, models: t.List[ModelFunction]):
-        """TBW.
-
-        :param models:
-        """
         self._log = logging.getLogger(__name__)
 
         self.models = models  # type: t.List[ModelFunction]
 
     def __repr__(self):
-        """TBW."""
         cls_name = self.__class__.__name__  # type: str
         all_models = [
             model.name for model in self.models if model.name
@@ -42,18 +37,15 @@ class ModelGroup:
         return f"{cls_name}<models={all_models!r}>"
 
     def __deepcopy__(self, memo: dict) -> "ModelGroup":
-        """TBW."""
         copied_models = deepcopy(self.models)
         return ModelGroup(models=copied_models)
 
     def __iter__(self) -> t.Iterator[ModelFunction]:
-        """TBW."""
         for model in self.models:
             if model.enabled:
                 yield model
 
     def __getattr__(self, item: str) -> ModelFunction:
-        """TBW."""
         for model in self.models:
             if model.name == item:
                 return model
@@ -61,7 +53,6 @@ class ModelGroup:
             raise AttributeError(f"Cannot find model {item!r}.")
 
     def __dir__(self):
-        """TBW."""
         return dir(type(self)) + [model.name for model in self.models]
 
     # TODO: Why is this method returning a `bool` ?

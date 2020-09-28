@@ -37,7 +37,6 @@ if t.TYPE_CHECKING:
         """TBW."""
 
         def __call__(self, data: np.ndarray, name: str) -> Path:
-            """TBW."""
             ...
 
 
@@ -159,7 +158,6 @@ class Outputs:
         calibration_plot: t.Optional[CalibrationPlot] = None,
         single_plot: t.Optional[SinglePlot] = None,
     ):
-        """TBW."""
         self._log = logging.getLogger(__name__)
 
         # Check number of inputs
@@ -260,7 +258,6 @@ class Outputs:
         plt.close(self._fig)
 
     def __repr__(self):
-        """TBW."""
         cls_name = self.__class__.__name__  # type: str
 
         if self.parametric_plot is not None:

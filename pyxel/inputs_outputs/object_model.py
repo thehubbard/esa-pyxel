@@ -126,12 +126,6 @@ class ClassConstructor:
         paths: t.List[str],
         is_list: bool = False,
     ) -> None:
-        """TBW.
-
-        :param klass:
-        :param paths:
-        :param is_list:
-        """
         loader.add_path_resolver("!%s" % klass.__name__, paths)
         loader.add_constructor("!%s" % klass.__name__, self.__call__)
         self.klass = klass
@@ -141,12 +135,6 @@ class ClassConstructor:
     def __call__(
         self, loader: ObjectModelLoader, node: yaml.Node
     ) -> t.Union[list, dict, t.Any]:
-        """TBW.
-
-        :param loader:
-        :param node:
-        :return:
-        """
         if isinstance(node, yaml.ScalarNode):
             obj = node.value
 

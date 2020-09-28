@@ -65,7 +65,6 @@ class CCDCharacteristics(Characteristics):
         self._st = st
 
     def __repr__(self) -> str:
-        """Return a string representation."""
         return f"CCDCharacteristics(fwc_serial={self.fwc_serial}, svg={self.svg}, t={self.t}, st={self.st})"
 
     @property

@@ -25,7 +25,6 @@ class Charge(Particle):
     """
 
     def __init__(self):
-        """TBW."""
         # TODO: The following line is not really needed
         super().__init__()
         self.nextid = 0  # type: int

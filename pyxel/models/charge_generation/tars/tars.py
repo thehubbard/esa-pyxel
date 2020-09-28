@@ -248,10 +248,6 @@ class TARS:
         start_pos_hor: str,
         start_pos_z: str,
     ):
-        """TBW.
-
-        :param detector:
-        """
         self.simulation_mode = simulation_mode
         self.part_type = particle_type
         self.init_energy = initial_energy

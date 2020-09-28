@@ -42,7 +42,6 @@ class Environment:
         self._total_non_ionising_dose = total_non_ionising_dose
 
     def __repr__(self) -> str:
-        """Return a string representation of this object."""
         cls_name = self.__class__.__name__  # type: str
         return (
             f"{cls_name}(temperature={self._temperature!r}, "
