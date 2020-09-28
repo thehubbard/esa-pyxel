@@ -127,6 +127,7 @@ class ModelFunction:
     #     return func
 
     def __call__(self, detector: "Detector") -> T:
+        """TBW."""
         # func_ref = evaluate_reference(self.func)  # type: t.Callable
 
         # if inspect.isclass(self._func):

@@ -37,6 +37,7 @@ if t.TYPE_CHECKING:
         """TBW."""
 
         def __call__(self, data: np.ndarray, name: str) -> Path:
+            """TBW."""
             ...
 
 
