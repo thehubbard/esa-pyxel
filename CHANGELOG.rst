@@ -19,6 +19,13 @@ Core
 * Remove deprecated methods from Photon class.
   (See `!119 <https://gitlab.com/esa/pyxel/-/merge_requests/119>`_).
 
+Documentation
+~~~~~~~~~~~~~
+
+* Remove comments for magic methods.
+  (See `!134 <https://gitlab.com/esa/pyxel/-/merge_requests/134>`_).
+
+
 
 version 0.6 / 2020-09-16
 ------------------------
