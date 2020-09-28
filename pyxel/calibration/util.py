@@ -55,11 +55,11 @@ class ResultType(Enum):
 
 
 class Island(Enum):
-    """User defined islands."""
+    """User defines num_islands provides by Pygmo."""
 
-    MultiProcessing = "processes"
-    MultiThreading = "threads"
-    IPyParallel = "ipython_parallel"
+    MultiProcessing = "multiprocessing"
+    MultiThreading = "multithreading"
+    IPyParallel = "ipyparallel"
 
 
 class AlgorithmType(Enum):

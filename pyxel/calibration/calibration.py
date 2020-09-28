@@ -13,6 +13,7 @@ import typing as t
 from pathlib import Path
 
 import numpy as np
+from typing_extensions import Literal
 
 from pyxel.calibration import (
     AlgorithmType,
@@ -24,8 +25,7 @@ from pyxel.calibration import (
 from pyxel.calibration.fitting import ModelFitting
 from pyxel.parametric.parameter_values import ParameterValues
 from pyxel.pipelines import ModelFunction, Processor
-
-from ..util.outputs import Outputs
+from pyxel.util import Outputs
 
 try:
     import pygmo as pg
@@ -45,7 +45,7 @@ class Algorithm:
     def __init__(
         self,
         # TODO: Rename 'type' into 'algorithm_type'
-        type: AlgorithmType = AlgorithmType.Sade,
+        type: Literal["sade", "sga", "nlopt"] = "sade",
         generations: int = 1,
         population_size: int = 1,
         # SADE #####
@@ -494,8 +494,8 @@ class Calibration:
         self,
         output_dir: t.Optional[Path] = None,
         fitting: t.Optional[ModelFitting] = None,
-        calibration_mode: CalibrationMode = CalibrationMode.Pipeline,
-        result_type: ResultType = ResultType.Image,
+        calibration_mode: Literal["pipeline", "single_model"] = "pipeline",
+        result_type: Literal["image", "signal", "pixel"] = "image",
         result_fit_range: t.Optional[t.Sequence[int]] = None,
         result_input_arguments: t.Optional[t.Sequence[ParameterValues]] = None,
         target_data_path: t.Optional[t.Sequence[Path]] = None,
@@ -504,14 +504,17 @@ class Calibration:
         algorithm: t.Optional[Algorithm] = None,
         parameters: t.Optional[t.Sequence[ParameterValues]] = None,
         seed: t.Optional[int] = None,
-        islands: int = 0,
+        num_islands: int = 0,
+        type_islands: Literal[
+            "multiprocessing", "multithreading", "ipyparallel"
+        ] = "multiprocessing",
         weighting_path: t.Optional[t.Sequence[Path]] = None,
     ):
         if seed is not None and seed not in range(100001):
             raise ValueError("'seed' must be between 0 and 100000.")
 
-        if islands not in range(101):
-            raise ValueError("'islands' must be between 0 and 100.")
+        if num_islands not in range(101):
+            raise ValueError("'num_islands' must be between 0 and 100.")
 
         self._log = logging.getLogger(__name__)
 
@@ -547,8 +550,9 @@ class Calibration:
 
         self._seed = np.random.randint(0, 100000) if seed is None else seed  # type: int
 
-        # TODO: Rename to '_num_islands'
-        self._islands = islands  # type: int
+        self._num_islands = num_islands  # type: int
+        self._type_islands = Island(type_islands)  # type:Island
+
         self._weighting_path = weighting_path  # type: t.Optional[t.Sequence[Path]]
 
     @property
@@ -686,19 +690,18 @@ class Calibration:
 
         self._seed = value
 
-    # TODO: Rename this to 'num_islands'
     @property
-    def islands(self) -> int:
+    def num_islands(self) -> int:
         """TBW."""
-        return self._islands
+        return self._num_islands
 
-    @islands.setter
-    def islands(self, value: int) -> None:
+    @num_islands.setter
+    def num_islands(self, value: int) -> None:
         """TBW."""
         if value not in range(101):
-            raise ValueError("'islands' must be between 0 and 100.")
+            raise ValueError("'num_islands' must be between 0 and 100.")
 
-        self._islands = value
+        self._num_islands = value
 
     @property
     def weighting_path(self) -> t.Optional[t.Sequence[Path]]:
@@ -714,8 +717,6 @@ class Calibration:
         self,
         processor: Processor,
         output_dir: Path,
-        island: Island = Island.MultiProcessing,
-        # island: Island = Island.IPyParallel,
     ) -> t.Sequence[CalibrationResult]:
         """TBW.
 
@@ -723,7 +724,6 @@ class Calibration:
         ----------
         processor
         output_dir
-        island
 
         Returns
         -------
@@ -763,10 +763,10 @@ class Calibration:
         #     bfe = None
         #
         # try:
-        #     archi = pg.archipelago(n=self.islands, algo=algo, prob=prob, b=bfe,
+        #     archi = pg.archipelago(n=self.num_islands, algo=algo, prob=prob, b=bfe,
         #                            pop_size=self.algorithm.population_size, udi=pg.mp_island())
         # except KeyError:
-        #     archi = pg.archipelago(n=self.islands, algo=algo, prob=prob,
+        #     archi = pg.archipelago(n=self.num_islands, algo=algo, prob=prob,
         #                            pop_size=self.algorithm.population_size, udi=pg.mp_island())
         #
         # try:
@@ -776,28 +776,29 @@ class Calibration:
 
         # TODO: Move this into class `Island`
         # Set user-defined island
-        if island is Island.MultiProcessing:
+        if self._type_islands is Island.MultiProcessing:
             user_defined_island = pg.mp_island()
-        elif island is Island.MultiThreading:
+
+        elif self._type_islands is Island.MultiThreading:
             # NOTE: It is not possible to use a problem implemented in Python with
             #       'thread_island'. This is related to thread safety.
             #       See: https://esa.github.io/pygmo2/misc.html#pygmo.thread_safety
             user_defined_island = pg.thread_island()
-        elif island is Island.IPyParallel:
+
+        elif self._type_islands is Island.IPyParallel:
             user_defined_island = pg.ipyparallel_island()
 
-        if self.islands > 1:  # default
-            # Create a collection of islands
+        if self.num_islands > 1:  # default
+            # Create a collection of num_islands
             archi = pg.archipelago(
-                n=self.islands,
+                n=self.num_islands,
                 algo=algo,
                 prob=prob,
                 pop_size=self.algorithm.population_size,
                 udi=user_defined_island,
             )
 
-            # Call all 'evolve()' methods on all the islands
-
+            # Call all 'evolve()' methods on all islands
             archi.evolve()
             self._log.info(archi)
 
@@ -805,7 +806,7 @@ class Calibration:
             # that was encountered
             archi.wait_check()
 
-            # Get fitness and decision vectors of the islands' champions
+            # Get fitness and decision vectors of the num_islands' champions
             champions_1d_fitness = archi.get_champions_f()  # type: t.List[np.ndarray]
             champions_1d_decision = archi.get_champions_x()  # type: t.List[np.ndarray]
         else:
