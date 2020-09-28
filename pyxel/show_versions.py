@@ -18,15 +18,17 @@ __all__ = ["show_versions"]
 
 
 def get_system_info() -> t.Mapping[str, t.Any]:
+    """Get extra informations."""
     # Get git commit hash
     commit = get_versions()["full-revisionid"]  # type: t.Optional[str]
     version = get_versions()["version"]  # type: str
 
     size_integer = struct.calcsize("P")  # type: int
+    language_code, encoding = locale.getlocale()
 
     return {
         "commit": commit,
-        "Version": version,
+        "version": version,
         "python": sys.version,
         "python-bits": size_integer * 8,
         "OS": platform.system(),
@@ -36,13 +38,57 @@ def get_system_info() -> t.Mapping[str, t.Any]:
         "byteorder": sys.byteorder,
         "LC_ALL": os.environ.get("LC_ALL"),
         "LANG": os.environ.get("LANG"),
-        "LOCALE": ".".join(locale.getlocale()),
+        "LOCALE": f"{language_code}.{encoding}",
     }
 
 
 def show_versions():
-    """Display the versions of Pyxel and its dependencies."""
+    """Display the versions of Pyxel and its dependencies.
 
+    Examples
+    --------
+    >>> import pyxel
+    >>> pyxel.show_versions()
+    INSTALLED VERSIONS
+    ------------------
+    commit     : cfb7ce2886d24f884699aafd1ad7dc6f8615252d
+    version    : 0.6+18.gcfb7ce2.dirty
+    python     : 3.8.5 | packaged by conda-forge | (default, Aug 29 2020, 01:18:42)
+    [Clang 10.0.1 ]
+    python-bits: 64
+    OS         : Darwin
+    OS-release : 19.5.0
+    machine    : x86_64
+    processor  : i386
+    byteorder  : little
+    LC_ALL     : None
+    LANG       : None
+    LOCALE     : None.UTF-8
+    pyxel      : 0.6+18.gcfb7ce2.dirty
+    astropy    : 4.0.1.post1
+    dask       : 2.25.0
+    distributed: 2.25.0
+    h5py       : 2.10.0
+    ipywidgets : 7.5.1
+    jupyter    : installed
+    jupyterlab : 2.2.7
+    matplotlib : 3.3.1
+    numba      : 0.51.2
+    numpy      : 1.19.1
+    pandas     : 1.1.2
+    poppy      : 0.9.1
+    pygmo      : 2.15.0
+    scipy      : 1.5.2
+    setuptools : 49.6.0.post20200814
+    pip        : 20.2.3
+    conda      : 4.8.4
+    black      : 20.8b1
+    flake8     : 3.8.3
+    isort      : 5.5.2
+    mypy       : installed
+    pytest     : 6.0.1
+    sphinx     : None
+    """
     system_info = get_system_info()  # type: t.Mapping[str, t.Any]
 
     dependencies_lst = (
