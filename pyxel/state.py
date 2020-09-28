@@ -42,8 +42,8 @@ def get_obj_att(
 
     Example::
 
-        >>> obj = {'processor': {'pipeline': {'models': [1, 2, 3]}}}
-        >>> om.get_obj_att(obj, 'processor.pipeline.models')
+        >>> obj = {"processor": {"pipeline": {"models": [1, 2, 3]}}}
+        >>> om.get_obj_att(obj, "processor.pipeline.models")
         ({'models': [1, 2, 3]}, 'models')
 
     The above example works as well for a user-defined object with a attribute
@@ -197,8 +197,8 @@ def get_value(obj: t.Any, key: str) -> t.Any:
 
     Example::
 
-        >>> obj = {'processor': {'pipeline': {'models': [1, 2, 3]}}}
-        >>> om.get_value(obj, 'processor.pipeline.models')
+        >>> obj = {"processor": {"pipeline": {"models": [1, 2, 3]}}}
+        >>> om.get_value(obj, "processor.pipeline.models")
         [1, 2, 3]
 
     The above example works as well for a user-defined object with a attribute

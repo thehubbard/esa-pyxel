@@ -46,7 +46,7 @@ where you could start out.
 Once you've found an interesting issue, you can return here to get your
 development environment setup.
 
-Feel free to ask question on the `mailing list <https://rssd-mgw.estec.esa.int:81/mailman/listinfo/pyxel>`_
+Feel free to ask question on the `Google group <https://groups.google.com/forum/#!forum/pyxel-detector-framework>`_
 or on `Gitter <https://gitter.im/pyxel-framework/community>`_
 
 .. _contributing.bug_reports:
@@ -69,7 +69,7 @@ and/or fixed.
 
 Bug reports must:
 
-#. Include a short, self-contained python snipper reproducing the problem.
+1. Include a short, self-contained python snipper reproducing the problem.
    You can format the code nicely by using `GitLab Flavored Markdown
    <https://docs.gitlab.com/ee/user/markdown.html#gitlab-flavored-markdown-gfm>`_::
 
@@ -79,13 +79,13 @@ Bug reports must:
       ...
       ```
 
-#. Include the full version string of *Pyxel* and its dependencies. You can
+2. Include the full version string of *Pyxel* and its dependencies. You can
 use the built in function:
 
-.. code-block:: fish
+.. code-block:: python
 
    >>> import pyxel
-   >>> pyxel.__version__
+   >>> pyxel.show_versions()
 
 #. Explain why the current behavior is wrong/not desired and what you expect
    instead.
@@ -159,7 +159,7 @@ Then the following command connects your repository to upstream (main project)
     $ git remote add upstream https://gitlab.com/esa/pyxel.git
 
 
-Now you can push/pull your _fork_ with `git push` and `git pull`.
+Now you can push/pull your *fork* with ``git push`` and ``git pull``.
 
 
 .. _contributing.dev_env:
@@ -465,13 +465,18 @@ format throughout the project. ``flake8`` can be installed with
 
 .. code-block:: fish
 
-   $ pip install flake8
+   $ pip install flake8 black isort mypy blackdoc
 
 and then run from the root of the Pyxel repository:
 
 .. code-block:: fish
 
+   $ isort .
+   $ black .
+   $ blackdoc .
    $ flake8
+   $ mypy .
+
 
 or:
 

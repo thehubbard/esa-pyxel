@@ -14,6 +14,8 @@ Core
   (See `!113 <https://gitlab.com/esa/pyxel/-/merge_requests/113>`_).
 * Create a function 'pyxel.show_versions().
   (See `!114 <https://gitlab.com/esa/pyxel/-/merge_requests/114>`_).
+* Shorter path to import/reference the models.
+  (See `!131 <https://gitlab.com/esa/pyxel/-/merge_requests/131>`_).
 
 
 version 0.6 / 2020-09-16

@@ -27,7 +27,7 @@ You should copy the python file including your function in the folder
 
     photon_generation:
       - name: illumination
-        func: pyxel.models.photon_generation.illumination.illumination
+        func: pyxel.models.photon_generation.illumination
         enabled: true
         arguments:
           level: 1000
@@ -42,7 +42,7 @@ You should copy the python file including your function in the folder
       #######################################################################
 
       - name: shot_noise
-        func: pyxel.models.photon_generation.shot_noise.shot_noise
+        func: pyxel.models.photon_generation.shot_noise
         enabled: false
 
 
@@ -66,13 +66,18 @@ To validate input arguments of a model function, use the
 
     import pyxel
 
+
     @pyxel.validate
-    @pyxel.argument(name='file', label='a fits file', validate=check_path)
-    @pyxel.argument(name='arg', label='an integer number', units='', validate=check_type(int))
+    @pyxel.argument(name="file", label="a fits file", validate=check_path)
+    @pyxel.argument(
+        name="arg", label="an integer number", units="", validate=check_type(int)
+    )
     def my_model_function(detector: Detector, file: str, arg: int = 0):
         """This is my model with validated arguments.
 
-        :param detector:
-        :param file:
-        :param arg:
+        Parameters
+        ----------
+        detector
+        file
+        arg
         """

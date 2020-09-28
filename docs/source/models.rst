@@ -1,7 +1,8 @@
 .. _models:
 
+######
 Models
-===========
+######
 
 By models, we mean various analytical functions, numerical methods or
 algorithms implemented in order to approximate, calculate, visualize
@@ -68,37 +69,43 @@ models in the pipeline.
 
     For more details, see the :ref:`Adding new models <new_model>` page.
 
+
+
 .. _photon_generation:
 
 Photon Generation models
----------------------------------
+========================
 
+
+.. currentmodule:: pyxel.models.photon_generation
 .. automodule:: pyxel.models.photon_generation
     :members:
     :undoc-members:
     :imported-members:
 
-Loading image
-***************************
 
-.. autofunction:: pyxel.models.photon_generation.load_image.load_image(detector: Detector, image_file: str, position: list = None, fit_image_to_det: bool = False)
+Loading image
+-------------
+
+.. autofunction:: load_image
 
 Simple illumination
-***************************
+-------------------
 
-.. autofunction:: pyxel.models.photon_generation.illumination.illumination(detector: Detector, level: int, option: str = 'uniform', array_size: list = None, mask_size: t.List[int] = None, mask_center: t.List[int] = None)
+.. autofunction:: illumination
 
 Shot noise
-***************************
+----------
 
-.. autofunction:: pyxel.models.photon_generation.shot_noise.shot_noise(detector: Detector, random_seed: int = None)
+.. autofunction:: shot_noise
 
 
 .. _optical:
 
 Optical models
----------------------------------
+==============
 
+.. currentmodule:: pyxel.models.optics
 .. automodule:: pyxel.models.optics
     :members:
     :undoc-members:
@@ -106,35 +113,36 @@ Optical models
 
 
 Physical Optics Propagation in PYthon (POPPY)
-***********************************************
+---------------------------------------------
 
-.. autofunction:: pyxel.models.optics.poppy.optical_psf(detector: Detector, wavelength: float, pixelscale: float, fov_pixels: int, optical_system: list, fov_arcsec: float = None)
+.. autofunction:: optical_psf
 
 
 Simple optical alignment
-***************************
+------------------------
 
-.. autofunction:: pyxel.models.optics.alignment.alignment
+.. autofunction:: alignment
 
 
 .. _charge_generation:
 
 Charge Generation models
----------------------------------
+========================
 
+.. currentmodule:: pyxel.models.charge_generation
 .. automodule:: pyxel.models.charge_generation
     :members:
     :undoc-members:
     :imported-members:
 
 Simple photoconversion
-***************************
+----------------------
 
-.. autofunction:: pyxel.models.charge_generation.photoelectrons.simple_conversion
+.. autofunction:: simple_conversion
 
 
 TARS cosmic ray model
-***************************
+---------------------
 
 A cosmic ray event simulator was the first model added to Pyxel.
 Initially it was a simple, semi-analytical model in Fortran using the stopping
@@ -149,11 +157,11 @@ Geant4 application for each single event. The validation of the latest
 version of the model against cosmic ray signals of the Gaia Basic Angle
 Monitor CCDs is ongoing via Pyxel.
 
-.. autofunction:: pyxel.models.charge_generation.tars.tars.run_tars
+.. autofunction:: pyxel.models.charge_generation.run_tars
 
 ..
     CCD charge injection
-    ***************************
+    --------------------
 
     .. autofunction:: pyxel.models.charge_generation.charge_injection.charge_injection
 
@@ -161,43 +169,45 @@ Monitor CCDs is ongoing via Pyxel.
 .. _charge_collection:
 
 Charge Collection models
----------------------------------
+========================
 
+.. currentmodule:: pyxel.models.charge_collection
 .. automodule:: pyxel.models.charge_collection
     :members:
     :undoc-members:
     :imported-members:
 
 Simple charge collection
-***************************
+------------------------
 
-.. autofunction:: pyxel.models.charge_collection.collection.simple_collection
+.. autofunction:: simple_collection
 
 Simple full well
-***************************
+----------------
 
-.. autofunction:: pyxel.models.charge_collection.full_well.simple_full_well
+.. autofunction:: simple_full_well
 
 Fix pattern noise
-***************************
+-----------------
 
-.. autofunction:: pyxel.models.charge_collection.fix_pattern_noise.fix_pattern_noise
+.. autofunction:: fix_pattern_noise
 
 .. _charge_transfer:
 
 Charge Transfer models (CCD)
----------------------------------
+============================
 
 .. important::
     This model group is only for CCD detectors!
 
+.. currentmodule:: pyxel.models.charge_transfer
 .. automodule:: pyxel.models.charge_transfer
     :members:
     :undoc-members:
     :imported-members:
 
 Charge Distortion Model (CDM)
-*******************************
+-----------------------------
 
 The Charge Distortion Model (CDM) describes the effects of the radiation
 damage causing charge deferral and image shape distortion. The analytical
@@ -207,31 +217,32 @@ a generalized version has already been applied in a broader context, for
 example to investigate the impact of radiation damage on the Euclid mission.
 This generalized version has been included and used in Pyxel.
 
-.. autofunction:: pyxel.models.charge_transfer.cdm.cdm
+.. autofunction:: cdm
 
 
 .. _charge_measurement:
 
 Charge Measurement models
----------------------------------
+=========================
 
+.. currentmodule:: pyxel.models.charge_measurement
 .. automodule:: pyxel.models.charge_measurement
     :members:
     :undoc-members:
     :imported-members:
 
 Simple charge measurement
-*******************************
+-------------------------
 
-.. autofunction:: pyxel.models.charge_measurement.measurement.simple_measurement
+.. autofunction:: simple_measurement
 
 Output node noise
-*******************************
+-----------------
 
-.. autofunction:: pyxel.models.charge_measurement.readout_noise.output_node_noise
+.. autofunction:: output_node_noise
 
 HxRG noise generator
-*******************************
+--------------------
 
 A near-infrared CMOS noise generator (ngHxRG) developed for the
 James Webb Space Telescope (JWST) Near Infrared Spectrograph (NIRSpec)
@@ -246,7 +257,7 @@ The model can simulate noise for HxRG detectors of
 Teledyne Imaging Sensors with and without the SIDECAR ASIC IR array
 controller.
 
-.. autofunction:: pyxel.models.charge_measurement.nghxrg.nghxrg.nghxrg
+.. autofunction:: pyxel.models.charge_measurement.nghxrg
 
 * **kTC bias noise**
 * **White readout noise**
@@ -258,11 +269,12 @@ controller.
 .. _signal_transfer:
 
 Signal Transfer models (CMOS)
----------------------------------
+=============================
 
 .. important::
    This model group is only for CMOS-based detectors!
 
+.. currentmodule:: pyxel.models.signal_transfer
 .. automodule:: pyxel.models.signal_transfer
     :members:
     :undoc-members:
@@ -271,19 +283,20 @@ Signal Transfer models (CMOS)
 .. _readout_electronics:
 
 Readout Electronics models
----------------------------------
+==========================
 
+.. currentmodule:: pyxel.models.readout_electronics
 .. automodule:: pyxel.models.readout_electronics
     :members:
     :undoc-members:
     :imported-members:
 
 Simple digitization
-*******************************
+-------------------
 
-.. autofunction:: pyxel.models.readout_electronics.digitization.simple_digitization
+.. autofunction:: simple_digitization
 
 Simple amplification
-*******************************
+--------------------
 
-.. autofunction:: pyxel.models.readout_electronics.amplification.simple_amplifier
+.. autofunction:: simple_amplifier
