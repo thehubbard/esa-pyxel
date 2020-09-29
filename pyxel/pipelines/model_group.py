@@ -46,11 +46,9 @@ class ModelGroup:
                 yield model
 
     def __getstate__(self) -> tuple:
-        """TBW."""
         return tuple(self.models)
 
     def __setstate__(self, state: tuple) -> None:
-        """TBW."""
         self.models = list(state)
 
     def __getattr__(self, item: str) -> ModelFunction:
