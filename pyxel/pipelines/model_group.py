@@ -23,10 +23,10 @@ if t.TYPE_CHECKING:
 class ModelGroup:
     """TBW."""
 
-    def __init__(self, models: t.List[ModelFunction]):
+    def __init__(self, models: t.Sequence[ModelFunction]):
         self._log = logging.getLogger(__name__)
 
-        self.models = models  # type: t.List[ModelFunction]
+        self.models = models  # type: t.Sequence[ModelFunction]
 
     def __repr__(self):
         cls_name = self.__class__.__name__  # type: str
@@ -44,6 +44,12 @@ class ModelGroup:
         for model in self.models:
             if model.enabled:
                 yield model
+
+    def __getstate__(self) -> tuple:
+        return tuple(self.models)
+
+    def __setstate__(self, state: tuple) -> None:
+        self.models = list(state)
 
     def __getattr__(self, item: str) -> ModelFunction:
         for model in self.models:
