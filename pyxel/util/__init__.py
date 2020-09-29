@@ -44,7 +44,6 @@ class PipelineAborted(Exception):
         message: t.Optional[str] = None,
         # errors=None
     ):
-        """TBW."""
         super().__init__(message)
         # self.errors = errors
 

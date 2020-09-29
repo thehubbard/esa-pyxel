@@ -23,7 +23,6 @@ class Arguments(dict):
     """TBW."""
 
     def __getattr__(self, name: str) -> t.Union[int, float]:
-        """TBW."""
         if name not in self:
             raise AttributeError(f"Argument {name!r} does not exist.")
 
@@ -33,7 +32,6 @@ class Arguments(dict):
         return result
 
     def __dir__(self):
-        """TBW."""
         return dir(type(self)) + list(self)
 
     # def __deepcopy__(self, memo) -> "Arguments":
@@ -85,15 +83,6 @@ class ModelFunction:
         arguments: t.Optional[dict] = None,
         enabled: bool = True,
     ):
-        """TBW.
-
-        Parameters
-        ----------
-        func
-        name
-        arguments
-        enabled
-        """
         assert not inspect.isclass(func)
 
         self._func = func  # type: t.Callable
@@ -107,7 +96,6 @@ class ModelFunction:
         # self.group = None               # TODO
 
     def __repr__(self) -> str:
-        """TBW."""
         cls_name = self.__class__.__name__  # type: str
         func_name = self._func.__module__ + "." + self._func.__name__
 

@@ -25,25 +25,16 @@ class Processor:
     """TBW."""
 
     def __init__(self, detector: t.Union[CCD, CMOS], pipeline: DetectionPipeline):
-        """TBW.
-
-        Parameters
-        ----------
-        detector
-        pipeline
-        """
         self._log = logging.getLogger(__name__)
 
         self.detector = detector
         self.pipeline = pipeline
 
     def __repr__(self) -> str:
-        """TBW."""
         cls_name = self.__class__.__name__  # type: str
         return f"{cls_name}<detector={self.detector!r}, pipeline={self.pipeline!r}>"
 
     def __deepcopy__(self, memodict: dict) -> "Processor":
-        """Make a deep copy of this object."""
         return Processor(
             detector=deepcopy(self.detector, memo=memodict),
             pipeline=deepcopy(self.pipeline, memo=memodict),

@@ -30,10 +30,6 @@ class Signal(Array):
     TYPE_LIST = (np.float16, np.float32, np.float64)
 
     def __init__(self, geo: "Geometry"):
-        """TBW.
-
-        :param geo:
-        """
         new_array = np.zeros((geo.row, geo.col), dtype=self.EXP_TYPE)
 
         super().__init__(new_array)  # TODO: add unit (V)

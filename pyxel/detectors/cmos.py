@@ -24,13 +24,6 @@ class CMOS(Detector):
         environment: "Environment",
         characteristics: "CMOSCharacteristics",
     ):
-        """TBW.
-
-        :param geometry:
-        :param material:
-        :param environment:
-        :param characteristics:
-        """
         self._geometry = geometry  # type: CMOSGeometry
         self._characteristics = characteristics  # type: CMOSCharacteristics
 

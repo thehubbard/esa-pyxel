@@ -34,11 +34,6 @@ class Detector:
     """The detector class."""
 
     def __init__(self, material: Material, environment: Environment):
-        """TBW.
-
-        :param material:
-        :param environment:
-        """
         self.material = material  # type: Material
         self.environment = environment  # type: Environment
 

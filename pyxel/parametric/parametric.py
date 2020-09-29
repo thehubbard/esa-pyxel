@@ -42,7 +42,6 @@ class ParametricAnalysis:
         from_file: t.Optional[str] = None,
         column_range: t.Optional[t.Tuple[int, int]] = None,
     ):
-        """TBW."""
         self.parametric_mode = ParametricMode(parametric_mode)  # type: ParametricMode
         self._parameters = parameters
         self.file = from_file
@@ -51,7 +50,6 @@ class ParametricAnalysis:
             self.columns = slice(*column_range)
 
     def __repr__(self):
-        """TBW."""
         cls_name = self.__class__.__name__  # type: str
         return f"{cls_name}<mode={self.parametric_mode!s}>"
 
@@ -197,16 +195,6 @@ class Configuration:
         calibration: "t.Optional[Calibration]" = None,
         dynamic: t.Optional[t.Dict[str, t.Any]] = None,
     ):
-        """TBW.
-
-        Parameters
-        ----------
-        mode
-        outputs
-        parametric
-        calibration
-        dynamic
-        """
         if mode not in ["single", "parametric", "calibration", "dynamic"]:
             raise ValueError(
                 "Non-existing running mode defined for Pyxel in yaml config file."
@@ -225,7 +213,6 @@ class Configuration:
             self.outputs.params_func(self.parametric)
 
     def __repr__(self) -> str:
-        """TBW."""
         cls_name = self.__class__.__name__  # type: str
 
         return f"{cls_name}<mode={self.mode!r}, outputs={self.outputs!r}>"
