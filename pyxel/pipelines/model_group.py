@@ -23,7 +23,7 @@ if t.TYPE_CHECKING:
 class ModelGroup:
     """TBW."""
 
-    def __init__(self, models: t.List[ModelFunction]):
+    def __init__(self, models: t.Sequence[ModelFunction]):
         self._log = logging.getLogger(__name__)
 
         self.models = models  # type: t.Sequence[ModelFunction]
