@@ -16,6 +16,8 @@ Core
   (See `!114 <https://gitlab.com/esa/pyxel/-/merge_requests/114>`_).
 * Shorter path to import/reference the models.
   (See `!131 <https://gitlab.com/esa/pyxel/-/merge_requests/131>`_).
+* Remove deprecated methods from Photon class.
+  (See `!119 <https://gitlab.com/esa/pyxel/-/merge_requests/119>`_).
 
 
 version 0.6 / 2020-09-16
