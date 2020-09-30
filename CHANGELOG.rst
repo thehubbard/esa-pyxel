@@ -20,6 +20,8 @@ Core
   (See `!119 <https://gitlab.com/esa/pyxel/-/merge_requests/119>`_).
 * Instances of 'DetectionPipeline' are not serializable.
   (See `!120 <https://gitlab.com/esa/pyxel/-/merge_requests/120>`_).
+* Cannot run 'calibration' pipeline with multiprocessing or ipyparallel islands.
+  (See `!121 <https://gitlab.com/esa/pyxel/-/merge_requests/121>`_).
 
 Documentation
 ~~~~~~~~~~~~~

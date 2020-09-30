@@ -20,6 +20,8 @@ from pyxel.pipelines import Processor
 __all__ = [
     "CalibrationResult",
     "CalibrationMode",
+    "Island",
+    "AlgorithmType",
     "ResultType",
     "check_ranges",
     "list_to_slice",
@@ -50,6 +52,22 @@ class ResultType(Enum):
     Image = "image"
     Signal = "signal"
     Pixel = "pixel"
+
+
+class Island(Enum):
+    """User defines num_islands provides by Pygmo."""
+
+    MultiProcessing = "multiprocessing"
+    MultiThreading = "multithreading"
+    IPyParallel = "ipyparallel"
+
+
+class AlgorithmType(Enum):
+    """TBW."""
+
+    Sade = "sade"
+    Sga = "sga"
+    Nlopt = "nlopt"
 
 
 def read_single_data(filename: Path) -> np.ndarray:

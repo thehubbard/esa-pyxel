@@ -11,6 +11,8 @@
 from .util import (
     CalibrationResult,
     CalibrationMode,
+    Island,
+    AlgorithmType,
     ResultType,
     check_ranges,
     list_to_slice,

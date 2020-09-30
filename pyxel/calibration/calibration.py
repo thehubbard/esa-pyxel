@@ -10,17 +10,22 @@
 import logging
 import math
 import typing as t
-from enum import Enum
 from pathlib import Path
 
 import numpy as np
+from typing_extensions import Literal
 
-from pyxel.calibration import CalibrationMode, CalibrationResult, ResultType
+from pyxel.calibration import (
+    AlgorithmType,
+    CalibrationMode,
+    CalibrationResult,
+    Island,
+    ResultType,
+)
 from pyxel.calibration.fitting import ModelFitting
 from pyxel.parametric.parameter_values import ParameterValues
 from pyxel.pipelines import ModelFunction, Processor
-
-from ..util.outputs import Outputs
+from pyxel.util import Outputs
 
 try:
     import pygmo as pg
@@ -28,14 +33,6 @@ except ImportError:
     import warnings
 
     warnings.warn("Cannot import 'pygmo", RuntimeWarning, stacklevel=2)
-
-
-class AlgorithmType(Enum):
-    """TBW."""
-
-    Sade = "sade"
-    Sga = "sga"
-    Nlopt = "nlopt"
 
 
 # TODO: Put classes `Algorithm` and `Calibration` in separated files.
@@ -48,7 +45,7 @@ class Algorithm:
     def __init__(
         self,
         # TODO: Rename 'type' into 'algorithm_type'
-        type: AlgorithmType = AlgorithmType.Sade,
+        type: Literal["sade", "sga", "nlopt"] = "sade",
         generations: int = 1,
         population_size: int = 1,
         # SADE #####
@@ -497,8 +494,8 @@ class Calibration:
         self,
         output_dir: t.Optional[Path] = None,
         fitting: t.Optional[ModelFitting] = None,
-        calibration_mode: CalibrationMode = CalibrationMode.Pipeline,
-        result_type: ResultType = ResultType.Image,
+        calibration_mode: Literal["pipeline", "single_model"] = "pipeline",
+        result_type: Literal["image", "signal", "pixel"] = "image",
         result_fit_range: t.Optional[t.Sequence[int]] = None,
         result_input_arguments: t.Optional[t.Sequence[ParameterValues]] = None,
         target_data_path: t.Optional[t.Sequence[Path]] = None,
@@ -507,42 +504,55 @@ class Calibration:
         algorithm: t.Optional[Algorithm] = None,
         parameters: t.Optional[t.Sequence[ParameterValues]] = None,
         seed: t.Optional[int] = None,
-        islands: int = 0,
+        num_islands: int = 0,
+        type_islands: Literal[
+            "multiprocessing", "multithreading", "ipyparallel"
+        ] = "multiprocessing",
         weighting_path: t.Optional[t.Sequence[Path]] = None,
     ):
         if seed is not None and seed not in range(100001):
             raise ValueError("'seed' must be between 0 and 100000.")
 
-        if islands not in range(101):
-            raise ValueError("'islands' must be between 0 and 100.")
+        if num_islands not in range(101):
+            raise ValueError("'num_islands' must be between 0 and 100.")
 
         self._log = logging.getLogger(__name__)
 
         self._output_dir = output_dir  # type:t.Optional[Path]
         self._fitting = fitting  # type: t.Optional[ModelFitting]
-        self._calibration_mode = CalibrationMode(
-            calibration_mode
-        )  # type: CalibrationMode
+
+        self._calibration_mode = CalibrationMode(calibration_mode)
+
         self._result_type = ResultType(result_type)  # type: ResultType
+
         self._result_fit_range = (
             result_fit_range if result_fit_range else []
         )  # type: t.Sequence[int]
+
         self._result_input_arguments = (
             result_input_arguments if result_input_arguments else []
         )  # type: t.Sequence[ParameterValues]
+
         self._target_data_path = (
             to_path_list(target_data_path) if target_data_path else []
         )  # type: t.List[Path]
+
         self._target_fit_range = (
             target_fit_range if target_fit_range else []
         )  # type: t.Sequence[int]
+
         self._fitness_function = fitness_function  # type: t.Optional[ModelFunction]
         self._algorithm = algorithm  # type: t.Optional[Algorithm]
+
         self._parameters = (
             parameters if parameters else []
         )  # type: t.Sequence[ParameterValues]
+
         self._seed = np.random.randint(0, 100000) if seed is None else seed  # type: int
-        self._islands = islands  # type: int
+
+        self._num_islands = num_islands  # type: int
+        self._type_islands = Island(type_islands)  # type:Island
+
         self._weighting_path = weighting_path  # type: t.Optional[t.Sequence[Path]]
 
     @property
@@ -681,17 +691,17 @@ class Calibration:
         self._seed = value
 
     @property
-    def islands(self) -> int:
+    def num_islands(self) -> int:
         """TBW."""
-        return self._islands
+        return self._num_islands
 
-    @islands.setter
-    def islands(self, value: int) -> None:
+    @num_islands.setter
+    def num_islands(self, value: int) -> None:
         """TBW."""
         if value not in range(101):
-            raise ValueError("'islands' must be between 0 and 100.")
+            raise ValueError("'num_islands' must be between 0 and 100.")
 
-        self._islands = value
+        self._num_islands = value
 
     @property
     def weighting_path(self) -> t.Optional[t.Sequence[Path]]:
@@ -704,13 +714,20 @@ class Calibration:
         self._weighting_path = value
 
     def run_calibration(
-        self, processor: Processor, output_dir: Path
+        self,
+        processor: Processor,
+        output_dir: Path,
     ) -> t.Sequence[CalibrationResult]:
         """TBW.
 
-        :param processor: Processor object
-        :param output_dir: Output object
-        :return:
+        Parameters
+        ----------
+        processor
+        output_dir
+
+        Returns
+        -------
+        Sequence of `CalibrationResult`
         """
         pg.set_global_rng_seed(seed=self.seed)
         self._log.info("Seed: %d", self.seed)
@@ -732,11 +749,13 @@ class Calibration:
             file_path=output_dir,
         )
 
+        # Create a Pygmo problem
         prob = pg.problem(self.fitting)  # type: pg.problem
-        opt_algorithm = (
-            self.algorithm.get_algorithm()
-        )  # type: t.Union[pg.sade, pg.sga, pg.nlopt]
-        algo = pg.algorithm(opt_algorithm)  # type: pg.algorithm
+        self._log.info(prob)
+
+        # Create a Pygmo algorithm
+        algo = pg.algorithm(self.algorithm.get_algorithm())  # type: pg.algorithm
+        self._log.info(algo)
 
         # try:
         #     bfe = pg.bfe(udbfe=pg.member_bfe())
@@ -744,10 +763,10 @@ class Calibration:
         #     bfe = None
         #
         # try:
-        #     archi = pg.archipelago(n=self.islands, algo=algo, prob=prob, b=bfe,
+        #     archi = pg.archipelago(n=self.num_islands, algo=algo, prob=prob, b=bfe,
         #                            pop_size=self.algorithm.population_size, udi=pg.mp_island())
         # except KeyError:
-        #     archi = pg.archipelago(n=self.islands, algo=algo, prob=prob,
+        #     archi = pg.archipelago(n=self.num_islands, algo=algo, prob=prob,
         #                            pop_size=self.algorithm.population_size, udi=pg.mp_island())
         #
         # try:
@@ -755,32 +774,57 @@ class Calibration:
         # except TypeError:
         #     pop = pg.population(prob=prob, size=self.algorithm.population_size)
 
-        if self.islands > 1:  # default
+        # TODO: Move this into class `Island`
+        # Set user-defined island
+        if self._type_islands is Island.MultiProcessing:
+            user_defined_island = pg.mp_island()
+
+        elif self._type_islands is Island.MultiThreading:
+            # NOTE: It is not possible to use a problem implemented in Python with
+            #       'thread_island'. This is related to thread safety.
+            #       See: https://esa.github.io/pygmo2/misc.html#pygmo.thread_safety
+            user_defined_island = pg.thread_island()
+
+        elif self._type_islands is Island.IPyParallel:
+            user_defined_island = pg.ipyparallel_island()
+
+        if self.num_islands > 1:  # default
+            # Create a collection of num_islands
             archi = pg.archipelago(
-                n=self.islands,
+                n=self.num_islands,
                 algo=algo,
                 prob=prob,
                 pop_size=self.algorithm.population_size,
-                udi=pg.mp_island(),
+                udi=user_defined_island,
             )
+
+            # Call all 'evolve()' methods on all islands
             archi.evolve()
             self._log.info(archi)
+
+            # Block until all evolutions have finished and raise the first exception
+            # that was encountered
             archi.wait_check()
-            champion_f = archi.get_champions_f()  # type: t.List[np.ndarray]
-            champion_x = archi.get_champions_x()  # type: t.List[np.ndarray]
+
+            # Get fitness and decision vectors of the num_islands' champions
+            champions_1d_fitness = archi.get_champions_f()  # type: t.List[np.ndarray]
+            champions_1d_decision = archi.get_champions_x()  # type: t.List[np.ndarray]
         else:
             self._log.info("Initialize optimization algorithm")
             pop = pg.population(prob=prob, size=self.algorithm.population_size)
 
             self._log.info("Start optimization algorithm")
+
             pop = algo.evolve(pop)
-            champion_f = [pop.champion_f]
-            champion_x = [pop.champion_x]
+
+            # Get fitness and decision vector of the population champion
+            champions_1d_fitness = [pop.champion_f]
+            champions_1d_decision = [pop.champion_x]
 
         self.fitting.file_matching_renaming()
         res = []  # type: t.List[CalibrationResult]
 
-        for f, x in zip(champion_f, champion_x):
+        for f, x in zip(champions_1d_fitness, champions_1d_decision):
             res += [self.fitting.get_results(overall_fitness=f, parameter=x)]
 
         self._log.info("Calibration ended.")

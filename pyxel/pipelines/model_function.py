@@ -18,7 +18,7 @@ if t.TYPE_CHECKING:
 T = t.TypeVar("T")
 
 
-# TODO: Implement this class with `abc.Mapping`
+# TODO: Improve this class. See issue #133.
 class Arguments(dict):
     """TBW."""
 
@@ -39,10 +39,7 @@ class Arguments(dict):
     #     return Arguments(deepcopy(self._arguments))
 
 
-# TODO: What is `ModelFunction` ?
-#       Is it possible to replace this by a `callable` ?
-#       Is it possible to use a function with an inner function (==> a closure) ?
-#       could be 'name' and 'enabled' stored in `ModelGroup` ?
+# TODO: Improve this class. See issue #132.
 class ModelFunction:
     """Create a wrapper function around a Model function.
 

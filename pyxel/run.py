@@ -106,7 +106,7 @@ def parametric_mode(
             filenames = delayed(output.save_to_file)(processor=result_proc)
 
         result_list.append(result_val)
-        output_filenames.append(filenames)
+        output_filenames.append(filenames)  # TODO: This is not used
 
     if not with_dask:
         plot_array = output.merge_func(result_list)  # type: np.ndarray

@@ -20,9 +20,7 @@ from operator import add
 from pathlib import Path
 
 import numpy as np
-from dask import delayed
-from dask.delayed import Delayed
-from typing_extensions import Literal
+from typing_extensions import Literal, Protocol
 
 from pyxel.calibration import (
     CalibrationMode,
@@ -36,7 +34,34 @@ from pyxel.parametric.parameter_values import ParameterValues
 from pyxel.pipelines import Processor
 
 
-class ModelFitting:
+class ProblemSingleObjective(Protocol):
+    """Create a `Protocol` for a user defined Single Objective `Problem` for Pygmo2.
+
+    A single objective is a deterministic, derivative-free, unconstrained
+    optimization problem.
+
+    See https://esa.github.io/pygmo2/problem.html#pygmo.problem.
+    """
+
+    def fitness(self, parameter: np.ndarray) -> t.Sequence[float]:
+        """Return the fitness of the input decision vector.
+
+        Concatenate the objectives, the equality and the inequality constraints.
+        """
+        ...
+
+    def get_bounds(self) -> t.Tuple[t.Sequence[float], t.Sequence[float]]:
+        """Get the box bounds of the problem (lower_boundary, upper_boundary).
+
+        It also implicitly defines the dimension of the problem.
+        """
+        ...
+
+    # TODO: Add something about 'batch_fitness'
+    #       (see https://esa.github.io/pygmo2/problem.html#pygmo.problem.batch_fitness)
+
+
+class ModelFitting(ProblemSingleObjective):
     """Pygmo problem class to fit data with any model in Pyxel."""
 
     def __init__(self, processor: Processor, variables: t.Sequence[ParameterValues]):
@@ -77,9 +102,13 @@ class ModelFitting:
         # self.target_data_norm = []
 
     def get_bounds(self) -> t.Tuple[t.Sequence[float], t.Sequence[float]]:
-        """TBW.
+        """Get the box bounds of the problem (lower_boundary, upper_boundary).
 
-        :return:
+        It also implicitly defines the dimension of the problem.
+
+        Returns
+        -------
+        tuple of lower boundaries and upper boundaries
         """
         return self.lbd, self.ubd
 
@@ -236,39 +265,55 @@ class ModelFitting:
 
         return simulated_data
 
-    def batch_fitness(self, population_parameter_vector):
+    def batch_fitness(self, population_parameter_vector: np.ndarray) -> np.ndarray:
         """Batch Fitness Evaluation.
 
         PYGMO BFE IS STILL NOT FULLY IMPLEMENTED, THEREFORE THIS FUNC CAN NOT BE USED YET.
+
+        Parameters
+        ----------
+        population_parameter_vector : array-like
+            The decision vectors (chromosomes) to be evaluated in batch mode
+
+        Returns
+        -------
+        array : 1D numpy float array
+            The fitness vectors of input 'population_parameter_vector'.
         """
         logger = logging.getLogger("pyxel")
         logger.info("batch_fitness() called with %s " % population_parameter_vector)
 
-        fitness_vector = []
+        fitness_vector = []  # type: t.List[float]
         for parameter in population_parameter_vector:
             overall_fitness = 0.0
             parameter = self.update_parameter([parameter])
             processor_list = deepcopy(self.param_processor_list)
+
             for processor, target_data in zip(processor_list, self.all_target_data):
-                # processor = self.update_processor(parameter, processor)
-                processor = delayed(self.update_processor)(parameter, processor)
-                # result_proc = processor.run_pipeline()
-                result_proc = delayed(processor.run_pipeline)()
-                # simulated_data = self.get_simulated_data(result_proc)
-                simulated_data = delayed(self.get_simulated_data)(result_proc)
-                # fitness = self.calculate_fitness(simulated_data, target_data)
-                fitness = delayed(self.calculate_fitness)(simulated_data, target_data)
-                # overall_fitness = add(overall_fitness, fitness)
-                overall_fitness = delayed(add)(overall_fitness, fitness)
+                processor = self.update_processor(parameter, processor)
+                # processor = delayed(self.update_processor)(parameter, processor)
+
+                result_proc = processor.run_pipeline()
+                # result_proc = delayed(processor.run_pipeline)()
+
+                simulated_data = self.get_simulated_data(result_proc)
+                # simulated_data = delayed(self.get_simulated_data)(result_proc)
+
+                fitness = self.calculate_fitness(simulated_data, target_data)
+                # fitness = delayed(self.calculate_fitness)(simulated_data, target_data)
+
+                overall_fitness = add(overall_fitness, fitness)
+                # overall_fitness = delayed(add)(overall_fitness, fitness)
 
             fitness_vector.append(
                 overall_fitness
             )  # overall fitness per individual for the full population
 
-        # fitness_vector = self.merge(fitness_vector)
-        fitness_vector_delayed = delayed(merge_fitness)(fitness_vector)  # type: Delayed
-        # population_fitness_vector = fitness_vector
-        population_fitness_vector = fitness_vector_delayed.compute()
+        fitness_vector = merge_fitness(fitness_vector)
+        # fitness_vector_delayed = delayed(merge_fitness)(fitness_vector)  # type: Delayed
+
+        population_fitness_vector = fitness_vector
+        # population_fitness_vector = fitness_vector_delayed.compute()
 
         return population_fitness_vector
 
@@ -290,11 +335,19 @@ class ModelFitting:
 
         return fitness
 
+    # TODO: If possible, use 'numba' for this method
     def fitness(self, parameter: np.ndarray) -> t.Sequence[float]:
         """Call the fitness function, elements of parameter array could be logarithmic values.
 
-        :param parameter: 1d np.array
-        :return:
+        Parameters
+        ----------
+        parameter
+
+        Returns
+        -------
+        sequence
+            The fitness of the input decision vector (concatenating the objectives,
+            the equality and the inequality constraints)
         """
         # TODO: Fix this
         if self.pop is None:
