@@ -22,6 +22,8 @@ Core
   (See `!120 <https://gitlab.com/esa/pyxel/-/merge_requests/120>`_).
 * Cannot run 'calibration' pipeline with multiprocessing or ipyparallel islands.
   (See `!121 <https://gitlab.com/esa/pyxel/-/merge_requests/121>`_).
+* Make package and script 'pyxel' executable.
+  (See `!112 <https://gitlab.com/esa/pyxel/-/merge_requests/112>`_).
 
 Documentation
 ~~~~~~~~~~~~~
