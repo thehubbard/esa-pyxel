@@ -7,15 +7,15 @@ To run Pyxel on your local computer, simply run it from the command-line:
 
 .. code-block:: bash
 
-  $ python pyxel/run.py -c input.yaml
+    $ python pyxel/run.py -c input.yaml
 
-or
+    or
 
-  $ pyxel --config input.yaml
+    $ pyxel --config input.yaml
 
-or
+    or
 
-  $ python -m pyxel --config input.yaml
+    $ python -m pyxel --config input.yaml
 
 
 where
