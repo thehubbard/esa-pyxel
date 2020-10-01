@@ -23,7 +23,9 @@ def sampling_distribution(distribution: np.ndarray) -> float:
     """
     u = np.random.random()  # type: float
     # random_value_from_dist = distribution[bisect.bisect(distribution[:, 1], u) - 1, 0]
-    random_value_from_dist = get_xvalue_with_interpolation(distribution, u)
+    random_value_from_dist = get_xvalue_with_interpolation(
+        function_array=distribution, y_value=u
+    )
 
     return random_value_from_dist
 

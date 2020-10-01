@@ -86,7 +86,7 @@ def parametric_mode(
     processors_it = parametric.collect(processor)  # type: t.Iterator[Processor]
 
     result_list = []  # type: t.List[Result]
-    output_filenames = []  # type: t.List[t.List[Path]]
+    output_filenames = []  # type: t.List[t.Sequence[Path]]
 
     # out.params_func(parametric)
 
@@ -97,7 +97,9 @@ def parametric_mode(
             result_proc = proc.run_pipeline()  # type: Processor
             result_val = output.extract_func(processor=result_proc)  # type: Result
 
-            filenames = output.save_to_file(processor=result_proc)  # type: t.List[Path]
+            filenames = output.save_to_file(
+                processor=result_proc
+            )  # type: t.Sequence[Path]
 
         else:
             result_proc = delayed(proc.run_pipeline)()
@@ -195,11 +197,13 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
         if not simulation.dynamic:
             raise RuntimeError("Missing 'Dynamic' parameters.")
 
+        # TODO: Use a helper class to store parameters for dynamic mode. See issue #121.
         logging.info("Mode: Dynamic")
         if "non_destructive_readout" not in simulation.dynamic or isinstance(
             detector, CCD
         ):
             simulation.dynamic["non_destructive_readout"] = False
+
         if "t_step" in simulation.dynamic and "steps" in simulation.dynamic:
             detector.set_dynamic(
                 steps=simulation.dynamic["steps"],

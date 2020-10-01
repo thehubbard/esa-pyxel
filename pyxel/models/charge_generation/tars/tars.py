@@ -15,6 +15,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 from tqdm.auto import tqdm
+from typing_extensions import Literal
 
 from pyxel.detectors import Detector
 from pyxel.models.charge_generation.tars.plotting import PlottingTARS
@@ -31,10 +32,14 @@ from pyxel.models.charge_generation.tars.util import (  # , load_histogram_data
 # @config.argument(name='', label='', units='', validate=)
 def run_tars(
     detector: Detector,
-    simulation_mode: t.Optional[str] = None,
-    running_mode: t.Optional[str] = None,
-    particle_type: t.Optional[str] = None,
-    initial_energy: t.Optional[t.Union[str, float]] = None,
+    simulation_mode: t.Optional[
+        Literal["cosmic_ray", "cosmics", "radioactive_decay", "snowflakes"]
+    ] = None,
+    running_mode: t.Optional[
+        Literal["stopping", "stepsize", "geant4", "plotting"]
+    ] = None,
+    particle_type: t.Optional[Literal["proton", "alpha", "ion"]] = None,
+    initial_energy: t.Optional[t.Union[int, float, Literal["random"]]] = None,
     particle_number: t.Optional[int] = None,
     incident_angles: t.Optional[t.Tuple[str, str]] = None,
     starting_position: t.Optional[t.Tuple[str, str, str]] = None,
@@ -238,9 +243,13 @@ class TARS:
     def __init__(
         self,
         detector: Detector,
-        simulation_mode: str,
-        particle_type: str,
-        initial_energy: t.Union[str, float],
+        simulation_mode: Literal[
+            "cosmic_ray", "cosmics", "radioactive_decay", "snowflakes"
+        ],
+        particle_type: Literal[
+            "proton", "ion", "alpha", "beta", "electron", "gamma", "x-ray"
+        ],
+        initial_energy: t.Union[int, float, Literal["random"]],
         particle_number: int,
         incident_angle_alpha: str,
         incident_angle_beta: str,
@@ -263,7 +272,10 @@ class TARS:
         self._log = logging.getLogger(__name__)
 
     # TODO: Is it still used ?
-    def set_simulation_mode(self, sim_mode: str) -> None:
+    def set_simulation_mode(
+        self,
+        sim_mode: Literal["cosmic_ray", "cosmics", "radioactive_decay", "snowflakes"],
+    ) -> None:
         """TBW.
 
         :param sim_mode:
@@ -271,7 +283,12 @@ class TARS:
         self.simulation_mode = sim_mode
 
     # TODO: Is it still used ?
-    def set_particle_type(self, particle_type: str) -> None:
+    def set_particle_type(
+        self,
+        particle_type: Literal[
+            "proton", "ion", "alpha", "beta", "electron", "gamma", "x-ray"
+        ],
+    ) -> None:
         """TBW.
 
         :param particle_type:
@@ -279,7 +296,9 @@ class TARS:
         self.part_type = particle_type
 
     # TODO: Is it still used ?
-    def set_initial_energy(self, energy: t.Union[str, float]) -> None:
+    def set_initial_energy(
+        self, energy: t.Union[int, float, Literal["random"]]
+    ) -> None:
         """TBW.
 
         :param energy:
@@ -416,7 +435,7 @@ class TARS:
 
         for k in tqdm(range(self.particle_number), desc="TARS", unit=" particle"):
             # for k in range(0, self.particle_number):
-            err = None
+            err = None  # type: t.Optional[bool]
             if self.sim_obj.energy_loss_data == "stepsize":  # TODO
                 err = self.sim_obj.event_generation()
             elif self.sim_obj.energy_loss_data == "geant4":

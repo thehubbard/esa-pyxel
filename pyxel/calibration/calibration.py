@@ -535,8 +535,7 @@ class Calibration:
 
         self._target_data_path = (
             to_path_list(target_data_path) if target_data_path else []
-        )  # type: t.List[Path]
-
+        )  # type: t.Sequence[Path]
         self._target_fit_range = (
             target_fit_range if target_fit_range else []
         )  # type: t.Sequence[int]
@@ -622,12 +621,12 @@ class Calibration:
         self._result_input_arguments = value
 
     @property
-    def target_data_path(self) -> t.List[Path]:
+    def target_data_path(self) -> t.Sequence[Path]:
         """TBW."""
         return self._target_data_path
 
     @target_data_path.setter
-    def target_data_path(self, value: t.List[Path]) -> None:
+    def target_data_path(self, value: t.Sequence[Path]) -> None:
         """TBW."""
         self._target_data_path = value
 

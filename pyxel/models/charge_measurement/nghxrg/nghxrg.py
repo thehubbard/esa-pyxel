@@ -23,8 +23,8 @@ def nghxrg(
     detector: CMOS,
     noise: list,
     pca0_file: t.Optional[str] = None,
-    window_position: t.Optional[t.List[int]] = None,
-    window_size: t.Optional[t.List[int]] = None,
+    window_position: t.Optional[t.Sequence[int]] = None,
+    window_size: t.Optional[t.Sequence[int]] = None,
     plot_psd: t.Optional[bool] = True,
 ) -> None:
     """TBW.

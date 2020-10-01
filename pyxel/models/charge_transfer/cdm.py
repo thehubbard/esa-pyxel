@@ -42,12 +42,12 @@ def cdm(
     serial_cti: bool,
     beta_p: float,
     beta_s: float,
-    tr_p: t.List[float],
-    tr_s: t.List[float],
-    nt_p: t.List[float],
-    nt_s: t.List[float],
-    sigma_p: t.List[float],
-    sigma_s: t.List[float],
+    tr_p: t.Sequence[float],
+    tr_s: t.Sequence[float],
+    nt_p: t.Sequence[float],
+    nt_s: t.Sequence[float],
+    sigma_p: t.Sequence[float],
+    sigma_s: t.Sequence[float],
     charge_injection: bool,
 ) -> None:
     """Charge Distortion Model (CDM) model wrapper.

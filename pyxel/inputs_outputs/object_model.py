@@ -123,7 +123,7 @@ class ClassConstructor:
         self,
         loader: t.Type[yaml.SafeLoader],
         klass: t.Callable,
-        paths: t.List[str],
+        paths: t.Sequence[str],
         is_list: bool = False,
     ) -> None:
         loader.add_path_resolver("!%s" % klass.__name__, paths)

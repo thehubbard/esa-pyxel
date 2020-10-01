@@ -69,7 +69,7 @@ class PlotArguments:
     bins: t.Optional[int] = None  # TODO: This should not be here !
 
     @classmethod
-    def from_dict(cls, dct: t.Dict[str, t.Any]) -> "PlotArguments":
+    def from_dict(cls, dct: t.Mapping[str, t.Any]) -> "PlotArguments":
         """TBW."""
         return cls(**dct)
 
@@ -153,7 +153,9 @@ class Outputs:
     def __init__(
         self,
         output_folder: t.Union[str, Path],
-        save_data_to_file: t.Optional[t.List[t.Dict[str, t.List[str]]]] = None,
+        save_data_to_file: t.Optional[
+            t.Sequence[t.Mapping[str, t.Sequence[str]]]
+        ] = None,
         save_parameter_to_file: t.Optional[dict] = None,
         parametric_plot: t.Optional[ParametricPlot] = None,
         calibration_plot: t.Optional[CalibrationPlot] = None,
@@ -206,7 +208,7 @@ class Outputs:
         # TODO: Not related to a plot. Use by 'single' and 'parametric' modes.
         self.save_data_to_file = save_data_to_file or [
             {"detector.image.array": ["fits"]}
-        ]  # type: t.List[t.Dict[str, t.List[str]]]
+        ]  # type: t.Sequence[t.Mapping[str, t.Sequence[str]]]
 
         if self.output_dir.exists():
             raise IsADirectoryError("Directory exists.")
@@ -453,7 +455,7 @@ class Outputs:
         """
         ax_args0, plt_args0 = self.update_args(plot_type=PlotType.Graph, new_args=args)
 
-        user_plt_args_dct = None  # type: t.Optional[dict]
+        user_plt_args_dct = None  # type: t.Optional[t.Mapping]
         if isinstance(self.user_plt_args, PlotArguments):
             user_plt_args_dct = self.user_plt_args.to_dict()
 
@@ -484,7 +486,7 @@ class Outputs:
         """
         assert self.user_plt_args is not None
 
-        user_plt_args_dct = None  # type: t.Optional[dict]
+        user_plt_args_dct = None  # type: t.Optional[t.Mapping]
         if isinstance(self.user_plt_args, PlotArguments):
             user_plt_args_dct = self.user_plt_args.to_dict()
 
@@ -530,7 +532,7 @@ class Outputs:
         color
         args
         """
-        user_plt_args_dct = None  # type: t.Optional[dict]
+        user_plt_args_dct = None  # type: t.Optional[t.Mapping]
 
         if isinstance(self.user_plt_args, PlotArguments):
             user_plt_args_dct = self.user_plt_args.to_dict()
@@ -625,7 +627,7 @@ class Outputs:
 
         # plt.close()
 
-    def save_to_file(self, processor: "Processor") -> t.List[Path]:
+    def save_to_file(self, processor: "Processor") -> t.Sequence[Path]:
         """Save outputs into file(s).
 
         Parameters
@@ -649,7 +651,7 @@ class Outputs:
 
         filenames = []  # type: t.List[Path]
 
-        for dct in self.save_data_to_file:  # type: t.Dict[str, t.List[str]]
+        for dct in self.save_data_to_file:  # type: t.Mapping[str, t.Sequence[str]]
             # Get first entry of `dict` 'item'
             first_item, *_ = dct.items()
 
@@ -669,7 +671,7 @@ class Outputs:
     # TODO: Specific to 'calibration_plot'
     def champions_plot(
         self,
-        results: t.Dict[str, t.Union[Number, np.ndarray]],
+        results: t.Mapping[str, t.Union[Number, np.ndarray]],
         champions_file: Path,
         island_id: int,
     ) -> None:
@@ -774,7 +776,7 @@ class Outputs:
                     self.single_to_plot(processor)
 
     # TODO: Specific to 'calibration_plot'
-    def calibration_plots(self, results: dict, fitness: float) -> None:
+    def calibration_plots(self, results: t.Mapping, fitness: float) -> None:
         """TBW."""
         assert self.calibration_plot
 
@@ -833,7 +835,7 @@ class Outputs:
 
             self.user_plt_args = self.calibration_plot.fitting_plot.plot_args
 
-            user_plt_args_dct = None  # type: t.Optional[t.Dict[str, t.Any]]
+            user_plt_args_dct = None  # type: t.Optional[t.Mapping[str, t.Any]]
             if isinstance(self.user_plt_args, PlotArguments):
                 user_plt_args_dct = self.user_plt_args.to_dict()
 
@@ -972,7 +974,7 @@ class Outputs:
     def update_args(
         self,
         plot_type: PlotType,
-        new_args: t.Optional[dict] = None,
+        new_args: t.Optional[t.Mapping] = None,
         ax_args: t.Optional[dict] = None,
         plt_args: t.Optional[dict] = None,
     ) -> t.Tuple[dict, dict]:

@@ -51,7 +51,7 @@ cache:
 #    - pytest
 #  allow_failure: true
 
-# Run pytest for Python 3.6
+# Run pytest for Python 3.6 without anaconda
 python36:
   image: python:3.6
   stage: test
@@ -59,7 +59,7 @@ python36:
     - tox -e py36-extra_all
 
 
-# Run pytest for Python 3.7
+# Run pytest for Python 3.7 without anaconda
 python37:
   image: python:3.7
   stage: test
@@ -67,7 +67,7 @@ python37:
     - tox -e py37-extra_all
 
 
-# Run pytest for Python 3.8
+# Run pytest for Python 3.8 without anaconda
 python38:
   image: python:3.8
   stage: test
@@ -77,7 +77,7 @@ python38:
 
 # Run mypy
 mypy:
-  image: python:3.7
+  image: python:3
   stage: test
   script:
     - tox -e mypy
@@ -141,7 +141,7 @@ doc8:
 
 # Run pytest + coverage and create html report (pytest_report.html)
 coverage:
-  image: python:3.6
+  image: python:3
   stage: build
   script:
     - pip install pytest pytest-cov pytest-html
@@ -169,7 +169,7 @@ licenses-latest:
 
 # Generate the Sphinx documentation into 'doc/html'
 doc:
-  image: python:3.7
+  image: python:3
   stage: build
   script:
     - tox -e docs
@@ -260,7 +260,7 @@ website:
 
 # Create the pages
 pages:
-  image: python:3.6
+  image: python:3
   stage: deploy
   script:
     - mkdir public
