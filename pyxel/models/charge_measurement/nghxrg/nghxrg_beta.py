@@ -649,10 +649,11 @@ class HXRGNoise:
                     start_x_idx = w[2]
                     end_x_idx = self.naxis1 - w[3]
 
-                    here[
-                        start_y_idx:end_y_idx, start_x_idx:end_x_idx
-                    ] = rd_noise * np.random.standard_normal(
-                        (self.naxis2 - w[0] - w[1], self.naxis1 - w[2] - w[3])
+                    here[start_y_idx:end_y_idx, start_x_idx:end_x_idx] = (
+                        rd_noise
+                        * np.random.standard_normal(
+                            (self.naxis2 - w[0] - w[1], self.naxis1 - w[2] - w[3])
+                        )
                     )
                 else:  # No Ref. pixel,  so add only regular pixel
                     here = rd_noise * np.random.standard_normal(

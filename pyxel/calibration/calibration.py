@@ -713,9 +713,7 @@ class Calibration:
         self._weighting_path = value
 
     def run_calibration(
-        self,
-        processor: Processor,
-        output_dir: Path,
+        self, processor: Processor, output_dir: Path,
     ) -> t.Sequence[CalibrationResult]:
         """TBW.
 
@@ -830,9 +828,7 @@ class Calibration:
         return res
 
     def post_processing(
-        self,
-        calib_results: t.Sequence[CalibrationResult],
-        output: Outputs,
+        self, calib_results: t.Sequence[CalibrationResult], output: Outputs,
     ) -> None:
         """TBW."""
         for one_calib_result in calib_results:  # type: CalibrationResult

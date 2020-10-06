@@ -54,10 +54,7 @@ registry_map = {
         {"func": "pyxel.models.run_tars", "name": "tars"},
     ],
     "charge_collection": [
-        {
-            "func": "pyxel.models.charge_collection.fix_pattern_noise",
-            "type": "ccd",
-        },
+        {"func": "pyxel.models.charge_collection.fix_pattern_noise", "type": "ccd",},
         {
             "func": "pyxel.models.charge_collection.simple_full_well",
             "name": "full_well",
@@ -65,10 +62,7 @@ registry_map = {
     ],
     "charge_transfer": [{"func": "pyxel.models.charge_transfer.cdm", "type": "ccd"}],
     "charge_measurement": [
-        {
-            "func": "pyxel.models.charge_measurement.output_node_noise",
-            "type": "ccd",
-        },
+        {"func": "pyxel.models.charge_measurement.output_node_noise", "type": "ccd",},
         {
             "func": "pyxel.models.signal_transfer.nghxrg.nghxrg.ktc_bias_noise",
             "type": "cmos",
