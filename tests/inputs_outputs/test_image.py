@@ -10,6 +10,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 from astropy.io import fits
+from PIL import Image
 
 from pyxel.inputs_outputs import load_image
 
@@ -38,6 +39,15 @@ def valid_multiple_hdus() -> fits.HDUList:
     hdu_lst = fits.HDUList([hdu_primary, hdu_secondary])
 
     return hdu_lst
+
+
+@pytest.fixture
+def valid_pil_image() -> Image.Image:
+    """Create a valid RGB PIL image."""
+    data_2d = np.array([[10, 20], [30, 40]])
+    pil_image = Image.fromarray(data_2d).convert("RGB")
+
+    return pil_image
 
 
 def test_invalid_filename():
@@ -128,3 +138,32 @@ def test_with_txt(tmp_path: Path, filename: str, content: str):
 
     # Check 'data_2d
     np.testing.assert_equal(data_2d, np.array([[1.1, 2.2], [3.3, 4.4]]))
+
+
+@pytest.mark.parametrize(
+    "filename",
+    [
+        "valid_filename.jpg",
+        "valid_filename.png",
+        "valid_filename.tiff",
+        "valid_filename.bmp",
+    ],
+)
+def test_with_pil(tmp_path: Path, valid_pil_image: Image.Image, filename: str):
+    """Check with a RGB uploaded image."""
+    full_filename = tmp_path.joinpath(filename)
+    valid_pil_image.save(full_filename)
+
+    assert full_filename.exists()
+
+    # Load image
+    data_2d = load_image(full_filename)
+
+    suffix = full_filename.suffix.lower()
+
+    if suffix.startswith(".jpg"):
+        # Check compressed (lossy) jpg data_2d
+        np.testing.assert_equal(data_2d, np.array([[13, 19], [28, 34]]))
+    else:
+        # Check data_2d
+        np.testing.assert_equal(data_2d, np.array([[10, 20], [30, 40]]))

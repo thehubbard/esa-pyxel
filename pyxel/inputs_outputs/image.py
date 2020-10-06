@@ -12,6 +12,7 @@ from pathlib import Path
 
 import numpy as np
 from astropy.io import fits
+from PIL import Image
 
 
 def load_image(filename: t.Union[str, Path]) -> np.ndarray:
@@ -42,6 +43,9 @@ def load_image(filename: t.Union[str, Path]) -> np.ndarray:
 
     >>> load_image('another_frame.npy')
     array([[-1.10136521, -0.93890239, ...]])
+
+    >>> load_image('rgb_frame.jpg')
+    array([[234, 211, ...]])
     """
     filename_path = Path(filename).resolve()
 
@@ -77,7 +81,15 @@ def load_image(filename: t.Union[str, Path]) -> np.ndarray:
                 if ii >= len(sep):
                     break
 
+    elif suffix.startswith((".jpg", ".png", ".bmp", ".tiff")):
+        image_2d = Image.open(filename_path)
+        image_2d_converted = image_2d.convert("LA")  # RGB to grayscale conversion
+        data_2d = np.array(image_2d_converted)[:, :, 0]
+
     else:
-        raise NotImplementedError("Only .npy, .fits, .txt and .data implemented.")
+        raise NotImplementedError(
+            """Image format not supported. List of supported image formats:
+            .npy, .fits, .txt, .data, .jpg, .bmp, .png, .tiff."""
+        )
 
     return data_2d

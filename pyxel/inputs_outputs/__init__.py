@@ -160,8 +160,7 @@ def pyxel_yaml_loader():
         ["simulation", "outputs", "calibration_plot", "population_plot", "plot_args"],
     )
     ObjectModelLoader.add_class(
-        FittingPlot,
-        ["simulation", "outputs", "calibration_plot", "fitting_plot"],
+        FittingPlot, ["simulation", "outputs", "calibration_plot", "fitting_plot"],
     )
     ObjectModelLoader.add_class(
         PlotArguments,
