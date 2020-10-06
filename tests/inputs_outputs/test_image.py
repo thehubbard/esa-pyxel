@@ -44,7 +44,7 @@ def valid_multiple_hdus() -> fits.HDUList:
 @pytest.fixture
 def valid_pil_image() -> Image.Image:
     """Create a valid RGB PIL image."""
-    data_2d = np.array([[10, 20], [30, 40]])
+    data_2d = np.array([[10, 20], [30, 40]], dtype=uint8)
     pil_image = Image.fromarray(data_2d).convert("RGB")
 
     return pil_image
