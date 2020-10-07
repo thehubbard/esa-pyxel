@@ -12,8 +12,8 @@ import pytest
 from astropy.io import fits
 from PIL import Image
 
-from pyxel.inputs_outputs import load_image
-
+from pyxel.inputs_outputs import load_image, load_table
+import pandas as pd
 
 @pytest.fixture
 def valid_hdus() -> fits.HDUList:
@@ -39,6 +39,11 @@ def valid_multiple_hdus() -> fits.HDUList:
     hdu_lst = fits.HDUList([hdu_primary, hdu_secondary])
 
     return hdu_lst
+
+@pytest.fixture
+def valid_table() -> np.ndarray:
+    table = np.array([[1., 2., 3.], [4., 5., 6.], [7., 8., 9.]])
+    return table
 
 
 @pytest.fixture
@@ -170,3 +175,64 @@ def test_with_pil(tmp_path: Path, valid_pil_image: Image.Image, filename: str):
     else:
         # Check data_2d
         np.testing.assert_equal(data_2d, np.array([[10, 20], [30, 40]]))
+
+def test_load_table_invalid_filename():
+    with pytest.raises(FileNotFoundError):
+        _ = load_table("dummy")
+
+@pytest.mark.parametrize("filename", ["dummy.foo"])
+def test_load_table_invalid_format(tmp_path: Path, filename: str):
+    # Create an empty file
+    full_filename = tmp_path.joinpath(filename)  # type: Path
+    full_filename.touch()
+
+    with pytest.raises(NotImplementedError):
+        _ = load_table(full_filename)
+
+@pytest.mark.parametrize(
+    "filename", ["valid_filename.txt", "valid_filename.TXT", "valid_filename.data"]
+)
+@pytest.mark.parametrize(
+    "delimiter", ["\t", " ", ",", "|", ";"]
+)
+def test_load_table_txtdata(tmp_path: Path, filename: str, delimiter: str):
+    full_filename = tmp_path.joinpath(filename)
+    t=valid_table
+    np.savetxt(full_filename, t, delimiter=delimiter)
+
+    assert full_filename.exists()
+
+    table = load_table(full_filename)
+
+    np.testing.assert_equal(table, valid_table)
+
+@pytest.mark.parametrize(
+    "filename", ["valid_filename.xlsx"]
+)
+def test_load_table_xlsx(tmp_path: Path, filename: str):
+    full_filename = tmp_path.joinpath(filename)
+    t = pd.DataFrame(valid_table)
+    t.to_excel(full_filename, header=False, index=False)
+
+    assert full_filename.exists()
+
+    table = load_table(full_filename)
+
+    np.testing.assert_equal(table, valid_table)
+
+@pytest.mark.parametrize(
+    "filename", ["valid_filename.csv", "valid_filename.CSV"]
+)
+@pytest.mark.parametrize(
+    "delimiter", ["\t", " ", ",", "|", ";"]
+)
+def test_load_table_csv(tmp_path: Path, filename: str, delimiter: str):
+    full_filename = tmp_path.joinpath(filename)
+    t = pd.DataFrame(valid_table)
+    t.to_csv(full_filename, delimiter = delimiter, header=False, index=False)
+
+    assert full_filename.exists()
+
+    table = load_table(full_filename)
+
+    np.testing.assert_equal(table, valid_table)

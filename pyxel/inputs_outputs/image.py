@@ -13,6 +13,7 @@ from pathlib import Path
 import numpy as np
 from astropy.io import fits
 from PIL import Image
+import pandas as pd
 
 
 def load_image(filename: t.Union[str, Path]) -> np.ndarray:
@@ -48,7 +49,7 @@ def load_image(filename: t.Union[str, Path]) -> np.ndarray:
     >>> load_image('rgb_frame.jpg')
     array([[234, 211, ...]])
     """
-    filename_path = Path(filename).resolve()
+    filename_path = Path(filename).expanduser().resolve()
 
     if not filename_path.exists():
         raise FileNotFoundError(f"Input file '{filename_path}' can not be found.")
@@ -82,3 +83,54 @@ def load_image(filename: t.Union[str, Path]) -> np.ndarray:
         )
 
     return data_2d
+
+
+def load_table(filename: t.Union[str, Path]) -> np.ndarray:
+    """Loads a table from a file and returns a numpy array.
+
+    Parameters
+    ----------
+    filename: str or Path
+        Filename to read the table.
+
+    Returns
+    -------
+    table: ndarray
+
+    Raises
+    ------
+    FileNotFoundError
+        If an image is not found.
+    NotImplementedError
+        When the extension of the filename is unknown.
+
+    """
+    filename_path = Path(filename).expanduser().resolve()
+
+    if not filename_path.exists():
+        raise FileNotFoundError(f"Input file '{filename_path}' can not be found.")
+
+    suffix = filename_path.suffix.lower()
+
+    if suffix.startswith(".npy"):
+        table = np.load(filename_path)
+
+    elif suffix.startswith('.xlsx'):
+        table = np.array(pd.read_excel(filename_path, header=None))
+
+    elif suffix.startswith('.csv'):
+        table = np.array(pd.read_csv(filename_path, header=None))
+
+    elif suffix.startswith(".txt") or suffix.startswith(".data"):
+        for sep in ["\t", " ", ",", "|", ";"]:
+            try:
+                table = np.array(pd.read_table(filename_path, header=None, delimiter=sep))
+            except ValueError:
+                pass
+            else:
+                break
+
+    else:
+        raise NotImplementedError("Only .npy, .xlsx, .csv, .txt and .data implemented.")
+
+    return table
