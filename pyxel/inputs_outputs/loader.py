@@ -5,16 +5,15 @@
 #  this file, may be copied, modified, propagated, or distributed except according to
 #  the terms contained in the file ‘LICENCE.txt’.
 
-"""Subpackage to load images."""
+"""Subpackage to load images and tables."""
 
 import typing as t
 from pathlib import Path
 
 import numpy as np
-from astropy.io import fits
-from PIL import Image
 import pandas as pd
 from astropy.io import fits
+from PIL import Image
 
 
 def load_image(filename: t.Union[str, Path]) -> np.ndarray:
@@ -87,12 +86,13 @@ def load_image(filename: t.Union[str, Path]) -> np.ndarray:
 
 
 def load_table(filename: t.Union[str, Path]) -> pd.DataFrame:
-    """Loads a table from a file and returns a pandas dataframe. No header is expected in xlsx.
+    """Load a table from a file and returns a pandas dataframe. No header is expected in xlsx.
 
     Parameters
     ----------
     filename: str or Path
         Filename to read the table.
+        {.npy, .xlsx, .csv, .txt., .data} are accepted.
 
     Returns
     -------
@@ -122,6 +122,7 @@ def load_table(filename: t.Union[str, Path]) -> pd.DataFrame:
     elif suffix.startswith(".csv"):
         for sep in ["\t", " ", ",", "|", ";"]:
             try:
+                #numpy will return ValueError with a wrong delimiter
                 table = pd.DataFrame(np.loadtxt(filename_path, delimiter=sep))
             except ValueError:
                 pass
@@ -131,6 +132,7 @@ def load_table(filename: t.Union[str, Path]) -> pd.DataFrame:
     elif suffix.startswith(".txt") or suffix.startswith(".data"):
         for sep in ["\t", " ", ",", "|", ";"]:
             try:
+                # numpy will return ValueError with a wrong delimiter
                 table = pd.DataFrame(np.loadtxt(filename_path, delimiter=sep))
             except ValueError:
                 pass
