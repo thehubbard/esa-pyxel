@@ -24,6 +24,8 @@ Core
   (See `!121 <https://gitlab.com/esa/pyxel/-/merge_requests/121>`_).
 * Make package and script 'pyxel' executable.
   (See `!112 <https://gitlab.com/esa/pyxel/-/merge_requests/112>`_).
+* Created a function inputs_outputs.load_table().
+  (See `!132 <https://gitlab.com/esa/pyxel/-/merge_requests/132>`_).
 
 Documentation
 ~~~~~~~~~~~~~
