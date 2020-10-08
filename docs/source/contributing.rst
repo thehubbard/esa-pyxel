@@ -75,7 +75,8 @@ Bug reports must:
 
       ```python
       >>> from pyxel.io import load
-      >>> cfg = load("config.yml")
+      >>> cfg = load('config.yml')
+      ...
       ```
 
 2. Include the full version string of *Pyxel* and its dependencies. You can
