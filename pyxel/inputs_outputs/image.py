@@ -85,8 +85,8 @@ def load_image(filename: t.Union[str, Path]) -> np.ndarray:
     return data_2d
 
 
-def load_table(filename: t.Union[str, Path]) -> np.ndarray:
-    """Loads a table from a file and returns a numpy array.
+def load_table(filename: t.Union[str, Path]) -> pd.DataFrame:
+    """Loads a table from a file and returns a pandas dataframe. No header is expected in xlsx.
 
     Parameters
     ----------
@@ -95,7 +95,7 @@ def load_table(filename: t.Union[str, Path]) -> np.ndarray:
 
     Returns
     -------
-    table: ndarray
+    table: DataFrame
 
     Raises
     ------
@@ -113,18 +113,24 @@ def load_table(filename: t.Union[str, Path]) -> np.ndarray:
     suffix = filename_path.suffix.lower()
 
     if suffix.startswith(".npy"):
-        table = np.load(filename_path)
+        table = pd.DataFrame(np.load(filename_path))
 
     elif suffix.startswith('.xlsx'):
-        table = np.array(pd.read_excel(filename_path, header=None))
+        table = pd.read_excel(filename_path, header=None, convert_float=False)
 
     elif suffix.startswith('.csv'):
-        table = np.array(pd.read_csv(filename_path, header=None))
+        for sep in ["\t", " ", ",", "|", ";"]:
+            try:
+                table = pd.DataFrame(np.loadtxt(filename_path, delimiter=sep))
+            except ValueError:
+                pass
+            else:
+                break
 
     elif suffix.startswith(".txt") or suffix.startswith(".data"):
         for sep in ["\t", " ", ",", "|", ";"]:
             try:
-                table = np.array(pd.read_table(filename_path, header=None, delimiter=sep))
+                table = pd.DataFrame(np.loadtxt(filename_path, delimiter=sep))
             except ValueError:
                 pass
             else:

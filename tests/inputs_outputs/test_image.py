@@ -41,9 +41,9 @@ def valid_multiple_hdus() -> fits.HDUList:
     return hdu_lst
 
 @pytest.fixture
-def valid_table() -> np.ndarray:
-    table = np.array([[1., 2., 3.], [4., 5., 6.], [7., 8., 9.]])
-    return table
+def valid_table() -> pd.DataFrame:
+    array = np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]])
+    return pd.DataFrame(array, dtype='float64')
 
 
 @pytest.fixture
@@ -195,30 +195,28 @@ def test_load_table_invalid_format(tmp_path: Path, filename: str):
 @pytest.mark.parametrize(
     "delimiter", ["\t", " ", ",", "|", ";"]
 )
-def test_load_table_txtdata(tmp_path: Path, filename: str, delimiter: str):
+def test_load_table_txtdata(tmp_path: Path, filename: str, delimiter: str, valid_table):
     full_filename = tmp_path.joinpath(filename)
-    t=valid_table
-    np.savetxt(full_filename, t, delimiter=delimiter)
+    valid_table.to_csv(full_filename, header=None, index=None, sep=delimiter)
 
     assert full_filename.exists()
 
     table = load_table(full_filename)
 
-    np.testing.assert_equal(table, valid_table)
+    pd.testing.assert_frame_equal(table, valid_table)
 
 @pytest.mark.parametrize(
     "filename", ["valid_filename.xlsx"]
 )
-def test_load_table_xlsx(tmp_path: Path, filename: str):
+def test_load_table_xlsx(tmp_path: Path, filename: str, valid_table):
     full_filename = tmp_path.joinpath(filename)
-    t = pd.DataFrame(valid_table)
-    t.to_excel(full_filename, header=False, index=False)
+    valid_table.to_excel(full_filename, header=False, index=False)
 
     assert full_filename.exists()
 
     table = load_table(full_filename)
 
-    np.testing.assert_equal(table, valid_table)
+    pd.testing.assert_frame_equal(table, valid_table)
 
 @pytest.mark.parametrize(
     "filename", ["valid_filename.csv", "valid_filename.CSV"]
@@ -226,13 +224,12 @@ def test_load_table_xlsx(tmp_path: Path, filename: str):
 @pytest.mark.parametrize(
     "delimiter", ["\t", " ", ",", "|", ";"]
 )
-def test_load_table_csv(tmp_path: Path, filename: str, delimiter: str):
+def test_load_table_csv(tmp_path: Path, filename: str, valid_table, delimiter: str):
     full_filename = tmp_path.joinpath(filename)
-    t = pd.DataFrame(valid_table)
-    t.to_csv(full_filename, delimiter = delimiter, header=False, index=False)
+    valid_table.to_csv(full_filename, header=None, index=None, sep=delimiter)
 
     assert full_filename.exists()
 
     table = load_table(full_filename)
 
-    np.testing.assert_equal(table, valid_table)
+    pd.testing.assert_frame_equal(table, valid_table)
