@@ -75,8 +75,7 @@ Bug reports must:
 
       ```python
       >>> from pyxel.io import load
-      >>> cfg = load('config.yml')
-      ...
+      >>> cfg = load("config.yml")
       ```
 
 2. Include the full version string of *Pyxel* and its dependencies. You can
@@ -360,13 +359,13 @@ Some other important things to know about the docs:
       .. ipython:: python
 
           x = 2
-          x**3
+          x ** 3
 
   will be rendered as::
 
       In [1]: x = 2
 
-      In [2]: x**3
+      In [2]: x ** 3
       Out[2]: 8
 
   Almost all code examples in the docs are run (and the output saved) during the

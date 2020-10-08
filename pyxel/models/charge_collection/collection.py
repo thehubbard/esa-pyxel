@@ -41,17 +41,16 @@ def simple_collection(detector: Detector) -> None:
 
     # Changing = to += since charge dataframe is reset, the pixel array need to be
     # incremented, we can't do the whole operation on each iteration
-    detector.pixel.array += df_to_array(array,
-                                        charge_per_pixel,
-                                        pixel_index_ver,
-                                        pixel_index_hor
-                                        ).astype(np.int32)
-                                        
+    detector.pixel.array += df_to_array(
+        array, charge_per_pixel, pixel_index_ver, pixel_index_hor
+    ).astype(np.int32)
+
+
 def empty_charge(detector: Detector) -> None:
-    """ Each time the charges are collected in the pixel, the charge array is reset
+    """Each time the charges are collected in the pixel, the charge array is reset
     using Charge(). This allows to limit memory leaks due to long exposure.
     There will still be a problem for very large charge array due to very high flux
-    in simulation """
+    in simulation"""
     detector._charge = Charge()
 
 
