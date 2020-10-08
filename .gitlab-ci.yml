@@ -141,7 +141,7 @@ doc8:
 
 # Run pytest + coverage and create html report (pytest_report.html)
 coverage:
-  image: python:3
+  image: python:3.8
   stage: build
   script:
     - pip install pytest pytest-cov pytest-html

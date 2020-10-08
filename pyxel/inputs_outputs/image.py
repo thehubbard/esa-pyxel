@@ -12,6 +12,7 @@ from pathlib import Path
 
 import numpy as np
 from astropy.io import fits
+from PIL import Image
 
 
 def load_image(filename: t.Union[str, Path]) -> np.ndarray:
@@ -20,7 +21,8 @@ def load_image(filename: t.Union[str, Path]) -> np.ndarray:
     Parameters
     ----------
     filename : str or Path
-        Filename to read an image. '.fits', '.npy' and '.txt' are accepted.
+        Filename to read an image.
+        {.npy, .fits, .txt, .data, .jpg, .jpeg, .bmp, .png, .tiff} are accepted.
 
     Returns
     -------
@@ -42,6 +44,9 @@ def load_image(filename: t.Union[str, Path]) -> np.ndarray:
 
     >>> load_image('another_frame.npy')
     array([[-1.10136521, -0.93890239, ...]])
+
+    >>> load_image('rgb_frame.jpg')
+    array([[234, 211, ...]])
     """
     filename_path = Path(filename).resolve()
 
@@ -57,27 +62,23 @@ def load_image(filename: t.Union[str, Path]) -> np.ndarray:
         data_2d = np.load(filename_path)
 
     elif suffix.startswith(".txt") or suffix.startswith(".data"):
-        # TODO: this is a convoluted implementation. Change to:
-        # for sep in [' ', ',', '|', ';']:
-        #     try:
-        #         data = np.loadtxt(path, delimiter=sep[ii])
-        #     except ValueError:
-        #         pass
-        #     else:
-        #         break
-        sep = [" ", ",", "|", ";"]
-        ii, jj = 0, 1
-        while jj:
+        for sep in ["\t", " ", ",", "|", ";"]:
             try:
-                jj -= 1
-                data_2d = np.loadtxt(filename_path, delimiter=sep[ii])
+                data_2d = np.loadtxt(filename_path, delimiter=sep)
             except ValueError:
-                ii += 1
-                jj += 1
-                if ii >= len(sep):
-                    break
+                pass
+            else:
+                break
+
+    elif suffix.startswith((".jpg", ".jpeg", ".png", ".bmp", ".tiff")):
+        image_2d = Image.open(filename_path)
+        image_2d_converted = image_2d.convert("LA")  # RGB to grayscale conversion
+        data_2d = np.array(image_2d_converted)[:, :, 0]
 
     else:
-        raise NotImplementedError("Only .npy, .fits, .txt and .data implemented.")
+        raise NotImplementedError(
+            """Image format not supported. List of supported image formats:
+            .npy, .fits, .txt, .data, .jpg, .jpeg, .bmp, .png, .tiff."""
+        )
 
     return data_2d

@@ -48,6 +48,7 @@ dependencies:
   - tqdm
   - typing-extensions
   - pygmo>=2.11
+  - pillow
 # Development
   - flake8
   - isort>=5
