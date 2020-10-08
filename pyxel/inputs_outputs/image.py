@@ -14,6 +14,7 @@ import numpy as np
 from astropy.io import fits
 from PIL import Image
 import pandas as pd
+from astropy.io import fits
 
 
 def load_image(filename: t.Union[str, Path]) -> np.ndarray:
@@ -115,10 +116,10 @@ def load_table(filename: t.Union[str, Path]) -> pd.DataFrame:
     if suffix.startswith(".npy"):
         table = pd.DataFrame(np.load(filename_path))
 
-    elif suffix.startswith('.xlsx'):
+    elif suffix.startswith(".xlsx"):
         table = pd.read_excel(filename_path, header=None, convert_float=False)
 
-    elif suffix.startswith('.csv'):
+    elif suffix.startswith(".csv"):
         for sep in ["\t", " ", ",", "|", ";"]:
             try:
                 table = pd.DataFrame(np.loadtxt(filename_path, delimiter=sep))

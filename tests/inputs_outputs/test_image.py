@@ -8,12 +8,13 @@
 from pathlib import Path
 
 import numpy as np
+import pandas as pd
 import pytest
 from astropy.io import fits
 from PIL import Image
 
 from pyxel.inputs_outputs import load_image, load_table
-import pandas as pd
+
 
 @pytest.fixture
 def valid_hdus() -> fits.HDUList:
@@ -40,10 +41,11 @@ def valid_multiple_hdus() -> fits.HDUList:
 
     return hdu_lst
 
+
 @pytest.fixture
 def valid_table() -> pd.DataFrame:
     array = np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0], [7.0, 8.0, 9.0]])
-    return pd.DataFrame(array, dtype='float64')
+    return pd.DataFrame(array, dtype="float64")
 
 
 @pytest.fixture
@@ -176,9 +178,11 @@ def test_with_pil(tmp_path: Path, valid_pil_image: Image.Image, filename: str):
         # Check data_2d
         np.testing.assert_equal(data_2d, np.array([[10, 20], [30, 40]]))
 
+
 def test_load_table_invalid_filename():
     with pytest.raises(FileNotFoundError):
         _ = load_table("dummy")
+
 
 @pytest.mark.parametrize("filename", ["dummy.foo"])
 def test_load_table_invalid_format(tmp_path: Path, filename: str):
@@ -189,12 +193,11 @@ def test_load_table_invalid_format(tmp_path: Path, filename: str):
     with pytest.raises(NotImplementedError):
         _ = load_table(full_filename)
 
+
 @pytest.mark.parametrize(
     "filename", ["valid_filename.txt", "valid_filename.TXT", "valid_filename.data"]
 )
-@pytest.mark.parametrize(
-    "delimiter", ["\t", " ", ",", "|", ";"]
-)
+@pytest.mark.parametrize("delimiter", ["\t", " ", ",", "|", ";"])
 def test_load_table_txtdata(tmp_path: Path, filename: str, delimiter: str, valid_table):
     full_filename = tmp_path.joinpath(filename)
     valid_table.to_csv(full_filename, header=None, index=None, sep=delimiter)
@@ -205,9 +208,8 @@ def test_load_table_txtdata(tmp_path: Path, filename: str, delimiter: str, valid
 
     pd.testing.assert_frame_equal(table, valid_table)
 
-@pytest.mark.parametrize(
-    "filename", ["valid_filename.xlsx"]
-)
+
+@pytest.mark.parametrize("filename", ["valid_filename.xlsx"])
 def test_load_table_xlsx(tmp_path: Path, filename: str, valid_table):
     full_filename = tmp_path.joinpath(filename)
     valid_table.to_excel(full_filename, header=False, index=False)
@@ -218,12 +220,9 @@ def test_load_table_xlsx(tmp_path: Path, filename: str, valid_table):
 
     pd.testing.assert_frame_equal(table, valid_table)
 
-@pytest.mark.parametrize(
-    "filename", ["valid_filename.csv", "valid_filename.CSV"]
-)
-@pytest.mark.parametrize(
-    "delimiter", ["\t", " ", ",", "|", ";"]
-)
+
+@pytest.mark.parametrize("filename", ["valid_filename.csv", "valid_filename.CSV"])
+@pytest.mark.parametrize("delimiter", ["\t", " ", ",", "|", ";"])
 def test_load_table_csv(tmp_path: Path, filename: str, valid_table, delimiter: str):
     full_filename = tmp_path.joinpath(filename)
     valid_table.to_csv(full_filename, header=None, index=None, sep=delimiter)
