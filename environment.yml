@@ -44,6 +44,8 @@ dependencies:
   - fsspec
   - h5py
   - pyyaml
+  - xlrd
+  - openpyxl
 # Others
   - tqdm
   - typing-extensions

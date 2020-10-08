@@ -122,7 +122,7 @@ def load_table(filename: t.Union[str, Path]) -> pd.DataFrame:
     elif suffix.startswith(".csv"):
         for sep in ["\t", " ", ",", "|", ";"]:
             try:
-                #numpy will return ValueError with a wrong delimiter
+                # numpy will return ValueError with a wrong delimiter
                 table = pd.DataFrame(np.loadtxt(filename_path, delimiter=sep))
             except ValueError:
                 pass
