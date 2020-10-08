@@ -119,6 +119,7 @@ def test_with_fits_multiple(
 @pytest.mark.parametrize(
     "content",
     [
+        pytest.param("1.1\t2.2\n3.3\t4.4", id="with tab"),
         pytest.param("1.1 2.2\n3.3 4.4", id="with space"),
         pytest.param("1.1,2.2\n3.3,4.4", id="with comma"),
         pytest.param("1.1|2.2\n3.3|4.4", id="with vertical-colon"),
@@ -144,7 +145,9 @@ def test_with_txt(tmp_path: Path, filename: str, content: str):
     "filename",
     [
         "valid_filename.jpg",
+        "valid_filename.jpeg",
         "valid_filename.png",
+        "valid_filename.PNG",
         "valid_filename.tiff",
         "valid_filename.bmp",
     ],
@@ -161,7 +164,7 @@ def test_with_pil(tmp_path: Path, valid_pil_image: Image.Image, filename: str):
 
     suffix = full_filename.suffix.lower()
 
-    if suffix.startswith(".jpg"):
+    if suffix.startswith(".jpg") or suffix.startswith(".jpeg"):
         # Check compressed (lossy) jpg data_2d
         np.testing.assert_equal(data_2d, np.array([[13, 19], [28, 34]]))
     else:
