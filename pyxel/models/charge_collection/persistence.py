@@ -5,9 +5,9 @@
 """Pyxel persistence model."""
 import logging
 
-from pyxel.detectors import CMOS
-
 import numpy as np
+
+from pyxel.detectors import CMOS
 
 
 # @validators.validate

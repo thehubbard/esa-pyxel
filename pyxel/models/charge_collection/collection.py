@@ -11,8 +11,9 @@ import logging
 import numba
 import numpy as np
 
-from pyxel.detectors import Detector
 from pyxel.data_structure import Charge
+from pyxel.detectors import Detector
+
 
 # @pyxel.validate
 # @pyxel.argument(name='', label='', units='', validate=)
@@ -47,10 +48,12 @@ def simple_collection(detector: Detector) -> None:
 
 
 def empty_charge(detector: Detector) -> None:
-    """Each time the charges are collected in the pixel, the charge array is reset
-    using Charge(). This allows to limit memory leaks due to long exposure.
+    """Each time the charges are collected in the pixel, the charge array is reset using Charge().
+
+    This allows to limit memory leaks due to long exposure.
     There will still be a problem for very large charge array due to very high flux
-    in simulation"""
+    in simulation.
+    """
     detector._charge = Charge()
 
 
