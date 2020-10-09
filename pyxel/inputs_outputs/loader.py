@@ -34,8 +34,8 @@ def load_image(filename: t.Union[str, Path]) -> np.ndarray:
     ------
     FileNotFoundError
         If an image is not found.
-    NotImplementedError
-        When the extension of the filename is unknown.
+    ValueError
+        When the extension of the filename is unknown or separator is not found.
 
     Examples
     --------
@@ -66,10 +66,11 @@ def load_image(filename: t.Union[str, Path]) -> np.ndarray:
         for sep in ["\t", " ", ",", "|", ";"]:
             try:
                 data_2d = np.loadtxt(filename_path, delimiter=sep)
+                break
             except ValueError:
                 pass
-            else:
-                break
+        else:
+            raise ValueError("Cannot find the separator.")
 
     elif suffix.startswith((".jpg", ".jpeg", ".png", ".bmp", ".tiff")):
         image_2d = Image.open(filename_path)
@@ -77,7 +78,7 @@ def load_image(filename: t.Union[str, Path]) -> np.ndarray:
         data_2d = np.array(image_2d_converted)[:, :, 0]
 
     else:
-        raise NotImplementedError(
+        raise ValueError(
             """Image format not supported. List of supported image formats:
             .npy, .fits, .txt, .data, .jpg, .jpeg, .bmp, .png, .tiff."""
         )
@@ -102,8 +103,8 @@ def load_table(filename: t.Union[str, Path]) -> pd.DataFrame:
     ------
     FileNotFoundError
         If an image is not found.
-    NotImplementedError
-        When the extension of the filename is unknown.
+    ValueError
+        When the extension of the filename is unknown or separator is not found.
 
     """
     filename_path = Path(filename).expanduser().resolve()
@@ -114,7 +115,7 @@ def load_table(filename: t.Union[str, Path]) -> pd.DataFrame:
     suffix = filename_path.suffix.lower()
 
     if suffix.startswith(".npy"):
-        table = pd.DataFrame(np.load(filename_path))
+        table = pd.DataFrame(np.load(filename_path), dtype='float')
 
     elif suffix.startswith(".xlsx"):
         table = pd.read_excel(filename_path, header=None, convert_float=False)
@@ -123,23 +124,24 @@ def load_table(filename: t.Union[str, Path]) -> pd.DataFrame:
         for sep in ["\t", " ", ",", "|", ";"]:
             try:
                 # numpy will return ValueError with a wrong delimiter
-                table = pd.DataFrame(np.loadtxt(filename_path, delimiter=sep))
+                table = pd.read_csv(filename_path, delimiter=sep, header=None, dtype='float')
+                break
             except ValueError:
                 pass
-            else:
-                break
+        else:
+            raise ValueError("Cannot find the separator.")
 
     elif suffix.startswith(".txt") or suffix.startswith(".data"):
         for sep in ["\t", " ", ",", "|", ";"]:
             try:
-                # numpy will return ValueError with a wrong delimiter
-                table = pd.DataFrame(np.loadtxt(filename_path, delimiter=sep))
+                table = pd.read_table(filename_path, delimiter=sep, header=None, dtype='float')
+                break
             except ValueError:
                 pass
-            else:
-                break
+        else:
+            raise ValueError("Cannot find the separator.")
 
     else:
-        raise NotImplementedError("Only .npy, .xlsx, .csv, .txt and .data implemented.")
+        raise ValueError("Only .npy, .xlsx, .csv, .txt and .data implemented.")
 
     return table

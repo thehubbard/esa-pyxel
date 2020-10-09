@@ -68,7 +68,7 @@ def test_invalid_format(tmp_path: Path, filename: str):
     full_filename = tmp_path.joinpath(filename)  # type: Path
     full_filename.touch()
 
-    with pytest.raises(NotImplementedError):
+    with pytest.raises(ValueError):
         _ = load_image(full_filename)
 
 
@@ -190,7 +190,7 @@ def test_load_table_invalid_format(tmp_path: Path, filename: str):
     full_filename = tmp_path.joinpath(filename)  # type: Path
     full_filename.touch()
 
-    with pytest.raises(NotImplementedError):
+    with pytest.raises(ValueError):
         _ = load_table(full_filename)
 
 
