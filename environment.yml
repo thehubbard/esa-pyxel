@@ -57,6 +57,7 @@ dependencies:
   - mypy
   - pytest
   - tox
+  - black>=20
 # Pip packages
   - pip:
     - poppy>=0.9
