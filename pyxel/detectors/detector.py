@@ -45,6 +45,9 @@ class Detector:
         self._signal = None  # type: t.Optional[Signal]
         self._image = None  # type: t.Optional[Image]
 
+        # This will be the memory of the detector where trapped charges will be saved
+        self._memory = dict()  # type: t.Dict
+
         self.input_image = None  # type: t.Optional[np.ndarray]
         self._output_dir = None  # type: t.Optional[Path]  # TODO: Is it really needed ?
 

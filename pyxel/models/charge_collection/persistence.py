@@ -5,42 +5,38 @@
 """Pyxel persistence model."""
 import logging
 
-from pyxel.detectors import CMOS
+import numpy as np
 
-# import numpy as np
+from pyxel.detectors import CMOS
 
 
 # @validators.validate
 # @config.argument(name='', label='', units='', validate=)
 def simple_persistence(
-    detector: CMOS, trap_timeconstant: list, trap_density: list
+    detector: CMOS, trap_timeconstants: list, trap_densities: list
 ) -> None:
     """Trapping/detrapping charges."""
-    logging.info("")
-
-    # TODO: NOT FINISHED AND NOT WORKING YET
-
-    # if detector.time == detector.start_time:
-    #     trapped_charge = np.zeros((len(trap_timeconstant), detector.geometry.row, detector.geometry.col))
-    # else:
-    #     trapped_charge = detector.material.trapped_charge
-    #
-    # trap_density_array = np.ones((len(trap_timeconstant), detector.geometry.row, detector.geometry.col))
-    #
-    # for idx, tc in enumerate(trap_timeconstant):
-    #     # trapped_charge[idx] += (detector.time / tc) *
-    #     # (detector.pixels.array * trap_density[idx] - trapped_charge[idx])
-    #
-    #     trap_density_array[idx] *= trap_density[idx]
-    #     max_charge_could_be_trapped = np.clip(detector.pixels.array, 0, trap_density_array[idx])
-    #     trapped_charge[idx] += (detector.time / tc) * (max_charge_could_be_trapped - trapped_charge[idx])
-    #
-    # detector.material.trapped_charge = trapped_charge
-    #
-    # # detector.pixels.array = trapped_charge[0]    # TODO
-    #
-    # # for i in range(len(trap_timeconstant)):
-    # #     detector.pixels.array -= trapped_charge[i, :, :]
-    #
-    #
-    # pass
+    logging.info("Persistence")
+    if "persistence" not in detector._memory.keys():
+        detector._memory["persistence"] = dict()
+        for trap_density, trap_timeconstant in zip(trap_densities, trap_timeconstants):
+            entry = "".join(
+                ["trappedCharges_", str(trap_density), "-", str(trap_timeconstant)]
+            )
+            detector._memory["persistence"].update(
+                {entry: np.zeros((detector.geometry.row, detector.geometry.col))}
+            )
+    else:
+        for trap_density, trap_timeconstant in zip(trap_densities, trap_timeconstants):
+            entry = "".join(
+                ["trappedCharges_", str(trap_density), "-", str(trap_timeconstant)]
+            )
+            trapped_charges = detector._memory["persistence"][entry]
+            # Trap density is a scalar for now, in the future we could feed maps?
+            trapped_charges = trapped_charges + (0.5 / trap_timeconstant) * (
+                detector.pixel.array * trap_density - trapped_charges
+            )
+            # Remove the trapped charges from the pixel
+            detector.pixel.array -= trapped_charges.astype(np.int32)
+            # Replace old trapped charges map in the detector's memory
+            detector._memory["persistence"][entry] = trapped_charges

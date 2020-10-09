@@ -3,9 +3,9 @@
 List of Acronyms
 =================
 
-===============  ==============================================================
+=======          ==========
 Acronym          Definition
-===============  ==============================================================
+=======          ==========
 CCD              Charge-Coupled Device
 CMOS             Complementary Metal Oxide Semiconductor
 MCT              Mercury Cadmium Telluride (HgCdTe)
@@ -21,4 +21,4 @@ ADC              Analog-Digital Converter
 PSF              Point Spread Function
 ACN              Alternating Column Noise
 RTG              Random Telegraph Noise
-===============  ==============================================================
+=======          ==========

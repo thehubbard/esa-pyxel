@@ -19,7 +19,9 @@ from pyxel.pipelines import ModelFunction
 def model_function() -> ModelFunction:
     """Create a valid `ModelFunction` instance."""
     return ModelFunction(
-        name="illumination", func=illumination, arguments={"level": 1, "option": "foo"}
+        name="illumination",
+        func=illumination,
+        arguments={"level": 1, "option": "foo"},
     )
 
 
