@@ -8,11 +8,12 @@
 from pathlib import Path
 
 import numpy as np
+import pandas as pd
 import pytest
 from astropy.io import fits
 from PIL import Image
 
-from pyxel.inputs_outputs import load_image
+from pyxel.inputs_outputs import load_image, load_table
 
 
 @pytest.fixture
@@ -42,6 +43,12 @@ def valid_multiple_hdus() -> fits.HDUList:
 
 
 @pytest.fixture
+def valid_table() -> pd.DataFrame:
+    array = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+    return pd.DataFrame(array, dtype="float64")
+
+
+@pytest.fixture
 def valid_pil_image() -> Image.Image:
     """Create a valid RGB PIL image."""
     data_2d = np.array([[10, 20], [30, 40]], dtype="uint8")
@@ -61,7 +68,7 @@ def test_invalid_format(tmp_path: Path, filename: str):
     full_filename = tmp_path.joinpath(filename)  # type: Path
     full_filename.touch()
 
-    with pytest.raises(NotImplementedError):
+    with pytest.raises(ValueError):
         _ = load_image(full_filename)
 
 
@@ -170,3 +177,58 @@ def test_with_pil(tmp_path: Path, valid_pil_image: Image.Image, filename: str):
     else:
         # Check data_2d
         np.testing.assert_equal(data_2d, np.array([[10, 20], [30, 40]]))
+
+
+def test_load_table_invalid_filename():
+    with pytest.raises(FileNotFoundError):
+        _ = load_table("dummy")
+
+
+@pytest.mark.parametrize("filename", ["dummy.foo"])
+def test_load_table_invalid_format(tmp_path: Path, filename: str):
+    # Create an empty file
+    full_filename = tmp_path.joinpath(filename)  # type: Path
+    full_filename.touch()
+
+    with pytest.raises(ValueError):
+        _ = load_table(full_filename)
+
+
+@pytest.mark.parametrize(
+    "filename", ["valid_filename.txt", "valid_filename.TXT", "valid_filename.data"]
+)
+@pytest.mark.parametrize("delimiter", ["\t", " ", ",", "|", ";"])
+def test_load_table_txtdata(tmp_path: Path, filename: str, delimiter: str, valid_table):
+    full_filename = tmp_path.joinpath(filename)
+    valid_table.to_csv(full_filename, header=None, index=None, sep=delimiter)
+
+    assert full_filename.exists()
+
+    table = load_table(full_filename)
+
+    pd.testing.assert_frame_equal(table, valid_table)
+
+
+@pytest.mark.parametrize("filename", ["valid_filename.xlsx"])
+def test_load_table_xlsx(tmp_path: Path, filename: str, valid_table):
+    full_filename = tmp_path.joinpath(filename)
+    valid_table.to_excel(full_filename, header=False, index=False)
+
+    assert full_filename.exists()
+
+    table = load_table(full_filename)
+
+    pd.testing.assert_frame_equal(table, valid_table)
+
+
+@pytest.mark.parametrize("filename", ["valid_filename.csv", "valid_filename.CSV"])
+@pytest.mark.parametrize("delimiter", ["\t", " ", ",", "|", ";"])
+def test_load_table_csv(tmp_path: Path, filename: str, valid_table, delimiter: str):
+    full_filename = tmp_path.joinpath(filename)
+    valid_table.to_csv(full_filename, header=None, index=None, sep=delimiter)
+
+    assert full_filename.exists()
+
+    table = load_table(full_filename)
+
+    pd.testing.assert_frame_equal(table, valid_table)

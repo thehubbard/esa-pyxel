@@ -22,7 +22,7 @@ from ..util import (
     FittingPlot,
     ParametricPlot,
 )
-from .image import load_image
+from .loader import load_image, load_table
 
 
 def build_callable(func: str, arguments: t.Optional[dict] = None) -> t.Callable:
