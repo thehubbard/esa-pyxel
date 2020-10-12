@@ -169,7 +169,7 @@ licenses-latest:
 
 # Generate the Sphinx documentation into 'doc/html'
 doc:
-  image: python:3
+  image: python:3.8
   stage: build
   script:
     - tox -e docs
