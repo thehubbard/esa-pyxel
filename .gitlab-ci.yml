@@ -1,22 +1,15 @@
-#
-# Notes: $CI_COMMIT_REF_NAME => master or branch-xyz
-#
-
-# variables:
-#    PYPI_USER: SECURE
-#    PYPI_PASSWORD: SECURE
-#    CONTAINER_LATEST_IMAGE: gitlab.esa.int:4567/sci-fv/pyxel:latest
-
 variables:
   # Change pip's cache directory to be inside the project directory.
   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache"
 
+  # Set tags for docker images
+  DOCKER_TEST_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
+  DOCKER_RELEASE_IMAGE: $CI_REGISTRY_IMAGE:latest
 
 stages:
   - test
   - build
   - deploy
-
 
 before_script:
   - python -V
@@ -217,24 +210,37 @@ website:
 #  only:
 #    - master
 
-#docker:
-#  stage: build
-#  image: docker:dind
-#  script:
-#    - echo $CONTAINER_LATEST_IMAGE
-#    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN gitlab.esa.int:4567
-#    - docker build -t gitlab.esa.int:4567/sci-fv/pyxel-mirror .
-#    - docker push gitlab.esa.int:4567/sci-fv/pyxel-mirror
-##    - docker login -u david.lucsanyi -p $TOKEN gitlab.esa.int:4567   # TODO  (personal) key/token needed
-##    - docker tag gitlab.esa.int:4567/sci-fv/pyxel-mirror:latest registry.gitlab.com/esa/pyxel:latest
-##    - docker push registry.gitlab.com/esa/pyxel
-#
-##    - docker build --pull -t $CONTAINER_LATEST_IMAGE .
-##    - docker push $CONTAINER_LATEST_IMAGE
-##    - docker tag $CONTAINER_LATEST_IMAGE registry.gitlab.com/esa/pyxel
-#  allow_failure: true
-#  only:
-#    - master
+# See https://docs.gitlab.com/ee/user/packages/container_registry/#build-and-push-by-using-gitlab-cicd
+docker:
+  stage: build
+  image: docker
+  services:
+    - docker:dind
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - docker build -t $DOCKER_TEST_IMAGE .
+    - docker push $DOCKER_TEST_IMAGE
+  rules:
+    - if: $FULL_CI_CD
+#    - if: $CI_PIPELINE_SOURCE != "schedule"
+    - if: $CI_COMMIT_BRANCH != "master"
+    
+
+docker_release:
+  stage: deploy
+  image: docker
+  before_script:
+    - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+  script:
+    - docker pull $DOCKER_TEST_IMAGE
+    - docker tag $DOCKER_TEST_IMAGE $DOCKER_RELEASE_IMAGE
+    - docker push $DOCKER_RELEASE_IMAGE
+  rules:
+    - if: $FULL_CI_CD
+#    - if: $CI_PIPELINE_SOURCE != "schedule"
+    - if: $CI_COMMIT_BRANCH == "master"
+
 
 # ###########################
 # Deploy Stage
