@@ -80,11 +80,10 @@ def optical_psf(
     """
     logging.getLogger("poppy").setLevel(logging.WARNING)
 
-    osys = op.OpticalSystem()  # default: npix=1024  # todo: npix=?
     if fov_arcsec:  # TODO
         raise NotImplementedError
 
-    osys = op.OpticalSystem(npix=1000)  # default: 1024
+    osys = op.OpticalSystem(npix=1000)  # default: 1024# todo: npix=?
 
     for item in optical_system:
         if item["item"] == "CircularAperture":
