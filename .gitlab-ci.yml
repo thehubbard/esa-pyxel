@@ -221,6 +221,11 @@ docker:
   script:
     - docker build -t $DOCKER_TEST_IMAGE .
     - docker push $DOCKER_TEST_IMAGE
+  rules:
+    - if: $FULL_CI_CD
+    - if: $CI_PIPELINE_SOURCE != "schedule"
+    - if: $CI_COMMIT_BRANCH != "master"
+    
 
 docker_release:
   stage: deploy
@@ -231,8 +236,10 @@ docker_release:
     - docker pull $DOCKER_TEST_IMAGE
     - docker tag $DOCKER_TEST_IMAGE $DOCKER_RELEASE_IMAGE
     - docker push $DOCKER_RELEASE_IMAGE
-#  rules:
-#    - if: $CI_COMMIT_BRANCH == "master"
+  rules:
+    - if: $FULL_CI_CD
+    - if: $CI_PIPELINE_SOURCE != "schedule"
+    - if: $CI_COMMIT_BRANCH == "master"
 
 
 # ###########################
