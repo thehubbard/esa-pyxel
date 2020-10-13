@@ -223,7 +223,7 @@ docker:
     - docker push $DOCKER_TEST_IMAGE
   rules:
     - if: $FULL_CI_CD
-    - if: $CI_PIPELINE_SOURCE != "schedule"
+#    - if: $CI_PIPELINE_SOURCE != "schedule"
     - if: $CI_COMMIT_BRANCH != "master"
     
 
@@ -238,7 +238,7 @@ docker_release:
     - docker push $DOCKER_RELEASE_IMAGE
   rules:
     - if: $FULL_CI_CD
-    - if: $CI_PIPELINE_SOURCE != "schedule"
+#    - if: $CI_PIPELINE_SOURCE != "schedule"
     - if: $CI_COMMIT_BRANCH == "master"
 
 
