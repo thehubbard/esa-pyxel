@@ -84,7 +84,9 @@ def memory_usage_details(
 
     for attribute in attr_kw[0]:
         if attribute not in obj.__dict__.keys():
-            raise AttributeError(f"Attribute {attribute} not found in the observed object.")
+            raise AttributeError(
+                f"Attribute {attribute} not found in the observed object."
+            )
 
     for key, value in obj.__dict__.items():
         if hasattr(value, "numbytes") and key in attr_kw[0]:
