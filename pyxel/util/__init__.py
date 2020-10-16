@@ -26,7 +26,15 @@ from pyxel.util.outputs import (
     ParametricPlot,
 )
 
-from pyxel.util.jupyxel import display_config, display_dict, display_model, change_modelparam, display_array, display_detector, display_persist
+from pyxel.util.jupyxel import (
+    display_config,
+    display_dict,
+    display_model,
+    change_modelparam,
+    display_array,
+    display_detector,
+    display_persist,
+)
 
 from pyxel.util.memory import get_size, memory_usage_details
 

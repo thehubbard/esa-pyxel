@@ -85,6 +85,30 @@ def change_modelparam(cfg, model_name: str, argument: str, changed_value):
                         print(model_name, "possess no argument named: ", value)
 
 
+def set_modelstate(cfg, model_name: str, state: bool = True):
+    display(Markdown("## <font color=blue>" + model_name + "</font>"))
+    for keyw, value in cfg["pipeline"].__dict__.items():
+        if type(value) == pyxel.pipelines.model_group.ModelGroup:
+            for model in value.__dict__["models"]:
+                if model.name == model_name:
+                    try:
+                        model.enabled = state
+                        display(
+                            Markdown(
+                                "".join(
+                                    [
+                                        "Model ",
+                                        model_name,
+                                        " enabled? ",
+                                        str(model.enabled),
+                                    ]
+                                )
+                            )
+                        )
+                    except KeyError:
+                        print(model_name, "possess no argument named: ", value)
+
+
 # ----------------------------------------------------------------------------------------------
 # These method are used to display the detector object (all of the array Phton, pixel, signal and image)
 
