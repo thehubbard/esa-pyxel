@@ -8,7 +8,8 @@
 #
 
 import pytest
-from pyxel.detectors import CCD, Environment, Material, CCDCharacteristics, CCDGeometry
+
+from pyxel.detectors import CCD, CCDCharacteristics, CCDGeometry, Environment, Material
 
 
 @pytest.fixture

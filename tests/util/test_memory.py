@@ -7,8 +7,9 @@
 #
 #
 
-from pyxel.util import memory_usage_details
 import pytest
+
+from pyxel.util import memory_usage_details
 
 
 def test_no_attributes(CCD_empty):
@@ -18,7 +19,7 @@ def test_no_attributes(CCD_empty):
 
 def test_invalid_attribute(CCD_empty):
     with pytest.raises(KeyError):
-        memory_usage_details(CCD_empty, ['dummy'])
+        memory_usage_details(CCD_empty, ["dummy"])
 
 
 def test_memory_usage(CCD_empty):

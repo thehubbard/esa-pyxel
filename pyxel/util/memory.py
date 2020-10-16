@@ -10,8 +10,8 @@
 
 import typing as t
 from typing import List
-import numpy as np
 
+import numpy as np
 from pympler.asizeof import asizeof  # type: ignore
 
 
