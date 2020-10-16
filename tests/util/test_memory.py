@@ -24,7 +24,9 @@ def test_invalid_attribute(CCD_empty):
         memory_usage_details(CCD_empty, ["dummy"])
 
 
-@pytest.mark.skipif(sys.version_info < (3, 8), reason="Different value for older versions.")
+@pytest.mark.skipif(
+    sys.version_info < (3, 8), reason="Different value for older versions."
+)
 def test_memory_usage(CCD_empty):
 
     attributes = [
