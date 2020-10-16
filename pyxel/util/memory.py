@@ -71,8 +71,10 @@ def memory_usage_details(
 
     Raises
     ------
-    Value Error:
-
+    Value Error
+        When no attributes provided.
+    AttributeError
+        Attribute does not exist in the object.
     """
 
     usage: dict = {}
@@ -80,9 +82,9 @@ def memory_usage_details(
     if attr_kw == ():
         raise ValueError("No attributes provided.")
 
-    for key in attr_kw[0]:
-        if key not in obj.__dict__.keys():
-            raise KeyError(f"Key {key} not found in obj.__dict__.items().")
+    for attribute in attr_kw[0]:
+        if attribute not in obj.__dict__.keys():
+            raise AttributeError(f"Attribute {attribute} not found in the observed object.")
 
     for key, value in obj.__dict__.items():
         if hasattr(value, "numbytes") and key in attr_kw[0]:

@@ -18,7 +18,7 @@ def test_no_attributes(CCD_empty):
 
 
 def test_invalid_attribute(CCD_empty):
-    with pytest.raises(KeyError):
+    with pytest.raises(AttributeError):
         memory_usage_details(CCD_empty, ["dummy"])
 
 
