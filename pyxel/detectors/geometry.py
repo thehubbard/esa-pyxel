@@ -58,6 +58,8 @@ class Geometry:
         self._pixel_vert_size = pixel_vert_size
         self._pixel_horz_size = pixel_horz_size
 
+        self._numbytes = 0
+
     def __repr__(self) -> str:
         cls_name = self.__class__.__name__  # type: str
         return (
@@ -170,7 +172,8 @@ class Geometry:
         init_hor_position += self.pixel_horz_size / 2.0
         return np.tile(init_hor_position, self.row)
 
-    def nbytes(self) -> int:
+    @property
+    def numbytes(self) -> int:
         """Recursively calculates object size in bytes using Pympler library.
 
         Returns
@@ -178,4 +181,5 @@ class Geometry:
         int
             Size of the object in bytes.
         """
-        return get_size(self)
+        self._numbytes = get_size(self)
+        return self._numbytes

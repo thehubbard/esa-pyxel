@@ -86,6 +86,8 @@ class Characteristics:
         self._vg = vg
         self._dt = dt
 
+        self._numbytes = 0
+
     @property
     def qe(self) -> float:
         """Get Quantum efficiency."""
@@ -200,7 +202,8 @@ class Characteristics:
 
         self._dt = value
 
-    def nbytes(self) -> int:
+    @property
+    def numbytes(self) -> int:
         """Recursively calculates object size in bytes using Pympler library.
 
         Returns
@@ -208,4 +211,5 @@ class Characteristics:
         int
             Size of the object in bytes.
         """
-        return get_size(self)
+        self._numbytes = get_size(self)
+        return self._numbytes

@@ -6,11 +6,46 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 #
 #
+
+from pyxel.util import memory_usage_details
 import pytest
-from pyxel.util import get_size, memory_usage_details
-import numpy as np
-import pandas as pd
-import sys
 
 
+def test_no_attributes(CCD_empty):
+    with pytest.raises(ValueError):
+        memory_usage_details(CCD_empty)
 
+
+def test_invalid_attribute(CCD_empty):
+    with pytest.raises(KeyError):
+        memory_usage_details(CCD_empty, ['dummy'])
+
+
+def test_memory_usage(CCD_empty):
+
+    attributes = [
+        "_photon",
+        "_charge",
+        "_pixel",
+        "_signal",
+        "_image",
+        "material",
+        "environment",
+        "_geometry",
+        "_characteristics",
+    ]
+
+    usage = memory_usage_details(CCD_empty, attributes, print_result=False)
+
+    empty_size = {
+        "characteristics": 1160,
+        "charge": 43896,
+        "environment": 512,
+        "geometry": 664,
+        "image": 432,
+        "material": 1400,
+        "pixel": 432,
+        "signal": 432,
+    }
+
+    assert usage == empty_size

@@ -26,6 +26,8 @@ class Particle:
         self.EMPTY_FRAME = pd.DataFrame()  # type: pd.DataFrame
         self.frame = pd.DataFrame()  # type: pd.DataFrame
 
+        self._numbytes = 0
+
     def get_values(self, quantity: str, id_list: t.Optional[list] = None) -> np.ndarray:
         """Get quantity values of particles defined with id_list. By default it returns values of all particles.
 
@@ -62,7 +64,8 @@ class Particle:
         else:
             self.frame = self.EMPTY_FRAME.copy()
 
-    def nbytes(self) -> int:
+    @property
+    def numbytes(self) -> int:
         """Recursively calculates object size in bytes using Pympler library.
 
         Returns
@@ -70,4 +73,5 @@ class Particle:
         int
             Size of the object in bytes.
         """
-        return get_size(self)
+        self._numbytes = get_size(self)
+        return self._numbytes

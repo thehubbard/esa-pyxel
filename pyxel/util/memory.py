@@ -10,6 +10,7 @@
 
 import typing as t
 from typing import List
+import numpy as np
 
 from pympler.asizeof import asizeof  # type: ignore
 
@@ -44,7 +45,7 @@ def print_human_readable_memory(usage: dict) -> None:
     for k, v in usage.items():
         for unit in ["Bytes", "KB", "MB", "GB"]:
             if v < 1024.0:
-                print(f"{k:<20}{round(v):<5}{unit}")
+                print(f"{k:<20}{np.round(v,decimals=1):<7}{unit}")
                 break
             v /= 1024.0
 
@@ -67,15 +68,25 @@ def memory_usage_details(
     Returns
     -------
     usage: dict
+
+    Raises
+    ------
+    Value Error:
+
     """
 
     usage: dict = {}
 
-    for k, v in obj.__dict__.items():
-        if hasattr(v, "nbytes") and k in attr_kw[0]:
-            usage.update({k.replace("_", ""): get_size(v)})
-        else:
-            pass
+    if attr_kw == ():
+        raise ValueError("No attributes provided.")
+
+    for key in attr_kw[0]:
+        if key not in obj.__dict__.keys():
+            raise KeyError(f"Key {key} not found in obj.__dict__.items().")
+
+    for key, value in obj.__dict__.items():
+        if hasattr(value, "numbytes") and key in attr_kw[0]:
+            usage.update({key.replace("_", ""): get_size(value)})
 
     if print_result:
         if human_readable:

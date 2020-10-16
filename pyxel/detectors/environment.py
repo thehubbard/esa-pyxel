@@ -43,6 +43,8 @@ class Environment:
         self._total_ionising_dose = total_ionising_dose
         self._total_non_ionising_dose = total_non_ionising_dose
 
+        self._numbytes = 0
+
     def __repr__(self) -> str:
         cls_name = self.__class__.__name__  # type: str
         return (
@@ -90,7 +92,8 @@ class Environment:
 
         self._total_non_ionising_dose = value
 
-    def nbytes(self) -> int:
+    @property
+    def numbytes(self) -> int:
         """Recursively calculates object size in bytes using Pympler library.
 
         Returns
@@ -98,4 +101,5 @@ class Environment:
         int
             Size of the object in bytes.
         """
-        return get_size(self)
+        self._numbytes = get_size(self)
+        return self._numbytes

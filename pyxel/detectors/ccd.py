@@ -23,7 +23,7 @@ class CCD(Detector):
         material: "Material",
         environment: "Environment",
         characteristics: "CCDCharacteristics",
-    ):
+    ) -> object:
         self._geometry = geometry  # type: CCDGeometry
         self._characteristics = characteristics  # type: CCDCharacteristics
 

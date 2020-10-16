@@ -111,6 +111,7 @@ class Material:
         self._e_effective_mass = (
             e_effective_mass  # TODO: set automatically depending on the material
         )
+        self._numbytes = 0
 
     @property
     def trapped_charge(self) -> t.Optional[np.ndarray]:
@@ -210,7 +211,8 @@ class Material:
 
         self._e_effective_mass = value
 
-    def nbytes(self) -> int:
+    @property
+    def numbytes(self) -> int:
         """Recursively calculates object size in bytes using Pympler library.
 
         Returns
@@ -218,7 +220,8 @@ class Material:
         int
             Size of the object in bytes.
         """
-        return get_size(self)
+        self._numbytes = get_size(self)
+        return self._numbytes
 
     # TODO create func for compound materials
     # def set_material(self, material):

@@ -31,6 +31,8 @@ class Processor:
         self.detector = detector
         self.pipeline = pipeline
 
+        self._numbytes = 0
+
     def __repr__(self) -> str:
         cls_name = self.__class__.__name__  # type: str
         return f"{cls_name}<detector={self.detector!r}, pipeline={self.pipeline!r}>"
@@ -162,7 +164,8 @@ class Processor:
         # TODO: Is is necessary to return 'self' ??
         return self
 
-    def nbytes(self) -> int:
+    @property
+    def numbytes(self) -> int:
         """Recursively calculates object size in bytes using Pympler library.
 
         Returns
@@ -170,4 +173,5 @@ class Processor:
         int
             Size of the object in bytes.
         """
-        return get_size(self)
+        self._numbytes = get_size(self)
+        return self._numbytes

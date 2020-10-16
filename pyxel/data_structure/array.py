@@ -34,6 +34,8 @@ class Array:
 
         self._array = value  # type: np.ndarray
 
+        self._numbytes = 0
+
         # TODO: is `self.type` needed ?
         # self.type = None            # type: t.Optional[type]
 
@@ -123,7 +125,8 @@ class Array:
         """Return sum of all pixel values."""
         return np.sum(self._array)
 
-    def nbytes(self) -> int:
+    @property
+    def numbytes(self) -> int:
         """Recursively calculates object size in bytes using Pympler library.
 
         Returns
@@ -131,4 +134,5 @@ class Array:
         int
             Size of the object in bytes.
         """
-        return get_size(self)
+        self._numbytes = get_size(self)
+        return self._numbytes

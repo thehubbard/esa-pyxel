@@ -62,6 +62,8 @@ class Detector:
         self.read_out = True  # type: bool
         self._all_time_steps_it = iter([])  # type: t.Iterator[float]
 
+        self._numbytes = 0
+
     @property
     def geometry(self):
         """TBW."""
@@ -209,7 +211,8 @@ class Detector:
             self._time = 0.0
         return self._time
 
-    def nbytes(self) -> int:
+    @property
+    def numbytes(self) -> int:
         """Recursively calculates object size in bytes using Pympler library.
 
         Returns
@@ -217,7 +220,8 @@ class Detector:
         int
             Size of the object in bytes.
         """
-        return get_size(self)
+        self._numbytes = get_size(self)
+        return self._numbytes
 
     def memory_usage(
         self, print_result: bool = True, human_readable: bool = True
