@@ -23,6 +23,7 @@ def test_invalid_attribute(CCD_empty):
     with pytest.raises(AttributeError):
         memory_usage_details(CCD_empty, ["dummy"])
 
+
 @pytest.mark.skipif(sys.version_info < (3, 8))
 def test_memory_usage(CCD_empty):
 
