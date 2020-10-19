@@ -7,74 +7,41 @@
 
 """Pyxel photon generator models."""
 import logging
+import typing as t
+from typing import Any, Optional, Tuple, Union
 
+import astropy
+import matplotlib.pyplot as plt
 import numpy as np
 import poppy as op
+from astropy.convolution import convolve_fft
+from astropy.io import fits
 
 from pyxel.data_structure import Photon
 from pyxel.detectors import Detector
 
-from astropy.convolution import convolve_fft
 
-
-def optical_psf(
-    detector: Detector,
+def calc_psf(
     wavelength: float,
     fov_arcsec: float,
     pixelscale: float,
     optical_system: list,
-) -> None:
-    """POPPY (Physical Optics Propagation in PYthon) model wrapper.
+    display: bool = False,
+) -> t.Tuple[t.List[fits.hdu.image.PrimaryHDU], t.List[op.Wavefront]]:
+    """TBW.
 
-    It calculates the optical Point Spread Function of an optical system.
+    Parameters
+    ----------
+    wavelength
+    fov_arcsec
+    pixelscale
+    optical_system
+    display
 
-    Documentation:
-    https://poppy-optics.readthedocs.io/en/stable/index.html
-
-    detector: Detector
-        Pyxel Detector object.
-    wavelength: float
-        Wavelength of incoming light in meters.
-    fov_arcsec: float, optional
-        Field Of View on detector plane in arcsec.
-    pixelscale: float
-        Pixel scale on detector plane (arcsec/pixel).
-        Defines sampling resolution of PSF.
-    optical_system:
-        List of optical elements before detector with their specific arguments.
-
-        See details about POPPY Optical Element classes:
-        https://poppy-optics.readthedocs.io/en/stable/available_optics.html
-
-        Supported optical elements:
-
-        - ``CircularAperture``
-        - ``SquareAperture``
-        - ``RectangularAperture``
-        - ``HexagonAperture``
-        - ``MultiHexagonalAperture``
-        - ``ThinLens``
-        - ``SecondaryObscuration``
-        - ``ZernikeWFE``
-        - ``SineWaveWFE``
-
-        .. code-block:: yaml
-
-          # YAML config: arguments of POPPY optical_system
-          optical_system:
-          - item: CircularAperture
-            radius: 1.5
-          - item: ThinLens
-            radius: 1.2
-            nwaves: 1
-          - item: ZernikeWFE
-            radius: 0.8
-            coefficients: [0.1e-6, 3.e-6, -3.e-6, 1.e-6, -7.e-7, 0.4e-6, -2.e-6]
-            aperture_stop: false
-
+    Returns
+    -------
+    psf
     """
-    logging.getLogger("poppy").setLevel(logging.WARNING)
-
     osys = op.OpticalSystem(npix=1000)  # default: 1024
 
     for item in optical_system:
@@ -130,12 +97,85 @@ def optical_psf(
     psf = osys.calc_psf(
         wavelength=wavelength,
         return_intermediates=True,
-        #display_intermediates=True,
+        display_intermediates=display,
         normalize="last",
+    )
+
+    if display:
+        plt.show()
+
+    return psf
+
+
+def optical_psf(
+    detector: Detector,
+    wavelength: float,
+    fov_arcsec: float,
+    pixelscale: float,
+    optical_system: list,
+) -> None:
+    """POPPY (Physical Optics Propagation in Python) model wrapper.
+
+    It calculates the optical Point Spread Function of an optical system and applies the convolution.
+
+    Documentation:
+    https://poppy-optics.readthedocs.io/en/stable/index.html
+
+    detector: Detector
+        Pyxel Detector object.
+    wavelength: float
+        Wavelength of incoming light in meters.
+    fov_arcsec: float, optional
+        Field Of View on detector plane in arcsec.
+    pixelscale: float
+        Pixel scale on detector plane (arcsec/pixel).
+        Defines sampling resolution of PSF.
+    optical_system:
+        List of optical elements before detector with their specific arguments.
+
+        See details about POPPY Optical Element classes:
+        https://poppy-optics.readthedocs.io/en/stable/available_optics.html
+
+        Supported optical elements:
+
+        - ``CircularAperture``
+        - ``SquareAperture``
+        - ``RectangularAperture``
+        - ``HexagonAperture``
+        - ``MultiHexagonalAperture``
+        - ``ThinLens``
+        - ``SecondaryObscuration``
+        - ``ZernikeWFE``
+        - ``SineWaveWFE``
+
+        .. code-block:: yaml
+
+          # YAML config: arguments of POPPY optical_system
+          optical_system:
+          - item: CircularAperture
+            radius: 1.5
+          - item: ThinLens
+            radius: 1.2
+            nwaves: 1
+          - item: ZernikeWFE
+            radius: 0.8
+            coefficients: [0.1e-6, 3.e-6, -3.e-6, 1.e-6, -7.e-7, 0.4e-6, -2.e-6]
+            aperture_stop: false
+
+    """
+    logging.getLogger("poppy").setLevel(logging.WARNING)
+
+    psf = calc_psf(
+        wavelength=wavelength,
+        fov_arcsec=fov_arcsec,
+        pixelscale=pixelscale,
+        optical_system=optical_system,
     )
 
     # Convolution
     mean = np.mean(detector.photon.array)
-    array = convolve_fft(detector.photon.array, psf[0][0].data, boundary='fill', fill_value=mean)
+    array = astropy.convolution.convolve_fft(
+        detector.photon.array, psf[0][0].data, boundary="fill", fill_value=mean
+    )
 
     detector.photon = Photon(array)

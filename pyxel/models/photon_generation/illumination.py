@@ -67,15 +67,22 @@ def illumination(
         if hole_size:
             photon_array = np.zeros(shape, dtype=int)
             if hole_center is not None:
-                if not ((0 <= hole_center[0] <= shape[0]) and (0 <= hole_center[1] <= shape[1])):
-                    raise ValueError('Argument "hole_center" should be inside Photon array.')
+                if not (
+                    (0 <= hole_center[0] <= shape[0])
+                    and (0 <= hole_center[1] <= shape[1])
+                ):
+                    raise ValueError(
+                        'Argument "hole_center" should be inside Photon array.'
+                    )
             else:
                 hole_center = [int(shape[0] / 2), int(shape[1] / 2)]
             p = hole_center[0] - int(hole_size[0] / 2)
             q = hole_center[1] - int(hole_size[1] / 2)
             p0 = int(np.clip(p, a_min=0, a_max=shape[0]))
             q0 = int(np.clip(q, a_min=0, a_max=shape[1]))
-            photon_array[slice(p0, p + hole_size[0]), slice(q0, q + hole_size[1])] = level
+            photon_array[
+                slice(p0, p + hole_size[0]), slice(q0, q + hole_size[1])
+            ] = level
         else:
             raise ValueError(
                 "hole_size argument should be defined for illumination model"
@@ -85,8 +92,13 @@ def illumination(
         if hole_size:
             photon_array = np.zeros(shape, dtype=int)
             if hole_center is not None:
-                if not ((0 <= hole_center[0] <= shape[0]) and (0 <= hole_center[1] <= shape[1])):
-                    raise ValueError('Argument "hole_center" should be inside Photon array.')
+                if not (
+                    (0 <= hole_center[0] <= shape[0])
+                    and (0 <= hole_center[1] <= shape[1])
+                ):
+                    raise ValueError(
+                        'Argument "hole_center" should be inside Photon array.'
+                    )
             else:
                 hole_center = [int(shape[0] / 2), int(shape[1] / 2)]
             y, x = np.ogrid[: shape[0], : shape[1]]
