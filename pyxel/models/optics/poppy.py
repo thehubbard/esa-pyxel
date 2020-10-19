@@ -7,26 +7,22 @@
 
 """Pyxel photon generator models."""
 import logging
-import typing as t
 
 import numpy as np
 import poppy as op
-from matplotlib import pyplot as plt
-from scipy import signal
 
 from pyxel.data_structure import Photon
 from pyxel.detectors import Detector
 
+from astropy.convolution import convolve_fft
 
-# @validators.validate
-# @config.argument(name='image_file', label='', validate=check_path)
+
 def optical_psf(
     detector: Detector,
     wavelength: float,
+    fov_arcsec: float,
     pixelscale: float,
-    fov_pixels: int,
     optical_system: list,
-    fov_arcsec: t.Optional[float] = None,
 ) -> None:
     """POPPY (Physical Optics Propagation in PYthon) model wrapper.
 
@@ -39,11 +35,11 @@ def optical_psf(
         Pyxel Detector object.
     wavelength: float
         Wavelength of incoming light in meters.
+    fov_arcsec: float, optional
+        Field Of View on detector plane in arcsec.
     pixelscale: float
-        Pixel scale on detector plane (micron/pixel or arcsec/pixel).
+        Pixel scale on detector plane (arcsec/pixel).
         Defines sampling resolution of PSF.
-    fov_pixels: int
-        Field Of View on detector plane in pixel.
     optical_system:
         List of optical elements before detector with their specific arguments.
 
@@ -56,6 +52,7 @@ def optical_psf(
         - ``SquareAperture``
         - ``RectangularAperture``
         - ``HexagonAperture``
+        - ``MultiHexagonalAperture``
         - ``ThinLens``
         - ``SecondaryObscuration``
         - ``ZernikeWFE``
@@ -75,15 +72,10 @@ def optical_psf(
             coefficients: [0.1e-6, 3.e-6, -3.e-6, 1.e-6, -7.e-7, 0.4e-6, -2.e-6]
             aperture_stop: false
 
-    fov_arcsec: float, optional
-        Field Of View on detector plane in arcsec.
     """
     logging.getLogger("poppy").setLevel(logging.WARNING)
 
-    if fov_arcsec:  # TODO
-        raise NotImplementedError
-
-    osys = op.OpticalSystem(npix=1000)  # default: 1024# todo: npix=?
+    osys = op.OpticalSystem(npix=1000)  # default: 1024
 
     for item in optical_system:
         if item["item"] == "CircularAperture":
@@ -102,6 +94,12 @@ def optical_psf(
             )  # m
         elif item["item"] == "HexagonAperture":
             optical_item = op.HexagonAperture(side=item["side"])
+        elif item["item"] == "MultiHexagonalAperture":
+            optical_item = op.MultiHexagonAperture(
+                side=item["side"],
+                rings=item["rings"],
+                gap=item["gap"],
+            )  # cm
         elif item["item"] == "SecondaryObscuration":
             optical_item = op.SecondaryObscuration(
                 secondary_radius=item["secondary_radius"],
@@ -124,59 +122,20 @@ def optical_psf(
             raise NotImplementedError
         osys.add_pupil(optical_item)
 
-    osys.add_detector(pixelscale=pixelscale,
-                      fov_arcsec=fov_arcsec)  # fov_pixels=fov_pixels)
+    osys.add_detector(
+        pixelscale=pixelscale,
+        fov_arcsec=fov_arcsec,
+    )
 
     psf = osys.calc_psf(
         wavelength=wavelength,
         return_intermediates=True,
-        # return_final=True,
-        display_intermediates=True,
+        #display_intermediates=True,
         normalize="last",
-    )  # TODO NORMALIZATION!!!!
+    )
 
-    # psf[0][0].data == psf[1][-1].intensity
+    # Convolution
+    mean = np.mean(detector.photon.array)
+    array = convolve_fft(detector.photon.array, psf[0][0].data, boundary='fill', fill_value=mean)
 
-    plt.figure()
-    plt.imshow(detector.photon.array, cmap='gray')
-    plt.title('Original')
-    plt.colorbar()
-
-    plt.figure()
-    plt.imshow(psf[0][0].data, cmap='gray')
-    plt.title('PSF lin. scale')
-    plt.colorbar()
-
-    plt.figure()
-    plt.imshow(np.log10(psf[0][0].data), cmap='gray')
-    plt.title('PSF log. scale')
-    plt.colorbar()
-
-    # # Convolution                             # TODO TODO TODO
-    # a = detector.photon.array.shape[0]
-    # b = detector.photon.array.shape[1]
-    # new_shape = (a + 2 * fov_pixels, b + 2 * fov_pixels)
-    # # new_shape = (a, b)
-    # array = np.zeros(new_shape, detector.photon.array.dtype)
-    # roi = slice(fov_pixels, fov_pixels + a), slice(fov_pixels, fov_pixels + b)
-    # # roi = slice(0, 0 + a), slice(0, 0 + b)
-    # array[roi] = detector.photon.array
-    #
-    # array = signal.convolve2d(array,
-    #                           psf[0][0].data,
-    #                           mode='same',
-    #                           boundary='fill', fillvalue=0)
-    # detector.photon.new_array(array)
-
-    # plt.figure()
-    # ax_int = plt.gca()
-    # ax_int.imshow(array, cmap='gray')
-    # ax_int.set_title('Convolution with intensity')
-    # ax_int.set_axis_off()
-
-    plt.show()
-
-    # conv_with_wavefront = signal.convolve2d(detector.photon.array, psf[1][-1].wavefront,
-    #                                         mode='same', boundary='fill', fillvalue=0)
-
-    plt.close("all")  # TODO
+    detector.photon = Photon(array)
