@@ -9,7 +9,6 @@
 import logging
 import typing as t
 
-import astropy
 import matplotlib.pyplot as plt
 import numpy as np
 import poppy as op
@@ -93,7 +92,9 @@ def calc_psf(
         fov_arcsec=fov_arcsec,
     )
 
-    psf= osys.calc_psf(
+    psf: t.Tuple[
+        t.List[fits.hdu.image.PrimaryHDU], t.List[op.Wavefront]
+    ] = osys.calc_psf(
         wavelength=wavelength,
         return_intermediates=True,
         display_intermediates=display,
@@ -173,7 +174,7 @@ def optical_psf(
 
     # Convolution
     mean = np.mean(detector.photon.array)
-    array = astropy.convolution.convolve_fft(
+    array = convolve_fft(
         detector.photon.array, psf[0][0].data, boundary="fill", fill_value=mean
     )
 
