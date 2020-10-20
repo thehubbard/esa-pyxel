@@ -26,6 +26,8 @@ Core
   (See `!112 <https://gitlab.com/esa/pyxel/-/merge_requests/112>`_).
 * Created a function inputs_outputs.load_table().
   (See `!132 <https://gitlab.com/esa/pyxel/-/merge_requests/132>`_).
+* Reimplement convolution in POPPY optical_psf model.
+  (See `#52 <https://gitlab.com/esa/pyxel/issues/52>`_).
 
 Documentation
 ~~~~~~~~~~~~~
