@@ -70,3 +70,27 @@ upstream	https://gitlab.com/esa/pyxel.git (push)
    $ git push upstream --tags
    ```
    :interrobang: This could be done directly inside Gitlab
+
+1. Add a section for the next release {X:Y+1} to `CHANGELOG.rst`
+
+    ```fish
+    version {X:Y+1} / 2020-MM-DD
+    ----------------------------
+
+    Core
+    ~~~~
+
+    Documentation
+    ~~~~~~~~~~~~~
+    ```
+
+1. Commit you changes and push to master again:
+    ```fish
+    $ git commit -am "New Changelog section"
+    $ git push upstream master
+    ```
+
+1. Issue the release on GitLab.
+   Click on https://gitlab.com/esa/pyxel/-/releases . Type in the version number and paste the release summary in the notes.
+
+1. Issue the release announcement to the mailing list pyxel-dev@googlegroups.com and to the Pyxel blog.
