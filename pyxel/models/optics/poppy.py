@@ -94,7 +94,7 @@ def calc_psf(
         fov_arcsec=fov_arcsec,
     )
 
-    psf = osys.calc_psf(
+    psf= osys.calc_psf(
         wavelength=wavelength,
         return_intermediates=True,
         display_intermediates=display,
