@@ -8,7 +8,6 @@
 """Pyxel photon generator models."""
 import logging
 import typing as t
-from typing import Any, Optional, Tuple, Union
 
 import astropy
 import matplotlib.pyplot as plt
