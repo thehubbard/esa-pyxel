@@ -115,7 +115,7 @@ def load_table(filename: t.Union[str, Path]) -> pd.DataFrame:
     suffix = filename_path.suffix.lower()
 
     if suffix.startswith(".npy"):
-        table = pd.DataFrame(np.load(filename_path), dtype='float')
+        table = pd.DataFrame(np.load(filename_path), dtype="float")
 
     elif suffix.startswith(".xlsx"):
         table = pd.read_excel(filename_path, header=None, convert_float=False)
@@ -124,7 +124,9 @@ def load_table(filename: t.Union[str, Path]) -> pd.DataFrame:
         for sep in ["\t", " ", ",", "|", ";"]:
             try:
                 # numpy will return ValueError with a wrong delimiter
-                table = pd.read_csv(filename_path, delimiter=sep, header=None, dtype='float')
+                table = pd.read_csv(
+                    filename_path, delimiter=sep, header=None, dtype="float"
+                )
                 break
             except ValueError:
                 pass
@@ -134,7 +136,9 @@ def load_table(filename: t.Union[str, Path]) -> pd.DataFrame:
     elif suffix.startswith(".txt") or suffix.startswith(".data"):
         for sep in ["\t", " ", ",", "|", ";"]:
             try:
-                table = pd.read_table(filename_path, delimiter=sep, header=None, dtype='float')
+                table = pd.read_table(
+                    filename_path, delimiter=sep, header=None, dtype="float"
+                )
                 break
             except ValueError:
                 pass
