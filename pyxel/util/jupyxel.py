@@ -8,6 +8,7 @@ from IPython.display import Markdown, display
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 import pyxel
+from pyxel.pipelines.model_group import ModelGroup
 
 # plt.style.use('dark_background')
 
@@ -73,6 +74,10 @@ def display_model(cfg, model_name):
         display(Markdown("<font color=red>" + model_name + " not found</font>"))
 
 
+# TODO: change cfg to processor
+# TODO: change type to isinstance
+# TODO: fix mypy
+# TODO: fix flake8
 def change_modelparam(cfg, model_name: str, argument: str, changed_value):
     display(Markdown("## <font color=blue>" + model_name + "</font>"))
     for keyw, value in cfg["pipeline"].__dict__.items():
@@ -85,7 +90,7 @@ def change_modelparam(cfg, model_name: str, argument: str, changed_value):
                         print(model_name, "possess no argument named: ", value)
 
 
-def set_modelstate(cfg, model_name: str, state: bool = True):
+def set_modelstate(cfg, model_name: str, state: bool = True) -> None:
     display(Markdown("## <font color=blue>" + model_name + "</font>"))
     for keyw, value in cfg["pipeline"].__dict__.items():
         if type(value) == pyxel.pipelines.model_group.ModelGroup:
