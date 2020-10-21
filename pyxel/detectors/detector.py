@@ -15,6 +15,7 @@ import numpy as np
 
 from pyxel.data_structure import Charge, Image, Photon, Pixel, Signal
 from pyxel.detectors import Environment, Material
+from pyxel.util.memory import get_size, memory_usage_details
 
 __all__ = ["Detector"]
 
@@ -60,6 +61,8 @@ class Detector:
         self._non_destructive = False  # type: bool
         self.read_out = True  # type: bool
         self._all_time_steps_it = iter([])  # type: t.Iterator[float]
+
+        self._numbytes = 0
 
     @property
     def geometry(self):
@@ -207,3 +210,41 @@ class Detector:
         except StopIteration:
             self._time = 0.0
         return self._time
+
+    @property
+    def numbytes(self) -> int:
+        """Recursively calculates object size in bytes using Pympler library.
+
+        Returns
+        -------
+        int
+            Size of the object in bytes.
+        """
+        self._numbytes = get_size(self)
+        return self._numbytes
+
+    def memory_usage(
+        self, print_result: bool = True, human_readable: bool = True
+    ) -> dict:
+        """TBW.
+
+        Returns
+        -------
+        dict
+            Dictionary of attribute memory usage
+        """
+        attributes = [
+            "_photon",
+            "_charge",
+            "_pixel",
+            "_signal",
+            "_image",
+            "material",
+            "environment",
+            "_geometry",
+            "_characteristics",
+        ]
+
+        return memory_usage_details(
+            self, attributes, print_result=print_result, human_readable=human_readable
+        )

@@ -12,6 +12,8 @@ import typing as t
 import numpy as np
 import pandas as pd
 
+from pyxel.util.memory import get_size
+
 # from astropy.units import cds
 # cds.enable()
 
@@ -23,6 +25,8 @@ class Particle:
         # TODO: This should be a class variable
         self.EMPTY_FRAME = pd.DataFrame()  # type: pd.DataFrame
         self.frame = pd.DataFrame()  # type: pd.DataFrame
+
+        self._numbytes = 0
 
     def get_values(self, quantity: str, id_list: t.Optional[list] = None) -> np.ndarray:
         """Get quantity values of particles defined with id_list. By default it returns values of all particles.
@@ -59,3 +63,15 @@ class Particle:
             self.frame.query("index not in %s" % id_list, inplace=True)
         else:
             self.frame = self.EMPTY_FRAME.copy()
+
+    @property
+    def numbytes(self) -> int:
+        """Recursively calculates object size in bytes using Pympler library.
+
+        Returns
+        -------
+        int
+            Size of the object in bytes.
+        """
+        self._numbytes = get_size(self)
+        return self._numbytes

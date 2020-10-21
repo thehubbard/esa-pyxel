@@ -7,6 +7,8 @@
 
 """TBW."""
 
+from pyxel.util.memory import get_size
+
 
 class Environment:
     """Environmental attributes of the detector."""
@@ -40,6 +42,8 @@ class Environment:
         self._temperature = temperature
         self._total_ionising_dose = total_ionising_dose
         self._total_non_ionising_dose = total_non_ionising_dose
+
+        self._numbytes = 0
 
     def __repr__(self) -> str:
         cls_name = self.__class__.__name__  # type: str
@@ -87,3 +91,15 @@ class Environment:
             raise ValueError("'total_non_ionising_dose' must be between 0.0 and 1e15.")
 
         self._total_non_ionising_dose = value
+
+    @property
+    def numbytes(self) -> int:
+        """Recursively calculates object size in bytes using Pympler library.
+
+        Returns
+        -------
+        int
+            Size of the object in bytes.
+        """
+        self._numbytes = get_size(self)
+        return self._numbytes

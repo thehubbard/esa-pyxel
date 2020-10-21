@@ -26,6 +26,8 @@ from pyxel.util.outputs import (
     ParametricPlot,
 )
 
+from pyxel.util.memory import get_size, memory_usage_details
+
 __all__ = [
     "convert_to_int",
     "round_convert_to_int",

@@ -12,6 +12,8 @@ import typing as t  # noqa: F401
 import numpy as np
 from astropy.units import cds
 
+from pyxel.util.memory import get_size
+
 # TODO: Is it possible to move this to `data_structure/__init__.py' ?
 cds.enable()
 
@@ -31,6 +33,8 @@ class Array:
         self.validate_type(value)
 
         self._array = value  # type: np.ndarray
+
+        self._numbytes = 0
 
         # TODO: is `self.type` needed ?
         # self.type = None            # type: t.Optional[type]
@@ -120,3 +124,15 @@ class Array:
     def sum(self) -> np.ndarray:
         """Return sum of all pixel values."""
         return np.sum(self._array)
+
+    @property
+    def numbytes(self) -> int:
+        """Recursively calculates object size in bytes using Pympler library.
+
+        Returns
+        -------
+        int
+            Size of the object in bytes.
+        """
+        self._numbytes = get_size(self)
+        return self._numbytes
