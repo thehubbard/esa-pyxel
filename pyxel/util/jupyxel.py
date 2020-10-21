@@ -17,9 +17,10 @@ from IPython.display import Markdown, display
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 from pyxel.data_structure import Image, Photon, Pixel, Signal
-from pyxel.detectors import Detector
-from pyxel.pipelines import Processor
-from pyxel.pipelines.model_group import ModelGroup
+
+if t.TYPE_CHECKING:
+    from pyxel.detectors import Detector
+    from pyxel.pipelines import DetectionPipeline, ModelFunction, Processor
 
 # ----------------------------------------------------------------------------------------------
 # Those two methods are used to display the contents of the configuration once loaded in pyxel
@@ -37,21 +38,21 @@ def display_config(cfg: dict, only: str = "all") -> None:
     -------
     None
     """
-    for k in cfg:
+    for key in cfg:
         if (only not in cfg.keys()) & (only != "all"):
             error = "Config file only contains following keys: " + str(cfg.keys())
             display(Markdown("<font color=red>" + error + "</font>"))
             break
-        elif (only == k) & (only != "all"):
-            display(Markdown("## <font color=blue>" + k + "</font>"))
-            display(Markdown("\t" + str(cfg[k])))
-            if isinstance(cfg[k].__dict__, dict):
-                display_dict(cfg[k].__dict__)
+        elif (only == key) & (only != "all"):
+            display(Markdown("## <font color=blue>" + key + "</font>"))
+            display(Markdown("\t" + str(cfg[key])))
+            if isinstance(cfg[key].__dict__, dict):
+                display_dict(cfg[key].__dict__)
         elif only == "all":
-            display(Markdown("## <font color=blue>" + k + "</font>"))
-            display(Markdown("\t" + str(cfg[k])))
-            if isinstance(cfg[k].__dict__, dict):
-                display_dict(cfg[k].__dict__)
+            display(Markdown("## <font color=blue>" + key + "</font>"))
+            display(Markdown("\t" + str(cfg[key])))
+            if isinstance(cfg[key].__dict__, dict):
+                display_dict(cfg[key].__dict__)
 
 
 def display_dict(cfg: dict) -> None:
@@ -65,9 +66,9 @@ def display_dict(cfg: dict) -> None:
     -------
     None
     """
-    for k in cfg:
-        display(Markdown("#### <font color=#0088FF>" + k + "</font>"))
-        display(Markdown("\t" + str(cfg[k])))
+    for key in cfg:
+        display(Markdown(f"#### <font color=#0088FF> {key} </font>"))
+        display(Markdown("\t" + str(cfg[key])))
 
 
 # ----------------------------------------------------------------------------------------------
@@ -75,7 +76,7 @@ def display_dict(cfg: dict) -> None:
 
 
 def display_model(
-    pipeline_container: t.Union[Processor, dict], model_name: str
+    pipeline_container: t.Union["Processor", dict], model_name: str
 ) -> None:
     """Display model from configuration dictionary or Processor object.
 
@@ -88,40 +89,19 @@ def display_model(
     -------
     None
     """
-    model_found = False
-    if isinstance(pipeline_container, Processor):
-        pipeline = pipeline_container.pipeline
-    else:
-        pipeline = pipeline_container["pipeline"]
-    for value in pipeline.__dict__.values():
-        if isinstance(value, ModelGroup):
-            # value is a list of ModelFunction namespaces
-            models_list = value.__dict__["models"]
-            for model_namespace in models_list:
-                # print(np.where([name for name in modelNamespace.name] == model_name))
-                if model_name in model_namespace.name:
-                    display(Markdown("## <font color=blue>" + model_name + "</font>"))
-                    display(
-                        Markdown(
-                            "".join(
-                                [
-                                    "Model ",
-                                    model_name,
-                                    " enabled? ",
-                                    str(model_namespace.enabled),
-                                ]
-                            )
-                        )
-                    )
-                    display_dict(model_namespace.arguments)
-                    model_found = True
 
-    if not model_found:
-        display(Markdown("<font color=red>" + model_name + " not found</font>"))
+    if isinstance(pipeline_container, dict):
+        pipeline = pipeline_container["pipeline"]  # type: DetectionPipeline
+    else:
+        pipeline = pipeline_container.pipeline
+    model = pipeline.get_model(name=model_name)  # type: ModelFunction
+    display(Markdown(f"## <font color=blue> {model_name} </font>"))
+    display(Markdown(f"Model {model_name} enabled? {model.enabled}"))
+    display_dict(model.arguments)
 
 
 def change_modelparam(
-    processor: Processor, model_name: str, argument: str, changed_value: t.Any
+    processor: "Processor", model_name: str, argument: str, changed_value: t.Any
 ) -> None:
     """Change model parameter.
 
@@ -137,17 +117,11 @@ def change_modelparam(
     None
     """
     display(Markdown("## <font color=blue>" + model_name + "</font>"))
-    for value in processor.__dict__.values():
-        if isinstance(value, ModelGroup):
-            for model in value.__dict__["models"]:
-                if model.name == model_name:
-                    try:
-                        model.arguments[argument] = changed_value
-                    except KeyError:
-                        print(model_name, "possess no argument named: ", value)
+    model = processor.pipeline.get_model(name=model_name)  # type: ModelFunction
+    model.change_argument(argument, changed_value)
 
 
-def set_modelstate(processor: Processor, model_name: str, state: bool = True) -> None:
+def set_modelstate(processor: "Processor", model_name: str, state: bool = True) -> None:
     """Change model state (true/false).
 
     Parameters
@@ -161,26 +135,9 @@ def set_modelstate(processor: Processor, model_name: str, state: bool = True) ->
     None
     """
     display(Markdown("## <font color=blue>" + model_name + "</font>"))
-    for value in processor.pipeline.__dict__.values():
-        if isinstance(value, ModelGroup):
-            for model in value.__dict__["models"]:
-                if model.name == model_name:
-                    try:
-                        model.enabled = state
-                        display(
-                            Markdown(
-                                "".join(
-                                    [
-                                        "Model ",
-                                        model_name,
-                                        " enabled? ",
-                                        str(model.enabled),
-                                    ]
-                                )
-                            )
-                        )
-                    except KeyError:
-                        print(model_name, "possess no argument named: ", value)
+    model = processor.pipeline.get_model(name=model_name)  # type: ModelFunction
+    model.enabled = state
+    display(Markdown(f"Model {model_name} enabled? {model.enabled}"))
 
 
 # ----------------------------------------------------------------------------------------------
@@ -217,7 +174,7 @@ def display_array(data: np.ndarray, axes: t.List[plt.axes], **kwargs: str) -> No
 
 
 def display_detector(
-    detector: Detector, array: t.Union[None, Photon, Pixel, Signal, Image] = None
+    detector: "Detector", array: t.Union[None, Photon, Pixel, Signal, Image] = None
 ) -> None:
     """Display detector.
 

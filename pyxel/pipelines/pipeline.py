@@ -103,10 +103,21 @@ class DetectionPipeline:
 
     # TODO: Is this method used ?
     def get_model(self, name: str) -> ModelFunction:
-        """TBW.
+        """Return a ModelFunction object for the specified model name.
 
-        :param name:
-        :return:
+        Parameters
+        ----------
+        name: str
+            Name of the model.
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        AttributeError
+            If model with the specified name is not found.
         """
         for group_name in self.model_group_names:  # type: str
             model_group = getattr(self, group_name)  # type: ModelGroup
@@ -114,4 +125,4 @@ class DetectionPipeline:
                 for model in model_group.models:  # type: ModelFunction
                     if name == model.name:
                         return model
-        raise AttributeError("Model has not found.")
+        raise AttributeError("Model has not been found.")
