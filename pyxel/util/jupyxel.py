@@ -7,10 +7,9 @@ import matplotlib.pyplot as plt
 from IPython.display import Markdown, display
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
-import pyxel
 from pyxel.pipelines.model_group import ModelGroup
-
-# plt.style.use('dark_background')
+import typing as t
+from pyxel.pipelines import Processor
 
 # ----------------------------------------------------------------------------------------------
 # Those two methods are used to display the contents of the configuration once loaded in pyxel
@@ -45,15 +44,15 @@ def display_dict(cfg):
 # This method will display the parameters of a specific model
 
 
-def display_model(cfg, model_name):
+def display_model(cfg, model_name: str) -> None:
     model_found = False
-    for keyw, value in cfg["pipeline"].__dict__.items():
-        if type(value) == pyxel.pipelines.model_group.ModelGroup:
+    for value in cfg["pipeline"].__dict__.values():
+        if isinstance(value, ModelGroup):
             # value is a list of ModelFunction namespaces
             models_list = value.__dict__["models"]
-            for idx, modelNamespace in enumerate(models_list):
+            for model_namespace in models_list:
                 # print(np.where([name for name in modelNamespace.name] == model_name))
-                if model_name in modelNamespace.name:
+                if model_name in model_namespace.name:
                     display(Markdown("## <font color=blue>" + model_name + "</font>"))
                     display(
                         Markdown(
@@ -62,12 +61,12 @@ def display_model(cfg, model_name):
                                     "Model ",
                                     model_name,
                                     " enabled? ",
-                                    str(modelNamespace.enabled),
+                                    str(model_namespace.enabled),
                                 ]
                             )
                         )
                     )
-                    display_dict(modelNamespace.arguments)
+                    display_dict(model_namespace.arguments)
                     model_found = True
 
     if not model_found:
@@ -76,12 +75,11 @@ def display_model(cfg, model_name):
 
 # TODO: change cfg to processor
 # TODO: change type to isinstance
-# TODO: fix mypy
 # TODO: fix flake8
-def change_modelparam(cfg, model_name: str, argument: str, changed_value):
+def change_modelparam(cfg: dict, model_name: str, argument: str, changed_value: t.Any) -> None:
     display(Markdown("## <font color=blue>" + model_name + "</font>"))
-    for keyw, value in cfg["pipeline"].__dict__.items():
-        if type(value) == pyxel.pipelines.model_group.ModelGroup:
+    for value in cfg["pipeline"].__dict__.values():
+        if isinstance(value, ModelGroup):
             for model in value.__dict__["models"]:
                 if model.name == model_name:
                     try:
@@ -90,10 +88,10 @@ def change_modelparam(cfg, model_name: str, argument: str, changed_value):
                         print(model_name, "possess no argument named: ", value)
 
 
-def set_modelstate(cfg, model_name: str, state: bool = True) -> None:
+def set_modelstate(cfg: dict, model_name: str, state: bool = True) -> None:
     display(Markdown("## <font color=blue>" + model_name + "</font>"))
-    for keyw, value in cfg["pipeline"].__dict__.items():
-        if type(value) == pyxel.pipelines.model_group.ModelGroup:
+    for value in cfg["pipeline"].__dict__.values():
+        if isinstance(value, ModelGroup):
             for model in value.__dict__["models"]:
                 if model.name == model_name:
                     try:
