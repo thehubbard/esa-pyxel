@@ -111,6 +111,36 @@ class ModelFunction:
         """TBW."""
         return self._arguments
 
+    def change_argument(self, argument: str, value: t.Any) -> None:
+        """Change a model argument.
+
+        Parameters
+        ----------
+        argument: str
+            Name of the argument to be changed.
+        value
+
+        Returns
+        -------
+        None
+
+        Raises
+        ------
+        TypeError
+            If types of the changed value and default value do not match.
+        KeyError
+            If argument does not exist.
+        """
+        try:
+            if type(self._arguments[argument]) == type(value):
+                self._arguments[argument] = value
+            else:
+                raise TypeError(
+                    f"Type of the changed value should be {type(self._arguments[argument])}, not {type(value)}"
+                )
+        except KeyError:
+            raise
+
     # # TODO: Replace this by __call__ ?
     # @property
     # def function(self) -> t.Callable:

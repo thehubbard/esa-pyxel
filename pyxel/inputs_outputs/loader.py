@@ -40,13 +40,13 @@ def load_image(filename: t.Union[str, Path]) -> np.ndarray:
     Examples
     --------
     >>> from pyxel.inputs_outputs import load_image
-    >>> load_image('frame.fits')
+    >>> load_image("frame.fits")
     array([[-0.66328494, -0.63205819, ...]])
 
-    >>> load_image('another_frame.npy')
+    >>> load_image("another_frame.npy")
     array([[-1.10136521, -0.93890239, ...]])
 
-    >>> load_image('rgb_frame.jpg')
+    >>> load_image("rgb_frame.jpg")
     array([[234, 211, ...]])
     """
     filename_path = Path(filename).expanduser().resolve()

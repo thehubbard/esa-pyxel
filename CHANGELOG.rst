@@ -30,6 +30,8 @@ Core
   (See `#52 <https://gitlab.com/esa/pyxel/issues/52>`_).
 * Add property 'Detector.numbytes' and/or method 'Detector.memory_usage()'
   (See `!116 <https://gitlab.com/esa/pyxel/-/merge_requests/116>`_).
+* Created jupyxel.py for jupyter notebook visualization.
+  (See `!122 <https://gitlab.com/esa/pyxel/-/merge_requests/122>`_).
 
 Documentation
 ~~~~~~~~~~~~~
