@@ -41,15 +41,15 @@ def display_config(cfg: dict, only: str = "all") -> None:
     for key in cfg:
         if (only not in cfg.keys()) & (only != "all"):
             error = "Config file only contains following keys: " + str(cfg.keys())
-            display(Markdown("<font color=red>" + error + "</font>"))
+            display(Markdown(f"<font color=red> {error} </font>"))
             break
         elif (only == key) & (only != "all"):
-            display(Markdown("## <font color=blue>" + key + "</font>"))
+            display(Markdown(f"## <font color=blue> {key} </font>"))
             display(Markdown("\t" + str(cfg[key])))
             if isinstance(cfg[key].__dict__, dict):
                 display_dict(cfg[key].__dict__)
         elif only == "all":
-            display(Markdown("## <font color=blue>" + key + "</font>"))
+            display(Markdown(f"## <font color=blue> {key} </font>"))
             display(Markdown("\t" + str(cfg[key])))
             if isinstance(cfg[key].__dict__, dict):
                 display_dict(cfg[key].__dict__)
@@ -116,9 +116,10 @@ def change_modelparam(
     -------
     None
     """
-    display(Markdown("## <font color=blue>" + model_name + "</font>"))
+    display(Markdown(f"## <font color=blue> {model_name} </font>"))
     model = processor.pipeline.get_model(name=model_name)  # type: ModelFunction
     model.change_argument(argument, changed_value)
+    display(Markdown(f"Changed {argument} to {changed_value}."))
 
 
 def set_modelstate(processor: "Processor", model_name: str, state: bool = True) -> None:
@@ -134,7 +135,7 @@ def set_modelstate(processor: "Processor", model_name: str, state: bool = True) 
     -------
     None
     """
-    display(Markdown("## <font color=blue>" + model_name + "</font>"))
+    display(Markdown(f"## <font color=blue> {model_name} </font>"))
     model = processor.pipeline.get_model(name=model_name)  # type: ModelFunction
     model.enabled = state
     display(Markdown(f"Model {model_name} enabled? {model.enabled}"))
