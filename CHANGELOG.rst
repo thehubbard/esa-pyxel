@@ -2,7 +2,13 @@ Changelog
 =========
 
 
-version 0.7 / 2020-MM-DD
+version 0.8 UNRELEASED/ 2020-MM-DD
+----------------------------------
+
+Core
+~~~~
+
+version 0.7 / 2020-10-22
 ------------------------
 
 Core
