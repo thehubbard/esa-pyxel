@@ -11,6 +11,8 @@ upstream	https://gitlab.com/esa/pyxel.git (fetch)
 upstream	https://gitlab.com/esa/pyxel.git (push)
 ```
 
+1. Write a release summary: ~50 words describing the high level features. This will be used in the release emails, GitLab release notes, blog, etc.
+
 1. Ensure your master branch is synced to upstream:
 
    ```fish
@@ -18,19 +20,15 @@ upstream	https://gitlab.com/esa/pyxel.git (push)
    $ git pull upstream master
    ```
 
-1. Confirm there is no commits on stable that are not yet merged.
+1. Create a branch 'new_release{X}.{Y}' from 'master' for the new release.
 
    ```fish
-   $ git merge upstream stable
+   $ git checkout -b new_release{X}.{Y}
    ```
 
-1. Write a release summary: ~50 words describing the high level features. This will be used in the release emails, GitLab release notes, blog, etc.
+1. Open a merge request linked to the new release branch with the release summary and changes.
 
-1. Update release notes in `CHANGELOG.rst` and add release summary at the top.
-
-1. If possible, open a merge request with the release summary and changes.
-
-   :interrobang: The user should work in a branch and not master
+1. Update release notes in `CHANGELOG.rst` in the branch and add release summary at the top.
 
 1. After merging, again ensure your master branch is synced to upstream:
 
@@ -48,21 +46,17 @@ upstream	https://gitlab.com/esa/pyxel.git (push)
    $ tox
    ```
 
-1. On the master branch, commit the release in Git:
+1. Tag the release from https://gitlab.com/esa/pyxel/-/tags with the following actions:
 
-   ```fish
-   $ git commit -am 'Release v{X.Y}'
-   ```
+   a. Click the button 'new_tag'
 
-   :interrobang: This could be done directly inside Gitlab
+   b. In the field 'Tag name', enter `v{X.Y}`
 
-1. Tag the release
+   c. In the field 'Create from', choose `master` (this is the default value)
 
-   ```fish
-   $ git tag -a v{X.Y} -m 'v{X.Y}'
-   ```
+   d. In the field 'Message', enter `v{X.Y}`
 
-   :interrobang: This could be done directly inside Gitlab
+   e. In the field 'Release notes', enter the content of `CHANGELOG.rst` only for this release.
 
 1. Push your changes to master:
    ```fish
