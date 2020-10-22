@@ -50,6 +50,9 @@ python36:
   stage: test
   script:
     - tox -e py36-extra_all
+  rules:
+    # If `$FORCE_GITLAB_CI` is set, create a pipeline.
+    - if: '$FORCE_GITLAB_CI'
 
 
 # Run pytest for Python 3.7 without anaconda
@@ -58,7 +61,9 @@ python37:
   stage: test
   script:
     - tox -e py37-extra_all
-
+  rules:
+    # If `$FORCE_GITLAB_CI` is set, create a pipeline.
+    - if: '$FORCE_GITLAB_CI'
 
 # Run pytest for Python 3.8 without anaconda
 python38:
@@ -66,6 +71,9 @@ python38:
   stage: test
   script:
     - tox -e py38-extra_all
+  rules:
+    # If `$FORCE_GITLAB_CI` is set, create a pipeline.
+    - if: '$FORCE_GITLAB_CI'
 
 
 # Run mypy
@@ -74,6 +82,9 @@ mypy:
   stage: test
   script:
     - tox -e mypy
+  rules:
+    # If `$FORCE_GITLAB_CI` is set, create a pipeline.
+    - if: '$FORCE_GITLAB_CI'
 
 
 # Run pylint (with pytest) and generate HTML report
@@ -98,6 +109,9 @@ flake8:
   stage: test
   script:
     - tox -e flake8
+  rules:
+    # If `$FORCE_GITLAB_CI` is set, create a pipeline.
+    - if: '$FORCE_GITLAB_CI'
 
 
 pydocstyle:
@@ -105,6 +119,9 @@ pydocstyle:
   stage: test
   script:
     - tox -e pydocstyle
+  rules:
+    # If `$FORCE_GITLAB_CI` is set, create a pipeline.
+    - if: '$FORCE_GITLAB_CI'
 
 
 doc8:
@@ -112,6 +129,9 @@ doc8:
   stage: test
   script:
     - tox -e doc8
+  rules:
+    # If `$FORCE_GITLAB_CI` is set, create a pipeline.
+    - if: '$FORCE_GITLAB_CI'
 
 
 # ###########################
@@ -147,6 +167,9 @@ coverage:
       - htmlcov
       - pytest_report.html
       - coverage.out
+  rules:
+    # If `$FORCE_GITLAB_CI` is set, create a pipeline.
+    - if: '$FORCE_GITLAB_CI'
 
 # Scan sourcecode for licenses, copyrights & dependencies
 # experimental, latest version
@@ -158,6 +181,9 @@ licenses-latest:
   artifacts:
     paths:
       - license.html
+  rules:
+    # If `$FORCE_GITLAB_CI` is set, create a pipeline.
+    - if: '$FORCE_GITLAB_CI'
 
 
 # Generate the Sphinx documentation into 'doc/html'
@@ -172,6 +198,8 @@ doc:
       - docs/html
       - documentation.svg
   rules:
+    # If `$FORCE_GITLAB_CI` is set, create a pipeline.
+    - if: '$FORCE_GITLAB_CI'
     - if: $CI_COMMIT_BRANCH == "master"
 
 
@@ -186,6 +214,7 @@ website:
     paths:
        - html
   rules:
+    - if: '$FORCE_GITLAB_CI'
     - if: $CI_COMMIT_BRANCH == "master"
 
 
