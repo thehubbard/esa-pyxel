@@ -32,7 +32,7 @@ class ParametricMode(Enum):
 
 
 # TODO: Use `Enum` for `parametric_mode` ?
-class ParametricAnalysis:
+class Parametric:
     """TBW."""
 
     def __init__(
@@ -191,7 +191,7 @@ class Configuration:
         self,
         mode: str,
         outputs: "Outputs",
-        parametric: t.Optional[ParametricAnalysis] = None,
+        parametric: t.Optional[Parametric] = None,
         calibration: "t.Optional[Calibration]" = None,
         dynamic: t.Optional[t.Dict[str, t.Any]] = None,
     ):
@@ -204,7 +204,7 @@ class Configuration:
 
         self.outputs = outputs  # type: Outputs
 
-        self.parametric = parametric  # type: t.Optional[ParametricAnalysis]
+        self.parametric = parametric  # type: t.Optional[Parametric]
         self.calibration = calibration  # type: t.Optional[Calibration]
         self.dynamic = dynamic  # type: t.Optional[t.Dict[str, t.Any]]
 

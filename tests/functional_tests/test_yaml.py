@@ -25,7 +25,7 @@ def test_yaml_load(yaml_file):
     cfg = io.load(yaml_file)
 
     assert cfg["simulation"].__class__.__name__ == "Configuration"
-    assert cfg["simulation"].parametric.__class__.__name__ == "ParametricAnalysis"
+    assert cfg["simulation"].parametric.__class__.__name__ == "Parametric"
     assert (
         cfg["simulation"].parametric.enabled_steps[0].__class__.__name__
         == "ParameterValues"

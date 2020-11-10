@@ -30,7 +30,7 @@ if t.TYPE_CHECKING:
     from ..calibration import ResultType
     from ..detectors import Detector
     from ..parametric.parameter_values import ParameterValues
-    from ..parametric.parametric import ParametricAnalysis
+    from ..parametric.parametric import Parametric
     from ..pipelines import Processor
 
     class SaveToFile(t.Protocol):
@@ -859,7 +859,7 @@ class Outputs:
             self.save_plot(filename=f"fitted_datasets_id{island}")
 
     # TODO: Specific to 'parametric_plot' ?
-    def params_func(self, param: "ParametricAnalysis") -> None:
+    def params_func(self, param: "Parametric") -> None:
         """Extract all parametric keys from `param`."""
         assert self.parameter_keys is not None
 
@@ -874,7 +874,7 @@ class Outputs:
                 if par is not None and par not in self.parameter_keys:
                     self.parameter_keys += [par]
 
-    # TODO: This function should be moved in `ParametricAnalysis`
+    # TODO: This function should be moved in `Parametric`
     # TODO: Specific to 'parametric_plot' ?
     def extract_func(self, processor: "Processor") -> Result:
         """TBW."""

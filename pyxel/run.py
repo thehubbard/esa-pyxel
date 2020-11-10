@@ -27,7 +27,7 @@ from tqdm.auto import tqdm
 from pyxel import __version__ as version
 from pyxel import inputs_outputs as io
 from pyxel.detectors import CCD, CMOS
-from pyxel.parametric.parametric import Configuration, ParametricAnalysis
+from pyxel.parametric.parametric import Configuration, Parametric
 from pyxel.pipelines import DetectionPipeline, Processor
 from pyxel.util import Outputs
 from pyxel.util.outputs import Result
@@ -58,7 +58,7 @@ def single_mode(processor: Processor, out: Outputs) -> plt.Figure:
 
 def parametric_mode(
     processor: Processor,
-    parametric: ParametricAnalysis,
+    parametric: Parametric,
     output: Outputs,
     with_dask: bool = False,
 ) -> t.Optional[plt.Figure]:
@@ -186,7 +186,7 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
         if not simulation.parametric:
             raise RuntimeError("Missing 'Parametric' parameters.")
 
-        parametric = simulation.parametric  # type: ParametricAnalysis
+        parametric = simulation.parametric  # type: Parametric
 
         # TODO: This should be done during initializing of object `Configuration`
         # out.params_func(parametric)

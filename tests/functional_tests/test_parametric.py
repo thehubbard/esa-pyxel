@@ -7,7 +7,7 @@ from pyxel import inputs_outputs as io
 from pyxel.detectors import CCD
 from pyxel.parametric.parametric import (
     Configuration,
-    ParametricAnalysis,
+    Parametric,
     ParametricMode,
 )
 from pyxel.pipelines import DetectionPipeline, Processor
@@ -64,7 +64,7 @@ def test_pipeline_parametric_without_init_photon(mode: ParametricMode, expected)
     assert isinstance(simulation, Configuration)
 
     parametric = simulation.parametric
-    assert isinstance(parametric, ParametricAnalysis)
+    assert isinstance(parametric, Parametric)
 
     parametric.parametric_mode = mode
 

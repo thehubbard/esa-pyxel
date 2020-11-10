@@ -155,6 +155,14 @@ class ClassConstructor:
         return obj
 
 
+class Configuration:
+    """Helper class to store configuration dictionary as a class."""
+
+    def __init__(self, cfg_dict: dict):
+        for key in cfg_dict:
+            setattr(self, key, cfg_dict[key])
+
+
 def load(yaml_file: t.Union[str, Path]) -> t.Any:
     """Load YAML file.
 

@@ -71,7 +71,7 @@ def build_model_function(
 def pyxel_yaml_loader():
     """TBW."""
     from pyxel.parametric.parametric import Configuration
-    from pyxel.parametric.parametric import ParametricAnalysis
+    from pyxel.parametric.parametric import Parametric
     from pyxel.parametric.parameter_values import ParameterValues
     from pyxel.pipelines import ModelGroup
     from pyxel.util import Outputs
@@ -139,7 +139,7 @@ def pyxel_yaml_loader():
     ObjectModelLoader.add_class(
         PlotArguments, ["simulation", "outputs", "single_plot", "plot_args"]
     )
-    ObjectModelLoader.add_class(ParametricAnalysis, ["simulation", "parametric"])
+    ObjectModelLoader.add_class(Parametric, ["simulation", "parametric"])
     ObjectModelLoader.add_class(
         ParameterValues, ["simulation", "parametric", "parameters"], is_list=True
     )
