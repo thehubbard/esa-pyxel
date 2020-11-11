@@ -37,11 +37,13 @@ class Parametric:
 
     def __init__(
         self,
+        outputs: "Outputs",
         parametric_mode: str,
         parameters: t.Sequence[ParameterValues],
         from_file: t.Optional[str] = None,
         column_range: t.Optional[t.Tuple[int, int]] = None,
     ):
+        self.outputs = outputs
         self.parametric_mode = ParametricMode(parametric_mode)  # type: ParametricMode
         self._parameters = parameters
         self.file = from_file
@@ -180,39 +182,39 @@ class Parametric:
         return result
 
 
-# TODO: Use a `Enum` for 'mode' ?
-# TODO: Create several classes `ConfigurationSingle`, `ConfigurationParametric`,
-#       `ConfigurationCalibration` and `ConfigurationDynamic`
-# TODO: Move this class into its own file 'configuration.py'
-class Configuration:
-    """TBW."""
-
-    def __init__(
-        self,
-        mode: str,
-        outputs: "Outputs",
-        parametric: t.Optional[Parametric] = None,
-        calibration: "t.Optional[Calibration]" = None,
-        dynamic: t.Optional[t.Dict[str, t.Any]] = None,
-    ):
-        if mode not in ["single", "parametric", "calibration", "dynamic"]:
-            raise ValueError(
-                "Non-existing running mode defined for Pyxel in yaml config file."
-            )
-
-        self.mode = mode  # type: str
-
-        self.outputs = outputs  # type: Outputs
-
-        self.parametric = parametric  # type: t.Optional[Parametric]
-        self.calibration = calibration  # type: t.Optional[Calibration]
-        self.dynamic = dynamic  # type: t.Optional[t.Dict[str, t.Any]]
-
-        if mode == "parametric":
-            assert self.parametric
-            self.outputs.params_func(self.parametric)
-
-    def __repr__(self) -> str:
-        cls_name = self.__class__.__name__  # type: str
-
-        return f"{cls_name}<mode={self.mode!r}, outputs={self.outputs!r}>"
+# # TODO: Use a `Enum` for 'mode' ?
+# # TODO: Create several classes `ConfigurationSingle`, `ConfigurationParametric`,
+# #       `ConfigurationCalibration` and `ConfigurationDynamic`
+# # TODO: Move this class into its own file 'configuration.py'
+# class Configuration:
+#     """TBW."""
+#
+#     def __init__(
+#         self,
+#         mode: str,
+#         outputs: "Outputs",
+#         parametric: t.Optional[Parametric] = None,
+#         calibration: "t.Optional[Calibration]" = None,
+#         dynamic: t.Optional[t.Dict[str, t.Any]] = None,
+#     ):
+#         if mode not in ["single", "parametric", "calibration", "dynamic"]:
+#             raise ValueError(
+#                 "Non-existing running mode defined for Pyxel in yaml config file."
+#             )
+#
+#         self.mode = mode  # type: str
+#
+#         self.outputs = outputs  # type: Outputs
+#
+#         self.parametric = parametric  # type: t.Optional[Parametric]
+#         self.calibration = calibration  # type: t.Optional[Calibration]
+#         self.dynamic = dynamic  # type: t.Optional[t.Dict[str, t.Any]]
+#
+#         if mode == "parametric":
+#             assert self.parametric
+#             self.outputs.params_func(self.parametric)
+#
+#     def __repr__(self) -> str:
+#         cls_name = self.__class__.__name__  # type: str
+#
+#         return f"{cls_name}<mode={self.mode!r}, outputs={self.outputs!r}>"

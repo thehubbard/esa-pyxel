@@ -26,9 +26,13 @@ from tqdm.auto import tqdm
 
 from pyxel import __version__ as version
 from pyxel import inputs_outputs as io
+from pyxel.calibration import Calibration
 from pyxel.detectors import CCD, CMOS
-from pyxel.parametric.parametric import Configuration, Parametric
+from pyxel.dynamic import Dynamic
+from pyxel.inputs_outputs import Configuration
+from pyxel.parametric import Parametric
 from pyxel.pipelines import DetectionPipeline, Processor
+from pyxel.single import Single
 from pyxel.util import Outputs
 from pyxel.util.outputs import Result
 
@@ -125,6 +129,46 @@ def parametric_mode(
     return fig
 
 
+def dynamic_mode(processor: "Processor", dynamic: "Dynamic", outputs: "Outputs"):
+
+    logging.info("Mode: Dynamic")
+
+    detector = processor.detector
+
+    if isinstance(detector, CCD):
+        dynamic.non_destructive_readout = False
+
+    detector.set_dynamic(
+        steps=dynamic.steps,
+        time_step=dynamic.t_step,
+        ndreadout=dynamic.non_destructive_readout,
+    )
+
+    # TODO: Use an iterator for that ?
+    while detector.elapse_time():
+        logging.info("time = %.3f s", detector.time)
+        if detector.is_non_destructive_readout:
+            detector.initialize(reset_all=False)
+        else:
+            detector.initialize(reset_all=True)
+        processor.run_pipeline()
+        if detector.read_out:
+            outputs.single_output(processor)
+
+
+def calibration_mode(
+    processor: "Processor", calibration: "Calibration", outputs: "Outputs"
+):
+
+    logging.info("Mode: Calibration")
+
+    results = calibration.run_calibration(
+        processor=processor, output_dir=outputs.output_dir
+    )
+
+    calibration.post_processing(calib_results=results, output=outputs)
+
+
 def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
     """TBW.
 
@@ -140,98 +184,72 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
     if random_seed:
         np.random.seed(random_seed)
 
-    # TODO: 'cfg' is a `dict`. It would better to use an helper class. See Issue #60.
-    #       Example:
-    #           >>> cfg = io.load(input_filename)
-    #           >>> cfg.pipeline
-    #           ...
-    #           >>> cfg.simulation
-    #           ...
-    cfg = io.load(Path(input_filename))  # type: dict
+    configuration = io.load(
+        Path(input_filename).expanduser().resolve()
+    )  # type: Configuration
 
-    pipeline = cfg["pipeline"]  # type: DetectionPipeline
-    simulation = cfg["simulation"]  # type: Configuration
+    pipeline = configuration.pipeline  # type: DetectionPipeline
 
-    if "ccd_detector" in cfg:
-        detector = cfg["ccd_detector"]  # type: t.Union[CCD, CMOS]
-    elif "cmos_detector" in cfg:
-        detector = cfg["cmos_detector"]
+    if hasattr(configuration, "ccd_detector"):
+        detector = configuration.ccd_detector  # type: CCD
+    elif hasattr(configuration, "cmos_detector"):
+        detector = configuration.cmos_detector  # type: CMOS
     else:
         raise NotImplementedError("Detector is not defined in YAML config. file!")
 
     processor = Processor(detector=detector, pipeline=pipeline)
 
-    out = simulation.outputs  # type: Outputs
-    out.set_input_file(input_filename)
+    if hasattr(configuration, "single"):
 
-    detector.set_output_dir(out.output_dir)  # TODO: Remove this
+        single = configuration.single  # type: Single
 
-    # TODO: Create new separate functions 'run_single', 'run_calibration', 'run_parametric'
-    #       and 'run_dynamic'. See issue #61.
-    if simulation.mode == "single":
-        _ = single_mode(processor=processor, out=out)
+        outputs = single.outputs  # type: Outputs
+        outputs.set_input_file(input_filename)
+        detector.set_output_dir(outputs.output_dir)  # TODO: Remove this
 
-    elif simulation.mode == "calibration":
-        if not simulation.calibration:
-            raise RuntimeError("Missing 'Calibration' parameters.")
+        _ = single_mode(processor=processor, out=outputs)
 
-        logging.info("Mode: Calibration")
-        results = simulation.calibration.run_calibration(
-            processor=processor, output_dir=out.output_dir
-        )
+    elif hasattr(configuration, "calibration"):
 
-        simulation.calibration.post_processing(calib_results=results, output=out)
+        calibration = configuration.calibration  # type: Calibration
 
-    elif simulation.mode == "parametric":
-        if not simulation.parametric:
-            raise RuntimeError("Missing 'Parametric' parameters.")
+        outputs = calibration.outputs  # type: Outputs
+        outputs.set_input_file(input_filename)
+        detector.set_output_dir(outputs.output_dir)  # TODO: Remove this
 
-        parametric = simulation.parametric  # type: Parametric
+        calibration_mode(processor=processor, calibration=calibration, outputs=outputs)
+
+    elif hasattr(configuration, "parametric"):
+
+        parametric = configuration.parametric  # type: Parametric
+
+        outputs = parametric.outputs  # type: Outputs
+        outputs.set_input_file(input_filename)
+        detector.set_output_dir(outputs.output_dir)  # TODO: Remove this
 
         # TODO: This should be done during initializing of object `Configuration`
         # out.params_func(parametric)
 
-        _ = parametric_mode(processor=processor, parametric=parametric, output=out)
+        _ = parametric_mode(processor=processor, parametric=parametric, output=outputs)
 
-    elif simulation.mode == "dynamic":
-        if not simulation.dynamic:
-            raise RuntimeError("Missing 'Dynamic' parameters.")
+    elif hasattr(configuration, "dynamic"):
 
-        # TODO: Use a helper class to store parameters for dynamic mode. See issue #121.
-        logging.info("Mode: Dynamic")
-        if "non_destructive_readout" not in simulation.dynamic or isinstance(
-            detector, CCD
-        ):
-            simulation.dynamic["non_destructive_readout"] = False
+        dynamic = configuration.dynamic  # type: Dynamic
 
-        if "t_step" in simulation.dynamic and "steps" in simulation.dynamic:
-            detector.set_dynamic(
-                steps=simulation.dynamic["steps"],
-                time_step=simulation.dynamic["t_step"],
-                ndreadout=simulation.dynamic["non_destructive_readout"],
-            )
+        outputs = dynamic.outputs  # type: Outputs
+        outputs.set_input_file(input_filename)
+        detector.set_output_dir(outputs.output_dir)  # TODO: Remove this
 
-        # TODO: Use an iterator for that ?
-        while detector.elapse_time():
-            logging.info("time = %.3f s", detector.time)
-            if detector.is_non_destructive_readout:
-                detector.initialize(reset_all=False)
-            else:
-                detector.initialize(reset_all=True)
-            processor.run_pipeline()
-            if detector.read_out:
-                out.single_output(processor)
+        dynamic_mode(processor=processor, dynamic=dynamic, output=outputs)
 
     else:
-        raise NotImplementedError(
-            f"Simulation mode {simulation.mode} is not implemented !"
-        )
+        raise NotImplementedError(f"Please provide a valid simulation mode !")
 
     logging.info("Pipeline completed.")
     logging.info("Running time: %.3f seconds" % (time.time() - start_time))
     # Closing the logger in order to be able to move the file in the output dir
     logging.shutdown()
-    out.save_log_file()
+    outputs.save_log_file()
     plt.close()
 
 

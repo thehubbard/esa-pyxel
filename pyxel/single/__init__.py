@@ -8,4 +8,4 @@
 #
 """TBW."""
 
-from single import Single
+from .single import Single

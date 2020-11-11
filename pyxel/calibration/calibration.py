@@ -492,6 +492,7 @@ class Calibration:
 
     def __init__(
         self,
+        outputs: Outputs,
         output_dir: t.Optional[Path] = None,
         fitting: t.Optional[ModelFitting] = None,
         calibration_mode: Literal["pipeline", "single_model"] = "pipeline",
@@ -517,6 +518,8 @@ class Calibration:
             raise ValueError("'num_islands' must be between 0 and 100.")
 
         self._log = logging.getLogger(__name__)
+
+        self.outputs = outputs
 
         self._output_dir = output_dir  # type:t.Optional[Path]
         self._fitting = fitting  # type: t.Optional[ModelFitting]

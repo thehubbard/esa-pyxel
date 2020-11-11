@@ -8,4 +8,4 @@
 #
 """TBW."""
 
-from dynamic import Dynamic
+from .dynamic import Dynamic

@@ -5,11 +5,7 @@ import pytest
 
 from pyxel import inputs_outputs as io
 from pyxel.detectors import CCD
-from pyxel.parametric.parametric import (
-    Configuration,
-    Parametric,
-    ParametricMode,
-)
+from pyxel.parametric.parametric import Configuration, Parametric, ParametricMode
 from pyxel.pipelines import DetectionPipeline, Processor
 
 try:

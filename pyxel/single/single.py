@@ -17,5 +17,9 @@ if t.TYPE_CHECKING:
 class Single:
     """TBW."""
 
-    def __init__(self, outputs: Outputs):
+    def __init__(self, outputs: "Outputs"):
         self.outputs = outputs
+
+    def __repr__(self) -> str:
+        cls_name = self.__class__.__name__  # type: str
+        return f"{cls_name}<outputs={self.outputs!r}>"

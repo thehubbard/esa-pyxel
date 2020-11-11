@@ -10,7 +10,7 @@ import typing as t
 from functools import partial
 
 # flake8: noqa
-from .object_model import ObjectModelLoader, load
+from .object_model import ObjectModelLoader, load, Configuration
 from ..evaluator import evaluate_reference
 from ..pipelines import ModelFunction
 from ..util import (
@@ -70,7 +70,8 @@ def build_model_function(
 # TODO: Re-develop the YAML loader and representer. See Issue #59.
 def pyxel_yaml_loader():
     """TBW."""
-    from pyxel.parametric.parametric import Configuration
+    from pyxel.single import Single
+    from pyxel.dynamic import Dynamic
     from pyxel.parametric.parametric import Parametric
     from pyxel.parametric.parameter_values import ParameterValues
     from pyxel.pipelines import ModelGroup
@@ -80,19 +81,17 @@ def pyxel_yaml_loader():
         from pyxel.calibration.calibration import Calibration
         from pyxel.calibration.calibration import Algorithm
 
-        ObjectModelLoader.add_class(Calibration, ["simulation", "calibration"])
+        # CALIBRATION
+
+        ObjectModelLoader.add_class(Calibration, ["calibration"])
+        ObjectModelLoader.add_class(Algorithm, ["calibration", "algorithm"])
+        ObjectModelLoader.add_class(build_callable, ["calibration", "fitness_function"])
         ObjectModelLoader.add_class(
-            Algorithm, ["simulation", "calibration", "algorithm"]
-        )
-        ObjectModelLoader.add_class(
-            build_callable, ["simulation", "calibration", "fitness_function"]
-        )
-        ObjectModelLoader.add_class(
-            ParameterValues, ["simulation", "calibration", "parameters"], is_list=True
+            ParameterValues, ["calibration", "parameters"], is_list=True
         )
         ObjectModelLoader.add_class(
             ParameterValues,
-            ["simulation", "calibration", "result_input_arguments"],
+            ["calibration", "result_input_arguments"],
             is_list=True,
         )
         # WITH_CALIBRATION = True  # noqa: N806
@@ -106,6 +105,8 @@ def pyxel_yaml_loader():
     from pyxel.detectors import CMOSGeometry, CMOSCharacteristics
 
     from pyxel.pipelines import DetectionPipeline
+
+    # DETECTOR
 
     ObjectModelLoader.add_class(CCD, ["ccd_detector"])  # pyxel.detectors.ccd.CCD
     ObjectModelLoader.add_class(CMOS, ["cmos_detector"])
@@ -124,59 +125,83 @@ def pyxel_yaml_loader():
     ObjectModelLoader.add_class(Material, [None, "material"])
     ObjectModelLoader.add_class(Environment, [None, "environment"])
 
+    # PIPELINE
+
     ObjectModelLoader.add_class(DetectionPipeline, ["pipeline"])
 
     ObjectModelLoader.add_class(ModelGroup, ["pipeline", None])
     ObjectModelLoader.add_class(build_model_function, ["pipeline", None, None])
 
-    ObjectModelLoader.add_class(Configuration, ["simulation"])
+    # SINGLE
 
-    ObjectModelLoader.add_class(Outputs, ["simulation", "outputs"])
+    ObjectModelLoader.add_class(Single, ["single"])
 
-    ObjectModelLoader.add_class(SinglePlot, ["simulation", "outputs", "single_plot"])
+    # SINGLE PLOT
 
-    # Builder for `PlotArguments`
+    ObjectModelLoader.add_class(Outputs, ["single", "outputs"])
+
+    ObjectModelLoader.add_class(SinglePlot, ["single", "outputs", "single_plot"])
+
     ObjectModelLoader.add_class(
-        PlotArguments, ["simulation", "outputs", "single_plot", "plot_args"]
+        PlotArguments, ["single", "outputs", "single_plot", "plot_args"]
     )
-    ObjectModelLoader.add_class(Parametric, ["simulation", "parametric"])
+
+    # PARAMETRIC
+
+    ObjectModelLoader.add_class(Parametric, ["parametric"])
     ObjectModelLoader.add_class(
-        ParameterValues, ["simulation", "parametric", "parameters"], is_list=True
+        ParameterValues, ["parametric", "parameters"], is_list=True
     )
 
-    # Builder for `CalibrationPlot`
+    # DYNAMIC
+
+    ObjectModelLoader.add_class(Dynamic, ["dynamic"])
+    ObjectModelLoader.add_class(Outputs, ["dynamic", "outputs"])
+
+    ObjectModelLoader.add_class(SinglePlot, ["dynamic", "outputs", "single_plot"])
     ObjectModelLoader.add_class(
-        ChampionsPlot, ["simulation", "outputs", "calibration_plot", "champions_plot"]
+        PlotArguments, ["dynamic", "outputs", "single_plot", "plot_args"]
+    )
+    # dynamic plot same as single for now !!!
+
+    # CALIBRATION PLOT
+
+    ObjectModelLoader.add_class(Outputs, ["calibration", "outputs"])
+    ObjectModelLoader.add_class(
+        ChampionsPlot, ["calibration", "outputs", "calibration_plot", "champions_plot"]
     )
     ObjectModelLoader.add_class(
         PlotArguments,
-        ["simulation", "outputs", "calibration_plot", "champions_plot", "plot_args"],
+        ["calibration", "outputs", "calibration_plot", "champions_plot", "plot_args"],
     )
     ObjectModelLoader.add_class(
-        PopulationPlot, ["simulation", "outputs", "calibration_plot", "population_plot"]
+        PopulationPlot,
+        ["calibration", "outputs", "calibration_plot", "population_plot"],
     )
     ObjectModelLoader.add_class(
         PlotArguments,
-        ["simulation", "outputs", "calibration_plot", "population_plot", "plot_args"],
+        ["calibration", "outputs", "calibration_plot", "population_plot", "plot_args"],
     )
     ObjectModelLoader.add_class(
         FittingPlot,
-        ["simulation", "outputs", "calibration_plot", "fitting_plot"],
+        ["calibration", "outputs", "calibration_plot", "fitting_plot"],
     )
     ObjectModelLoader.add_class(
         PlotArguments,
-        ["simulation", "outputs", "calibration_plot", "fitting_plot", "plot_args"],
+        ["calibration", "outputs", "calibration_plot", "fitting_plot", "plot_args"],
     )
     ObjectModelLoader.add_class(
-        CalibrationPlot, ["simulation", "outputs", "calibration_plot"]
+        CalibrationPlot, ["calibration", "outputs", "calibration_plot"]
     )
 
-    # Builder for `ParametricPlot`
+    # PARAMETRIC PLOT
+
+    ObjectModelLoader.add_class(Outputs, ["parametric", "outputs"])
     ObjectModelLoader.add_class(
-        ParametricPlot, ["simulation", "outputs", "parametric_plot"]
+        ParametricPlot, ["parametric", "outputs", "parametric_plot"]
     )
     ObjectModelLoader.add_class(
-        PlotArguments, ["simulation", "outputs", "parametric_plot", "plot_args"]
+        PlotArguments, ["parametric", "outputs", "parametric_plot", "plot_args"]
     )
 
 

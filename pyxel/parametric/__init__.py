@@ -6,3 +6,5 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """TBW."""
+
+from .parametric import Parametric
