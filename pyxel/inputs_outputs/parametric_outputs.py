@@ -4,14 +4,11 @@
 #  is part of this Pyxel package. No part of the package, including
 #  this file, may be copied, modified, propagated, or distributed except according to
 #  the terms contained in the file ‘LICENCE.txt’.
-
-"""Utility functions for creating outputs."""
+#
+#
+"""TBW."""
 import logging
 import typing as t
-import warnings
-from enum import Enum
-from glob import glob
-from numbers import Number
 from pathlib import Path
 from shutil import copy2
 from time import strftime
@@ -22,12 +19,12 @@ import numpy as np
 import pandas as pd
 from astropy.io import fits as fits
 from matplotlib import pyplot as plt
-from matplotlib.ticker import ScalarFormatter
 
 from pyxel import __version__ as version
 
+from .outputs import PlotArguments, PlotType, apply_run_number, update_plot
+
 if t.TYPE_CHECKING:
-    from ..calibration import ResultType
     from ..detectors import Detector
     from ..parametric.parameter_values import ParameterValues
     from ..parametric.parametric import Parametric
@@ -41,59 +38,13 @@ if t.TYPE_CHECKING:
             ...
 
 
+# TODO Specific to parametric
 @attr.s(auto_attribs=True, slots=True, frozen=True)
 class Result:
     """TBW."""
 
     result: np.ndarray  # TODO: Use a `DataFrame` ?
     plot: np.ndarray
-
-
-@attr.s(auto_attribs=True, slots=True, frozen=True)
-class PlotArguments:
-    """TBW."""
-
-    title: t.Optional[str] = None
-    xscale: str = "linear"
-    yscale: str = "linear"
-    xlabel: t.Optional[str] = None
-    ylabel: t.Optional[str] = None
-    xlim: t.Tuple[t.Optional[float], t.Optional[float]] = (None, None)
-    ylim: t.Tuple[t.Optional[float], t.Optional[float]] = (None, None)
-    xticks: t.Any = None
-    yticks: t.Any = None
-    sci_x: bool = False
-    sci_y: bool = False
-    grid: bool = False
-    axis: t.Any = None
-    bins: t.Optional[int] = None  # TODO: This should not be here !
-
-    @classmethod
-    def from_dict(cls, dct: t.Mapping[str, t.Any]) -> "PlotArguments":
-        """TBW."""
-        return cls(**dct)
-
-    def to_dict(self) -> t.Dict[str, t.Any]:
-        """TBW."""
-        return attr.asdict(self)
-
-
-class PlotType(Enum):
-    """TBW."""
-
-    Histogram = "histogram"
-    Graph = "graph"
-    Scatter = "scatter"
-
-
-@attr.s(auto_attribs=True, slots=True, frozen=True)
-class SinglePlot:
-    """TBW."""
-
-    plot_type: PlotType = attr.ib(converter=PlotType)
-    x: str = "detector.photon.array"  # TODO: Check if the value is valid
-    y: str = "detector.image.array"  # TODO: Check if the value is valid
-    plot_args: t.Optional[PlotArguments] = None
 
 
 @attr.s(auto_attribs=True, slots=True)
@@ -110,44 +61,7 @@ class ParametricPlot:
         return cls(x=dct["x"], y=dct["y"], plot_args=dct["plot_args"])
 
 
-# Specific for CalibrationPlot
-@attr.s(auto_attribs=True, slots=True, frozen=True)
-class ChampionsPlot:
-    """TBW."""
-
-    plot_args: t.Optional[PlotArguments] = None
-
-
-@attr.s(auto_attribs=True, slots=True, frozen=True)
-class PopulationPlot:
-    """TBW."""
-
-    columns: t.Optional[t.Tuple[int, int]] = None  # TODO: Check this, with validator ?
-    plot_args: t.Optional[PlotArguments] = None
-
-
-@attr.s(auto_attribs=True, slots=True, frozen=True)
-class FittingPlot:
-    """TBW."""
-
-    plot_args: t.Optional[PlotArguments] = None
-
-
-@attr.s(auto_attribs=True, slots=True, frozen=True)
-class CalibrationPlot:
-    """TBW."""
-
-    champions_plot: t.Optional[ChampionsPlot] = None
-    population_plot: t.Optional[PopulationPlot] = None
-    fitting_plot: t.Optional[FittingPlot] = None
-
-
-# TODO: Create a special Output class for 'parametric_plot', 'calibration_plot' and
-#       'single_plot' ?
-# TODO: Example
-#       >>> class ParametricOutputs:
-#       ...     def __init__(self, parametric, ...): ...
-class Outputs:
+class ParametricOutputs:
     """TBW."""
 
     def __init__(
@@ -158,24 +72,8 @@ class Outputs:
         ] = None,
         save_parameter_to_file: t.Optional[dict] = None,
         parametric_plot: t.Optional[ParametricPlot] = None,
-        calibration_plot: t.Optional[CalibrationPlot] = None,
-        single_plot: t.Optional[SinglePlot] = None,
     ):
         self._log = logging.getLogger(__name__)
-
-        # Check number of inputs
-        num_inputs = sum(
-            [
-                parametric_plot is not None,
-                calibration_plot is not None,
-                single_plot is not None,
-            ]
-        )  # type: int
-        if num_inputs not in (0, 1):
-            raise ValueError(
-                "Too much parameters. You should have only parameter "
-                "'parametric_plot', 'calibration_plot' or 'single_plot'."
-            )
 
         # self.input_file = None  # type: t.Optional[Path]
 
@@ -186,25 +84,12 @@ class Outputs:
 
         self.parameter_keys = []  # type: t.List[str]
 
-        # Parameter(s) specific for 'Calibration'
-        self.calibration_plot = None  # type: t.Optional[CalibrationPlot]
-        if calibration_plot is not None:
-            self.calibration_plot = calibration_plot
-
-        # Parameter(s) specific for 'Single'
-        self._single_plot = None  # type: t.Optional[SinglePlot]
-        if single_plot:
-            self._single_plot = single_plot
-
         self.user_plt_args = None  # type: t.Optional[PlotArguments]
         self.save_parameter_to_file = save_parameter_to_file  # type: t.Optional[dict]
         self.output_dir = (
             Path(output_folder).joinpath("run_" + strftime("%Y%m%d_%H%M%S")).resolve()
         )  # type: Path
 
-        # if save_data_to_file is None:
-        #     self.save_data_to_file = [{'detector.image.array': ['fits']}]       # type: list
-        # else:
         # TODO: Not related to a plot. Use by 'single' and 'parametric' modes.
         self.save_data_to_file = save_data_to_file or [
             {"detector.image.array": ["fits"]}
@@ -262,21 +147,12 @@ class Outputs:
 
     def __repr__(self):
         cls_name = self.__class__.__name__  # type: str
-
-        if self.parametric_plot is not None:
-            mode = "parametric"
-        elif self.calibration_plot is not None:
-            mode = "calibration"
-        else:
-            mode = "single"
-
-        return f"{cls_name}<mode={mode!r}, output_dir={self.output_dir!r}>"
+        return f"{cls_name}<output_dir={self.output_dir!r}>"
 
     @property
     def fig(self) -> plt.Figure:
         """Get the current ``Figure``."""
         return self._fig
-
 
     def copy_config_file(self, filename: t.Union[str, Path]) -> Path:
         """Copy a YAML configuration filename into its output directory.
@@ -562,71 +438,6 @@ class Outputs:
         # plt.draw()
         # fig.canvas.draw_idle()
 
-    # TODO: Specific to 'single_plot'
-    # TODO: This function is doing too much.
-    def single_output(self, processor: "Processor") -> None:
-        """Save data into a file and/or generate pictures.
-
-        Parameters
-        ----------
-        processor
-        """
-        warnings.warn(
-            "Use function 'save_to_file' and 'single_plot'.", DeprecationWarning
-        )
-
-        assert self._single_plot is not None
-
-        # if not self.save_data_to_file:
-        #     self.save_data_to_file = [{"detector.image.array": ["fits"]}]
-
-        self.save_to_file(processor)
-
-        self.single_to_plot(processor)
-
-    # TODO: Specific to 'single_plot'
-    def single_to_plot(self, processor: "Processor") -> None:
-        """Generate picture(s).
-
-        Parameters
-        ----------
-        processor
-        """
-        assert self._single_plot is not None
-
-        self.user_plt_args = None
-        # todo: default plots with plot_args?
-        color = None
-
-        if self._single_plot.plot_args:
-            plot_args = self._single_plot.plot_args  # type: PlotArguments
-            self.user_plt_args = plot_args
-
-        x = processor.get(self._single_plot.x)
-        y = processor.get(self._single_plot.y)
-
-        x = x.flatten()
-        y = y.flatten()
-
-        if self._single_plot.plot_type is PlotType.Graph:
-            self.plot_graph(x=x, y=y)
-            fname = "graph_??"  # type: str
-
-        elif self._single_plot.plot_type is PlotType.Histogram:
-            self.plot_histogram(y)
-            fname = "histogram_??"
-
-        elif self._single_plot.plot_type is PlotType.Scatter:
-            self.plot_scatter(x, y, color)
-            fname = "scatter_??"
-
-        else:
-            raise NotImplementedError
-
-        self.save_plot(filename=fname)
-
-        # plt.close()
-
     def save_to_file(self, processor: "Processor") -> t.Sequence[Path]:
         """Save outputs into file(s).
 
@@ -666,197 +477,6 @@ class Outputs:
                     filenames.append(filename)
 
         return filenames
-
-    # TODO: Specific to 'calibration_plot'
-    def champions_plot(
-        self,
-        results: t.Mapping[str, t.Union[Number, np.ndarray]],
-        champions_file: Path,
-        island_id: int,
-    ) -> None:
-        """TBW."""
-        data = np.loadtxt(champions_file)
-        generations = data[:, 0].astype(int)
-        title = "Calibrated parameter: "
-
-        a = 1
-        for key, param_value in results.items():
-            plt_args = {"xlabel": "generation", "linestyle": "-", "sci_y": True}
-
-            param_name = key[slice(key.rfind(".") + 1, None)]
-            plt_args["ylabel"] = param_name
-
-            if param_name == "fitness":
-                plt_args["title"] = "Champion fitness"
-                plt_args["color"] = "red"
-                plt_args["ylabel"] = "fitness"
-
-            elif param_name == "island":
-                continue
-
-            else:
-                if key.rfind(".arguments") == -1:
-                    mdn = key[: key.rfind("." + param_name)]
-                else:
-                    mdn = key[: key.rfind(".arguments")]
-                model_name = mdn[slice(mdn.rfind(".") + 1, None)]
-                plt_args["title"] = title + model_name + " / " + param_name
-                plt_args["ylabel"] = param_name
-
-            b = 1
-            if isinstance(param_value, Number):
-                column = data[:, a]
-                self.plot_graph(x=generations, y=column, args=plt_args)
-
-            elif isinstance(param_value, np.ndarray):
-                b = len(param_value)
-                column = data[:, slice(a, a + b)]
-                self.plot_graph(x=generations, y=column, args=plt_args)
-                self._fig.legend([f"index {i}" for i in range(b)])
-
-            self.save_plot(filename=f"calibrated_{param_name!s}_id{island_id!s}")
-            a += b
-
-    # TODO: Specific to 'calibration_plot' ??
-    def population_plot(
-        self,
-        # results: dict,
-        population_file: Path,
-        island_id: int,
-    ) -> None:
-        """TBW."""
-        assert self.calibration_plot
-
-        data = np.loadtxt(population_file)  # type: np.ndarray
-        fitnesses = np.log10(data[:, 1])
-        a, b = 2, 1  # 1st parameter and fitness
-        if self.calibration_plot.population_plot:
-            if self.calibration_plot.population_plot.columns:
-                col = self.calibration_plot.population_plot.columns
-                a, b = col[0], col[1]
-        x = data[:, a]
-        y = data[:, b]
-
-        plt_args = {
-            "title": "Population of the last generation",
-            "size": 8,
-            "cbar_label": "log(fitness)",
-        }
-        if b == 0:
-            plt_args["ylabel"] = "generation"
-        elif b == 1:
-            plt_args["ylabel"] = "fitness"
-        else:
-            plt_args["ylabel"] = "champions file column #" + str(b)
-
-        if a == 0:
-            plt_args["xlabel"] = "generation"
-        elif a == 1:
-            plt_args["xlabel"] = "fitness"
-        else:
-            plt_args["xlabel"] = "champions file column #" + str(a)
-
-        if a == 1 or b == 1:
-            plt_args["sci_y"] = True
-            self.plot_scatter(x, y, args=plt_args)
-        else:
-            self.plot_scatter(x, y, color=fitnesses, args=plt_args)
-
-        self.save_plot(filename=f"population_id{island_id}")
-
-    # TODO: Specific to 'calibration_plot'
-    def calibration_outputs(self, processor_list: "t.Sequence[Processor]") -> None:
-        """TBW."""
-        if self.save_data_to_file is not None:
-            for processor in processor_list:
-                self.save_to_file(processor)
-
-                if self._single_plot:
-                    self.single_to_plot(processor)
-
-    # TODO: Specific to 'calibration_plot'
-    def calibration_plots(self, results: t.Mapping, fitness: float) -> None:
-        """TBW."""
-        assert self.calibration_plot
-
-        if self.calibration_plot:
-            if self.calibration_plot.champions_plot:
-                self.user_plt_args = None
-
-                if self.calibration_plot.champions_plot.plot_args:
-                    self.user_plt_args = self.calibration_plot.champions_plot.plot_args
-
-                for iid, file_ch in enumerate(
-                    self.output_dir.glob("champions_id*.out")
-                ):
-                    self.champions_plot(
-                        results={"fitness": fitness, **results},
-                        champions_file=file_ch,
-                        island_id=iid,
-                    )
-
-            if self.calibration_plot.population_plot:
-                self.user_plt_args = None
-                if self.calibration_plot.population_plot.plot_args:
-                    self.user_plt_args = self.calibration_plot.population_plot.plot_args
-
-                for iid, file_pop in enumerate(
-                    self.output_dir.glob("population_id*.out")
-                ):
-                    self.population_plot(
-                        # results=results,
-                        population_file=file_pop,
-                        island_id=iid,
-                    )
-
-    # TODO: Specific to 'calibration_plot' ??
-    def fitting_plot(
-        self, target_data: np.ndarray, simulated_data: np.ndarray, data_i: int
-    ) -> None:
-        """TBW."""
-        assert self.calibration_plot
-
-        if self.calibration_plot.fitting_plot:
-            self._ax.plot(target_data, ".-", label=f"target data #{data_i}")
-            self._ax.plot(simulated_data, ".-", label=f"simulated data #{data_i}")
-            self._fig.canvas.draw_idle()
-
-    # TODO: Specific to 'calibration_plot' ??
-    def fitting_plot_close(self, result_type: "ResultType", island: int) -> None:
-        """TBW."""
-        assert self.calibration_plot
-        assert isinstance(island, int)
-
-        if self.calibration_plot.fitting_plot:
-            self.user_plt_args = None
-            if self.calibration_plot.fitting_plot.plot_args is None:
-                raise RuntimeError
-
-            self.user_plt_args = self.calibration_plot.fitting_plot.plot_args
-
-            user_plt_args_dct = None  # type: t.Optional[t.Mapping[str, t.Any]]
-            if isinstance(self.user_plt_args, PlotArguments):
-                user_plt_args_dct = self.user_plt_args.to_dict()
-
-            args = {
-                "title": f"Target and Simulated ({result_type}) "
-                f"data, "
-                f"island {island}"
-            }
-            ax_args0, plt_args0 = self.update_args(
-                plot_type=PlotType.Graph, new_args=args
-            )
-            ax_args, plt_args = self.update_args(
-                plot_type=PlotType.Graph,
-                new_args=user_plt_args_dct,
-                ax_args=ax_args0,
-                plt_args=plt_args0,
-            )
-            update_plot(ax_args=ax_args, ax=self._ax)
-            # plt.legend()
-            self._fig.legend()
-
-            self.save_plot(filename=f"fitted_datasets_id{island}")
 
     # TODO: Specific to 'parametric_plot' ?
     def params_func(self, param: "Parametric") -> None:
@@ -1003,104 +623,3 @@ class Outputs:
                 raise KeyError('Not valid plotting key in "plot_args": "%s"' % key)
 
         return ax_args, plt_args
-
-
-def show_plots() -> None:
-    """Close last empty canvas and show all the previously created figures."""
-    plt.close()
-    plt.show()
-
-
-def update_plot(ax_args: dict, ax: plt.Axes) -> None:
-    """TBW.
-
-    Parameters
-    ----------
-    ax_args
-    ax
-    """
-    ax.set_xlabel(ax_args["xlabel"])
-    ax.set_ylabel(ax_args["ylabel"])
-
-    ax.set_xscale(ax_args["xscale"])
-    ax.set_yscale(ax_args["yscale"])
-
-    ax.set_xlim(ax_args["xlim"][0], ax_args["xlim"][1])
-    ax.set_ylim(ax_args["ylim"][0], ax_args["ylim"][1])
-
-    ax.set_title(ax_args["title"])
-
-    if ax_args["axis"]:
-        # TODO: Fix this
-        raise NotImplementedError
-        # plt.axis(ax_args["axis"])
-
-    if ax_args["xticks"]:
-        ax.set_xticks(ax_args["xticks"])
-    if ax_args["yticks"]:
-        ax.set_yticks(ax_args["yticks"])
-
-    # TODO: Enable this
-    ax.grid(ax_args["grid"])
-
-    if ax_args["sci_x"]:
-        ax.xaxis.set_major_formatter(ScalarFormatter())
-        ax.ticklabel_format(style="scientific", axis="x", scilimits=(0, 0))
-    if ax_args["sci_y"]:
-        ax.yaxis.set_major_formatter(ScalarFormatter())
-        ax.ticklabel_format(style="scientific", axis="y", scilimits=(0, 0))
-
-
-# TODO: Refactor this function
-def update_fits_header(
-    header: dict, key: t.Union[str, list, tuple], value: t.Any
-) -> None:
-    """TBW.
-
-    Parameters
-    ----------
-    header
-    key
-    value
-    """
-    if isinstance(value, (str, int, float)):
-        result = value  # type: t.Union[str, int, float]
-    else:
-        result = repr(value)
-
-    if isinstance(result, str):
-        result = result[0:24]
-
-    if isinstance(key, (list, tuple)):
-        key = "/".join(key)
-
-    key = key.replace(".", "/")[0:36]
-    header[key] = value
-
-
-# TODO: Create unit tests
-# TODO: Refactor this in 'def apply_run_number(folder, template_filename) -> Path
-def apply_run_number(template_filename: Path) -> Path:
-    """Convert the file name numeric placeholder to a unique number.
-
-    :param template_filename:
-    :return:
-    """
-    path_str = str(template_filename)
-    if "?" in path_str:
-        # TODO: Use method 'Path.glob'
-        dir_list = sorted(glob(path_str))
-
-        p_0 = path_str.find("?")
-        p_1 = path_str.rfind("?")
-        template = path_str[slice(p_0, p_1 + 1)]
-        path_str = path_str.replace(template, "{:0%dd}" % len(template))
-
-        last_num = 0
-        if len(dir_list):
-            path_last = dir_list[-1]
-            last_num = int(path_last[slice(p_0, p_1 + 1)])
-        last_num += 1
-        path_str = path_str.format(last_num)
-
-    return Path(path_str)

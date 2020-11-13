@@ -204,7 +204,7 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
         single = configuration.single  # type: Single
 
         outputs = single.outputs  # type: Outputs
-        outputs.set_input_file(input_filename)
+        outputs.copy_config_file(input_filename)
         detector.set_output_dir(outputs.output_dir)  # TODO: Remove this
 
         _ = single_mode(processor=processor, out=outputs)
@@ -214,7 +214,7 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
         calibration = configuration.calibration  # type: Calibration
 
         outputs = calibration.outputs  # type: Outputs
-        outputs.set_input_file(input_filename)
+        outputs.copy_config_file(input_filename)
         detector.set_output_dir(outputs.output_dir)  # TODO: Remove this
 
         calibration_mode(processor=processor, calibration=calibration, outputs=outputs)
@@ -224,7 +224,7 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
         parametric = configuration.parametric  # type: Parametric
 
         outputs = parametric.outputs  # type: Outputs
-        outputs.set_input_file(input_filename)
+        outputs.copy_config_file(input_filename)
         detector.set_output_dir(outputs.output_dir)  # TODO: Remove this
 
         # TODO: This should be done during initializing of object `Configuration`
@@ -237,7 +237,7 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
         dynamic = configuration.dynamic  # type: Dynamic
 
         outputs = dynamic.outputs  # type: Outputs
-        outputs.set_input_file(input_filename)
+        outputs.copy_config_file(input_filename)
         detector.set_output_dir(outputs.output_dir)  # TODO: Remove this
 
         dynamic_mode(processor=processor, dynamic=dynamic, output=outputs)

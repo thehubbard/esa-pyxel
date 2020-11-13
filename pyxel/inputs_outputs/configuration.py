@@ -7,62 +7,103 @@
 #
 #
 
+import typing as t
+from functools import partial
+from pathlib import Path
+
+import attr
 import yaml
 from yaml import Loader
-import typing as t
-from pathlib import Path
-from pyxel.evaluator import evaluate_reference
-from functools import partial
-from pyxel.pipelines import DetectionPipeline, ModelFunction, ModelGroup
-import attr
 
+from pyxel.calibration import Calibration
 from pyxel.detectors import (
     CCD,
     CMOS,
-    Environment,
-    CCDGeometry,
     CCDCharacteristics,
-    CMOSGeometry,
+    CCDGeometry,
     CMOSCharacteristics,
+    CMOSGeometry,
+    Environment,
     Material,
 )
-from pyxel.single import Single
-from pyxel.parametric import Parametric
-from pyxel.calibration import Calibration
 from pyxel.dynamic import Dynamic
-from pyxel.util import Outputs
+from pyxel.evaluator import evaluate_reference
+from pyxel.inputs_outputs.dynamic_outputs import DynamicOutputs
+from pyxel.inputs_outputs.outputs import PlotArguments
+from pyxel.inputs_outputs.single_outputs import SingleOutputs, SinglePlot
+from pyxel.inputs_outputs.parametric_outputs import ParametricOutputs
+from pyxel.inputs_outputs.calibration_outputs import CalibrationOutputs
+from pyxel.parametric import Parametric
+from pyxel.pipelines import DetectionPipeline, ModelFunction, ModelGroup
+from pyxel.single import Single
 
 
-def build_callable(func: str, arguments: t.Optional[dict] = None) -> t.Callable:
-    """Create a callable.
-
-    Parameters
-    ----------
-    func
-    arguments
-
-    Returns
-    -------
-    callable
-        TBW.
-    """
-    assert isinstance(func, str)
-    assert arguments is None or isinstance(arguments, dict)
-
-    if arguments is None:
-        arguments = {}
-
-    func_callable = evaluate_reference(func)  # type: t.Callable
-
-    return partial(func_callable, **arguments)
+@attr.s
+class Configuration:
+    single: Single = attr.ib(init=False)
+    parametric: Parametric = attr.ib(init=False)
+    calibration: Calibration = attr.ib(init=False)
+    dynamic: Dynamic = attr.ib(init=False)
+    ccd_detector: CCD = attr.ib(init=False)
+    cmos_detector: CMOS = attr.ib(init=False)
+    pipeline: DetectionPipeline = attr.ib(init=False)
 
 
-def to_outputs(dct) -> Outputs:
-    return Outputs(dct)
+# def build_callable(func: str, arguments: t.Optional[dict] = None) -> t.Callable:
+#     """Create a callable.
+#
+#     Parameters
+#     ----------
+#     func
+#     arguments
+#
+#     Returns
+#     -------
+#     callable
+#         TBW.
+#     """
+#     assert isinstance(func, str)
+#     assert arguments is None or isinstance(arguments, dict)
+#
+#     if arguments is None:
+#         arguments = {}
+#
+#     func_callable = evaluate_reference(func)  # type: t.Callable
+#
+#     return partial(func_callable, **arguments)
 
 
-def to_single(dct) -> Single:
-    return Single(outputs=to_outputs(dct["outputs"]))
+def to_plot_arguments(dct: dict) -> PlotArguments:
+    return PlotArguments(**dct)
+
+
+def to_single_plot(dct: dict) -> SinglePlot:
+    dct.update({"plot_args": to_plot_arguments(dct["plot_args"])})
+    return SinglePlot(**dct)
+
+
+def to_single_outputs(dct: dict) -> SingleOutputs:
+    dct.update({"single_plot": to_single_plot(dct["single_plot"])})
+    return SingleOutputs(**dct)
+
+
+def to_single(dct: dict) -> Single:
+    return Single(outputs=to_single_outputs(dct["outputs"]))
+
+
+# TODO: Dynamic uses single plot for now
+def to_dynamic_outputs(dct: dict) -> DynamicOutputs:
+    dct.update({"single_plot": to_single_plot(dct["single_plot"])})
+    return DynamicOutputs(**dct)
+
+
+def to_dynamic(dct) -> Dynamic:
+    dct.update({"outputs": to_dynamic_outputs(dct["outputs"])})
+    return Dynamic(**dct)
+
+
+def to_parametric(dct) -> Parametric:
+
 
 
 def to_ccd_geometry(dct: dict) -> CCDGeometry:
@@ -108,49 +149,19 @@ def to_cmos(dct: dict) -> CMOS:
 
 
 def to_model_function(dct: dict) -> ModelFunction:
-    func = dct["func"]
-    name = dct["name"]
-    try:
-        arguments = dct["arguments"]
-    except:
-        arguments = {}
-    enabled = dct["enabled"]
-
-    assert isinstance(func, str)
-    assert isinstance(name, str)
-    assert isinstance(arguments, dict)
-    assert isinstance(enabled, bool)
-
-    func_callable = evaluate_reference(func)  # type: t.Callable
-
-    return ModelFunction(
-        func=func_callable, name=name, arguments=arguments, enabled=enabled
-    )
+    dct.update({"func": evaluate_reference(dct["func"])})
+    return ModelFunction(**dct)
 
 
 def to_model_group(models_list: t.Sequence[dict]) -> ModelGroup:
-    models = []
-    for model_dict in models_list:
-        models.append(to_model_function(model_dict))
+    models = [to_model_function(model_dict) for model_dict in models_list]
     return ModelGroup(models=models)
 
 
 def to_pipeline(dct: dict) -> DetectionPipeline:
-    pipeline_dict = {}
     for model_group_name in dct.keys():
-        pipeline_dict.update({model_group_name: to_model_group(dct[model_group_name])})
-    return DetectionPipeline(**pipeline_dict)
-
-
-@attr.s
-class Configuration:
-    single: Single = attr.ib(init=False)
-    parametric: Parametric = attr.ib(init=False)
-    calibration: Calibration = attr.ib(init=False)
-    dynamic: Dynamic = attr.ib(init=False)
-    ccd_detector: CCD = attr.ib(init=False)
-    cmos_detector: CMOS = attr.ib(init=False)
-    pipeline: DetectionPipeline = attr.ib(init=False)
+        dct.update({model_group_name: to_model_group(dct[model_group_name])})
+    return DetectionPipeline(**dct)
 
 
 def build_configuration(dct: dict) -> Configuration:
@@ -158,10 +169,10 @@ def build_configuration(dct: dict) -> Configuration:
 
     if "single" in dct:
         configuration.single = to_single(dct["single"])
-    elif "parametric" in dct:
-        configuration.parametric = to_parametric(dct["parametric"])
-    elif "calibration" in dct:
-        configuration.calibration = to_calibration(dct["calibration"])
+    # elif "parametric" in dct:
+    #     configuration.parametric = to_parametric(dct["parametric"])
+    # elif "calibration" in dct:
+    #     configuration.calibration = to_calibration(dct["calibration"])
     elif "dynamic" in dct:
         configuration.dynamic = to_dynamic(dct["dynamic"])
     else:
@@ -202,11 +213,9 @@ def load_yaml(stream: t.Union[str, t.IO]) -> t.Any:
 
 
 if __name__ == "__main__":
-    configuration = Configuration()
-    cfg = load("../../examples/single.yaml")
-    print(cfg)
-    detector = to_ccd(cfg["ccd_detector"])
-    pipeline = to_pipeline(cfg["pipeline"])
-    single = to_single(cfg["single"])
-    print(3)
-    pass
+    config_dict = load("../../examples/single.yaml")
+    cfg = build_configuration(config_dict)
+    detector = cfg.ccd_detector
+    pipeline = cfg.pipeline
+    single = cfg.single
+    print(detector, pipeline, single)
