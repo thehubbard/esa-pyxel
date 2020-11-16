@@ -33,11 +33,12 @@ from pyxel.inputs_outputs import Configuration
 from pyxel.parametric import Parametric
 from pyxel.pipelines import DetectionPipeline, Processor
 from pyxel.single import Single
-from pyxel.util import Outputs
-from pyxel.util.outputs import Result
+
+if t.TYPE_CHECKING:
+    from .inputs_outputs import SingleOutputs, ParametricOutputs, CalibrationOutputs, DynamicOutputs, Result
 
 
-def single_mode(processor: Processor, out: Outputs) -> plt.Figure:
+def single_mode(processor: Processor, out: "SingleOutputs") -> plt.Figure:
     """TBW.
 
     Parameters
@@ -63,7 +64,7 @@ def single_mode(processor: Processor, out: Outputs) -> plt.Figure:
 def parametric_mode(
     processor: Processor,
     parametric: Parametric,
-    output: Outputs,
+    output: "ParametricOutputs",
     with_dask: bool = False,
 ) -> t.Optional[plt.Figure]:
     """Run a 'parametric' pipeline.
@@ -129,7 +130,7 @@ def parametric_mode(
     return fig
 
 
-def dynamic_mode(processor: "Processor", dynamic: "Dynamic", outputs: "Outputs"):
+def dynamic_mode(processor: "Processor", dynamic: "Dynamic", outputs: "DynamicOutputs"):
 
     logging.info("Mode: Dynamic")
 
@@ -157,7 +158,7 @@ def dynamic_mode(processor: "Processor", dynamic: "Dynamic", outputs: "Outputs")
 
 
 def calibration_mode(
-    processor: "Processor", calibration: "Calibration", outputs: "Outputs"
+    processor: "Processor", calibration: "Calibration", outputs: "CalibrationOutputs"
 ):
 
     logging.info("Mode: Calibration")
@@ -203,7 +204,7 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
 
         single = configuration.single  # type: Single
 
-        outputs = single.outputs  # type: Outputs
+        outputs = single.outputs  # type: SingleOutputs
         outputs.copy_config_file(input_filename)
         detector.set_output_dir(outputs.output_dir)  # TODO: Remove this
 
@@ -213,7 +214,7 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
 
         calibration = configuration.calibration  # type: Calibration
 
-        outputs = calibration.outputs  # type: Outputs
+        outputs = calibration.outputs  # type: CalibrationOutputs
         outputs.copy_config_file(input_filename)
         detector.set_output_dir(outputs.output_dir)  # TODO: Remove this
 
@@ -223,7 +224,7 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
 
         parametric = configuration.parametric  # type: Parametric
 
-        outputs = parametric.outputs  # type: Outputs
+        outputs = parametric.outputs  # type: ParametricOutputs
         outputs.copy_config_file(input_filename)
         detector.set_output_dir(outputs.output_dir)  # TODO: Remove this
 
@@ -236,11 +237,11 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
 
         dynamic = configuration.dynamic  # type: Dynamic
 
-        outputs = dynamic.outputs  # type: Outputs
+        outputs = dynamic.outputs  # type: DynamicOutputs
         outputs.copy_config_file(input_filename)
         detector.set_output_dir(outputs.output_dir)  # TODO: Remove this
 
-        dynamic_mode(processor=processor, dynamic=dynamic, output=outputs)
+        dynamic_mode(processor=processor, dynamic=dynamic, outputs=outputs)
 
     else:
         raise NotImplementedError(f"Please provide a valid simulation mode !")

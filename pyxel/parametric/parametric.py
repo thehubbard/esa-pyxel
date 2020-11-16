@@ -20,7 +20,7 @@ from pyxel.state import get_obj_att, get_value
 if t.TYPE_CHECKING:
     from ..calibration.calibration import Calibration
     from ..pipelines import Processor
-    from ..util import Outputs
+    from ..inputs_outputs import ParametricOutputs
 
 
 class ParametricMode(Enum):
@@ -37,7 +37,7 @@ class Parametric:
 
     def __init__(
         self,
-        outputs: "Outputs",
+        outputs: "ParametricOutputs",
         parametric_mode: str,
         parameters: t.Sequence[ParameterValues],
         from_file: t.Optional[str] = None,

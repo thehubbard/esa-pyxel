@@ -14,18 +14,6 @@ import numpy as np
 
 # flake8: noqa
 # from pyxel.util.outputs import image, numpy_array, hist_plot, graph_plot, show_plots
-from pyxel.util.outputs import (
-    Outputs,
-    apply_run_number,
-    PlotArguments,
-    SinglePlot,
-    ChampionsPlot,
-    PopulationPlot,
-    CalibrationPlot,
-    FittingPlot,
-    ParametricPlot,
-)
-
 from pyxel.util.jupyxel import (
     display_config,
     display_dict,

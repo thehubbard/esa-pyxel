@@ -18,4 +18,4 @@ from .util import (
     list_to_slice,
     read_data,
 )
-from .calibration import Calibration
+from .calibration import Calibration, Algorithm

@@ -7,4 +7,4 @@
 
 """TBW."""
 
-from .parametric import Parametric
+from .parametric import Parametric, ParameterValues

@@ -25,7 +25,8 @@ from pyxel.calibration import (
 from pyxel.calibration.fitting import ModelFitting
 from pyxel.parametric.parameter_values import ParameterValues
 from pyxel.pipelines import ModelFunction, Processor
-from pyxel.util import Outputs
+if t.TYPE_CHECKING:
+    from ..inputs_outputs import CalibrationOutputs
 
 try:
     import pygmo as pg
@@ -492,7 +493,7 @@ class Calibration:
 
     def __init__(
         self,
-        outputs: Outputs,
+        outputs: "CalibrationOutputs",
         output_dir: t.Optional[Path] = None,
         fitting: t.Optional[ModelFitting] = None,
         calibration_mode: Literal["pipeline", "single_model"] = "pipeline",

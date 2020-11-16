@@ -11,13 +11,13 @@
 import typing as t
 
 if t.TYPE_CHECKING:
-    from ..util import Outputs
+    from ..inputs_outputs import SingleOutputs
 
 
 class Single:
     """TBW."""
 
-    def __init__(self, outputs: "Outputs"):
+    def __init__(self, outputs: "SingleOutputs"):
         self.outputs = outputs
 
     def __repr__(self) -> str:

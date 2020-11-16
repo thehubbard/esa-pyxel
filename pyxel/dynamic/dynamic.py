@@ -11,7 +11,7 @@
 import typing as t
 
 if t.TYPE_CHECKING:
-    from ..util import Outputs
+    from ..inputs_outputs import DynamicOutputs
 
 
 class Dynamic:
@@ -19,7 +19,7 @@ class Dynamic:
 
     def __init__(
         self,
-        outputs: "Outputs",
+        outputs: "DynamicOutputs",
         t_step: float,
         steps: int,
         non_destructive_readout: bool = False,
