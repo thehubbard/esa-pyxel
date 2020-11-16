@@ -592,8 +592,8 @@ class CalibrationOutputs:
             for processor in processor_list:
                 self.save_to_file(processor)
 
-                if self._single_plot:
-                    self.single_to_plot(processor)
+                #if self._single_plot:
+                #    self.single_to_plot(processor)
 
     # TODO: Specific to 'calibration_plot'
     def calibration_plots(self, results: t.Mapping, fitness: float) -> None:

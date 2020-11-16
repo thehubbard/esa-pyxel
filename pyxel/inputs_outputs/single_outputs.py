@@ -136,7 +136,7 @@ class SingleOutputs:
         return self._fig
 
     def copy_config_file(self, filename: t.Union[str, Path]) -> Path:
-        """Copy a YAML configuration filename into its output directory.
+        """Copy a YAML configuration filename into its outputs directory.
 
         Parameters
         ----------
@@ -164,7 +164,7 @@ class SingleOutputs:
 
     # TODO: the log file should directly write in 'output_dir'
     def save_log_file(self) -> None:
-        """Move log file to the output directory of the simulation."""
+        """Move log file to the outputs directory of the simulation."""
         log_file = Path("pyxel.log").resolve(strict=True)  # type: Path
 
         new_log_filename = self.output_dir.joinpath(log_file.name)

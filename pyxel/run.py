@@ -35,16 +35,22 @@ from pyxel.pipelines import DetectionPipeline, Processor
 from pyxel.single import Single
 
 if t.TYPE_CHECKING:
-    from .inputs_outputs import SingleOutputs, ParametricOutputs, CalibrationOutputs, DynamicOutputs, Result
+    from .inputs_outputs import (
+        CalibrationOutputs,
+        DynamicOutputs,
+        ParametricOutputs,
+        Result,
+        SingleOutputs,
+    )
 
 
-def single_mode(processor: Processor, out: "SingleOutputs") -> plt.Figure:
+def single_mode(processor: Processor, outputs: "SingleOutputs") -> plt.Figure:
     """TBW.
 
     Parameters
     ----------
     processor
-    out
+    outputs
 
     Returns
     -------
@@ -55,16 +61,16 @@ def single_mode(processor: Processor, out: "SingleOutputs") -> plt.Figure:
 
     _ = processor.run_pipeline()
 
-    out.save_to_file(processor)
-    out.single_to_plot(processor)
+    outputs.save_to_file(processor)
+    outputs.single_to_plot(processor)
 
-    return out.fig
+    return outputs.fig
 
 
 def parametric_mode(
     processor: Processor,
     parametric: Parametric,
-    output: "ParametricOutputs",
+    outputs: "ParametricOutputs",
     with_dask: bool = False,
 ) -> t.Optional[plt.Figure]:
     """Run a 'parametric' pipeline.
@@ -73,7 +79,7 @@ def parametric_mode(
     ----------
     processor
     parametric
-    output
+    outputs
     with_dask
 
     Returns
@@ -100,32 +106,32 @@ def parametric_mode(
 
         if not with_dask:
             result_proc = proc.run_pipeline()  # type: Processor
-            result_val = output.extract_func(processor=result_proc)  # type: Result
+            result_val = outputs.extract_func(processor=result_proc)  # type: Result
 
-            filenames = output.save_to_file(
+            filenames = outputs.save_to_file(
                 processor=result_proc
             )  # type: t.Sequence[Path]
 
         else:
             result_proc = delayed(proc.run_pipeline)()
-            result_val = delayed(output.extract_func)(processor=result_proc)
+            result_val = delayed(outputs.extract_func)(processor=result_proc)
 
-            filenames = delayed(output.save_to_file)(processor=result_proc)
+            filenames = delayed(outputs.save_to_file)(processor=result_proc)
 
         result_list.append(result_val)
         output_filenames.append(filenames)  # TODO: This is not used
 
     if not with_dask:
-        plot_array = output.merge_func(result_list)  # type: np.ndarray
+        plot_array = outputs.merge_func(result_list)  # type: np.ndarray
     else:
-        array = delayed(output.merge_func)(result_list)
+        array = delayed(outputs.merge_func)(result_list)
         plot_array, _ = dask.compute(array, output_filenames)
 
     # TODO: Plot with dask ?
     fig = None  # type: t.Optional[plt.Figure]
-    if output.parametric_plot is not None:
-        output.plotting_func(plot_array)
-        fig = output.fig
+    if outputs.parametric_plot is not None:
+        outputs.plotting_func(plot_array)
+        fig = outputs.fig
 
     return fig
 
@@ -191,16 +197,16 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
 
     pipeline = configuration.pipeline  # type: DetectionPipeline
 
-    if hasattr(configuration, "ccd_detector"):
+    if configuration.ccd_detector is not None:
         detector = configuration.ccd_detector  # type: CCD
-    elif hasattr(configuration, "cmos_detector"):
+    elif configuration.cmos_detector is not None:
         detector = configuration.cmos_detector  # type: CMOS
     else:
         raise NotImplementedError("Detector is not defined in YAML config. file!")
 
     processor = Processor(detector=detector, pipeline=pipeline)
 
-    if hasattr(configuration, "single"):
+    if configuration.single is not None:
 
         single = configuration.single  # type: Single
 
@@ -208,9 +214,9 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
         outputs.copy_config_file(input_filename)
         detector.set_output_dir(outputs.output_dir)  # TODO: Remove this
 
-        _ = single_mode(processor=processor, out=outputs)
+        _ = single_mode(processor=processor, outputs=outputs)
 
-    elif hasattr(configuration, "calibration"):
+    elif configuration.calibration is not None:
 
         calibration = configuration.calibration  # type: Calibration
 
@@ -220,7 +226,7 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
 
         calibration_mode(processor=processor, calibration=calibration, outputs=outputs)
 
-    elif hasattr(configuration, "parametric"):
+    elif configuration.parametric is not None:
 
         parametric = configuration.parametric  # type: Parametric
 
@@ -231,9 +237,9 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
         # TODO: This should be done during initializing of object `Configuration`
         # out.params_func(parametric)
 
-        _ = parametric_mode(processor=processor, parametric=parametric, output=outputs)
+        _ = parametric_mode(processor=processor, parametric=parametric, outputs=outputs)
 
-    elif hasattr(configuration, "dynamic"):
+    elif configuration.dynamic is not None:
 
         dynamic = configuration.dynamic  # type: Dynamic
 

@@ -15,4 +15,3 @@ from .calibration_outputs import CalibrationOutputs
 from .dynamic_outputs import DynamicOutputs
 
 from .loader import load_image, load_table
-

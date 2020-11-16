@@ -25,6 +25,7 @@ from pyxel.calibration import (
 from pyxel.calibration.fitting import ModelFitting
 from pyxel.parametric.parameter_values import ParameterValues
 from pyxel.pipelines import ModelFunction, Processor
+
 if t.TYPE_CHECKING:
     from ..inputs_outputs import CalibrationOutputs
 
@@ -836,7 +837,7 @@ class Calibration:
     def post_processing(
         self,
         calib_results: t.Sequence[CalibrationResult],
-        output: Outputs,
+        output: "CalibrationOutputs",
     ) -> None:
         """TBW."""
         for one_calib_result in calib_results:  # type: CalibrationResult

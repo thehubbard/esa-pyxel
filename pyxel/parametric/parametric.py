@@ -19,8 +19,8 @@ from pyxel.state import get_obj_att, get_value
 
 if t.TYPE_CHECKING:
     from ..calibration.calibration import Calibration
-    from ..pipelines import Processor
     from ..inputs_outputs import ParametricOutputs
+    from ..pipelines import Processor
 
 
 class ParametricMode(Enum):

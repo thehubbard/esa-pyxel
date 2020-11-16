@@ -6,6 +6,7 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 #
 #
+"""Configuration loader."""
 
 import typing as t
 from functools import partial
@@ -27,6 +28,9 @@ from ..detectors import (
 )
 from ..dynamic import Dynamic
 from ..evaluator import evaluate_reference
+from ..parametric import ParameterValues, Parametric
+from ..pipelines import DetectionPipeline, ModelFunction, ModelGroup
+from ..single import Single
 from .calibration_outputs import (
     CalibrationOutputs,
     CalibrationPlot,
@@ -38,9 +42,6 @@ from .dynamic_outputs import DynamicOutputs
 from .outputs import PlotArguments
 from .parametric_outputs import ParametricOutputs, ParametricPlot
 from .single_outputs import SingleOutputs, SinglePlot
-from ..parametric import ParameterValues, Parametric
-from ..pipelines import DetectionPipeline, ModelFunction, ModelGroup
-from ..single import Single
 
 
 @attr.s
@@ -54,13 +55,67 @@ class Configuration:
     cmos_detector: t.Optional[CMOS] = attr.ib(default=None)
 
 
+def load(yaml_file: t.Union[str, Path]) -> Configuration:
+    """Load a YAML file.
+
+    Parameters
+    ----------
+    yaml_file
+
+    Returns
+    -------
+    configuration: Configuration
+    """
+    filename = Path(yaml_file).resolve()
+    if not filename.exists():
+        raise FileNotFoundError(f"Cannot find configuration file '{filename}'.")
+    with filename.open("r") as file_obj:
+        return build_configuration(load_yaml(file_obj))
+
+
+def load_yaml(stream: t.Union[str, t.IO]) -> t.Any:
+    """Load a YAML document.
+
+    Parameters
+    ----------
+    stream
+
+    Returns
+    -------
+    result: dict
+
+    """
+    result = yaml.load(stream, Loader=yaml.SafeLoader)
+    return result
+
+
 def to_plot_arguments(dct: dict) -> t.Optional[PlotArguments]:
+    """Create a PlotArguments class from a dictionary.
+
+    Parameters
+    ----------
+    dct
+
+    Returns
+    -------
+    PlotArguments
+    """
     if dct is None:
         return None
     return PlotArguments(**dct)
 
 
 def to_single_plot(dct: dict) -> t.Optional[SinglePlot]:
+    """Create a SinglePlot class from a dictionary.
+
+    Parameters
+    ----------
+    dct
+
+    Returns
+    -------
+    SinglePlot
+    """
     if dct is None:
         return None
     dct.update({"plot_args": to_plot_arguments(dct["plot_args"])})
@@ -68,26 +123,76 @@ def to_single_plot(dct: dict) -> t.Optional[SinglePlot]:
 
 
 def to_single_outputs(dct: dict) -> SingleOutputs:
+    """Create a SingleOutputs class from a dictionary.
+
+    Parameters
+    ----------
+    dct
+
+    Returns
+    -------
+    SingleOutputs
+    """
     dct.update({"single_plot": to_single_plot(dct["single_plot"])})
     return SingleOutputs(**dct)
 
 
 def to_single(dct: dict) -> Single:
+    """Create a Single class from a dictionary.
+
+    Parameters
+    ----------
+    dct
+
+    Returns
+    -------
+    Single
+    """
     return Single(outputs=to_single_outputs(dct["outputs"]))
 
 
 # TODO: Dynamic uses single plot for now
 def to_dynamic_outputs(dct: dict) -> DynamicOutputs:
+    """Create a DynamicOutputs class from a dictionary.
+
+    Parameters
+    ----------
+    dct
+
+    Returns
+    -------
+    DynamicOutputs
+    """
     dct.update({"single_plot": to_single_plot(dct["single_plot"])})
     return DynamicOutputs(**dct)
 
 
 def to_dynamic(dct: dict) -> Dynamic:
+    """Create a Dynamic class from a dictionary.
+
+    Parameters
+    ----------
+    dct
+
+    Returns
+    -------
+    Dynamic
+    """
     dct.update({"outputs": to_dynamic_outputs(dct["outputs"])})
     return Dynamic(**dct)
 
 
 def to_parametric_plot(dct: dict) -> t.Optional[ParametricPlot]:
+    """Create a ParametricPlot class from a dictionary.
+
+    Parameters
+    ----------
+    dct
+
+    Returns
+    -------
+    ParametricPlot
+    """
     if dct is None:
         return None
     dct.update({"plot_args": to_plot_arguments(dct["plot_args"])})
@@ -95,15 +200,45 @@ def to_parametric_plot(dct: dict) -> t.Optional[ParametricPlot]:
 
 
 def to_parametric_outputs(dct: dict) -> ParametricOutputs:
+    """Create a ParametricOutputs class from a dictionary.
+
+    Parameters
+    ----------
+    dct
+
+    Returns
+    -------
+    ParametricOutputs
+    """
     dct.update({"parametric_plot": to_parametric_plot(dct["parametric_plot"])})
     return ParametricOutputs(**dct)
 
 
 def to_parameters(dct: dict) -> ParameterValues:
+    """Create a ParameterValues class from a dictionary.
+
+    Parameters
+    ----------
+    dct
+
+    Returns
+    -------
+    ParameterValues
+    """
     return ParameterValues(**dct)
 
 
 def to_parametric(dct: dict) -> Parametric:
+    """Create a Parametric class from a dictionary.
+
+    Parameters
+    ----------
+    dct
+
+    Returns
+    -------
+    Parametric
+    """
     dct.update(
         {"parameters": [to_parameters(param_dict) for param_dict in dct["parameters"]]}
     )
@@ -112,6 +247,16 @@ def to_parametric(dct: dict) -> Parametric:
 
 
 def to_champions_plot(dct: dict) -> t.Optional[ChampionsPlot]:
+    """Create a ChampionsPlot class from a dictionary.
+
+    Parameters
+    ----------
+    dct
+
+    Returns
+    -------
+    ChampionsPlot
+    """
     if dct is None:
         return None
     dct.update({"plot_args": to_plot_arguments(dct["plot_args"])})
@@ -119,6 +264,16 @@ def to_champions_plot(dct: dict) -> t.Optional[ChampionsPlot]:
 
 
 def to_population_plot(dct: dict) -> t.Optional[PopulationPlot]:
+    """Create a PopulatonPlot class from a dictionary.
+
+    Parameters
+    ----------
+    dct
+
+    Returns
+    -------
+    PopulationPlot
+    """
     if dct is None:
         return None
     dct.update({"plot_args": to_plot_arguments(dct["plot_args"])})
@@ -126,6 +281,16 @@ def to_population_plot(dct: dict) -> t.Optional[PopulationPlot]:
 
 
 def to_fitting_plot(dct: dict) -> t.Optional[FittingPlot]:
+    """Create a FittingPlot class from a dictionary.
+
+    Parameters
+    ----------
+    dct
+
+    Returns
+    -------
+    FittingPlot
+    """
     if dct is None:
         return None
     dct.update({"plot_args": to_plot_arguments(dct["plot_args"])})
@@ -133,6 +298,16 @@ def to_fitting_plot(dct: dict) -> t.Optional[FittingPlot]:
 
 
 def to_calibration_plot(dct: dict) -> t.Optional[CalibrationPlot]:
+    """Create a CalibrationPlot class from a dictionary.
+
+    Parameters
+    ----------
+    dct
+
+    Returns
+    -------
+    CalibrationPlot
+    """
     if "champions_plot" in dct:
         dct.update({"champions_plot": to_champions_plot(dct["champions_plot"])})
     if "population_plot" in dct:
@@ -145,17 +320,47 @@ def to_calibration_plot(dct: dict) -> t.Optional[CalibrationPlot]:
 
 
 def to_calibration_outputs(dct: dict):
+    """Create a CalibrationOutputs class from a dictionary.
+
+    Parameters
+    ----------
+    dct
+
+    Returns
+    -------
+    CalibrationOutputs
+    """
     dct.update({"calibration_plot": to_calibration_plot(dct["calibration_plot"])})
     return CalibrationOutputs(**dct)
 
 
 def to_algorithm(dct: dict) -> t.Optional[Algorithm]:
+    """Create an Algorithm class from a dictionary.
+
+    Parameters
+    ----------
+    dct
+
+    Returns
+    -------
+    Algorithm
+    """
     if dct is None:
         return None
     return Algorithm(**dct)
 
 
 def to_callable(dct: dict) -> t.Callable:
+    """Create a callable from a dictionary.
+
+    Parameters
+    ----------
+    dct
+
+    Returns
+    -------
+    callable
+    """
     func = evaluate_reference(dct["func"])
     arguments = dct["arguments"]
     if arguments is None:
@@ -164,6 +369,16 @@ def to_callable(dct: dict) -> t.Callable:
 
 
 def to_calibration(dct: dict) -> Calibration:
+    """Create a Calibration class from a dictionary.
+
+    Parameters
+    ----------
+    dct
+
+    Returns
+    -------
+    Calibration
+    """
     dct.update({"outputs": to_calibration_outputs(dct["outputs"])})
     dct.update({"fitness_function": to_callable(dct["fitness_function"])})
     dct.update({"algorithm": to_algorithm(dct["algorithm"])})
@@ -174,42 +389,112 @@ def to_calibration(dct: dict) -> Calibration:
 
 
 def to_ccd_geometry(dct: dict) -> t.Optional[CCDGeometry]:
+    """Create a CCDGeometry class from a dictionary.
+
+    Parameters
+    ----------
+    dct
+
+    Returns
+    -------
+    CCDGeometry
+    """
     if dct is None:
         return None
     return CCDGeometry(**dct)
 
 
 def to_cmos_geometry(dct: dict) -> t.Optional[CMOSGeometry]:
+    """Create a CMOSGeometry class from a dictionary.
+
+    Parameters
+    ----------
+    dct
+
+    Returns
+    -------
+    CMOSGeometry
+    """
     if dct is None:
         return None
     return CMOSGeometry(**dct)
 
 
 def to_material(dct: dict) -> t.Optional[Material]:
+    """Create a Material class from a dictionary.
+
+    Parameters
+    ----------
+    dct
+
+    Returns
+    -------
+    Material
+    """
     if dct is None:
         return None
     return Material(**dct)
 
 
 def to_environment(dct: dict) -> t.Optional[Environment]:
+    """Create an Environment class from a dictionary.
+
+    Parameters
+    ----------
+    dct
+
+    Returns
+    -------
+    Environment
+    """
     if dct is None:
         return None
     return Environment(**dct)
 
 
 def to_ccd_characteristics(dct: dict) -> t.Optional[CCDCharacteristics]:
+    """Create a CCDCharacteristics class from a dictionary.
+
+    Parameters
+    ----------
+    dct
+
+    Returns
+    -------
+    CCDCharacteristics
+    """
     if dct is None:
         return None
     return CCDCharacteristics(**dct)
 
 
 def to_cmos_characteristics(dct: dict) -> t.Optional[CMOSCharacteristics]:
+    """Create a CMOSCharacteristics class from a dictionary.
+
+    Parameters
+    ----------
+    dct
+
+    Returns
+    -------
+    CMOSCharacteristics
+    """
     if dct is None:
         return None
     return CMOSCharacteristics(**dct)
 
 
 def to_ccd(dct: dict) -> CCD:
+    """Create a CCD class from a dictionary.
+
+    Parameters
+    ----------
+    dct
+
+    Returns
+    -------
+    CCD
+    """
     return CCD(
         geometry=to_ccd_geometry(dct["geometry"]),
         material=to_material(dct["material"]),
@@ -219,6 +504,16 @@ def to_ccd(dct: dict) -> CCD:
 
 
 def to_cmos(dct: dict) -> CMOS:
+    """Create a CMOS class from a dictionary.
+
+    Parameters
+    ----------
+    dct
+
+    Returns
+    -------
+    CMOS
+    """
     return CMOS(
         geometry=to_cmos_geometry(dct["geometry"]),
         material=to_material(dct["material"]),
@@ -228,11 +523,31 @@ def to_cmos(dct: dict) -> CMOS:
 
 
 def to_model_function(dct: dict) -> ModelFunction:
+    """Create a MOdelFunciton class from a dictionary.
+
+    Parameters
+    ----------
+    dct
+
+    Returns
+    -------
+    ModelFunction
+    """
     dct.update({"func": evaluate_reference(dct["func"])})
     return ModelFunction(**dct)
 
 
 def to_model_group(models_list: t.Sequence[dict]) -> t.Optional[ModelGroup]:
+    """Create a ModelGroup class from a dictionary.
+
+    Parameters
+    ----------
+    models_list
+
+    Returns
+    -------
+    ModelGroup
+    """
     if models_list is None:
         return None
     models = [to_model_function(model_dict) for model_dict in models_list]
@@ -240,12 +555,32 @@ def to_model_group(models_list: t.Sequence[dict]) -> t.Optional[ModelGroup]:
 
 
 def to_pipeline(dct: dict) -> DetectionPipeline:
+    """Create a DetectionPipeline class from a dictionary.
+
+    Parameters
+    ----------
+    dct
+
+    Returns
+    -------
+    DetectionPipeline
+    """
     for model_group_name in dct.keys():
         dct.update({model_group_name: to_model_group(dct[model_group_name])})
     return DetectionPipeline(**dct)
 
 
 def build_configuration(dct: dict) -> Configuration:
+    """Create a Configuration class from a dictionary.
+
+    Parameters
+    ----------
+    dct
+
+    Returns
+    -------
+    Configuration
+    """
 
     configuration = Configuration()  # type: Configuration
 
@@ -270,26 +605,4 @@ def build_configuration(dct: dict) -> Configuration:
         raise (ValueError("No detector configuration provided."))
 
     return configuration
-
-
-def load(yaml_file: t.Union[str, Path]) -> Configuration:
-    """Load YAML file.
-    :param yaml_file:
-    :return:
-    """
-    filename = Path(yaml_file).resolve()
-    if not filename.exists():
-        raise FileNotFoundError(f"Cannot find configuration file '{filename}'.")
-    with filename.open("r") as file_obj:
-        return build_configuration(load_yaml(file_obj))
-
-
-def load_yaml(stream: t.Union[str, t.IO]) -> t.Any:
-    """Load a YAML document.
-
-    :param stream: document to process.
-    :return: a python object
-    """
-    result = yaml.load(stream, Loader=yaml.SafeLoader)
-    return result
 

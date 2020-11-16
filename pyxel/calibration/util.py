@@ -14,7 +14,7 @@ from pathlib import Path
 import attr
 import numpy as np
 
-from pyxel.inputs_outputs import load_image
+from pyxel.inputs_outputs.loader import load_image #shortcutting causes circular import
 from pyxel.pipelines import Processor
 
 __all__ = [
