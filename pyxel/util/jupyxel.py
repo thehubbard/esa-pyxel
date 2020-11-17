@@ -11,6 +11,7 @@ import typing as t
 
 import matplotlib.pyplot as plt
 import numpy as np
+
 # # Display methods for detector objects in Jupyter notebook
 from IPython.display import Markdown, display
 from mpl_toolkits.axes_grid1 import make_axes_locatable

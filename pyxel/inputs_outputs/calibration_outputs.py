@@ -592,7 +592,7 @@ class CalibrationOutputs:
             for processor in processor_list:
                 self.save_to_file(processor)
 
-                #if self._single_plot:
+                # if self._single_plot:
                 #    self.single_to_plot(processor)
 
     # TODO: Specific to 'calibration_plot'

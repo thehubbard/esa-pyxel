@@ -523,7 +523,7 @@ def to_cmos(dct: dict) -> CMOS:
 
 
 def to_model_function(dct: dict) -> ModelFunction:
-    """Create a MOdelFunciton class from a dictionary.
+    """Create a ModelFunction class from a dictionary.
 
     Parameters
     ----------
@@ -605,4 +605,3 @@ def build_configuration(dct: dict) -> Configuration:
         raise (ValueError("No detector configuration provided."))
 
     return configuration
-

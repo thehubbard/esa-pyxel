@@ -1,6 +1,7 @@
 # Create a new conda environment:
 #   $ cd pyxel
-#   $ conda update conda
+#   $ conda update -n base conda
+#   $ conda deactivate
 #   $ conda env create -f environment.yml
 #   $ conda activate pyxel-dev
 #   (pyxel_dev) $ pip install -e .
@@ -61,4 +62,4 @@ dependencies:
   - black>=20
 # Pip packages
   - pip:
-    - poppy>=0.9
+  - poppy>=0.9
