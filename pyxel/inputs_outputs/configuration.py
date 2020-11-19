@@ -12,10 +12,11 @@ import typing as t
 from functools import partial
 from pathlib import Path
 from shutil import copy2
-from pyxel import __version__ as version
 
 import attr
 import yaml
+
+from pyxel import __version__ as version
 
 from ..calibration import Algorithm, Calibration
 from ..detectors import (

@@ -5,9 +5,9 @@ import pytest
 
 from pyxel import inputs_outputs as io
 from pyxel.detectors import CCD
+from pyxel.inputs_outputs import Configuration
 from pyxel.parametric.parametric import Parametric, ParametricMode
 from pyxel.pipelines import DetectionPipeline, Processor
-from pyxel.inputs_outputs import Configuration
 
 try:
     import pygmo as pg

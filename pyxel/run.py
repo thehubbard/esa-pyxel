@@ -90,7 +90,9 @@ def parametric_mode(
     logging.info("Mode: Parametric")
 
     parametric_outputs = parametric.outputs  # type: ParametricOutputs
-    processor.detector.set_output_dir(parametric_outputs.output_dir)  # TODO: Remove this
+    processor.detector.set_output_dir(
+        parametric_outputs.output_dir
+    )  # TODO: Remove this
 
     # TODO: This should be done during initializing of object `Configuration`
     # parametric_outputs.params_func(parametric)
@@ -110,7 +112,9 @@ def parametric_mode(
 
         if not with_dask:
             result_proc = proc.run_pipeline()  # type: Processor
-            result_val = parametric_outputs.extract_func(processor=result_proc)  # type: Result
+            result_val = parametric_outputs.extract_func(
+                processor=result_proc
+            )  # type: Result
 
             filenames = parametric_outputs.save_to_file(
                 processor=result_proc
@@ -170,14 +174,14 @@ def dynamic_mode(processor: "Processor", dynamic: "Dynamic") -> None:
             dynamic_outputs.single_output(processor)
 
 
-def calibration_mode(
-    processor: "Processor", calibration: "Calibration"
-) -> None:
+def calibration_mode(processor: "Processor", calibration: "Calibration") -> None:
 
     logging.info("Mode: Calibration")
 
     calibration_outputs = calibration.outputs  # type: CalibrationOutputs
-    processor.detector.set_output_dir(calibration_outputs.output_dir)  # TODO: Remove this
+    processor.detector.set_output_dir(
+        calibration_outputs.output_dir
+    )  # TODO: Remove this
 
     results = calibration.run_calibration(
         processor=processor, output_dir=calibration_outputs.output_dir

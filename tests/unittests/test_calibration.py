@@ -13,6 +13,7 @@ import numpy as np
 import pytest
 
 from pyxel import inputs_outputs as io
+from pyxel.calibration import Calibration
 from pyxel.calibration.util import (
     check_ranges,
     list_to_slice,
@@ -22,7 +23,6 @@ from pyxel.calibration.util import (
 from pyxel.detectors import CCD
 from pyxel.inputs_outputs import Configuration
 from pyxel.pipelines import DetectionPipeline, Processor
-from pyxel.calibration import Calibration
 
 try:
     import pygmo as pg
