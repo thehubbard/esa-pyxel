@@ -11,6 +11,8 @@
 import typing as t
 from functools import partial
 from pathlib import Path
+from shutil import copy2
+from pyxel import __version__ as version
 
 import attr
 import yaml
@@ -89,7 +91,7 @@ def load_yaml(stream: t.Union[str, t.IO]) -> t.Any:
     return result
 
 
-def to_plot_arguments(dct: dict) -> t.Optional[PlotArguments]:
+def to_plot_arguments(dct: t.Optional[dict]) -> t.Optional[PlotArguments]:
     """Create a PlotArguments class from a dictionary.
 
     Parameters
@@ -105,7 +107,7 @@ def to_plot_arguments(dct: dict) -> t.Optional[PlotArguments]:
     return PlotArguments(**dct)
 
 
-def to_single_plot(dct: dict) -> t.Optional[SinglePlot]:
+def to_single_plot(dct: t.Optional[dict]) -> t.Optional[SinglePlot]:
     """Create a SinglePlot class from a dictionary.
 
     Parameters
@@ -148,7 +150,8 @@ def to_single(dct: dict) -> Single:
     -------
     Single
     """
-    return Single(outputs=to_single_outputs(dct["outputs"]))
+    dct.update({"outputs": to_single_outputs(dct["outputs"])})
+    return Single(**dct)
 
 
 # TODO: Dynamic uses single plot for now
@@ -182,7 +185,7 @@ def to_dynamic(dct: dict) -> Dynamic:
     return Dynamic(**dct)
 
 
-def to_parametric_plot(dct: dict) -> t.Optional[ParametricPlot]:
+def to_parametric_plot(dct: t.Optional[dict]) -> t.Optional[ParametricPlot]:
     """Create a ParametricPlot class from a dictionary.
 
     Parameters
@@ -246,7 +249,7 @@ def to_parametric(dct: dict) -> Parametric:
     return Parametric(**dct)
 
 
-def to_champions_plot(dct: dict) -> t.Optional[ChampionsPlot]:
+def to_champions_plot(dct: t.Optional[dict]) -> t.Optional[ChampionsPlot]:
     """Create a ChampionsPlot class from a dictionary.
 
     Parameters
@@ -263,7 +266,7 @@ def to_champions_plot(dct: dict) -> t.Optional[ChampionsPlot]:
     return ChampionsPlot(**dct)
 
 
-def to_population_plot(dct: dict) -> t.Optional[PopulationPlot]:
+def to_population_plot(dct: t.Optional[dict]) -> t.Optional[PopulationPlot]:
     """Create a PopulatonPlot class from a dictionary.
 
     Parameters
@@ -280,7 +283,7 @@ def to_population_plot(dct: dict) -> t.Optional[PopulationPlot]:
     return PopulationPlot(**dct)
 
 
-def to_fitting_plot(dct: dict) -> t.Optional[FittingPlot]:
+def to_fitting_plot(dct: t.Optional[dict]) -> t.Optional[FittingPlot]:
     """Create a FittingPlot class from a dictionary.
 
     Parameters
@@ -297,7 +300,7 @@ def to_fitting_plot(dct: dict) -> t.Optional[FittingPlot]:
     return FittingPlot(**dct)
 
 
-def to_calibration_plot(dct: dict) -> t.Optional[CalibrationPlot]:
+def to_calibration_plot(dct: t.Optional[dict]) -> t.Optional[CalibrationPlot]:
     """Create a CalibrationPlot class from a dictionary.
 
     Parameters
@@ -308,18 +311,19 @@ def to_calibration_plot(dct: dict) -> t.Optional[CalibrationPlot]:
     -------
     CalibrationPlot
     """
-    if "champions_plot" in dct:
-        dct.update({"champions_plot": to_champions_plot(dct["champions_plot"])})
-    if "population_plot" in dct:
-        dct.update({"population_plot": to_population_plot(dct["population_plot"])})
-    if "fitting_plot" in dct:
-        dct.update({"fitting_plot": to_fitting_plot(dct["fitting_plot"])})
     if dct is None:
         return None
-    return CalibrationPlot(**dct)
+    else:
+        if "champions_plot" in dct:
+            dct.update({"champions_plot": to_champions_plot(dct["champions_plot"])})
+        if "population_plot" in dct:
+            dct.update({"population_plot": to_population_plot(dct["population_plot"])})
+        if "fitting_plot" in dct:
+            dct.update({"fitting_plot": to_fitting_plot(dct["fitting_plot"])})
+        return CalibrationPlot(**dct)
 
 
-def to_calibration_outputs(dct: dict):
+def to_calibration_outputs(dct: dict) -> CalibrationOutputs:
     """Create a CalibrationOutputs class from a dictionary.
 
     Parameters
@@ -334,7 +338,7 @@ def to_calibration_outputs(dct: dict):
     return CalibrationOutputs(**dct)
 
 
-def to_algorithm(dct: dict) -> t.Optional[Algorithm]:
+def to_algorithm(dct: t.Optional[dict]) -> t.Optional[Algorithm]:
     """Create an Algorithm class from a dictionary.
 
     Parameters
@@ -388,7 +392,7 @@ def to_calibration(dct: dict) -> Calibration:
     return Calibration(**dct)
 
 
-def to_ccd_geometry(dct: dict) -> t.Optional[CCDGeometry]:
+def to_ccd_geometry(dct: dict) -> CCDGeometry:
     """Create a CCDGeometry class from a dictionary.
 
     Parameters
@@ -399,12 +403,11 @@ def to_ccd_geometry(dct: dict) -> t.Optional[CCDGeometry]:
     -------
     CCDGeometry
     """
-    if dct is None:
-        return None
+
     return CCDGeometry(**dct)
 
 
-def to_cmos_geometry(dct: dict) -> t.Optional[CMOSGeometry]:
+def to_cmos_geometry(dct: dict) -> CMOSGeometry:
     """Create a CMOSGeometry class from a dictionary.
 
     Parameters
@@ -415,12 +418,10 @@ def to_cmos_geometry(dct: dict) -> t.Optional[CMOSGeometry]:
     -------
     CMOSGeometry
     """
-    if dct is None:
-        return None
     return CMOSGeometry(**dct)
 
 
-def to_material(dct: dict) -> t.Optional[Material]:
+def to_material(dct: dict) -> Material:
     """Create a Material class from a dictionary.
 
     Parameters
@@ -431,12 +432,10 @@ def to_material(dct: dict) -> t.Optional[Material]:
     -------
     Material
     """
-    if dct is None:
-        return None
     return Material(**dct)
 
 
-def to_environment(dct: dict) -> t.Optional[Environment]:
+def to_environment(dct: dict) -> Environment:
     """Create an Environment class from a dictionary.
 
     Parameters
@@ -447,12 +446,10 @@ def to_environment(dct: dict) -> t.Optional[Environment]:
     -------
     Environment
     """
-    if dct is None:
-        return None
     return Environment(**dct)
 
 
-def to_ccd_characteristics(dct: dict) -> t.Optional[CCDCharacteristics]:
+def to_ccd_characteristics(dct: dict) -> CCDCharacteristics:
     """Create a CCDCharacteristics class from a dictionary.
 
     Parameters
@@ -463,12 +460,10 @@ def to_ccd_characteristics(dct: dict) -> t.Optional[CCDCharacteristics]:
     -------
     CCDCharacteristics
     """
-    if dct is None:
-        return None
     return CCDCharacteristics(**dct)
 
 
-def to_cmos_characteristics(dct: dict) -> t.Optional[CMOSCharacteristics]:
+def to_cmos_characteristics(dct: dict) -> CMOSCharacteristics:
     """Create a CMOSCharacteristics class from a dictionary.
 
     Parameters
@@ -479,8 +474,6 @@ def to_cmos_characteristics(dct: dict) -> t.Optional[CMOSCharacteristics]:
     -------
     CMOSCharacteristics
     """
-    if dct is None:
-        return None
     return CMOSCharacteristics(**dct)
 
 
@@ -537,7 +530,7 @@ def to_model_function(dct: dict) -> ModelFunction:
     return ModelFunction(**dct)
 
 
-def to_model_group(models_list: t.Sequence[dict]) -> t.Optional[ModelGroup]:
+def to_model_group(models_list: t.Optional[t.Sequence[dict]]) -> t.Optional[ModelGroup]:
     """Create a ModelGroup class from a dictionary.
 
     Parameters
@@ -605,3 +598,31 @@ def build_configuration(dct: dict) -> Configuration:
         raise (ValueError("No detector configuration provided."))
 
     return configuration
+
+
+def save(configuration: Configuration, filename: t.Union[str, Path]) -> Path:
+    """TBW."""
+    if isinstance(configuration.single, Single):
+        output_dir = configuration.single.outputs.output_dir
+    elif isinstance(configuration.calibration, Calibration):
+        output_dir = configuration.calibration.outputs.output_dir
+    elif isinstance(configuration.dynamic, Dynamic):
+        output_dir = configuration.dynamic.outputs.output_dir
+    elif isinstance(configuration.parametric, Parametric):
+        output_dir = configuration.parametric.outputs.output_dir
+    else:
+        raise (ValueError("Outputs not initialized."))
+
+    input_file = Path(filename)
+    copy2(input_file, output_dir)
+
+    # TODO: sort filenames ?
+    copied_input_file_it = output_dir.glob("*.yaml")  # type: t.Iterator[Path]
+    copied_input_file = next(copied_input_file_it)  # type: Path
+
+    with copied_input_file.open("a") as file:
+        file.write("\n#########")
+        file.write(f"\n# Pyxel version: {version}")
+        file.write("\n#########")
+
+    return copied_input_file

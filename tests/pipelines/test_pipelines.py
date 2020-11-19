@@ -21,7 +21,7 @@ def pipeline_single() -> DetectionPipeline:
     assert filename_single.exists()
 
     cfg = load(filename_single)
-    pipeline = cfg["pipeline"]  # type: DetectionPipeline
+    pipeline = cfg.pipeline  # type: DetectionPipeline
 
     return pipeline
 

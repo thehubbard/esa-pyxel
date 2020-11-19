@@ -18,7 +18,6 @@ from pyxel.parametric.parameter_values import ParameterValues
 from pyxel.state import get_obj_att, get_value
 
 if t.TYPE_CHECKING:
-    from ..calibration.calibration import Calibration
     from ..inputs_outputs import ParametricOutputs
     from ..pipelines import Processor
 
@@ -38,13 +37,13 @@ class Parametric:
     def __init__(
         self,
         outputs: "ParametricOutputs",
-        parametric_mode: str,
+        mode: str,
         parameters: t.Sequence[ParameterValues],
         from_file: t.Optional[str] = None,
         column_range: t.Optional[t.Tuple[int, int]] = None,
     ):
         self.outputs = outputs
-        self.parametric_mode = ParametricMode(parametric_mode)  # type: ParametricMode
+        self.parametric_mode = ParametricMode(mode)  # type: ParametricMode
         self._parameters = parameters
         self.file = from_file
         self.data = None  # type: t.Optional[np.ndarray]

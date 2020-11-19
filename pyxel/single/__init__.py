@@ -8,4 +8,5 @@
 #
 """TBW."""
 
+# flake8: noqa
 from .single import Single

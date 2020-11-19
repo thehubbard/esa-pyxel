@@ -46,5 +46,5 @@ class Dynamic:
         return self._non_destructive_readout
 
     @non_destructive_readout.setter
-    def non_destructive_readout(self, non_destructive_readout: bool):
+    def non_destructive_readout(self, non_destructive_readout: bool) -> None:
         self._non_destructive_readout = non_destructive_readout

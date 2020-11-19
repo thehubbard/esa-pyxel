@@ -44,7 +44,7 @@ if t.TYPE_CHECKING:
     )
 
 
-def single_mode(processor: Processor, outputs: "SingleOutputs") -> plt.Figure:
+def single_mode(processor: Processor, single: "Single") -> None:
     """TBW.
 
     Parameters
@@ -59,27 +59,27 @@ def single_mode(processor: Processor, outputs: "SingleOutputs") -> plt.Figure:
     """
     logging.info("Mode: Single")
 
+    single_outputs = single.outputs  # type: SingleOutputs
+    processor.detector.set_output_dir(single_outputs.output_dir)  # TODO: Remove this
+
     _ = processor.run_pipeline()
 
-    outputs.save_to_file(processor)
-    outputs.single_to_plot(processor)
-
-    return outputs.fig
+    single_outputs.save_to_file(processor)
+    single_outputs.single_to_plot(processor)
+    single_outputs.save_log_file()
 
 
 def parametric_mode(
     processor: Processor,
     parametric: Parametric,
-    outputs: "ParametricOutputs",
     with_dask: bool = False,
-) -> t.Optional[plt.Figure]:
+) -> None:
     """Run a 'parametric' pipeline.
 
     Parameters
     ----------
     processor
     parametric
-    outputs
     with_dask
 
     Returns
@@ -88,6 +88,12 @@ def parametric_mode(
         TBW.
     """
     logging.info("Mode: Parametric")
+
+    parametric_outputs = parametric.outputs  # type: ParametricOutputs
+    processor.detector.set_output_dir(parametric_outputs.output_dir)  # TODO: Remove this
+
+    # TODO: This should be done during initializing of object `Configuration`
+    # parametric_outputs.params_func(parametric)
 
     # Check if all keys from 'parametric' are valid keys for object 'pipeline'
     for param_value in parametric.enabled_steps:
@@ -99,48 +105,47 @@ def parametric_mode(
     result_list = []  # type: t.List[Result]
     output_filenames = []  # type: t.List[t.Sequence[Path]]
 
-    # out.params_func(parametric)
-
     # Run all pipelines
     for proc in tqdm(processors_it):  # type: Processor
 
         if not with_dask:
             result_proc = proc.run_pipeline()  # type: Processor
-            result_val = outputs.extract_func(processor=result_proc)  # type: Result
+            result_val = parametric_outputs.extract_func(processor=result_proc)  # type: Result
 
-            filenames = outputs.save_to_file(
+            filenames = parametric_outputs.save_to_file(
                 processor=result_proc
             )  # type: t.Sequence[Path]
 
         else:
             result_proc = delayed(proc.run_pipeline)()
-            result_val = delayed(outputs.extract_func)(processor=result_proc)
+            result_val = delayed(parametric_outputs.extract_func)(processor=result_proc)
 
-            filenames = delayed(outputs.save_to_file)(processor=result_proc)
+            filenames = delayed(parametric_outputs.save_to_file)(processor=result_proc)
 
         result_list.append(result_val)
         output_filenames.append(filenames)  # TODO: This is not used
 
     if not with_dask:
-        plot_array = outputs.merge_func(result_list)  # type: np.ndarray
+        plot_array = parametric_outputs.merge_func(result_list)  # type: np.ndarray
     else:
-        array = delayed(outputs.merge_func)(result_list)
+        array = delayed(parametric_outputs.merge_func)(result_list)
         plot_array, _ = dask.compute(array, output_filenames)
 
     # TODO: Plot with dask ?
-    fig = None  # type: t.Optional[plt.Figure]
-    if outputs.parametric_plot is not None:
-        outputs.plotting_func(plot_array)
-        fig = outputs.fig
+    if parametric_outputs.parametric_plot is not None:
+        parametric_outputs.plotting_func(plot_array)
 
-    return fig
+    parametric_outputs.save_log_file()
 
 
-def dynamic_mode(processor: "Processor", dynamic: "Dynamic", outputs: "DynamicOutputs"):
+def dynamic_mode(processor: "Processor", dynamic: "Dynamic") -> None:
 
     logging.info("Mode: Dynamic")
 
+    dynamic_outputs = dynamic.outputs  # type: DynamicOutputs
+
     detector = processor.detector
+    detector.set_output_dir(dynamic_outputs.output_dir)  # TODO: Remove this
 
     if isinstance(detector, CCD):
         dynamic.non_destructive_readout = False
@@ -151,6 +156,8 @@ def dynamic_mode(processor: "Processor", dynamic: "Dynamic", outputs: "DynamicOu
         ndreadout=dynamic.non_destructive_readout,
     )
 
+    dynamic_outputs.save_log_file()
+
     # TODO: Use an iterator for that ?
     while detector.elapse_time():
         logging.info("time = %.3f s", detector.time)
@@ -160,20 +167,24 @@ def dynamic_mode(processor: "Processor", dynamic: "Dynamic", outputs: "DynamicOu
             detector.initialize(reset_all=True)
         processor.run_pipeline()
         if detector.read_out:
-            outputs.single_output(processor)
+            dynamic_outputs.single_output(processor)
 
 
 def calibration_mode(
-    processor: "Processor", calibration: "Calibration", outputs: "CalibrationOutputs"
-):
+    processor: "Processor", calibration: "Calibration"
+) -> None:
 
     logging.info("Mode: Calibration")
 
+    calibration_outputs = calibration.outputs  # type: CalibrationOutputs
+    processor.detector.set_output_dir(calibration_outputs.output_dir)  # TODO: Remove this
+
     results = calibration.run_calibration(
-        processor=processor, output_dir=outputs.output_dir
+        processor=processor, output_dir=calibration_outputs.output_dir
     )
 
-    calibration.post_processing(calib_results=results, output=outputs)
+    calibration.post_processing(calib_results=results, output=calibration_outputs)
+    calibration_outputs.save_log_file()
 
 
 def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
@@ -195,68 +206,44 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
         Path(input_filename).expanduser().resolve()
     )  # type: Configuration
 
+    io.save(configuration=configuration, filename=input_filename)
+
     pipeline = configuration.pipeline  # type: DetectionPipeline
 
-    if configuration.ccd_detector is not None:
-        detector = configuration.ccd_detector  # type: CCD
-    elif configuration.cmos_detector is not None:
-        detector = configuration.cmos_detector  # type: CMOS
+    if isinstance(configuration.ccd_detector, CCD):
+        detector = configuration.ccd_detector  # type: t.Union[CCD, CMOS]
+    elif isinstance(configuration.cmos_detector, CMOS):
+        detector = configuration.cmos_detector
     else:
         raise NotImplementedError("Detector is not defined in YAML config. file!")
 
     processor = Processor(detector=detector, pipeline=pipeline)
 
-    if configuration.single is not None:
-
+    if isinstance(configuration.single, Single):
         single = configuration.single  # type: Single
+        single_mode(processor=processor, single=single)
 
-        outputs = single.outputs  # type: SingleOutputs
-        outputs.copy_config_file(input_filename)
-        detector.set_output_dir(outputs.output_dir)  # TODO: Remove this
-
-        _ = single_mode(processor=processor, outputs=outputs)
-
-    elif configuration.calibration is not None:
+    elif isinstance(configuration.calibration, Calibration):
 
         calibration = configuration.calibration  # type: Calibration
+        calibration_mode(processor=processor, calibration=calibration)
 
-        outputs = calibration.outputs  # type: CalibrationOutputs
-        outputs.copy_config_file(input_filename)
-        detector.set_output_dir(outputs.output_dir)  # TODO: Remove this
-
-        calibration_mode(processor=processor, calibration=calibration, outputs=outputs)
-
-    elif configuration.parametric is not None:
-
+    elif isinstance(configuration.parametric, Parametric):
         parametric = configuration.parametric  # type: Parametric
+        parametric_mode(processor=processor, parametric=parametric)
 
-        outputs = parametric.outputs  # type: ParametricOutputs
-        outputs.copy_config_file(input_filename)
-        detector.set_output_dir(outputs.output_dir)  # TODO: Remove this
-
-        # TODO: This should be done during initializing of object `Configuration`
-        # out.params_func(parametric)
-
-        _ = parametric_mode(processor=processor, parametric=parametric, outputs=outputs)
-
-    elif configuration.dynamic is not None:
+    elif isinstance(configuration.dynamic, Dynamic):
 
         dynamic = configuration.dynamic  # type: Dynamic
-
-        outputs = dynamic.outputs  # type: DynamicOutputs
-        outputs.copy_config_file(input_filename)
-        detector.set_output_dir(outputs.output_dir)  # TODO: Remove this
-
-        dynamic_mode(processor=processor, dynamic=dynamic, outputs=outputs)
+        dynamic_mode(processor=processor, dynamic=dynamic)
 
     else:
-        raise NotImplementedError(f"Please provide a valid simulation mode !")
+        raise NotImplementedError("Please provide a valid simulation mode !")
 
     logging.info("Pipeline completed.")
     logging.info("Running time: %.3f seconds" % (time.time() - start_time))
     # Closing the logger in order to be able to move the file in the output dir
     logging.shutdown()
-    outputs.save_log_file()
     plt.close()
 
 

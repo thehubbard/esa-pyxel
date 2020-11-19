@@ -11,7 +11,6 @@ import logging
 import typing as t
 from numbers import Number
 from pathlib import Path
-from shutil import copy2
 from time import strftime
 
 import attr
@@ -163,33 +162,6 @@ class CalibrationOutputs:
     def fig(self) -> plt.Figure:
         """Get the current ``Figure``."""
         return self._fig
-
-    def copy_config_file(self, filename: t.Union[str, Path]) -> Path:
-        """Copy a YAML configuration filename into its output directory.
-
-        Parameters
-        ----------
-        filename : str or Path
-            YAML filename to copy
-
-        Returns
-        -------
-        Path
-            Returns the copied YAML filename.
-        """
-        input_file = Path(filename)
-        copy2(input_file, self.output_dir)
-
-        # TODO: sort filenames ?
-        copied_input_file_it = self.output_dir.glob("*.yaml")  # type: t.Iterator[Path]
-        copied_input_file = next(copied_input_file_it)  # type: Path
-
-        with copied_input_file.open("a") as file:
-            file.write("\n#########")
-            file.write(f"\n# Pyxel version: {version}")
-            file.write("\n#########")
-
-        return copied_input_file
 
     # TODO: the log file should directly write in 'output_dir'
     def save_log_file(self) -> None:

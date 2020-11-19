@@ -7,4 +7,5 @@
 
 """TBW."""
 
+# flake8: noqa
 from .parametric import Parametric, ParameterValues

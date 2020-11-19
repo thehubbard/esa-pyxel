@@ -7,8 +7,8 @@
 
 """TBW."""
 
-
-from .configuration import Configuration, load
+# flake8: noqa
+from .configuration import Configuration, load, save
 from .single_outputs import SingleOutputs
 from .parametric_outputs import ParametricOutputs, Result
 from .calibration_outputs import CalibrationOutputs
