@@ -179,7 +179,7 @@ def dynamic_mode(processor: "Processor", dynamic: "Dynamic") -> None:
 
 
 def calibration_mode(processor: "Processor", calibration: "Calibration") -> None:
-    """Run a 'calibration' pipeline
+    """Run a 'calibration' pipeline.
 
     Parameters
     ----------

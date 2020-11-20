@@ -424,7 +424,7 @@ def to_cmos_geometry(dct: dict) -> CMOSGeometry:
     return CMOSGeometry(**dct)
 
 
-def to_material(dct: dict) -> Material:
+def to_material(dct: t.Optional[dict]) -> Material:
     """Create a Material class from a dictionary.
 
     Parameters
@@ -435,10 +435,12 @@ def to_material(dct: dict) -> Material:
     -------
     Material
     """
+    if dct is None:
+        dct = {}
     return Material(**dct)
 
 
-def to_environment(dct: dict) -> Environment:
+def to_environment(dct: t.Optional[dict]) -> Environment:
     """Create an Environment class from a dictionary.
 
     Parameters
@@ -449,10 +451,12 @@ def to_environment(dct: dict) -> Environment:
     -------
     Environment
     """
+    if dct is None:
+        dct = {}
     return Environment(**dct)
 
 
-def to_ccd_characteristics(dct: dict) -> CCDCharacteristics:
+def to_ccd_characteristics(dct: t.Optional[dict]) -> CCDCharacteristics:
     """Create a CCDCharacteristics class from a dictionary.
 
     Parameters
@@ -463,10 +467,12 @@ def to_ccd_characteristics(dct: dict) -> CCDCharacteristics:
     -------
     CCDCharacteristics
     """
+    if dct is None:
+        dct = {}
     return CCDCharacteristics(**dct)
 
 
-def to_cmos_characteristics(dct: dict) -> CMOSCharacteristics:
+def to_cmos_characteristics(dct: t.Optional[dict]) -> CMOSCharacteristics:
     """Create a CMOSCharacteristics class from a dictionary.
 
     Parameters
@@ -477,6 +483,8 @@ def to_cmos_characteristics(dct: dict) -> CMOSCharacteristics:
     -------
     CMOSCharacteristics
     """
+    if dct is None:
+        dct = {}
     return CMOSCharacteristics(**dct)
 
 

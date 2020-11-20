@@ -203,7 +203,7 @@ def custom_fitness_func(simulated, target, weighting=None):
 def test_custom_fitness(yaml, simulated, target, weighting):
     """Test"""
     cfg = io.load(yaml)
-    assert isinstance(cfg, dict)
+    assert isinstance(cfg, Configuration)
 
     detector = cfg.ccd_detector
     assert isinstance(detector, CCD)
@@ -310,7 +310,7 @@ def test_fitness(yaml, parameter, expected_fitness):
 def test_split_and_update(yaml, parameter, expected_array):
     """Test"""
     cfg = io.load(yaml)
-    detector = cfg.ccd_dtector
+    detector = cfg.ccd_detector
     pipeline = cfg.pipeline
     processor = Processor(detector, pipeline)
     calibration = cfg.calibration
