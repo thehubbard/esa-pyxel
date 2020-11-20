@@ -35,16 +35,20 @@ class Dynamic:
 
     @property
     def t_step(self):
+        """TBW."""
         return self._t_step
 
     @property
     def steps(self):
+        """TBW."""
         return self._steps
 
     @property
     def non_destructive_readout(self):
+        """TBW."""
         return self._non_destructive_readout
 
     @non_destructive_readout.setter
     def non_destructive_readout(self, non_destructive_readout: bool) -> None:
+        """TBW."""
         self._non_destructive_readout = non_destructive_readout

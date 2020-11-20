@@ -6,6 +6,8 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 #
 #
+"""Single outputs."""
+
 import logging
 import typing as t
 import warnings
@@ -133,14 +135,6 @@ class SingleOutputs:
     def fig(self) -> plt.Figure:
         """Get the current ``Figure``."""
         return self._fig
-
-    # TODO: the log file should directly write in 'output_dir'
-    def save_log_file(self) -> None:
-        """Move log file to the outputs directory of the simulation."""
-        log_file = Path("pyxel.log").resolve(strict=True)  # type: Path
-
-        new_log_filename = self.output_dir.joinpath(log_file.name)
-        log_file.rename(new_log_filename)
 
     def new_file(self, filename: str) -> Path:
         """TBW."""

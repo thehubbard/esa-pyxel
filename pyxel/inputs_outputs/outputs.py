@@ -6,7 +6,7 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 #
 #
-"""Classes for creating outputs"""
+"""Classes for creating outputs."""
 import typing as t
 from enum import Enum
 from glob import glob
@@ -153,3 +153,12 @@ def apply_run_number(template_filename: Path) -> Path:
         path_str = path_str.format(last_num)
 
     return Path(path_str)
+
+
+# TODO: the log file should directly write in 'output_dir'
+def save_log_file(output_dir: Path) -> None:
+    """Move log file to the outputs directory of the simulation."""
+    log_file = Path("pyxel.log").resolve(strict=True)  # type: Path
+
+    new_log_filename = output_dir.joinpath(log_file.name)
+    log_file.rename(new_log_filename)

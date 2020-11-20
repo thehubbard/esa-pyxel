@@ -49,6 +49,8 @@ from .single_outputs import SingleOutputs, SinglePlot
 
 @attr.s
 class Configuration:
+    """Configuration class."""
+
     pipeline: DetectionPipeline = attr.ib(init=False)
     single: t.Optional[Single] = attr.ib(default=None)
     parametric: t.Optional[Parametric] = attr.ib(default=None)
@@ -601,20 +603,10 @@ def build_configuration(dct: dict) -> Configuration:
     return configuration
 
 
-def save(configuration: Configuration, filename: t.Union[str, Path]) -> Path:
+def save(input_filename: t.Union[str, Path], output_dir: Path) -> Path:
     """TBW."""
-    if isinstance(configuration.single, Single):
-        output_dir = configuration.single.outputs.output_dir
-    elif isinstance(configuration.calibration, Calibration):
-        output_dir = configuration.calibration.outputs.output_dir
-    elif isinstance(configuration.dynamic, Dynamic):
-        output_dir = configuration.dynamic.outputs.output_dir
-    elif isinstance(configuration.parametric, Parametric):
-        output_dir = configuration.parametric.outputs.output_dir
-    else:
-        raise (ValueError("Outputs not initialized."))
 
-    input_file = Path(filename)
+    input_file = Path(input_filename)
     copy2(input_file, output_dir)
 
     # TODO: sort filenames ?

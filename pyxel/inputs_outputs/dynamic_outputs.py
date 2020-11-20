@@ -6,8 +6,12 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 #
 #
+"""Dynamic outputs."""
+
 from .single_outputs import SingleOutputs
 
 
 class DynamicOutputs(SingleOutputs):
+    """TBW."""
+
     pass

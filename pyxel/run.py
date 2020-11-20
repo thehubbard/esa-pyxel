@@ -45,17 +45,16 @@ if t.TYPE_CHECKING:
 
 
 def single_mode(processor: Processor, single: "Single") -> None:
-    """TBW.
+    """Run a 'single' pipeline.
 
     Parameters
     ----------
     processor
-    outputs
+    single
 
     Returns
     -------
-    Figure
-        TBW.
+    None
     """
     logging.info("Mode: Single")
 
@@ -66,7 +65,6 @@ def single_mode(processor: Processor, single: "Single") -> None:
 
     single_outputs.save_to_file(processor)
     single_outputs.single_to_plot(processor)
-    single_outputs.save_log_file()
 
 
 def parametric_mode(
@@ -84,8 +82,7 @@ def parametric_mode(
 
     Returns
     -------
-    Optional `Figure`
-        TBW.
+    None
     """
     logging.info("Mode: Parametric")
 
@@ -139,10 +136,19 @@ def parametric_mode(
     if parametric_outputs.parametric_plot is not None:
         parametric_outputs.plotting_func(plot_array)
 
-    parametric_outputs.save_log_file()
-
 
 def dynamic_mode(processor: "Processor", dynamic: "Dynamic") -> None:
+    """Run a 'dynamic' pipeline.
+
+    Parameters
+    ----------
+    processor
+    dynamic
+
+    Returns
+    -------
+    None
+    """
 
     logging.info("Mode: Dynamic")
 
@@ -160,8 +166,6 @@ def dynamic_mode(processor: "Processor", dynamic: "Dynamic") -> None:
         ndreadout=dynamic.non_destructive_readout,
     )
 
-    dynamic_outputs.save_log_file()
-
     # TODO: Use an iterator for that ?
     while detector.elapse_time():
         logging.info("time = %.3f s", detector.time)
@@ -175,6 +179,17 @@ def dynamic_mode(processor: "Processor", dynamic: "Dynamic") -> None:
 
 
 def calibration_mode(processor: "Processor", calibration: "Calibration") -> None:
+    """Run a 'calibration' pipeline
+
+    Parameters
+    ----------
+    processor
+    calibration
+
+    Returns
+    -------
+    None
+    """
 
     logging.info("Mode: Calibration")
 
@@ -188,7 +203,30 @@ def calibration_mode(processor: "Processor", calibration: "Calibration") -> None
     )
 
     calibration.post_processing(calib_results=results, output=calibration_outputs)
-    calibration_outputs.save_log_file()
+
+
+def output_directory(configuration: Configuration) -> Path:
+    """Return the output directory from the configuration.
+
+    Parameters
+    ----------
+    configuration
+
+    Returns
+    -------
+    output_dir
+    """
+    if isinstance(configuration.single, Single):
+        output_dir = configuration.single.outputs.output_dir
+    elif isinstance(configuration.calibration, Calibration):
+        output_dir = configuration.calibration.outputs.output_dir
+    elif isinstance(configuration.dynamic, Dynamic):
+        output_dir = configuration.dynamic.outputs.output_dir
+    elif isinstance(configuration.parametric, Parametric):
+        output_dir = configuration.parametric.outputs.output_dir
+    else:
+        raise (ValueError("Outputs not initialized."))
+    return output_dir
 
 
 def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
@@ -210,7 +248,9 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
         Path(input_filename).expanduser().resolve()
     )  # type: Configuration
 
-    io.save(configuration=configuration, filename=input_filename)
+    output_dir = output_directory(configuration)
+
+    io.save(input_filename=input_filename, output_dir=output_dir)
 
     pipeline = configuration.pipeline  # type: DetectionPipeline
 
@@ -248,6 +288,7 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
     logging.info("Running time: %.3f seconds" % (time.time() - start_time))
     # Closing the logger in order to be able to move the file in the output dir
     logging.shutdown()
+    io.save_log_file(output_dir)
     plt.close()
 
 
