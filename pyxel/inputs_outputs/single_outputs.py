@@ -77,8 +77,8 @@ class SingleOutputs:
             {"detector.image.array": ["fits"]}
         ]  # type: t.Sequence[t.Mapping[str, t.Sequence[str]]]
 
-        #TODO: reenable
-        #if self.output_dir.exists():
+        # TODO: reenable
+        # if self.output_dir.exists():
         #    raise IsADirectoryError("Directory exists.")
 
         self.output_dir.mkdir(parents=True, exist_ok=True)

@@ -27,7 +27,7 @@ def test_yaml_load(yaml_file):
     assert cfg.__class__.__name__ == "Configuration"
     assert cfg.parametric.__class__.__name__ == "Parametric"
     assert cfg.parametric.enabled_steps[0].__class__.__name__ == "ParameterValues"
-    #assert cfg.calibration.__class__.__name__ == "Calibration"
+    # assert cfg.calibration.__class__.__name__ == "Calibration"
     assert cfg.ccd_detector.__class__.__name__ == "CCD"
     assert cfg.ccd_detector.geometry.__class__.__name__ == "CCDGeometry"
     assert cfg.ccd_detector.environment.__class__.__name__ == "Environment"
