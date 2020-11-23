@@ -8,6 +8,13 @@ version 0.8 UNRELEASED/ 2020-MM-DD
 Core
 ~~~~
 
+Others
+~~~~~~
+
+* Change licence to MIT.
+  (See `!142 <https://gitlab.com/esa/pyxel/-/merge_requests/142>`_).
+
+
 version 0.7 / 2020-10-22
 ------------------------
 
