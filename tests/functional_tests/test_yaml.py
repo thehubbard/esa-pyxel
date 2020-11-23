@@ -16,47 +16,66 @@ try:
 except ImportError:
     WITH_PYGMO = False
 
+from pyxel.calibration import Algorithm, Calibration, CalibrationMode
+from pyxel.data_structure import Charge, Image, Pixel, Signal
+from pyxel.detectors import CCD, CCDCharacteristics, CCDGeometry, Environment, Material
+from pyxel.dynamic import Dynamic
+from pyxel.inputs_outputs import Configuration
+from pyxel.inputs_outputs.calibration_outputs import CalibrationOutputs
+from pyxel.inputs_outputs.dynamic_outputs import DynamicOutputs
+from pyxel.inputs_outputs.parametric_outputs import ParametricOutputs
+from pyxel.inputs_outputs.single_outputs import SingleOutputs
+from pyxel.parametric import Parametric, ParametricMode
+from pyxel.pipelines import DetectionPipeline, ModelFunction, ModelGroup
+from pyxel.single import Single
+
 
 @pytest.mark.skipif(not WITH_PYGMO, reason="Package 'pygmo' is not installed.")
 @pytest.mark.parametrize(
-    "yaml_file", ["tests/data/parametric.yaml", "tests/data/yaml.yaml"]
+    "yaml_file",
+    [
+        "tests/data/parametric.yaml",
+        "tests/data/yaml.yaml",
+        "tests/data/calibrate_models.yaml",
+    ],
 )
 def test_yaml_load(yaml_file):
     cfg = io.load(yaml_file)
 
-    assert cfg.__class__.__name__ == "Configuration"
-    assert cfg.parametric.__class__.__name__ == "Parametric"
-    assert cfg.parametric.enabled_steps[0].__class__.__name__ == "ParameterValues"
-    # assert cfg.calibration.__class__.__name__ == "Calibration"
-    assert cfg.ccd_detector.__class__.__name__ == "CCD"
-    assert cfg.ccd_detector.geometry.__class__.__name__ == "CCDGeometry"
-    assert cfg.ccd_detector.environment.__class__.__name__ == "Environment"
-    assert cfg.ccd_detector.material.__class__.__name__ == "Material"
-    assert cfg.ccd_detector.characteristics.__class__.__name__ == "CCDCharacteristics"
-    assert cfg.ccd_detector.charge.__class__.__name__ == "Charge"
-    # assert cfg['ccd_detector'].photon.__class__.__name__ == 'Photon'
-    assert cfg.ccd_detector.pixel.__class__.__name__ == "Pixel"
-    assert cfg.ccd_detector.signal.__class__.__name__ == "Signal"
-    assert cfg.ccd_detector.image.__class__.__name__ == "Image"
-    assert cfg.pipeline.__class__.__name__ == "DetectionPipeline"
-    # assert cfg['pipeline'].__class__.__name__ == 'CCDDetectionPipeline'
-    # assert cfg['pipeline'].model_groups['photon_generation'].__class__.__name__ == 'ModelGroup'
-    # assert cfg['pipeline'].model_groups['photon_generation'].models[0].__class__.__name__ == 'ModelFunction'
-    assert cfg.pipeline.photon_generation.__class__.__name__ == "ModelGroup"
-    assert (
-        cfg.pipeline.photon_generation.models[0].__class__.__name__ == "ModelFunction"
-    )
-    assert cfg.pipeline.charge_generation.__class__.__name__ == "ModelGroup"
-    assert (
-        cfg.pipeline.charge_generation.models[0].__class__.__name__ == "ModelFunction"
-    )
-    assert cfg.pipeline.charge_collection.__class__.__name__ == "ModelGroup"
-    assert (
-        cfg.pipeline.charge_collection.models[0].__class__.__name__ == "ModelFunction"
-    )
-    assert cfg.pipeline.charge_transfer.__class__.__name__ == "ModelGroup"
-    assert cfg.pipeline.charge_transfer.models[0].__class__.__name__ == "ModelFunction"
-    assert cfg.pipeline.charge_measurement.__class__.__name__ == "ModelGroup"
-    assert (
-        cfg.pipeline.charge_measurement.models[0].__class__.__name__ == "ModelFunction"
-    )
+    assert isinstance(cfg, Configuration)
+
+    if isinstance(cfg.single, Single):
+        assert isinstance(cfg.single.outputs, SingleOutputs)
+    elif isinstance(cfg.calibration, Calibration):
+        assert isinstance(cfg.calibration.outputs, CalibrationOutputs)
+        assert isinstance(cfg.calibration.algorithm, Algorithm)
+        assert isinstance(cfg.calibration.calibration_mode, CalibrationMode)
+    elif isinstance(cfg.dynamic, Dynamic):
+        assert isinstance(cfg.dynamic.outputs, DynamicOutputs)
+    elif isinstance(cfg.parametric, Parametric):
+        assert isinstance(cfg.parametric.outputs, ParametricOutputs)
+        assert isinstance(cfg.parametric.parametric_mode, ParametricMode)
+    else:
+        raise AssertionError("Running mode not initialized.")
+
+    assert isinstance(cfg.ccd_detector, CCD)
+    assert isinstance(cfg.ccd_detector.geometry, CCDGeometry)
+    assert isinstance(cfg.ccd_detector.characteristics, CCDCharacteristics)
+    assert isinstance(cfg.ccd_detector.material, Material)
+    assert isinstance(cfg.ccd_detector.environment, Environment)
+    assert isinstance(cfg.ccd_detector.image, Image)
+    assert isinstance(cfg.ccd_detector.signal, Signal)
+    assert isinstance(cfg.ccd_detector.pixel, Pixel)
+    assert isinstance(cfg.ccd_detector.charge, Charge)
+
+    assert isinstance(cfg.pipeline, DetectionPipeline)
+    assert isinstance(cfg.pipeline.photon_generation, ModelGroup)
+    assert isinstance(cfg.pipeline.photon_generation.models[0], ModelFunction)
+    assert isinstance(cfg.pipeline.charge_generation, ModelGroup)
+    assert isinstance(cfg.pipeline.charge_generation.models[0], ModelFunction)
+    assert isinstance(cfg.pipeline.charge_collection, ModelGroup)
+    assert isinstance(cfg.pipeline.charge_collection.models[0], ModelFunction)
+    assert isinstance(cfg.pipeline.charge_transfer, ModelGroup)
+    assert isinstance(cfg.pipeline.charge_transfer.models[0], ModelFunction)
+    assert isinstance(cfg.pipeline.charge_measurement, ModelGroup)
+    assert isinstance(cfg.pipeline.charge_measurement.models[0], ModelFunction)
