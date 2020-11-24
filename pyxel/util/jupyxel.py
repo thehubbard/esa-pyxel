@@ -40,7 +40,7 @@ def display_config(configuration: "Configuration", only: str = "all") -> None:
     -------
     None
     """
-    cfg = configuration.__dict__  #type: dict
+    cfg = configuration.__dict__  # type: dict
     for key in cfg:
         if cfg[key] is None:
             pass
