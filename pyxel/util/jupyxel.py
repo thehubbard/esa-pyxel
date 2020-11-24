@@ -20,15 +20,15 @@ from pyxel.data_structure import Image, Photon, Pixel, Signal
 
 if t.TYPE_CHECKING:
     from pyxel.detectors import Detector
-    from pyxel.pipelines import DetectionPipeline, ModelFunction, Processor
     from pyxel.inputs_outputs import Configuration
+    from pyxel.pipelines import DetectionPipeline, ModelFunction, Processor
 
 
 # ----------------------------------------------------------------------------------------------
 # Those two methods are used to display the contents of the configuration once loaded in pyxel
 
 
-def display_config(cfg: "Configuration", only: str = "all") -> None:
+def display_config(configuration: "Configuration", only: str = "all") -> None:
     """Display configuration.
 
     Parameters
@@ -40,9 +40,9 @@ def display_config(cfg: "Configuration", only: str = "all") -> None:
     -------
     None
     """
-    cfg = cfg.__dict__
+    cfg = configuration.__dict__  #type: dict
     for key in cfg:
-        if cfg[key] == None:
+        if cfg[key] is None:
             pass
         elif (only not in cfg.keys()) & (only != "all"):
             error = "Config file only contains following keys: " + str(cfg.keys())
@@ -80,9 +80,7 @@ def display_dict(cfg: dict) -> None:
 # This method will display the parameters of a specific model
 
 
-def display_model(
-    configuration: "Configuration", model_name: str
-) -> None:
+def display_model(configuration: "Configuration", model_name: str) -> None:
     """Display model from configuration dictionary or Processor object.
 
     Parameters
