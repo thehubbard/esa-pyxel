@@ -13,7 +13,8 @@ try:
     del _pg
 except ImportError:
     raise RuntimeError(
-        "Missing package 'pygmo'. Please install it with 'conda install pygmo' or 'pip install pygmo'."
+        "Missing package 'pygmo'. Please install it with 'conda install pygmo' "
+        "or 'pip install pygmo'."
     )
 
 # flake8: noqa

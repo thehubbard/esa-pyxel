@@ -9,8 +9,12 @@
 import logging
 import math
 import typing as t
+from concurrent.futures import ThreadPoolExecutor
+from functools import partial
 from pathlib import Path
 
+import dask.array as da
+import dask.delayed as delayed
 import numpy as np
 import pygmo as pg
 from typing_extensions import Literal
@@ -28,6 +32,107 @@ from pyxel.pipelines import ModelFunction, Processor
 
 if t.TYPE_CHECKING:
     from ..inputs_outputs import CalibrationOutputs
+
+
+class DaskBFE:
+    """User defined Batch Fitness Evaluator using `Dask`.
+
+    This class is a user-defined batch fitness evaluator based on 'Dask'.
+    """
+
+    def __init__(self, chunk_size: int = 1):
+        self._chunk_size = chunk_size
+
+    def __call__(self, prob: pg.problem, dvs_1d: np.ndarray) -> da.Array:
+        """Call operator to run the batch fitness evaluator.
+
+        Parameters
+        ----------
+        prob
+        dvs_1d
+
+        Returns
+        -------
+
+        """
+        ndims_dvs = prob.get_nx()  # type: int
+        num_fitness = prob.get_nf()  # type: int
+
+        # [dvs_1_1, ..., dvs_1_n, dvs_2_1, ..., dvs_2_n, ..., dvs_m_1, ..., dvs_m_n]
+
+        # [[dvs_1_1, ..., dvs_1_n],
+        #  [dvs_2_1, ..., dvs_2_n],
+        #  ...
+        #  [dvs_m_1, ..., dvs_m_n]]
+
+        # Convert 1D Decision Vectors to 2D `dask.Array`
+        dvs_2d = da.from_array(
+            dvs_1d.reshape((-1, ndims_dvs)), chunks=(self._chunk_size, ndims_dvs)
+        )  # type: da.Array
+
+        logging.info(f"DaskBFE: {len(dvs_1d)=}, {ndims_dvs=}, {dvs_2d.shape=}")
+
+        # Create a function to run a 2D input into 'prob.fitness'
+        new_func = da.gufunc(
+            prob.fitness,
+            signature="(i)->(j)",
+            output_dtypes=np.float,
+            output_sizes={"j": num_fitness},
+            vectorize=True,
+        )
+
+        fitness_2d = new_func(dvs_2d)  # type: da.Array
+        fitness_1d = fitness_2d.ravel()  # type: da.Array
+
+        return fitness_1d
+
+    def get_name(self) -> str:
+        """Return name of this evaluator."""
+        return "Dask batch fitness evaluator"
+
+    def get_extra_info(self) -> str:
+        """Return extra information for this evaluator."""
+        return f"Dask batch fitness evaluator with chunk_size={self._chunk_size}."
+
+
+class DaskIsland:
+    """User defined Island usind `Dask`."""
+
+    def run_evolve(
+        self, algo: pg.algorithm, pop: pg.population
+    ) -> t.Tuple[pg.algorithm, pg.population]:
+        """Run 'evolve' method from the input `algorithm` to evolve the input `population`.
+
+        Once the evolution is finished, it will return the algorithm used for the
+        evolution and the evolved `population`.
+
+        Parameters
+        ----------
+        algo : pg.algorithm
+            Algorithm used to evolve the input population
+        pop : pg.population
+            Input population.
+
+        Returns
+        -------
+        tuple of pg.algorithm, pg.population
+            The algorithm used for the evolution and the evolved population.
+        """
+        logging.info(f"Run evolve {pop=}, {algo=}")
+
+        # Run 'algo.evolve' with `Dask`
+        new_delayed_pop = delayed(algo.evolve)(pop)  # type: delayed.Delayed
+        new_pop = new_delayed_pop.compute()  # type: pg.population
+
+        return algo, new_pop
+
+    def get_name(self) -> str:
+        """Return Island's name."""
+        return "Dask Island"
+
+    # def get_extra_info(self) -> str:
+    #     """Return extra information for this Island."""
+    #     pass
 
 
 # TODO: Put classes `Algorithm` and `Calibration` in separated files.
@@ -754,46 +859,27 @@ class Calibration:
         algo = pg.algorithm(self.algorithm.get_algorithm())  # type: pg.algorithm
         self._log.info(algo)
 
-        # try:
-        #     bfe = pg.bfe(udbfe=pg.member_bfe())
-        # except AttributeError:
-        #     bfe = None
-        #
-        # try:
-        #     archi = pg.archipelago(n=self.num_islands, algo=algo, prob=prob, b=bfe,
-        #                            pop_size=self.algorithm.population_size, udi=pg.mp_island())
-        # except KeyError:
-        #     archi = pg.archipelago(n=self.num_islands, algo=algo, prob=prob,
-        #                            pop_size=self.algorithm.population_size, udi=pg.mp_island())
-        #
-        # try:
-        #     pop = pg.population(prob=prob, size=self.algorithm.population_size, b=bfe)
-        # except TypeError:
-        #     pop = pg.population(prob=prob, size=self.algorithm.population_size)
-
-        # TODO: Move this into class `Island`
-        # Set user-defined island
-        if self._type_islands is Island.MultiProcessing:
-            user_defined_island = pg.mp_island()
-
-        elif self._type_islands is Island.MultiThreading:
-            # NOTE: It is not possible to use a problem implemented in Python with
-            #       'thread_island'. This is related to thread safety.
-            #       See: https://esa.github.io/pygmo2/misc.html#pygmo.thread_safety
-            user_defined_island = pg.thread_island()
-
-        elif self._type_islands is Island.IPyParallel:
-            user_defined_island = pg.ipyparallel_island()
-
         if self.num_islands > 1:  # default
-            # Create a collection of num_islands
-            archi = pg.archipelago(
-                n=self.num_islands,
-                algo=algo,
-                prob=prob,
-                pop_size=self.algorithm.population_size,
-                udi=user_defined_island,
-            )
+
+            # Create an archipelago
+            user_defined_island = DaskIsland()
+            batch_fitness_evaluator = DaskBFE(chunk_size=1)
+
+            archi = pg.archipelago()
+            with ThreadPoolExecutor() as executor:
+
+                params = [prob] * self.num_islands
+                func = partial(
+                    pg.population,
+                    b=batch_fitness_evaluator,
+                    size=self.algorithm.population_size,
+                    seed=self.seed,
+                )
+
+                for pop in executor.map(func, params):
+                    archi.push_back(
+                        pg.island(udi=user_defined_island, algo=algo, pop=pop)
+                    )
 
             # Call all 'evolve()' methods on all islands
             archi.evolve()
