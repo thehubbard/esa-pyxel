@@ -490,32 +490,43 @@ class ModelFitting(ProblemSingleObjective):
         parameter = self.update_parameter(parameter)
 
         if self.file_path:
-            # TODO: Use 'np.ravel(parameter)' instead of 'parameter.reshape(1, len(parameter))' ?
-            arr_2d = np.c_[
-                overall_fitness, parameter.reshape(1, len(parameter))
-            ]  # type: np.ndarray
+            ref_values_1d = np.concatenate([overall_fitness, parameter])
 
-            with np.printoptions(formatter={"float": "{: .6E}".format}, suppress=False):
-                arr_str = np.array2string(
-                    arr_2d, separator="", suppress_small=False
-                )  # type: str
+            for island_num, value in self.match.items():
+                values_1d = np.asarray(value, dtype=np.float)
 
-            arr_str = (
-                arr_str.replace("\n", "")
-                .replace("   ", " ")
-                .replace("  ", " ")
-                .replace("[[ ", "")
-                .replace("]]", "")
-            )
-
-            lst_str = arr_str.split(" ")  # type: t.Sequence[str]
-            island = -1  # type: int
-            for k, v in self.match.items():
-                if lst_str == v:
-                    island = k
+                if np.allclose(ref_values_1d, values_1d):
+                    island = island_num
                     break
-            if island == -1:
-                raise RuntimeError()
+            else:
+                raise RuntimeError
+        #     # TODO: Use 'np.ravel(parameter)' instead of 'parameter.reshape(1, len(parameter))' ?
+        #     arr_2d = np.c_[
+        #         overall_fitness, parameter.reshape(1, len(parameter))
+        #     ]  # type: np.ndarray
+        #
+        #     with np.printoptions(formatter={"float": "{: .6E}".format}, suppress=False):
+        #         arr_str = np.array2string(
+        #             arr_2d, separator="", suppress_small=False
+        #         )  # type: str
+        #
+        #     arr_str = (
+        #         arr_str.replace("\n", "")
+        #         .replace("   ", " ")
+        #         .replace("  ", " ")
+        #         .replace("[[ ", "")
+        #         .replace("]]", "")
+        #     )
+        #
+        #     lst_str = arr_str.split(" ")  # type: t.Sequence[str]
+        #     island = -1  # type: int
+        #     # TODO: Use np.allclose to compare
+        #     for k, v in self.match.items():
+        #         if lst_str == v:
+        #             island = k
+        #             break
+        #     if island == -1:
+        #         raise RuntimeError()
         else:
             island = 0
 
@@ -632,6 +643,7 @@ class ModelFitting(ProblemSingleObjective):
         assert self.champion_x_list is not None
         assert self.file_path
 
+        # TODO: Use `astropy.table` ?
         champions_file = self.file_path.joinpath(
             f"champions_id_{id(self)}.out"
         )  # type: Path
