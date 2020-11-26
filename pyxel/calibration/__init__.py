@@ -7,6 +7,15 @@
 
 """TBW."""
 
+try:
+    import pygmo as _pg
+
+    del _pg
+except ImportError:
+    raise RuntimeError(
+        "Missing package 'pygmo'. Please install it with 'conda install pygmo' or 'pip install pygmo'."
+    )
+
 # flake8: noqa
 from .util import (
     CalibrationResult,

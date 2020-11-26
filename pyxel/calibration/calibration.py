@@ -6,13 +6,13 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """TBW."""
-
 import logging
 import math
 import typing as t
 from pathlib import Path
 
 import numpy as np
+import pygmo as pg
 from typing_extensions import Literal
 
 from pyxel.calibration import (
@@ -28,13 +28,6 @@ from pyxel.pipelines import ModelFunction, Processor
 
 if t.TYPE_CHECKING:
     from ..inputs_outputs import CalibrationOutputs
-
-try:
-    import pygmo as pg
-except ImportError:
-    import warnings
-
-    warnings.warn("Cannot import 'pygmo", RuntimeWarning, stacklevel=2)
 
 
 # TODO: Put classes `Algorithm` and `Calibration` in separated files.
