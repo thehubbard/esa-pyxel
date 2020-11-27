@@ -12,12 +12,13 @@ import typing as t
 from concurrent.futures import ThreadPoolExecutor
 from functools import partial
 from pathlib import Path
+from timeit import default_timer as timer
 
 import dask.array as da
 import dask.delayed as delayed
 import numpy as np
 import pygmo as pg
-from typing_extensions import Literal
+from typing_extensions import Literal, Protocol
 
 from pyxel.calibration import (
     AlgorithmType,
@@ -26,12 +27,96 @@ from pyxel.calibration import (
     Island,
     ResultType,
 )
-from pyxel.calibration.fitting import ModelFitting
+from pyxel.calibration.fitting import ModelFitting, ProblemSingleObjective
 from pyxel.parametric.parameter_values import ParameterValues
 from pyxel.pipelines import ModelFunction, Processor
 
 if t.TYPE_CHECKING:
     from ..inputs_outputs import CalibrationOutputs
+
+
+class IslandProtocol(Protocol):
+    """TBW."""
+
+    def run_evolve(
+        self, algo: pg.algorithm, pop: pg.population
+    ) -> t.Tuple[pg.algorithm, pg.population]:
+        ...
+
+
+class ProblemSerializable:
+    """Create a 'problem' with a serializable fitness method.
+
+    Method '.fitness' from a ``pg.problem`` is not serializable with 'cloudpickle'.
+    Method ``ProblemSerializable.fitness`` is seriablizable with 'cloudpickle'.
+
+    Examples
+    --------
+    Create a new pygmo problem and serializable problem
+    >>> import pygmo as pg
+    >>> prob = pg.problem(...)
+    >>> prob_serial = ProblemSerializable(prob)
+
+    Fitness function is working for the pygmo and serializable problem
+    >>> import numpy as np
+    >>> dvs = np.array([...])
+    >>> np.array_equal(prob.fitness(dvs), prob_serial(dvs))
+    True
+
+    Serialization is not working for method 'prob.fitness' with 'cloudpickle'
+    >>> import cloudpickle
+    >>> _ = cloudpickle.dumps(prob.fitness)
+    TypeError: cannot pickle 'PyCapsule' object
+
+    Serialization is working with method 'prob_serial.fitness' with 'cloudpickle'
+    >>> _ = cloudpickle.dumps(prob_serial.fitness)  # It's working !
+    """
+
+    def __init__(self, prob):
+        self._prob = prob
+
+    def fitness(self, *args, **kwargs):
+        """Compute fitness."""
+        return self._prob.fitness(*args, **kwargs)
+
+
+class AlgoSerializable:
+    """Create an 'algorithm' with a serializable evolve method."""
+
+    def __init__(self, algo):
+        self._algo = algo
+
+    def evolve(self, *args, **kwargs):
+        """Compute 'evolve'"""
+        return self._algo.evolve(*args, **kwargs)
+
+
+def create_archipelago(
+    num_islands: int,
+    udi: IslandProtocol,
+    algo: t.Callable,
+    problem: ProblemSingleObjective,
+    pop_size: int,
+    bfe: t.Optional[t.Callable] = None,
+    seed: t.Optional[int] = None,
+) -> pg.archipelago:
+    """Create a new ``archipelago``."""
+    start_time = timer()  # type: float
+
+    archi = pg.archipelago()
+    func = partial(pg.population, b=bfe, size=pop_size, seed=seed)
+
+    with ThreadPoolExecutor(max_workers=num_islands) as executor:
+        problems = [problem] * num_islands  # type: t.Sequence[pg.problem]
+
+        for pop in executor.map(func, problems):
+            island = pg.island(udi=udi, algo=algo, pop=pop)
+            archi.push_back(island)
+
+    stop_time = timer()
+    logging.info("Create a new archipelago in %.2f s", stop_time - start_time)
+
+    return archi
 
 
 class DaskBFE:
@@ -53,7 +138,8 @@ class DaskBFE:
 
         Returns
         -------
-
+        array_like
+            A 1d array with the fitness parameters.
         """
         ndims_dvs = prob.get_nx()  # type: int
         num_fitness = prob.get_nf()  # type: int
@@ -72,16 +158,19 @@ class DaskBFE:
 
         logging.info(f"DaskBFE: {len(dvs_1d)=}, {ndims_dvs=}, {dvs_2d.shape=}")
 
-        # Create a function to run a 2D input into 'prob.fitness'
-        new_func = da.gufunc(
-            prob.fitness,
+        # Create a new problem with a serializable method '.fitness'
+        problem_pickable = ProblemSerializable(prob)
+
+        # Create a generalized function to run a 2D input with 'prob.fitness'
+        fitness_func = da.gufunc(
+            problem_pickable.fitness,
             signature="(i)->(j)",
             output_dtypes=np.float,
             output_sizes={"j": num_fitness},
             vectorize=True,
         )
 
-        fitness_2d = new_func(dvs_2d)  # type: da.Array
+        fitness_2d = fitness_func(dvs_2d)  # type: da.Array
         fitness_1d = fitness_2d.ravel()  # type: da.Array
 
         return fitness_1d
@@ -120,8 +209,11 @@ class DaskIsland:
         """
         logging.info(f"Run evolve {pop=}, {algo=}")
 
+        # Create a new algorithm with a serializable method '.evolve'
+        algo_pickable = AlgoSerializable(algo)
+
         # Run 'algo.evolve' with `Dask`
-        new_delayed_pop = delayed(algo.evolve)(pop)  # type: delayed.Delayed
+        new_delayed_pop = delayed(algo_pickable.evolve)(pop)  # type: delayed.Delayed
         new_pop = new_delayed_pop.compute()  # type: pg.population
 
         return algo, new_pop
@@ -863,23 +955,17 @@ class Calibration:
 
             # Create an archipelago
             user_defined_island = DaskIsland()
-            batch_fitness_evaluator = DaskBFE(chunk_size=1)
+            user_defined_bfe = DaskBFE(chunk_size=1)
 
-            archi = pg.archipelago()
-            with ThreadPoolExecutor() as executor:
-
-                params = [prob] * self.num_islands
-                func = partial(
-                    pg.population,
-                    b=batch_fitness_evaluator,
-                    size=self.algorithm.population_size,
-                    seed=self.seed,
-                )
-
-                for pop in executor.map(func, params):
-                    archi.push_back(
-                        pg.island(udi=user_defined_island, algo=algo, pop=pop)
-                    )
+            archi = create_archipelago(
+                num_islands=self.num_islands,
+                udi=user_defined_island,
+                algo=algo,
+                problem=prob,
+                pop_size=self.algorithm.population_size,
+                bfe=user_defined_bfe,
+                seed=self.seed,
+            )  # type: pg.archipelago
 
             # Call all 'evolve()' methods on all islands
             archi.evolve()

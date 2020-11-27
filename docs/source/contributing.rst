@@ -75,8 +75,7 @@ Bug reports must:
 
       ```python
       >>> from pyxel.io import load
-      >>> cfg = load('config.yml')
-      ...
+      >>> cfg = load("config.yml")
       ```
 
 2. Include the full version string of *Pyxel* and its dependencies. You can
@@ -84,8 +83,9 @@ use the built in function:
 
 .. code-block:: python
 
-   >>> import pyxel
-   >>> pyxel.show_versions()
+    import pyxel
+
+    pyxel.show_versions()
 
 #. Explain why the current behavior is wrong/not desired and what you expect
    instead.
