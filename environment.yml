@@ -33,6 +33,7 @@ dependencies:
   - scipy
 # Plotting
   - matplotlib>=3.1
+  - seaborn
 # Parallel computing
   - dask>=2.9
 # Jupyter notebook
