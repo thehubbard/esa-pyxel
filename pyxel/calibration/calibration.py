@@ -6,17 +6,20 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """TBW."""
+import copy
 import logging
 import math
 import typing as t
-from concurrent.futures import ThreadPoolExecutor
-from functools import partial
+
+# from concurrent.futures import ThreadPoolExecutor
+# from functools import partial
 from pathlib import Path
 from timeit import default_timer as timer
 
 import dask.array as da
 import dask.delayed as delayed
 import numpy as np
+import pandas as pd
 import pygmo as pg
 from typing_extensions import Literal, Protocol
 
@@ -104,19 +107,94 @@ def create_archipelago(
     start_time = timer()  # type: float
 
     archi = pg.archipelago()
-    func = partial(pg.population, b=bfe, size=pop_size, seed=seed)
+    # func = partial(pg.population, b=bfe, size=pop_size, seed=seed)
 
-    with ThreadPoolExecutor(max_workers=num_islands) as executor:
-        problems = [problem] * num_islands  # type: t.Sequence[pg.problem]
+    def create_island(_: t.Any) -> pg.island:
+        """Create a new island."""
+        return pg.island(
+            udi=copy.deepcopy(udi),
+            algo=copy.deepcopy(algo),
+            prob=copy.deepcopy(problem),
+            b=bfe,
+            size=pop_size,
+            seed=seed,
+        )
 
-        for pop in executor.map(func, problems):
-            island = pg.island(udi=udi, algo=algo, pop=pop)
-            archi.push_back(island)
+    for _ in range(num_islands):
+        island = create_island(_)
+        archi.push_back(island)
+
+    # with ThreadPoolExecutor(max_workers=num_islands) as executor:
+    #
+    #     all_pop_sizes = [pop_size] * num_islands
+    #
+    #     # island = pg.island(udi=udi, algo=algo, prob=problem, bfe=bfe, size=pop_size, seed=seed)
+    #     for island in executor.map(create_island, all_pop_sizes):
+    #         archi.push_back(island)
+    #
+    #     # # problems = [problem] * num_islands  # type: t.Sequence[pg.problem]
+    #     # problems = [problem for _ in range(num_islands)]  # type: t.Sequence[pg.problem]
+    #     #
+    #     # # Create population in parallel
+    #     # for island_id, pop in enumerate(executor.map(func, problems)):
+    #     #     # import pandas as pd
+    #     #     # algo.set_verbosity(1)
+    #     #     # foo = algo.evolve(pop)
+    #     #     # logs = algo.extract(pg.sade).get_log()  # type: list
+    #     #     #
+    #     #     # df = pd.DataFrame(logs, columns=['num_generations', 'num_evaluations', 'best_fitness', 'f', 'cr', 'dx', 'df'])
+    #     #     # df['id_island'] = island_id
+    #     #
+    #     #     new_algo = pg.algorithm(algo())
+    #     #     new_algo.set_verbosity(1)
+    #     #     island = pg.island(udi=udi, algo=new_algo, pop=pop)
+    #     #
+    #     #     # island = pg.island(udi=udi, algo=algo, pop=pop)
+    #     #     archi.push_back(island)
 
     stop_time = timer()
     logging.info("Create a new archipelago in %.2f s", stop_time - start_time)
 
     return archi
+
+
+def get_logs_from_algo(algo: pg.algorithm, algo_type: AlgorithmType) -> pd.DataFrame:
+    """Get logging information from an algorithm."""
+    if algo_type is AlgorithmType.Sade:
+        columns = [
+            "num_generations",
+            "num_evaluations",
+            "best_fitness",
+            "f",
+            "cr",
+            "dx",
+            "df",
+        ]
+        algo_to_extract = pg.sade
+    else:
+        raise NotImplementedError
+
+    algo_extracted = algo.extract(algo_to_extract)
+    logs = algo_extracted.get_log()  # type: list
+
+    df = pd.DataFrame(logs, columns=columns)
+
+    return df
+
+
+def get_logs_from_archi(
+    archi: pg.archipelago, algo_type: AlgorithmType
+) -> pd.DataFrame:
+    """Get logging information from an archipelago."""
+    lst = []
+    for id_island, island in enumerate(archi):
+        df_island = get_logs_from_algo(algo=island.get_algorithm(), algo_type=algo_type)
+        df_island["id_island"] = id_island + 1
+
+        lst.append(df_island)
+
+    df_archipelago = pd.concat(lst, ignore_index=True)
+    return df_archipelago
 
 
 class DaskBFE:
@@ -125,7 +203,7 @@ class DaskBFE:
     This class is a user-defined batch fitness evaluator based on 'Dask'.
     """
 
-    def __init__(self, chunk_size: int = 1):
+    def __init__(self, chunk_size: t.Optional[int] = None):
         self._chunk_size = chunk_size
 
     def __call__(self, prob: pg.problem, dvs_1d: np.ndarray) -> da.Array:
@@ -144,6 +222,11 @@ class DaskBFE:
         ndims_dvs = prob.get_nx()  # type: int
         num_fitness = prob.get_nf()  # type: int
 
+        if self._chunk_size is None:
+            chunk_size = max(1, num_fitness // 10)  # type: int
+        else:
+            chunk_size = self._chunk_size
+
         # [dvs_1_1, ..., dvs_1_n, dvs_2_1, ..., dvs_2_n, ..., dvs_m_1, ..., dvs_m_n]
 
         # [[dvs_1_1, ..., dvs_1_n],
@@ -153,10 +236,11 @@ class DaskBFE:
 
         # Convert 1D Decision Vectors to 2D `dask.Array`
         dvs_2d = da.from_array(
-            dvs_1d.reshape((-1, ndims_dvs)), chunks=(self._chunk_size, ndims_dvs)
+            dvs_1d.reshape((-1, ndims_dvs)),
+            chunks=(chunk_size, ndims_dvs),
         )  # type: da.Array
 
-        logging.info(f"DaskBFE: {len(dvs_1d)=}, {ndims_dvs=}, {dvs_2d.shape=}")
+        print(f"DaskBFE: {len(dvs_1d)=}, {ndims_dvs=}, {dvs_2d.shape=}")
 
         # Create a new problem with a serializable method '.fitness'
         problem_pickable = ProblemSerializable(prob)
@@ -911,7 +995,7 @@ class Calibration:
         self,
         processor: Processor,
         output_dir: Path,
-    ) -> t.Sequence[CalibrationResult]:
+    ) -> t.Tuple[t.Sequence[CalibrationResult], pd.DataFrame]:
         """TBW.
 
         Parameters
@@ -952,28 +1036,44 @@ class Calibration:
         self._log.info(algo)
 
         if self.num_islands > 1:  # default
-
             # Create an archipelago
             user_defined_island = DaskIsland()
-            user_defined_bfe = DaskBFE(chunk_size=1)
+            user_defined_bfe = DaskBFE()
 
-            archi = create_archipelago(
-                num_islands=self.num_islands,
-                udi=user_defined_island,
+            verbosity_level = min(1, self.algorithm.population_size // 100)  # type: int
+            algo.set_verbosity(verbosity_level)
+
+            # archi = create_archipelago(
+            #     num_islands=self.num_islands,
+            #     udi=user_defined_island,
+            #     algo=algo,
+            #     problem=prob,
+            #     pop_size=self.algorithm.population_size,
+            #     bfe=user_defined_bfe,
+            #     seed=self.seed,
+            # )  # type: pg.archipelago
+
+            # TODO: Missing parameter 't' for a user-defined topology
+            archi = pg.archipelago(
+                n=self.num_islands,
+                # udi=user_defined_island,
                 algo=algo,
-                problem=prob,
+                prob=prob,
                 pop_size=self.algorithm.population_size,
-                bfe=user_defined_bfe,
-                seed=self.seed,
-            )  # type: pg.archipelago
+                b=user_defined_bfe,
+            )
 
             # Call all 'evolve()' methods on all islands
+            # TODO: Missing parameter 'n'
             archi.evolve()
             self._log.info(archi)
 
             # Block until all evolutions have finished and raise the first exception
             # that was encountered
             archi.wait_check()
+
+            # Get log information
+            df_logs = get_logs_from_archi(archi=archi, algo_type=self.algorithm.type)
 
             # Get fitness and decision vectors of the num_islands' champions
             champions_1d_fitness = archi.get_champions_f()  # type: t.List[np.ndarray]
@@ -986,6 +1086,9 @@ class Calibration:
 
             pop = algo.evolve(pop)
 
+            # Get log information
+            df_logs = get_logs_from_algo(algo=algo, algo_type=self.algorithm.type)
+
             # Get fitness and decision vector of the population champion
             champions_1d_fitness = [pop.champion_f]
             champions_1d_decision = [pop.champion_x]
@@ -997,7 +1100,7 @@ class Calibration:
             res += [self.fitting.get_results(overall_fitness=f, parameter=x)]
 
         self._log.info("Calibration ended.")
-        return res
+        return res, df_logs
 
     def post_processing(
         self,
