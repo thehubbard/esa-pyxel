@@ -10,9 +10,8 @@ import copy
 import logging
 import math
 import typing as t
-
-# from concurrent.futures import ThreadPoolExecutor
-# from functools import partial
+from concurrent.futures import ThreadPoolExecutor
+from functools import partial
 from pathlib import Path
 from timeit import default_timer as timer
 
@@ -21,6 +20,7 @@ import dask.delayed as delayed
 import numpy as np
 import pandas as pd
 import pygmo as pg
+from tqdm.auto import tqdm
 from typing_extensions import Literal, Protocol
 
 from pyxel.calibration import (
@@ -91,7 +91,9 @@ class AlgoSerializable:
 
     def evolve(self, *args, **kwargs):
         """Compute 'evolve'"""
-        return self._algo.evolve(*args, **kwargs)
+        pop = self._algo.evolve(*args, **kwargs)
+
+        return self._algo, pop
 
 
 def create_archipelago(
@@ -112,25 +114,32 @@ def create_archipelago(
     def create_island(_: t.Any) -> pg.island:
         """Create a new island."""
         return pg.island(
-            udi=copy.deepcopy(udi),
+            udi=udi,
             algo=copy.deepcopy(algo),
-            prob=copy.deepcopy(problem),
+            prob=problem,
             b=bfe,
             size=pop_size,
             seed=seed,
         )
 
-    for _ in range(num_islands):
-        island = create_island(_)
-        archi.push_back(island)
+    if False:
+        for _ in tqdm(range(num_islands), desc="Create islands"):
+            island = create_island(_)
+            archi.push_back(island)
+    else:
 
-    # with ThreadPoolExecutor(max_workers=num_islands) as executor:
-    #
-    #     all_pop_sizes = [pop_size] * num_islands
-    #
-    #     # island = pg.island(udi=udi, algo=algo, prob=problem, bfe=bfe, size=pop_size, seed=seed)
-    #     for island in executor.map(create_island, all_pop_sizes):
-    #         archi.push_back(island)
+        with ThreadPoolExecutor(max_workers=num_islands) as executor:
+
+            it = executor.map(create_island, range(num_islands))
+            for island in tqdm(it, desc="Create islands", total=num_islands):
+                archi.push_back(island)
+
+    #    with ThreadPoolExecutor(max_workers=num_islands) as executor:
+    #        all_pop_sizes = [pop_size] * num_islands
+
+    #         # island = pg.island(udi=udi, algo=algo, prob=problem, bfe=bfe, size=pop_size, seed=seed)
+    #        for island in tqdm(executor.map(create_island, all_pop_sizes), desc='Create islands', total=num_islands):
+    #            archi.push_back(island)
     #
     #     # # problems = [problem] * num_islands  # type: t.Sequence[pg.problem]
     #     # problems = [problem for _ in range(num_islands)]  # type: t.Sequence[pg.problem]
@@ -240,7 +249,7 @@ class DaskBFE:
             chunks=(chunk_size, ndims_dvs),
         )  # type: da.Array
 
-        print(f"DaskBFE: {len(dvs_1d)=}, {ndims_dvs=}, {dvs_2d.shape=}")
+        logging.info(f"DaskBFE: {len(dvs_1d)=}, {ndims_dvs=}, {dvs_2d.shape=}")
 
         # Create a new problem with a serializable method '.fitness'
         problem_pickable = ProblemSerializable(prob)
@@ -297,10 +306,12 @@ class DaskIsland:
         algo_pickable = AlgoSerializable(algo)
 
         # Run 'algo.evolve' with `Dask`
-        new_delayed_pop = delayed(algo_pickable.evolve)(pop)  # type: delayed.Delayed
-        new_pop = new_delayed_pop.compute()  # type: pg.population
+        new_delayed_pop = delayed(algo_pickable.evolve, nout=2)(
+            pop
+        )  # type: delayed.Delayed
+        new_algo, new_pop = new_delayed_pop.compute()  # type: pg.population
 
-        return algo, new_pop
+        return new_algo, new_pop
 
     def get_name(self) -> str:
         """Return Island's name."""
@@ -1043,25 +1054,25 @@ class Calibration:
             verbosity_level = min(1, self.algorithm.population_size // 100)  # type: int
             algo.set_verbosity(verbosity_level)
 
-            # archi = create_archipelago(
-            #     num_islands=self.num_islands,
-            #     udi=user_defined_island,
-            #     algo=algo,
-            #     problem=prob,
-            #     pop_size=self.algorithm.population_size,
-            #     bfe=user_defined_bfe,
-            #     seed=self.seed,
-            # )  # type: pg.archipelago
+            archi = create_archipelago(
+                num_islands=self.num_islands,
+                udi=user_defined_island,
+                algo=algo,
+                problem=prob,
+                pop_size=self.algorithm.population_size,
+                bfe=user_defined_bfe,
+                seed=self.seed,
+            )  # type: pg.archipelago
 
             # TODO: Missing parameter 't' for a user-defined topology
-            archi = pg.archipelago(
-                n=self.num_islands,
-                # udi=user_defined_island,
-                algo=algo,
-                prob=prob,
-                pop_size=self.algorithm.population_size,
-                b=user_defined_bfe,
-            )
+            # archi = pg.archipelago(
+            #    n=self.num_islands,
+            #    udi=user_defined_island,
+            #                algo=algo,
+            #                prob=prob,
+            #                pop_size=self.algorithm.population_size,
+            #                b=user_defined_bfe,
+            #             )
 
             # Call all 'evolve()' methods on all islands
             # TODO: Missing parameter 'n'
@@ -1102,14 +1113,16 @@ class Calibration:
         self._log.info("Calibration ended.")
         return res, df_logs
 
+    # TODO: Speed-up this function
     def post_processing(
         self,
         calib_results: t.Sequence[CalibrationResult],
         output: "CalibrationOutputs",
     ) -> None:
         """TBW."""
-        for one_calib_result in calib_results:  # type: CalibrationResult
+        for one_calib_result in tqdm(calib_results):  # type: CalibrationResult
 
+            # TODO: Create a new method in output called '.save_processor(processor)'
             output.calibration_outputs(processor_list=one_calib_result.processors)
 
             for idx, (processor, target_data) in enumerate(
