@@ -30,7 +30,7 @@ def ipc_kernel(
 
     Returns
     -------
-    matrix: np.ndarray
+    kernel: np.ndarray
     """
 
     if not diagonal_coupling < coupling:
