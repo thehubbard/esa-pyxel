@@ -153,7 +153,7 @@ def create_archipelago(
     else:
         func_rnd = Random()  # type: Random
         func_rnd.seed(seed)
-        max_value = np.iinfo(np.uint).max  # type: int
+        max_value = np.iinfo(np.uint32).max  # type: int
         seeds = [func_rnd.randint(0, max_value) for _ in range(num_islands)]
 
     if topology is None:
