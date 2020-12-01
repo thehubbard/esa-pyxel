@@ -7,6 +7,7 @@ version 0.8 UNRELEASED/ 2020-MM-DD
 
 Core
 ~~~~
+
 * Improved user friendliness.
   (See `#144 <https://gitlab.com/esa/pyxel/issues/144>`_).
 * Simplified the look of YAML configuration files.
@@ -19,9 +20,12 @@ Core
   (See `#121 <https://gitlab.com/esa/pyxel/issues/121>`_).
 * Split class Outputs for different modes and moved to inputs_ouputs.
   (See `#149 <https://gitlab.com/esa/pyxel/issues/149>`_).
+* Added a simple Inter Pixel Capacitance model for CMOS detectors.
+  (See `#65 <https://gitlab.com/esa/pyxel/issues/65>`_).
 
 Others
 ~~~~~~
+
 * Change licence to MIT.
   (See `!142 <https://gitlab.com/esa/pyxel/-/merge_requests/142>`_).
 
