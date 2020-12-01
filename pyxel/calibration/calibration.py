@@ -6,20 +6,18 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """TBW."""
-import copy
 import logging
 import math
 import typing as t
 from concurrent.futures import ThreadPoolExecutor
-from functools import partial
 from pathlib import Path
+from random import Random
 from timeit import default_timer as timer
 
 import dask.array as da
 import dask.delayed as delayed
 import numpy as np
 import pandas as pd
-import pygmo as pg
 from tqdm.auto import tqdm
 from typing_extensions import Literal, Protocol
 
@@ -37,13 +35,21 @@ from pyxel.pipelines import ModelFunction, Processor
 if t.TYPE_CHECKING:
     from ..inputs_outputs import CalibrationOutputs
 
+try:
+    import pygmo as pg
+except ImportError:
+    import warnings
+
+    warnings.warn("Cannot import 'pygmo", RuntimeWarning, stacklevel=2)
+
 
 class IslandProtocol(Protocol):
-    """TBW."""
+    """Protocol for a User Define Island."""
 
     def run_evolve(
-        self, algo: pg.algorithm, pop: pg.population
-    ) -> t.Tuple[pg.algorithm, pg.population]:
+        self, algo: "pg.algorithm", pop: "pg.population"
+    ) -> t.Tuple["pg.algorithm", "pg.population"]:
+        """Run 'evolve' method."""
         ...
 
 
@@ -90,7 +96,7 @@ class AlgoSerializable:
         self._algo = algo
 
     def evolve(self, *args, **kwargs):
-        """Compute 'evolve'"""
+        """Compute 'evolve'."""
         pop = self._algo.evolve(*args, **kwargs)
 
         return self._algo, pop
@@ -103,63 +109,71 @@ def create_archipelago(
     problem: ProblemSingleObjective,
     pop_size: int,
     bfe: t.Optional[t.Callable] = None,
+    topology: t.Optional[t.Callable] = None,
     seed: t.Optional[int] = None,
-) -> pg.archipelago:
-    """Create a new ``archipelago``."""
+    parallel: bool = True,
+    with_bar: bool = False,
+) -> "pg.archipelago":
+    """Create a new ``archipelago``.
+
+    Parameters
+    ----------
+    num_islands
+    udi
+    algo
+    problem
+    pop_size
+    bfe
+    topology
+    seed
+    parallel
+    with_bar
+
+    Returns
+    -------
+    archipelago
+        A new archipelago.
+    """
+    disable_bar = not with_bar  # type: bool
     start_time = timer()  # type: float
 
-    archi = pg.archipelago()
-    # func = partial(pg.population, b=bfe, size=pop_size, seed=seed)
-
-    def create_island(_: t.Any) -> pg.island:
+    def create_island(seed: t.Optional[int] = None) -> pg.island:
         """Create a new island."""
         return pg.island(
             udi=udi,
-            algo=copy.deepcopy(algo),
+            algo=algo,
             prob=problem,
             b=bfe,
             size=pop_size,
             seed=seed,
         )
 
-    if False:
-        for _ in tqdm(range(num_islands), desc="Create islands"):
-            island = create_island(_)
-            archi.push_back(island)
+    if seed is None:
+        seeds = [None] * num_islands  # type: t.Sequence[t.Optional[int]]
     else:
+        func_rnd = Random()  # type: Random
+        func_rnd.seed(seed)
+        max_value = np.iinfo(np.uint).max  # type: int
+        seeds = [func_rnd.randint(0, max_value) for _ in range(num_islands)]
 
+    if topology is None:
+        topology = pg.topology()
+
+    archi = pg.archipelago(t=topology)
+
+    if parallel:
         with ThreadPoolExecutor(max_workers=num_islands) as executor:
-
-            it = executor.map(create_island, range(num_islands))
-            for island in tqdm(it, desc="Create islands", total=num_islands):
+            it = executor.map(create_island, seeds)
+            for island in tqdm(
+                it, desc="Create islands", total=num_islands, disable=disable_bar
+            ):
                 archi.push_back(island)
-
-    #    with ThreadPoolExecutor(max_workers=num_islands) as executor:
-    #        all_pop_sizes = [pop_size] * num_islands
-
-    #         # island = pg.island(udi=udi, algo=algo, prob=problem, bfe=bfe, size=pop_size, seed=seed)
-    #        for island in tqdm(executor.map(create_island, all_pop_sizes), desc='Create islands', total=num_islands):
-    #            archi.push_back(island)
-    #
-    #     # # problems = [problem] * num_islands  # type: t.Sequence[pg.problem]
-    #     # problems = [problem for _ in range(num_islands)]  # type: t.Sequence[pg.problem]
-    #     #
-    #     # # Create population in parallel
-    #     # for island_id, pop in enumerate(executor.map(func, problems)):
-    #     #     # import pandas as pd
-    #     #     # algo.set_verbosity(1)
-    #     #     # foo = algo.evolve(pop)
-    #     #     # logs = algo.extract(pg.sade).get_log()  # type: list
-    #     #     #
-    #     #     # df = pd.DataFrame(logs, columns=['num_generations', 'num_evaluations', 'best_fitness', 'f', 'cr', 'dx', 'df'])
-    #     #     # df['id_island'] = island_id
-    #     #
-    #     #     new_algo = pg.algorithm(algo())
-    #     #     new_algo.set_verbosity(1)
-    #     #     island = pg.island(udi=udi, algo=new_algo, pop=pop)
-    #     #
-    #     #     # island = pg.island(udi=udi, algo=algo, pop=pop)
-    #     #     archi.push_back(island)
+    else:
+        it = map(create_island, seeds)
+        for island in tqdm(
+            it, desc="Create islands", total=num_islands, disable=disable_bar
+        ):
+            archi.push_back(island)
 
     stop_time = timer()
     logging.info("Create a new archipelago in %.2f s", stop_time - start_time)
@@ -167,7 +181,7 @@ def create_archipelago(
     return archi
 
 
-def get_logs_from_algo(algo: pg.algorithm, algo_type: AlgorithmType) -> pd.DataFrame:
+def get_logs_from_algo(algo: "pg.algorithm", algo_type: AlgorithmType) -> pd.DataFrame:
     """Get logging information from an algorithm."""
     if algo_type is AlgorithmType.Sade:
         columns = [
@@ -192,7 +206,7 @@ def get_logs_from_algo(algo: pg.algorithm, algo_type: AlgorithmType) -> pd.DataF
 
 
 def get_logs_from_archi(
-    archi: pg.archipelago, algo_type: AlgorithmType
+    archi: "pg.archipelago", algo_type: AlgorithmType
 ) -> pd.DataFrame:
     """Get logging information from an archipelago."""
     lst = []
@@ -215,7 +229,7 @@ class DaskBFE:
     def __init__(self, chunk_size: t.Optional[int] = None):
         self._chunk_size = chunk_size
 
-    def __call__(self, prob: pg.problem, dvs_1d: np.ndarray) -> da.Array:
+    def __call__(self, prob: "pg.problem", dvs_1d: np.ndarray) -> da.Array:
         """Call operator to run the batch fitness evaluator.
 
         Parameters
@@ -249,7 +263,7 @@ class DaskBFE:
             chunks=(chunk_size, ndims_dvs),
         )  # type: da.Array
 
-        logging.info(f"DaskBFE: {len(dvs_1d)=}, {ndims_dvs=}, {dvs_2d.shape=}")
+        logging.info("DaskBFE: %i, %i, %r", len(dvs_1d), ndims_dvs, dvs_2d.shape)
 
         # Create a new problem with a serializable method '.fitness'
         problem_pickable = ProblemSerializable(prob)
@@ -278,11 +292,11 @@ class DaskBFE:
 
 
 class DaskIsland:
-    """User defined Island usind `Dask`."""
+    """User Defined Island usind `Dask`."""
 
     def run_evolve(
-        self, algo: pg.algorithm, pop: pg.population
-    ) -> t.Tuple[pg.algorithm, pg.population]:
+        self, algo: "pg.algorithm", pop: "pg.population"
+    ) -> t.Tuple["pg.algorithm", "pg.population"]:
         """Run 'evolve' method from the input `algorithm` to evolve the input `population`.
 
         Once the evolution is finished, it will return the algorithm used for the
@@ -300,7 +314,7 @@ class DaskIsland:
         tuple of pg.algorithm, pg.population
             The algorithm used for the evolution and the evolved population.
         """
-        logging.info(f"Run evolve {pop=}, {algo=}")
+        logging.info("Run evolve %r, %r", pop, algo)
 
         # Create a new algorithm with a serializable method '.evolve'
         algo_pickable = AlgoSerializable(algo)
@@ -309,7 +323,10 @@ class DaskIsland:
         new_delayed_pop = delayed(algo_pickable.evolve, nout=2)(
             pop
         )  # type: delayed.Delayed
-        new_algo, new_pop = new_delayed_pop.compute()  # type: pg.population
+        (
+            new_algo,
+            new_pop,
+        ) = new_delayed_pop.compute()  # type: t.Tuple[pg.algo, pg.population]
 
         return new_algo, new_pop
 
@@ -359,7 +376,7 @@ class Algorithm:
         ftol_rel: float = 0.0,
         ftol_abs: float = 0.0,
         stopval: float = -math.inf,
-        local_optimizer: t.Optional[pg.nlopt] = None,
+        local_optimizer: t.Optional["pg.nlopt"] = None,
         replacement: str = "best",
         nlopt_selection: str = "best",
     ):
@@ -681,12 +698,12 @@ class Algorithm:
         self._stopval = value
 
     @property
-    def local_optimizer(self) -> t.Optional[pg.nlopt]:
+    def local_optimizer(self) -> t.Optional["pg.nlopt"]:
         """TBW."""
         return self._local_optimizer
 
     @local_optimizer.setter
-    def local_optimizer(self, value: t.Optional[pg.nlopt]) -> None:
+    def local_optimizer(self, value: t.Optional["pg.nlopt"]) -> None:
         """TBW."""
         self._local_optimizer = value
 
@@ -713,7 +730,7 @@ class Algorithm:
     # NLOPT #####
 
     # TODO: This could be refactored for each if-statement
-    def get_algorithm(self) -> t.Union[pg.sade, pg.sga, pg.nlopt]:
+    def get_algorithm(self) -> t.Union["pg.sade", "pg.sga", "pg.nlopt"]:
         """TBW.
 
         :return:
