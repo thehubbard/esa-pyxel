@@ -164,6 +164,7 @@ def create_archipelago(
     if parallel:
         with ThreadPoolExecutor(max_workers=num_islands) as executor:
             it = executor.map(create_island, seeds)
+
             for island in tqdm(
                 it, desc="Create islands", total=num_islands, disable=disable_bar
             ):
@@ -216,7 +217,7 @@ def get_logs_from_archi(
 
         lst.append(df_island)
 
-    df_archipelago = pd.concat(lst, ignore_index=True)
+    df_archipelago = pd.concat(lst)
     return df_archipelago
 
 
@@ -323,6 +324,7 @@ class DaskIsland:
         new_delayed_pop = delayed(algo_pickable.evolve, nout=2)(
             pop
         )  # type: delayed.Delayed
+
         (
             new_algo,
             new_pop,
@@ -810,6 +812,7 @@ class Calibration:
         parameters: t.Optional[t.Sequence[ParameterValues]] = None,
         seed: t.Optional[int] = None,
         num_islands: int = 0,
+        num_evolutions: int = 1,
         type_islands: Literal[
             "multiprocessing", "multithreading", "ipyparallel"
         ] = "multiprocessing",
@@ -818,8 +821,8 @@ class Calibration:
         if seed is not None and seed not in range(100001):
             raise ValueError("'seed' must be between 0 and 100000.")
 
-        if num_islands not in range(101):
-            raise ValueError("'num_islands' must be between 0 and 100.")
+        if num_islands < 1:
+            raise ValueError("'num_islands' must superior or equal to 1.")
 
         self._log = logging.getLogger(__name__)
 
@@ -857,6 +860,7 @@ class Calibration:
         self._seed = np.random.randint(0, 100000) if seed is None else seed  # type: int
 
         self._num_islands = num_islands  # type: int
+        self._num_evolutions = num_evolutions  # type: int
         self._type_islands = Island(type_islands)  # type:Island
 
         self._weighting_path = weighting_path  # type: t.Optional[t.Sequence[Path]]
@@ -1004,10 +1008,20 @@ class Calibration:
     @num_islands.setter
     def num_islands(self, value: int) -> None:
         """TBW."""
-        if value not in range(101):
-            raise ValueError("'num_islands' must be between 0 and 100.")
+        if value < 1:
+            raise ValueError("'num_islands' must superior or equal to 1.")
 
         self._num_islands = value
+
+    @property
+    def num_evolutions(self) -> int:
+        """TBW."""
+        return self._num_evolutions
+
+    @num_evolutions.setter
+    def num_evolutions(self, value: int) -> None:
+        """TBW."""
+        self._num_evolutions = value
 
     @property
     def weighting_path(self) -> t.Optional[t.Sequence[Path]]:
@@ -1020,9 +1034,7 @@ class Calibration:
         self._weighting_path = value
 
     def run_calibration(
-        self,
-        processor: Processor,
-        output_dir: Path,
+        self, processor: Processor, output_dir: Path, with_bar: bool = True
     ) -> t.Tuple[t.Sequence[CalibrationResult], pd.DataFrame]:
         """TBW.
 
@@ -1059,6 +1071,10 @@ class Calibration:
         prob = pg.problem(self.fitting)  # type: pg.problem
         self._log.info(prob)
 
+        total_num_generations = (
+            self._num_evolutions * self.algorithm.generations
+        )  # type: int
+
         # Create a Pygmo algorithm
         algo = pg.algorithm(self.algorithm.get_algorithm())  # type: pg.algorithm
         self._log.info(algo)
@@ -1068,7 +1084,7 @@ class Calibration:
             user_defined_island = DaskIsland()
             user_defined_bfe = DaskBFE()
 
-            verbosity_level = min(1, self.algorithm.population_size // 100)  # type: int
+            verbosity_level = max(1, self.algorithm.population_size // 100)  # type: int
             algo.set_verbosity(verbosity_level)
 
             archi = create_archipelago(
@@ -1079,6 +1095,7 @@ class Calibration:
                 pop_size=self.algorithm.population_size,
                 bfe=user_defined_bfe,
                 seed=self.seed,
+                with_bar=with_bar,
             )  # type: pg.archipelago
 
             # TODO: Missing parameter 't' for a user-defined topology
@@ -1091,17 +1108,47 @@ class Calibration:
             #                b=user_defined_bfe,
             #             )
 
-            # Call all 'evolve()' methods on all islands
-            # TODO: Missing parameter 'n'
-            archi.evolve()
-            self._log.info(archi)
+            # TODO: Remove this
+            pd.set_option("display.max_columns", 10)
+            pd.set_option("display.width", 1000)
+            pd.set_option("display.max_rows", 30)
 
-            # Block until all evolutions have finished and raise the first exception
-            # that was encountered
-            archi.wait_check()
+            df_all_logs = pd.DataFrame()
 
-            # Get log information
-            df_logs = get_logs_from_archi(archi=archi, algo_type=self.algorithm.type)
+            bars = {}
+            for idx in range(self.num_islands):
+                bars[idx + 1] = tqdm(
+                    total=int(total_num_generations),
+                    position=idx,
+                    desc=f"Island {idx+1:02d}",
+                    unit="generations",
+                )
+
+            for id_evolution in range(self._num_evolutions):
+                # Call all 'evolve()' methods on all islands
+                archi.evolve()
+                self._log.info(archi)
+
+                # Block until all evolutions have finished and raise the first exception
+                # that was encountered
+                archi.wait_check()
+
+                df_logs = get_logs_from_archi(
+                    archi=archi, algo_type=self.algorithm.type
+                )
+                df_logs["id_evolution"] = id_evolution + 1
+
+                df_all_logs = df_all_logs.append(df_logs)
+
+                df_last = df_all_logs.groupby(["id_island"]).last()
+                df_last = df_last.assign(
+                    global_num_generations=df_last["num_generations"]
+                    * df_last["id_evolution"]
+                )
+
+                for id_island, serie in df_last.iterrows():
+                    num_generations = int(serie["global_num_generations"])
+                    bars[id_island].update(num_generations)
 
             # Get fitness and decision vectors of the num_islands' champions
             champions_1d_fitness = archi.get_champions_f()  # type: t.List[np.ndarray]
@@ -1115,11 +1162,17 @@ class Calibration:
             pop = algo.evolve(pop)
 
             # Get log information
-            df_logs = get_logs_from_algo(algo=algo, algo_type=self.algorithm.type)
+            df_all_logs = get_logs_from_algo(algo=algo, algo_type=self.algorithm.type)
 
             # Get fitness and decision vector of the population champion
             champions_1d_fitness = [pop.champion_f]
             champions_1d_decision = [pop.champion_x]
+
+        df_all_logs = df_all_logs.reset_index(drop=True).assign(
+            global_num_generations=lambda df: (df["id_evolution"] - 1)
+            * self.algorithm.generations
+            + df["num_generations"]
+        )
 
         self.fitting.file_matching_renaming()
         res = []  # type: t.List[CalibrationResult]
@@ -1128,7 +1181,7 @@ class Calibration:
             res += [self.fitting.get_results(overall_fitness=f, parameter=x)]
 
         self._log.info("Calibration ended.")
-        return res, df_logs
+        return res, df_all_logs
 
     # TODO: Speed-up this function
     def post_processing(
