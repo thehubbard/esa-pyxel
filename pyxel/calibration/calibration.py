@@ -813,6 +813,7 @@ class Calibration:
         seed: t.Optional[int] = None,
         num_islands: int = 0,
         num_evolutions: int = 1,
+        topology: t.Optional[str] = None,
         type_islands: Literal[
             "multiprocessing", "multithreading", "ipyparallel"
         ] = "multiprocessing",
@@ -862,6 +863,7 @@ class Calibration:
         self._num_islands = num_islands  # type: int
         self._num_evolutions = num_evolutions  # type: int
         self._type_islands = Island(type_islands)  # type:Island
+        self._topology = topology  # type: t.Optional[str]
 
         self._weighting_path = weighting_path  # type: t.Optional[t.Sequence[Path]]
 
@@ -1024,6 +1026,14 @@ class Calibration:
         self._num_evolutions = value
 
     @property
+    def topology(self):
+        return self._topology
+
+    @topology.setter
+    def topology(self, value):
+        self._topology = value
+
+    @property
     def weighting_path(self) -> t.Optional[t.Sequence[Path]]:
         """TBW."""
         return self._weighting_path
@@ -1106,11 +1116,6 @@ class Calibration:
             #                b=user_defined_bfe,
             #             )
 
-            # TODO: Remove this
-            pd.set_option("display.max_columns", 10)
-            pd.set_option("display.width", 1000)
-            pd.set_option("display.max_rows", 30)
-
             df_all_logs = pd.DataFrame()
 
             # Create progress bars
@@ -1171,9 +1176,14 @@ class Calibration:
                         num_generations = int(serie["global_num_generations"])
                         bars[id_progress_bar - 1].update(int(num_generations))
 
+            t0 = timer()
             # Get fitness and decision vectors of the num_islands' champions
             champions_1d_fitness = archi.get_champions_f()  # type: t.List[np.ndarray]
             champions_1d_decision = archi.get_champions_x()  # type: t.List[np.ndarray]
+
+            t1 = timer()
+            print(f"Get fitness in {t1-t0:.2f} s")
+
         else:
             self._log.info("Initialize optimization algorithm")
             pop = pg.population(prob=prob, size=self.algorithm.population_size)
@@ -1195,10 +1205,18 @@ class Calibration:
             + df["num_generations"]
         )
 
+        t0 = timer()
         self.fitting.file_matching_renaming()
+        t1 = timer()
+        print(f"File matching renaming in {t1-t0:.2f} s")
+
         res = []  # type: t.List[CalibrationResult]
 
-        for f, x in zip(champions_1d_fitness, champions_1d_decision):
+        for f, x in tqdm(
+            zip(champions_1d_fitness, champions_1d_decision),
+            desc="Get results",
+            disable=not with_progress_bar,
+        ):
             res += [self.fitting.get_results(overall_fitness=f, parameter=x)]
 
         self._log.info("Calibration ended.")
