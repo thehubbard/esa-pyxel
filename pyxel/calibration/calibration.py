@@ -1034,7 +1034,7 @@ class Calibration:
         self._weighting_path = value
 
     def run_calibration(
-        self, processor: Processor, output_dir: Path, with_bar: bool = True
+        self, processor: Processor, output_dir: Path, with_progress_bar: bool = True
     ) -> t.Tuple[t.Sequence[CalibrationResult], pd.DataFrame]:
         """TBW.
 
@@ -1071,9 +1071,7 @@ class Calibration:
         prob = pg.problem(self.fitting)  # type: pg.problem
         self._log.info(prob)
 
-        total_num_generations = (
-            self._num_evolutions * self.algorithm.generations
-        )  # type: int
+        total_num_generations = self._num_evolutions * self.algorithm.generations
 
         # Create a Pygmo algorithm
         algo = pg.algorithm(self.algorithm.get_algorithm())  # type: pg.algorithm
@@ -1095,7 +1093,7 @@ class Calibration:
                 pop_size=self.algorithm.population_size,
                 bfe=user_defined_bfe,
                 seed=self.seed,
-                with_bar=with_bar,
+                with_bar=with_progress_bar,
             )  # type: pg.archipelago
 
             # TODO: Missing parameter 't' for a user-defined topology
@@ -1115,14 +1113,33 @@ class Calibration:
 
             df_all_logs = pd.DataFrame()
 
-            bars = {}
-            for idx in range(self.num_islands):
-                bars[idx + 1] = tqdm(
-                    total=int(total_num_generations),
-                    position=idx,
-                    desc=f"Island {idx+1:02d}",
-                    unit="generations",
-                )
+            # Create progress bars
+            max_num_bars = 10
+            num_bars = min(self.num_islands, max_num_bars)
+            num_islands_per_bar = math.ceil(self.num_islands // num_bars)
+
+            bars = []
+            if with_progress_bar:
+                for idx in range(num_bars):
+                    if num_islands_per_bar == 1:
+                        desc = f"Island {idx+1:02d}"
+                    else:
+                        first_island = idx * num_islands_per_bar + 1
+                        last_island = (idx + 1) * num_islands_per_bar + 1
+
+                        if last_island > self.num_islands:
+                            last_island = self.num_islands
+
+                        desc = f"Islands {first_island:02d}-{last_island:02d}"
+
+                    new_bar = tqdm(
+                        total=int(total_num_generations),
+                        position=idx,
+                        desc=desc,
+                        unit=" generations",
+                    )
+
+                    bars.append(new_bar)
 
             for id_evolution in range(self._num_evolutions):
                 # Call all 'evolve()' methods on all islands
@@ -1136,19 +1153,23 @@ class Calibration:
                 df_logs = get_logs_from_archi(
                     archi=archi, algo_type=self.algorithm.type
                 )
-                df_logs["id_evolution"] = id_evolution + 1
+                df_logs = df_logs.assign(
+                    id_evolution=id_evolution + 1,
+                    id_progress_bar=lambda df: (df["id_island"] // num_islands_per_bar),
+                )
 
                 df_all_logs = df_all_logs.append(df_logs)
 
-                df_last = df_all_logs.groupby(["id_island"]).last()
-                df_last = df_last.assign(
-                    global_num_generations=df_last["num_generations"]
-                    * df_last["id_evolution"]
-                )
+                if with_progress_bar:
+                    df_last = df_all_logs.groupby("id_progress_bar").last()
+                    df_last = df_last.assign(
+                        global_num_generations=df_last["num_generations"]
+                        * df_last["id_evolution"]
+                    )
 
-                for id_island, serie in df_last.iterrows():
-                    num_generations = int(serie["global_num_generations"])
-                    bars[id_island].update(num_generations)
+                    for id_progress_bar, serie in df_last.iterrows():
+                        num_generations = int(serie["global_num_generations"])
+                        bars[id_progress_bar - 1].update(int(num_generations))
 
             # Get fitness and decision vectors of the num_islands' champions
             champions_1d_fitness = archi.get_champions_f()  # type: t.List[np.ndarray]
