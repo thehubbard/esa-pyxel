@@ -813,7 +813,7 @@ class Calibration:
         seed: t.Optional[int] = None,
         num_islands: int = 0,
         num_evolutions: int = 1,
-        topology: t.Optional[str] = None,
+        topology: t.Literal["unconnected", "ring", "fully_connected"] = "unconnected",
         type_islands: Literal[
             "multiprocessing", "multithreading", "ipyparallel"
         ] = "multiprocessing",
@@ -863,7 +863,9 @@ class Calibration:
         self._num_islands = num_islands  # type: int
         self._num_evolutions = num_evolutions  # type: int
         self._type_islands = Island(type_islands)  # type:Island
-        self._topology = topology  # type: t.Optional[str]
+        self._topology = (
+            topology
+        )  # type: t.Literal['unconnected', 'ring', 'fully_connected']
 
         self._weighting_path = weighting_path  # type: t.Optional[t.Sequence[Path]]
 
@@ -1026,11 +1028,16 @@ class Calibration:
         self._num_evolutions = value
 
     @property
-    def topology(self):
+    def topology(self) -> t.Literal["unconnected", "ring", "fully_connected"]:
         return self._topology
 
     @topology.setter
-    def topology(self, value):
+    def topology(self, value: t.Any) -> None:
+        if value not in ["unconnected", "ring", "fully_connected"]:
+            raise ValueError(
+                "Expecting value: 'unconnected', 'ring' or 'fully_connected'"
+            )
+
         self._topology = value
 
     @property
@@ -1095,6 +1102,15 @@ class Calibration:
             verbosity_level = max(1, self.algorithm.population_size // 100)  # type: int
             algo.set_verbosity(verbosity_level)
 
+            if self.topology == "unconnected":
+                topo = pg.unconnected()
+            elif self.topology == "ring":
+                topo = pg.ring()
+            elif self.topology == "fully_connected":
+                topo = pg.fully_connected()
+            else:
+                raise NotImplementedError(f"topology {self.topology!r}")
+
             archi = create_archipelago(
                 num_islands=self.num_islands,
                 udi=user_defined_island,
@@ -1102,6 +1118,7 @@ class Calibration:
                 problem=prob,
                 pop_size=self.algorithm.population_size,
                 bfe=user_defined_bfe,
+                topology=topo,
                 seed=self.seed,
                 with_bar=with_progress_bar,
             )  # type: pg.archipelago
@@ -1119,13 +1136,13 @@ class Calibration:
             df_all_logs = pd.DataFrame()
 
             # Create progress bars
-            max_num_bars = 10
-            num_bars = min(self.num_islands, max_num_bars)
-            num_islands_per_bar = math.ceil(self.num_islands // num_bars)
+            max_num_progress_bars = 10
+            num_progress_bars = min(self.num_islands, max_num_progress_bars)
+            num_islands_per_bar = math.ceil(self.num_islands // num_progress_bars)
 
-            bars = []
+            progress_bars = []
             if with_progress_bar:
-                for idx in range(num_bars):
+                for idx in range(num_progress_bars):
                     if num_islands_per_bar == 1:
                         desc = f"Island {idx+1:02d}"
                     else:
@@ -1144,7 +1161,7 @@ class Calibration:
                         unit=" generations",
                     )
 
-                    bars.append(new_bar)
+                    progress_bars.append(new_bar)
 
             for id_evolution in range(self._num_evolutions):
                 # Call all 'evolve()' methods on all islands
@@ -1174,7 +1191,12 @@ class Calibration:
 
                     for id_progress_bar, serie in df_last.iterrows():
                         num_generations = int(serie["global_num_generations"])
-                        bars[id_progress_bar - 1].update(int(num_generations))
+                        # print(f'{id_evolution=}, {id_progress_bar=}, {num_generations=}')
+                        progress_bars[id_progress_bar - 1].update(num_generations)
+
+            for progress_bar in progress_bars:
+                progress_bar.close()
+                del progress_bar
 
             t0 = timer()
             # Get fitness and decision vectors of the num_islands' champions
