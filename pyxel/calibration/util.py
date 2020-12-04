@@ -23,7 +23,6 @@ __all__ = [
     "CalibrationResult",
     "CalibrationMode",
     "Island",
-    "AlgorithmType",
     "ResultType",
     "check_ranges",
     "list_to_slice",
@@ -62,14 +61,6 @@ class Island(Enum):
     MultiProcessing = "multiprocessing"
     MultiThreading = "multithreading"
     IPyParallel = "ipyparallel"
-
-
-class AlgorithmType(Enum):
-    """TBW."""
-
-    Sade = "sade"
-    Sga = "sga"
-    Nlopt = "nlopt"
 
 
 def read_single_data(filename: Path) -> np.ndarray:

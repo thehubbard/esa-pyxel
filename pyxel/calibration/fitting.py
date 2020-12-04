@@ -20,11 +20,12 @@ from operator import add
 from pathlib import Path
 
 import numpy as np
-from typing_extensions import Literal, Protocol
+from typing_extensions import Literal
 
 from pyxel.calibration import (
     CalibrationMode,
     CalibrationResult,
+    ProblemSingleObjective,
     ResultType,
     check_ranges,
     list_to_slice,
@@ -32,33 +33,6 @@ from pyxel.calibration import (
 )
 from pyxel.parametric.parameter_values import ParameterValues
 from pyxel.pipelines import Processor
-
-
-class ProblemSingleObjective(Protocol):
-    """Create a `Protocol` for a user defined Single Objective `Problem` for Pygmo2.
-
-    A single objective is a deterministic, derivative-free, unconstrained
-    optimization problem.
-
-    See https://esa.github.io/pygmo2/problem.html#pygmo.problem.
-    """
-
-    def fitness(self, parameter: np.ndarray) -> t.Sequence[float]:
-        """Return the fitness of the input decision vector.
-
-        Concatenate the objectives, the equality and the inequality constraints.
-        """
-        ...
-
-    def get_bounds(self) -> t.Tuple[t.Sequence[float], t.Sequence[float]]:
-        """Get the box bounds of the problem (lower_boundary, upper_boundary).
-
-        It also implicitly defines the dimension of the problem.
-        """
-        ...
-
-    # TODO: Add something about 'batch_fitness'
-    #       (see https://esa.github.io/pygmo2/problem.html#pygmo.problem.batch_fitness)
 
 
 class ModelFitting(ProblemSingleObjective):
