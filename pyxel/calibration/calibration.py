@@ -837,12 +837,13 @@ class Calibration:
     def post_processing(
         self,
         calib_results: t.Sequence[CalibrationResult],
-        output: "CalibrationOutputs",
     ) -> None:
         """TBW."""
         for one_calib_result in calib_results:  # type: CalibrationResult
 
-            output.calibration_outputs(processor_list=one_calib_result.processors)
+            outputs = self.outputs  # type: CalibrationOutputs
+
+            outputs.calibration_outputs(processor_list=one_calib_result.processors)
 
             for idx, (processor, target_data) in enumerate(
                 zip(one_calib_result.processors, self.fitting.all_target_data)
