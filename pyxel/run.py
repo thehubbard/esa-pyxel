@@ -35,6 +35,8 @@ from pyxel.pipelines import DetectionPipeline, Processor
 from pyxel.single import Single
 
 if t.TYPE_CHECKING:
+    from pyxel.calibration import CalibrationResult
+
     from .inputs_outputs import (
         CalibrationOutputs,
         DynamicOutputs,
@@ -178,7 +180,9 @@ def dynamic_mode(processor: "Processor", dynamic: "Dynamic") -> None:
             dynamic_outputs.single_output(processor)
 
 
-def calibration_mode(processor: "Processor", calibration: "Calibration") -> None:
+def calibration_mode(
+    processor: "Processor", calibration: "Calibration"
+) -> t.Sequence[CalibrationResult]:
     """Run a 'calibration' pipeline.
 
     Parameters
@@ -203,6 +207,8 @@ def calibration_mode(processor: "Processor", calibration: "Calibration") -> None
     )
 
     calibration.post_processing(calib_results=results, output=calibration_outputs)
+
+    return results
 
 
 def output_directory(configuration: Configuration) -> Path:
