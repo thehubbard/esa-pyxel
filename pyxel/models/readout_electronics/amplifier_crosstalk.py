@@ -45,51 +45,41 @@ def flip_array(array: np.ndarray, direction: int) -> np.ndarray:
 
 
 @numba.njit
-def get_channel_slices(
-    detector_shape: tuple, channel_matrix: np.array
-) -> t.List[t.List[slice]]:
+def get_channel_slices(shape: tuple, channel_matrix: np.array) -> t.List[t.List[slice]]:
     """Get pairs of slices that correspond to the given channel matrix in numerical order of channels.
 
     Parameters
     ----------
-    detector_shape: tuple
+    shape: tuple
     channel_matrix: ndarray
 
     Returns
     -------
     slices
     """
-    columns = True
     j_x = channel_matrix.shape[0]
     j_y = 1
-    if len(channel_matrix.shape) > 1:
-        columns = False
+    if channel_matrix.ndim == 2:
         j_y = channel_matrix.shape[1]
 
-    x = detector_shape[0]
-    y = detector_shape[1]
+    delta_x = shape[0] // j_x
+    delta_y = shape[1] // j_y
 
     slices = []
 
     for j in range(1, channel_matrix.size + 1):
-        channel_position = np.where(channel_matrix == j)
-        if columns:
-            channel_slice_x = slice(
-                channel_position[0][0] * x // j_x,
-                (channel_position[0][0] + 1) * x // j_x,
-            )
-            channel_slice_y = slice(0, y)
-            slices.append([channel_slice_x, channel_slice_y])
-        else:
-            channel_slice_x = slice(
-                channel_position[1][0] * x // j_x,
-                (channel_position[1][0] + 1) * x // j_x,
-            )
-            channel_slice_y = slice(
-                channel_position[0][0] * y // j_y,
-                (channel_position[0][0] + 1) * y // j_y,
-            )
-            slices.append([channel_slice_x, channel_slice_y])
+        channel_position = np.argwhere(channel_matrix == j)[0]
+        if channel_position.size == 1:
+            channel_position = np.append(np.array([0]), channel_position)
+        channel_slice_x = slice(
+            channel_position[1] * delta_x,
+            (channel_position[1] + 1) * delta_x,
+        )
+        channel_slice_y = slice(
+            channel_position[0] * delta_y,
+            (channel_position[0] + 1) * delta_y,
+        )
+        slices.append([channel_slice_x, channel_slice_y])
 
     return slices
 
@@ -133,7 +123,9 @@ def crosstalk_signal_ac(
     """
     amp_number = channel_matrix.size  # number of amplifiers
 
-    slices = get_channel_slices(array.shape, channel_matrix)
+    slices = get_channel_slices(
+        shape=array.shape, channel_matrix=channel_matrix
+    )  # type: t.List[t.List[slice]]
 
     array_copy = array.copy()
 
@@ -176,7 +168,7 @@ def crosstalk_signal_dc(
     amp_number = channel_matrix.size  # number of amplifiers
 
     slices = get_channel_slices(
-        array.shape, channel_matrix
+        shape=array.shape, channel_matrix=channel_matrix
     )  # type: t.List[t.List[slice]]
 
     array_copy = array.copy()
