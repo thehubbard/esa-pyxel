@@ -28,6 +28,8 @@ Others
 
 * Change licence to MIT.
   (See `!142 <https://gitlab.com/esa/pyxel/-/merge_requests/142>`_).
+* Change Pyxel's package name to 'pyxel-sim'.
+  (See `!144 <https://gitlab.com/esa/pyxel/-/merge_requests/114>`_).
 
 
 version 0.7 / 2020-10-22
