@@ -4,16 +4,13 @@
 #  is part of this Pyxel package. No part of the package, including
 #  this file, may be copied, modified, propagated, or distributed except according to
 #  the terms contained in the file ‘LICENCE.txt’.
-
-"""Utility functions for creating outputs."""
+#
+#
+"""TBW."""
 import logging
 import typing as t
-import warnings
-from enum import Enum
-from glob import glob
 from numbers import Number
 from pathlib import Path
-from shutil import copy2
 from time import strftime
 
 import attr
@@ -22,15 +19,14 @@ import numpy as np
 import pandas as pd
 from astropy.io import fits as fits
 from matplotlib import pyplot as plt
-from matplotlib.ticker import ScalarFormatter
 
 from pyxel import __version__ as version
+
+from .outputs import PlotArguments, PlotType, apply_run_number, update_plot
 
 if t.TYPE_CHECKING:
     from ..calibration import ResultType
     from ..detectors import Detector
-    from ..parametric.parameter_values import ParameterValues
-    from ..parametric.parametric import ParametricAnalysis
     from ..pipelines import Processor
 
     class SaveToFile(t.Protocol):
@@ -39,75 +35,6 @@ if t.TYPE_CHECKING:
         def __call__(self, data: np.ndarray, name: str) -> Path:
             """TBW."""
             ...
-
-
-@attr.s(auto_attribs=True, slots=True, frozen=True)
-class Result:
-    """TBW."""
-
-    result: np.ndarray  # TODO: Use a `DataFrame` ?
-    plot: np.ndarray
-
-
-@attr.s(auto_attribs=True, slots=True, frozen=True)
-class PlotArguments:
-    """TBW."""
-
-    title: t.Optional[str] = None
-    xscale: str = "linear"
-    yscale: str = "linear"
-    xlabel: t.Optional[str] = None
-    ylabel: t.Optional[str] = None
-    xlim: t.Tuple[t.Optional[float], t.Optional[float]] = (None, None)
-    ylim: t.Tuple[t.Optional[float], t.Optional[float]] = (None, None)
-    xticks: t.Any = None
-    yticks: t.Any = None
-    sci_x: bool = False
-    sci_y: bool = False
-    grid: bool = False
-    axis: t.Any = None
-    bins: t.Optional[int] = None  # TODO: This should not be here !
-
-    @classmethod
-    def from_dict(cls, dct: t.Mapping[str, t.Any]) -> "PlotArguments":
-        """TBW."""
-        return cls(**dct)
-
-    def to_dict(self) -> t.Dict[str, t.Any]:
-        """TBW."""
-        return attr.asdict(self)
-
-
-class PlotType(Enum):
-    """TBW."""
-
-    Histogram = "histogram"
-    Graph = "graph"
-    Scatter = "scatter"
-
-
-@attr.s(auto_attribs=True, slots=True, frozen=True)
-class SinglePlot:
-    """TBW."""
-
-    plot_type: PlotType = attr.ib(converter=PlotType)
-    x: str = "detector.photon.array"  # TODO: Check if the value is valid
-    y: str = "detector.image.array"  # TODO: Check if the value is valid
-    plot_args: t.Optional[PlotArguments] = None
-
-
-@attr.s(auto_attribs=True, slots=True)
-class ParametricPlot:
-    """TBW."""
-
-    x: str
-    y: str
-    plot_args: PlotArguments
-
-    @classmethod
-    def from_dict(cls, dct: dict) -> "ParametricPlot":
-        """TBW."""
-        return cls(x=dct["x"], y=dct["y"], plot_args=dct["plot_args"])
 
 
 # Specific for CalibrationPlot
@@ -142,12 +69,7 @@ class CalibrationPlot:
     fitting_plot: t.Optional[FittingPlot] = None
 
 
-# TODO: Create a special Output class for 'parametric_plot', 'calibration_plot' and
-#       'single_plot' ?
-# TODO: Example
-#       >>> class ParametricOutputs:
-#       ...     def __init__(self, parametric, ...): ...
-class Outputs:
+class CalibrationOutputs:
     """TBW."""
 
     def __init__(
@@ -157,44 +79,16 @@ class Outputs:
             t.Sequence[t.Mapping[str, t.Sequence[str]]]
         ] = None,
         save_parameter_to_file: t.Optional[dict] = None,
-        parametric_plot: t.Optional[ParametricPlot] = None,
         calibration_plot: t.Optional[CalibrationPlot] = None,
-        single_plot: t.Optional[SinglePlot] = None,
     ):
         self._log = logging.getLogger(__name__)
 
-        # Check number of inputs
-        num_inputs = sum(
-            [
-                parametric_plot is not None,
-                calibration_plot is not None,
-                single_plot is not None,
-            ]
-        )  # type: int
-        if num_inputs not in (0, 1):
-            raise ValueError(
-                "Too much parameters. You should have only parameter "
-                "'parametric_plot', 'calibration_plot' or 'single_plot'."
-            )
-
         # self.input_file = None  # type: t.Optional[Path]
-
-        # Parameter(s) specific for 'Parametric'
-        self.parametric_plot = None  # type: t.Optional[ParametricPlot]
-        if parametric_plot is not None:
-            self.parametric_plot = parametric_plot
-
-        self.parameter_keys = []  # type: t.List[str]
 
         # Parameter(s) specific for 'Calibration'
         self.calibration_plot = None  # type: t.Optional[CalibrationPlot]
         if calibration_plot is not None:
             self.calibration_plot = calibration_plot
-
-        # Parameter(s) specific for 'Single'
-        self._single_plot = None  # type: t.Optional[SinglePlot]
-        if single_plot:
-            self._single_plot = single_plot
 
         self.user_plt_args = None  # type: t.Optional[PlotArguments]
         self.save_parameter_to_file = save_parameter_to_file  # type: t.Optional[dict]
@@ -210,8 +104,9 @@ class Outputs:
             {"detector.image.array": ["fits"]}
         ]  # type: t.Sequence[t.Mapping[str, t.Sequence[str]]]
 
-        if self.output_dir.exists():
-            raise IsADirectoryError("Directory exists.")
+        # TODO: reenable
+        # if self.output_dir.exists():
+        #    raise IsADirectoryError("Directory exists.")
 
         self.output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -262,56 +157,12 @@ class Outputs:
 
     def __repr__(self):
         cls_name = self.__class__.__name__  # type: str
-
-        if self.parametric_plot is not None:
-            mode = "parametric"
-        elif self.calibration_plot is not None:
-            mode = "calibration"
-        else:
-            mode = "single"
-
-        return f"{cls_name}<mode={mode!r}, output_dir={self.output_dir!r}>"
+        return f"{cls_name}<output_dir={self.output_dir!r}>"
 
     @property
     def fig(self) -> plt.Figure:
         """Get the current ``Figure``."""
         return self._fig
-
-    # TODO: Rename this method to 'copy_config_file' ??
-    def set_input_file(self, filename: t.Union[str, Path]) -> Path:
-        """Copy a YAML configuration filename into its output directory.
-
-        Parameters
-        ----------
-        filename : str or Path
-            YAML filename to copy
-
-        Returns
-        -------
-        Path
-            Returns the copied YAML filename.
-        """
-        input_file = Path(filename)
-        copy2(input_file, self.output_dir)
-
-        # TODO: sort filenames ?
-        copied_input_file_it = self.output_dir.glob("*.yaml")  # type: t.Iterator[Path]
-        copied_input_file = next(copied_input_file_it)  # type: Path
-
-        with copied_input_file.open("a") as file:
-            file.write("\n#########")
-            file.write(f"\n# Pyxel version: {version}")
-            file.write("\n#########")
-
-        return copied_input_file
-
-    # TODO: the log file should directly write in 'output_dir'
-    def save_log_file(self) -> None:
-        """Move log file to the output directory of the simulation."""
-        log_file = Path("pyxel.log").resolve(strict=True)  # type: Path
-
-        new_log_filename = self.output_dir.joinpath(log_file.name)
-        log_file.rename(new_log_filename)
 
     def new_file(self, filename: str) -> Path:
         """TBW."""
@@ -562,71 +413,6 @@ class Outputs:
         # plt.draw()
         # fig.canvas.draw_idle()
 
-    # TODO: Specific to 'single_plot'
-    # TODO: This function is doing too much.
-    def single_output(self, processor: "Processor") -> None:
-        """Save data into a file and/or generate pictures.
-
-        Parameters
-        ----------
-        processor
-        """
-        warnings.warn(
-            "Use function 'save_to_file' and 'single_plot'.", DeprecationWarning
-        )
-
-        assert self._single_plot is not None
-
-        # if not self.save_data_to_file:
-        #     self.save_data_to_file = [{"detector.image.array": ["fits"]}]
-
-        self.save_to_file(processor)
-
-        self.single_to_plot(processor)
-
-    # TODO: Specific to 'single_plot'
-    def single_to_plot(self, processor: "Processor") -> None:
-        """Generate picture(s).
-
-        Parameters
-        ----------
-        processor
-        """
-        assert self._single_plot is not None
-
-        self.user_plt_args = None
-        # todo: default plots with plot_args?
-        color = None
-
-        if self._single_plot.plot_args:
-            plot_args = self._single_plot.plot_args  # type: PlotArguments
-            self.user_plt_args = plot_args
-
-        x = processor.get(self._single_plot.x)
-        y = processor.get(self._single_plot.y)
-
-        x = x.flatten()
-        y = y.flatten()
-
-        if self._single_plot.plot_type is PlotType.Graph:
-            self.plot_graph(x=x, y=y)
-            fname = "graph_??"  # type: str
-
-        elif self._single_plot.plot_type is PlotType.Histogram:
-            self.plot_histogram(y)
-            fname = "histogram_??"
-
-        elif self._single_plot.plot_type is PlotType.Scatter:
-            self.plot_scatter(x, y, color)
-            fname = "scatter_??"
-
-        else:
-            raise NotImplementedError
-
-        self.save_plot(filename=fname)
-
-        # plt.close()
-
     def save_to_file(self, processor: "Processor") -> t.Sequence[Path]:
         """Save outputs into file(s).
 
@@ -764,15 +550,15 @@ class Outputs:
 
         self.save_plot(filename=f"population_id{island_id}")
 
-    # TODO: Specific to 'single_plot'
+    # TODO: Specific to 'calibration_plot'
     def calibration_outputs(self, processor_list: "t.Sequence[Processor]") -> None:
         """TBW."""
         if self.save_data_to_file is not None:
             for processor in processor_list:
                 self.save_to_file(processor)
 
-                if self._single_plot:
-                    self.single_to_plot(processor)
+                # if self._single_plot:
+                #    self.single_to_plot(processor)
 
     # TODO: Specific to 'calibration_plot'
     def calibration_plots(self, results: t.Mapping, fitness: float) -> None:
@@ -858,118 +644,6 @@ class Outputs:
 
             self.save_plot(filename=f"fitted_datasets_id{island}")
 
-    # TODO: Specific to 'parametric_plot' ?
-    def params_func(self, param: "ParametricAnalysis") -> None:
-        """Extract all parametric keys from `param`."""
-        assert self.parameter_keys is not None
-
-        # TODO: Re-initialized 'self.parameters' ??
-
-        for var in param.enabled_steps:  # type: ParameterValues
-            if var.key not in self.parameter_keys:
-                self.parameter_keys += [var.key]
-
-        if self.save_parameter_to_file and self.save_parameter_to_file["parameter"]:
-            for par in self.save_parameter_to_file["parameter"]:
-                if par is not None and par not in self.parameter_keys:
-                    self.parameter_keys += [par]
-
-    # TODO: This function should be moved in `ParametricAnalysis`
-    # TODO: Specific to 'parametric_plot' ?
-    def extract_func(self, processor: "Processor") -> Result:
-        """TBW."""
-        assert self.parameter_keys is not None
-
-        # self.single_output(processor.detector)    # TODO: extract other things (optional)
-
-        res_row = []  # type: t.List[np.ndarray]
-        for key in self.parameter_keys:
-            value = processor.get(key)  # type: np.ndarray
-            res_row.append(value)
-
-        # Extract all parameters keys from 'proc'
-        # all_attr_getters = operator.attrgetter(self.parameter_keys)  # type: t.Callable
-        # res_row = all_attr_getters(processor)  # type: t.Tuple[t.Any, ...]
-
-        # TODO: Refactor this
-        plt_row = []  # type: t.List[np.ndarray]
-        if self.parametric_plot:
-            for key in [self.parametric_plot.x, self.parametric_plot.y]:
-                if key is not None:
-                    value = processor.get(key)
-                    plt_row.append(value)
-
-        return Result(
-            result=np.array(res_row, dtype=np.float),
-            plot=np.array(plt_row, dtype=np.float),
-        )
-
-    # TODO: Specific to 'parametric_mode' ?
-    def merge_func(self, result_list: t.Sequence[Result]) -> np.ndarray:
-        """TBW."""
-        assert self.parameter_keys is not None
-
-        if self.save_parameter_to_file:
-            result_array = np.array([k.result for k in result_list])
-            save_methods = {
-                "npy": self.save_to_npy,
-                "txt": self.save_to_txt,
-                "csv": self.save_to_csv,
-            }  # type: t.Dict[str, SaveToFile]
-
-            for out_format in self.save_parameter_to_file["file_format"]:
-                func = save_methods[out_format]  # type: SaveToFile
-                file = func(data=result_array, name="parameters")  # type: Path
-
-                if file.suffix in (".txt", ".csv"):
-                    with file.open("r+") as f:
-                        content = f.read()
-                        f.seek(0, 0)
-                        f.write(
-                            "# "
-                            + "".join([pp + " // " for pp in self.parameter_keys])
-                            + "\n"
-                            + content
-                        )
-        plot_array = np.array([k.plot for k in result_list])  # type: np.ndarray
-        return plot_array
-
-    # TODO: Specific to 'parametric_plot' ?
-    def plotting_func(self, plot_array: np.ndarray) -> None:
-        """TBW.
-
-        Parameters
-        ----------
-        plot_array : array
-        """
-        if not self.parametric_plot:
-            raise RuntimeError
-
-        x_key = self.parametric_plot.x  # type: str
-        y_key = self.parametric_plot.y  # type: str
-
-        self.user_plt_args = self.parametric_plot.plot_args
-
-        x = plot_array[:, 0]  # type: np.ndarray
-        y = plot_array[:, 1]  # type: np.ndarray
-
-        par_name = x_key[
-            x_key[: x_key[: x_key.rfind(".")].rfind(".")].rfind(".") + 1 :  # noqa: E203
-        ]
-        res_name = y_key[
-            y_key[: y_key[: y_key.rfind(".")].rfind(".")].rfind(".") + 1 :  # noqa: E203
-        ]
-
-        args = {"xlabel": par_name, "ylabel": res_name}
-
-        if isinstance(x, np.ndarray):
-            x = x.flatten()
-        if isinstance(y, np.ndarray):
-            y = y.flatten()
-
-        self.plot_graph(x=x, y=y, args=args)
-        self.save_plot(filename="parametric_??")
-
     def update_args(
         self,
         plot_type: PlotType,
@@ -1003,104 +677,3 @@ class Outputs:
                 raise KeyError('Not valid plotting key in "plot_args": "%s"' % key)
 
         return ax_args, plt_args
-
-
-def show_plots() -> None:
-    """Close last empty canvas and show all the previously created figures."""
-    plt.close()
-    plt.show()
-
-
-def update_plot(ax_args: dict, ax: plt.Axes) -> None:
-    """TBW.
-
-    Parameters
-    ----------
-    ax_args
-    ax
-    """
-    ax.set_xlabel(ax_args["xlabel"])
-    ax.set_ylabel(ax_args["ylabel"])
-
-    ax.set_xscale(ax_args["xscale"])
-    ax.set_yscale(ax_args["yscale"])
-
-    ax.set_xlim(ax_args["xlim"][0], ax_args["xlim"][1])
-    ax.set_ylim(ax_args["ylim"][0], ax_args["ylim"][1])
-
-    ax.set_title(ax_args["title"])
-
-    if ax_args["axis"]:
-        # TODO: Fix this
-        raise NotImplementedError
-        # plt.axis(ax_args["axis"])
-
-    if ax_args["xticks"]:
-        ax.set_xticks(ax_args["xticks"])
-    if ax_args["yticks"]:
-        ax.set_yticks(ax_args["yticks"])
-
-    # TODO: Enable this
-    ax.grid(ax_args["grid"])
-
-    if ax_args["sci_x"]:
-        ax.xaxis.set_major_formatter(ScalarFormatter())
-        ax.ticklabel_format(style="scientific", axis="x", scilimits=(0, 0))
-    if ax_args["sci_y"]:
-        ax.yaxis.set_major_formatter(ScalarFormatter())
-        ax.ticklabel_format(style="scientific", axis="y", scilimits=(0, 0))
-
-
-# TODO: Refactor this function
-def update_fits_header(
-    header: dict, key: t.Union[str, list, tuple], value: t.Any
-) -> None:
-    """TBW.
-
-    Parameters
-    ----------
-    header
-    key
-    value
-    """
-    if isinstance(value, (str, int, float)):
-        result = value  # type: t.Union[str, int, float]
-    else:
-        result = repr(value)
-
-    if isinstance(result, str):
-        result = result[0:24]
-
-    if isinstance(key, (list, tuple)):
-        key = "/".join(key)
-
-    key = key.replace(".", "/")[0:36]
-    header[key] = value
-
-
-# TODO: Create unit tests
-# TODO: Refactor this in 'def apply_run_number(folder, template_filename) -> Path
-def apply_run_number(template_filename: Path) -> Path:
-    """Convert the file name numeric placeholder to a unique number.
-
-    :param template_filename:
-    :return:
-    """
-    path_str = str(template_filename)
-    if "?" in path_str:
-        # TODO: Use method 'Path.glob'
-        dir_list = sorted(glob(path_str))
-
-        p_0 = path_str.find("?")
-        p_1 = path_str.rfind("?")
-        template = path_str[slice(p_0, p_1 + 1)]
-        path_str = path_str.replace(template, "{:0%dd}" % len(template))
-
-        last_num = 0
-        if len(dir_list):
-            path_last = dir_list[-1]
-            last_num = int(path_last[slice(p_0, p_1 + 1)])
-        last_num += 1
-        path_str = path_str.format(last_num)
-
-    return Path(path_str)

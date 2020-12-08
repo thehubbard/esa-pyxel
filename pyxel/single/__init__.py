@@ -4,8 +4,9 @@
 #  is part of this Pyxel package. No part of the package, including
 #  this file, may be copied, modified, propagated, or distributed except according to
 #  the terms contained in the file ‘LICENCE.txt’.
-
+#
+#
 """TBW."""
 
 # flake8: noqa
-from .parametric import Parametric, ParameterValues, ParametricMode
+from .single import Single

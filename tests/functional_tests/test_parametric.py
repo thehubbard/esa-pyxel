@@ -5,11 +5,8 @@ import pytest
 
 from pyxel import inputs_outputs as io
 from pyxel.detectors import CCD
-from pyxel.parametric.parametric import (
-    Configuration,
-    ParametricAnalysis,
-    ParametricMode,
-)
+from pyxel.inputs_outputs import Configuration
+from pyxel.parametric.parametric import Parametric, ParametricMode
 from pyxel.pipelines import DetectionPipeline, Processor
 
 try:
@@ -55,20 +52,17 @@ def test_pipeline_parametric_without_init_photon(mode: ParametricMode, expected)
     input_filename = "tests/data/parametric.yaml"
     cfg = io.load(Path(input_filename))
 
-    assert isinstance(cfg, dict)
-    assert "simulation" in cfg
-    assert "ccd_detector" in cfg
-    assert "pipeline" in cfg
+    assert isinstance(cfg, Configuration)
+    assert hasattr(cfg, "parametric")
+    assert hasattr(cfg, "ccd_detector")
+    assert hasattr(cfg, "pipeline")
 
-    simulation = cfg["simulation"]
-    assert isinstance(simulation, Configuration)
-
-    parametric = simulation.parametric
-    assert isinstance(parametric, ParametricAnalysis)
+    parametric = cfg.parametric
+    assert isinstance(parametric, Parametric)
 
     parametric.parametric_mode = mode
 
-    detector = cfg["ccd_detector"]
+    detector = cfg.ccd_detector
     assert isinstance(detector, CCD)
 
     assert detector.has_photon is False
@@ -81,7 +75,7 @@ def test_pipeline_parametric_without_init_photon(mode: ParametricMode, expected)
     ):
         _ = detector.photon
 
-    pipeline = cfg["pipeline"]
+    pipeline = cfg.pipeline
     assert isinstance(pipeline, DetectionPipeline)
 
     processor = Processor(

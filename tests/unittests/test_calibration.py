@@ -13,6 +13,7 @@ import numpy as np
 import pytest
 
 from pyxel import inputs_outputs as io
+from pyxel.calibration import Calibration
 from pyxel.calibration.util import (
     check_ranges,
     list_to_slice,
@@ -20,7 +21,7 @@ from pyxel.calibration.util import (
     read_single_data,
 )
 from pyxel.detectors import CCD
-from pyxel.parametric.parametric import Configuration
+from pyxel.inputs_outputs import Configuration
 from pyxel.pipelines import DetectionPipeline, Processor
 
 try:
@@ -47,8 +48,8 @@ except ImportError:
 def test_set_algo(yaml):
     """Test """
     cfg = io.load(yaml)
-    simulation = cfg["simulation"]
-    obj = simulation.calibration.algorithm.get_algorithm()
+    calibration = cfg.calibration
+    obj = calibration.algorithm.get_algorithm()
     if isinstance(obj, pg.sade):
         pass
     elif isinstance(obj, pg.sga):
@@ -180,21 +181,21 @@ def test_check_ranges(targ_range, out_range, row, col):
 @pytest.mark.parametrize("yaml", ["tests/data/calibrate_models.yaml"])
 def test_run_calibration(yaml):
     """Test """
-    cfg = inputs_outputs.load(yaml)
-    assert isinstance(cfg, dict)
+    cfg = io.load(yaml)
+    assert isinstance(cfg, Configuration)
 
-    detector = cfg["ccd_detector"]
+    detector = cfg.ccd_detector
     assert isinstance(detector, CCD)
 
-    pipeline = cfg["pipeline"]
+    pipeline = cfg.pipeline
     assert isinstance(pipeline, DetectionPipeline)
 
     processor = Processor(detector, pipeline)
     assert isinstance(processor, Processor)
 
-    simulation = cfg["simulation"]
-    assert isinstance(simulation, Configuration)
+    calibration = cfg.calibration
+    assert isinstance(calibration, Calibration)
 
-    assert simulation.calibration is not None
-    result = simulation.calibration.run_calibration(processor)
+    assert calibration is not None
+    result = calibration.run_calibration(processor)
     # assert result == 1         # TODO

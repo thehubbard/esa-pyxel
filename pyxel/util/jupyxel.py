@@ -20,13 +20,15 @@ from pyxel.data_structure import Image, Photon, Pixel, Signal
 
 if t.TYPE_CHECKING:
     from pyxel.detectors import Detector
+    from pyxel.inputs_outputs import Configuration
     from pyxel.pipelines import DetectionPipeline, ModelFunction, Processor
+
 
 # ----------------------------------------------------------------------------------------------
 # Those two methods are used to display the contents of the configuration once loaded in pyxel
 
 
-def display_config(cfg: dict, only: str = "all") -> None:
+def display_config(configuration: "Configuration", only: str = "all") -> None:
     """Display configuration.
 
     Parameters
@@ -38,8 +40,11 @@ def display_config(cfg: dict, only: str = "all") -> None:
     -------
     None
     """
+    cfg = configuration.__dict__  # type: dict
     for key in cfg:
-        if (only not in cfg.keys()) & (only != "all"):
+        if cfg[key] is None:
+            pass
+        elif (only not in cfg.keys()) & (only != "all"):
             error = "Config file only contains following keys: " + str(cfg.keys())
             display(Markdown(f"<font color=red> {error} </font>"))
             break
@@ -75,9 +80,7 @@ def display_dict(cfg: dict) -> None:
 # This method will display the parameters of a specific model
 
 
-def display_model(
-    pipeline_container: t.Union["Processor", dict], model_name: str
-) -> None:
+def display_model(configuration: "Configuration", model_name: str) -> None:
     """Display model from configuration dictionary or Processor object.
 
     Parameters
@@ -90,10 +93,7 @@ def display_model(
     None
     """
 
-    if isinstance(pipeline_container, dict):
-        pipeline = pipeline_container["pipeline"]  # type: DetectionPipeline
-    else:
-        pipeline = pipeline_container.pipeline
+    pipeline = configuration.pipeline  # type: DetectionPipeline
     model = pipeline.get_model(name=model_name)  # type: ModelFunction
     display(Markdown(f"## <font color=blue> {model_name} </font>"))
     display(Markdown(f"Model {model_name} enabled? {model.enabled}"))

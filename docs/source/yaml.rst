@@ -30,10 +30,11 @@ classes defined with their *class* arguments. During this process,
 classes get all the parameters as input arguments defined within the group
 or subgroup.
 
-* **simulation:**
+* **running mode:**
 
     In the beginning of the configuration file, the user should define
-    the running mode. For details, see :ref:`running_modes`.
+    the running mode. This can be single, parametric, dynamic and calibration.
+    For details, see :ref:`running_modes`.
 
 * **detector:**
 

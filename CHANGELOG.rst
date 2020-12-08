@@ -7,10 +7,21 @@ version 0.8 UNRELEASED/ 2020-MM-DD
 
 Core
 ~~~~
+* Improved user friendliness.
+  (See `#144 <https://gitlab.com/esa/pyxel/issues/144>`_).
+* Simplified the look of YAML configuration files.
+  (See `#118 <https://gitlab.com/esa/pyxel/issues/118>`_).
+* Extracted functions to run modes separately from pyxel.run.run()
+  (See `#61 <https://gitlab.com/esa/pyxel/issues/61>`_).
+* Refactored YAML loader, returns a class Configuration instead of a dictionary.
+  (See `#60 <https://gitlab.com/esa/pyxel/issues/60>`_).
+* Created new classes Single and Dynamic to store running mode parameters.
+  (See `#121 <https://gitlab.com/esa/pyxel/issues/121>`_).
+* Split class Outputs for different modes and moved to inputs_ouputs.
+  (See `#149 <https://gitlab.com/esa/pyxel/issues/149>`_).
 
 Others
 ~~~~~~
-
 * Change licence to MIT.
   (See `!142 <https://gitlab.com/esa/pyxel/-/merge_requests/142>`_).
 

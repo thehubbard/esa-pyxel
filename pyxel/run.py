@@ -26,57 +26,75 @@ from tqdm.auto import tqdm
 
 from pyxel import __version__ as version
 from pyxel import inputs_outputs as io
+from pyxel.calibration import Calibration
 from pyxel.detectors import CCD, CMOS
-from pyxel.parametric.parametric import Configuration, ParametricAnalysis
+from pyxel.dynamic import Dynamic
+from pyxel.inputs_outputs import Configuration
+from pyxel.parametric import Parametric
 from pyxel.pipelines import DetectionPipeline, Processor
-from pyxel.util import Outputs
-from pyxel.util.outputs import Result
+from pyxel.single import Single
+
+if t.TYPE_CHECKING:
+    from pyxel.calibration import CalibrationResult
+
+    from .inputs_outputs import (
+        CalibrationOutputs,
+        DynamicOutputs,
+        ParametricOutputs,
+        Result,
+        SingleOutputs,
+    )
 
 
-def single_mode(processor: Processor, out: Outputs) -> plt.Figure:
-    """TBW.
+def single_mode(processor: Processor, single: "Single") -> None:
+    """Run a 'single' pipeline.
 
     Parameters
     ----------
     processor
-    out
+    single
 
     Returns
     -------
-    Figure
-        TBW.
+    None
     """
     logging.info("Mode: Single")
 
+    single_outputs = single.outputs  # type: SingleOutputs
+    processor.detector.set_output_dir(single_outputs.output_dir)  # TODO: Remove this
+
     _ = processor.run_pipeline()
 
-    out.save_to_file(processor)
-    out.single_to_plot(processor)
-
-    return out.fig
+    single_outputs.save_to_file(processor)
+    single_outputs.single_to_plot(processor)
 
 
 def parametric_mode(
     processor: Processor,
-    parametric: ParametricAnalysis,
-    output: Outputs,
+    parametric: Parametric,
     with_dask: bool = False,
-) -> t.Optional[plt.Figure]:
+) -> None:
     """Run a 'parametric' pipeline.
 
     Parameters
     ----------
     processor
     parametric
-    output
     with_dask
 
     Returns
     -------
-    Optional `Figure`
-        TBW.
+    None
     """
     logging.info("Mode: Parametric")
+
+    parametric_outputs = parametric.outputs  # type: ParametricOutputs
+    processor.detector.set_output_dir(
+        parametric_outputs.output_dir
+    )  # TODO: Remove this
+
+    # TODO: This should be done during initializing of object `Configuration`
+    # parametric_outputs.params_func(parametric)
 
     # Check if all keys from 'parametric' are valid keys for object 'pipeline'
     for param_value in parametric.enabled_steps:
@@ -88,41 +106,133 @@ def parametric_mode(
     result_list = []  # type: t.List[Result]
     output_filenames = []  # type: t.List[t.Sequence[Path]]
 
-    # out.params_func(parametric)
-
     # Run all pipelines
     for proc in tqdm(processors_it):  # type: Processor
 
         if not with_dask:
             result_proc = proc.run_pipeline()  # type: Processor
-            result_val = output.extract_func(processor=result_proc)  # type: Result
+            result_val = parametric_outputs.extract_func(
+                processor=result_proc
+            )  # type: Result
 
-            filenames = output.save_to_file(
+            filenames = parametric_outputs.save_to_file(
                 processor=result_proc
             )  # type: t.Sequence[Path]
 
         else:
             result_proc = delayed(proc.run_pipeline)()
-            result_val = delayed(output.extract_func)(processor=result_proc)
+            result_val = delayed(parametric_outputs.extract_func)(processor=result_proc)
 
-            filenames = delayed(output.save_to_file)(processor=result_proc)
+            filenames = delayed(parametric_outputs.save_to_file)(processor=result_proc)
 
         result_list.append(result_val)
         output_filenames.append(filenames)  # TODO: This is not used
 
     if not with_dask:
-        plot_array = output.merge_func(result_list)  # type: np.ndarray
+        plot_array = parametric_outputs.merge_func(result_list)  # type: np.ndarray
     else:
-        array = delayed(output.merge_func)(result_list)
+        array = delayed(parametric_outputs.merge_func)(result_list)
         plot_array, _ = dask.compute(array, output_filenames)
 
     # TODO: Plot with dask ?
-    fig = None  # type: t.Optional[plt.Figure]
-    if output.parametric_plot is not None:
-        output.plotting_func(plot_array)
-        fig = output.fig
+    if parametric_outputs.parametric_plot is not None:
+        parametric_outputs.plotting_func(plot_array)
 
-    return fig
+
+def dynamic_mode(processor: "Processor", dynamic: "Dynamic") -> None:
+    """Run a 'dynamic' pipeline.
+
+    Parameters
+    ----------
+    processor
+    dynamic
+
+    Returns
+    -------
+    None
+    """
+
+    logging.info("Mode: Dynamic")
+
+    dynamic_outputs = dynamic.outputs  # type: DynamicOutputs
+
+    detector = processor.detector
+    detector.set_output_dir(dynamic_outputs.output_dir)  # TODO: Remove this
+
+    if isinstance(detector, CCD):
+        dynamic.non_destructive_readout = False
+
+    detector.set_dynamic(
+        steps=dynamic.steps,
+        time_step=dynamic.t_step,
+        ndreadout=dynamic.non_destructive_readout,
+    )
+
+    # TODO: Use an iterator for that ?
+    while detector.elapse_time():
+        logging.info("time = %.3f s", detector.time)
+        if detector.is_non_destructive_readout:
+            detector.initialize(reset_all=False)
+        else:
+            detector.initialize(reset_all=True)
+        processor.run_pipeline()
+        if detector.read_out:
+            dynamic_outputs.single_output(processor)
+
+
+def calibration_mode(
+    processor: "Processor", calibration: "Calibration"
+) -> t.Sequence[CalibrationResult]:
+    """Run a 'calibration' pipeline.
+
+    Parameters
+    ----------
+    processor
+    calibration
+
+    Returns
+    -------
+    None
+    """
+
+    logging.info("Mode: Calibration")
+
+    calibration_outputs = calibration.outputs  # type: CalibrationOutputs
+    processor.detector.set_output_dir(
+        calibration_outputs.output_dir
+    )  # TODO: Remove this
+
+    results = calibration.run_calibration(
+        processor=processor, output_dir=calibration_outputs.output_dir
+    )
+
+    calibration.post_processing(calib_results=results, output=calibration_outputs)
+
+    return results
+
+
+def output_directory(configuration: Configuration) -> Path:
+    """Return the output directory from the configuration.
+
+    Parameters
+    ----------
+    configuration
+
+    Returns
+    -------
+    output_dir
+    """
+    if isinstance(configuration.single, Single):
+        output_dir = configuration.single.outputs.output_dir
+    elif isinstance(configuration.calibration, Calibration):
+        output_dir = configuration.calibration.outputs.output_dir
+    elif isinstance(configuration.dynamic, Dynamic):
+        output_dir = configuration.dynamic.outputs.output_dir
+    elif isinstance(configuration.parametric, Parametric):
+        output_dir = configuration.parametric.outputs.output_dir
+    else:
+        raise (ValueError("Outputs not initialized."))
+    return output_dir
 
 
 def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
@@ -140,98 +250,51 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
     if random_seed:
         np.random.seed(random_seed)
 
-    # TODO: 'cfg' is a `dict`. It would better to use an helper class. See Issue #60.
-    #       Example:
-    #           >>> cfg = io.load(input_filename)
-    #           >>> cfg.pipeline
-    #           ...
-    #           >>> cfg.simulation
-    #           ...
-    cfg = io.load(Path(input_filename))  # type: dict
+    configuration = io.load(
+        Path(input_filename).expanduser().resolve()
+    )  # type: Configuration
 
-    pipeline = cfg["pipeline"]  # type: DetectionPipeline
-    simulation = cfg["simulation"]  # type: Configuration
+    output_dir = output_directory(configuration)
 
-    if "ccd_detector" in cfg:
-        detector = cfg["ccd_detector"]  # type: t.Union[CCD, CMOS]
-    elif "cmos_detector" in cfg:
-        detector = cfg["cmos_detector"]
+    io.save(input_filename=input_filename, output_dir=output_dir)
+
+    pipeline = configuration.pipeline  # type: DetectionPipeline
+
+    if isinstance(configuration.ccd_detector, CCD):
+        detector = configuration.ccd_detector  # type: t.Union[CCD, CMOS]
+    elif isinstance(configuration.cmos_detector, CMOS):
+        detector = configuration.cmos_detector
     else:
         raise NotImplementedError("Detector is not defined in YAML config. file!")
 
     processor = Processor(detector=detector, pipeline=pipeline)
 
-    out = simulation.outputs  # type: Outputs
-    out.set_input_file(input_filename)
+    if isinstance(configuration.single, Single):
+        single = configuration.single  # type: Single
+        single_mode(processor=processor, single=single)
 
-    detector.set_output_dir(out.output_dir)  # TODO: Remove this
+    elif isinstance(configuration.calibration, Calibration):
 
-    # TODO: Create new separate functions 'run_single', 'run_calibration', 'run_parametric'
-    #       and 'run_dynamic'. See issue #61.
-    if simulation.mode == "single":
-        _ = single_mode(processor=processor, out=out)
+        calibration = configuration.calibration  # type: Calibration
+        calibration_mode(processor=processor, calibration=calibration)
 
-    elif simulation.mode == "calibration":
-        if not simulation.calibration:
-            raise RuntimeError("Missing 'Calibration' parameters.")
+    elif isinstance(configuration.parametric, Parametric):
+        parametric = configuration.parametric  # type: Parametric
+        parametric_mode(processor=processor, parametric=parametric)
 
-        logging.info("Mode: Calibration")
-        results = simulation.calibration.run_calibration(
-            processor=processor, output_dir=out.output_dir
-        )
+    elif isinstance(configuration.dynamic, Dynamic):
 
-        simulation.calibration.post_processing(calib_results=results, output=out)
-
-    elif simulation.mode == "parametric":
-        if not simulation.parametric:
-            raise RuntimeError("Missing 'Parametric' parameters.")
-
-        parametric = simulation.parametric  # type: ParametricAnalysis
-
-        # TODO: This should be done during initializing of object `Configuration`
-        # out.params_func(parametric)
-
-        _ = parametric_mode(processor=processor, parametric=parametric, output=out)
-
-    elif simulation.mode == "dynamic":
-        if not simulation.dynamic:
-            raise RuntimeError("Missing 'Dynamic' parameters.")
-
-        # TODO: Use a helper class to store parameters for dynamic mode. See issue #121.
-        logging.info("Mode: Dynamic")
-        if "non_destructive_readout" not in simulation.dynamic or isinstance(
-            detector, CCD
-        ):
-            simulation.dynamic["non_destructive_readout"] = False
-
-        if "t_step" in simulation.dynamic and "steps" in simulation.dynamic:
-            detector.set_dynamic(
-                steps=simulation.dynamic["steps"],
-                time_step=simulation.dynamic["t_step"],
-                ndreadout=simulation.dynamic["non_destructive_readout"],
-            )
-
-        # TODO: Use an iterator for that ?
-        while detector.elapse_time():
-            logging.info("time = %.3f s", detector.time)
-            if detector.is_non_destructive_readout:
-                detector.initialize(reset_all=False)
-            else:
-                detector.initialize(reset_all=True)
-            processor.run_pipeline()
-            if detector.read_out:
-                out.single_output(processor)
+        dynamic = configuration.dynamic  # type: Dynamic
+        dynamic_mode(processor=processor, dynamic=dynamic)
 
     else:
-        raise NotImplementedError(
-            f"Simulation mode {simulation.mode} is not implemented !"
-        )
+        raise NotImplementedError("Please provide a valid simulation mode !")
 
     logging.info("Pipeline completed.")
     logging.info("Running time: %.3f seconds" % (time.time() - start_time))
     # Closing the logger in order to be able to move the file in the output dir
     logging.shutdown()
-    out.save_log_file()
+    io.save_log_file(output_dir)
     plt.close()
 
 

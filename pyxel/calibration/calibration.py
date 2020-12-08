@@ -25,7 +25,9 @@ from pyxel.calibration import (
 from pyxel.calibration.fitting import ModelFitting
 from pyxel.parametric.parameter_values import ParameterValues
 from pyxel.pipelines import ModelFunction, Processor
-from pyxel.util import Outputs
+
+if t.TYPE_CHECKING:
+    from ..inputs_outputs import CalibrationOutputs
 
 try:
     import pygmo as pg
@@ -492,9 +494,10 @@ class Calibration:
 
     def __init__(
         self,
+        outputs: "CalibrationOutputs",
         output_dir: t.Optional[Path] = None,
         fitting: t.Optional[ModelFitting] = None,
-        calibration_mode: Literal["pipeline", "single_model"] = "pipeline",
+        mode: Literal["pipeline", "single_model"] = "pipeline",
         result_type: Literal["image", "signal", "pixel"] = "image",
         result_fit_range: t.Optional[t.Sequence[int]] = None,
         result_input_arguments: t.Optional[t.Sequence[ParameterValues]] = None,
@@ -518,10 +521,12 @@ class Calibration:
 
         self._log = logging.getLogger(__name__)
 
+        self.outputs = outputs
+
         self._output_dir = output_dir  # type:t.Optional[Path]
         self._fitting = fitting  # type: t.Optional[ModelFitting]
 
-        self._calibration_mode = CalibrationMode(calibration_mode)
+        self._calibration_mode = CalibrationMode(mode)
 
         self._result_type = ResultType(result_type)  # type: ResultType
 
@@ -832,7 +837,7 @@ class Calibration:
     def post_processing(
         self,
         calib_results: t.Sequence[CalibrationResult],
-        output: Outputs,
+        output: "CalibrationOutputs",
     ) -> None:
         """TBW."""
         for one_calib_result in calib_results:  # type: CalibrationResult

@@ -4,8 +4,14 @@
 #  is part of this Pyxel package. No part of the package, including
 #  this file, may be copied, modified, propagated, or distributed except according to
 #  the terms contained in the file ‘LICENCE.txt’.
+#
+#
+"""Dynamic outputs."""
 
-"""TBW."""
+from .single_outputs import SingleOutputs
 
-# flake8: noqa
-from .parametric import Parametric, ParameterValues, ParametricMode
+
+class DynamicOutputs(SingleOutputs):
+    """TBW."""
+
+    pass

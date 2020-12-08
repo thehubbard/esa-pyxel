@@ -63,8 +63,7 @@ or the GUI.
 
   # YAML config file for Single mode
 
-  simulation:
-    mode: single
+    single
 
 
 ..
@@ -94,18 +93,16 @@ Sequential
 
   # YAML config file for Parametric mode (sequential)
 
-  simulation:
-    mode: parametric
+  parametric
 
-    parametric:
-      parametric_mode: sequential
-      parameters:
-        - key:      pipeline.charge_generation.tars.arguments.particle_number
-          values:   [1, 2, 3]
-          enabled:  true
-        - key:      pipeline.photon_generation.illumination.arguments.level
-          values:   range(0, 300, 100)
-          enabled:  true
+    mode: sequential
+    parameters:
+      - key:      pipeline.charge_generation.tars.arguments.particle_number
+        values:   [1, 2, 3]
+        enabled:  true
+      - key:      pipeline.photon_generation.illumination.arguments.level
+        values:   range(0, 300, 100)
+        enabled:  true
 
 | The yaml file will start 6 runs in this order:
 | number=1, number=2, number=3, level=0, level=100, level=200
@@ -120,18 +117,16 @@ Embedded
 
   # YAML config file for Parametric mode (embedded)
 
-  simulation:
-    mode: parametric
+  parametric
 
-    parametric:
-      parametric_mode: embedded
-      parameters:
-        - key:      pipeline.charge_generation.tars.arguments.particle_number
-          values:   [1, 2, 3]
-          enabled:  true
-        - key:      pipeline.photon_generation.illumination.arguments.level
-          values:   range(0, 300, 100)
-          enabled:  true
+    mode: embedded
+    parameters:
+      - key:      pipeline.charge_generation.tars.arguments.particle_number
+        values:   [1, 2, 3]
+        enabled:  true
+      - key:      pipeline.photon_generation.illumination.arguments.level
+        values:   range(0, 300, 100)
+        enabled:  true
 
 | The yaml file will start 9 runs in this order:
 | (number=1, level=0), (number=1, level=100), (number=1, level=200),
@@ -148,26 +143,24 @@ Parallel
 
   # YAML config file for Parametric mode (parallel)
 
-  simulation:
-    mode: parametric
+  parametric
 
-    parametric:
-      parametric_mode:  parallel
-      from_file:        'outputs/calibration_champions.out'
-      column_range:     [2, 17]
-      parameters:
-        - key:      detector.characteristics.amp
-          values:   _
-        - key:      pipeline.charge_transfer.cdm.arguments.tr_p
-          values:   [_, _, _, _]
-        - key:      pipeline.charge_transfer.cdm.arguments.nt_p
-          values:   [_, _, _, _]
-        - key:      pipeline.charge_transfer.cdm.arguments.sigma_p
-          values:   [_, _, _, _]
-        - key:      pipeline.charge_transfer.cdm.arguments.beta_p
-          values:   _
-        - key:      detector.environment.temperature
-          values:   _
+    mode:  parallel
+    from_file:        'outputs/calibration_champions.out'
+    column_range:     [2, 17]
+    parameters:
+      - key:      detector.characteristics.amp
+        values:   _
+      - key:      pipeline.charge_transfer.cdm.arguments.tr_p
+        values:   [_, _, _, _]
+      - key:      pipeline.charge_transfer.cdm.arguments.nt_p
+        values:   [_, _, _, _]
+      - key:      pipeline.charge_transfer.cdm.arguments.sigma_p
+        values:   [_, _, _, _]
+      - key:      pipeline.charge_transfer.cdm.arguments.beta_p
+        values:   _
+      - key:      detector.environment.temperature
+        values:   _
 
 The parametric values (int, float or str) indicated with with '_' character,
 and all are read and changed in parallel from an ASCII file defined
@@ -200,46 +193,45 @@ target dataset the models or detector behaviour shall reproduce.
 
   # YAML config file for Calibration mode
 
-  simulation:
-    mode: calibration
 
-    calibration:
-      calibration_mode: pipeline                    # single_model
+  calibration:
 
-      result_type:      image                       # pixel # signal # image
-      result_fit_range: [0, 20, 0, 30]
+    mode: pipeline                                # single_model
 
-      target_data_path: [data/target.fits']         #  <*.npy> <*.fits> <ascii>
-      target_fit_range: [10, 30, 20, 50]
+    result_type:      image                       # pixel # signal # image
+    result_fit_range: [0, 20, 0, 30]
 
-      weighting_path:   ['data/weights.fits']
+    target_data_path: [data/target.fits']         #  <*.npy> <*.fits> <ascii>
+    target_fit_range: [10, 30, 20, 50]
 
-      fitness_function:
-        func: pyxel.calibration.fitness.sum_of_abs_residuals
-        arguments:
+    weighting_path:   ['data/weights.fits']
 
-      algorithm:
-        type:            sade                       # sga # nlopt
-        generations:     20
-        population_size: 100
-        variant:         2
+    fitness_function:
+      func: pyxel.calibration.fitness.sum_of_abs_residuals
+      arguments:
 
-      seed:              1321
+    algorithm:
+      type:            sade                       # sga # nlopt
+      generations:     20
+      population_size: 100
+      variant:         2
 
-      parameters:
-        - key:  detector.characteristics.amp
-          values: _
-          logarithmic: false
-          boundaries: [1., 10.]
-        - key:  pipeline.charge_transfer.cdm.arguments.tr_p
-          values: [_, _, _, _]
-          logarithmic: true
-          boundaries: [1.e-3, 2.]
-        - key:  pipeline.charge_transfer.cdm.arguments.nt_p
-          values: [_, _, _, _]
-          logarithmic: true
-          boundaries: [1.e-2, 1.e+1]
-        - key:  pipeline.charge_transfer.cdm.arguments.beta_p
-          values: _
-          logarithmic: false
-          boundaries: [0., 1.]
+    seed:              1321
+
+    parameters:
+      - key:  detector.characteristics.amp
+        values: _
+        logarithmic: false
+        boundaries: [1., 10.]
+      - key:  pipeline.charge_transfer.cdm.arguments.tr_p
+        values: [_, _, _, _]
+        logarithmic: true
+        boundaries: [1.e-3, 2.]
+      - key:  pipeline.charge_transfer.cdm.arguments.nt_p
+        values: [_, _, _, _]
+        logarithmic: true
+        boundaries: [1.e-2, 1.e+1]
+      - key:  pipeline.charge_transfer.cdm.arguments.beta_p
+        values: _
+        logarithmic: false
+        boundaries: [0., 1.]
