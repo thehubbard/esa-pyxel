@@ -30,6 +30,8 @@ Others
   (See `!142 <https://gitlab.com/esa/pyxel/-/merge_requests/142>`_).
 * Change Pyxel's package name to 'pyxel-sim'.
   (See `!144 <https://gitlab.com/esa/pyxel/-/merge_requests/114>`_).
+* Added a 'How to release' guide.
+  (See `#109 <https://gitlab.com/esa/pyxel/issues/109>`_).
 
 
 version 0.7 / 2020-10-22
