@@ -1,7 +1,5 @@
 # How to issue a Pyxel release
 
-~~Time required: ???~~
-
 These instructions assume that `upstream` refers to the main repository:
 
 ```fish
