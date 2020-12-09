@@ -6,16 +6,31 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 #
 #
-# import pytest
-# import numpy as np
-# from pyxel.models.readout_electronics.amplifier_crosstalk import get_channel_slices
+import numpy as np
+import pytest
 
-# @pytest.fixture()
-# def shape():
-#     return (100, 100)
-#
-# @pytest.mark.parametrize("channel_matrix,expected", [
-#     (np.array([1, 2]), [[slice(0, 50, None), slice(0, 100, None)], [slice(50, 100, None), slice(0, 100, None)]]),
-# ])
-# def test_channel_slices(shape, channel_matrix, expected):
-#     assert get_channel_slices(shape, channel_matrix) == expected
+from pyxel.models.readout_electronics.amplifier_crosstalk import get_channel_slices
+
+
+@pytest.fixture()
+def shape():
+    return 100, 100
+
+
+@pytest.mark.parametrize(
+    "channel_matrix,expected",
+    [
+        (np.array([1, 2]), [[(0, 50), (0, 100)], [(50, 100), (0, 100)]]),
+        (
+            np.array([[4, 3], [1, 2]]),
+            [
+                [(0, 50), (50, 100)],
+                [(50, 100), (50, 100)],
+                [(50, 100), (0, 50)],
+                [(0, 50), (0, 50)],
+            ],
+        ),
+    ],
+)
+def test_channel_slices(shape, channel_matrix, expected):
+    assert get_channel_slices(shape, channel_matrix) == expected

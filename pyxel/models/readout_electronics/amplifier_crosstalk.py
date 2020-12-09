@@ -45,7 +45,9 @@ def flip_array(array: np.ndarray, direction: int) -> np.ndarray:
 
 
 @numba.njit
-def get_channel_slices(shape: tuple, channel_matrix: np.array) -> t.List[t.List[slice]]:
+def get_channel_slices(
+    shape: tuple, channel_matrix: np.array
+) -> t.List[t.List[t.Tuple[t.Any, t.Any]]]:
     """Get pairs of slices that correspond to the given channel matrix in numerical order of channels.
 
     Parameters
@@ -71,11 +73,11 @@ def get_channel_slices(shape: tuple, channel_matrix: np.array) -> t.List[t.List[
         channel_position = np.argwhere(channel_matrix == j)[0]
         if channel_position.size == 1:
             channel_position = np.append(np.array([0]), channel_position)
-        channel_slice_x = slice(
+        channel_slice_x = (
             channel_position[1] * delta_x,
             (channel_position[1] + 1) * delta_x,
         )
-        channel_slice_y = slice(
+        channel_slice_y = (
             channel_position[0] * delta_y,
             (channel_position[0] + 1) * delta_y,
         )
@@ -125,7 +127,7 @@ def crosstalk_signal_ac(
 
     slices = get_channel_slices(
         shape=array.shape, channel_matrix=channel_matrix
-    )  # type: t.List[t.List[slice]]
+    )  # type: t.List[t.List[t.Tuple[t.Any, t.Any]]]
 
     array_copy = array.copy()
 
@@ -133,14 +135,20 @@ def crosstalk_signal_ac(
         for j in range(amp_number):
             if k != j and coupling_matrix[k][j] != 0:
                 s_k = flip_array(
-                    array_copy[slices[k][1], slices[k][0]], readout_directions[k]
+                    array_copy[
+                        slices[k][1][0] : slices[k][1][1],
+                        slices[k][0][0] : slices[k][0][1],
+                    ],
+                    readout_directions[k],
                 )
                 s_k_shift = np.hstack((s_k[:, 0:1], s_k[:, 0:-1]))
                 delta_s = s_k - s_k_shift
                 crosstalk_signal = coupling_matrix[k][j] * flip_array(
                     delta_s, readout_directions[j]
                 )
-                array[slices[j][1], slices[j][0]] += crosstalk_signal
+                array[
+                    slices[j][1][0] : slices[j][1][1], slices[j][0][0] : slices[j][0][1]
+                ] += crosstalk_signal
 
     return array
 
@@ -169,7 +177,7 @@ def crosstalk_signal_dc(
 
     slices = get_channel_slices(
         shape=array.shape, channel_matrix=channel_matrix
-    )  # type: t.List[t.List[slice]]
+    )  # type: t.List[t.List[t.Tuple[t.Any, t.Any]]]
 
     array_copy = array.copy()
 
@@ -177,12 +185,18 @@ def crosstalk_signal_dc(
         for j in range(amp_number):
             if k != j and coupling_matrix[k][j] != 0:
                 s_k = flip_array(
-                    array_copy[slices[k][1], slices[k][0]], readout_directions[k]
+                    array_copy[
+                        slices[k][1][0] : slices[k][1][1],
+                        slices[k][0][0] : slices[k][0][1],
+                    ],
+                    readout_directions[k],
                 )
                 crosstalk_signal = coupling_matrix[k][j] * flip_array(
                     s_k, readout_directions[j]
                 )
-                array[slices[j][1], slices[j][0]] += crosstalk_signal
+                array[
+                    slices[j][1][0] : slices[j][1][1], slices[j][0][0] : slices[j][0][1]
+                ] += crosstalk_signal
 
     return array
 
