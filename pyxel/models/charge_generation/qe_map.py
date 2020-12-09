@@ -16,7 +16,7 @@ if t.TYPE_CHECKING:
     from pyxel.detectors import Detector
 
 
-def qe_map(detector: Detector, filename: t.Union[str, Path]) -> None:
-    """Upload from file and asign a custom QE map to a detector."""
+def qe_map(detector: "Detector", filename: t.Union[str, Path]) -> None:
+    """Upload from file and assign a custom QE map to a detector."""
     qe = load_image(filename)
     detector.characteristics.qe = qe
