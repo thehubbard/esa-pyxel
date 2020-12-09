@@ -7,6 +7,7 @@ Pyxel detector simulation framework
 [![gitter](https://badges.gitter.im/pyxel-framework/community.svg)](https://gitter.im/pyxel-framework/community)
 [![coverage](https://gitlab.com/esa/pyxel/badges/master/coverage.svg)](http://sci-fv.io.esa.int/pyxel-mirror/coverage/)
 [![doi](https://zenodo.org/badge/DOI/10.1117/12.2314047.svg)](https://doi.org/10.1117/12.2314047)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 ## What is it?
 
@@ -15,6 +16,10 @@ An easy-to-use framework that can simulate a variety of imaging detector
 effects combined on images (e.g. radiation and optical effects, noises)
 made by CCD or CMOS-based detectors.
 
+*Pyxel* is tested on Python 3.6+.
+
+If you'd like to contribute to *Pyxel* you're most welcome.
+Please read [the little guide](https://esa.gitlab.io/pyxel/doc/contributing.html) to get you started.
 
 ## Documentation
 
@@ -61,4 +66,4 @@ The detailed changelog is available [here](https://esa.gitlab.io/pyxel/doc/chang
 
 ## License
 
-The license is available [here](https://esa.gitlab.io/pyxel/doc/license.html).
+*Pyxel* is released under MIT license, available [here](https://esa.gitlab.io/pyxel/doc/license.html).
