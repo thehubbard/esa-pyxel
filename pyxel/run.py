@@ -182,7 +182,7 @@ def dynamic_mode(processor: "Processor", dynamic: "Dynamic") -> None:
 
 def calibration_mode(
     processor: "Processor", calibration: "Calibration"
-) -> t.Sequence[CalibrationResult]:
+) -> t.Sequence["CalibrationResult"]:
     """Run a 'calibration' pipeline.
 
     Parameters

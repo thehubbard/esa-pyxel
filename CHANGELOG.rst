@@ -22,6 +22,8 @@ Core
   (See `#149 <https://gitlab.com/esa/pyxel/issues/149>`_).
 * Added a simple Inter Pixel Capacitance model for CMOS detectors.
   (See `#65 <https://gitlab.com/esa/pyxel/issues/65>`_).
+* Added a model for the amplifier crosstalk.
+  (See `#116 <https://gitlab.com/esa/pyxel/issues/116>`_).
 
 Others
 ~~~~~~
