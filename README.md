@@ -16,7 +16,6 @@ An easy-to-use framework that can simulate a variety of imaging detector
 effects combined on images (e.g. radiation and optical effects, noises)
 made by CCD or CMOS-based detectors.
 
-*Pyxel* is released under the [ESA Public license](https://essr.esa.int/license/european-space-agency-public-license-esa-pl-commentary-v2-3)(ESA-PL).
 *Pyxel* is tested on Python 3.6+.
 
 If you'd like to contribute to *Pyxel* you're most welcome.
@@ -67,4 +66,4 @@ The detailed changelog is available [here](https://esa.gitlab.io/pyxel/doc/chang
 
 ## License
 
-The license is available [here](https://esa.gitlab.io/pyxel/doc/license.html).
+*Pyxel* is released under MIT license, available [here](https://esa.gitlab.io/pyxel/doc/license.html).
