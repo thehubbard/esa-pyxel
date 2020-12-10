@@ -7,8 +7,10 @@
 
 """TBW."""
 import typing as t
-from pyxel.util.memory import get_size
+
 import numpy as np
+
+from pyxel.util.memory import get_size
 
 
 # TODO: 'vg' should be the full volume and not the half
