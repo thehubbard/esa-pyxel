@@ -312,10 +312,13 @@ Simple amplification
 
 .. autofunction:: simple_amplifier
 
-Amplifier crosstalk
---------------------
+DC crosstalk
+--------------
 
 .. autofunction:: dc_crosstalk
+
+AC crosstalk
+--------------
 
 .. autofunction:: ac_crosstalk
 
