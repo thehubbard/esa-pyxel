@@ -14,7 +14,6 @@ demo/*
 *.mac
 *.ascii
 *.csv
-pyxel/models/charge_generation/tars/data/*
 
 # Pycharm, Byte-compiled
 */__pycache__/*
