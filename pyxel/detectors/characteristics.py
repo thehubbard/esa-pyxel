@@ -6,6 +6,9 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """TBW."""
+import typing as t
+
+import numpy as np
 
 from pyxel.util.memory import get_size
 
@@ -89,15 +92,15 @@ class Characteristics:
         self._numbytes = 0
 
     @property
-    def qe(self) -> float:
+    def qe(self) -> t.Union[float, np.ndarray]:
         """Get Quantum efficiency."""
         return self._qe
 
     @qe.setter
-    def qe(self, value: float) -> None:
+    def qe(self, value: t.Union[float, np.ndarray]) -> None:
         """Set Quantum efficiency."""
-        if not (0.0 <= value <= 1.0):
-            raise ValueError("'qe' must be between 0.0 and 1.0.")
+        if not (0.0 <= np.min(value)) and (np.max(value) <= 1.0):
+            raise ValueError("'QE' values must be between 0.0 and 1.0.")
 
         self._qe = value
 

@@ -3,32 +3,24 @@
 Examples
 ==========
 
-Basic examples
---------------------------
+All Pyxel examples can be found in a separate public repository `Pyxel Data <https://gitlab.com/esa/pyxel-data>`_,
+containing Jupyter notebooks showcasing different running modes or different models. You can find the list
+of available examples below.
 
+**Single Mode:**
 
-Parametric analysis
---------------------------
+- Basic example
+- Amplifier crosstalk model
+- Inter-pixel capacitance model
 
-CCD Photon Transfer Curve
-***************************
+**Parametric mode:**
 
+- Photon transfer curve
 
-.. literalinclude:: ../../examples/parametric_PTC.yaml
-    :language: yaml
+**Dynamic mode:**
 
-See :download:`this example yaml
-<../../examples/parametric_PTC.yaml>`.
+- Persistence model
 
+**Calibration mode:**
 
-TABLE
-
-Readout (output node) noise
-
-Shot noise
-
-Fixed pattern noise
-
-
-Calibration
---------------------------
+- Charge distortion model
