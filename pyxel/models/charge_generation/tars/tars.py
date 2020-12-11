@@ -387,6 +387,7 @@ class TARS:
         energy_list = [100.0]  # MeV
         thick_list = [40.0, 50.0, 60.0, 70.0, 100.0]  # um
 
+        # TODO: Fix this. See issue #152
         path = Path(__file__).parent.joinpath("data", "inputs")
         filename_list = [
             "stepsize_proton_100MeV_40um_Si_10k.ascii",
