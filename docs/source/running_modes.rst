@@ -93,7 +93,7 @@ Sequential
 
   # YAML config file for Parametric mode (sequential)
 
-  parametric:
+  parametric
 
     mode: sequential
     parameters:
@@ -117,7 +117,7 @@ Embedded
 
   # YAML config file for Parametric mode (embedded)
 
-  parametric:
+  parametric
 
     mode: embedded
     parameters:
@@ -143,7 +143,7 @@ Parallel
 
   # YAML config file for Parametric mode (parallel)
 
-  parametric:
+  parametric
 
     mode:  parallel
     from_file:        'outputs/calibration_champions.out'

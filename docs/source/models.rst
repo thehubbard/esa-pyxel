@@ -140,11 +140,6 @@ Simple photoconversion
 
 .. autofunction:: simple_conversion
 
-Custom quantum efficiency map
------------------------------
-
-.. autofunction:: qe_map
-
 
 TARS cosmic ray model
 ---------------------
@@ -196,12 +191,6 @@ Fix pattern noise
 -----------------
 
 .. autofunction:: fix_pattern_noise
-
-Inter-pixel capacitance
------------------------
-
-.. autofunction:: simple_ipc
-
 
 .. _charge_transfer:
 
@@ -311,11 +300,3 @@ Simple amplification
 --------------------
 
 .. autofunction:: simple_amplifier
-
-Amplifier crosstalk
---------------------
-
-.. autofunction:: dc_crosstalk
-
-.. autofunction:: ac_crosstalk
-
