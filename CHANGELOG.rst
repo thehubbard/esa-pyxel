@@ -34,8 +34,10 @@ Others
   (See `!144 <https://gitlab.com/esa/pyxel/-/merge_requests/114>`_).
 * Added a 'How to release' guide.
   (See `#109 <https://gitlab.com/esa/pyxel/issues/109>`_).
-* Remove_folder_examples_data
-  (See `!148 <https://gitlab.com/esa/pyxel/-/merge_requests/118>`_).
+* Remove_folder_examples_data.
+  (See `!148 <https://gitlab.com/esa/pyxel/-/merge_requests/148>`_).
+* Fix typo in documentation.
+  (See `!149 <https://gitlab.com/esa/pyxel/-/merge_requests/149>`_).
 
 
 version 0.7 / 2020-10-22
