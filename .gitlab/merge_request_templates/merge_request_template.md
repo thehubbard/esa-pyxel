@@ -12,7 +12,7 @@ make it apparent that there's nothing to do.
  - [ ] Closes issue #xxxx
  - [ ] Added **tests** for change code
  - [ ] Updated **documentation** for changed code
- - [ ] Documentation `.rst` files is writtend using [semantic newlines](https://sembr.org)
+ - [ ] Documentation `.rst` files is written using [semantic newlines](https://sembr.org)
  - [ ] User visible changes (including notable bug fixes and possible deprecations) are 
        documented in `CHANGELOG.rst`
  - [ ] Passes in this order
