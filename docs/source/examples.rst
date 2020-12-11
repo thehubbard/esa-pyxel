@@ -15,7 +15,7 @@ CCD Photon Transfer Curve
 
 
 .. literalinclude:: ../../examples/parametric_PTC.yaml
-
+    :language: yaml
 
 See :download:`this example yaml
 <../../examples/parametric_PTC.yaml>`.
