@@ -40,6 +40,8 @@ Others
   (See `!148 <https://gitlab.com/esa/pyxel/-/merge_requests/148>`_).
 * Fix typo in documentation.
   (See `!149 <https://gitlab.com/esa/pyxel/-/merge_requests/149>`_).
+* Updated documentation according to v0.8.
+  (See `!153 <https://gitlab.com/esa/pyxel/-/merge_requests/153>`_).
 
 
 version 0.7 / 2020-10-22
