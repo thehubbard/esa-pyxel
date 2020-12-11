@@ -8,6 +8,8 @@
 """TBW."""
 
 # flake8: noqa
+from .algorithm import AlgorithmType, Algorithm, get_logs_from_algo
+from .user_defined import DaskBFE, DaskIsland
 from .protocols import IslandProtocol, ProblemSingleObjective
 from .util import (
     CalibrationResult,
@@ -18,7 +20,5 @@ from .util import (
     list_to_slice,
     read_data,
 )
-from .calibration import Calibration, Algorithm, CalibrationMode
-from .algorithm import AlgorithmType, Algorithm, get_logs_from_algo
-from .user_defined import DaskBFE, DaskIsland
 from .archipelago import create_archipelago, get_logs_from_archi
+from .calibration import Calibration, CalibrationMode

@@ -17,8 +17,8 @@ import attr
 import yaml
 
 from pyxel import __version__ as version
+from pyxel.calibration import Algorithm, Calibration
 
-from ..calibration import Algorithm, Calibration
 from ..detectors import (
     CCD,
     CMOS,
@@ -392,6 +392,10 @@ def to_calibration(dct: dict) -> Calibration:
     dct.update(
         {"parameters": [to_parameters(param_dict) for param_dict in dct["parameters"]]}
     )
+    dct["result_input_arguments"] = [
+        to_parameters(value) for value in dct["result_input_arguments"]
+    ]
+
     return Calibration(**dct)
 
 
@@ -599,7 +603,7 @@ def build_configuration(dct: dict) -> Configuration:
     elif "dynamic" in dct:
         configuration.dynamic = to_dynamic(dct["dynamic"])
     else:
-        raise (ValueError("No mode configuration provided."))
+        raise ValueError("No mode configuration provided.")
 
     if "ccd_detector" in dct:
         configuration.ccd_detector = to_ccd(dct["ccd_detector"])

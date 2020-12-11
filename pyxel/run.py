@@ -197,6 +197,10 @@ def calibration_mode(
 
     logging.info("Mode: Calibration")
 
+    import distributed
+
+    client = distributed.Client()
+
     calibration_outputs = calibration.outputs  # type: CalibrationOutputs
     processor.detector.set_output_dir(
         calibration_outputs.output_dir

@@ -463,19 +463,20 @@ class Calibration:
             print(f"Get fitness in {t1-t0:.2f} s")
 
         else:
-            self._log.info("Initialize optimization algorithm")
-            pop = pg.population(prob=prob, size=self.algorithm.population_size)
-
-            self._log.info("Start optimization algorithm")
-
-            pop = algo.evolve(pop)
-
-            # Get log information
-            df_all_logs = get_logs_from_algo(algo=algo, algo_type=self.algorithm.type)
-
-            # Get fitness and decision vector of the population champion
-            champions_1d_fitness = [pop.champion_f]
-            champions_1d_decision = [pop.champion_x]
+            # self._log.info("Initialize optimization algorithm")
+            # pop = pg.population(prob=prob, size=self.algorithm.population_size)
+            #
+            # self._log.info("Start optimization algorithm")
+            #
+            # pop = algo.evolve(pop)
+            #
+            # # Get log information
+            # df_all_logs = get_logs_from_algo(algo=algo, algo_type=self.algorithm.type)
+            #
+            # # Get fitness and decision vector of the population champion
+            # champions_1d_fitness = [pop.champion_f]
+            # champions_1d_decision = [pop.champion_x]
+            raise NotImplementedError("Not implemented for 1 island.")
 
         df_all_logs = df_all_logs.reset_index(drop=True).assign(
             global_num_generations=lambda df: (df["id_evolution"] - 1)
