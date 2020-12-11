@@ -141,7 +141,7 @@ Simple photoconversion
 .. autofunction:: simple_conversion
 
 Custom quantum efficiency map
-----------------------
+-----------------------------
 
 .. autofunction:: qe_map
 
