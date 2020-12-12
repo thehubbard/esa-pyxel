@@ -180,9 +180,7 @@ def dynamic_mode(processor: "Processor", dynamic: "Dynamic") -> None:
             dynamic_outputs.single_output(processor)
 
 
-def calibration_mode(
-    processor: "Processor", calibration: "Calibration"
-) -> t.Sequence["CalibrationResult"]:
+def calibration_mode(processor: "Processor", calibration: "Calibration") -> t.Tuple:
     """Run a 'calibration' pipeline.
 
     Parameters
@@ -206,13 +204,27 @@ def calibration_mode(
         calibration_outputs.output_dir
     )  # TODO: Remove this
 
-    results = calibration.run_calibration(
+    ds_results, df_processors, df_all_logs = calibration.run_calibration(
         processor=processor, output_dir=calibration_outputs.output_dir
     )
 
-    calibration.post_processing(calib_results=results, output=calibration_outputs)
+    # TODO: Save the processors from 'df_processors'
+    # TODO: Generate plots from 'ds_results'
 
-    return results
+    # TODO: Do something with 'df_all_logs' ?
+
+    # TODO: create 'output' object with .calibration_outputs
+    # TODO: use 'fitting.get_simulated_data' ==> np.ndarray
+
+    # geometry = processor.detector.geometry
+    # calibration.post_processing(
+    #     champions=champions,
+    #     output=calibration_outputs,
+    #     row=geometry.row,
+    #     col=geometry.col,
+    # )
+
+    return ds_results, df_processors, df_all_logs
 
 
 def output_directory(configuration: Configuration) -> Path:
@@ -280,7 +292,7 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
     elif isinstance(configuration.calibration, Calibration):
 
         calibration = configuration.calibration  # type: Calibration
-        calibration_mode(processor=processor, calibration=calibration)
+        _ = calibration_mode(processor=processor, calibration=calibration)
 
     elif isinstance(configuration.parametric, Parametric):
         parametric = configuration.parametric  # type: Parametric

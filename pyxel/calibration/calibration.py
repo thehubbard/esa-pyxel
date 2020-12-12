@@ -7,13 +7,12 @@
 
 """TBW."""
 import logging
-import math
 import typing as t
 from pathlib import Path
-from timeit import default_timer as timer
 
 import numpy as np
 import pandas as pd
+import xarray as xr
 from tqdm.auto import tqdm
 from typing_extensions import Literal
 
@@ -24,10 +23,8 @@ from pyxel.calibration import (
     DaskBFE,
     DaskIsland,
     Island,
+    MyArchipelago,
     ResultType,
-    create_archipelago,
-    get_logs_from_algo,
-    get_logs_from_archi,
 )
 from pyxel.calibration.fitting import ModelFitting
 from pyxel.parametric.parameter_values import ParameterValues
@@ -308,8 +305,8 @@ class Calibration:
 
     def run_calibration(
         self, processor: Processor, output_dir: Path, with_progress_bar: bool = True
-    ) -> t.Tuple[t.Sequence[CalibrationResult], pd.DataFrame]:
-        """TBW.
+    ) -> t.Tuple[xr.Dataset, pd.DataFrame, pd.DataFrame]:
+        """Run calibration pipeline.
 
         Parameters
         ----------
@@ -324,8 +321,8 @@ class Calibration:
         self._log.info("Seed: %d", self.seed)
 
         self.output_dir = output_dir
-        self.fitting = ModelFitting(processor=processor, variables=self.parameters)
 
+        self.fitting = ModelFitting(processor=processor, variables=self.parameters)
         self.fitting.configure(
             calibration_mode=self.calibration_mode,
             generations=self.algorithm.generations,
@@ -340,23 +337,10 @@ class Calibration:
             file_path=output_dir,
         )
 
-        # Create a Pygmo problem
-        prob = pg.problem(self.fitting)  # type: pg.problem
-        self._log.info(prob)
-
-        total_num_generations = self._num_evolutions * self.algorithm.generations
-
-        # Create a Pygmo algorithm
-        algo = pg.algorithm(self.algorithm.get_algorithm())  # type: pg.algorithm
-        self._log.info(algo)
-
         if self.num_islands > 1:  # default
             # Create an archipelago
             user_defined_island = DaskIsland()
             user_defined_bfe = DaskBFE()
-
-            verbosity_level = max(1, self.algorithm.population_size // 100)  # type: int
-            algo.set_verbosity(verbosity_level)
 
             if self.topology == "unconnected":
                 topo = pg.unconnected()
@@ -367,165 +351,68 @@ class Calibration:
             else:
                 raise NotImplementedError(f"topology {self.topology!r}")
 
-            archi = create_archipelago(
+            my_archipelago = MyArchipelago(
                 num_islands=self.num_islands,
                 udi=user_defined_island,
-                algo=algo,
-                problem=prob,
+                algorithm=self.algorithm,
+                problem=self.fitting,
                 pop_size=self.algorithm.population_size,
                 bfe=user_defined_bfe,
                 topology=topo,
                 seed=self.seed,
                 with_bar=with_progress_bar,
-            )  # type: pg.archipelago
-
-            # TODO: Missing parameter 't' for a user-defined topology
-            # archi = pg.archipelago(
-            #    n=self.num_islands,
-            #    udi=user_defined_island,
-            #                algo=algo,
-            #                prob=prob,
-            #                pop_size=self.algorithm.population_size,
-            #                b=user_defined_bfe,
-            #             )
-
-            df_all_logs = pd.DataFrame()
-
-            # Create progress bars
-            max_num_progress_bars = 10
-            num_progress_bars = min(self.num_islands, max_num_progress_bars)
-            num_islands_per_bar = math.ceil(self.num_islands // num_progress_bars)
-
-            progress_bars = []
-            if with_progress_bar:
-                for idx in range(num_progress_bars):
-                    if num_islands_per_bar == 1:
-                        desc = f"Island {idx+1:02d}"
-                    else:
-                        first_island = idx * num_islands_per_bar + 1
-                        last_island = (idx + 1) * num_islands_per_bar + 1
-
-                        if last_island > self.num_islands:
-                            last_island = self.num_islands
-
-                        desc = f"Islands {first_island:02d}-{last_island:02d}"
-
-                    new_bar = tqdm(
-                        total=int(total_num_generations),
-                        position=idx,
-                        desc=desc,
-                        unit=" generations",
-                    )
-
-                    progress_bars.append(new_bar)
-
-            for id_evolution in range(self._num_evolutions):
-                # Call all 'evolve()' methods on all islands
-                archi.evolve()
-                self._log.info(archi)
-
-                # Block until all evolutions have finished and raise the first exception
-                # that was encountered
-                archi.wait_check()
-
-                df_logs = get_logs_from_archi(
-                    archi=archi, algo_type=self.algorithm.type
-                )
-                df_logs = df_logs.assign(
-                    id_evolution=id_evolution + 1,
-                    id_progress_bar=lambda df: (df["id_island"] // num_islands_per_bar),
-                )
-
-                df_all_logs = df_all_logs.append(df_logs)
-
-                if with_progress_bar:
-                    df_last = df_all_logs.groupby("id_progress_bar").last()
-                    df_last = df_last.assign(
-                        global_num_generations=df_last["num_generations"]
-                        * df_last["id_evolution"]
-                    )
-
-                    for id_progress_bar, serie in df_last.iterrows():
-                        num_generations = int(serie["global_num_generations"])
-                        # print(f'{id_evolution=}, {id_progress_bar=}, {num_generations=}')
-                        progress_bars[id_progress_bar - 1].update(num_generations)
-
-            for progress_bar in progress_bars:
-                progress_bar.close()
-                del progress_bar
-
-            t0 = timer()
-            # Get fitness and decision vectors of the num_islands' champions
-            champions_1d_fitness = archi.get_champions_f()  # type: t.List[np.ndarray]
-            champions_1d_decision = archi.get_champions_x()  # type: t.List[np.ndarray]
-
-            t1 = timer()
-            print(f"Get fitness in {t1-t0:.2f} s")
-
-        else:
-            # self._log.info("Initialize optimization algorithm")
-            # pop = pg.population(prob=prob, size=self.algorithm.population_size)
-            #
-            # self._log.info("Start optimization algorithm")
-            #
-            # pop = algo.evolve(pop)
-            #
-            # # Get log information
-            # df_all_logs = get_logs_from_algo(algo=algo, algo_type=self.algorithm.type)
-            #
-            # # Get fitness and decision vector of the population champion
-            # champions_1d_fitness = [pop.champion_f]
-            # champions_1d_decision = [pop.champion_x]
-            raise NotImplementedError("Not implemented for 1 island.")
-
-        df_all_logs = df_all_logs.reset_index(drop=True).assign(
-            global_num_generations=lambda df: (df["id_evolution"] - 1)
-            * self.algorithm.generations
-            + df["num_generations"]
-        )
-
-        t0 = timer()
-        self.fitting.file_matching_renaming()
-        t1 = timer()
-        print(f"File matching renaming in {t1-t0:.2f} s")
-
-        res = []  # type: t.List[CalibrationResult]
-
-        for f, x in tqdm(
-            zip(champions_1d_fitness, champions_1d_decision),
-            desc="Get results",
-            disable=not with_progress_bar,
-        ):
-            res += [self.fitting.get_results(overall_fitness=f, parameter=x)]
-
-        self._log.info("Calibration ended.")
-        return res, df_all_logs
-
-    # TODO: Speed-up this function
-    def post_processing(
-        self,
-        calib_results: t.Sequence[CalibrationResult],
-        output: "CalibrationOutputs",
-    ) -> None:
-        """TBW."""
-        for one_calib_result in tqdm(calib_results):  # type: CalibrationResult
-
-            # TODO: Create a new method in output called '.save_processor(processor)'
-            output.calibration_outputs(processor_list=one_calib_result.processors)
-
-            for idx, (processor, target_data) in enumerate(
-                zip(one_calib_result.processors, self.fitting.all_target_data)
-            ):
-                simulated_data = self.fitting.get_simulated_data(processor)
-                output.fitting_plot(
-                    target_data=target_data, simulated_data=simulated_data, data_i=idx
-                )
-
-            output.fitting_plot_close(
-                result_type=self.result_type, island=one_calib_result.island
             )
 
-        first_calib_result = calib_results[0]  # type: CalibrationResult
-        output.calibration_plots(
-            results=first_calib_result.results, fitness=first_calib_result.fitness
-        )
+            my_archipelago.create()
+
+            ds, df_processors, df_all_logs = my_archipelago.run_evolve(
+                num_evolutions=self._num_evolutions
+            )
+
+        else:
+            raise NotImplementedError("Not implemented for 1 island.")
+
+        self._log.info("Calibration ended.")
+        return ds, df_processors, df_all_logs
+
+    # TODO: This function must me improved
+    # TODO: Speed-up this function
+    # def old_post_processing(
+    #     self,
+    #     calib_results: t.Sequence[CalibrationResult],
+    #     output: "CalibrationOutputs",
+    # ) -> None:
+    #     """TBW."""
+    #     for one_calib_result in tqdm(calib_results):  # type: CalibrationResult
+    #
+    #         # TODO: Create a new method in output called '.save_processor(processor)'
+    #         output.calibration_outputs(processor_list=one_calib_result.processors)
+    #
+    #         for idx, (processor, target_data) in enumerate(
+    #             zip(one_calib_result.processors, self.fitting.all_target_data)
+    #         ):
+    #             simulated_data = self.fitting.get_simulated_data(
+    #                 processor
+    #             )  # type: np.ndarray
+    #             output.fitting_plot(
+    #                 target_data=target_data, simulated_data=simulated_data, data_i=idx
+    #             )
+    #
+    #         output.fitting_plot_close(
+    #             result_type=self.result_type, island=one_calib_result.island
+    #         )
+    #
+    #     first_calib_result = calib_results[0]  # type: CalibrationResult
+    #     output.calibration_plots(
+    #         results=first_calib_result.results, fitness=first_calib_result.fitness
+    #     )
+    #
+    # def post_processing(
+    #     self,
+    #     champions: xr.Dataset,
+    #     output: "CalibrationOutputs",
+    #     row: int,
+    #     col: int,
+    # ) -> None:
+    #     """TBW."""
+    #     raise NotImplementedError

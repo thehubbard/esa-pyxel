@@ -8,11 +8,10 @@ import math
 import typing as t
 from enum import Enum
 
-import pandas as pd
 import pygmo as pg
 from typing_extensions import Literal
 
-__all__ = ["Algorithm", "AlgorithmType", "get_logs_from_algo"]
+__all__ = ["Algorithm", "AlgorithmType"]
 
 
 class AlgorithmType(Enum):
@@ -23,28 +22,28 @@ class AlgorithmType(Enum):
     Nlopt = "nlopt"
 
 
-def get_logs_from_algo(algo: "pg.algorithm", algo_type: AlgorithmType) -> pd.DataFrame:
-    """Get logging information from an algorithm."""
-    if algo_type is AlgorithmType.Sade:
-        columns = [
-            "num_generations",
-            "num_evaluations",
-            "best_fitness",
-            "f",
-            "cr",
-            "dx",
-            "df",
-        ]
-        algo_to_extract = pg.sade
-    else:
-        raise NotImplementedError
-
-    algo_extracted = algo.extract(algo_to_extract)
-    logs = algo_extracted.get_log()  # type: list
-
-    df = pd.DataFrame(logs, columns=columns)
-
-    return df
+# def get_logs_from_algo(algo: "pg.algorithm", algo_type: AlgorithmType) -> pd.DataFrame:
+#     """Get logging information from an algorithm."""
+#     if algo_type is AlgorithmType.Sade:
+#         columns = [
+#             "num_generations",
+#             "num_evaluations",
+#             "best_fitness",
+#             "f",
+#             "cr",
+#             "dx",
+#             "df",
+#         ]
+#         algo_to_extract = pg.sade
+#     else:
+#         raise NotImplementedError
+#
+#     algo_extracted = algo.extract(algo_to_extract)
+#     logs = algo_extracted.get_log()  # type: list
+#
+#     df = pd.DataFrame(logs, columns=columns)
+#
+#     return df
 
 
 # TODO: Put classes `Algorithm` and `Calibration` in separated files.
