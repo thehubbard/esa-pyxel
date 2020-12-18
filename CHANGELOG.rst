@@ -5,8 +5,11 @@ Changelog
 version 0.9 / UNRELEASED-2020-MM-DD
 -----------------------------------
 
-Core
-~~~~
+Others
+~~~~~~
+
+* Add a new badge for Google Group.
+  (See `!157 <https://gitlab.com/esa/pyxel/-/merge_requests/157>`_).
 
 
 version 0.8 / 2020-12-11
