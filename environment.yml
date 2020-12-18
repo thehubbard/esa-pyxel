@@ -62,4 +62,4 @@ dependencies:
   - black>=20
 # Pip packages
   - pip:
-  - poppy>=0.9
+    - poppy>=0.9
