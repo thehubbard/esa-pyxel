@@ -3,5 +3,5 @@
 References
 ===========
 
-.. bibliography:: refs.bib
+.. bibliography::
    :style: unsrt

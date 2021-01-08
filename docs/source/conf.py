@@ -60,6 +60,8 @@ extensions = [
     # 'sphinxcontrib.mermaid',
 ]
 
+bibtex_bibfiles = ['refs.bib']
+
 highlight_language = "python3"
 
 # autoyaml_root
