@@ -5,6 +5,12 @@ Changelog
 version 0.9 / UNRELEASED-2020-MM-DD
 -----------------------------------
 
+Documentation
+~~~~~~~~~~~~~
+
+* Enabled sphinxcontrib-bibtex version 2.
+  (See `#155 <https://gitlab.com/esa/pyxel/-/issues/155>`_).
+
 Others
 ~~~~~~
 
