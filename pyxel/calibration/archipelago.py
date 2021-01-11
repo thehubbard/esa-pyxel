@@ -144,8 +144,8 @@ class ArchipelagoLogs:
         """TBW."""
         new_df = self._df.reset_index(drop=True)
         new_df["global_num_generations"] = (
-            new_df["id_evolution"] * self._num_generations * new_df["num_generations"]
-        )
+            new_df["id_evolution"] - 1
+        ) * self._num_generations + new_df["num_generations"]
 
         return new_df
 
