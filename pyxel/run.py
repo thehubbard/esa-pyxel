@@ -190,7 +190,6 @@ def calibration_mode(processor: "Processor", calibration: "Calibration") -> t.Tu
     -------
     None
     """
-
     logging.info("Mode: Calibration")
 
     calibration_outputs = calibration.outputs  # type: CalibrationOutputs

@@ -133,8 +133,6 @@ class ArchipelagoLogs:
     # TODO: Remove parameter 'id_evolution' ?
     def append(self, archi: pg.archipelago, id_evolution: int) -> None:
         """Collect logging information from a archipelago for specified evolution id."""
-        assert id_evolution in range(self._num_generations)
-
         partial_df = self._from_archi(archi=archi)  # type: pd.DataFrame
         partial_df["id_evolution"] = id_evolution
 
