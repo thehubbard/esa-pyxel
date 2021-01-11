@@ -14,9 +14,6 @@ from pathlib import Path
 import attr
 import numpy as np
 
-from pyxel.inputs_outputs.loader import (
-    load_image,  # shortcutting causes circular import
-)
 from pyxel.pipelines import Processor
 
 __all__ = [
@@ -75,6 +72,8 @@ def read_single_data(filename: Path) -> np.ndarray:
     array
         TBW.
     """
+    # Late import to avoid circular import
+    from pyxel.inputs_outputs.loader import load_image
 
     data = load_image(filename)
 
