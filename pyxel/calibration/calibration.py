@@ -1,4 +1,4 @@
-#  Copyright (c) European Space Agency, 2017, 2018, 2019, 2020.
+#  Copyright (c) European Space Agency, 2017, 2018, 2019, 2020, 2021.
 #
 #  This file is subject to the terms and conditions defined in file 'LICENCE.txt', which
 #  is part of this Pyxel package. No part of the package, including
@@ -13,13 +13,12 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import xarray as xr
-from tqdm.auto import tqdm
+from dask.delayed import Delayed
 from typing_extensions import Literal
 
 from pyxel.calibration import (
     Algorithm,
     CalibrationMode,
-    CalibrationResult,
     DaskBFE,
     DaskIsland,
     Island,
@@ -30,15 +29,15 @@ from pyxel.calibration.fitting import ModelFitting
 from pyxel.parametric.parameter_values import ParameterValues
 from pyxel.pipelines import ModelFunction, Processor
 
-if t.TYPE_CHECKING:
-    from ..inputs_outputs import CalibrationOutputs
-
 try:
     import pygmo as pg
 except ImportError:
     import warnings
 
     warnings.warn("Cannot import 'pygmo", RuntimeWarning, stacklevel=2)
+
+if t.TYPE_CHECKING:
+    from ..inputs_outputs import CalibrationOutputs
 
 
 def to_path_list(values: t.Sequence[t.Union[str, Path]]) -> t.List[Path]:
@@ -282,6 +281,7 @@ class Calibration:
 
     @property
     def topology(self) -> t.Literal["unconnected", "ring", "fully_connected"]:
+        """TBW."""
         return self._topology
 
     @topology.setter
@@ -351,6 +351,8 @@ class Calibration:
             else:
                 raise NotImplementedError(f"topology {self.topology!r}")
 
+            # Create a new archipelago
+            # This operation takes some time ...
             my_archipelago = MyArchipelago(
                 num_islands=self.num_islands,
                 udi=user_defined_island,
@@ -363,8 +365,7 @@ class Calibration:
                 with_bar=with_progress_bar,
             )
 
-            my_archipelago.create()
-
+            # Run several evolutions in the archipelago
             ds, df_processors, df_all_logs = my_archipelago.run_evolve(
                 num_evolutions=self._num_evolutions
             )
@@ -375,7 +376,7 @@ class Calibration:
         self._log.info("Calibration ended.")
         return ds, df_processors, df_all_logs
 
-    # TODO: This function must me improved
+    # TODO: This function must be improved
     # TODO: Speed-up this function
     # def old_post_processing(
     #     self,
@@ -406,13 +407,19 @@ class Calibration:
     #     output.calibration_plots(
     #         results=first_calib_result.results, fitness=first_calib_result.fitness
     #     )
-    #
-    # def post_processing(
-    #     self,
-    #     champions: xr.Dataset,
-    #     output: "CalibrationOutputs",
-    #     row: int,
-    #     col: int,
-    # ) -> None:
-    #     """TBW."""
-    #     raise NotImplementedError
+
+    def post_processing(
+        self,
+        ds: xr.Dataset,
+        df_processors: pd.DataFrame,
+        output: "CalibrationOutputs",
+    ) -> t.Sequence[Delayed]:
+        """TBW."""
+        filenames = output.save_processors(
+            processors=df_processors
+        )  # type: t.Sequence[Delayed]
+
+        # TODO: Use self.fitting_plot ?
+        # TODO: Use self.fitting_plot_close ?
+
+        return filenames

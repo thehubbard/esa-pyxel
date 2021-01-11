@@ -1,9 +1,11 @@
-#  Copyright (c) European Space Agency, 2017, 2018, 2019, 2020.
+#  Copyright (c) European Space Agency, 2017, 2018, 2019, 2020, 2021.
 #
 #  This file is subject to the terms and conditions defined in file 'LICENCE.txt', which
 #  is part of this Pyxel package. No part of the package, including
 #  this file, may be copied, modified, propagated, or distributed except according to
 #  the terms contained in the file ‘LICENCE.txt’.
+"""TBW."""
+
 import math
 import typing as t
 from enum import Enum
@@ -20,30 +22,6 @@ class AlgorithmType(Enum):
     Sade = "sade"
     Sga = "sga"
     Nlopt = "nlopt"
-
-
-# def get_logs_from_algo(algo: "pg.algorithm", algo_type: AlgorithmType) -> pd.DataFrame:
-#     """Get logging information from an algorithm."""
-#     if algo_type is AlgorithmType.Sade:
-#         columns = [
-#             "num_generations",
-#             "num_evaluations",
-#             "best_fitness",
-#             "f",
-#             "cr",
-#             "dx",
-#             "df",
-#         ]
-#         algo_to_extract = pg.sade
-#     else:
-#         raise NotImplementedError
-#
-#     algo_extracted = algo.extract(algo_to_extract)
-#     logs = algo_extracted.get_log()  # type: list
-#
-#     df = pd.DataFrame(logs, columns=columns)
-#
-#     return df
 
 
 # TODO: Put classes `Algorithm` and `Calibration` in separated files.

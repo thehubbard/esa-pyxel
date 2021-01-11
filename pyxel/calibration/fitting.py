@@ -1,4 +1,4 @@
-#  Copyright (c) European Space Agency, 2017, 2018, 2019, 2020.
+#  Copyright (c) European Space Agency, 2017, 2018, 2019, 2020, 2021.
 #
 #  This file is subject to the terms and conditions defined in file 'LICENCE.txt', which
 #  is part of this Pyxel package. No part of the package, including
@@ -53,9 +53,6 @@ class ModelFitting(ProblemSingleObjective):
         self.sim_output = None  # type: t.Optional[ResultType]
         # self.fitted_model = None            # type: t.Optional['ModelFunction']
         self.param_processor_list = []  # type: t.List[Processor]
-
-        # self.n = 0  # type: int
-        # self.g = 0  # type: int
 
         self.file_path = None  # type: t.Optional[Path]
 
@@ -359,35 +356,7 @@ class ModelFitting(ProblemSingleObjective):
                 simulated_data=simulated_data, target_data=target_data
             )
 
-        # self.save_population(parameter=parameter, overall_fitness=overall_fitness)
-        #
-        # if (self.n + 1) % self.pop == 0:
-        #     logger.info("%d. generation", self.g)
-        #     self.champion_to_file(parameter)
-        #     self.g += 1
-        #
-        # self.n += 1
-
         return [overall_fitness]
-
-    # TODO: This method changes the input 'parameter'. Is it normal ?
-    # def old_update_parameter(self, parameter: np.ndarray) -> np.ndarray:
-    #     """TBW.
-    #
-    #     :param parameter: 1d np.array
-    #     :return:
-    #     """
-    #     a = 0
-    #     for var in self.variables:
-    #         b = 1
-    #         if isinstance(var.values, list):
-    #             b = len(var.values)
-    #         if var.logarithmic:
-    #             start = a
-    #             stop = a + b
-    #             parameter[start:stop] = np.power(10, parameter[start:stop])
-    #         a += b
-    #     return parameter
 
     def update_parameter(self, parameters: np.ndarray) -> np.ndarray:
         """TBW."""
@@ -411,7 +380,7 @@ class ModelFitting(ProblemSingleObjective):
         self, processor: Processor, parameter: np.ndarray
     ) -> Processor:
         """Create a new ``Processor`` with new parameters."""
-        # print(f"{processor=}, {parameter=}")
+        print(f"{processor=}, {parameter=}")
         new_processor = self.update_processor(parameter=parameter, processor=processor)
 
         if self.calibration_mode is CalibrationMode.Pipeline:
@@ -422,6 +391,7 @@ class ModelFitting(ProblemSingleObjective):
 
     # TODO: Check this
     def apply_parameters_to_processors(self, parameters: xr.DataArray) -> pd.DataFrame:
+        """TBW."""
         assert "island" in parameters.dims
         assert "param_id" in parameters.dims
 
@@ -447,29 +417,6 @@ class ModelFitting(ProblemSingleObjective):
         df = pd.DataFrame(lst).sort_values(["island", "id_processor"])
 
         return df
-
-    # def old_update_processor(
-    #     self, parameter: np.ndarray, new_processor: Processor
-    # ) -> Processor:
-    #     """TBW.
-    #
-    #     :param parameter:
-    #     :param new_processor:
-    #     :return:
-    #     """
-    #     a, b = 0, 0
-    #     for var in self.variables:
-    #         if var.values == "_":
-    #             b = 1
-    #             new_processor.set(key=var.key, value=parameter[a])
-    #         elif isinstance(var.values, list):
-    #             b = len(var.values)
-    #
-    #             start = a
-    #             stop = a + b
-    #             new_processor.set(key=var.key, value=parameter[start:stop])
-    #         a += b
-    #     return new_processor
 
     def update_processor(
         self, parameter: np.ndarray, processor: Processor

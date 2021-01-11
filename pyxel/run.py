@@ -35,8 +35,6 @@ from pyxel.pipelines import DetectionPipeline, Processor
 from pyxel.single import Single
 
 if t.TYPE_CHECKING:
-    from pyxel.calibration import CalibrationResult
-
     from .inputs_outputs import (
         CalibrationOutputs,
         DynamicOutputs,
@@ -195,10 +193,6 @@ def calibration_mode(processor: "Processor", calibration: "Calibration") -> t.Tu
 
     logging.info("Mode: Calibration")
 
-    import distributed
-
-    client = distributed.Client()
-
     calibration_outputs = calibration.outputs  # type: CalibrationOutputs
     processor.detector.set_output_dir(
         calibration_outputs.output_dir
@@ -223,8 +217,11 @@ def calibration_mode(processor: "Processor", calibration: "Calibration") -> t.Tu
     #     row=geometry.row,
     #     col=geometry.col,
     # )
+    filenames = calibration.post_processing(
+        ds=ds_results, df_processors=df_processors, output=calibration_outputs
+    )
 
-    return ds_results, df_processors, df_all_logs
+    return ds_results, df_processors, df_all_logs, filenames
 
 
 def output_directory(configuration: Configuration) -> Path:
