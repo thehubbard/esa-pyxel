@@ -21,6 +21,7 @@ import pandas as pd
 from astropy.io import fits as fits
 from dask.delayed import Delayed
 from matplotlib import pyplot as plt
+from typing_extensions import Literal
 
 from pyxel import __version__ as version
 
@@ -74,10 +75,10 @@ class CalibrationPlot:
 
 
 # Define type aliases
-ValidName = t.Literal[
+ValidName = Literal[
     "detector.image.array", "detector.signal.array", "detector.pixel.array"
 ]
-ValidFormat = t.Literal["fits", "hdf", "npy", "txt", "csv", "png"]
+ValidFormat = Literal["fits", "hdf", "npy", "txt", "csv", "png"]
 
 
 class CalibrationOutputs:

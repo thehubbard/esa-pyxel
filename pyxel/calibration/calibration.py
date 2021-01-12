@@ -65,7 +65,7 @@ class Calibration:
         seed: t.Optional[int] = None,
         num_islands: int = 1,
         num_evolutions: int = 1,
-        topology: t.Literal["unconnected", "ring", "fully_connected"] = "unconnected",
+        topology: Literal["unconnected", "ring", "fully_connected"] = "unconnected",
         type_islands: Literal[
             "multiprocessing", "multithreading", "ipyparallel"
         ] = "multiprocessing",
@@ -280,7 +280,7 @@ class Calibration:
         self._num_evolutions = value
 
     @property
-    def topology(self) -> t.Literal["unconnected", "ring", "fully_connected"]:
+    def topology(self) -> Literal["unconnected", "ring", "fully_connected"]:
         """TBW."""
         return self._topology
 
