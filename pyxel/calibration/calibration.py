@@ -304,19 +304,12 @@ class Calibration:
         self._weighting_path = value
 
     def run_calibration(
-        self, processor: Processor, output_dir: Path, with_progress_bar: bool = True
+        self,
+        processor: Processor,
+        output_dir: Path,
+        with_progress_bar: bool = True,
     ) -> t.Tuple[xr.Dataset, pd.DataFrame, pd.DataFrame]:
-        """Run calibration pipeline.
-
-        Parameters
-        ----------
-        processor
-        output_dir
-
-        Returns
-        -------
-        Sequence of `CalibrationResult`
-        """
+        """Run calibration pipeline."""
         pg.set_global_rng_seed(seed=self.seed)
         self._log.info("Seed: %d", self.seed)
 

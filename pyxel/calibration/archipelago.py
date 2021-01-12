@@ -7,7 +7,6 @@
 
 """Sub-package to create 'archipelagos'."""
 import logging
-import math
 import typing as t
 from concurrent.futures.thread import ThreadPoolExecutor
 from random import Random
@@ -23,63 +22,6 @@ from tqdm.auto import tqdm
 
 from pyxel.calibration import Algorithm, AlgorithmType, IslandProtocol
 from pyxel.calibration.fitting import ModelFitting
-
-
-class ProgressBars:
-    """Create progress bars for an archipelago."""
-
-    def __init__(
-        self,
-        num_islands: int,
-        total_num_generations: int,
-        max_num_progress_bars: int = 10,
-    ):
-        self._num_progress_bars = min(num_islands, max_num_progress_bars)
-        self._num_islands_per_bar = math.ceil(num_islands // self._num_progress_bars)
-
-        self._progress_bars = []
-        for idx in range(self._num_progress_bars):
-            if self._num_islands_per_bar == 1:
-                desc = f"Island {idx + 1:02d}"
-            else:
-                first_island = idx * self._num_islands_per_bar + 1
-                last_island = (idx + 1) * self._num_islands_per_bar + 1
-
-                if last_island > num_islands:
-                    last_island = num_islands
-
-                desc = f"Islands {first_island:02d}-{last_island:02d}"
-
-            # Create a new bar
-            new_bar = tqdm(
-                total=int(total_num_generations),
-                position=idx,
-                desc=desc,
-                unit=" generations",
-            )
-
-            self._progress_bars.append(new_bar)
-
-    # TODO: Simplify this method
-    def update(self, df: pd.DataFrame) -> None:
-        """TBW."""
-        df = df.assign(
-            id_progress_bar=lambda df: (df["id_island"] // self._num_islands_per_bar)
-        )
-        df_last = df.groupby("id_progress_bar").last()
-        df_last = df_last.assign(
-            global_num_generations=df_last["num_generations"] * df_last["id_evolution"]
-        )
-
-        for id_progress_bar, serie in df_last.iterrows():
-            num_generations = int(serie["global_num_generations"])
-            self._progress_bars[id_progress_bar - 1].update(num_generations)
-
-    def close(self) -> None:
-        """TBW."""
-        for progress_bar in self._progress_bars:
-            progress_bar.close()
-            del progress_bar
 
 
 class ArchipelagoLogs:
@@ -149,7 +91,6 @@ class ArchipelagoLogs:
     def get_total(self) -> pd.DataFrame:
         """TBW."""
         df = self.get_full_total()  # type: pd.DataFrame
-        # .set_index(['id_evolution', 'id_island', 'num_generations']).sort_index()
         return df[
             ["id_evolution", "id_island", "global_num_generations", "best_fitness"]
         ]
@@ -352,37 +293,31 @@ class MyArchipelago:
             algo_type=self.algorithm.type, num_generations=self.algorithm.generations
         )
 
-        progress_bars = None  # type: t.Optional[ProgressBars]
-        if self.with_bar:
-            total_num_generations = num_evolutions * self.algorithm.generations
+        total_num_generations = num_evolutions * self.algorithm.generations
 
-            # Create progress bar(s)
-            progress_bars = ProgressBars(
-                num_islands=self.num_islands,
-                total_num_generations=total_num_generations,
-            )
+        with tqdm(
+            total=total_num_generations,
+            desc=f"Evolve with {self.num_islands} islands",
+            unit=" generations",
+            disable=not self.with_bar,
+        ) as progress:
+            # Run an evolution im the archipelago several times
+            for id_evolution in range(num_evolutions):
+                # If the evolution on this archipelago was already run before, then
+                # the migration process between the islands is automatically executed
+                # Call all 'evolve()' methods on all islands
+                self._pygmo_archi.evolve()
+                # self._log.info(self._pygmo_archi)  # TODO: Remove this
 
-        # Run an evolution im the archipelago several times
-        for id_evolution in range(num_evolutions):
-            # If the evolution on this archipelago was already run before, then
-            # the migration process between the islands is automatically executed
-            # Call all 'evolve()' methods on all islands
-            self._pygmo_archi.evolve()
-            # self._log.info(self._pygmo_archi)  # TODO: Remove this
+                # Block until all evolutions have finished and raise the first exception
+                # that was encountered
+                self._pygmo_archi.wait_check()
 
-            # Block until all evolutions have finished and raise the first exception
-            # that was encountered
-            self._pygmo_archi.wait_check()
+                # Collect logging information from the algorithms running in the
+                # archipelago
+                logs.append(archi=self._pygmo_archi, id_evolution=id_evolution + 1)
 
-            # Collect logging information from the algorithms running in the
-            # archipelago
-            logs.append(archi=self._pygmo_archi, id_evolution=id_evolution + 1)
-
-            if progress_bars:
-                progress_bars.update(logs.get_full_total())
-
-        if progress_bars:
-            progress_bars.close()
+                progress.update(self.algorithm.generations)
 
         # Get logging information
         df_all_logs = logs.get_full_total()  # type: pd.DataFrame
