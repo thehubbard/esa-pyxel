@@ -644,39 +644,39 @@ class CalibrationOutputs:
         return lst
 
     # TODO: Specific to 'calibration_plot'
-    def calibration_plots(self, results: t.Mapping, fitness: float) -> None:
-        """TBW."""
-        assert self.calibration_plot
-
-        if self.calibration_plot:
-            if self.calibration_plot.champions_plot:
-                self.user_plt_args = None
-
-                if self.calibration_plot.champions_plot.plot_args:
-                    self.user_plt_args = self.calibration_plot.champions_plot.plot_args
-
-                for iid, file_ch in enumerate(
-                    self.output_dir.glob("champions_id*.out")
-                ):
-                    self.champions_plot(
-                        results={"fitness": fitness, **results},
-                        champions_file=file_ch,
-                        island_id=iid,
-                    )
-
-            if self.calibration_plot.population_plot:
-                self.user_plt_args = None
-                if self.calibration_plot.population_plot.plot_args:
-                    self.user_plt_args = self.calibration_plot.population_plot.plot_args
-
-                for iid, file_pop in enumerate(
-                    self.output_dir.glob("population_id*.out")
-                ):
-                    self.population_plot(
-                        # results=results,
-                        population_file=file_pop,
-                        island_id=iid,
-                    )
+    # def calibration_plots(self, results: t.Mapping, fitness: float) -> None:
+    #     """TBW."""
+    #     assert self.calibration_plot
+    #
+    #     if self.calibration_plot:
+    #         if self.calibration_plot.champions_plot:
+    #             self.user_plt_args = None
+    #
+    #             if self.calibration_plot.champions_plot.plot_args:
+    #                 self.user_plt_args = self.calibration_plot.champions_plot.plot_args
+    #
+    #             for iid, file_ch in enumerate(
+    #                 self.output_dir.glob("champions_id*.out")
+    #             ):
+    #                 self.champions_plot(
+    #                     results={"fitness": fitness, **results},
+    #                     champions_file=file_ch,
+    #                     island_id=iid,
+    #                 )
+    #
+    #         if self.calibration_plot.population_plot:
+    #             self.user_plt_args = None
+    #             if self.calibration_plot.population_plot.plot_args:
+    #                 self.user_plt_args = self.calibration_plot.population_plot.plot_args
+    #
+    #             for iid, file_pop in enumerate(
+    #                 self.output_dir.glob("population_id*.out")
+    #             ):
+    #                 self.population_plot(
+    #                     # results=results,
+    #                     population_file=file_pop,
+    #                     island_id=iid,
+    #                 )
 
     # TODO: Specific to 'calibration_plot' ??
     def fitting_plot(
