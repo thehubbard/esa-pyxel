@@ -81,7 +81,7 @@ Bug reports must:
 2. Include the full version string of *Pyxel* and its dependencies. You can
 use the built in function:
 
-.. code-block:: python
+.. ipython:: python
 
     import pyxel
 

@@ -57,12 +57,12 @@ non-Python code).
 
 
 Argument validation
----------------------
+-------------------
 
 To validate input arguments of a model function, use the
 ``validate`` and ``argument`` Pyxel decorators:
 
-.. code-block:: python
+.. ipython:: python
 
     import pyxel
 
