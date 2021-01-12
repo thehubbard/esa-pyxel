@@ -63,7 +63,7 @@ class Calibration:
         algorithm: t.Optional[Algorithm] = None,
         parameters: t.Optional[t.Sequence[ParameterValues]] = None,
         seed: t.Optional[int] = None,
-        num_islands: int = 0,
+        num_islands: int = 1,
         num_evolutions: int = 1,
         topology: t.Literal["unconnected", "ring", "fully_connected"] = "unconnected",
         type_islands: Literal[
@@ -419,7 +419,8 @@ class Calibration:
             processors=df_processors
         )  # type: t.Sequence[Delayed]
 
-        # TODO: Use self.fitting_plot ?
-        # TODO: Use self.fitting_plot_close ?
+        # TODO: Use output.fitting_plot ?
+        # TODO: Use output.fitting_plot_close ?
+        # TODO: Use output.calibration_plots ?
 
         return filenames

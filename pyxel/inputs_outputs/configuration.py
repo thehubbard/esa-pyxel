@@ -393,7 +393,7 @@ def to_calibration(dct: dict) -> Calibration:
         {"parameters": [to_parameters(param_dict) for param_dict in dct["parameters"]]}
     )
     dct["result_input_arguments"] = [
-        to_parameters(value) for value in dct["result_input_arguments"]
+        to_parameters(value) for value in dct.get("result_input_arguments", {})
     ]
 
     return Calibration(**dct)
