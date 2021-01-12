@@ -73,7 +73,6 @@ class ProgressBars:
 
         for id_progress_bar, serie in df_last.iterrows():
             num_generations = int(serie["global_num_generations"])
-            # print(f'{id_evolution=}, {id_progress_bar=}, {num_generations=}')
             self._progress_bars[id_progress_bar - 1].update(num_generations)
 
     def close(self) -> None:

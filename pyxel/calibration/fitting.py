@@ -224,8 +224,6 @@ class ModelFitting(ProblemSingleObjective):
 
     def get_simulated_data(self, processor: Processor) -> np.ndarray:
         """Extract 2D data from a processor."""
-        # print(f"{processor=}")
-
         if self.sim_output == ResultType.Image:
             simulated_data = processor.detector.image.array[
                 self.sim_fit_range
@@ -380,13 +378,11 @@ class ModelFitting(ProblemSingleObjective):
         self, processor: Processor, parameter: np.ndarray
     ) -> Processor:
         """Create a new ``Processor`` with new parameters."""
-        print(f"{processor=}, {parameter=}")
         new_processor = self.update_processor(parameter=parameter, processor=processor)
 
         if self.calibration_mode is CalibrationMode.Pipeline:
             new_processor.run_pipeline()
 
-        # print(f"{processor=}, {parameter=}, {new_processor=}")
         return new_processor
 
     # TODO: Check this
@@ -421,12 +417,7 @@ class ModelFitting(ProblemSingleObjective):
     def update_processor(
         self, parameter: np.ndarray, processor: Processor
     ) -> Processor:
-        """TBW.
-
-        :param parameter:
-        :param new_processor:
-        :return:
-        """
+        """TBW."""
         new_processor = copy.deepcopy(processor)
         a, b = 0, 0
         for var in self.variables:
