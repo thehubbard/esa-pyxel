@@ -17,6 +17,9 @@ Others
 * Add a new badge for Google Group.
   (See `!157 <https://gitlab.com/esa/pyxel/-/merge_requests/157>`_).
 
+* Prepare Pyxel to be uploadable on PyPI and Conda forge.
+  (See `!161 <https://gitlab.com/esa/pyxel/-/merge_requests/161>`_).
+
 
 version 0.8 / 2020-12-11
 ------------------------
