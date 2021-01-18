@@ -301,6 +301,8 @@ class MyArchipelago:
             unit=" generations",
             disable=not self.with_bar,
         ) as progress:
+
+            champions_lst = []  # type: t.List[xr.Dataset]
             # Run an evolution im the archipelago several times
             for id_evolution in range(num_evolutions):
                 # If the evolution on this archipelago was already run before, then
@@ -319,15 +321,23 @@ class MyArchipelago:
 
                 progress.update(self.algorithm.generations)
 
+                # Get partial champions for this evolution
+                champions_lst.append(
+                    self._get_champions().assign_coords({"evolution": [id_evolution]})
+                )
+
+        champions = xr.concat(champions_lst, dim="evolution")  # type: xr.Dataset
+
         # Get logging information
         df_all_logs = logs.get_full_total()  # type: pd.DataFrame
 
         # Get the champions in a `Dataset`
-        champions = self._get_champions()  # type: xr.Dataset
+        # champions = self._get_champions()  # type: # xr.Dataset
+        last_champions = champions.isel(evolution=-1)
 
         # Get the processor(s) in a `DataFrame`
         df_processors = self.problem.apply_parameters_to_processors(
-            parameters=champions["champion_parameters"],
+            parameters=last_champions["champion_parameters"],
         )  # type: pd.DataFrame
 
         assert isinstance(self.problem.sim_fit_range, tuple)
