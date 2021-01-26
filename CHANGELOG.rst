@@ -42,6 +42,8 @@ Core
   (See `#116 <https://gitlab.com/esa/pyxel/issues/116>`_).
 * Added ability to load custom QE maps.
   (See `#117 <https://gitlab.com/esa/pyxel/issues/117>`_).
+* Use 'Dask' for Calibration mode.
+  (See `!145 <https://gitlab.com/esa/pyxel/-/merge_requests/145>`_).
 
 Others
 ~~~~~~

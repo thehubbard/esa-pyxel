@@ -60,7 +60,7 @@ extensions = [
     # 'sphinxcontrib.mermaid',
 ]
 
-bibtex_bibfiles = ['refs.bib']
+bibtex_bibfiles = ["refs.bib"]
 
 highlight_language = "python3"
 

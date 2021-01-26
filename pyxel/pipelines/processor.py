@@ -1,4 +1,4 @@
-#  Copyright (c) European Space Agency, 2017, 2018, 2019, 2020.
+#  Copyright (c) European Space Agency, 2017, 2018, 2019, 2020, 2021.
 #
 #  This file is subject to the terms and conditions defined in file 'LICENCE.txt', which
 #  is part of this Pyxel package. No part of the package, including
@@ -14,12 +14,13 @@ from numbers import Number
 
 import numpy as np
 
-if t.TYPE_CHECKING:
-    from pyxel.detectors import CCD, CMOS
 from pyxel.evaluator import eval_entry
 from pyxel.pipelines import DetectionPipeline, ModelGroup
 from pyxel.state import get_obj_att
 from pyxel.util.memory import get_size
+
+if t.TYPE_CHECKING:
+    from pyxel.detectors import CCD, CMOS
 
 
 # TODO: Is this class needed ?
@@ -68,6 +69,8 @@ class Processor:
 
     # TODO: Could it be renamed '__getitem__' ?
     # TODO: Is it really needed ?
+    # TODO: What are the valid keys ? (e.g. 'detector.image.array',
+    #       'detector.signal.array' and 'detector.pixel.array')
     def get(self, key: str) -> np.ndarray:
         """TBW.
 

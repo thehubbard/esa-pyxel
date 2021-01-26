@@ -70,7 +70,9 @@ def load_image(filename: t.Union[str, Path]) -> np.ndarray:
             except ValueError:
                 pass
         else:
-            raise ValueError("Cannot find the separator.")
+            raise ValueError(
+                f"Cannot find the separator for filename '{filename_path}'."
+            )
 
     elif suffix.startswith((".jpg", ".jpeg", ".png", ".bmp", ".tiff")):
         image_2d = Image.open(filename_path)

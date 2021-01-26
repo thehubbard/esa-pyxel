@@ -1,4 +1,4 @@
-#  Copyright (c) European Space Agency, 2017, 2018, 2019, 2020.
+#  Copyright (c) European Space Agency, 2017, 2018, 2019, 2020, 2021.
 #
 #  This file is subject to the terms and conditions defined in file 'LICENCE.txt', which
 #  is part of this Pyxel package. No part of the package, including
@@ -14,11 +14,14 @@ from pathlib import Path
 from time import strftime
 
 import attr
+import dask.delayed as delayed
 import h5py as h5
 import numpy as np
 import pandas as pd
 from astropy.io import fits as fits
+from dask.delayed import Delayed
 from matplotlib import pyplot as plt
+from typing_extensions import Literal
 
 from pyxel import __version__ as version
 
@@ -32,7 +35,9 @@ if t.TYPE_CHECKING:
     class SaveToFile(t.Protocol):
         """TBW."""
 
-        def __call__(self, data: np.ndarray, name: str) -> Path:
+        def __call__(
+            self, data: np.ndarray, name: str, with_auto_suffix: bool = True
+        ) -> Path:
             """TBW."""
             ...
 
@@ -69,6 +74,13 @@ class CalibrationPlot:
     fitting_plot: t.Optional[FittingPlot] = None
 
 
+# Define type aliases
+ValidName = Literal[
+    "detector.image.array", "detector.signal.array", "detector.pixel.array"
+]
+ValidFormat = Literal["fits", "hdf", "npy", "txt", "csv", "png"]
+
+
 class CalibrationOutputs:
     """TBW."""
 
@@ -76,7 +88,7 @@ class CalibrationOutputs:
         self,
         output_folder: t.Union[str, Path],
         save_data_to_file: t.Optional[
-            t.Sequence[t.Mapping[str, t.Sequence[str]]]
+            t.Sequence[t.Mapping[ValidName, t.Sequence[ValidFormat]]]
         ] = None,
         save_parameter_to_file: t.Optional[dict] = None,
         calibration_plot: t.Optional[CalibrationPlot] = None,
@@ -86,9 +98,7 @@ class CalibrationOutputs:
         # self.input_file = None  # type: t.Optional[Path]
 
         # Parameter(s) specific for 'Calibration'
-        self.calibration_plot = None  # type: t.Optional[CalibrationPlot]
-        if calibration_plot is not None:
-            self.calibration_plot = calibration_plot
+        self.calibration_plot = calibration_plot  # type: t.Optional[CalibrationPlot]
 
         self.user_plt_args = None  # type: t.Optional[PlotArguments]
         self.save_parameter_to_file = save_parameter_to_file  # type: t.Optional[dict]
@@ -102,7 +112,7 @@ class CalibrationOutputs:
         # TODO: Not related to a plot. Use by 'single' and 'parametric' modes.
         self.save_data_to_file = save_data_to_file or [
             {"detector.image.array": ["fits"]}
-        ]  # type: t.Sequence[t.Mapping[str, t.Sequence[str]]]
+        ]  # type: t.Sequence[t.Mapping[ValidName, t.Sequence[ValidFormat]]]
 
         # TODO: reenable
         # if self.output_dir.exists():
@@ -172,7 +182,9 @@ class CalibrationOutputs:
         return new_filename
 
     # TODO: Specific to 'single_plot' ?
-    def save_to_png(self, data: np.ndarray, name: str) -> Path:
+    def save_to_png(
+        self, data: np.ndarray, name: str, with_auto_suffix: bool = True
+    ) -> Path:
         """Write array to bitmap PNG image file.
 
         Parameters
@@ -187,10 +199,15 @@ class CalibrationOutputs:
         """
         row, col = data.shape
         name = str(name).replace(".", "_")
-        filename = apply_run_number(
-            self.output_dir.joinpath(f"{name}_??.png")
-        )  # type: Path
 
+        if with_auto_suffix:
+            filename = apply_run_number(self.output_dir.joinpath(f"{name}_??.png"))
+        else:
+            filename = self.output_dir / f"{name}.png"
+
+        full_filename = filename.resolve()  # type: Path
+
+        # TODO: Create a new figure ! Check this
         dpi = 300
         self._fig.set_size_inches(min(col / dpi, 10.0), min(row / dpi, 10.0))
 
@@ -199,41 +216,44 @@ class CalibrationOutputs:
         #
         # fig.add_axes(ax)
         # plt.imshow(data, cmap="gray", extent=[0, col, 0, row])
-        self._fig.savefig(filename, dpi=dpi)
+        self._fig.savefig(full_filename, dpi=dpi)
 
-        return filename
+        return full_filename
 
-    def save_to_fits(self, data: np.ndarray, name: str) -> Path:
-        """Write array to FITS file.
-
-        Parameters
-        ----------
-        data
-        name
-
-        Returns
-        -------
-        Path
-            TBW.
-        """
+    def save_to_fits(
+        self, data: np.ndarray, name: str, with_auto_suffix: bool = True
+    ) -> Path:
+        """Write array to FITS file."""
         name = str(name).replace(".", "_")
-        filename = apply_run_number(
-            self.output_dir.joinpath(f"{name}_??.fits")
-        ).resolve()  # type: Path
 
-        self._log.info("Save to FITS - filename: '%s'", filename)
+        if with_auto_suffix:
+            filename = apply_run_number(self.output_dir.joinpath(f"{name}_??.fits"))
+        else:
+            filename = self.output_dir / f"{name}.fits"
+
+        full_filename = filename.resolve()  # type: Path
+        self._log.info("Save to FITS - filename: '%s'", full_filename)
 
         hdu = fits.PrimaryHDU(data)
         hdu.header["PYXEL_V"] = (str(version), "Pyxel version")
-        hdu.writeto(filename, overwrite=False, output_verify="exception")
+        hdu.writeto(full_filename, overwrite=False, output_verify="exception")
 
-        return filename
+        return full_filename
 
-    def save_to_hdf(self, data: "Detector", name: str) -> Path:
+    def save_to_hdf(
+        self, data: "Detector", name: str, with_auto_suffix: bool = True
+    ) -> Path:
         """Write detector object to HDF5 file."""
         name = str(name).replace(".", "_")
-        filename = apply_run_number(self.output_dir.joinpath(f"{name}_??.h5"))
-        with h5.File(filename, "w") as h5file:
+
+        if with_auto_suffix:
+            filename = apply_run_number(self.output_dir.joinpath(f"{name}_??.h5"))
+        else:
+            filename = self.output_dir / f"{name}.h5"
+
+        full_filename = filename.resolve()  # type: Path
+
+        with h5.File(full_filename, "w") as h5file:
             h5file.attrs["pyxel-version"] = str(version)
             if name == "detector":
                 detector_grp = h5file.create_group("detector")
@@ -255,31 +275,56 @@ class CalibrationOutputs:
                 dataset[:] = data
         return filename
 
-    def save_to_txt(self, data: np.ndarray, name: str) -> Path:
+    def save_to_txt(
+        self, data: np.ndarray, name: str, with_auto_suffix: bool = True
+    ) -> Path:
         """Write data to txt file."""
         name = str(name).replace(".", "_")
-        filename = apply_run_number(self.output_dir.joinpath(name + "_??.txt"))
-        np.savetxt(filename, data, delimiter=" | ", fmt="%.8e")
-        return filename
 
-    def save_to_csv(self, data: pd.DataFrame, name: str) -> Path:
+        if with_auto_suffix:
+            filename = apply_run_number(self.output_dir.joinpath(f"{name}_??.txt"))
+        else:
+            filename = self.output_dir / f"{name}.txt"
+
+        full_filename = filename.resolve()  # type: Path
+        np.savetxt(full_filename, data, delimiter=" | ", fmt="%.8e")
+
+        return full_filename
+
+    def save_to_csv(
+        self, data: pd.DataFrame, name: str, with_auto_suffix: bool = True
+    ) -> Path:
         """Write Pandas Dataframe or Numpy array to a CSV file."""
         name = str(name).replace(".", "_")
-        filename = apply_run_number(
-            self.output_dir.joinpath(name + "_??.csv")
-        )  # type: Path
-        try:
-            data.to_csv(filename, float_format="%g")
-        except AttributeError:
-            np.savetxt(filename, data, delimiter=",", fmt="%.8e")
-        return filename
 
-    def save_to_npy(self, data: np.ndarray, name: str) -> Path:
+        if with_auto_suffix:
+            filename = apply_run_number(self.output_dir.joinpath(f"{name}_??.csv"))
+        else:
+            filename = self.output_dir / f"{name}.csv"
+
+        full_filename = filename.resolve()
+        try:
+            data.to_csv(full_filename, float_format="%g")
+        except AttributeError:
+            np.savetxt(full_filename, data, delimiter=",", fmt="%.8e")
+
+        return full_filename
+
+    def save_to_npy(
+        self, data: np.ndarray, name: str, with_auto_suffix: bool = True
+    ) -> Path:
         """Write Numpy array to Numpy binary npy file."""
         name = str(name).replace(".", "_")
-        filename = apply_run_number(self.output_dir.joinpath(name + "_??.npy"))
-        np.save(file=filename, arr=data)
-        return filename
+
+        if with_auto_suffix:
+            filename = apply_run_number(self.output_dir.joinpath(f"{name}_??.npy"))
+        else:
+            filename = self.output_dir / f"{name}.npy"
+
+        full_filename = filename.resolve()  # type: Path
+
+        np.save(file=full_filename, arr=data)
+        return full_filename
 
     def save_plot(self, filename: str = "figure_??") -> Path:
         """Save plot figure in PNG format, close figure and create new canvas for next plot."""
@@ -413,13 +458,17 @@ class CalibrationOutputs:
         # plt.draw()
         # fig.canvas.draw_idle()
 
-    def save_to_file(self, processor: "Processor") -> t.Sequence[Path]:
+    def save_to_file(
+        self,
+        processor: "Processor",
+        prefix: t.Optional[str] = None,
+        with_auto_suffix: bool = True,
+    ) -> t.Sequence[Path]:
         """Save outputs into file(s).
 
         Parameters
         ----------
         processor : Processor
-
 
         Returns
         -------
@@ -433,23 +482,36 @@ class CalibrationOutputs:
             "txt": self.save_to_txt,
             "csv": self.save_to_csv,
             "png": self.save_to_png,
-        }  # type: t.Dict[str, SaveToFile]
+        }  # type: t.Mapping[ValidFormat, SaveToFile]
 
         filenames = []  # type: t.List[Path]
 
-        for dct in self.save_data_to_file:  # type: t.Mapping[str, t.Sequence[str]]
+        dct: t.Mapping[ValidName, t.Sequence[ValidFormat]]
+        for dct in self.save_data_to_file:
+            # TODO: Why looking at first entry ? Check this !
             # Get first entry of `dict` 'item'
+            first_item: t.Tuple[ValidName, t.Sequence[ValidFormat]]
             first_item, *_ = dct.items()
 
+            obj: ValidName
+            format_list: t.Sequence[ValidFormat]
             obj, format_list = first_item
+
             data = processor.get(obj)  # type: np.ndarray
 
-            if format_list is not None:
-                for out_format in format_list:
-                    func = save_methods[out_format]  # type: SaveToFile
-                    filename = func(data=data, name=obj)  # type: Path
+            if prefix:
+                name = f"{prefix}_{obj}"  # type: str
+            else:
+                name = obj
 
-                    filenames.append(filename)
+            out_format: ValidFormat
+            for out_format in format_list:
+                func = save_methods[out_format]  # type: SaveToFile
+                filename = func(
+                    data=data, name=name, with_auto_suffix=with_auto_suffix
+                )  # type: Path
+
+                filenames.append(filename)
 
         return filenames
 
@@ -553,47 +615,68 @@ class CalibrationOutputs:
     # TODO: Specific to 'calibration_plot'
     def calibration_outputs(self, processor_list: "t.Sequence[Processor]") -> None:
         """TBW."""
-        if self.save_data_to_file is not None:
+        if self.save_data_to_file:
             for processor in processor_list:
                 self.save_to_file(processor)
 
                 # if self._single_plot:
                 #    self.single_to_plot(processor)
 
-    # TODO: Specific to 'calibration_plot'
-    def calibration_plots(self, results: t.Mapping, fitness: float) -> None:
+    def save_processors(self, processors: pd.DataFrame) -> t.Sequence[Delayed]:
         """TBW."""
-        assert self.calibration_plot
+        lst = []  # type: t.List[delayed.Delayed]
 
-        if self.calibration_plot:
-            if self.calibration_plot.champions_plot:
-                self.user_plt_args = None
+        if self.save_data_to_file:
 
-                if self.calibration_plot.champions_plot.plot_args:
-                    self.user_plt_args = self.calibration_plot.champions_plot.plot_args
+            for _, serie in processors.iterrows():
+                id_island = serie["island"]  # type: int
+                id_processor = serie["id_processor"]  # type: int
+                processor = serie["processor"]  # type: Delayed
 
-                for iid, file_ch in enumerate(
-                    self.output_dir.glob("champions_id*.out")
-                ):
-                    self.champions_plot(
-                        results={"fitness": fitness, **results},
-                        champions_file=file_ch,
-                        island_id=iid,
-                    )
+                # TODO: Create folders ?
+                prefix = f"island{id_island:02d}_processor{id_processor:02d}"
 
-            if self.calibration_plot.population_plot:
-                self.user_plt_args = None
-                if self.calibration_plot.population_plot.plot_args:
-                    self.user_plt_args = self.calibration_plot.population_plot.plot_args
+                output_filenames = delayed(self.save_to_file)(
+                    processor=processor, prefix=prefix, with_auto_suffix=False
+                )  # type: Delayed
+                lst.append(output_filenames)
 
-                for iid, file_pop in enumerate(
-                    self.output_dir.glob("population_id*.out")
-                ):
-                    self.population_plot(
-                        # results=results,
-                        population_file=file_pop,
-                        island_id=iid,
-                    )
+        return lst
+
+    # TODO: Specific to 'calibration_plot'
+    # def calibration_plots(self, results: t.Mapping, fitness: float) -> None:
+    #     """TBW."""
+    #     assert self.calibration_plot
+    #
+    #     if self.calibration_plot:
+    #         if self.calibration_plot.champions_plot:
+    #             self.user_plt_args = None
+    #
+    #             if self.calibration_plot.champions_plot.plot_args:
+    #                 self.user_plt_args = self.calibration_plot.champions_plot.plot_args
+    #
+    #             for iid, file_ch in enumerate(
+    #                 self.output_dir.glob("champions_id*.out")
+    #             ):
+    #                 self.champions_plot(
+    #                     results={"fitness": fitness, **results},
+    #                     champions_file=file_ch,
+    #                     island_id=iid,
+    #                 )
+    #
+    #         if self.calibration_plot.population_plot:
+    #             self.user_plt_args = None
+    #             if self.calibration_plot.population_plot.plot_args:
+    #                 self.user_plt_args = self.calibration_plot.population_plot.plot_args
+    #
+    #             for iid, file_pop in enumerate(
+    #                 self.output_dir.glob("population_id*.out")
+    #             ):
+    #                 self.population_plot(
+    #                     # results=results,
+    #                     population_file=file_pop,
+    #                     island_id=iid,
+    #                 )
 
     # TODO: Specific to 'calibration_plot' ??
     def fitting_plot(
@@ -611,7 +694,6 @@ class CalibrationOutputs:
     def fitting_plot_close(self, result_type: "ResultType", island: int) -> None:
         """TBW."""
         assert self.calibration_plot
-        assert isinstance(island, int)
 
         if self.calibration_plot.fitting_plot:
             self.user_plt_args = None

@@ -14,16 +14,12 @@ from pathlib import Path
 import attr
 import numpy as np
 
-from pyxel.inputs_outputs.loader import (
-    load_image,  # shortcutting causes circular import
-)
 from pyxel.pipelines import Processor
 
 __all__ = [
     "CalibrationResult",
     "CalibrationMode",
     "Island",
-    "AlgorithmType",
     "ResultType",
     "check_ranges",
     "list_to_slice",
@@ -64,14 +60,6 @@ class Island(Enum):
     IPyParallel = "ipyparallel"
 
 
-class AlgorithmType(Enum):
-    """TBW."""
-
-    Sade = "sade"
-    Sga = "sga"
-    Nlopt = "nlopt"
-
-
 def read_single_data(filename: Path) -> np.ndarray:
     """Read a numpy array from a FITS or NPY file.
 
@@ -84,6 +72,8 @@ def read_single_data(filename: Path) -> np.ndarray:
     array
         TBW.
     """
+    # Late import to avoid circular import
+    from pyxel.inputs_outputs.loader import load_image
 
     data = load_image(filename)
 
