@@ -2,8 +2,8 @@ Changelog
 =========
 
 
-version 0.9 / UNRELEASED-2020-MM-DD
------------------------------------
+version 0.8.1 / 2021-01-26
+--------------------------
 
 Documentation
 ~~~~~~~~~~~~~
@@ -16,8 +16,7 @@ Others
 
 * Add a new badge for Google Group.
   (See `!157 <https://gitlab.com/esa/pyxel/-/merge_requests/157>`_).
-
-* Prepare Pyxel to be uploadable on PyPI and Conda forge.
+* Prepare Pyxel to be uploadable on PyPI.
   (See `!161 <https://gitlab.com/esa/pyxel/-/merge_requests/161>`_).
 
 
