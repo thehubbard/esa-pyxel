@@ -63,6 +63,26 @@ upstream	https://gitlab.com/esa/pyxel.git (push)
    ```
    :interrobang: This could be done directly inside Gitlab
 
+1. Send the new release 'pyxel-sim' to the Python Package Index (PyPI) repository and
+   the Conda forge channel:
+   
+   a. Send the new release 'pyxel-sim' to the PyPi repository with the following commands:
+      ```fish
+      # Send the package to https://test.pypi.org (only for testing)
+      $ tox -e release -- --repository testpypi
+
+      # Send the package to https://pypi.org
+      $ tox -e release
+      ```
+   
+   b. Send the new release 'pyxel-sim' to the Conda forge channel (after sending the 
+      package to PyPi)
+      ```fish
+      $ conda install conda-build
+      $ conda skeleton pypi pyxel-sim
+      TBW.
+      ```
+
 1. Add a section for the next release {X:Y+1} to `CHANGELOG.rst`
 
     ```fish
