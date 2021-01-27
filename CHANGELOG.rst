@@ -2,6 +2,16 @@ Changelog
 =========
 
 
+version 0.9 / UNRELEASED-2021-MM-DD
+--------------------------
+
+Others
+~~~~~~
+
+* Add a new badge for Binder.
+  (See `!163 <https://gitlab.com/esa/pyxel/-/merge_requests/163>`_).
+
+
 version 0.8.1 / 2021-01-26
 --------------------------
 
