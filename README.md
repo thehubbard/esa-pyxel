@@ -9,6 +9,7 @@ Pyxel detector simulation framework
 [![coverage](https://gitlab.com/esa/pyxel/badges/master/coverage.svg)](http://sci-fv.io.esa.int/pyxel-mirror/coverage/)
 [![doi](https://zenodo.org/badge/DOI/10.1117/12.2314047.svg)](https://doi.org/10.1117/12.2314047)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gl/esa%2Fpyxel-data/HEAD?urlpath=lab)
 
 ## What is it?
 
@@ -30,6 +31,11 @@ Learn more about *Pyxel* in its offical [blog](https://esa.gitlab.io/pyxel) and 
 ## Installation
 
 Installation instructions can be found [here](https://esa.gitlab.io/pyxel/doc/install.html).
+
+## Examples
+
+Example notebooks of Pyxel can be found in a separate public repository [Pyxel Data](https://gitlab.com/esa/pyxel-data). Examples can either be downloaded and run locally or run in the cloud using Binder, by clicking on the badge above.
+
 
 ## Getting Help
 
