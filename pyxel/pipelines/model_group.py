@@ -23,18 +23,19 @@ if t.TYPE_CHECKING:
 class ModelGroup:
     """TBW."""
 
-    def __init__(self, models: t.Sequence[ModelFunction]):
+    def __init__(self, models: t.Sequence[ModelFunction], name: str):
         self._log = logging.getLogger(__name__)
-
+        self._name = name
         self.models = models  # type: t.Sequence[ModelFunction]
 
     def __repr__(self):
         cls_name = self.__class__.__name__  # type: str
+
         all_models = [
             model.name for model in self.models if model.name
         ]  # type: t.List[str]
 
-        return f"{cls_name}<models={all_models!r}>"
+        return f"{cls_name}<name={self._name!r}, models={all_models!r}>"
 
     def __deepcopy__(self, memo: dict) -> "ModelGroup":
         copied_models = deepcopy(self.models)
