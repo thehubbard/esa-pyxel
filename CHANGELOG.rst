@@ -11,6 +11,12 @@ Others
 * Add a new badge for Binder.
   (See `!163 <https://gitlab.com/esa/pyxel/-/merge_requests/163>`_).
 
+Pipelines
+~~~~~~~~~
+
+* Calibration - Export champions for every evolution and every island
+  (See `!164 <https://gitlab.com/esa/pyxel/-/merge_requests/164>`_).
+
 
 version 0.8.1 / 2021-01-26
 --------------------------
