@@ -166,17 +166,20 @@ def extract_data_2d(df_processors: pd.DataFrame, rows: int, cols: int) -> xr.Dat
 
         lst.append(
             partial_ds.assign_coords(
-                coords={"island": island, "id_processor": id_processor}
+                island=island,
+                id_processor=id_processor,
             ).expand_dims(["island", "id_processor"])
         )
 
     ds = xr.combine_by_coords(lst).assign_coords(
-        coords={"y": range(rows), "x": range(cols)}
-    )
+        y=range(rows),
+        x=range(cols),
+    )  # type: xr.Dataset
 
     return ds
 
 
+# TODO: Rename to PyxelArchipelago
 class MyArchipelago:
     """User-defined Archipelago."""
 
@@ -275,7 +278,9 @@ class MyArchipelago:
         logging.info("Create a new archipelago in %.2f s", stop_time - start_time)
 
     def run_evolve(
-        self, num_evolutions: int = 1
+        self,
+        num_evolutions: int = 1,
+        num_best_decisions: t.Optional[int] = None,
     ) -> t.Tuple[xr.Dataset, pd.DataFrame, pd.DataFrame]:
         """Run evolution(s) several time.
 
@@ -283,6 +288,9 @@ class MyArchipelago:
         ----------
         num_evolutions : int
             Number of time to run the evolutions.
+        num_best_decisions : int or None, optional.
+            Number of best individuals to extract. If this parameter is set to None then
+            no individuals are extracted.
 
         Returns
         -------
@@ -322,8 +330,20 @@ class MyArchipelago:
                 progress.update(self.algorithm.generations)
 
                 # Get partial champions for this evolution
+                partial_champions = self._get_champions()  # type: xr.Dataset
+
+                # Get best population from the islands
+                if num_best_decisions:
+                    best_individuals = self.get_best_individuals(
+                        num_best_decisions=num_best_decisions
+                    )  # type: xr.Dataset
+
+                    all_champions = xr.merge([partial_champions, best_individuals])
+                else:
+                    all_champions = partial_champions
+
                 champions_lst.append(
-                    self._get_champions().assign_coords({"evolution": [id_evolution]})
+                    all_champions.assign_coords(evolution=id_evolution)
                 )
 
         champions = xr.concat(champions_lst, dim="evolution")  # type: xr.Dataset
@@ -403,3 +423,93 @@ class MyArchipelago:
         )
 
         return champions
+
+    def get_best_individuals(self, num_best_decisions: int) -> xr.Dataset:
+        """Get the best decision vectors and fitness from the island of an archipelago.
+
+        Parameters
+        ----------
+        num_best_decisions : int or None, optional.
+            Number of best individuals to extract. If this parameter is set to None then
+            no individuals are extracted.
+
+        Returns
+        -------
+        Dataset
+            A new dataset with two data arrays 'best_decision' and 'best_fitness'.
+
+        Examples
+        --------
+        >>> archi = MyArchipelago(...)
+        >>> archi.get_best_individuals(num_best_decisions=5)
+        <xarray.Dataset>
+        Dimensions:          (individual: 10, island: 2, param_id: 7)
+        Coordinates:
+          * island           (island) int64 0 1
+          * individual       (individual) int64 0 1 2 3 4 5 6 7 8 9
+        Dimensions without coordinates: param_id
+        Data variables:
+            best_decision    (island, individual, param_id) float64 0.1526 ... 0.1608
+            best_parameters  (island, individual, param_id) float64 0.1526 ... 0.1608
+            best_fitness     (island, individual) float64 3.285e+04 ... 5.732e+04
+
+        Raises
+        ------
+        ValueError
+            Raised if 'num_best_decisions' is a negative 'int' value.
+        """
+        if num_best_decisions < 0:
+            raise ValueError(
+                "'num_best_decisions' must be 'None' or a positive integer"
+            )
+
+        lst = []
+        for island_idx, island in enumerate(self._pygmo_archi):
+            population = island.get_population()  # type: pg.population
+
+            # Get the decision vectors: num_individuals x size_decision_vector
+            decision_vectors_2d = population.get_x()  # type: np.ndarray
+
+            # Get the fitness vectors: num_individuals x 1
+            fitness_vectors_2d = population.get_f()  # type: np.ndarray
+
+            # Convert the decision vectors to parameters:
+            #   num_individuals x size_decision_vector
+            parameters_2d = self.problem.update_parameter(decision_vectors_2d)
+
+            # Add the vectors into an Dataset
+            island_population = xr.Dataset()
+            island_population["best_decision"] = xr.DataArray(
+                decision_vectors_2d, dims=["individual", "param_id"]
+            )
+            island_population["best_parameters"] = xr.DataArray(
+                parameters_2d, dims=["individual", "param_id"]
+            )
+            island_population["best_fitness"] = xr.DataArray(
+                fitness_vectors_2d.flatten(), dims=["individual"]
+            )
+
+            # Get the indexes for the best fitness vectors
+            # and extract the 'num_besnum_best_decisionst_decisions' individuals
+            all_indexes_sorted = island_population["best_fitness"].argsort()
+            first_indexes_sorted = all_indexes_sorted[:num_best_decisions]
+
+            # Use the indexes to get the best elements
+            island_best_population = island_population.sel(
+                individual=first_indexes_sorted
+            )
+
+            # Append the result and add a new coordinate 'island'
+            lst.append(island_best_population.assign_coords(island=island_idx))
+
+        # Create a new dataset
+        best_individuals_no_coordinates = xr.concat(lst, dim="island")
+
+        # Add coordinates
+        num_individuals = len(best_individuals_no_coordinates["individual"])
+        best_individuals = best_individuals_no_coordinates.assign_coords(
+            individual=range(num_individuals),
+            island=range(len(self._pygmo_archi)),
+        )  # type: xr.Dataset
+
+        return best_individuals

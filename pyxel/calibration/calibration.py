@@ -65,6 +65,7 @@ class Calibration:
         seed: t.Optional[int] = None,
         num_islands: int = 1,
         num_evolutions: int = 1,
+        num_best_decisions: t.Optional[int] = None,
         topology: Literal["unconnected", "ring", "fully_connected"] = "unconnected",
         type_islands: Literal[
             "multiprocessing", "multithreading", "ipyparallel"
@@ -114,6 +115,7 @@ class Calibration:
 
         self._num_islands = num_islands  # type: int
         self._num_evolutions = num_evolutions  # type: int
+        self._num_best_decisions = num_best_decisions  # type: t.Optional[int]
         self._type_islands = Island(type_islands)  # type:Island
         self._topology = (
             topology
@@ -280,6 +282,21 @@ class Calibration:
         self._num_evolutions = value
 
     @property
+    def num_best_decisions(self) -> t.Optional[int]:
+        """TBW."""
+        return self._num_best_decisions
+
+    @num_best_decisions.setter
+    def num_best_decisions(self, value: t.Optional[int]) -> None:
+        """TBW."""
+        if isinstance(value, int) and value < 0:
+            raise ValueError(
+                "'num_best_decisions' must be 'None' or a positive integer"
+            )
+
+        self._num_best_decisions = value
+
+    @property
     def topology(self) -> Literal["unconnected", "ring", "fully_connected"]:
         """TBW."""
         return self._topology
@@ -360,7 +377,8 @@ class Calibration:
 
             # Run several evolutions in the archipelago
             ds, df_processors, df_all_logs = my_archipelago.run_evolve(
-                num_evolutions=self._num_evolutions
+                num_evolutions=self._num_evolutions,
+                num_best_decisions=self._num_best_decisions,
             )
 
         else:
