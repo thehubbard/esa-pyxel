@@ -14,8 +14,11 @@ Others
 Pipelines
 ~~~~~~~~~
 
-* Calibration - Export champions for every evolution and every island
+* Calibration - Export champions for every evolution and every island.
   (See `!164 <https://gitlab.com/esa/pyxel/-/merge_requests/164>`_).
+
+* Calibration - Extract best individuals.
+  (See `!165 <https://gitlab.com/esa/pyxel/-/merge_requests/165>`_).
 
 
 version 0.8.1 / 2021-01-26
