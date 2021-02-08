@@ -282,6 +282,21 @@ class Calibration:
         self._num_evolutions = value
 
     @property
+    def num_best_decisions(self) -> t.Optional[int]:
+        """TBW."""
+        return self._num_best_decisions
+
+    @num_evolutions.setter
+    def num_best_decisions(self, value: t.Optional[int]) -> None:
+        """TBW."""
+        if isinstance(value, int) and value < 0:
+            raise ValueError(
+                "'num_best_decisions' must be 'None' or a positive integer"
+            )
+
+        self._num_best_decisions = value
+
+    @property
     def topology(self) -> Literal["unconnected", "ring", "fully_connected"]:
         """TBW."""
         return self._topology

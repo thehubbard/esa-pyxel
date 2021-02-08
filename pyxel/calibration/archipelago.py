@@ -458,7 +458,7 @@ class MyArchipelago:
         ValueError
             Raised if 'num_best_decisions' is a negative 'int' value.
         """
-        if num_best_decisions <= 0:
+        if num_best_decisions < 0:
             raise ValueError(
                 "'num_best_decisions' must be 'None' or a positive integer"
             )
@@ -490,7 +490,7 @@ class MyArchipelago:
             )
 
             # Get the indexes for the best fitness vectors
-            # and extract the 'num_best_decisions' individuals
+            # and extract the 'num_besnum_best_decisionst_decisions' individuals
             all_indexes_sorted = island_population["best_fitness"].argsort()
             first_indexes_sorted = all_indexes_sorted[:num_best_decisions]
 
