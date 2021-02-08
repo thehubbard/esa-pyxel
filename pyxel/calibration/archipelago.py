@@ -278,7 +278,9 @@ class MyArchipelago:
         logging.info("Create a new archipelago in %.2f s", stop_time - start_time)
 
     def run_evolve(
-        self, num_evolutions: int = 1
+        self,
+        num_evolutions: int = 1,
+        num_best_decisions: t.Optional[int] = None,
     ) -> t.Tuple[xr.Dataset, pd.DataFrame, pd.DataFrame]:
         """Run evolution(s) several time.
 
@@ -286,6 +288,9 @@ class MyArchipelago:
         ----------
         num_evolutions : int
             Number of time to run the evolutions.
+        num_best_decisions : int or None, optional.
+            Number of best individuals to extract. If this parameter is set to None then
+            no individuals are extracted.
 
         Returns
         -------
@@ -328,11 +333,14 @@ class MyArchipelago:
                 partial_champions = self._get_champions()  # type: xr.Dataset
 
                 # Get best population from the islands
-                best_individuals = self.get_best_individuals(
-                    num_best_decisions=5
-                )  # type: xr.Dataset
+                if num_best_decisions:
+                    best_individuals = self.get_best_individuals(
+                        num_best_decisions=num_best_decisions
+                    )  # type: xr.Dataset
 
-                all_champions = xr.merge([partial_champions, best_individuals])
+                    all_champions = xr.merge([partial_champions, best_individuals])
+                else:
+                    all_champions = partial_champions
 
                 champions_lst.append(
                     all_champions.assign_coords(evolution=id_evolution)
@@ -421,8 +429,9 @@ class MyArchipelago:
 
         Parameters
         ----------
-        num_best_decisions : int
-            Number of best individuals to extract.
+        num_best_decisions : int or None, optional.
+            Number of best individuals to extract. If this parameter is set to None then
+            no individuals are extracted.
 
         Returns
         -------
@@ -442,7 +451,17 @@ class MyArchipelago:
         Data variables:
             best_decision  (island, individual, param_id) float64 0.1526 ... -0.01897
             best_fitness   (island, individual) float64 3.285e+04 ... 5.371e+04
+
+        Raises
+        ------
+        ValueError
+            Raised if 'num_best_decisions' is a negative 'int' value.
         """
+        if num_best_decisions <= 0:
+            raise ValueError(
+                "'num_best_decisions' must be 'None' or a positive integer"
+            )
+
         lst = []
         for island_idx, island in enumerate(self._pygmo_archi):
             population = island.get_population()  # type: pg.population
@@ -482,8 +501,13 @@ class MyArchipelago:
             # Append the result and add a new coordinate 'island'
             lst.append(island_best_population.assign_coords(island=island_idx))
 
-        best_individuals = xr.concat(lst, dim="island").assign_coords(
-            individual=range(num_best_decisions),
+        # Create a new dataset
+        best_individuals_no_coordinates = xr.concat(lst, dim="island")
+
+        # Add coordinates
+        num_individuals = len(best_individuals_no_coordinates["individual"])
+        best_individuals = best_individuals_no_coordinates.assign_coords(
+            individual=range(num_individuals),
             island=range(len(self._pygmo_archi)),
         )  # type: xr.Dataset
 
