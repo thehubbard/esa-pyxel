@@ -286,7 +286,7 @@ class Calibration:
         """TBW."""
         return self._num_best_decisions
 
-    @num_evolutions.setter
+    @num_best_decisions.setter
     def num_best_decisions(self, value: t.Optional[int]) -> None:
         """TBW."""
         if isinstance(value, int) and value < 0:
