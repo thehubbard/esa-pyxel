@@ -174,7 +174,7 @@ def extract_data_2d(df_processors: pd.DataFrame, rows: int, cols: int) -> xr.Dat
     ds = xr.combine_by_coords(lst).assign_coords(
         y=range(rows),
         x=range(cols),
-    )
+    )  # type: xr.Dataset
 
     return ds
 
@@ -325,14 +325,14 @@ class MyArchipelago:
                 progress.update(self.algorithm.generations)
 
                 # Get partial champions for this evolution
-                champions = self._get_champions()  # type: xr.Dataset
+                partial_champions = self._get_champions()  # type: xr.Dataset
 
                 # Get best population from the islands
                 best_individuals = self.get_best_individuals(
                     num_best_decisions=5
                 )  # type: xr.Dataset
 
-                all_champions = xr.merge([champions, best_individuals])
+                all_champions = xr.merge([partial_champions, best_individuals])
 
                 champions_lst.append(
                     all_champions.assign_coords(evolution=id_evolution)
@@ -448,25 +448,25 @@ class MyArchipelago:
             population = island.get_population()  # type: pg.population
 
             # Get the decision vectors: num_individuals x size_decision_vector
-            decision_vectors = population.get_x()  # type: np.ndarray
+            decision_vectors_2d = population.get_x()  # type: np.ndarray
 
             # Get the fitness vectors: num_individuals x 1
-            fitness_vectors = population.get_f()  # type: np.ndarray
+            fitness_vectors_2d = population.get_f()  # type: np.ndarray
 
             # Convert the decision vectors to parameters:
             #   num_individuals x size_decision_vector
-            parameters = self.problem.update_parameter(decision_vectors)
+            parameters_2d = self.problem.update_parameter(decision_vectors_2d)
 
             # Add the vectors into an Dataset
             island_population = xr.Dataset()
             island_population["best_decision"] = xr.DataArray(
-                decision_vectors, dims=["individual", "param_id"]
+                decision_vectors_2d, dims=["individual", "param_id"]
             )
             island_population["best_parameters"] = xr.DataArray(
-                parameters, dims=["individual", "param_id"]
+                parameters_2d, dims=["individual", "param_id"]
             )
             island_population["best_fitness"] = xr.DataArray(
-                fitness_vectors.flatten(), dims=["individual"]
+                fitness_vectors_2d.flatten(), dims=["individual"]
             )
 
             # Get the indexes for the best fitness vectors
@@ -484,7 +484,7 @@ class MyArchipelago:
 
         best_individuals = xr.concat(lst, dim="island").assign_coords(
             individual=range(num_best_decisions),
-            island=range(len(self._pygmo_archiarchipelago)),
-        )
+            island=range(len(self._pygmo_archi)),
+        )  # type: xr.Dataset
 
         return best_individuals
