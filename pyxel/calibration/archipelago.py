@@ -24,74 +24,6 @@ from pyxel.calibration import Algorithm, AlgorithmType, IslandProtocol
 from pyxel.calibration.fitting import ModelFitting
 
 
-def get_best_individuals(
-    archipelago: pg.archipelago,
-    num_best_decisions: int,
-) -> xr.Dataset:
-    """Get the best decision vectors and fitness from the island of an archipelago.
-
-    Parameters
-    ----------
-    archipelago : pg.archipelago
-        Archipelago used to extract the vectors.
-    num_best_decisions : int
-        Number of best individuals to extract.
-
-    Returns
-    -------
-    Dataset
-        A new dataset with two data arrays 'best_decision' and 'best_fitness'.
-
-    Examples
-    --------
-    >>> get_best_individuals(archipelago=..., num_best_decisions=5)
-    <xarray.Dataset>
-    Dimensions:        (individual: 5, island: 2, param_id: 7)
-    Coordinates:
-      * island         (island) int64 0 1
-      * individual     (individual) int64 0 1 2 3 4
-    Dimensions without coordinates: param_id
-    Data variables:
-        best_decision  (island, individual, param_id) float64 0.1526 ... -0.01897
-        best_fitness   (island, individual) float64 3.285e+04 ... 5.371e+04
-    """
-    lst = []
-    for island_idx, island in enumerate(archipelago):
-        population = island.get_population()  # type: pg.population
-
-        # Get the decision vectors: num_individuals x size_decision_vector
-        decision_vectors = population.get_x()  # type: np.ndarray
-
-        # Get the fitness vectors: num_individuals x 1
-        fitness_vectors = population.get_f()  # type: np.ndarray
-
-        # Add the vectors into an Dataset
-        island_population = xr.Dataset()
-        island_population["best_decision"] = xr.DataArray(
-            decision_vectors, dims=["individual", "param_id"]
-        )
-        island_population["best_fitness"] = xr.DataArray(
-            fitness_vectors.flatten(), dims=["individual"]
-        )
-
-        # Get the indexes for the best fitness vectors
-        all_indexes_sorted = island_population["best_fitness"].argsort()
-        first_indexes_sorted = all_indexes_sorted[:num_best_decisions]
-
-        # Use the indexes to get the best elements
-        island_best_population = island_population.sel(individual=first_indexes_sorted)
-
-        # Append the result and add a new coordinate 'island'
-        lst.append(island_best_population.assign_coords(island=island_idx))
-
-    best_individuals = xr.concat(lst, dim="island").assign_coords(
-        individual=range(num_best_decisions),
-        island=range(len(archipelago)),
-    )
-
-    return best_individuals
-
-
 class ArchipelagoLogs:
     """Keep log information from all algorithms in an archipelago."""
 
@@ -396,9 +328,8 @@ class MyArchipelago:
                 champions = self._get_champions()  # type: xr.Dataset
 
                 # Get best population from the islands
-                best_individuals = get_best_individuals(
-                    archipelago=self._pygmo_archi,
-                    num_best_decisions=5,
+                best_individuals = self.get_best_individuals(
+                    num_best_decisions=5
                 )  # type: xr.Dataset
 
                 all_champions = xr.merge([champions, best_individuals])
@@ -484,3 +415,76 @@ class MyArchipelago:
         )
 
         return champions
+
+    def get_best_individuals(self, num_best_decisions: int) -> xr.Dataset:
+        """Get the best decision vectors and fitness from the island of an archipelago.
+
+        Parameters
+        ----------
+        num_best_decisions : int
+            Number of best individuals to extract.
+
+        Returns
+        -------
+        Dataset
+            A new dataset with two data arrays 'best_decision' and 'best_fitness'.
+
+        Examples
+        --------
+        >>> archi = MyArchipelago(...)
+        >>> archi.get_best_individuals(num_best_decisions=5)
+        <xarray.Dataset>
+        Dimensions:        (individual: 5, island: 2, param_id: 7)
+        Coordinates:
+          * island         (island) int64 0 1
+          * individual     (individual) int64 0 1 2 3 4
+        Dimensions without coordinates: param_id
+        Data variables:
+            best_decision  (island, individual, param_id) float64 0.1526 ... -0.01897
+            best_fitness   (island, individual) float64 3.285e+04 ... 5.371e+04
+        """
+        lst = []
+        for island_idx, island in enumerate(self._pygmo_archi):
+            population = island.get_population()  # type: pg.population
+
+            # Get the decision vectors: num_individuals x size_decision_vector
+            decision_vectors = population.get_x()  # type: np.ndarray
+
+            # Get the fitness vectors: num_individuals x 1
+            fitness_vectors = population.get_f()  # type: np.ndarray
+
+            # Convert the decision vectors to parameters:
+            #   num_individuals x size_decision_vector
+            parameters = self.problem.update_parameter(decision_vectors)
+
+            # Add the vectors into an Dataset
+            island_population = xr.Dataset()
+            island_population["best_decision"] = xr.DataArray(
+                decision_vectors, dims=["individual", "param_id"]
+            )
+            island_population["best_parameters"] = xr.DataArray(
+                parameters, dims=["individual", "param_id"]
+            )
+            island_population["best_fitness"] = xr.DataArray(
+                fitness_vectors.flatten(), dims=["individual"]
+            )
+
+            # Get the indexes for the best fitness vectors
+            # and extract the 'num_best_decisions' individuals
+            all_indexes_sorted = island_population["best_fitness"].argsort()
+            first_indexes_sorted = all_indexes_sorted[:num_best_decisions]
+
+            # Use the indexes to get the best elements
+            island_best_population = island_population.sel(
+                individual=first_indexes_sorted
+            )
+
+            # Append the result and add a new coordinate 'island'
+            lst.append(island_best_population.assign_coords(island=island_idx))
+
+        best_individuals = xr.concat(lst, dim="island").assign_coords(
+            individual=range(num_best_decisions),
+            island=range(len(self._pygmo_archiarchipelago)),
+        )
+
+        return best_individuals
