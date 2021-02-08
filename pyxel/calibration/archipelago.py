@@ -443,14 +443,15 @@ class MyArchipelago:
         >>> archi = MyArchipelago(...)
         >>> archi.get_best_individuals(num_best_decisions=5)
         <xarray.Dataset>
-        Dimensions:        (individual: 5, island: 2, param_id: 7)
+        Dimensions:          (individual: 10, island: 2, param_id: 7)
         Coordinates:
-          * island         (island) int64 0 1
-          * individual     (individual) int64 0 1 2 3 4
+          * island           (island) int64 0 1
+          * individual       (individual) int64 0 1 2 3 4 5 6 7 8 9
         Dimensions without coordinates: param_id
         Data variables:
-            best_decision  (island, individual, param_id) float64 0.1526 ... -0.01897
-            best_fitness   (island, individual) float64 3.285e+04 ... 5.371e+04
+            best_decision    (island, individual, param_id) float64 0.1526 ... 0.1608
+            best_parameters  (island, individual, param_id) float64 0.1526 ... 0.1608
+            best_fitness     (island, individual) float64 3.285e+04 ... 5.732e+04
 
         Raises
         ------
