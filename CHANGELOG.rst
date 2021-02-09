@@ -20,6 +20,9 @@ Pipelines
 * Calibration - Extract best individuals.
   (See `!165 <https://gitlab.com/esa/pyxel/-/merge_requests/165>`_).
 
+* Calibration - Fix an issue when extracting parameters.
+  (See `!166 <https://gitlab.com/esa/pyxel/-/merge_requests/166>`_).
+
 
 version 0.8.1 / 2021-01-26
 --------------------------
