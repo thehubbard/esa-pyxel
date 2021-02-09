@@ -307,12 +307,13 @@ class ModelFitting(ProblemSingleObjective):
         return fitness
 
     # TODO: If possible, use 'numba' for this method
-    def fitness(self, parameter: np.ndarray) -> t.Sequence[float]:
+    def fitness(self, decision_vector_1d: np.ndarray) -> t.Sequence[float]:
         """Call the fitness function, elements of parameter array could be logarithmic values.
 
         Parameters
         ----------
-        parameter
+        decision_vector_1d : array_like
+            A 1d decision vector.
 
         Returns
         -------
@@ -328,14 +329,16 @@ class ModelFitting(ProblemSingleObjective):
         logger = logging.getLogger("pyxel")
         prev_log_level = logger.getEffectiveLevel()
 
-        parameter = self.update_parameter(parameter)
+        parameter_1d = self.convert_to_parameters(decision_vector_1d)
         # TODO: deepcopy is not needed. Check this
         processor_list = self.param_processor_list  # type: t.Sequence[Processor]
 
         overall_fitness = 0.0  # type: float
         for processor, target_data in zip(processor_list, self.all_target_data):
 
-            processor = self.update_processor(parameter=parameter, processor=processor)
+            processor = self.update_processor(
+                parameter=parameter_1d, processor=processor
+            )
 
             logger.setLevel(logging.WARNING)
             # result_proc = None
@@ -356,9 +359,20 @@ class ModelFitting(ProblemSingleObjective):
 
         return [overall_fitness]
 
-    def update_parameter(self, parameters: np.ndarray) -> np.ndarray:
-        """TBW."""
-        new_parameters = parameters.copy()
+    def convert_to_parameters(self, decisions_vector: np.ndarray) -> np.ndarray:
+        """Convert a decision version from Pygmo2 to parameters.
+
+        Parameters
+        ----------
+        decisions_vector : array_like
+            It could a 1D or 2D array.
+
+        Returns
+        -------
+        array_like
+            Parameters
+        """
+        parameters = decisions_vector.copy()
 
         a = 0
         for var in self.variables:
@@ -368,12 +382,12 @@ class ModelFitting(ProblemSingleObjective):
             if var.logarithmic:
                 start = a
                 stop = a + b
-                new_parameters[..., start:stop] = np.power(
-                    10, parameters[..., start:stop]
+                parameters[..., start:stop] = np.power(
+                    10, decisions_vector[..., start:stop]
                 )
             a += b
 
-        return new_parameters
+        return parameters
 
     # TODO: Check this
     def apply_parameters(
