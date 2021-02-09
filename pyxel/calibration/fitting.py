@@ -368,7 +368,9 @@ class ModelFitting(ProblemSingleObjective):
             if var.logarithmic:
                 start = a
                 stop = a + b
-                new_parameters[start:stop] = np.power(10, parameters[start:stop])
+                new_parameters[..., start:stop] = np.power(
+                    10, parameters[..., start:stop]
+                )
             a += b
 
         return new_parameters
