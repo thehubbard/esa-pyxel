@@ -418,7 +418,7 @@ class MyArchipelago:
         champions["champion_decision"] = xr.DataArray(
             champions_1d_decision, dims=["island", "param_id"]
         )
-        champions["champion_parameters"] = self.problem.update_parameter(
+        champions["champion_parameters"] = self.problem.convert_to_parameters(
             champions["champion_decision"]
         )
 
@@ -475,7 +475,7 @@ class MyArchipelago:
 
             # Convert the decision vectors to parameters:
             #   num_individuals x size_decision_vector
-            parameters_2d = self.problem.update_parameter(decision_vectors_2d)
+            parameters_2d = self.problem.convert_to_parameters(decision_vectors_2d)
 
             # Add the vectors into an Dataset
             island_population = xr.Dataset()

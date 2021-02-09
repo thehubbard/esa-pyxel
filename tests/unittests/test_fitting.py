@@ -316,7 +316,7 @@ def test_split_and_update(yaml, parameter, expected_array):
     calibration = cfg.calibration
     mf = ModelFitting(processor, calibration.parameters)
     configure(mf, cfg)
-    array = mf.update_parameter(parameter)
+    array = mf.convert_to_parameters(parameter)
     np.testing.assert_array_equal(array, expected_array)
 
 
