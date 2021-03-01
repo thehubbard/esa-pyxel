@@ -59,6 +59,7 @@ Reference
    :maxdepth: 1
    :hidden:
 
+   background/index.rst
    background/pipelines.rst
    background/detectors.rst
    background/models.rst
@@ -71,7 +72,8 @@ Reference
    :maxdepth: 1
    :hidden:
 
-   reference.rst
+   references/index.rst
+   references/reference.rst
 
 .. toctree::
    :caption: Physics Reference
