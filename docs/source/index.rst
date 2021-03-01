@@ -21,12 +21,13 @@ How-to guides
 =============
 
 **Step-by-step guides**.
-:doc:`Covers key tasks and operations and common problems <howto/overview>`.
+:doc:`Covers key tasks and operations and common problems <howto/index>`.
 
 Background
 ==========
 
-**Explanations**. Explanation of concepts, best practices and techniques.
+**Explanations**.
+:doc:`Explanation of concepts, best practices and techniques <background/index>`.
 
 Reference
 =========
@@ -58,12 +59,12 @@ Reference
    :maxdepth: 1
    :hidden:
 
-   pipelines.rst
-   detectors.rst
-   models.rst
-   data_structure.rst
-   yaml.rst
-   gui.rst
+   background/pipelines.rst
+   background/detectors.rst
+   background/models.rst
+   background/data_structure.rst
+   background/yaml.rst
+   background/gui.rst
 
 .. toctree::
    :caption: Reference
