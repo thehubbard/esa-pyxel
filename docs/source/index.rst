@@ -14,7 +14,7 @@ made by CCD or CMOS-based detectors.
 Getting Started
 ===============
 
-**Tutorials**. :doc:`Learn about the Pyxel's concepts <overview>`.
+**Tutorials**. :doc:`Learn about the Pyxel's concepts <tutorials/overview>`.
 
 How-to guides
 =============
@@ -34,13 +34,14 @@ Reference
 
 .. toctree::
    :caption: Getting Started
+   :name: tutorials
    :maxdepth: 1
    :hidden:
 
-   overview.rst
-   install.rst
-   running_modes.rst
-   examples.rst
+   tutorials/overview.rst
+   tutorials/install.rst
+   tutorials/running_modes.rst
+   tutorials/examples.rst
 
 .. toctree::
    :caption: How-to guides

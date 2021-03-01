@@ -1,11 +1,13 @@
 .. _install:
 
+============
 Installation
 ============
 
 You can install ``pyxel`` with ``pip`` (not yet) or by installing from source.
 
-The recommended installation method is `pip <https://pip.pypa.io/en/stable/>`_-installing
+The recommended installation method is
+`pip <https://pip.pypa.io/en/stable/>`_-installing
 into a `virtualenv <https://hynek.me/articles/virtualenv-lives/>`_.
 
 
@@ -82,7 +84,8 @@ You can check this by running:
 .. note::
 
   Do not use command ``pip`` but ``python -m pip``.
-  For example, to start ``pip`` for Python 3.6, you use the command ``python3.6 -m pip``.
+  For example, to start ``pip`` for Python 3.6, you use the
+  command ``python3.6 -m pip``.
 
 You can find more information about installing packages
 at this `link <https://packaging.python.org/installing/>`_.
@@ -123,7 +126,8 @@ with Pyxel using ``pip``:
 
 .. important::
   To prevent breaking any system-wide packages (ie packages installed for all users)
-  or to avoid using command ``$ sudo pip ...`` you can do a `user installation <https://pip.pypa.io/en/stable/user_guide/#user-installs>`_.
+  or to avoid using command ``$ sudo pip ...`` you can
+  do a `user installation <https://pip.pypa.io/en/stable/user_guide/#user-installs>`_.
 
   With the command: ``$ python3.7 -m pip install --user -r requirements.txt``
 

@@ -1,7 +1,8 @@
 .. _running_modes:
 
+=============
 Running Pyxel
-==============
+=============
 
 To run Pyxel on your local computer, simply run it from the command-line:
 
@@ -53,7 +54,7 @@ where
 .. _single_mode:
 
 Single mode
--------------
+===========
 
 Running Pyxel in Single mode can be used to get a single image with
 the detector effects defined in either the configuration file
@@ -74,7 +75,7 @@ or the GUI.
 .. _parametric_mode:
 
 Parametric mode
------------------
+===============
 
 The parametric mode of Pyxel can automatically change the value of any
 detector or model parameter to make a sensitivity analysis for any parameter.
@@ -87,7 +88,7 @@ At the end, the user can plot and analyze the data
 in function of the variable parameter.
 
 Sequential
-***********
+----------
 
 .. code-block:: yaml
 
@@ -111,7 +112,7 @@ The default values for 'number' and 'level' are defined as the arguments
 of the specific models in the pipeline part of the yaml config file.
 
 Embedded
-***********
+--------
 
 .. code-block:: yaml
 
@@ -137,7 +138,7 @@ The default values for 'number' and 'level' are defined as the arguments
 of the specific models in the pipeline part of the yaml config file.
 
 Parallel
-*********
+--------
 
 .. code-block:: yaml
 
@@ -173,7 +174,7 @@ output fits image for each generation to see the evolution.
 .. _calibration_mode:
 
 Calibration mode
-------------------
+================
 
 The purpose of the Calibration mode is to find the optimal input arguments
 of models or optimal detector attributes based on a
