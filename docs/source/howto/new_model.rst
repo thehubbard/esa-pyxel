@@ -1,7 +1,8 @@
 .. _new_model:
 
+=================
 Adding new models
-===================
+=================
 
 :ref:`Models <models>`
 
@@ -11,7 +12,7 @@ purpose.
 
 
 The YAML file
----------------
+=============
 
 You need to add your model function to the :ref:`YAML config file <yaml>`,
 providing the input arguments for the function.
@@ -47,7 +48,7 @@ You should copy the python file including your function in the folder
 
 
 Model wrapper
-----------------
+=============
 
 If your model is a Python class, package or it is implemented in a
 programming language other than Python (C/C++, Fortran, Java),
@@ -57,7 +58,7 @@ non-Python code).
 
 
 Argument validation
--------------------
+===================
 
 To validate input arguments of a model function, use the
 ``validate`` and ``argument`` Pyxel decorators:

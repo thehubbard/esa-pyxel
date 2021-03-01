@@ -14,12 +14,14 @@ made by CCD or CMOS-based detectors.
 Getting Started
 ===============
 
-**Tutorials**. :doc:`Learn about the Pyxel's concepts <tutorials/overview>`.
+**Tutorials**.
+:doc:`Learn about the Pyxel's concepts <tutorials/overview>`.
 
 How-to guides
 =============
 
-**Step-by-step guides**. Covers key tasks and operations and common problems.
+**Step-by-step guides**.
+:doc:`Covers key tasks and operations and common problems <howto/overview>`.
 
 Background
 ==========
@@ -48,7 +50,8 @@ Reference
    :maxdepth: 1
    :hidden:
 
-   new_model.rst
+   howto/index.rst
+   howto/new_model.rst
 
 .. toctree::
    :caption: Background
