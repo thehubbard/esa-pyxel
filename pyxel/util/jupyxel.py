@@ -16,9 +16,8 @@ import numpy as np
 from IPython.display import Markdown, display
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
-from pyxel.data_structure import Image, Photon, Pixel, Signal
-
 if t.TYPE_CHECKING:
+    from pyxel.data_structure import Image, Photon, Pixel, Signal
     from pyxel.detectors import Detector
     from pyxel.inputs_outputs import Configuration
     from pyxel.pipelines import DetectionPipeline, ModelFunction, Processor
@@ -175,7 +174,8 @@ def display_array(data: np.ndarray, axes: t.List[plt.axes], **kwargs: str) -> No
 
 
 def display_detector(
-    detector: "Detector", array: t.Union[None, Photon, Pixel, Signal, Image] = None
+    detector: "Detector",
+    array: t.Union[None, "Photon", "Pixel", "Signal", "Image"] = None,
 ) -> None:
     """Display detector.
 
