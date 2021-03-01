@@ -5,6 +5,12 @@ Changelog
 version 0.9 / UNRELEASED-2021-MM-DD
 -----------------------------------
 
+Core
+~~~~
+
+* Fix a circular import in 'pyxel.data_structure'/
+  (See `!171 <https://gitlab.com/esa/pyxel/-/merge_requests/171>`_).
+
 Others
 ~~~~~~
 
