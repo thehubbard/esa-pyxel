@@ -1,15 +1,41 @@
 .. _index:
 
-=====
-Pyxel
-=====
+========================================
+Welcome to the **Pyxel** documentation !
+========================================
 
-The **pyxel** documentation.
+Pyxel is a general detector simulation framework.
+
+An easy-to-use framework that can simulate a variety of imaging detector
+effects combined on images (e.g. radiation and optical effects, noises)
+made by CCD or CMOS-based detectors.
+
+
+Getting Started
+===============
+
+**Tutorials**. :doc:`Learn about the Pyxel's concepts <overview>`.
+
+How-to guides
+=============
+
+**Step-by-step guides**. Covers key tasks and operations and common problems.
+
+Background
+==========
+
+**Explanations**. Explanation of concepts, best practices and techniques.
+
+Reference
+=========
+
+**Technical reference**. Cover tools, components and resources.
 
 
 .. toctree::
    :caption: Getting Started
-   :maxdepth: 4
+   :maxdepth: 1
+   :hidden:
 
    overview.rst
    install.rst
@@ -17,8 +43,16 @@ The **pyxel** documentation.
    examples.rst
 
 .. toctree::
-   :caption: User Guide
-   :maxdepth: 4
+   :caption: How-to guides
+   :maxdepth: 1
+   :hidden:
+
+   new_model.rst
+
+.. toctree::
+   :caption: Background
+   :maxdepth: 1
+   :hidden:
 
    pipelines.rst
    detectors.rst
@@ -28,19 +62,28 @@ The **pyxel** documentation.
    gui.rst
 
 .. toctree::
+   :caption: Reference
+   :maxdepth: 1
+   :hidden:
+
+   reference.rst
+
+.. toctree::
    :caption: Physics Reference
-   :maxdepth: 4
+   :maxdepth: 1
+   :hidden:
 
 .. toctree::
    :caption: Developer Guide
-   :maxdepth: 4
+   :maxdepth: 1
+   :hidden:
 
    contributing.rst
-   new_model.rst
 
 .. toctree::
    :caption: About
    :maxdepth: 1
+   :hidden:
 
    faq.rst
    acronyms.rst
@@ -48,4 +91,3 @@ The **pyxel** documentation.
    license.rst
    authors.rst
    acknowledgement.rst
-   reference.rst
