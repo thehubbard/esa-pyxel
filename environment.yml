@@ -67,6 +67,7 @@ dependencies:
   - pygmo>=2.11
   - pympler
   - pillow
+  - scikit-image
 # Development
   - flake8
   - isort>=5
