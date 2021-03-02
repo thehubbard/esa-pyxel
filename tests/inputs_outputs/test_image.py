@@ -5,6 +5,7 @@
 #  this file, may be copied, modified, propagated, or distributed except according to
 #  the terms contained in the file ‘LICENCE.txt’.
 
+import os
 from pathlib import Path
 
 import numpy as np
@@ -57,6 +58,26 @@ def valid_pil_image() -> Image.Image:
     return pil_image
 
 
+@pytest.fixture
+def valid_data2d_folder(tmp_path: Path, valid_hdus: fits.HDUList) -> Path:
+    """Create a valid 2d files."""
+    data_2d = np.array([[1, 2], [3, 4]], dtype=np.uint16)
+
+    data_folder = tmp_path / "data"
+    data_folder.mkdir(parents=True, exist_ok=True)
+
+    # Create a new FITS file based on 'filename' and 'valid_hdus'
+    fits.writeto(data_folder / "frame2d.fits", data=data_2d)
+    np.save(data_folder / "frame2d.npy", arr=data_2d)
+    np.savetxt(data_folder / "frame2d_tab.txt", X=data_2d, delimiter="\t")
+    np.savetxt(data_folder / "frame2d_space.txt", X=data_2d, delimiter=" ")
+    np.savetxt(data_folder / "frame2d_comma.txt", X=data_2d, delimiter=",")
+    np.savetxt(data_folder / "frame2d_pipe.txt", X=data_2d, delimiter="|")
+    np.savetxt(data_folder / "frame2d_semicolon.txt", X=data_2d, delimiter=";")
+
+    return tmp_path
+
+
 def test_invalid_filename():
     with pytest.raises(FileNotFoundError):
         _ = load_image("dummy")
@@ -75,21 +96,32 @@ def test_invalid_format(tmp_path: Path, filename: str):
 @pytest.mark.parametrize(
     "filename",
     [
-        "valid_frame.fits",
-        "valid_frame.FITS",
-        # "valid_frame.fits.gz"
+        # Local FITS files
+        "data/frame2d.fits",
+        "data/frame2d.FITS",
+        Path("data/frame2d.fits"),
+        Path("./data/frame2d.fits"),
+        # Local Numpy binary files
+        "data/frame2d.npy",
+        Path("data/frame2d.npy"),
+        # Local Numpy text files
+        "data/frame2d_tab.txt",
+        "data/frame2d_space.txt",
+        "data/frame2d_comma.txt",
+        "data/frame2d_pipe.txt",
+        "data/frame2d_semicolon.txt",
+        Path("data/frame2d_tab.txt"),
+        Path("data/frame2d_space.txt"),
+        Path("data/frame2d_comma.txt"),
+        Path("data/frame2d_pipe.txt"),
+        Path("data/frame2d_semicolon.txt"),
     ],
 )
-def test_with_fits(tmp_path: Path, valid_hdus: fits.HDUList, filename: str):
+def test_with_fits(valid_data2d_folder: Path, filename: str):
     """Check with a valid FITS file with a single 'PrimaryHDU'."""
-    # Create a new FITS file based on 'filename' and 'valid_hdus'
-    full_filename = tmp_path.joinpath(filename)  # type: Path
-    valid_hdus.writeto(full_filename)
-
-    assert full_filename.exists()
-
     # Load FITS file
-    data_2d = load_image(full_filename)
+    os.chdir(valid_data2d_folder)
+    data_2d = load_image(filename)
 
     # Check 'data_2d
     np.testing.assert_equal(data_2d, np.array([[1, 2], [3, 4]], dtype=np.uint16))
