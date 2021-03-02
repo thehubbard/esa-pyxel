@@ -58,17 +58,17 @@ def load_image(filename: t.Union[str, Path]) -> np.ndarray:
     suffix = filename_path.suffix.lower()
 
     if suffix.startswith(".fits"):
-        with open(filename_path, mode="rb") as file_handler:
+        with fsspec.open(filename_path, mode="rb") as file_handler:
             data_2d = fits.getdata(file_handler)  # type: np.ndarray
 
     elif suffix.startswith(".npy"):
-        with open(filename_path, mode="rb") as file_handler:
+        with fsspec.open(filename_path, mode="rb") as file_handler:
             data_2d = np.load(file_handler)
 
     elif suffix.startswith(".txt") or suffix.startswith(".data"):
         for sep in ["\t", " ", ",", "|", ";"]:
             try:
-                with open(filename_path, mode="r") as file_handler:
+                with fsspec.open(filename_path, mode="r") as file_handler:
                     data_2d = np.loadtxt(file_handler, delimiter=sep)
                 break
             except ValueError:
@@ -79,7 +79,7 @@ def load_image(filename: t.Union[str, Path]) -> np.ndarray:
             )
 
     elif suffix.startswith((".jpg", ".jpeg", ".png", ".bmp", ".tiff")):
-        with open(filename_path, mode="rb") as file_handler:
+        with fsspec.open(filename_path, mode="rb") as file_handler:
             image_2d = Image.open(file_handler)
             image_2d_converted = image_2d.convert("LA")  # RGB to grayscale conversion
 

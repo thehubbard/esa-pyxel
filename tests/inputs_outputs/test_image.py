@@ -61,21 +61,30 @@ def valid_pil_image() -> Image.Image:
 @pytest.fixture
 def valid_data2d_folder(tmp_path: Path, valid_hdus: fits.HDUList) -> Path:
     """Create a valid 2d files."""
-    data_2d = np.array([[1, 2], [3, 4]], dtype=np.uint16)
+    # Get current folder
+    current_folder = Path().cwd()  # type: Path
 
-    data_folder = tmp_path / "data"
-    data_folder.mkdir(parents=True, exist_ok=True)
+    try:
+        os.chdir(tmp_path)
 
-    # Create a new FITS file based on 'filename' and 'valid_hdus'
-    fits.writeto(data_folder / "frame2d.fits", data=data_2d)
-    np.save(data_folder / "frame2d.npy", arr=data_2d)
-    np.savetxt(data_folder / "frame2d_tab.txt", X=data_2d, delimiter="\t")
-    np.savetxt(data_folder / "frame2d_space.txt", X=data_2d, delimiter=" ")
-    np.savetxt(data_folder / "frame2d_comma.txt", X=data_2d, delimiter=",")
-    np.savetxt(data_folder / "frame2d_pipe.txt", X=data_2d, delimiter="|")
-    np.savetxt(data_folder / "frame2d_semicolon.txt", X=data_2d, delimiter=";")
+        # Create folder 'data'
+        Path("data").mkdir(parents=True, exist_ok=True)
 
-    return tmp_path
+        data_2d = np.array([[1, 2], [3, 4]], dtype=np.uint16)
+
+        # Create a new FITS file based on 'filename' and 'valid_hdus'
+        fits.writeto("data/frame2d.fits", data=data_2d)
+        np.save("data/frame2d.npy", arr=data_2d)
+        np.savetxt("data/frame2d_tab.txt", X=data_2d, delimiter="\t")
+        np.savetxt("data/frame2d_space.txt", X=data_2d, delimiter=" ")
+        np.savetxt("data/frame2d_comma.txt", X=data_2d, delimiter=",")
+        np.savetxt("data/frame2d_pipe.txt", X=data_2d, delimiter="|")
+        np.savetxt("data/frame2d_semicolon.txt", X=data_2d, delimiter=";")
+
+        yield tmp_path
+
+    finally:
+        os.chdir(current_folder)
 
 
 def test_invalid_filename():
@@ -120,7 +129,6 @@ def test_invalid_format(tmp_path: Path, filename: str):
 def test_with_fits(valid_data2d_folder: Path, filename: str):
     """Check with a valid FITS file with a single 'PrimaryHDU'."""
     # Load FITS file
-    os.chdir(valid_data2d_folder)
     data_2d = load_image(filename)
 
     # Check 'data_2d
