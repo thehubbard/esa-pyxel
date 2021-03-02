@@ -7,6 +7,7 @@
 
 import os
 import re
+import typing as t
 from pathlib import Path
 
 import numpy as np
@@ -61,8 +62,8 @@ def valid_pil_image() -> Image.Image:
 
 
 @pytest.fixture
-def valid_data2d_folder(tmp_path: Path, httpserver: HTTPServer) -> Path:
-    """Create a valid 2d files locally."""
+def valid_data2d_http_hostname(tmp_path: Path, httpserver: HTTPServer) -> str:
+    """Create valid 2D files on a temporary HTTP server."""
     # Get current folder
     current_folder = Path().cwd()  # type: Path
 
@@ -74,63 +75,54 @@ def valid_data2d_folder(tmp_path: Path, httpserver: HTTPServer) -> Path:
 
         data_2d = np.array([[1, 2], [3, 4]], dtype=np.uint16)
 
-        # Create a new FITS file based on 'filename'
-        fits.writeto("data/frame2d.fits", data=data_2d)
-        np.save("data/frame2d.npy", arr=data_2d)
-        np.savetxt("data/frame2d_tab.txt", X=data_2d, delimiter="\t")
-        np.savetxt("data/frame2d_space.txt", X=data_2d, delimiter=" ")
-        np.savetxt("data/frame2d_comma.txt", X=data_2d, delimiter=",")
-        np.savetxt("data/frame2d_pipe.txt", X=data_2d, delimiter="|")
-        np.savetxt("data/frame2d_semicolon.txt", X=data_2d, delimiter=";")
+        # Create files in the local file system
+        fits.writeto("data/img.fits", data=data_2d)
+        np.save("data/img.npy", arr=data_2d)
+        np.savetxt("data/img_tab.txt", X=data_2d, delimiter="\t")
+        np.savetxt("data/img_space.txt", X=data_2d, delimiter=" ")
+        np.savetxt("data/img_comma.txt", X=data_2d, delimiter=",")
+        np.savetxt("data/img_pipe.txt", X=data_2d, delimiter="|")
+        np.savetxt("data/img_semicolon.txt", X=data_2d, delimiter=";")
 
-        yield tmp_path
+        text_filenames = [
+            "data/img_tab.txt",
+            "data/img_space.txt",
+            "data/img_comma.txt",
+            "data/img_pipe.txt",
+            "data/img_semicolon.txt",
+        ]
+
+        # Put text data in a fake HTTP server
+        for filename in text_filenames:
+            with open(filename, "r") as fh:
+                response_data = fh.read()  # type: str
+                httpserver.expect_request(f"/{filename}").respond_with_data(
+                    response_data, content_type="text/plain"
+                )
+
+        binary_filenames = [
+            "data/img.fits",
+            "data/img.npy",
+        ]
+
+        # Put binary data in a fake HTTP server
+        for filename in binary_filenames:
+            with open(filename, "rb") as fh:
+                response_data = fh.read()  # type: str
+                httpserver.expect_request(f"/{filename}").respond_with_data(
+                    response_data, content_type="text/plain"
+                )
+
+        # Extract an url (e.g. 'http://localhost:59226/)
+        url = httpserver.url_for("")  # type: str
+
+        # Extract the hostname (e.g. 'localhost:59226')
+        hostname = re.findall("http://(.*)/", url)[0]  # type: str
+
+        yield hostname
 
     finally:
         os.chdir(current_folder)
-
-
-@pytest.fixture
-def valid_data2d_http_hostname(
-    valid_data2d_folder: Path, httpserver: HTTPServer
-) -> str:
-    """Create valid 2D files on a temporary HTTP server."""
-
-    text_filenames = [
-        "data/frame2d_tab.txt",
-        "data/frame2d_space.txt",
-        "data/frame2d_comma.txt",
-        "data/frame2d_pipe.txt",
-        "data/frame2d_semicolon.txt",
-    ]
-
-    # Put text data in a fake HTTP server
-    for filename in text_filenames:
-        with open(filename, "r") as fh:
-            response_data = fh.read()  # type: str
-            httpserver.expect_request(f"/{filename}").respond_with_data(
-                response_data, content_type="text/plain"
-            )
-
-    binary_filenames = [
-        "data/frame2d.fits",
-        "data/frame2d.npy",
-    ]
-
-    # Put binary data in a fake HTTP server
-    for filename in binary_filenames:
-        with open(filename, "rb") as fh:
-            response_data = fh.read()  # type: str
-            httpserver.expect_request(f"/{filename}").respond_with_data(
-                response_data, content_type="text/plain"
-            )
-
-    # Extract an url (e.g. 'http://localhost:59226/)
-    url = httpserver.url_for("")  # type: str
-
-    # Extract the hostname (e.g. 'localhost:59226')
-    hostname = re.findall("http://(.*)/", url)[0]  # type: str
-
-    yield hostname
 
 
 @pytest.mark.parametrize(
@@ -156,60 +148,51 @@ def test_invalid_format(tmp_path: Path, filename: str):
 
 
 @pytest.mark.parametrize(
-    "filename",
+    "filename, exp_data",
     [
-        # Local FITS files
-        "data/frame2d.fits",
-        "data/frame2d.FITS",
-        Path("data/frame2d.fits"),
-        Path("./data/frame2d.fits"),
-        # Local Numpy binary files
-        "data/frame2d.npy",
-        Path("data/frame2d.npy"),
-        # Local Numpy text files
-        "data/frame2d_tab.txt",
-        "data/frame2d_space.txt",
-        "data/frame2d_comma.txt",
-        "data/frame2d_pipe.txt",
-        "data/frame2d_semicolon.txt",
-        Path("data/frame2d_tab.txt"),
-        Path("data/frame2d_space.txt"),
-        Path("data/frame2d_comma.txt"),
-        Path("data/frame2d_pipe.txt"),
-        Path("data/frame2d_semicolon.txt"),
+        # FITS files
+        ("data/img.fits", np.array([[1, 2], [3, 4]], np.uint16)),
+        ("data/img.FITS", np.array([[1, 2], [3, 4]], np.uint16)),
+        (Path("data/img.fits"), np.array([[1, 2], [3, 4]], np.uint16)),
+        (Path("./data/img.fits"), np.array([[1, 2], [3, 4]], np.uint16)),
+        ("http://{host}/data/img.fits", np.array([[1, 2], [3, 4]], np.uint16)),
+        ("data/img.npy", np.array([[1, 2], [3, 4]], np.uint16)),
+        (Path("data/img.npy"), np.array([[1, 2], [3, 4]], np.uint16)),
+        ("http://{host}/data/img.npy", np.array([[1, 2], [3, 4]], np.uint16)),
+        ("data/img_tab.txt", np.array([[1, 2], [3, 4]], np.uint16)),
+        ("data/img_space.txt", np.array([[1, 2], [3, 4]], np.uint16)),
+        ("data/img_comma.txt", np.array([[1, 2], [3, 4]], np.uint16)),
+        ("data/img_pipe.txt", np.array([[1, 2], [3, 4]], np.uint16)),
+        ("data/img_semicolon.txt", np.array([[1, 2], [3, 4]], np.uint16)),
+        (Path("data/img_tab.txt"), np.array([[1, 2], [3, 4]], np.uint16)),
+        (Path("data/img_space.txt"), np.array([[1, 2], [3, 4]], np.uint16)),
+        (Path("data/img_comma.txt"), np.array([[1, 2], [3, 4]], np.uint16)),
+        (Path("data/img_pipe.txt"), np.array([[1, 2], [3, 4]], np.uint16)),
+        (Path("data/img_semicolon.txt"), np.array([[1, 2], [3, 4]], np.uint16)),
+        ("http://{host}/data/img_tab.txt", np.array([[1, 2], [3, 4]], np.uint16)),
+        ("http://{host}/data/img_space.txt", np.array([[1, 2], [3, 4]], np.uint16)),
+        ("http://{host}/data/img_comma.txt", np.array([[1, 2], [3, 4]], np.uint16)),
+        ("http://{host}/data/img_pipe.txt", np.array([[1, 2], [3, 4]], np.uint16)),
+        ("http://{host}/data/img_semicolon.txt", np.array([[1, 2], [3, 4]], np.uint16)),
     ],
 )
-def test_load_image_local(valid_data2d_folder: Path, filename: str):
-    """Check with a valid FITS file with a single 'PrimaryHDU'."""
-    # Load data
-    data_2d = load_image(filename)
-
-    # Check 'data_2d
-    np.testing.assert_equal(data_2d, np.array([[1, 2], [3, 4]], dtype=np.uint16))
-
-
-@pytest.mark.parametrize(
-    "url",
-    [
-        "http://{hostname}/data/frame2d.fits",
-        "http://{hostname}/data/frame2d.npy",
-        "http://{hostname}/data/frame2d_tab.txt",
-        "http://{hostname}/data/frame2d_space.txt",
-        "http://{hostname}/data/frame2d_comma.txt",
-        "http://{hostname}/data/frame2d_pipe.txt",
-        "http://{hostname}/data/frame2d_semicolon.txt",
-    ],
-)
-def test_load_image_remote(valid_data2d_http_hostname: str, url: str):
-    """Load a remote image."""
+def test_load_image(
+    valid_data2d_http_hostname: str, filename: t.Union[str, Path], exp_data: np.ndarray
+):
+    """Test function 'load_image' with local and remote files."""
     # Build a full url
-    full_url = url.format(hostname=valid_data2d_http_hostname)  # type: str
+    if isinstance(filename, Path):
+        # Load data
+        data_2d = load_image(filename)
 
-    # Load data
-    data_2d = load_image(full_url)
+    else:
+        full_url = filename.format(host=valid_data2d_http_hostname)  # type: str
+
+        # Load data
+        data_2d = load_image(full_url)
 
     # Check 'data_2d
-    np.testing.assert_equal(data_2d, np.array([[1, 2], [3, 4]], dtype=np.uint16))
+    np.testing.assert_equal(data_2d, exp_data)
 
 
 @pytest.mark.parametrize(
