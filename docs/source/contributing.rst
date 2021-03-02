@@ -1,8 +1,8 @@
 .. _contributing:
 
-*********************
+=====================
 Contributing to Pyxel
-*********************
+=====================
 
 .. contents:: Table of contents:
    :local:
@@ -74,8 +74,8 @@ Bug reports must:
    <https://docs.gitlab.com/ee/user/markdown.html#gitlab-flavored-markdown-gfm>`_::
 
       ```python
-      >>> from pyxel.io import load
-      >>> cfg = load("config.yml")
+      from pyxel.io import load
+      cfg = load("config.yml")
       ```
 
 2. Include the full version string of *Pyxel* and its dependencies. You can
@@ -838,7 +838,7 @@ Merge Request checklist
 - **Test that the documentation builds correctly** by typing ``tox -e docs``.
   This is not strictly necessary, but this may be easier than waiting for CI
   to catch a mistake.
-  See :ref:`"Contributing to the documentation" <_contributing.documentation>`.
+  See :ref:`"Contributing to the documentation" <contributing.documentation>`.
 - **Test your code**.
 
     - Write new tests if needed. See :ref:`"Test-driven development/code

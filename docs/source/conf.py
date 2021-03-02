@@ -54,15 +54,14 @@ extensions = [
     "sphinx.ext.viewcode",  # add links to highlighted source code
     "sphinx.ext.autosummary",  # Generate autodoc summaries
     "sphinx.ext.napoleon",  # for numpy docstyle
-    "sphinxcontrib.bibtex"
-    # 'sphinxcontrib.autoyaml'
-    # 'sphinxcontrib.plantuml',
-    # 'sphinxcontrib.mermaid',
+    "sphinxcontrib.bibtex",
+    "IPython.sphinxext.ipython_directive",
+    "IPython.sphinxext.ipython_console_highlighting",
 ]
 
 bibtex_bibfiles = ["refs.bib"]
 
-highlight_language = "python3"
+# highlight_language = "python3"
 
 # autoyaml_root
 # autoyaml_doc_delimeter

@@ -65,20 +65,15 @@ To validate input arguments of a model function, use the
 
 .. ipython:: python
 
-    import pyxel
+    from pyxel.detectors import Detector
 
 
-    @pyxel.validate
-    @pyxel.argument(name="file", label="a fits file", validate=check_path)
-    @pyxel.argument(
-        name="arg", label="an integer number", units="", validate=check_type(int)
-    )
-    def my_model_function(detector: Detector, file: str, arg: int = 0):
+    def my_model_function(detector: Detector, filename: str, arg: int = 0):
         """This is my model with validated arguments.
-
         Parameters
         ----------
         detector
-        file
+        filename
         arg
         """
+        pass

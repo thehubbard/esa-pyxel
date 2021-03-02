@@ -65,7 +65,6 @@ Reference
    background/models.rst
    background/data_structure.rst
    background/yaml.rst
-   background/gui.rst
 
 .. toctree::
    :caption: Reference
