@@ -8,8 +8,11 @@ version 0.9 / UNRELEASED-2021-MM-DD
 Core
 ~~~~
 
-* Fix a circular import in 'pyxel.data_structure'/
+* Fix a circular import in 'pyxel.data_structure'.
   (See `!171 <https://gitlab.com/esa/pyxel/-/merge_requests/171>`_).
+
+* Add capability to read files from remote filesystems (e.g. http, ftp, ...).
+  (See `!169 <https://gitlab.com/esa/pyxel/-/merge_requests/169>`_).
 
 Others
 ~~~~~~
