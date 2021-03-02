@@ -1,4 +1,4 @@
-#  Copyright (c) European Space Agency, 2017, 2018, 2019, 2020.
+#  Copyright (c) European Space Agency, 2017, 2018, 2019, 2020, 2021.
 #
 #  This file is subject to the terms and conditions defined in file 'LICENCE.txt', which
 #  is part of this Pyxel package. No part of the package, including
@@ -10,6 +10,7 @@
 import typing as t
 from pathlib import Path
 
+import fsspec
 import numpy as np
 import pandas as pd
 from astropy.io import fits
@@ -57,15 +58,18 @@ def load_image(filename: t.Union[str, Path]) -> np.ndarray:
     suffix = filename_path.suffix.lower()
 
     if suffix.startswith(".fits"):
-        data_2d = fits.getdata(filename_path)  # type: np.ndarray
+        with open(filename_path, mode="rb") as file_handler:
+            data_2d = fits.getdata(file_handler)  # type: np.ndarray
 
     elif suffix.startswith(".npy"):
-        data_2d = np.load(filename_path)
+        with open(filename_path, mode="rb") as file_handler:
+            data_2d = np.load(file_handler)
 
     elif suffix.startswith(".txt") or suffix.startswith(".data"):
         for sep in ["\t", " ", ",", "|", ";"]:
             try:
-                data_2d = np.loadtxt(filename_path, delimiter=sep)
+                with open(filename_path, mode="r") as file_handler:
+                    data_2d = np.loadtxt(file_handler, delimiter=sep)
                 break
             except ValueError:
                 pass
@@ -75,14 +79,16 @@ def load_image(filename: t.Union[str, Path]) -> np.ndarray:
             )
 
     elif suffix.startswith((".jpg", ".jpeg", ".png", ".bmp", ".tiff")):
-        image_2d = Image.open(filename_path)
-        image_2d_converted = image_2d.convert("LA")  # RGB to grayscale conversion
+        with open(filename_path, mode="rb") as file_handler:
+            image_2d = Image.open(file_handler)
+            image_2d_converted = image_2d.convert("LA")  # RGB to grayscale conversion
+
         data_2d = np.array(image_2d_converted)[:, :, 0]
 
     else:
         raise ValueError(
-            """Image format not supported. List of supported image formats:
-            .npy, .fits, .txt, .data, .jpg, .jpeg, .bmp, .png, .tiff."""
+            "Image format not supported. List of supported image formats: "
+            ".npy, .fits, .txt, .data, .jpg, .jpeg, .bmp, .png, .tiff."
         )
 
     return data_2d
