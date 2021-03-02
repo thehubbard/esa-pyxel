@@ -50,36 +50,40 @@ def load_image(filename: t.Union[str, Path]) -> np.ndarray:
     >>> load_image("rgb_frame.jpg")
     array([[234, 211, ...]])
     """
-    filename_path = Path(filename).expanduser().resolve()
+    # Extract suffix (e.g. '.txt', '.fits'...)
+    suffix = Path(filename).suffix.lower()  # type: str
 
-    if not filename_path.exists():
-        raise FileNotFoundError(f"Input file '{filename_path}' can not be found.")
+    if isinstance(filename, Path):
+        full_filename = filename.expanduser().resolve()  # type: Path
+        if not full_filename.exists():
+            raise FileNotFoundError(f"Input file '{full_filename}' can not be found.")
 
-    suffix = filename_path.suffix.lower()
+        url_path = str(full_filename)  # type: str
+
+    else:
+        url_path = filename
 
     if suffix.startswith(".fits"):
-        with fsspec.open(filename_path, mode="rb") as file_handler:
+        with fsspec.open(url_path, mode="rb") as file_handler:
             data_2d = fits.getdata(file_handler)  # type: np.ndarray
 
     elif suffix.startswith(".npy"):
-        with fsspec.open(filename_path, mode="rb") as file_handler:
+        with fsspec.open(url_path, mode="rb") as file_handler:
             data_2d = np.load(file_handler)
 
     elif suffix.startswith(".txt") or suffix.startswith(".data"):
         for sep in ["\t", " ", ",", "|", ";"]:
             try:
-                with fsspec.open(filename_path, mode="r") as file_handler:
+                with fsspec.open(url_path, mode="r") as file_handler:
                     data_2d = np.loadtxt(file_handler, delimiter=sep)
                 break
             except ValueError:
                 pass
         else:
-            raise ValueError(
-                f"Cannot find the separator for filename '{filename_path}'."
-            )
+            raise ValueError(f"Cannot find the separator for filename '{url_path}'.")
 
     elif suffix.startswith((".jpg", ".jpeg", ".png", ".bmp", ".tiff")):
-        with fsspec.open(filename_path, mode="rb") as file_handler:
+        with fsspec.open(url_path, mode="rb") as file_handler:
             image_2d = Image.open(file_handler)
             image_2d_converted = image_2d.convert("LA")  # RGB to grayscale conversion
 

@@ -6,6 +6,7 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 import os
+import re
 from pathlib import Path
 
 import numpy as np
@@ -13,6 +14,7 @@ import pandas as pd
 import pytest
 from astropy.io import fits
 from PIL import Image
+from pytest_httpserver import HTTPServer  # pip install pytest-httpserver
 
 from pyxel.inputs_outputs import load_image, load_table
 
@@ -59,8 +61,8 @@ def valid_pil_image() -> Image.Image:
 
 
 @pytest.fixture
-def valid_data2d_folder(tmp_path: Path, valid_hdus: fits.HDUList) -> Path:
-    """Create a valid 2d files."""
+def valid_data2d_folder(tmp_path: Path, httpserver: HTTPServer) -> Path:
+    """Create a valid 2d files locally."""
     # Get current folder
     current_folder = Path().cwd()  # type: Path
 
@@ -72,7 +74,7 @@ def valid_data2d_folder(tmp_path: Path, valid_hdus: fits.HDUList) -> Path:
 
         data_2d = np.array([[1, 2], [3, 4]], dtype=np.uint16)
 
-        # Create a new FITS file based on 'filename' and 'valid_hdus'
+        # Create a new FITS file based on 'filename'
         fits.writeto("data/frame2d.fits", data=data_2d)
         np.save("data/frame2d.npy", arr=data_2d)
         np.savetxt("data/frame2d_tab.txt", X=data_2d, delimiter="\t")
@@ -87,9 +89,60 @@ def valid_data2d_folder(tmp_path: Path, valid_hdus: fits.HDUList) -> Path:
         os.chdir(current_folder)
 
 
-def test_invalid_filename():
-    with pytest.raises(FileNotFoundError):
-        _ = load_image("dummy")
+@pytest.fixture
+def valid_data2d_http_hostname(
+    valid_data2d_folder: Path, httpserver: HTTPServer
+) -> str:
+    """Create valid 2D files on a temporary HTTP server."""
+
+    text_filenames = [
+        "data/frame2d_tab.txt",
+        "data/frame2d_space.txt",
+        "data/frame2d_comma.txt",
+        "data/frame2d_pipe.txt",
+        "data/frame2d_semicolon.txt",
+    ]
+
+    # Put text data in a fake HTTP server
+    for filename in text_filenames:
+        with open(filename, "r") as fh:
+            response_data = fh.read()  # type: str
+            httpserver.expect_request(f"/{filename}").respond_with_data(
+                response_data, content_type="text/plain"
+            )
+
+    binary_filenames = [
+        "data/frame2d.fits",
+        "data/frame2d.npy",
+    ]
+
+    # Put binary data in a fake HTTP server
+    for filename in binary_filenames:
+        with open(filename, "rb") as fh:
+            response_data = fh.read()  # type: str
+            httpserver.expect_request(f"/{filename}").respond_with_data(
+                response_data, content_type="text/plain"
+            )
+
+    # Extract an url (e.g. 'http://localhost:59226/)
+    url = httpserver.url_for("")  # type: str
+
+    # Extract the hostname (e.g. 'localhost:59226')
+    hostname = re.findall("http://(.*)/", url)[0]  # type: str
+
+    yield hostname
+
+
+@pytest.mark.parametrize(
+    "filename, exp_error, exp_message",
+    [
+        ("dummy", ValueError, "Image format not supported"),
+    ],
+)
+def test_invalid_filename(filename, exp_error, exp_message):
+    """Test invalid filenames."""
+    with pytest.raises(exp_error, match=exp_message):
+        _ = load_image(filename)
 
 
 @pytest.mark.parametrize("filename", ["dummy.foo"])
@@ -126,10 +179,34 @@ def test_invalid_format(tmp_path: Path, filename: str):
         Path("data/frame2d_semicolon.txt"),
     ],
 )
-def test_with_fits(valid_data2d_folder: Path, filename: str):
+def test_load_image_local(valid_data2d_folder: Path, filename: str):
     """Check with a valid FITS file with a single 'PrimaryHDU'."""
-    # Load FITS file
+    # Load data
     data_2d = load_image(filename)
+
+    # Check 'data_2d
+    np.testing.assert_equal(data_2d, np.array([[1, 2], [3, 4]], dtype=np.uint16))
+
+
+@pytest.mark.parametrize(
+    "url",
+    [
+        "http://{hostname}/data/frame2d.fits",
+        "http://{hostname}/data/frame2d.npy",
+        "http://{hostname}/data/frame2d_tab.txt",
+        "http://{hostname}/data/frame2d_space.txt",
+        "http://{hostname}/data/frame2d_comma.txt",
+        "http://{hostname}/data/frame2d_pipe.txt",
+        "http://{hostname}/data/frame2d_semicolon.txt",
+    ],
+)
+def test_load_image_remote(valid_data2d_http_hostname: str, url: str):
+    """Load a remote image."""
+    # Build a full url
+    full_url = url.format(hostname=valid_data2d_http_hostname)  # type: str
+
+    # Load data
+    data_2d = load_image(full_url)
 
     # Check 'data_2d
     np.testing.assert_equal(data_2d, np.array([[1, 2], [3, 4]], dtype=np.uint16))
