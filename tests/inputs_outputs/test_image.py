@@ -21,18 +21,6 @@ from pyxel.inputs_outputs import load_image, load_table
 
 
 @pytest.fixture
-def valid_hdus() -> fits.HDUList:
-    """Create a valid HDUList with only one 'PrimaryHDU'."""
-    # Create a new image
-    data_2d = np.array([[1, 2], [3, 4]], dtype=np.uint16)
-
-    hdu = fits.PrimaryHDU(data_2d)
-    hdu_lst = fits.HDUList([hdu])
-
-    return hdu_lst
-
-
-@pytest.fixture
 def valid_multiple_hdus() -> fits.HDUList:
     """Create a valid HDUList with one 'PrimaryHDU' and one 'ImageHDU'."""
     # Create a new image
@@ -62,7 +50,12 @@ def valid_pil_image() -> Image.Image:
 
 
 @pytest.fixture
-def valid_data2d_http_hostname(tmp_path: Path, httpserver: HTTPServer) -> str:
+def valid_data2d_http_hostname(
+    tmp_path: Path,
+    httpserver: HTTPServer,
+    valid_pil_image: Image.Image,
+    valid_multiple_hdus: fits.HDUList,
+) -> str:
     """Create valid 2D files on a temporary HTTP server."""
     # Get current folder
     current_folder = Path().cwd()  # type: Path
@@ -75,14 +68,23 @@ def valid_data2d_http_hostname(tmp_path: Path, httpserver: HTTPServer) -> str:
 
         data_2d = np.array([[1, 2], [3, 4]], dtype=np.uint16)
 
-        # Create files in the local file system
+        # Save 2d images
         fits.writeto("data/img.fits", data=data_2d)
+        valid_multiple_hdus.writeto("data/img_multiple.fits")
         np.save("data/img.npy", arr=data_2d)
         np.savetxt("data/img_tab.txt", X=data_2d, delimiter="\t")
         np.savetxt("data/img_space.txt", X=data_2d, delimiter=" ")
         np.savetxt("data/img_comma.txt", X=data_2d, delimiter=",")
         np.savetxt("data/img_pipe.txt", X=data_2d, delimiter="|")
         np.savetxt("data/img_semicolon.txt", X=data_2d, delimiter=";")
+
+        valid_pil_image.save("data/img.jpg")
+        valid_pil_image.save("data/img.jpeg")
+        valid_pil_image.save("data/img.png")
+        valid_pil_image.save("data/img.PNG")
+        valid_pil_image.save("data/img.tiff")
+        valid_pil_image.save("data/img.tif")
+        valid_pil_image.save("data/img.bmp")
 
         text_filenames = [
             "data/img_tab.txt",
@@ -101,16 +103,25 @@ def valid_data2d_http_hostname(tmp_path: Path, httpserver: HTTPServer) -> str:
                 )
 
         binary_filenames = [
-            "data/img.fits",
-            "data/img.npy",
+            ("data/img.fits", "text/plain"),  # TODO: Change this type
+            ("data/img_multiple.fits", "text/plain"),  # TODO: Change this type
+            ("data/img_multiple.FITS", "text/plain"),  # TODO: Change this type
+            ("data/img.npy", "text/plain"),  # TODO: Change this type
+            ("data/img.jpg", "image/jpeg"),
+            ("data/img.jpeg", "image/jpeg"),
+            ("data/img.png", "image/png"),
+            ("data/img.PNG", "image/png"),
+            ("data/img.tif", "image/tiff"),
+            ("data/img.tiff", "image/tiff"),
+            ("data/img.bmp", "image/bmp"),
         ]
 
         # Put binary data in a fake HTTP server
-        for filename in binary_filenames:
+        for filename, content_type in binary_filenames:
             with open(filename, "rb") as fh:
                 response_data = fh.read()  # type: str
                 httpserver.expect_request(f"/{filename}").respond_with_data(
-                    response_data, content_type="text/plain"
+                    response_data, content_type=content_type
                 )
 
         # Extract an url (e.g. 'http://localhost:59226/)
@@ -129,6 +140,7 @@ def valid_data2d_http_hostname(tmp_path: Path, httpserver: HTTPServer) -> str:
     "filename, exp_error, exp_message",
     [
         ("dummy", ValueError, "Image format not supported"),
+        ("dummy.foo", ValueError, "Image format not supported"),
     ],
 )
 def test_invalid_filename(filename, exp_error, exp_message):
@@ -137,28 +149,25 @@ def test_invalid_filename(filename, exp_error, exp_message):
         _ = load_image(filename)
 
 
-@pytest.mark.parametrize("filename", ["dummy.foo"])
-def test_invalid_format(tmp_path: Path, filename: str):
-    # Create an empty file
-    full_filename = tmp_path.joinpath(filename)  # type: Path
-    full_filename.touch()
-
-    with pytest.raises(ValueError):
-        _ = load_image(full_filename)
-
-
 @pytest.mark.parametrize(
     "filename, exp_data",
     [
         # FITS files
         ("data/img.fits", np.array([[1, 2], [3, 4]], np.uint16)),
         ("data/img.FITS", np.array([[1, 2], [3, 4]], np.uint16)),
+        ("data/img_multiple.fits", np.array([[5, 6], [7, 8]], np.uint16)),
+        ("data/img_multiple.FITS", np.array([[5, 6], [7, 8]], np.uint16)),
         (Path("data/img.fits"), np.array([[1, 2], [3, 4]], np.uint16)),
         (Path("./data/img.fits"), np.array([[1, 2], [3, 4]], np.uint16)),
+        (Path("data/img_multiple.fits"), np.array([[5, 6], [7, 8]], np.uint16)),
         ("http://{host}/data/img.fits", np.array([[1, 2], [3, 4]], np.uint16)),
+        ("http://{host}/data/img_multiple.fits", np.array([[5, 6], [7, 8]], np.uint16)),
+        ("http://{host}/data/img_multiple.FITS", np.array([[5, 6], [7, 8]], np.uint16)),
+        # Numpy binary files
         ("data/img.npy", np.array([[1, 2], [3, 4]], np.uint16)),
         (Path("data/img.npy"), np.array([[1, 2], [3, 4]], np.uint16)),
         ("http://{host}/data/img.npy", np.array([[1, 2], [3, 4]], np.uint16)),
+        # Numpy text files
         ("data/img_tab.txt", np.array([[1, 2], [3, 4]], np.uint16)),
         ("data/img_space.txt", np.array([[1, 2], [3, 4]], np.uint16)),
         ("data/img_comma.txt", np.array([[1, 2], [3, 4]], np.uint16)),
@@ -174,6 +183,23 @@ def test_invalid_format(tmp_path: Path, filename: str):
         ("http://{host}/data/img_comma.txt", np.array([[1, 2], [3, 4]], np.uint16)),
         ("http://{host}/data/img_pipe.txt", np.array([[1, 2], [3, 4]], np.uint16)),
         ("http://{host}/data/img_semicolon.txt", np.array([[1, 2], [3, 4]], np.uint16)),
+        # JPG files
+        ("data/img.jpg", np.array([[13, 19], [28, 34]])),
+        ("data/img.jpeg", np.array([[13, 19], [28, 34]])),
+        ("http://{host}/data/img.jpg", np.array([[13, 19], [28, 34]])),
+        ("http://{host}/data/img.jpeg", np.array([[13, 19], [28, 34]])),
+        # PNG files
+        ("data/img.png", np.array([[10, 20], [30, 40]])),
+        ("data/img.PNG", np.array([[10, 20], [30, 40]])),
+        ("http://{host}/data/img.png", np.array([[10, 20], [30, 40]])),
+        ("http://{host}/data/img.PNG", np.array([[10, 20], [30, 40]])),
+        # TIFF files
+        ("data/img.tif", np.array([[10, 20], [30, 40]])),
+        ("data/img.tiff", np.array([[10, 20], [30, 40]])),
+        ("http://{host}/data/img.tif", np.array([[10, 20], [30, 40]])),
+        ("http://{host}/data/img.tiff", np.array([[10, 20], [30, 40]])),
+        # BMP files
+        ("data/img.bmp", np.array([[10, 20], [30, 40]])),
     ],
 )
 def test_load_image(
@@ -193,90 +219,6 @@ def test_load_image(
 
     # Check 'data_2d
     np.testing.assert_equal(data_2d, exp_data)
-
-
-@pytest.mark.parametrize(
-    "filename",
-    [
-        "valid_frame.fits",
-        "valid_frame.FITS",
-        # "valid_frame.fits.gz"
-    ],
-)
-def test_with_fits_multiple(
-    tmp_path: Path, valid_multiple_hdus: fits.HDUList, filename: str
-):
-    """Check with a valid FITS file with a 'PrimaryHDU' and 'ImageHDU'."""
-    # Create a new FITS file based on 'filename' and 'valid_hdus'
-    full_filename = tmp_path.joinpath(filename)  # type: Path
-    valid_multiple_hdus.writeto(full_filename)
-
-    assert full_filename.exists()
-
-    # Load FITS file
-    data_2d = load_image(full_filename)
-
-    # Check 'data_2d
-    np.testing.assert_equal(data_2d, np.array([[5, 6], [7, 8]], dtype=np.uint16))
-
-
-@pytest.mark.parametrize(
-    "filename", ["valid_filename.txt", "valid_filename.TXT", "valid_filename.data"]
-)
-@pytest.mark.parametrize(
-    "content",
-    [
-        pytest.param("1.1\t2.2\n3.3\t4.4", id="with tab"),
-        pytest.param("1.1 2.2\n3.3 4.4", id="with space"),
-        pytest.param("1.1,2.2\n3.3,4.4", id="with comma"),
-        pytest.param("1.1|2.2\n3.3|4.4", id="with vertical-colon"),
-        pytest.param("1.1;2.2\n3.3;4.4", id="with semicolon"),
-    ],
-)
-def test_with_txt(tmp_path: Path, filename: str, content: str):
-    # Create a new txt file based on 'filename'
-    full_filename = tmp_path.joinpath(filename)  # type: Path
-    with full_filename.open("w") as fh:
-        fh.write(content)
-
-    assert full_filename.exists()
-
-    # Load TXT file
-    data_2d = load_image(full_filename)
-
-    # Check 'data_2d
-    np.testing.assert_equal(data_2d, np.array([[1.1, 2.2], [3.3, 4.4]]))
-
-
-@pytest.mark.parametrize(
-    "filename",
-    [
-        "valid_filename.jpg",
-        "valid_filename.jpeg",
-        "valid_filename.png",
-        "valid_filename.PNG",
-        "valid_filename.tiff",
-        "valid_filename.bmp",
-    ],
-)
-def test_with_pil(tmp_path: Path, valid_pil_image: Image.Image, filename: str):
-    """Check with a RGB uploaded image."""
-    full_filename = tmp_path.joinpath(filename)
-    valid_pil_image.save(full_filename)
-
-    assert full_filename.exists()
-
-    # Load image
-    data_2d = load_image(full_filename)
-
-    suffix = full_filename.suffix.lower()
-
-    if suffix.startswith(".jpg") or suffix.startswith(".jpeg"):
-        # Check compressed (lossy) jpg data_2d
-        np.testing.assert_equal(data_2d, np.array([[13, 19], [28, 34]]))
-    else:
-        # Check data_2d
-        np.testing.assert_equal(data_2d, np.array([[10, 20], [30, 40]]))
 
 
 def test_load_table_invalid_filename():

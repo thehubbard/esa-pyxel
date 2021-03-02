@@ -44,6 +44,9 @@ def load_image(filename: t.Union[str, Path]) -> np.ndarray:
     >>> load_image("frame.fits")
     array([[-0.66328494, -0.63205819, ...]])
 
+    >>> load_image("https://hostname/folder/frame.fits")
+    array([[-0.66328494, -0.63205819, ...]])
+
     >>> load_image("another_frame.npy")
     array([[-1.10136521, -0.93890239, ...]])
 
@@ -82,7 +85,7 @@ def load_image(filename: t.Union[str, Path]) -> np.ndarray:
         else:
             raise ValueError(f"Cannot find the separator for filename '{url_path}'.")
 
-    elif suffix.startswith((".jpg", ".jpeg", ".png", ".bmp", ".tiff")):
+    elif suffix.startswith((".jpg", ".jpeg", ".png", ".bmp", ".tiff", ".tif")):
         with fsspec.open(url_path, mode="rb") as file_handler:
             image_2d = Image.open(file_handler)
             image_2d_converted = image_2d.convert("LA")  # RGB to grayscale conversion
@@ -92,7 +95,7 @@ def load_image(filename: t.Union[str, Path]) -> np.ndarray:
     else:
         raise ValueError(
             "Image format not supported. List of supported image formats: "
-            ".npy, .fits, .txt, .data, .jpg, .jpeg, .bmp, .png, .tiff."
+            ".npy, .fits, .txt, .data, .jpg, .jpeg, .bmp, .png, .tiff, .tif."
         )
 
     return data_2d
