@@ -84,7 +84,7 @@ master_doc = "index"
 
 # General information about the project.
 project = metadata["name"]
-copyright = "2019, European Space Agency"
+copyright = "2021, European Space Agency"
 author = metadata["author"]
 
 # The version info for the project you're documenting, acts as replacement for

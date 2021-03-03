@@ -14,13 +14,3 @@ We assume that the user has already some basic knowledge and understanding of Py
 
     A how-to guide is an answer to a question that only a user with some
     experience could even formulate and it offers a get-it-done information.
-
-Adding new model
-================
-
-* :ref:`Adding a new model <new_model>`
-
-.. toctree::
-   :hidden:
-
-   new_model.rst
