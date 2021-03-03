@@ -14,6 +14,9 @@ Core
 * Add capability to read files from remote filesystems (e.g. http, ftp, ...).
   (See `!169 <https://gitlab.com/esa/pyxel/-/merge_requests/169>`_).
 
+* Add a mechanism to set option in Pyxel.
+  (See `!170 <https://gitlab.com/esa/pyxel/-/merge_requests/170>`_).
+
 Others
 ~~~~~~
 
