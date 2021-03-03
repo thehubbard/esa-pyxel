@@ -11,8 +11,8 @@ effects combined on images (e.g. radiation and optical effects, noises)
 made by CCD or CMOS-based detectors.
 
 
-Getting Started
-===============
+Getting Started / Tutorials
+===========================
 
 **Tutorials**.
 :doc:`Learn about the Pyxel's concepts <tutorials/overview>`.
@@ -32,11 +32,12 @@ Background
 Reference
 =========
 
-**Technical reference**. Cover tools, components and resources.
+**Technical reference**.
+:doc:`Cover tools, components and resources <references/index>`.
 
 
 .. toctree::
-   :caption: Getting Started
+   :caption: Getting Started / Tutorials
    :name: tutorials
    :maxdepth: 1
    :hidden:
