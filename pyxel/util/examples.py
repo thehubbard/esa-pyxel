@@ -5,6 +5,8 @@
 #  this file, may be copied, modified, propagated, or distributed except according to
 #  the terms contained in the file ‘LICENCE.txt’.
 #
+"""Pyxel examples downloader."""
+
 import shutil
 from os import listdir, remove, rmdir
 from os.path import isdir, join
@@ -28,7 +30,7 @@ def download_examples(foldername: str = "pyxel-examples", force: bool = False) -
 
     if isdir(foldername) and not force:
         raise OSError(
-            f"Folder {foldername} already exists. Either delete it, use a different name. or use the force argument."
+            f"Folder {foldername} already exists. Either delete it, use a different name, or use the force argument."
         )
     elif isdir(foldername) and force:
         shutil.rmtree(foldername)
