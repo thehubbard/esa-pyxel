@@ -17,12 +17,16 @@ from pathlib import Path
 import attr
 
 
-@attr.s(auto_attribs=True, on_setattr=[attr.setters.convert, attr.setters.validate])
+@attr.s(
+    auto_attribs=True,
+    on_setattr=attr.setters.pipe(attr.setters.convert, attr.setters.validate),
+)
 class GlobalOptions:
     """Define a container class for all available options."""
 
     cache_enabled: bool = attr.ib(
-        validator=attr.validators.instance_of(bool), default=False
+        validator=attr.validators.instance_of(bool),
+        default=False,
     )
     cache_folder: t.Optional[t.Union[str, Path]] = attr.ib(
         validator=attr.validators.optional(attr.validators.instance_of((str, Path))),
