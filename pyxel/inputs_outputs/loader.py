@@ -1,4 +1,4 @@
-#  Copyright (c) European Space Agency, 2017, 2018, 2019, 2020.
+#  Copyright (c) European Space Agency, 2017, 2018, 2019, 2020, 2021.
 #
 #  This file is subject to the terms and conditions defined in file 'LICENCE.txt', which
 #  is part of this Pyxel package. No part of the package, including
@@ -10,6 +10,7 @@
 import typing as t
 from pathlib import Path
 
+import fsspec
 import numpy as np
 import pandas as pd
 from astropy.io import fits
@@ -43,46 +44,58 @@ def load_image(filename: t.Union[str, Path]) -> np.ndarray:
     >>> load_image("frame.fits")
     array([[-0.66328494, -0.63205819, ...]])
 
+    >>> load_image("https://hostname/folder/frame.fits")
+    array([[-0.66328494, -0.63205819, ...]])
+
     >>> load_image("another_frame.npy")
     array([[-1.10136521, -0.93890239, ...]])
 
     >>> load_image("rgb_frame.jpg")
     array([[234, 211, ...]])
     """
-    filename_path = Path(filename).expanduser().resolve()
+    # Extract suffix (e.g. '.txt', '.fits'...)
+    suffix = Path(filename).suffix.lower()  # type: str
 
-    if not filename_path.exists():
-        raise FileNotFoundError(f"Input file '{filename_path}' can not be found.")
+    if isinstance(filename, Path):
+        full_filename = filename.expanduser().resolve()  # type: Path
+        if not full_filename.exists():
+            raise FileNotFoundError(f"Input file '{full_filename}' can not be found.")
 
-    suffix = filename_path.suffix.lower()
+        url_path = str(full_filename)  # type: str
+
+    else:
+        url_path = filename
 
     if suffix.startswith(".fits"):
-        data_2d = fits.getdata(filename_path)  # type: np.ndarray
+        with fsspec.open(url_path, mode="rb") as file_handler:
+            data_2d = fits.getdata(file_handler)  # type: np.ndarray
 
     elif suffix.startswith(".npy"):
-        data_2d = np.load(filename_path)
+        with fsspec.open(url_path, mode="rb") as file_handler:
+            data_2d = np.load(file_handler)
 
     elif suffix.startswith(".txt") or suffix.startswith(".data"):
         for sep in ["\t", " ", ",", "|", ";"]:
             try:
-                data_2d = np.loadtxt(filename_path, delimiter=sep)
+                with fsspec.open(url_path, mode="r") as file_handler:
+                    data_2d = np.loadtxt(file_handler, delimiter=sep)
                 break
             except ValueError:
                 pass
         else:
-            raise ValueError(
-                f"Cannot find the separator for filename '{filename_path}'."
-            )
+            raise ValueError(f"Cannot find the separator for filename '{url_path}'.")
 
-    elif suffix.startswith((".jpg", ".jpeg", ".png", ".bmp", ".tiff")):
-        image_2d = Image.open(filename_path)
-        image_2d_converted = image_2d.convert("LA")  # RGB to grayscale conversion
+    elif suffix.startswith((".jpg", ".jpeg", ".png", ".bmp", ".tiff", ".tif")):
+        with fsspec.open(url_path, mode="rb") as file_handler:
+            image_2d = Image.open(file_handler)
+            image_2d_converted = image_2d.convert("LA")  # RGB to grayscale conversion
+
         data_2d = np.array(image_2d_converted)[:, :, 0]
 
     else:
         raise ValueError(
-            """Image format not supported. List of supported image formats:
-            .npy, .fits, .txt, .data, .jpg, .jpeg, .bmp, .png, .tiff."""
+            "Image format not supported. List of supported image formats: "
+            ".npy, .fits, .txt, .data, .jpg, .jpeg, .bmp, .png, .tiff, .tif."
         )
 
     return data_2d
@@ -109,27 +122,36 @@ def load_table(filename: t.Union[str, Path]) -> pd.DataFrame:
         When the extension of the filename is unknown or separator is not found.
 
     """
-    filename_path = Path(filename).expanduser().resolve()
+    suffix = Path(filename).suffix.lower()  # type: str
 
-    if not filename_path.exists():
-        raise FileNotFoundError(f"Input file '{filename_path}' can not be found.")
+    if isinstance(filename, Path):
+        full_filename = Path(filename).expanduser().resolve()
+        if not full_filename.exists():
+            raise FileNotFoundError(f"Input file '{full_filename}' can not be found.")
 
-    suffix = filename_path.suffix.lower()
+        url_path = str(full_filename)  # type: str
+    else:
+        url_path = filename
 
     if suffix.startswith(".npy"):
-        table = pd.DataFrame(np.load(filename_path), dtype="float")
+        with fsspec.open(url_path, mode="rb") as file_handler:
+            table = pd.DataFrame(np.load(file_handler), dtype="float")
 
     elif suffix.startswith(".xlsx"):
-        table = pd.read_excel(filename_path, header=None, convert_float=False)
+        with fsspec.open(url_path, mode="rb") as file_handler:
+            table = pd.read_excel(
+                file_handler, header=None, convert_float=False, engine="openpyxl"
+            )
 
     elif suffix.startswith(".csv"):
         for sep in ["\t", " ", ",", "|", ";"]:
             try:
                 # numpy will return ValueError with a wrong delimiter
-                table = pd.read_csv(
-                    filename_path, delimiter=sep, header=None, dtype="float"
-                )
-                break
+                with fsspec.open(url_path, mode="r") as file_handler:
+                    table = pd.read_csv(
+                        file_handler, delimiter=sep, header=None, dtype="float"
+                    )
+                    break
             except ValueError:
                 pass
         else:
@@ -138,10 +160,11 @@ def load_table(filename: t.Union[str, Path]) -> pd.DataFrame:
     elif suffix.startswith(".txt") or suffix.startswith(".data"):
         for sep in ["\t", " ", ",", "|", ";"]:
             try:
-                table = pd.read_table(
-                    filename_path, delimiter=sep, header=None, dtype="float"
-                )
-                break
+                with fsspec.open(url_path, mode="r") as file_handler:
+                    table = pd.read_table(
+                        file_handler, delimiter=sep, header=None, dtype="float"
+                    )
+                    break
             except ValueError:
                 pass
         else:
