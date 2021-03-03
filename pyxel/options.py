@@ -17,7 +17,7 @@ from pathlib import Path
 import attr
 
 
-@attr.define
+@attr.s(auto_attribs=True)
 class GlobalOptions:
     """Define a container class for all available options."""
 
@@ -62,7 +62,7 @@ class GlobalOptions:
         return previous_params
 
     def validate_and_convert(self, dct: t.Mapping) -> t.Mapping:
-        """Valid and convert the input 'option(s)'.
+        """Validate and convert the input 'option(s)'.
 
         Parameters
         ----------
