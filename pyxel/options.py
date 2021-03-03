@@ -17,7 +17,7 @@ from pathlib import Path
 import attr
 
 
-@attr.s(auto_attribs=True)
+@attr.s(auto_attribs=True, on_setattr=[attr.setters.convert, attr.setters.validate])
 class GlobalOptions:
     """Define a container class for all available options."""
 
