@@ -12,6 +12,7 @@
 
 """Subpackage to define options in Pyxel."""
 import typing as t
+from pathlib import Path
 
 import attr
 
@@ -20,8 +21,13 @@ import attr
 class GlobalOptions:
     """Define a container class for all available options."""
 
-    cache_enabled: bool = False
-    cache_folder: t.Optional[str] = None
+    cache_enabled: bool = attr.ib(
+        validator=attr.validators.instance_of(bool), default=False
+    )
+    cache_folder: t.Optional[t.Union[str, Path]] = attr.ib(
+        validator=attr.validators.optional(attr.validators.instance_of((str, Path))),
+        default=None,
+    )
 
     def update(self, dct: t.Mapping) -> t.Mapping:
         """Apply the option(s) in this container class.
@@ -35,6 +41,17 @@ class GlobalOptions:
         -------
         Mapping
             Previous option(s).
+
+        Examples
+        --------
+        >>> options = GlobalOptions()
+        >>> options
+        GlobalOptions(cache_enabled=False, cache_folder=None)
+
+        >>> options.update({"cache_enabled: True"})
+        {'cache_enabled': False}
+        >>> options
+        GlobalOptions(cache_enabled=True, cache_folder=None)
         """
         previous_params = {}
         for key, value in dct.items():
@@ -44,7 +61,6 @@ class GlobalOptions:
 
         return previous_params
 
-    # TODO: class method
     def validate_and_convert(self, dct: t.Mapping) -> t.Mapping:
         """Valid and convert the input 'option(s)'.
 
@@ -57,6 +73,17 @@ class GlobalOptions:
         -------
         Mapping
             The validated and converted option(s)
+
+        Examples
+        --------
+        >>> options = GlobalOptions()
+        >>> options
+        GlobalOptions(cache_enabled=False, cache_folder=None)
+
+        >>> options.validate_and_convert({"cache_enabled": True})
+        {'cache_enabled': True}
+        >>> options.validate_and_convert({"cache_enabled": "hello"})
+        TypeError(...)
         """
         valid_keys = list(attr.asdict(self, recurse=False))
 
