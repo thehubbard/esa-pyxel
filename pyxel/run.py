@@ -33,6 +33,7 @@ from pyxel.inputs_outputs import Configuration
 from pyxel.parametric import Parametric
 from pyxel.pipelines import DetectionPipeline, Processor
 from pyxel.single import Single
+from pyxel.util import download_examples
 
 if t.TYPE_CHECKING:
     from .inputs_outputs import (
@@ -325,20 +326,36 @@ def main() -> None:
         default=0,
         help="Increase output verbosity (-v/-vv/-vvv)",
     )
+
     parser.add_argument(
         "-V",
         "--version",
         action="version",
         version="Pyxel, version {version}".format(version=version),
     )
+
     parser.add_argument(
         "-c",
         "--config",
         type=str,
-        required=True,
         help="Configuration file to load (YAML)",
     )
+
     parser.add_argument("-s", "--seed", type=int, help="Random seed for the framework")
+
+    parser.add_argument(
+        "--download-examples",
+        nargs="?",
+        const="pyxel-examples",
+        help="Install examples to the specified directory, default is /examples.",
+    )
+
+    parser.add_argument(
+        "-f",
+        "--force",
+        action="store_true",
+        help="Force flag for saving the examples.",
+    )
 
     # parser.add_argument('-g', '--gui', default=False, type=bool, help='run Graphical User Interface')
     # parser.add_argument('-p', '--port', default=9999, type=int, help='The port to run the web server on')
@@ -364,6 +381,8 @@ def main() -> None:
 
     if opts.config:
         run(input_filename=opts.config, random_seed=opts.seed)
+    elif opts.download_examples:
+        download_examples(foldername=opts.download_examples, force=opts.force)
     else:
         print("Define a YAML configuration file!")
 

@@ -10,6 +10,8 @@ Core
 
 * Fix a circular import in 'pyxel.data_structure'.
   (See `!171 <https://gitlab.com/esa/pyxel/-/merge_requests/171>`_).
+* Add ability to download Pyxel examples from command line.
+  (See `!176 <https://gitlab.com/esa/pyxel/-/merge_requests/176>`_).
 
 * Add capability to read files from remote filesystems (e.g. http, ftp, ...).
   (See `!169 <https://gitlab.com/esa/pyxel/-/merge_requests/169>`_).
@@ -31,10 +33,8 @@ Pipelines
 
 * Calibration - Export champions for every evolution and every island.
   (See `!164 <https://gitlab.com/esa/pyxel/-/merge_requests/164>`_).
-
 * Calibration - Extract best individuals.
   (See `!165 <https://gitlab.com/esa/pyxel/-/merge_requests/165>`_).
-
 * Calibration - Fix an issue when extracting parameters.
   (See `!166 <https://gitlab.com/esa/pyxel/-/merge_requests/166>`_).
 
