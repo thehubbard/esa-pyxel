@@ -13,6 +13,7 @@ from os.path import isdir, join
 from zipfile import ZipFile
 
 import requests
+from tqdm import tqdm
 
 
 def download_examples(foldername: str = "pyxel-examples", force: bool = False) -> None:
@@ -36,10 +37,19 @@ def download_examples(foldername: str = "pyxel-examples", force: bool = False) -
         shutil.rmtree(foldername)
 
     url = "https://gitlab.com/esa/pyxel-data/-/archive/master/pyxel-data-master.zip"
-    response = requests.get(url)
+    response = requests.get(url, stream=True)
 
-    with open("examples_tmp.zip", "wb") as tmp:
-        tmp.write(response.content)
+    total = int(response.headers.get("content-length", 0))
+    with open("examples_tmp.zip", "wb") as tmp, tqdm(
+        desc="Downloading examples",
+        total=total,
+        unit="B",
+        unit_scale=True,
+        unit_divisor=1024,
+    ) as bar:
+        for data in response.iter_content(chunk_size=1024):
+            size = tmp.write(data)
+            bar.update(size)
 
     with ZipFile("examples_tmp.zip", "r") as zipobj:
         zipobj.extractall(foldername)
@@ -50,3 +60,5 @@ def download_examples(foldername: str = "pyxel-examples", force: bool = False) -
     rmdir(join(root, "pyxel-data-master"))
 
     remove("examples_tmp.zip")
+
+    print("Done.")

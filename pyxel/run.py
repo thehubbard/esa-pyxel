@@ -347,7 +347,7 @@ def main() -> None:
         "--download-examples",
         nargs="?",
         const="pyxel-examples",
-        help="Install examples to the specified directory, default is /examples.",
+        help="Install examples to the specified directory, default is /pyxel-examples.",
     )
 
     parser.add_argument(
