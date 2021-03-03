@@ -122,27 +122,34 @@ def load_table(filename: t.Union[str, Path]) -> pd.DataFrame:
         When the extension of the filename is unknown or separator is not found.
 
     """
-    filename_path = Path(filename).expanduser().resolve()
+    suffix = Path(filename).suffix.lower()  # type: str
 
-    if not filename_path.exists():
-        raise FileNotFoundError(f"Input file '{filename_path}' can not be found.")
+    if isinstance(filename, Path):
+        full_filename = Path(filename).expanduser().resolve()
+        if not full_filename.exists():
+            raise FileNotFoundError(f"Input file '{full_filename}' can not be found.")
 
-    suffix = filename_path.suffix.lower()
+        url_path = str(full_filename)  # type: str
+    else:
+        url_path = filename
 
     if suffix.startswith(".npy"):
-        table = pd.DataFrame(np.load(filename_path), dtype="float")
+        with fsspec.open(url_path, mode="rb") as file_handler:
+            table = pd.DataFrame(np.load(file_handler), dtype="float")
 
     elif suffix.startswith(".xlsx"):
-        table = pd.read_excel(filename_path, header=None, convert_float=False)
+        with fsspec.open(url_path, mode="rb") as file_handler:
+            table = pd.read_excel(file_handler, header=None, convert_float=False)
 
     elif suffix.startswith(".csv"):
         for sep in ["\t", " ", ",", "|", ";"]:
             try:
                 # numpy will return ValueError with a wrong delimiter
-                table = pd.read_csv(
-                    filename_path, delimiter=sep, header=None, dtype="float"
-                )
-                break
+                with fsspec.open(url_path, mode="r") as file_handler:
+                    table = pd.read_csv(
+                        file_handler, delimiter=sep, header=None, dtype="float"
+                    )
+                    break
             except ValueError:
                 pass
         else:
@@ -151,10 +158,11 @@ def load_table(filename: t.Union[str, Path]) -> pd.DataFrame:
     elif suffix.startswith(".txt") or suffix.startswith(".data"):
         for sep in ["\t", " ", ",", "|", ";"]:
             try:
-                table = pd.read_table(
-                    filename_path, delimiter=sep, header=None, dtype="float"
-                )
-                break
+                with fsspec.open(url_path, mode="r") as file_handler:
+                    table = pd.read_table(
+                        file_handler, delimiter=sep, header=None, dtype="float"
+                    )
+                    break
             except ValueError:
                 pass
         else:

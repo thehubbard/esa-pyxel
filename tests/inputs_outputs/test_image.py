@@ -35,12 +35,6 @@ def valid_multiple_hdus() -> fits.HDUList:
 
 
 @pytest.fixture
-def valid_table() -> pd.DataFrame:
-    array = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
-    return pd.DataFrame(array, dtype="float64")
-
-
-@pytest.fixture
 def valid_pil_image() -> Image.Image:
     """Create a valid RGB PIL image."""
     data_2d = np.array([[10, 20], [30, 40]], dtype="uint8")
@@ -56,7 +50,7 @@ def valid_data2d_http_hostname(
     valid_pil_image: Image.Image,
     valid_multiple_hdus: fits.HDUList,
 ) -> str:
-    """Create valid 2D files on a temporary HTTP server."""
+    """Create valid 2D files on a temporary folder and HTTP server."""
     # Get current folder
     current_folder = Path().cwd()  # type: Path
 
@@ -136,15 +130,178 @@ def valid_data2d_http_hostname(
         os.chdir(current_folder)
 
 
+@pytest.fixture
+def invalid_data2d_hostname(tmp_path: Path, httpserver: HTTPServer) -> str:
+    """Create invalid 2D files on a temporary folder and HTTP server."""
+    # Get current folder
+    current_folder = Path().cwd()  # type: Path
+
+    try:
+        os.chdir(tmp_path)
+
+        # Create folder 'data'
+        Path("invalid_data").mkdir(parents=True, exist_ok=True)
+
+        data_2d = np.array([[1, 2], [3, 4]], dtype=np.uint16)
+
+        np.savetxt("invalid_data/img_X.txt", X=data_2d, delimiter="X")
+
+        text_filenames = ["invalid_data/img_X.txt"]
+
+        # Put text data in a fake HTTP server
+        for filename in text_filenames:
+            with open(filename, "r") as fh:
+                response_data = fh.read()  # type: str
+                httpserver.expect_request(f"/{filename}").respond_with_data(
+                    response_data, content_type="text/plain"
+                )
+
+        # Extract an url (e.g. 'http://localhost:59226/)
+        url = httpserver.url_for("")  # type: str
+
+        # Extract the hostname (e.g. 'localhost:59226')
+        hostname = re.findall("http://(.*)/", url)[0]  # type: str
+
+        yield hostname
+
+    finally:
+        os.chdir(current_folder)
+
+
+@pytest.fixture
+def valid_table_http_hostname(tmp_path: Path, httpserver: HTTPServer) -> str:
+    """Create valid tables locally and on a temporary HTTP server."""
+    # Get current folder
+    current_folder = Path().cwd()  # type: Path
+
+    try:
+        os.chdir(tmp_path)
+
+        # Create folder 'data'
+        Path("data").mkdir(parents=True, exist_ok=True)
+
+        df = pd.DataFrame([[1, 2, 3], [4, 5, 6], [7, 8, 9]], dtype="float64")
+
+        # Save tables
+        df.to_csv("data/table_tab.txt", header=False, index=False, sep="\t")
+        df.to_csv("data/table_space.TXT", header=False, index=False, sep=" ")
+        df.to_csv("data/table_comma.data", header=False, index=False, sep=",")
+        df.to_csv("data/table_pipe.txt", header=False, index=False, sep="|")
+        df.to_csv("data/table_semicolon.txt", header=False, index=False, sep=";")
+
+        df.to_excel("data/table.xlsx", header=False, index=False)
+        np.save("data/table.npy", arr=df.to_numpy())
+
+        text_filenames = [
+            "data/table_tab.txt",
+            "data/table_space.TXT",
+            "data/table_comma.data",
+            "data/table_pipe.txt",
+            "data/table_semicolon.txt",
+        ]
+
+        # Put text data in a fake HTTP server
+        for filename in text_filenames:
+            with open(filename, "r") as fh:
+                response_data = fh.read()  # type: str
+                httpserver.expect_request(f"/{filename}").respond_with_data(
+                    response_data, content_type="text/plain"
+                )
+
+        binary_filenames = [
+            ("data/table.xlsx", "text/plain"),
+            ("data/table.npy", "text/plain"),
+        ]
+
+        # Put binary data in a fake HTTP server
+        for filename, content_type in binary_filenames:
+            with open(filename, "rb") as fh:
+                response_data = fh.read()  # type: str
+                httpserver.expect_request(f"/{filename}").respond_with_data(
+                    response_data, content_type=content_type
+                )
+
+        # Extract an url (e.g. 'http://localhost:59226/)
+        url = httpserver.url_for("")  # type: str
+
+        # Extract the hostname (e.g. 'localhost:59226')
+        hostname = re.findall("http://(.*)/", url)[0]  # type: str
+
+        yield hostname
+
+    finally:
+        os.chdir(current_folder)
+
+
+@pytest.fixture
+def invalid_table_http_hostname(tmp_path: Path, httpserver: HTTPServer) -> str:
+    """Create invalid tables on temporary folder and HTTP server."""
+    # Get current folder
+    current_folder = Path().cwd()  # type: Path
+
+    try:
+        os.chdir(tmp_path)
+
+        # Create folder 'data'
+        Path("invalid_data").mkdir(parents=True, exist_ok=True)
+
+        df = pd.DataFrame([[1, 2, 3], [4, 5, 6], [7, 8, 9]], dtype="float64")
+
+        # Save tables
+        df.to_csv("invalid_data/table_X.txt", header=False, index=False, sep="X")
+        Path("invalid_data/table_empty.txt").touch()
+
+        text_filenames = [
+            "invalid_data/table_X.txt",
+            "invalid_data/table_empty.txt",
+        ]
+
+        # Put text data in a fake HTTP server
+        for filename in text_filenames:
+            with open(filename, "r") as fh:
+                response_data = fh.read()  # type: str
+                httpserver.expect_request(f"/{filename}").respond_with_data(
+                    response_data, content_type="text/plain"
+                )
+
+        # Extract an url (e.g. 'http://localhost:59226/)
+        url = httpserver.url_for("")  # type: str
+
+        # Extract the hostname (e.g. 'localhost:59226')
+        hostname = re.findall("http://(.*)/", url)[0]  # type: str
+
+        yield hostname
+
+    finally:
+        os.chdir(current_folder)
+
+
 @pytest.mark.parametrize(
     "filename, exp_error, exp_message",
     [
         ("dummy", ValueError, "Image format not supported"),
         ("dummy.foo", ValueError, "Image format not supported"),
+        ("unknown.fits", FileNotFoundError, None),
+        (Path("unknown.fits"), FileNotFoundError, r"can not be found\.$"),
+        ("https://domain/unknown.fits", FileNotFoundError, None),
+        ("invalid_data/img_X.txt", ValueError, "Cannot find the separator"),
+        (
+            "http://{host}/invalid_data/img_X.txt",
+            ValueError,
+            "Cannot find the separator",
+        ),
     ],
 )
-def test_invalid_filename(filename, exp_error, exp_message):
+def test_invalid_filename(
+    invalid_data2d_hostname: str,
+    filename,
+    exp_error: TypeError,
+    exp_message: t.Optional[str],
+):
     """Test invalid filenames."""
+    if isinstance(filename, str):
+        filename = filename.format(host=invalid_data2d_hostname)  # type: str
+
     with pytest.raises(exp_error, match=exp_message):
         _ = load_image(filename)
 
@@ -206,11 +363,9 @@ def test_load_image(
     valid_data2d_http_hostname: str, filename: t.Union[str, Path], exp_data: np.ndarray
 ):
     """Test function 'load_image' with local and remote files."""
-    # Build a full url
     if isinstance(filename, Path):
         # Load data
         data_2d = load_image(filename)
-
     else:
         full_url = filename.format(host=valid_data2d_http_hostname)  # type: str
 
@@ -221,9 +376,83 @@ def test_load_image(
     np.testing.assert_equal(data_2d, exp_data)
 
 
-def test_load_table_invalid_filename():
-    with pytest.raises(FileNotFoundError):
-        _ = load_table("dummy")
+@pytest.mark.parametrize(
+    "filename, exp_error, exp_message",
+    [
+        ("dummy", ValueError, r"^Only (.*) implemented.$"),
+        (
+            Path("unknown.txt"),
+            FileNotFoundError,
+            f"^Input file (.*) can not be found\.$",
+        ),
+        ("unknown.txt", FileNotFoundError, None),
+        ("invalid_data/table_X.txt", ValueError, "Cannot find the separator"),
+        (
+            "http://{host}/invalid_data/table_X.txt",
+            ValueError,
+            "Cannot find the separator",
+        ),
+        ("invalid_data/table_empty.txt", ValueError, "Cannot find the separator"),
+        (
+            "http://{host}/invalid_data/table_empty.txt",
+            ValueError,
+            "Cannot find the separator",
+        ),
+    ],
+)
+def test_load_table_invalid_filename(
+    invalid_table_http_hostname: str,
+    filename,
+    exp_error: TypeError,
+    exp_message: t.Optional[str],
+):
+    """Test function 'load_table' with invalid filenames."""
+    if isinstance(filename, str):
+        filename = filename.format(host=invalid_table_http_hostname)
+
+    with pytest.raises(exp_error, match=exp_message):
+        _ = load_table(filename)
+
+
+@pytest.mark.parametrize(
+    "filename",
+    [
+        "data/table_tab.txt",
+        "data/table_space.TXT",
+        "data/table_comma.data",
+        "data/table_pipe.txt",
+        "data/table_semicolon.txt",
+        "data/table.xlsx",
+        "data/table.npy",
+        Path("data/table_tab.txt"),
+        Path("data/table_space.TXT"),
+        Path("data/table_comma.data"),
+        Path("data/table_pipe.txt"),
+        Path("data/table_semicolon.txt"),
+        Path("data/table.xlsx"),
+        Path("data/table.npy"),
+        "http://{host}/data/table_tab.txt",
+        "http://{host}/data/table_space.TXT",
+        "http://{host}/data/table_comma.data",
+        "http://{host}/data/table_pipe.txt",
+        "http://{host}/data/table_semicolon.txt",
+        "http://{host}/data/table.xlsx",
+        "http://{host}/data/table.npy",
+    ],
+)
+def test_load_table(valid_table_http_hostname: str, filename):
+    """Test function 'load_table'."""
+    if isinstance(filename, Path):
+        # Load data
+        table = load_table(filename)
+    else:
+        full_url = filename.format(host=valid_table_http_hostname)  # type: str
+
+        # Load data
+        table = load_table(full_url)
+
+    exp_table = pd.DataFrame([[1, 2, 3], [4, 5, 6], [7, 8, 9]], dtype="float64")
+    pd.testing.assert_frame_equal(table, exp_table)
 
 
 @pytest.mark.parametrize("filename", ["dummy.foo"])
@@ -234,44 +463,3 @@ def test_load_table_invalid_format(tmp_path: Path, filename: str):
 
     with pytest.raises(ValueError):
         _ = load_table(full_filename)
-
-
-@pytest.mark.parametrize(
-    "filename", ["valid_filename.txt", "valid_filename.TXT", "valid_filename.data"]
-)
-@pytest.mark.parametrize("delimiter", ["\t", " ", ",", "|", ";"])
-def test_load_table_txtdata(tmp_path: Path, filename: str, delimiter: str, valid_table):
-    full_filename = tmp_path.joinpath(filename)
-    valid_table.to_csv(full_filename, header=None, index=None, sep=delimiter)
-
-    assert full_filename.exists()
-
-    table = load_table(full_filename)
-
-    pd.testing.assert_frame_equal(table, valid_table)
-
-
-@pytest.mark.skip(reason="Fix this test !")
-@pytest.mark.parametrize("filename", ["valid_filename.xlsx"])
-def test_load_table_xlsx(tmp_path: Path, filename: str, valid_table):
-    full_filename = tmp_path.joinpath(filename)
-    valid_table.to_excel(full_filename, header=False, index=False)
-
-    assert full_filename.exists()
-
-    table = load_table(full_filename)
-
-    pd.testing.assert_frame_equal(table, valid_table)
-
-
-@pytest.mark.parametrize("filename", ["valid_filename.csv", "valid_filename.CSV"])
-@pytest.mark.parametrize("delimiter", ["\t", " ", ",", "|", ";"])
-def test_load_table_csv(tmp_path: Path, filename: str, valid_table, delimiter: str):
-    full_filename = tmp_path.joinpath(filename)
-    valid_table.to_csv(full_filename, header=None, index=None, sep=delimiter)
-
-    assert full_filename.exists()
-
-    table = load_table(full_filename)
-
-    pd.testing.assert_frame_equal(table, valid_table)
