@@ -131,7 +131,7 @@ class SetOptions:
             valid_parameters
         )  # type: t.Mapping
 
-    def __enter__(self) -> "Options":
+    def __enter__(self) -> "SetOptions":
         return self
 
     def __exit__(self, exc_type, exc_value, traceback) -> None:
