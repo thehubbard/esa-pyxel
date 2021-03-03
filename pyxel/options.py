@@ -134,5 +134,5 @@ class SetOptions:
     def __enter__(self) -> "SetOptions":
         return self
 
-    def __exit__(self, exc_type, exc_value, traceback) -> None:
+    def __exit__(self, exc_type: t.Any, exc_value: t.Any, traceback: t.Any) -> None:
         _ = global_options.update(self._previous_params)
