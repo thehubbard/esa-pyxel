@@ -16,6 +16,8 @@ import pandas as pd
 from astropy.io import fits
 from PIL import Image
 
+from pyxel.options import global_options
+
 
 def load_image(filename: t.Union[str, Path]) -> np.ndarray:
     """Load a 2D image.
@@ -66,18 +68,26 @@ def load_image(filename: t.Union[str, Path]) -> np.ndarray:
     else:
         url_path = filename
 
+    # Define extra parameters to use with 'fsspec'
+    extras = {}
+    if global_options.cache_enabled:
+        url_path = f"simplecache::{url_path}"
+
+        if global_options.cache_folder:
+            extras["simplecache"] = {"cache_storage": global_options.cache_folder}
+
     if suffix.startswith(".fits"):
-        with fsspec.open(url_path, mode="rb") as file_handler:
+        with fsspec.open(url_path, mode="rb", **extras) as file_handler:
             data_2d = fits.getdata(file_handler)  # type: np.ndarray
 
     elif suffix.startswith(".npy"):
-        with fsspec.open(url_path, mode="rb") as file_handler:
+        with fsspec.open(url_path, mode="rb", **extras) as file_handler:
             data_2d = np.load(file_handler)
 
     elif suffix.startswith(".txt") or suffix.startswith(".data"):
         for sep in ["\t", " ", ",", "|", ";"]:
             try:
-                with fsspec.open(url_path, mode="r") as file_handler:
+                with fsspec.open(url_path, mode="r", **extras) as file_handler:
                     data_2d = np.loadtxt(file_handler, delimiter=sep)
                 break
             except ValueError:
@@ -86,7 +96,7 @@ def load_image(filename: t.Union[str, Path]) -> np.ndarray:
             raise ValueError(f"Cannot find the separator for filename '{url_path}'.")
 
     elif suffix.startswith((".jpg", ".jpeg", ".png", ".bmp", ".tiff", ".tif")):
-        with fsspec.open(url_path, mode="rb") as file_handler:
+        with fsspec.open(url_path, mode="rb", **extras) as file_handler:
             image_2d = Image.open(file_handler)
             image_2d_converted = image_2d.convert("LA")  # RGB to grayscale conversion
 
@@ -133,12 +143,20 @@ def load_table(filename: t.Union[str, Path]) -> pd.DataFrame:
     else:
         url_path = filename
 
+    # Define extra parameters to use with 'fsspec'
+    extras = {}
+    if global_options.cache_enabled:
+        url_path = f"simplecache::{url_path}"
+
+        if global_options.cache_folder:
+            extras["simplecache"] = {"cache_storage": global_options.cache_folder}
+
     if suffix.startswith(".npy"):
-        with fsspec.open(url_path, mode="rb") as file_handler:
+        with fsspec.open(url_path, mode="rb", **extras) as file_handler:
             table = pd.DataFrame(np.load(file_handler), dtype="float")
 
     elif suffix.startswith(".xlsx"):
-        with fsspec.open(url_path, mode="rb") as file_handler:
+        with fsspec.open(url_path, mode="rb", **extras) as file_handler:
             table = pd.read_excel(
                 file_handler, header=None, convert_float=False, engine="openpyxl"
             )
@@ -147,7 +165,7 @@ def load_table(filename: t.Union[str, Path]) -> pd.DataFrame:
         for sep in ["\t", " ", ",", "|", ";"]:
             try:
                 # numpy will return ValueError with a wrong delimiter
-                with fsspec.open(url_path, mode="r") as file_handler:
+                with fsspec.open(url_path, mode="r", **extras) as file_handler:
                     table = pd.read_csv(
                         file_handler, delimiter=sep, header=None, dtype="float"
                     )
@@ -160,7 +178,7 @@ def load_table(filename: t.Union[str, Path]) -> pd.DataFrame:
     elif suffix.startswith(".txt") or suffix.startswith(".data"):
         for sep in ["\t", " ", ",", "|", ";"]:
             try:
-                with fsspec.open(url_path, mode="r") as file_handler:
+                with fsspec.open(url_path, mode="r", **extras) as file_handler:
                     table = pd.read_table(
                         file_handler, delimiter=sep, header=None, dtype="float"
                     )

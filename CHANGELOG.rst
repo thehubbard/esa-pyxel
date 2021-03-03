@@ -17,6 +17,9 @@ Core
 * Add a mechanism to set option in Pyxel.
   (See `!170 <https://gitlab.com/esa/pyxel/-/merge_requests/170>`_).
 
+* Add capability to cache files in functions 'load_image' and 'load_data'.
+  (See `!177 <https://gitlab.com/esa/pyxel/-/merge_requests/177>`_).
+
 Others
 ~~~~~~
 
