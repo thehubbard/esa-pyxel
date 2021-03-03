@@ -64,7 +64,9 @@ def valid_data2d_http_hostname(
 
         # Save 2d images
         fits.writeto("data/img.fits", data=data_2d)
+        fits.writeto("data/img2.FITS", data=data_2d)
         valid_multiple_hdus.writeto("data/img_multiple.fits")
+        valid_multiple_hdus.writeto("data/img_multiple2.FITS")
         np.save("data/img.npy", arr=data_2d)
         np.savetxt("data/img_tab.txt", X=data_2d, delimiter="\t")
         np.savetxt("data/img_space.txt", X=data_2d, delimiter=" ")
@@ -75,7 +77,7 @@ def valid_data2d_http_hostname(
         valid_pil_image.save("data/img.jpg")
         valid_pil_image.save("data/img.jpeg")
         valid_pil_image.save("data/img.png")
-        valid_pil_image.save("data/img.PNG")
+        valid_pil_image.save("data/img2.PNG")
         valid_pil_image.save("data/img.tiff")
         valid_pil_image.save("data/img.tif")
         valid_pil_image.save("data/img.bmp")
@@ -98,13 +100,14 @@ def valid_data2d_http_hostname(
 
         binary_filenames = [
             ("data/img.fits", "text/plain"),  # TODO: Change this type
+            ("data/img2.FITS", "text/plain"),  # TODO: Change this type
             ("data/img_multiple.fits", "text/plain"),  # TODO: Change this type
-            ("data/img_multiple.FITS", "text/plain"),  # TODO: Change this type
+            ("data/img_multiple2.FITS", "text/plain"),  # TODO: Change this type
             ("data/img.npy", "text/plain"),  # TODO: Change this type
             ("data/img.jpg", "image/jpeg"),
             ("data/img.jpeg", "image/jpeg"),
             ("data/img.png", "image/png"),
-            ("data/img.PNG", "image/png"),
+            ("data/img2.PNG", "image/png"),
             ("data/img.tif", "image/tiff"),
             ("data/img.tiff", "image/tiff"),
             ("data/img.bmp", "image/bmp"),
@@ -311,15 +314,18 @@ def test_invalid_filename(
     [
         # FITS files
         ("data/img.fits", np.array([[1, 2], [3, 4]], np.uint16)),
-        ("data/img.FITS", np.array([[1, 2], [3, 4]], np.uint16)),
+        ("data/img2.FITS", np.array([[1, 2], [3, 4]], np.uint16)),
         ("data/img_multiple.fits", np.array([[5, 6], [7, 8]], np.uint16)),
-        ("data/img_multiple.FITS", np.array([[5, 6], [7, 8]], np.uint16)),
+        ("data/img_multiple2.FITS", np.array([[5, 6], [7, 8]], np.uint16)),
         (Path("data/img.fits"), np.array([[1, 2], [3, 4]], np.uint16)),
         (Path("./data/img.fits"), np.array([[1, 2], [3, 4]], np.uint16)),
         (Path("data/img_multiple.fits"), np.array([[5, 6], [7, 8]], np.uint16)),
         ("http://{host}/data/img.fits", np.array([[1, 2], [3, 4]], np.uint16)),
         ("http://{host}/data/img_multiple.fits", np.array([[5, 6], [7, 8]], np.uint16)),
-        ("http://{host}/data/img_multiple.FITS", np.array([[5, 6], [7, 8]], np.uint16)),
+        (
+            "http://{host}/data/img_multiple2.FITS",
+            np.array([[5, 6], [7, 8]], np.uint16),
+        ),
         # Numpy binary files
         ("data/img.npy", np.array([[1, 2], [3, 4]], np.uint16)),
         (Path("data/img.npy"), np.array([[1, 2], [3, 4]], np.uint16)),
@@ -347,9 +353,9 @@ def test_invalid_filename(
         ("http://{host}/data/img.jpeg", np.array([[13, 19], [28, 34]])),
         # PNG files
         ("data/img.png", np.array([[10, 20], [30, 40]])),
-        ("data/img.PNG", np.array([[10, 20], [30, 40]])),
+        ("data/img2.PNG", np.array([[10, 20], [30, 40]])),
         ("http://{host}/data/img.png", np.array([[10, 20], [30, 40]])),
-        ("http://{host}/data/img.PNG", np.array([[10, 20], [30, 40]])),
+        ("http://{host}/data/img2.PNG", np.array([[10, 20], [30, 40]])),
         # TIFF files
         ("data/img.tif", np.array([[10, 20], [30, 40]])),
         ("data/img.tiff", np.array([[10, 20], [30, 40]])),

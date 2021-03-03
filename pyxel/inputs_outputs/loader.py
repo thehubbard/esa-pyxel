@@ -139,7 +139,9 @@ def load_table(filename: t.Union[str, Path]) -> pd.DataFrame:
 
     elif suffix.startswith(".xlsx"):
         with fsspec.open(url_path, mode="rb") as file_handler:
-            table = pd.read_excel(file_handler, header=None, convert_float=False)
+            table = pd.read_excel(
+                file_handler, header=None, convert_float=False, engine="openpyxl"
+            )
 
     elif suffix.startswith(".csv"):
         for sep in ["\t", " ", ",", "|", ";"]:
