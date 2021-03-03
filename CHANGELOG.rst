@@ -12,13 +12,10 @@ Core
   (See `!171 <https://gitlab.com/esa/pyxel/-/merge_requests/171>`_).
 * Add ability to download Pyxel examples from command line.
   (See `!176 <https://gitlab.com/esa/pyxel/-/merge_requests/176>`_).
-
 * Add capability to read files from remote filesystems (e.g. http, ftp, ...).
   (See `!169 <https://gitlab.com/esa/pyxel/-/merge_requests/169>`_).
-
 * Add a mechanism to set option in Pyxel.
   (See `!170 <https://gitlab.com/esa/pyxel/-/merge_requests/170>`_).
-
 * Add capability to cache files in functions 'load_image' and 'load_data'.
   (See `!177 <https://gitlab.com/esa/pyxel/-/merge_requests/177>`_).
 
