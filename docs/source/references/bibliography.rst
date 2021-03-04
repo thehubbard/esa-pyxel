@@ -1,7 +1,7 @@
 .. _reference:
 
-References
-===========
+Bibliography
+============
 
 .. bibliography::
    :style: unsrt
