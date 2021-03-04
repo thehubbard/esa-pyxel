@@ -19,6 +19,12 @@ Core
 * Add capability to cache files in functions 'load_image' and 'load_data'.
   (See `!177 <https://gitlab.com/esa/pyxel/-/merge_requests/177>`_).
 
+Documentation
+~~~~~~~~~~~~~
+
+* Use the 'Documentation System'.
+  (See `!178 <https://gitlab.com/esa/pyxel/-/merge_requests/178>`_).
+
 Others
 ~~~~~~
 
