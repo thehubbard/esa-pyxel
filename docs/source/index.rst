@@ -18,7 +18,7 @@ A high-level overview of how the documentation is organized will help you known 
 to look for certain things:
 
 * :ref:`Tutorials<Tutorial Overview>` take you by the hand through a series of steps
-  to install and to use Pyxel. Start here if you're new to Pyxel.
+  to install and to use Pyxel. **Start here if you're new to Pyxel**.
 
 * :ref:`Background<Background Overview>` discuss key topics and concepts at a fairly
   high level and provide useful background information and explanation.
@@ -123,15 +123,13 @@ Reference guides
 Cover tools, components and resources.
 
 .. toctree::
-   :caption: Technical Reference
+   :caption: Reference Guides
    :maxdepth: 1
    :hidden:
 
-   references/bibliography.rst
    references/citation.rst
    contributing.rst
 
-* :doc:`references/bibliography`
 * :doc:`references/citation`
 * Physics Reference (TBW)
 

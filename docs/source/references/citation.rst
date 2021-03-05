@@ -2,6 +2,14 @@
 Citation instructions
 =====================
 
+.. _reference:
+
+Bibliography
+============
+
+.. bibliography::
+   :style: unsrt
+
 City the library
 ================
 
