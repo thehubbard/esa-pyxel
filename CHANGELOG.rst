@@ -32,7 +32,10 @@ Others
   (See `!163 <https://gitlab.com/esa/pyxel/-/merge_requests/163>`_).
 
 * Fix issue when generating documentation in CI/CD.
-  (See `!171 <https://gitlab.com/esa/pyxel/-/merge_requests/171>`_).
+  (See `!179 <https://gitlab.com/esa/pyxel/-/merge_requests/179>`_).
+
+* Always execute stage 'doc' in CI/CD.
+  (See `!180 <https://gitlab.com/esa/pyxel/-/merge_requests/180>`_).
 
 Pipelines
 ~~~~~~~~~
