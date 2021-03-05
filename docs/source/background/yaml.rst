@@ -1,7 +1,8 @@
 .. _yaml:
 
+===================
 Configuration files
-====================
+===================
 
 The framework uses a user-friendly, structured YAML configuration file as an
 input, which defines all the detector parameters, detector effect models and
@@ -76,7 +77,7 @@ or subgroup.
 
 
 Argument validation
--------------------
+===================
 
 Independently of which UI is used to run the framework, before starting
 the simulation, Pyxel validates all input arguments using the
