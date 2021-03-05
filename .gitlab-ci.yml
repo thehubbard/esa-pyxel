@@ -197,8 +197,6 @@ doc:
     paths:
       - docs/html
       - documentation.svg
-  rules:
-    - if: $CI_COMMIT_BRANCH == "master"
 
 
 #website:
