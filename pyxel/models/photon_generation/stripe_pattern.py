@@ -12,14 +12,13 @@ import typing as t
 import numpy as np
 
 from pyxel.data_structure import Photon
-from pyxel.detectors import
 import skimage.transform as tr
 
 if t.TYPE_CHECKING:
     from pyxel.detectors import Detector
 
 
-def square_signal(n: int, lw: int, startwith: int =0):
+def square_signal(n: int, lw: int, startwith: int =0) -> list:
     """TBW."""
     if lw > n // 2:
         raise ValueError("Line too wide.")
@@ -31,7 +30,7 @@ def square_signal(n: int, lw: int, startwith: int =0):
     return out
 
 
-def pattern(detector_shape, period: int =2, multiplier=1, startwith=0, angle=0):
+def pattern(detector_shape, period: int =2, multiplier=1, startwith=0, angle=0) -> np.ndarray:
     """TBW."""
     x, y = detector_shape
 
@@ -57,8 +56,21 @@ def pattern(detector_shape, period: int =2, multiplier=1, startwith=0, angle=0):
 
 
 def stripe_pattern(
-    detector: Detector, period: int = 10, level: float = 1., angle:int =0, startwith: int = 0):
-    """TBW."""
+    detector: Detector, period: int = 10, level: float = 1., angle:int =0, startwith: int = 0) -> None:
+    """TBW.
+
+    Parameters
+    ----------
+    detector: Detector
+    period: int
+    level: float
+    angle: int
+    startwith: int
+
+    Returns
+    -------
+    None
+    """
 
     if period<2:
         raise ValueError("Cant set a period smaller than 2.")
@@ -67,8 +79,8 @@ def stripe_pattern(
 
     photon_array = pattern(
         detector_shape=(detector.geometry.row, detector.geometry.col),
-        multiplier=level,
         period=period,
+        multiplier=level,
         startwith=startwith,
         angle=angle
     )
