@@ -10,7 +10,7 @@ Bibliography
 .. bibliography::
    :style: unsrt
 
-City the library
+Cite the library
 ================
 
 TBW.
