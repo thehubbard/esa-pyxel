@@ -31,6 +31,9 @@ Others
 * Add a new badge for Binder.
   (See `!163 <https://gitlab.com/esa/pyxel/-/merge_requests/163>`_).
 
+* Fix issue when generating documentation in CI/CD.
+  (See `!171 <https://gitlab.com/esa/pyxel/-/merge_requests/171>`_).
+
 Pipelines
 ~~~~~~~~~
 
