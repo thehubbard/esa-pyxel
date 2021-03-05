@@ -198,8 +198,8 @@ doc:
       - docs/html
       - documentation.svg
   rules:
-    - if: $CI_COMMIT_BRANCH == "master"
-
+    # If `$FORCE_GITLAB_CI` is set, create a pipeline.
+    - if: '$FORCE_GITLAB_CI'
 
 #website:
 #  image: python:3
