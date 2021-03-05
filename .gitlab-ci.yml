@@ -198,7 +198,7 @@ doc:
       - docs/html
       - documentation.svg
   rules:
-    # If `$FORCE_GITLAB_CI` is set, create a pipeline.
+    - if: $CI_COMMIT_BRANCH == "master"
     - if: '$FORCE_GITLAB_CI'
 
 #website:
