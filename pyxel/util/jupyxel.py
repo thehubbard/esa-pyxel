@@ -9,6 +9,7 @@
 
 import typing as t
 
+import holoviews as hv
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -17,7 +18,9 @@ from IPython.display import Markdown, display
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 if t.TYPE_CHECKING:
-    from pyxel.data_structure import Image, Photon, Pixel, Signal
+    from holoviews import DynamicMap, Layout
+
+    # from pyxel.data_structure import Image, Photon, Pixel, Signal
     from pyxel.detectors import Detector
     from pyxel.inputs_outputs import Configuration
     from pyxel.pipelines import DetectionPipeline, ModelFunction, Processor
@@ -141,7 +144,66 @@ def set_modelstate(processor: "Processor", model_name: str, state: bool = True) 
 
 
 # ----------------------------------------------------------------------------------------------
-# These method are used to display the detector object (all of the array Phton, pixel, signal and image)
+# These method are used to display the detector object (all of the array Photon, pixel, signal and image)
+
+
+def display_detector(
+    detector: "Detector", hist: bool = True
+) -> t.Union["DynamicMap", "Layout"]:
+    """Display detector interactively.
+
+    Parameters
+    ----------
+    detector: Detector
+    hist: bool
+
+    Returns
+    -------
+    out
+        A Holoviews object.
+    """
+    hv.extension("bokeh")
+
+    def get_image(name):
+        det = {
+            "Pixel": detector.pixel.array,
+            "Image": detector.image.array,
+            "Signal": detector.signal.array,
+            "Photon": detector.photon.array,
+        }
+
+        data = det[name]
+
+        if detector.geometry.row == 1:
+            im = hv.Curve((range(len(data[0, :])), data[0, :])).opts(
+                tools=["hover"], aspect=1.5, xlabel="x", ylabel="z"
+            )
+        elif detector.geometry.col == 1:
+            im = hv.Curve((range(len(data[:, 0])), data[:, 0])).opts(
+                tools=["hover"], aspect=1.5, xlabel="y", ylabel="z"
+            )
+        else:
+            im = hv.Image((range(data.shape[1]), range(data.shape[0]), data)).opts(
+                colorbar=True,
+                cmap="gray",
+                tools=["hover"],
+                aspect=(detector.geometry.col / detector.geometry.row),
+            )
+        return im
+
+    array_names = ["Photon", "Pixel", "Signal", "Image"]
+    dmap = hv.DynamicMap(get_image, kdims=["Array"]).redim.values(Array=array_names)
+    dmap = dmap.opts(framewise=True)
+
+    if hist:
+        hist = dmap.hist(adjoin=False, num_bins=100).opts(
+            aspect=1.5, framewise=True, tools=["hover"], xlabel="z"
+        )
+        out = dmap + hist
+    else:
+        out = dmap
+
+    return out
 
 
 def display_array(data: np.ndarray, axes: t.List[plt.axes], **kwargs: str) -> None:
@@ -173,33 +235,32 @@ def display_array(data: np.ndarray, axes: t.List[plt.axes], **kwargs: str) -> No
     axes[1].grid(True, alpha=0.5)
 
 
-def display_detector(
-    detector: "Detector",
-    array: t.Union[None, "Photon", "Pixel", "Signal", "Image"] = None,
-) -> None:
-    """Display detector.
-
-    Parameters
-    ----------
-    detector: Detector
-    array: str
-
-    Returns
-    -------
-    None
-    """
-    if array is not None:
-        fig, axes = plt.subplots(1, 2, figsize=(15, 6))
-        display_array(array.array, axes, label=str(array).split("<")[0])
-    else:
-        arrays = [detector.photon, detector.pixel, detector.signal, detector.image]
-
-        fig, axes = plt.subplots(len(arrays), 2, figsize=(15, 6 * len(arrays)))
-
-        for idx, data in enumerate(arrays):
-            display_array(data.array, axes[idx], label=str(data).split("<")[0])
-
-    plt.show()
+# def display_detector(
+#     detector: "Detector", array: t.Union[None, Photon, Pixel, Signal, Image] = None
+# ) -> None:
+#     """Display detector.
+#
+#     Parameters
+#     ----------
+#     detector: Detector
+#     array: str
+#
+#     Returns
+#     -------
+#     None
+#     """
+#     if array is not None:
+#         fig, axes = plt.subplots(1, 2, figsize=(15, 6))
+#         display_array(array.array, axes, label=str(array).split("<")[0])
+#     else:
+#         arrays = [detector.photon, detector.pixel, detector.signal, detector.image]
+#
+#         fig, axes = plt.subplots(len(arrays), 2, figsize=(15, 6 * len(arrays)))
+#
+#         for idx, data in enumerate(arrays):
+#             display_array(data.array, axes[idx], label=str(data).split("<")[0])
+#
+#     plt.show()
 
 
 # ----------------------------------------------------------------------------------------------
