@@ -6,20 +6,36 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 #
 #
+""""Stripe pattern illumination model."""
 
 import typing as t
 
 import numpy as np
+import skimage.transform as tr
 
 from pyxel.data_structure import Photon
-import skimage.transform as tr
 
 if t.TYPE_CHECKING:
     from pyxel.detectors import Detector
 
 
-def square_signal(n: int, lw: int, startwith: int =0) -> list:
-    """TBW."""
+def square_signal(n: int, lw: int, startwith: int = 0) -> list:
+    """Compute a 1D periodic square signal.
+
+    Parameters
+    ----------
+    n: int
+        Length of the signal.
+    lw:
+        Width of a pulse.
+    startwith
+        1 to start with high level or 0 for 0.
+
+    Returns
+    -------
+    out: list
+        Output list.
+    """
     if lw > n // 2:
         raise ValueError("Line too wide.")
     start = [startwith] * lw
@@ -30,59 +46,98 @@ def square_signal(n: int, lw: int, startwith: int =0) -> list:
     return out
 
 
-def pattern(detector_shape, period: int =2, multiplier=1, startwith=0, angle=0) -> np.ndarray:
-    """TBW."""
-    x, y = detector_shape
+def pattern(
+    detector_shape: tuple,
+    period: int = 2,
+    level: float = 1,
+    angle: float = 0,
+    startwith: int = 0,
+) -> np.ndarray:
+    """Return an array of a periodic pattern.
 
-    n, m = x*4, y*4
+    Parameters
+    ----------
+    detector_shape: tuple
+        Detector shape.
+    period: int
+        Period of the periodic pattern in pixels.
+    level: float
+        Amplitude of the periodic pattern.
+    angle: int
+        Angle of the pattern in degrees.
+    startwith: int
+        1 to start with high level or 0 for 0.
 
-    sx = slice(n//2-x//2, n//2+x//2)
-    sy = slice(m // 2 - y // 2, m // 2 + y // 2)
+    Returns
+    -------
+    out: np.ndarray
+        Output stripe pattern.
+    """
 
-    signal = square_signal(n, period, startwith)
+    if period < 2:
+        raise ValueError("Cant set a period smaller than 2 pixels.")
+    elif (period % 2) != 0:
+        raise ValueError("Period should be a multiple of 2.")
+
+    y, x = detector_shape
+
+    n = max(y, x) * 2
+    m = max(y, x) * 2
+
+    sx = slice(n // 2 - y // 2, n // 2 + y // 2)
+    sy = slice(m // 2 - x // 2, m // 2 + x // 2)
+
+    signal = square_signal(n=n, lw=period // 2, startwith=startwith)
     signal = np.array(signal + ([1] * (n - len(signal))))[::-1]
 
-    out = np.ones((n,m))
+    out = np.ones((n, m))
 
     for i in range(m):
         out[:, i] = signal
 
-    out = multiplier * out
+    out = level * out
 
     if angle:
         out = tr.rotate(out, angle=angle)
 
-    return out[sx, sy]
+    out = out[sx, sy]
+
+    return out
 
 
 def stripe_pattern(
-    detector: Detector, period: int = 10, level: float = 1., angle:int =0, startwith: int = 0) -> None:
-    """TBW.
+    detector: "Detector",
+    period: int = 10,
+    level: float = 1.0,
+    angle: int = 0,
+    startwith: int = 0,
+) -> None:
+    """Stripe pattern model.
 
     Parameters
     ----------
     detector: Detector
+        Detector object.
     period: int
+        Period of the periodic pattern in pixels.
     level: float
+        Amplitude of the periodic pattern.
     angle: int
+        Angle of the pattern in degrees.
     startwith: int
+        1 to start with high level or 0 for 0.
 
     Returns
     -------
     None
     """
 
-    if period<2:
-        raise ValueError("Cant set a period smaller than 2.")
-    elif (period%2) != 0:
-        raise ValueError("Period should be a multiple of 2.")
-
     photon_array = pattern(
         detector_shape=(detector.geometry.row, detector.geometry.col),
         period=period,
-        multiplier=level,
+        level=level,
         startwith=startwith,
-        angle=angle
+        angle=angle,
     )
 
     detector.photon = Photon(photon_array)
