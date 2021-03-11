@@ -6,7 +6,7 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 #
 #
-""""Stripe pattern illumination model."""
+"""Stripe pattern illumination model."""
 
 import typing as t
 

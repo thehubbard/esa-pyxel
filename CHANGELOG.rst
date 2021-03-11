@@ -18,6 +18,8 @@ Core
   (See `!170 <https://gitlab.com/esa/pyxel/-/merge_requests/170>`_).
 * Add capability to cache files in functions 'load_image' and 'load_data'.
   (See `!177 <https://gitlab.com/esa/pyxel/-/merge_requests/177>`_).
+* Add a stripe pattern illumination model.
+  (See `!174 <https://gitlab.com/esa/pyxel/-/merge_requests/174>`_).
 * Add methods to display a Detector or an array of the Detector.
   (See `!173 <https://gitlab.com/esa/pyxel/-/merge_requests/173>`_).
 
