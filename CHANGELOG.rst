@@ -18,6 +18,8 @@ Core
   (See `!170 <https://gitlab.com/esa/pyxel/-/merge_requests/170>`_).
 * Add capability to cache files in functions 'load_image' and 'load_data'.
   (See `!177 <https://gitlab.com/esa/pyxel/-/merge_requests/177>`_).
+* Add methods to display a Detector or an array of the Detector.
+  (See `!173 <https://gitlab.com/esa/pyxel/-/merge_requests/173>`_).
 
 Documentation
 ~~~~~~~~~~~~~
@@ -30,10 +32,8 @@ Others
 
 * Add a new badge for Binder.
   (See `!163 <https://gitlab.com/esa/pyxel/-/merge_requests/163>`_).
-
 * Fix issue when generating documentation in CI/CD.
   (See `!179 <https://gitlab.com/esa/pyxel/-/merge_requests/179>`_).
-
 * Always execute stage 'doc' in CI/CD.
   (See `!180 <https://gitlab.com/esa/pyxel/-/merge_requests/180>`_).
 

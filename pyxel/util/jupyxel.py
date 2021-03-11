@@ -17,10 +17,9 @@ import numpy as np
 from IPython.display import Markdown, display
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
-
-
 if t.TYPE_CHECKING:
     from holoviews import DynamicMap, Layout
+
     # from pyxel.data_structure import Image, Photon, Pixel, Signal
     from pyxel.detectors import Detector
     from pyxel.inputs_outputs import Configuration
@@ -163,7 +162,7 @@ def display_detector(
     out
         A Holoviews object.
     """
-    hv.extension('bokeh')
+    hv.extension("bokeh")
 
     def get_image(name):
         det = {
