@@ -29,6 +29,12 @@ Documentation
 * Use the 'Documentation System'.
   (See `!178 <https://gitlab.com/esa/pyxel/-/merge_requests/178>`_).
 
+* Use the 'Documentation System'.
+  (See `!181 <https://gitlab.com/esa/pyxel/-/merge_requests/181>`_).
+
+* Add an 'overview' page for each section in the documentation.
+  (See `!183 <https://gitlab.com/esa/pyxel/-/merge_requests/183>`_).
+
 Others
 ~~~~~~
 
@@ -37,7 +43,7 @@ Others
 * Fix issue when generating documentation in CI/CD.
   (See `!179 <https://gitlab.com/esa/pyxel/-/merge_requests/179>`_).
 * Always execute stage 'doc' in CI/CD.
-  (See `!180 <https://gitlab.com/esa/pyxel/-/merge_requests/180>`_).
+  (See `!183 <https://gitlab.com/esa/pyxel/-/merge_requests/183>`_).
 
 Pipelines
 ~~~~~~~~~

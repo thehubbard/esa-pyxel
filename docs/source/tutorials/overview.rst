@@ -60,3 +60,13 @@ other projects as well, making knowledge transfer easier.
     *"Pyxel - a novel and multi-purpose python-based framework for imaging detector simulation"*
     Proc. SPIE 10709, High Energy, Optical, and Infrared Detectors for Astronomy VIII, 107091A, 2018.
     doi:10.1117/12.2314047.
+
+
+**Tutorials**. Learn about the Pyxel's concepts.
+Are you new to Pyxel ? This is the place to start !
+
+* :doc:`install`
+* :doc:`running_modes`
+* :doc:`examples`
+
+**Before you do anything else, start here** at our :doc:`install` tutorial.
