@@ -68,6 +68,7 @@ These how-to guides are intended as recipes to solve common problems/tasks using
 
 They are composed of the following **goal-oriented** series of steps:
 
+* Working in the local development environment
 * :doc:`howto/new_model`
 
 
@@ -85,6 +86,7 @@ They are composed of the following **goal-oriented** series of steps:
    :maxdepth: 1
    :hidden:
 
+   howto/overview.rst
    howto/new_model.rst
 
 
@@ -101,6 +103,7 @@ Explanation of key concepts, best practices and techniques in Pyxel.
    :maxdepth: 1
    :hidden:
 
+   background/overview.rst
    background/pipelines.rst
    background/detectors.rst
    background/models.rst
@@ -127,13 +130,17 @@ Cover tools, components and resources.
    :maxdepth: 1
    :hidden:
 
+   references/overview.rst
    references/citation.rst
    contributing.rst
+   references/changelog.rst
+   references/authors.rst
 
 * :doc:`references/citation`
 * Physics Reference (TBW)
-
 * :doc:`contributing`
+* :doc:`references/changelog`
+* :doc:`references/authors`
 
 
 .. toctree::
@@ -149,7 +156,5 @@ Cover tools, components and resources.
 
    faq.rst
    acronyms.rst
-   changelog.rst
    license.rst
-   authors.rst
    acknowledgement.rst
