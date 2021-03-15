@@ -18,6 +18,11 @@ Simple illumination
 
 .. autofunction:: illumination
 
+Stripe pattern
+--------------
+
+.. autofunction:: stripe_pattern
+
 Shot noise
 ----------
 
