@@ -2,7 +2,7 @@
 
 doc8
 sphinx
-sphinx-rtd-theme
+sphinx-book-theme
 sphinxcontrib-bibtex
 sphinxcontrib-napoleon
 
