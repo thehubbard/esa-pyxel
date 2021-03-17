@@ -22,16 +22,16 @@ Core
   (See `!174 <https://gitlab.com/esa/pyxel/-/merge_requests/174>`_).
 * Add methods to display a Detector or an array of the Detector.
   (See `!173 <https://gitlab.com/esa/pyxel/-/merge_requests/173>`_).
+* Initiate Processor object inside running mode functions.
+  (See `!184 <https://gitlab.com/esa/pyxel/-/merge_requests/184>`_).
 
 Documentation
 ~~~~~~~~~~~~~
 
 * Use the 'Documentation System'.
   (See `!178 <https://gitlab.com/esa/pyxel/-/merge_requests/178>`_).
-
 * Use the 'Documentation System'.
   (See `!181 <https://gitlab.com/esa/pyxel/-/merge_requests/181>`_).
-
 * Add an 'overview' page for each section in the documentation.
   (See `!183 <https://gitlab.com/esa/pyxel/-/merge_requests/183>`_).
 

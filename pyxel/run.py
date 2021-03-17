@@ -45,13 +45,18 @@ if t.TYPE_CHECKING:
     )
 
 
-def single_mode(processor: Processor, single: "Single") -> None:
+def single_mode(
+    single: "Single",
+    detector: t.Union["CCD", "CMOS"],
+    pipeline: "DetectionPipeline",
+) -> None:
     """Run a 'single' pipeline.
 
     Parameters
     ----------
-    processor
     single
+    detector
+    pipeline
 
     Returns
     -------
@@ -60,7 +65,9 @@ def single_mode(processor: Processor, single: "Single") -> None:
     logging.info("Mode: Single")
 
     single_outputs = single.outputs  # type: SingleOutputs
-    processor.detector.set_output_dir(single_outputs.output_dir)  # TODO: Remove this
+    detector.set_output_dir(single_outputs.output_dir)  # TODO: Remove this
+
+    processor = Processor(detector=detector, pipeline=pipeline)
 
     _ = processor.run_pipeline()
 
@@ -69,16 +76,18 @@ def single_mode(processor: Processor, single: "Single") -> None:
 
 
 def parametric_mode(
-    processor: Processor,
-    parametric: Parametric,
+    parametric: "Parametric",
+    detector: t.Union["CCD", "CMOS"],
+    pipeline: "DetectionPipeline",
     with_dask: bool = False,
 ) -> None:
     """Run a 'parametric' pipeline.
 
     Parameters
     ----------
-    processor
     parametric
+    detector
+    pipeline
     with_dask
 
     Returns
@@ -88,12 +97,12 @@ def parametric_mode(
     logging.info("Mode: Parametric")
 
     parametric_outputs = parametric.outputs  # type: ParametricOutputs
-    processor.detector.set_output_dir(
-        parametric_outputs.output_dir
-    )  # TODO: Remove this
+    detector.set_output_dir(parametric_outputs.output_dir)  # TODO: Remove this
 
     # TODO: This should be done during initializing of object `Configuration`
     # parametric_outputs.params_func(parametric)
+
+    processor = Processor(detector=detector, pipeline=pipeline)
 
     # Check if all keys from 'parametric' are valid keys for object 'pipeline'
     for param_value in parametric.enabled_steps:
@@ -138,13 +147,18 @@ def parametric_mode(
         parametric_outputs.plotting_func(plot_array)
 
 
-def dynamic_mode(processor: "Processor", dynamic: "Dynamic") -> None:
+def dynamic_mode(
+    dynamic: "Dynamic",
+    detector: t.Union["CCD", "CMOS"],
+    pipeline: "DetectionPipeline",
+) -> None:
     """Run a 'dynamic' pipeline.
 
     Parameters
     ----------
-    processor
     dynamic
+    detector
+    pipeline
 
     Returns
     -------
@@ -155,8 +169,9 @@ def dynamic_mode(processor: "Processor", dynamic: "Dynamic") -> None:
 
     dynamic_outputs = dynamic.outputs  # type: DynamicOutputs
 
-    detector = processor.detector
     detector.set_output_dir(dynamic_outputs.output_dir)  # TODO: Remove this
+
+    processor = Processor(detector=detector, pipeline=pipeline)
 
     if isinstance(detector, CCD):
         dynamic.non_destructive_readout = False
@@ -179,13 +194,18 @@ def dynamic_mode(processor: "Processor", dynamic: "Dynamic") -> None:
             dynamic_outputs.single_output(processor)
 
 
-def calibration_mode(processor: "Processor", calibration: "Calibration") -> t.Tuple:
+def calibration_mode(
+    calibration: "Calibration",
+    detector: t.Union["CCD", "CMOS"],
+    pipeline: "DetectionPipeline",
+) -> t.Tuple:
     """Run a 'calibration' pipeline.
 
     Parameters
     ----------
-    processor
     calibration
+    detector
+    pipeline
 
     Returns
     -------
@@ -194,9 +214,9 @@ def calibration_mode(processor: "Processor", calibration: "Calibration") -> t.Tu
     logging.info("Mode: Calibration")
 
     calibration_outputs = calibration.outputs  # type: CalibrationOutputs
-    processor.detector.set_output_dir(
-        calibration_outputs.output_dir
-    )  # TODO: Remove this
+    detector.set_output_dir(calibration_outputs.output_dir)  # TODO: Remove this
+
+    processor = Processor(detector=detector, pipeline=pipeline)
 
     ds_results, df_processors, df_all_logs = calibration.run_calibration(
         processor=processor, output_dir=calibration_outputs.output_dir
@@ -280,25 +300,25 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
     else:
         raise NotImplementedError("Detector is not defined in YAML config. file!")
 
-    processor = Processor(detector=detector, pipeline=pipeline)
-
     if isinstance(configuration.single, Single):
         single = configuration.single  # type: Single
-        single_mode(processor=processor, single=single)
+        single_mode(single=single, detector=detector, pipeline=pipeline)
 
     elif isinstance(configuration.calibration, Calibration):
 
         calibration = configuration.calibration  # type: Calibration
-        _ = calibration_mode(processor=processor, calibration=calibration)
+        _ = calibration_mode(
+            calibration=calibration, detector=detector, pipeline=pipeline
+        )
 
     elif isinstance(configuration.parametric, Parametric):
         parametric = configuration.parametric  # type: Parametric
-        parametric_mode(processor=processor, parametric=parametric)
+        parametric_mode(parametric=parametric, detector=detector, pipeline=pipeline)
 
     elif isinstance(configuration.dynamic, Dynamic):
 
         dynamic = configuration.dynamic  # type: Dynamic
-        dynamic_mode(processor=processor, dynamic=dynamic)
+        dynamic_mode(dynamic=dynamic, detector=detector, pipeline=pipeline)
 
     else:
         raise NotImplementedError("Please provide a valid simulation mode !")
