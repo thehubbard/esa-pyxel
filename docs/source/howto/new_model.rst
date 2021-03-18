@@ -63,7 +63,7 @@ Argument validation
 To validate input arguments of a model function, use the
 ``validate`` and ``argument`` Pyxel decorators:
 
-.. ipython:: python
+.. code-block:: python
 
     from pyxel.detectors import Detector
 
