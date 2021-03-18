@@ -24,6 +24,8 @@ Core
   (See `!173 <https://gitlab.com/esa/pyxel/-/merge_requests/173>`_).
 * Initiate Processor object inside running mode functions.
   (See `!184 <https://gitlab.com/esa/pyxel/-/merge_requests/184>`_).
+* Add HTML display methods for objects.
+  (See `!185 <https://gitlab.com/esa/pyxel/-/merge_requests/185>`_).
 
 Documentation
 ~~~~~~~~~~~~~
