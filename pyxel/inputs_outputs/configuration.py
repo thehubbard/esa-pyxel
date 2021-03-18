@@ -545,7 +545,9 @@ def to_model_function(dct: dict) -> ModelFunction:
     return ModelFunction(**dct)
 
 
-def to_model_group(models_list: t.Optional[t.Sequence[dict]], name: str) -> t.Optional[ModelGroup]:
+def to_model_group(
+    models_list: t.Optional[t.Sequence[dict]], name: str
+) -> t.Optional[ModelGroup]:
     """Create a ModelGroup class from a dictionary.
 
     Parameters
@@ -575,7 +577,13 @@ def to_pipeline(dct: dict) -> DetectionPipeline:
     DetectionPipeline
     """
     for model_group_name in dct.keys():
-        dct.update({model_group_name: to_model_group(models_list=dct[model_group_name], name=model_group_name)})
+        dct.update(
+            {
+                model_group_name: to_model_group(
+                    models_list=dct[model_group_name], name=model_group_name
+                )
+            }
+        )
     return DetectionPipeline(**dct)
 
 

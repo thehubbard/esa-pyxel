@@ -14,6 +14,7 @@
 #
 #
 
+# flake8: noqa
 from pyxel.notebook.jupyxel import (
     display_config,
     display_dict,
@@ -23,5 +24,4 @@ from pyxel.notebook.jupyxel import (
     display_detector,
     display_persist,
 )
-
 from pyxel.notebook.html_representation import display_html

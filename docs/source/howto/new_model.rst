@@ -67,6 +67,7 @@ To validate input arguments of a model function, use the
 
     from pyxel.detectors import Detector
 
+
     def my_model_function(detector: Detector, filename: str, arg: int = 0):
         """This is my model with validated arguments.
         Parameters

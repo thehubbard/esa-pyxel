@@ -39,7 +39,7 @@ class ModelGroup:
 
     def __deepcopy__(self, memo: dict) -> "ModelGroup":
         copied_models = deepcopy(self.models)
-        return ModelGroup(models=copied_models)
+        return ModelGroup(models=copied_models, name=self._name)
 
     def __iter__(self) -> t.Iterator[ModelFunction]:
         for model in self.models:
