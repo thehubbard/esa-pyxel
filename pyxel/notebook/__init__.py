@@ -13,6 +13,7 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 #
 #
+"""Notebook functions."""
 
 # flake8: noqa
 from pyxel.notebook.jupyxel import (
