@@ -171,13 +171,20 @@ def display_detector(
     """
     hv.extension("bokeh")
 
+    #Container for detector data, leave out where there is none.
+    det = {}
+    if not isinstance(detector.input_image, type(None)):
+        det['Input'] = detector.input_image
+    if not isinstance(detector._photon, type(None)):
+        det['Photon'] = detector.photon.array
+    if not isinstance(detector._pixel, type(None)):
+        det['Pixel'] = detector.pixel.array
+    if not isinstance(detector._signal, type(None)):
+        det['Signal'] = detector.signal.array
+    if not isinstance(detector._image, type(None)):
+        det['Image'] = detector.image.array
+
     def get_image(name):
-        det = {
-            "Pixel": detector.pixel.array,
-            "Image": detector.image.array,
-            "Signal": detector.signal.array,
-            "Photon": detector.photon.array,
-        }
 
         data = det[name]
 
@@ -198,7 +205,11 @@ def display_detector(
             )
         return im
 
-    array_names = ["Photon", "Pixel", "Signal", "Image"]
+    array_names = [key for key in det.keys()]
+
+    if len(array_names) == 0:
+        raise ValueError("No data in the detector.")
+
     dmap = hv.DynamicMap(get_image, kdims=["Array"]).redim.values(Array=array_names)
     dmap = dmap.opts(framewise=True)
 
