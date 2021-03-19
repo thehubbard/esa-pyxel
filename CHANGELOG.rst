@@ -26,6 +26,8 @@ Core
   (See `!184 <https://gitlab.com/esa/pyxel/-/merge_requests/184>`_).
 * Add HTML display methods for objects.
   (See `!185 <https://gitlab.com/esa/pyxel/-/merge_requests/185>`_).
+* Add ability to display input image in the display_detector function.
+  (See `!186 <https://gitlab.com/esa/pyxel/-/merge_requests/186>`_).
 
 Documentation
 ~~~~~~~~~~~~~

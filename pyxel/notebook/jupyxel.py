@@ -171,22 +171,22 @@ def display_detector(
     """
     hv.extension("bokeh")
 
-    #Container for detector data, leave out where there is none.
+    # Container for detector data, leave out where there is none.
     det = {}
     if not isinstance(detector.input_image, type(None)):
-        det['Input'] = detector.input_image
+        det["Input"] = detector.input_image
     if not isinstance(detector._photon, type(None)):
-        det['Photon'] = detector.photon.array
+        det["Photon"] = detector.photon.array
     if not isinstance(detector._pixel, type(None)):
-        det['Pixel'] = detector.pixel.array
+        det["Pixel"] = detector.pixel.array
     if not isinstance(detector._signal, type(None)):
-        det['Signal'] = detector.signal.array
+        det["Signal"] = detector.signal.array
     if not isinstance(detector._image, type(None)):
-        det['Image'] = detector.image.array
+        det["Image"] = detector.image.array
 
     def get_image(name):
 
-        data = det[name]
+        data = det[name]  # type: np.ndarray
 
         if detector.geometry.row == 1:
             im = hv.Curve((range(len(data[0, :])), data[0, :])).opts(
