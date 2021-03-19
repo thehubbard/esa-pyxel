@@ -14,15 +14,6 @@ import numpy as np
 
 # flake8: noqa
 # from pyxel.util.outputs import image, numpy_array, hist_plot, graph_plot, show_plots
-from pyxel.util.jupyxel import (
-    display_config,
-    display_dict,
-    display_model,
-    change_modelparam,
-    display_array,
-    display_detector,
-    display_persist,
-)
 
 from pyxel.util.memory import get_size, memory_usage_details
 from pyxel.util.examples import download_examples
