@@ -25,7 +25,7 @@ from IPython.display import Markdown, display
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 if t.TYPE_CHECKING:
-    from holoviews import DynamicMap, Layout
+    from holoviews import Layout
 
     # from pyxel.data_structure import Image, Photon, Pixel, Signal
     from pyxel.detectors import Detector
@@ -154,9 +154,7 @@ def set_modelstate(processor: "Processor", model_name: str, state: bool = True) 
 # These method are used to display the detector object (all of the array Photon, pixel, signal and image)
 
 
-def display_detector(
-    detector: "Detector"
-) -> t.Union["Layout"]:
+def display_detector(detector: "Detector") -> t.Union["Layout"]:
     """Display detector interactively.
 
     Parameters
