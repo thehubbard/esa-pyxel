@@ -25,7 +25,7 @@ from IPython.display import Markdown, display
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 if t.TYPE_CHECKING:
-    from holoviews import DynamicMap, Layout
+    from holoviews import Layout
 
     # from pyxel.data_structure import Image, Photon, Pixel, Signal
     from pyxel.detectors import Detector
@@ -154,9 +154,7 @@ def set_modelstate(processor: "Processor", model_name: str, state: bool = True) 
 # These method are used to display the detector object (all of the array Photon, pixel, signal and image)
 
 
-def display_detector(
-    detector: "Detector", hist: bool = True
-) -> t.Union["DynamicMap", "Layout"]:
+def display_detector(detector: "Detector") -> t.Union["Layout"]:
     """Display detector interactively.
 
     Parameters
@@ -213,13 +211,10 @@ def display_detector(
     dmap = hv.DynamicMap(get_image, kdims=["Array"]).redim.values(Array=array_names)
     dmap = dmap.opts(framewise=True)
 
-    if hist:
-        hist = dmap.hist(adjoin=False, num_bins=100).opts(
-            aspect=1.5, framewise=True, tools=["hover"], xlabel="z"
-        )
-        out = dmap + hist
-    else:
-        out = dmap
+    hist = dmap.hist(adjoin=False, num_bins=100).opts(
+        aspect=1.5, framewise=True, tools=["hover"], xlabel="z"
+    )
+    out = (dmap.relabel("Array") + hist.relabel("Histogram")).opts(tabs=True)
 
     return out
 
