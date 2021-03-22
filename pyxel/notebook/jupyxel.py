@@ -155,8 +155,8 @@ def set_modelstate(processor: "Processor", model_name: str, state: bool = True) 
 
 
 def display_detector(
-    detector: "Detector", hist: bool = True
-) -> t.Union["DynamicMap", "Layout"]:
+    detector: "Detector"
+) -> t.Union["Layout"]:
     """Display detector interactively.
 
     Parameters
@@ -213,13 +213,10 @@ def display_detector(
     dmap = hv.DynamicMap(get_image, kdims=["Array"]).redim.values(Array=array_names)
     dmap = dmap.opts(framewise=True)
 
-    if hist:
-        hist = dmap.hist(adjoin=False, num_bins=100).opts(
-            aspect=1.5, framewise=True, tools=["hover"], xlabel="z"
-        )
-        out = dmap + hist
-    else:
-        out = dmap
+    hist = dmap.hist(adjoin=False, num_bins=100).opts(
+        aspect=1.5, framewise=True, tools=["hover"], xlabel="z"
+    )
+    out = (dmap.relabel("Array") + hist.relabel("Histogram")).opts(tabs=True)
 
     return out
 
