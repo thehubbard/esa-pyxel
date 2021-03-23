@@ -46,10 +46,10 @@ class ModelGroup:
             if model.enabled:
                 yield model
 
-    def __getstate__(self) -> tuple:
+    def __getstate__(self) -> t.Mapping:
         return {"models": tuple(self.models), "name": self._name}
 
-    def __setstate__(self, state: tuple) -> None:
+    def __setstate__(self, state: t.Mapping) -> None:
         self.models = list(state["models"])
         self._name = state["name"]
 
