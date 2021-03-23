@@ -28,6 +28,8 @@ Core
   (See `!185 <https://gitlab.com/esa/pyxel/-/merge_requests/185>`_).
 * Add ability to display input image in the display_detector function.
   (See `!186 <https://gitlab.com/esa/pyxel/-/merge_requests/186>`_).
+* Issue when creating islands in a Grid.
+  (See `!188 <https://gitlab.com/esa/pyxel/-/merge_requests/188>`_).
 
 Documentation
 ~~~~~~~~~~~~~
