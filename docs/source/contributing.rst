@@ -82,10 +82,11 @@ Bug reports must:
 use the built in function:
 
 .. ipython::
+    :okwarning:
 
-   In [1]: import pyxel
+    In [1]: import pyxel
 
-   In [2]: pyxel.show_versions()
+    In [2]: pyxel.show_versions()
 
 #. Explain why the current behavior is wrong/not desired and what you expect
    instead.
