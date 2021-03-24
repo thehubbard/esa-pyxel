@@ -82,7 +82,7 @@ Bug reports must:
 use the built in function:
 
 .. ipython:: python
-
+    :okwarning:
     import pyxel
 
     pyxel.show_versions()
