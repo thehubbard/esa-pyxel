@@ -50,6 +50,8 @@ Others
   (See `!179 <https://gitlab.com/esa/pyxel/-/merge_requests/179>`_).
 * Always execute stage 'doc' in CI/CD.
   (See `!183 <https://gitlab.com/esa/pyxel/-/merge_requests/183>`_).
+* Pyxel version cannot be retrieved.
+  (See `!189 <https://gitlab.com/esa/pyxel/-/merge_requests/189>`_).
 
 Pipelines
 ~~~~~~~~~
