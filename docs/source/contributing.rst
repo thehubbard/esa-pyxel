@@ -81,11 +81,11 @@ Bug reports must:
 2. Include the full version string of *Pyxel* and its dependencies. You can
 use the built in function:
 
-.. ipython:: python
-    :okwarning:
-    import pyxel
+.. ipython::
 
-    pyxel.show_versions()
+   In [1]: import pyxel
+
+   In [2]: pyxel.show_versions()
 
 #. Explain why the current behavior is wrong/not desired and what you expect
    instead.
