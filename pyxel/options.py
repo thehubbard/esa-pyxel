@@ -4,11 +4,6 @@
 #  is part of this Pyxel package. No part of the package, including
 #  this file, may be copied, modified, propagated, or distributed except according to
 #  the terms contained in the file ‘LICENCE.txt’.
-#
-#  This file is subject to the terms and conditions defined in file 'LICENCE.txt', which
-#  is part of this Pyxel package. No part of the package, including
-#  this file, may be copied, modified, propagated, or distributed except according to
-#  the terms contained in the file ‘LICENCE.txt’.
 
 """Subpackage to define options in Pyxel."""
 import typing as t
@@ -124,7 +119,6 @@ class SetOptions:
     Or with a context manager
     >>> with pyxel.set_options(cache_enabled=True, cache_folder="/tmp"):
     ...     print("Do something")
-    ...
     """
 
     def __init__(self, **kwargs):
