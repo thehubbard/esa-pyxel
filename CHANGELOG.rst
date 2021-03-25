@@ -52,6 +52,8 @@ Others
   (See `!183 <https://gitlab.com/esa/pyxel/-/merge_requests/183>`_).
 * Pyxel version cannot be retrieved.
   (See `!189 <https://gitlab.com/esa/pyxel/-/merge_requests/189>`_).
+* Remove pyviz from dependencies.
+  (See `!191 <https://gitlab.com/esa/pyxel/-/merge_requests/191>`_).
 
 Pipelines
 ~~~~~~~~~
