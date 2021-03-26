@@ -7,6 +7,8 @@ version 0.10 / UNRELEASED-2021-MM-DD
 
 Core
 ~~~~
+* Add missing packages when running 'pyxel.show_versions()
+  (See `!193 <https://gitlab.com/esa/pyxel/-/merge_requests/193>`_).
 
 
 version 0.9 / 2021-03-25
