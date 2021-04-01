@@ -42,8 +42,7 @@ Are you new to Pyxel ? This is the place to start !
 
 .. toctree::
    :caption: Getting Started / Tutorials
-   :name: tutorials
-   :maxdepth: 1
+   :maxdepth: 2
    :hidden:
 
    tutorials/overview.rst

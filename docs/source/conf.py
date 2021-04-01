@@ -1,7 +1,5 @@
-#!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 #
-# esapy_rpc documentation build configuration file, created by
+# pyxel documentation build configuration file, created by
 # sphinx-quickstart on Tue Nov 21 09:37:42 2017.
 #
 # This file is execfile()d with the current directory set to its
@@ -24,10 +22,6 @@ from setuptools.config import read_configuration
 
 import pyxel
 
-html_theme = "sphinx_rtd_theme"
-
-html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
-
 # Read 'setup.cfg' file
 parent_folder = Path(__file__).parent
 setup_cfg_filename = parent_folder.joinpath("../../setup.cfg").resolve(
@@ -36,18 +30,14 @@ setup_cfg_filename = parent_folder.joinpath("../../setup.cfg").resolve(
 metadata = read_configuration(setup_cfg_filename)["metadata"]  # type: dict
 
 
-plantuml = "java -jar /usr/local/plantuml/plantuml.jar"
-
 # -- General configuration ------------------------------------------------
 
 # If your documentation needs a minimal Sphinx version, state it here.
-#
 # needs_sphinx = '1.0'
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-# extensions = ['sphinx.ext.autodoc']
 extensions = [
     "sphinx.ext.autodoc",  # include documentation from docstrings
     "sphinx.ext.autosummary",  # Generate autodoc summaries
@@ -60,19 +50,15 @@ extensions = [
     "IPython.sphinxext.ipython_console_highlighting",
     "sphinx.ext.viewcode",  # add links to highlighted source code
     "sphinxcontrib.bibtex",
+    # 'sphinx_panels'
 ]
 
 extlinks = {
-    "issue": ("https://github.com/pydata/xarray/issues/%s", "GH"),
-    "pull": ("https://github.com/pydata/xarray/pull/%s", "PR"),
+    "issue": ("https://gitlab.com/esa/pyxel/-/issues/%s", "GH"),
+    "pull": ("https://gitlab.com/esa/pyxel/-/merge_requests/%s", "PR"),
 }
 bibtex_bibfiles = ["refs.bib"]
 
-# highlight_language = "python3"
-
-# autoyaml_root
-# autoyaml_doc_delimeter
-# autoyaml_comment
 
 autodoc_typehints = "none"
 
@@ -91,8 +77,8 @@ templates_path = ["_templates"]
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
 #
-source_suffix = [".rst", ".md"]
-# source_suffix = '.rst'
+# source_suffix = [".rst", ".md"]
+source_suffix = ".rst"
 
 # The master toctree document.
 master_doc = "index"
@@ -142,8 +128,7 @@ todo_include_todos = False
 # a list of builtin themes.
 #
 html_theme = "sphinx_book_theme"
-html_title = "My Title"
-
+html_title = ""
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -154,19 +139,20 @@ html_theme_options = {
     "repository_branch": "master",
     "path_to_docs": "doc",
     # Add buttons
+    "use_edit_page_button": True,
     "use_repository_button": True,
     "use_issues_button": True,
-    "use_edit_page_button": True,
     "use_download_button": True,
     "home_page_in_toc": False,
     "extra_navbar": "",
     "navbar_footer_text": "",
     "extra_footer": """<p>Pyxel</p>""",
+    "toc_title": "Contents",  # Control the right sidebar items
 }
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
-html_logo = "_static/esa-logo.png"
+html_logo = "_static/pyxel-logo.png"
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -179,7 +165,6 @@ ogp_site_url = "https://esa.gitlab.io/pyxel/doc/"
 ogp_image = "https://esa.gitlab.io/pyxel/doc/_static/esa-logo.png"
 ogp_custom_meta_tags = [
     # '<meta name="twitter:card" content="summary_large_image" />',
-    # '<meta property="twitter:site" content="@xarray_dev />',
     '<meta name="image" property="og:image" content="https://esa.gitlab.io/pyxel/doc/_static/esa-logo.png">',
 ]
 
@@ -188,12 +173,12 @@ ogp_custom_meta_tags = [
 #
 # This is required for the alabaster theme
 # refs: http://alabaster.readthedocs.io/en/latest/installation.html#sidebars
-html_sidebars = {
-    "**": [
-        "relations.html",  # needs 'show_related': True theme option to display
-        "searchbox.html",
-    ]
-}
+# html_sidebars = {
+#     "**": [
+#         "relations.html",  # needs 'show_related': True theme option to display
+#         "searchbox.html",
+#     ]
+# }
 
 
 # -- Options for HTMLHelp output ------------------------------------------
