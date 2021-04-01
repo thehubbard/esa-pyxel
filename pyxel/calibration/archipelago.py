@@ -16,12 +16,16 @@ import dask.array as da
 import dask.delayed as delayed
 import numpy as np
 import pandas as pd
-import pygmo as pg
 import xarray as xr
 from tqdm.auto import tqdm
 
 from pyxel.calibration import Algorithm, AlgorithmType, IslandProtocol
 from pyxel.calibration.fitting import ModelFitting
+
+try:
+    import pygmo as pg
+except ImportError:
+    pass
 
 
 class ArchipelagoLogs:
@@ -72,7 +76,7 @@ class ArchipelagoLogs:
         return df_archipelago
 
     # TODO: Remove parameter 'id_evolution' ?
-    def append(self, archi: pg.archipelago, id_evolution: int) -> None:
+    def append(self, archi: "pg.archipelago", id_evolution: int) -> None:
         """Collect logging information from a archipelago for specified evolution id."""
         partial_df = self._from_archi(archi=archi)  # type: pd.DataFrame
         partial_df["id_evolution"] = id_evolution

@@ -47,12 +47,18 @@ import typing as t
 
 import matplotlib.pyplot as plt
 import numpy as np
-import poppy as op
 from astropy.convolution import convolve_fft
 from astropy.io import fits
 
 from pyxel.data_structure import Photon
 from pyxel.detectors import Detector
+
+try:
+    import poppy as op
+
+    WITH_POPPY: bool = True
+except ImportError:
+    WITH_POPPY = False
 
 
 def calc_psf(
@@ -61,7 +67,7 @@ def calc_psf(
     pixelscale: float,
     optical_system: list,
     display: bool = False,
-) -> t.Tuple[t.List[fits.hdu.image.PrimaryHDU], t.List[op.Wavefront]]:
+) -> t.Tuple[t.List[fits.hdu.image.PrimaryHDU], t.List["op.Wavefront"]]:
     """Calculate the point spread function for the given optical system and optionally display the psf.
 
     Parameters
@@ -81,6 +87,13 @@ def calc_psf(
     psf: tuple
         Tuple of lists containing the psf and intermediate wavefronts.
     """
+    if not WITH_POPPY:
+        raise ImportError(
+            "Missing optional package 'poppy'.\n"
+            "Please install it with 'pip install pyxel-sim[model]' "
+            "or 'pip install pyxel-sim[all]'"
+        )
+
     osys = op.OpticalSystem(npix=1000)  # default: 1024
 
     for item in optical_system:

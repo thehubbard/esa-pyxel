@@ -22,3 +22,13 @@ from .util import (
 )
 from .archipelago import MyArchipelago
 from .calibration import Calibration, CalibrationMode
+
+
+try:
+    import pygmo
+
+    del pygmo
+except ImportError:
+    import warnings
+
+    warnings.warn("Cannot import 'pygmo", RuntimeWarning, stacklevel=2)

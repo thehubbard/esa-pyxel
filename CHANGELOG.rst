@@ -13,6 +13,14 @@ Core
 * Fix issue when displaying current version.
   (See `!196 <https://gitlab.com/esa/pyxel/-/merge_requests/196>`_).
 
+Others
+~~~~~~
+
+* Fix issue when displaying current version.
+  (See `!196 <https://gitlab.com/esa/pyxel/-/merge_requests/196>`_).
+* Cannot import sub-packages 'calibration' and 'models.optics'.
+  (See `!189 <https://gitlab.com/esa/pyxel/-/merge_requests/189>`_).
+
 
 version 0.9 / 2021-03-25
 ------------------------
