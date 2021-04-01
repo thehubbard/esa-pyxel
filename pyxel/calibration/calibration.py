@@ -31,10 +31,10 @@ from pyxel.pipelines import ModelFunction, Processor
 
 try:
     import pygmo as pg
-except ImportError:
-    import warnings
 
-    warnings.warn("Cannot import 'pygmo", RuntimeWarning, stacklevel=2)
+    WITH_PYGMO: bool = True
+except ImportError:
+    WITH_PYGMO = False
 
 if t.TYPE_CHECKING:
     from ..inputs_outputs import CalibrationOutputs
@@ -72,6 +72,13 @@ class Calibration:
         ] = "multiprocessing",
         weighting_path: t.Optional[t.Sequence[Path]] = None,
     ):
+        if not WITH_PYGMO:
+            raise ImportError(
+                "Missing optional package 'pygmo'.\n"
+                "Please install it with 'pip install pyxel-sim[calibration]' "
+                "or 'pip install pyxel-sim[all]'"
+            )
+
         if seed is not None and seed not in range(100001):
             raise ValueError("'seed' must be between 0 and 100000.")
 

@@ -11,11 +11,15 @@ import logging
 import typing as t
 
 import numpy as np
-import pygmo as pg
 from dask import array as da
 from dask import delayed as delayed
 
 __all__ = ["DaskBFE", "DaskIsland"]
+
+try:
+    import pygmo as pg
+except Exception:
+    pass
 
 
 class ProblemSerializable:

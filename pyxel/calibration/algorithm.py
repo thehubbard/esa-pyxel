@@ -10,8 +10,12 @@ import math
 import typing as t
 from enum import Enum
 
-import pygmo as pg
 from typing_extensions import Literal
+
+try:
+    import pygmo as pg
+except ImportError:
+    pass
 
 __all__ = ["Algorithm", "AlgorithmType"]
 
