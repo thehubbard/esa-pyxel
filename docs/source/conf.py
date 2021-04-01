@@ -15,7 +15,7 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 
-import datetime
+from datetime import datetime
 from pathlib import Path
 
 from setuptools.config import read_configuration
@@ -29,6 +29,7 @@ setup_cfg_filename = parent_folder.joinpath("../../setup.cfg").resolve(
 )  # type: Path
 metadata = read_configuration(setup_cfg_filename)["metadata"]  # type: dict
 
+now_dt = datetime.now()  # type: datetime
 
 # -- General configuration ------------------------------------------------
 
@@ -85,8 +86,8 @@ master_doc = "index"
 
 # General information about the project.
 project = metadata["name"]
-copyright = f"2017-{datetime.datetime.now().year}, European Space Agency"
-author = metadata["author"]
+copyright = f"2017-{now_dt:%Y}, European Space Agency"
+author = "Pyxel Developers"
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -146,7 +147,7 @@ html_theme_options = {
     "home_page_in_toc": False,
     "extra_navbar": "",
     "navbar_footer_text": "",
-    "extra_footer": """<p>Pyxel</p>""",
+    "extra_footer": f"""<p>Last updated on {now_dt:%Y-%m-%d}.</p>""",
     "toc_title": "Contents",  # Control the right sidebar items
 }
 
