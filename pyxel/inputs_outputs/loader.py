@@ -78,6 +78,14 @@ def load_image(filename: t.Union[str, Path]) -> np.ndarray:
 
     if suffix.startswith(".fits"):
         with fsspec.open(url_path, mode="rb", **extras) as file_handler:
+
+            # Fix for fsspec version 0.9
+            if isinstance(file_handler, fsspec.implementations.local.LocalFileOpener):
+                try:
+                    _ = file_handler.fileno()
+                except OSError:
+                    file_handler.fileno = file_handler.f.fileno
+
             data_2d = fits.getdata(file_handler)  # type: np.ndarray
 
     elif suffix.startswith(".npy"):
@@ -158,7 +166,9 @@ def load_table(filename: t.Union[str, Path]) -> pd.DataFrame:
     elif suffix.startswith(".xlsx"):
         with fsspec.open(url_path, mode="rb", **extras) as file_handler:
             table = pd.read_excel(
-                file_handler, header=None, convert_float=False, engine="openpyxl"
+                file_handler,
+                header=None,
+                convert_float=False,
             )
 
     elif suffix.startswith(".csv"):
