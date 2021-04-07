@@ -44,16 +44,6 @@ cache:
 #    - pytest
 #  allow_failure: true
 
-# Run pytest for Python 3.6 without anaconda
-python36:
-  image: python:3.6
-  stage: test
-  script:
-    - tox -e py36-extra_all
-  rules:
-    # If `$FORCE_GITLAB_CI` is set, create a pipeline.
-    - if: '$FORCE_GITLAB_CI'
-
 
 # Run pytest for Python 3.7 without anaconda
 python37:

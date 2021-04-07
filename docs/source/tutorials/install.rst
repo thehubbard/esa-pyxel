@@ -14,7 +14,7 @@ into a `virtualenv <https://hynek.me/articles/virtualenv-lives/>`_.
 Requirements
 -------------
 
-* ``python >=3.6``
+* ``python >=3.7``
 
 **Dependencies available on official PyPI server:**
 
@@ -36,7 +36,7 @@ Before you begin
 Python
 ~~~~~~
 
-Before you got any further, make sure you've got Python 3.6 or newer available
+Before you got any further, make sure you've got Python 3.7 or newer available
 from your command line.
 
 You can check this by simply running:
@@ -67,7 +67,7 @@ On Windows, you can also try:
 .. note::
 
   Do not use command ``python``, you should use a command like ``pythonX.Y``.
-  For example, to start Python 3.6, you use the command ``python3.6``.
+  For example, to start Python 3.7, you use the command ``python3.7``.
 
 
 Pip
@@ -84,8 +84,8 @@ You can check this by running:
 .. note::
 
   Do not use command ``pip`` but ``python -m pip``.
-  For example, to start ``pip`` for Python 3.6, you use the
-  command ``python3.6 -m pip``.
+  For example, to start ``pip`` for Python 3.7, you use the
+  command ``python3.7 -m pip``.
 
 You can find more information about installing packages
 at this `link <https://packaging.python.org/installing/>`_.

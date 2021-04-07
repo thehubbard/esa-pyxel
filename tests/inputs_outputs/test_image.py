@@ -7,7 +7,6 @@
 
 import os
 import re
-import sys
 import typing as t
 from pathlib import Path
 
@@ -427,7 +426,6 @@ def test_load_table_invalid_filename(
         _ = load_table(filename)
 
 
-@pytest.mark.skipif(sys.version_info < (3, 7), reason="Not compatible with Python 3.6")
 @pytest.mark.parametrize("with_caching", [False, True])
 @pytest.mark.parametrize(
     "filename",
