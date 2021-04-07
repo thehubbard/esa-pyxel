@@ -213,8 +213,8 @@ def valid_table_http_hostname(tmp_path: Path, httpserver: HTTPServer) -> str:
                 )
 
         binary_filenames = [
-            ("data/table.xlsx", "text/plain"),
-            ("data/table.npy", "text/plain"),
+            ("data/table.xlsx", "application/octet-stream"),
+            ("data/table.npy", "application/octet-stream"),
         ]
 
         # Put binary data in a fake HTTP server
