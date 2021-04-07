@@ -242,7 +242,7 @@ Creating a Python Environment (pip)
 If you aren't using conda for your development environment, follow
 these instructions:
 
-- You'll need to have at least python3.6 installed on your system.
+- You'll need to have at least python3.7 installed on your system.
 - Make sure that you have :ref:`cloned the repository <contributing.forking>`
 - ``cd`` to the *Pyxel* source directory
 
@@ -559,9 +559,6 @@ install *Pyxel*) by typing:
 or:
 
 .. code-block:: fish
-
-    # For testing under Python 3.6
-    $ tox -e py36
 
     # For testing under Python 3.7
     $ tox -e py37
