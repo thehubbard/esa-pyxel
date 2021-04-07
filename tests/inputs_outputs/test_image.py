@@ -7,6 +7,7 @@
 
 import os
 import re
+import sys
 import typing as t
 from pathlib import Path
 
@@ -213,8 +214,8 @@ def valid_table_http_hostname(tmp_path: Path, httpserver: HTTPServer) -> str:
                 )
 
         binary_filenames = [
-            ("data/table.xlsx", "text/plain"),
-            ("data/table.npy", "text/plain"),
+            ("data/table.xlsx", "application/octet-stream"),
+            ("data/table.npy", "application/octet-stream"),
         ]
 
         # Put binary data in a fake HTTP server
@@ -426,6 +427,7 @@ def test_load_table_invalid_filename(
         _ = load_table(filename)
 
 
+@pytest.mark.skipif(sys.version_info < (3, 7), reason="Not compatible with Python 3.6")
 @pytest.mark.parametrize("with_caching", [False, True])
 @pytest.mark.parametrize(
     "filename",

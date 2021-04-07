@@ -73,6 +73,7 @@ dependencies:
   - mypy
   - pre-commit
   - pytest
+  - pytest-httpserver
   - tox
   - black>=20
 # Pip packages

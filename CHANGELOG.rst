@@ -10,8 +10,8 @@ Core
 
 * Add missing packages when running 'pyxel.show_versions().
   (See `!193 <https://gitlab.com/esa/pyxel/-/merge_requests/193>`_).
-* Fix issue when displaying current version.
-  (See `!196 <https://gitlab.com/esa/pyxel/-/merge_requests/196>`_).
+* Fix issues with 'fsspec' version 0.9.
+  (See `!198 <https://gitlab.com/esa/pyxel/-/merge_requests/198>`_).
 
 Others
 ~~~~~~
