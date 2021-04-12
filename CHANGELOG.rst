@@ -22,6 +22,8 @@ Others
   (See `!189 <https://gitlab.com/esa/pyxel/-/merge_requests/189>`_).
 * Drop support for Python 3.6.
   (See `!199 <https://gitlab.com/esa/pyxel/-/merge_requests/199>`_).
+* Solve typing issues with numpy.
+  (See `!200 <https://gitlab.com/esa/pyxel/-/merge_requests/200`_).
 
 
 version 0.9 / 2021-03-25
