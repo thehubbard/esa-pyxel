@@ -17,7 +17,6 @@ import dask.delayed as delayed
 import numpy as np
 import pandas as pd
 import xarray as xr
-from numpy.typing import ArrayLike
 from tqdm.auto import tqdm
 
 from pyxel.calibration import Algorithm, AlgorithmType, IslandProtocol
@@ -27,6 +26,9 @@ try:
     import pygmo as pg
 except ImportError:
     pass
+
+if t.TYPE_CHECKING:
+    from numpy.typing import ArrayLike
 
 
 class ArchipelagoLogs:

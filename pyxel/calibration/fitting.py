@@ -21,7 +21,6 @@ import dask.delayed as delayed
 import numpy as np
 import pandas as pd
 import xarray as xr
-from numpy.typing import ArrayLike
 from typing_extensions import Literal
 
 from pyxel.calibration import (
@@ -34,6 +33,9 @@ from pyxel.calibration import (
 )
 from pyxel.parametric.parameter_values import ParameterValues
 from pyxel.pipelines import Processor
+
+if t.TYPE_CHECKING:
+    from numpy.typing import ArrayLike
 
 
 class ModelFitting(ProblemSingleObjective):
@@ -360,7 +362,7 @@ class ModelFitting(ProblemSingleObjective):
 
         return [overall_fitness]
 
-    def convert_to_parameters(self, decisions_vector: ArrayLike) -> np.ndarray:
+    def convert_to_parameters(self, decisions_vector: "ArrayLike") -> np.ndarray:
         """Convert a decision version from Pygmo2 to parameters.
 
         Parameters
