@@ -94,7 +94,7 @@ class Processor:
         self,
         key: str,
         value: t.Union[
-            str, Number, np.ndarray, t.Sequence[t.Union[str, Number, np.ndarray]]
+            str, Number, np.ndarray, t.List[t.Union[str, Number, np.ndarray]]
         ],
         convert_value: bool = True,
     ) -> None:
@@ -110,18 +110,34 @@ class Processor:
             # TODO: Refactor this
             # convert the string based value to a number
             if isinstance(value, list):
-                for i, val in enumerate(value):
+                new_value_lst = []  # type: t.List[t.Union[str, Number, np.ndarray]]
+                for val in value:  # type: t.Union[str, Number, np.ndarray]
                     if val:
-                        value[i] = eval_entry(val)
+                        new_val = eval_entry(val)
+                    else:
+                        new_val = val
+
+                    new_value_lst.append(new_val)
+
+                new_value = (
+                    new_value_lst
+                )  # type: t.Union[str, Number, np.ndarray, t.List[t.Union[str, Number, np.ndarray]]]
+
             else:
-                value = eval_entry(value)
+                converted_value = eval_entry(
+                    value
+                )  # type: t.Union[str, Number, np.ndarray]
+
+                new_value = converted_value
+        else:
+            new_value = value
 
         obj, att = get_obj_att(self, key)
 
         if isinstance(obj, dict) and att in obj:
-            obj[att] = value
+            obj[att] = new_value
         else:
-            setattr(obj, att, value)
+            setattr(obj, att, new_value)
 
     # TODO: Create a method `DetectionPipeline.run`
     def run_pipeline(self, abort_before: t.Optional[str] = None) -> "Processor":
