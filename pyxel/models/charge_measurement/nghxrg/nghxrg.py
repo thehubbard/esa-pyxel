@@ -162,6 +162,8 @@ def display_noisepsd(
     (noverlap argument)
     nperseg high means less averaging for the PSD but more points
     """
+    if nb_output <= 1:
+        raise ValueError("Parameter 'nb_output' must be >= 1.")
 
     # Should be in the simulated data header
     dimension = dimensions[0]  # type: int
@@ -173,7 +175,6 @@ def display_noisepsd(
     # Initializing table of nb_outputs periodogram +1 for dimensions
     pxx_outputs = np.zeros((nb_output, int(nperseg / 2) + 1))
 
-    f_vect = None
     # For each output
     for i in np.arange(nb_output):
         # If i odd, flatten data since its the good reading direction
@@ -228,4 +229,5 @@ def display_noisepsd(
         plt.savefig(filename, dpi=300)
         plt.close()
 
-    return f_vect, np.mean(pxx_outputs, axis=0)
+    result = np.asarray(np.mean(pxx_outputs, axis=0))  # type: np.ndarray
+    return f_vect, result

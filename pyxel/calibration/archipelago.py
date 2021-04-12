@@ -17,6 +17,7 @@ import dask.delayed as delayed
 import numpy as np
 import pandas as pd
 import xarray as xr
+from numpy.typing import ArrayLike
 from tqdm.auto import tqdm
 
 from pyxel.calibration import Algorithm, AlgorithmType, IslandProtocol
@@ -406,13 +407,9 @@ class MyArchipelago:
             champion_parameters  (island, param_id) float64 0.1526 -1.977 ... 8.568
         """
         # Get fitness and decision vectors of the num_islands' champions
-        champions_1d_fitness = (
-            self._pygmo_archi.get_champions_f()
-        )  # type: t.List[np.ndarray]
+        champions_1d_fitness = self._pygmo_archi.get_champions_f()  # type: ArrayLike
 
-        champions_1d_decision = (
-            self._pygmo_archi.get_champions_x()
-        )  # type: t.List[np.ndarray]
+        champions_1d_decision = self._pygmo_archi.get_champions_x()  # type: ArrayLike
 
         # Get the champions as a Dataset
         champions = xr.Dataset()

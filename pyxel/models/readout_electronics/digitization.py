@@ -7,7 +7,6 @@
 
 """Readout electronics model."""
 import logging
-from pydoc import locate
 
 import numpy as np
 
@@ -30,7 +29,7 @@ def simple_digitization(detector: Detector, data_type: str = "numpy.uint16") -> 
     """
     logging.info("")
 
-    d_type = locate(data_type)
+    d_type = np.dtype(data_type)  # type: np.dtype
     if d_type is None:
         raise TypeError(
             "Can not locate the type defined as `data_type` argument in yaml file."
@@ -42,14 +41,16 @@ def simple_digitization(detector: Detector, data_type: str = "numpy.uint16") -> 
     detector.signal.array = np.floor(detector.signal.array)
 
     # convert floats to other datatype (e.g. 16-bit unsigned integers)
-    result = np.clip(
-        detector.signal.array,
-        a_min=np.iinfo(d_type).min,
-        a_max=np.iinfo(d_type).max,
+    result = np.asarray(
+        np.clip(
+            detector.signal.array,
+            a_min=np.iinfo(d_type).min,
+            a_max=np.iinfo(d_type).max,
+        )
     )  # type: np.ndarray
-    detector.signal.array = result
 
-    detector.image.array = detector.signal.array.astype(d_type)
+    detector.signal.array = result
+    detector.image.array = np.asarray(detector.signal.array, dtype=d_type)
 
 
 def simple_processing(detector: Detector) -> None:
