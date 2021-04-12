@@ -87,7 +87,7 @@ class Processor:
         func = operator.attrgetter(key)  # type: t.Callable
         result = func(self)
 
-        return np.asarray(result, dtype=np.float)
+        return np.asarray(result, dtype=float)
 
     # TODO: Could it be renamed '__setitem__' ?
     def set(

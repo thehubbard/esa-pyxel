@@ -159,9 +159,9 @@ def extract_data_2d(df_processors: pd.DataFrame, rows: int, cols: int) -> xr.Dat
         signal_delayed = processor.detector.signal.array  # type: delayed.Delayed
         pixel_delayed = processor.detector.pixel.array  # type: delayed.Delayed
 
-        image_2d = da.from_delayed(image_delayed, shape=(rows, cols), dtype=np.float)
-        signal_2d = da.from_delayed(signal_delayed, shape=(rows, cols), dtype=np.float)
-        pixel_2d = da.from_delayed(pixel_delayed, shape=(rows, cols), dtype=np.float)
+        image_2d = da.from_delayed(image_delayed, shape=(rows, cols), dtype=float)
+        signal_2d = da.from_delayed(signal_delayed, shape=(rows, cols), dtype=float)
+        pixel_2d = da.from_delayed(pixel_delayed, shape=(rows, cols), dtype=float)
 
         partial_ds = xr.Dataset()
         partial_ds["simulated_image"] = xr.DataArray(image_2d, dims=["y", "x"])
@@ -408,11 +408,11 @@ class MyArchipelago:
         # Get fitness and decision vectors of the num_islands' champions
         champions_1d_fitness = (
             self._pygmo_archi.get_champions_f()
-        )  # type: t.List[np.array]
+        )  # type: t.List[np.ndarray]
 
         champions_1d_decision = (
             self._pygmo_archi.get_champions_x()
-        )  # type: t.List[np.array]
+        )  # type: t.List[np.ndarray]
 
         # Get the champions as a Dataset
         champions = xr.Dataset()

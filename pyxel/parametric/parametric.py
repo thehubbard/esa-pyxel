@@ -65,7 +65,8 @@ class Parametric:
         :param processor:
         :return:
         """
-        self.data = np.loadtxt(self.file)[:, self.columns]
+        result = np.loadtxt(self.file)[:, self.columns]  # type: np.ndarray
+        self.data = result
         for data_array in self.data:
             i = 0
             new_proc = deepcopy(processor)  # type: Processor

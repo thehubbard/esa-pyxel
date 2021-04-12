@@ -36,9 +36,12 @@ class Particle:
         :return: array
         """
         if id_list:
-            array = self.frame.query("index in %s" % id_list)[quantity].values
+            df = self.frame.query("index in %s" % id_list)  # type: pd.DataFrame
         else:
-            array = self.frame[quantity].values
+            df = self.frame
+
+        array = df[quantity].values  # type: np.ndarray
+
         return array
 
     def set_values(

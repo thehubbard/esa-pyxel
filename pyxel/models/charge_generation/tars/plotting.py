@@ -604,7 +604,7 @@ class PlottingTARS:
 
     def plot_electron_hist(
         self,
-        data1: np.ndarray,
+        data1: t.Union[str, np.ndarray],
         data2: t.Optional[np.ndarray] = None,
         data3: t.Optional[np.ndarray] = None,
         title: str = "",

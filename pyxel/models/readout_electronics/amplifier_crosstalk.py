@@ -33,20 +33,22 @@ def flip_array(array: np.ndarray, direction: int) -> np.ndarray:
     ndarray
     """
     if direction == 1:
-        return array
+        result = array  # type: np.ndarray
     elif direction == 2:
-        return np.fliplr(array)
+        result = np.fliplr(array)
     elif direction == 3:
-        return np.flipud(array)
+        result = np.flipud(array)
     elif direction == 4:
-        return np.fliplr(np.flipud(array))
+        result = np.fliplr(np.flipud(array))
     else:
         raise ValueError("Unknown readout direction.")
+
+    return result
 
 
 @numba.njit
 def get_channel_slices(
-    shape: tuple, channel_matrix: np.array
+    shape: tuple, channel_matrix: np.ndarray
 ) -> t.List[t.List[t.Tuple[t.Any, t.Any]]]:
     """Get pairs of slices that correspond to the given channel matrix in numerical order of channels.
 

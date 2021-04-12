@@ -37,12 +37,18 @@ def simple_digitization(detector: Detector, data_type: str = "numpy.uint16") -> 
         )
     # Gain of the Analog-Digital Converter
     detector.signal.array *= detector.characteristics.a2
+
     # floor of signal values element-wise (quantization)
     detector.signal.array = np.floor(detector.signal.array)
+
     # convert floats to other datatype (e.g. 16-bit unsigned integers)
-    detector.signal.array = np.clip(
-        detector.signal.array, a_min=np.iinfo(d_type).min, a_max=np.iinfo(d_type).max
-    )
+    result = np.clip(
+        detector.signal.array,
+        a_min=np.iinfo(d_type).min,
+        a_max=np.iinfo(d_type).max,
+    )  # type: np.ndarray
+    detector.signal.array = result
+
     detector.image.array = detector.signal.array.astype(d_type)
 
 

@@ -26,7 +26,7 @@ class Signal(Array):
     Accepted array types: np.float16, np.float32, np.float64.
     """
 
-    EXP_TYPE = np.float
+    EXP_TYPE = float
     TYPE_LIST = (np.float16, np.float32, np.float64)
 
     def __init__(self, geo: "Geometry"):

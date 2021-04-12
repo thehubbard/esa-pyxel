@@ -31,7 +31,7 @@ def load_array(filename: Path) -> np.ndarray:
     """Load an array from a filename."""
     if filename.suffix == ".npy":
         logging.debug("Load numpy array from filename '%s'", filename)
-        result = np.load(filename)  # np.ndarray
+        result = np.load(filename)  # type: np.ndarray
     else:
         raise NotImplementedError
 

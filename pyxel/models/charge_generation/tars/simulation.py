@@ -54,7 +54,7 @@ class Simulation:
 
         self.data_library = pd.DataFrame()
 
-        self.stopping_power = None
+        self.stopping_power = None  # type: t.Optional[np.ndarray]
 
         self.particle = None  # type: t.Optional[Particle]
 
@@ -74,14 +74,14 @@ class Simulation:
         )
         self.energy_cut = 1.0e-5  # MeV
 
-        self.e_num_lst_per_step = []  # type: t.List[float]
-        self.e_energy_lst = []  # type: t.List[float]
-        self.e_pos0_lst = []  # type: t.List[float]
-        self.e_pos1_lst = []  # type: t.List[float]
-        self.e_pos2_lst = []  # type: t.List[float]
-        self.e_vel0_lst = []  # type: t.List[float]
-        self.e_vel1_lst = []  # type: t.List[float]
-        self.e_vel2_lst = []  # type: t.List[float]
+        self.e_num_lst_per_step = np.array([])  # type: np.ndarray
+        self.e_energy_lst = np.array([])  # type: np.ndarray
+        self.e_pos0_lst = np.array([])  # type: np.ndarray
+        self.e_pos1_lst = np.array([])  # type: np.ndarray
+        self.e_pos2_lst = np.array([])  # type: np.ndarray
+        self.e_vel0_lst = np.array([])  # type: np.ndarray
+        self.e_vel1_lst = np.array([])  # type: np.ndarray
+        self.e_vel2_lst = np.array([])  # type: np.ndarray
 
         self.electron_number_from_eloss = []  # type: t.List[int]
         self.secondaries_from_eloss = []  # type: t.List[int]
@@ -248,6 +248,10 @@ class Simulation:
         assert self.simulation_mode is not None
         assert self.particle_type is not None
         assert self.initial_energy is not None
+        assert self.spectrum_cdf is not None
+        assert self.position_ver is not None
+        assert self.position_hor is not None
+        assert self.position_z is not None
 
         self.particle = Particle(
             detector=self.detector,
@@ -373,6 +377,10 @@ class Simulation:
         assert self.simulation_mode is not None
         assert self.particle_type is not None
         assert self.initial_energy is not None
+        assert self.spectrum_cdf is not None
+        assert self.position_ver is not None
+        assert self.position_hor is not None
+        assert self.position_z is not None
 
         self.particle = Particle(
             detector=self.detector,

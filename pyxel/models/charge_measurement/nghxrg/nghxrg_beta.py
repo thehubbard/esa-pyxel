@@ -104,7 +104,8 @@ def white_noise(nstep: int) -> np.ndarray:
         nstep - Length of vector returned
 
     """
-    return np.random.standard_normal(nstep)
+    distribution = np.random.standard_normal(nstep)  # type: np.ndarray
+    return distribution
 
 
 class HXRGNoise:
@@ -440,7 +441,7 @@ class HXRGNoise:
         # Apply the pinkening filter.
         thefft = np.fft.rfft(mynoise)
         thefft = np.multiply(thefft, p_filter)
-        result = np.fft.irfft(thefft)
+        result = np.fft.irfft(thefft)  # type: np.ndarray
         result = result[: nstep // 2]  # Keep 1st half of nstep
 
         # Restore the mean and standard deviation

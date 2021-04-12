@@ -496,9 +496,9 @@ class TARS:
 
         size = len(self.sim_obj.e_num_lst_per_step)
 
-        self.sim_obj.e_vel0_lst = [0.0] * size
-        self.sim_obj.e_vel1_lst = [0.0] * size
-        self.sim_obj.e_vel2_lst = [0.0] * size
+        self.sim_obj.e_vel0_lst = np.zeros(size)
+        self.sim_obj.e_vel1_lst = np.zeros(size)
+        self.sim_obj.e_vel2_lst = np.zeros(size)
 
         self.charge_obj.add_charge(
             particle_type="e",
@@ -525,19 +525,19 @@ class TARS:
         e_pos2_lst = np.load(out_path + "tars-e_pos2_lst.npy")
 
         size = len(e_num_lst_per_step)
-        e_energy_lst = [0.0] * size
-        e_vel0_lst = [0.0] * size
-        e_vel1_lst = [0.0] * size
-        e_vel2_lst = [0.0] * size
+        e_energy_lst = np.zeros(size)
+        e_vel0_lst = np.zeros(size)
+        e_vel1_lst = np.zeros(size)
+        e_vel2_lst = np.zeros(size)
 
         self.charge_obj.add_charge(
-            "e",
-            e_num_lst_per_step,
-            e_energy_lst,
-            e_pos0_lst,
-            e_pos1_lst,
-            e_pos2_lst,
-            e_vel0_lst,
-            e_vel1_lst,
-            e_vel2_lst,
+            particle_type="e",
+            particles_per_cluster=e_num_lst_per_step,
+            init_energy=e_energy_lst,
+            init_ver_position=e_pos0_lst,
+            init_hor_position=e_pos1_lst,
+            init_z_position=e_pos2_lst,
+            init_ver_velocity=e_vel0_lst,
+            init_hor_velocity=e_vel1_lst,
+            init_z_velocity=e_vel2_lst,
         )

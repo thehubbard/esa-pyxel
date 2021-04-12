@@ -12,6 +12,8 @@ import typing as t
 from pathlib import Path
 
 import numpy as np
+from matplotlib import pyplot as plt
+from scipy import signal
 
 from pyxel.detectors import CMOS, CMOSGeometry
 from pyxel.models.charge_measurement.nghxrg.nghxrg_beta import HXRGNoise
@@ -106,6 +108,9 @@ def nghxrg(
         else:
             noise_name = ""
 
+        if result is None:
+            raise NotImplementedError
+
         try:
             result = ng.format_result(result)
             if result.any():
@@ -137,7 +142,7 @@ def nghxrg(
 # TODO: This generates plot. It should be in class `Output`
 def display_noisepsd(
     array: np.ndarray,
-    nb_output: float,
+    nb_output: int,
     dimensions: t.Tuple[int, int],
     noise_name: str,
     path: Path,
@@ -145,10 +150,6 @@ def display_noisepsd(
     mode: str = "plot",
 ) -> t.Tuple[t.Any, np.ndarray]:
     """Display noise PSD from the generated FITS file."""
-    import numpy as np
-    from matplotlib import pyplot as plt
-    from scipy import signal
-
     # Conversion gain
     conversion_gain = 1
     data_corr = array * conversion_gain

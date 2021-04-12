@@ -46,22 +46,23 @@ class Charge(Particle):
         )  # type: t.Tuple[str, ...]
 
         self.EMPTY_FRAME = pd.DataFrame(
-            columns=self.columns, dtype=np.float
-        )  # type: pd.DataFrame       # todo
+            columns=self.columns, dtype=float
+        )  # type: pd.DataFrame
 
         self.frame = self.EMPTY_FRAME.copy()  # type: pd.DataFrame
 
     def add_charge(
         self,
+        *,
         particle_type: str,  # TODO: Use Enum
-        particles_per_cluster: t.Sequence[float],
-        init_energy: t.Sequence[float],
-        init_ver_position: t.Sequence[float],
-        init_hor_position: t.Sequence[float],
-        init_z_position: t.Sequence[float],
-        init_ver_velocity: t.Sequence[float],
-        init_hor_velocity: t.Sequence[float],
-        init_z_velocity: t.Sequence[float],
+        particles_per_cluster: np.ndarray,
+        init_energy: np.ndarray,
+        init_ver_position: np.ndarray,
+        init_hor_position: np.ndarray,
+        init_z_position: np.ndarray,
+        init_ver_velocity: np.ndarray,
+        init_hor_velocity: np.ndarray,
+        init_z_velocity: np.ndarray,
     ) -> None:
         """Create new charge or group of charge inside the detector stored in a pandas DataFrame.
 

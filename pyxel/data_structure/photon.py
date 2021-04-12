@@ -25,7 +25,7 @@ class Photon(Array):
     """
 
     # TODO: add unit (ph)
-    EXP_TYPE = np.int
+    EXP_TYPE = int
     TYPE_LIST = (
         np.int32,
         np.int64,

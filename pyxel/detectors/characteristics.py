@@ -79,7 +79,7 @@ class Characteristics:
         if not (0.0 <= dt <= 10.0):
             raise ValueError("'dt' must be between 0.0 and 10.0.")
 
-        self._qe = qe
+        self._qe = qe  # type: t.Union[float, np.ndarray]
         self._eta = eta
         self._sv = sv
         self._amp = amp

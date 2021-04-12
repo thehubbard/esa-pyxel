@@ -485,8 +485,8 @@ class ParametricOutputs:
                     plt_row.append(value)
 
         return Result(
-            result=np.array(res_row, dtype=np.float),
-            plot=np.array(plt_row, dtype=np.float),
+            result=np.array(res_row, dtype=float),
+            plot=np.array(plt_row, dtype=float),
         )
 
     # TODO: Specific to 'parametric_mode' ?

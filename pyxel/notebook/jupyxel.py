@@ -163,16 +163,16 @@ def display_detector(detector: "Detector") -> t.Union["Layout"]:
     hv.extension("bokeh")
 
     # Container for detector data, leave out where there is none.
-    det = {}
-    if not isinstance(detector.input_image, type(None)):
+    det = {}  # type: t.Dict[str, np.ndarray]
+    if detector.input_image is not None:
         det["Input"] = detector.input_image
-    if not isinstance(detector._photon, type(None)):
+    if detector._photon is not None:
         det["Photon"] = detector.photon.array
-    if not isinstance(detector._pixel, type(None)):
+    if detector._pixel is not None:
         det["Pixel"] = detector.pixel.array
-    if not isinstance(detector._signal, type(None)):
+    if detector._signal is not None:
         det["Signal"] = detector.signal.array
-    if not isinstance(detector._image, type(None)):
+    if detector._image is not None:
         det["Image"] = detector.image.array
 
     def get_image(name):
