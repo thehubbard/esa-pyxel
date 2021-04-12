@@ -322,7 +322,7 @@ class Particle:
 
 def find_intersection(
     n: np.ndarray, p0: np.ndarray, ls: np.ndarray, lv: np.ndarray
-) -> np.ndarray:
+) -> t.Optional[np.ndarray]:
     """TBW.
 
     https://en.wikipedia.org/wiki/Line%E2%80%93plane_intersection
@@ -336,7 +336,7 @@ def find_intersection(
         return None
     else:
         d = np.dot((p0 - ls), n) / np.dot(lv, n)
-        p = d * lv + ls
+        p = d * lv + ls  # type: np.ndarray
         return p
 
 

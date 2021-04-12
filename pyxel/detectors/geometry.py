@@ -170,7 +170,9 @@ class Geometry:
         """Generate horizontal position list of all pixel centers in detector imaging area."""
         init_hor_position = np.arange(0.0, self.col, 1.0) * self.pixel_horz_size
         init_hor_position += self.pixel_horz_size / 2.0
-        return np.tile(init_hor_position, self.row)
+
+        result = np.tile(init_hor_position, reps=self.row)  # type: np.ndarray
+        return result
 
     @property
     def numbytes(self) -> int:

@@ -123,7 +123,7 @@ class DaskBFE:
         fitness_func = da.gufunc(
             problem_pickable.fitness,
             signature="(i)->(j)",
-            output_dtypes=np.float,
+            output_dtypes=float,
             output_sizes={"j": num_fitness},
             vectorize=True,
         )

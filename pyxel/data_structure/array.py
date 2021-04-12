@@ -96,34 +96,34 @@ class Array:
 
     # TODO: Is it necessary ? Maybe not if you implement method __array__
     @property
-    def mean(self) -> np.ndarray:
+    def mean(self) -> float:
         """Return mean of all pixel values."""
-        return np.mean(self._array)
+        return float(np.mean(self._array))
 
     @property
-    def std_deviation(self) -> np.ndarray:
+    def std_deviation(self) -> float:
         """Return standard deviation of all pixel values."""
-        return np.std(self._array)
+        return float(np.std(self._array))
 
     @property
-    def max(self) -> np.ndarray:
+    def max(self) -> float:
         """Return maximum of all pixel values."""
-        return np.max(self._array)
+        return float(np.max(self._array))
 
     @property
-    def min(self) -> np.ndarray:
+    def min(self) -> float:
         """Return minimum of all pixel values."""
-        return np.min(self._array)
+        return float(np.min(self._array))
 
     @property
-    def peak_to_peak(self) -> np.ndarray:
+    def peak_to_peak(self) -> float:
         """Return peak-to-peak value of all pixel values."""
-        return np.ptp(self._array)
+        return float(np.ptp(self._array))
 
     @property
-    def sum(self) -> np.ndarray:
+    def sum(self) -> float:
         """Return sum of all pixel values."""
-        return np.sum(self._array)
+        return float(np.sum(self._array))
 
     @property
     def numbytes(self) -> int:

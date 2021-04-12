@@ -50,11 +50,11 @@ def charge_blocks(
     detector.charge.add_charge(
         particle_type="e",
         particles_per_cluster=charge_number,
-        init_energy=[0.0] * size,
+        init_energy=np.zeros(size),
         init_ver_position=init_ver_pix_position,
         init_hor_position=init_hor_pix_position,
-        init_z_position=[0.0] * size,
-        init_ver_velocity=[0.0] * size,
-        init_hor_velocity=[0.0] * size,
-        init_z_velocity=[0.0] * size,
+        init_z_position=np.zeros(size),
+        init_ver_velocity=np.zeros(size),
+        init_hor_velocity=np.zeros(size),
+        init_z_velocity=np.zeros(size),
     )

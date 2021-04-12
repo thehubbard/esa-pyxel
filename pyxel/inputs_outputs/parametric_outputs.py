@@ -32,7 +32,7 @@ if t.TYPE_CHECKING:
     class SaveToFile(t.Protocol):
         """TBW."""
 
-        def __call__(self, data: np.ndarray, name: str) -> Path:
+        def __call__(self, data: t.Any, name: str) -> Path:
             """TBW."""
             ...
 
@@ -237,12 +237,13 @@ class ParametricOutputs:
                     ],
                     ["Signal", "Image", "Photon", "Pixel", "Charge"],
                 ):
-                    dataset = detector_grp.create_dataset(name, np.shape(array))
+                    dataset = detector_grp.create_dataset(name, shape=np.shape(array))
                     dataset[:] = array
             else:
-                detector_grp = h5file.create_group("data")
-                dataset = detector_grp.create_dataset(name, np.shape(data))
-                dataset[:] = data
+                raise NotImplementedError
+                # detector_grp = h5file.create_group("data")
+                # dataset = detector_grp.create_dataset(name, shape=np.shape(data))
+                # dataset[:] = data
         return filename
 
     def save_to_txt(self, data: np.ndarray, name: str) -> Path:
@@ -485,8 +486,8 @@ class ParametricOutputs:
                     plt_row.append(value)
 
         return Result(
-            result=np.array(res_row, dtype=np.float),
-            plot=np.array(plt_row, dtype=np.float),
+            result=np.array(res_row, dtype=float),
+            plot=np.array(plt_row, dtype=float),
         )
 
     # TODO: Specific to 'parametric_mode' ?

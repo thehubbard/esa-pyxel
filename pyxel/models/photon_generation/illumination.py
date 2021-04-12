@@ -56,7 +56,8 @@ def illumination(
             geo = detector.geometry
             detector.photon = Photon(np.zeros((geo.row, geo.col), dtype=int))
 
-        shape = detector.photon.array.shape  # type: t.Tuple[int, int]
+        num_rows, num_cols = detector.photon.array.shape
+        shape = num_rows, num_cols  # type: t.Tuple[int, int]
     else:
         shape = array_size
 

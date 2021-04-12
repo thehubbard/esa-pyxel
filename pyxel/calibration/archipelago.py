@@ -27,6 +27,9 @@ try:
 except ImportError:
     pass
 
+if t.TYPE_CHECKING:
+    from numpy.typing import ArrayLike
+
 
 class ArchipelagoLogs:
     """Keep log information from all algorithms in an archipelago."""
@@ -159,9 +162,9 @@ def extract_data_2d(df_processors: pd.DataFrame, rows: int, cols: int) -> xr.Dat
         signal_delayed = processor.detector.signal.array  # type: delayed.Delayed
         pixel_delayed = processor.detector.pixel.array  # type: delayed.Delayed
 
-        image_2d = da.from_delayed(image_delayed, shape=(rows, cols), dtype=np.float)
-        signal_2d = da.from_delayed(signal_delayed, shape=(rows, cols), dtype=np.float)
-        pixel_2d = da.from_delayed(pixel_delayed, shape=(rows, cols), dtype=np.float)
+        image_2d = da.from_delayed(image_delayed, shape=(rows, cols), dtype=float)
+        signal_2d = da.from_delayed(signal_delayed, shape=(rows, cols), dtype=float)
+        pixel_2d = da.from_delayed(pixel_delayed, shape=(rows, cols), dtype=float)
 
         partial_ds = xr.Dataset()
         partial_ds["simulated_image"] = xr.DataArray(image_2d, dims=["y", "x"])
@@ -406,13 +409,9 @@ class MyArchipelago:
             champion_parameters  (island, param_id) float64 0.1526 -1.977 ... 8.568
         """
         # Get fitness and decision vectors of the num_islands' champions
-        champions_1d_fitness = (
-            self._pygmo_archi.get_champions_f()
-        )  # type: t.List[np.array]
+        champions_1d_fitness = self._pygmo_archi.get_champions_f()  # type: ArrayLike
 
-        champions_1d_decision = (
-            self._pygmo_archi.get_champions_x()
-        )  # type: t.List[np.array]
+        champions_1d_decision = self._pygmo_archi.get_champions_x()  # type: ArrayLike
 
         # Get the champions as a Dataset
         champions = xr.Dataset()

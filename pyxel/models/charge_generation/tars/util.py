@@ -125,7 +125,7 @@ def read_data(file_name: Path) -> np.ndarray:
     if not full_path.exists():
         raise FileNotFoundError(f"Cannot find file '{full_path}' !")
 
-    data = np.loadtxt(full_path, "float", "#")
+    data = np.loadtxt(full_path, "float", "#")  # type: np.ndarray
     return data
 
 

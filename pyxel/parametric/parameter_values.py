@@ -6,8 +6,8 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """TBW."""
-import collections
 import typing as t
+from collections import abc
 from numbers import Number
 
 from typing_extensions import Literal
@@ -30,7 +30,7 @@ class ParameterValues:
     ):
         # TODO: should these values be checked ?
         assert values == "_" or (
-            isinstance(values, collections.Sequence)
+            isinstance(values, abc.Sequence)
             and (
                 all([el == "_" for el in values])
                 or all([isinstance(el, str) for el in values])
