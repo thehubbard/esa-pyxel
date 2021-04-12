@@ -222,9 +222,11 @@ class SingleOutputs:
                     dataset = detector_grp.create_dataset(name, shape=np.shape(array))
                     dataset[:] = array
             else:
-                detector_grp = h5file.create_group("data")
-                dataset = detector_grp.create_dataset(name, shape=np.shape(data))
-                dataset[:] = data
+                raise NotImplementedError
+                # detector_grp = h5file.create_group("data")
+                # dataset = detector_grp.create_dataset(name, shape=np.shape(data))
+                # dataset[:] = data
+
         return filename
 
     def save_to_txt(self, data: np.ndarray, name: str) -> Path:
