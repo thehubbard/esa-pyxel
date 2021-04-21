@@ -30,7 +30,7 @@ Learn more about *Pyxel* in its offical [blog](https://esa.gitlab.io/pyxel) and 
 
 ## Installation
 
-Installation instructions can be found [here](https://esa.gitlab.io/pyxel/doc/install.html).
+[Installation instructions](https://esa.gitlab.io/pyxel/doc/tutorials/install.html) can be found in the tutorials.
 
 ## Examples
 
@@ -68,9 +68,9 @@ Feel free to ask questions on the [mailing list](https://rssd-mgw.estec.esa.int:
 
 ## Changelog
 
-The detailed changelog is available [here](https://esa.gitlab.io/pyxel/doc/changelog.html).
+The [detailed changelog](https://esa.gitlab.io/pyxel/doc/references/changelog.html) is available on the website.
 
 
 ## License
 
-*Pyxel* is released under MIT license, available [here](https://esa.gitlab.io/pyxel/doc/license.html).
+*Pyxel* is released under [MIT license](https://esa.gitlab.io/pyxel/doc/license.html).
