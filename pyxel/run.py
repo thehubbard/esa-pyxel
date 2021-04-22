@@ -123,28 +123,28 @@ def parametric_mode(
                 processor=result_proc
             )  # type: Result
 
-            filenames = parametric_outputs.save_to_file(
-                processor=result_proc
-            )  # type: t.Sequence[Path]
+            #filenames = parametric_outputs.save_to_file(
+            #    processor=result_proc
+            #)  # type: t.Sequence[Path]
 
         else:
             result_proc = delayed(proc.run_pipeline)()
             result_val = delayed(parametric_outputs.extract_func)(processor=result_proc)
 
-            filenames = delayed(parametric_outputs.save_to_file)(processor=result_proc)
+            #filenames = delayed(parametric_outputs.save_to_file)(processor=result_proc)
 
         result_list.append(result_val)
-        output_filenames.append(filenames)  # TODO: This is not used
+        #output_filenames.append(filenames)  # TODO: This is not used
 
     if not with_dask:
         plot_array = parametric_outputs.merge_func(result_list)  # type: np.ndarray
     else:
         array = delayed(parametric_outputs.merge_func)(result_list)
-        plot_array, _ = dask.compute(array, output_filenames)
+        plot_array = dask.compute(array)
 
     # TODO: Plot with dask ?
-    if parametric_outputs.parametric_plot is not None:
-        parametric_outputs.plotting_func(plot_array)
+    #if parametric_outputs.parametric_plot is not None:
+    #    parametric_outputs.plotting_func(plot_array)
 
 
 def dynamic_mode(
