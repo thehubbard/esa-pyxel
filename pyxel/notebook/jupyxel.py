@@ -99,7 +99,7 @@ def display_model(configuration: "Configuration", model_name: str) -> None:
     model = pipeline.get_model(name=model_name)  # type: ModelFunction
     display(Markdown(f"## <font color=blue> {model_name} </font>"))
     display(Markdown(f"Model {model_name} enabled? {model.enabled}"))
-    display_dict(model.arguments)
+    display_dict(dict(model.arguments))
 
 
 def change_modelparam(
@@ -120,7 +120,7 @@ def change_modelparam(
     """
     display(Markdown(f"## <font color=blue> {model_name} </font>"))
     model = processor.pipeline.get_model(name=model_name)  # type: ModelFunction
-    model.change_argument(argument, changed_value)
+    model.arguments[argument] = changed_value
     display(Markdown(f"Changed {argument} to {changed_value}."))
 
 

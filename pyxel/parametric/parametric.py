@@ -180,4 +180,3 @@ class Parametric:
             logging.debug("%d: %r" % (i, values))
             result.append((i, values))
         return result
-

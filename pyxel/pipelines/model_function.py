@@ -42,15 +42,15 @@ class Arguments(t.MutableMapping):
     1
 
     Changing parameters
-    >>> arguments["one"]=10
-    >>> arguments["two"]=20
+    >>> arguments["one"] = 10
+    >>> arguments["two"] = 20
     >>> arguments
     Arguments({'one': 10, 'two': 20})
 
     Non existing arguments
-    >>> arguments["three"]=3
+    >>> arguments["three"] = 3
     KeyError: 'No argument named three !'
-    >>> arguments.three=3
+    >>> arguments.three = 3
     AttributeError: 'No argument named three !'
     """
 
@@ -59,7 +59,9 @@ class Arguments(t.MutableMapping):
         # Check the value types in the input dictionary
         for key, value in input_arguments.items():
             if not isinstance(value, (int, float, str, t.Collection, type(None))):
-                raise TypeError(f"Cannot set value of {key} with type different to (int, float, str, Collection, NoneType)")
+                raise TypeError(
+                    f"Cannot set value of {key} with type different to (int, float, str, Collection, NoneType)"
+                )
 
         self._arguments = dict(input_arguments)
 
@@ -69,7 +71,9 @@ class Arguments(t.MutableMapping):
             raise KeyError(f"No argument named {key} !")
 
         if not isinstance(value, (int, float, str, t.Collection, type(None))):
-            raise TypeError(f"Cannot set value of {key} with type different to (int, float, str, Collection, NoneType)")
+            raise TypeError(
+                f"Cannot set value of {key} with type different to (int, float, str, Collection, NoneType)"
+            )
 
         self._arguments[key] = value
 
@@ -95,7 +99,7 @@ class Arguments(t.MutableMapping):
 
         # Use non-modified __getattr__ in this case.
         if key == "_arguments":
-            return super().__getattr__(key)
+            return self._arguments
 
         if key not in self._arguments:
             raise AttributeError(f"No argument named {key} !")
@@ -113,7 +117,9 @@ class Arguments(t.MutableMapping):
             raise AttributeError(f"No argument named {key} !")
 
         if not isinstance(value, (int, float, str, t.Collection, type(None))):
-            raise TypeError(f"Cannot set value of {key} with type different to (int, float, str, Collection, NoneType)")
+            raise TypeError(
+                f"Cannot set value of {key} with type different to (int, float, str, Collection, NoneType)"
+            )
 
         self._arguments[key] = value
 
@@ -121,7 +127,7 @@ class Arguments(t.MutableMapping):
         return dir(type(self)) + list(self)
 
     def __repr__(self):
-        return f'Arguments({self._arguments})'
+        return f"Arguments({self._arguments})"
 
     # def __deepcopy__(self, memo) -> "Arguments":
     #     """TBW."""
@@ -166,7 +172,7 @@ class ModelFunction:
         self,
         func: t.Callable,
         name: str,
-        arguments: t.Optional[t.Mapping] = None,
+        arguments: t.Optional[dict] = None,
         enabled: bool = True,
     ):
         if inspect.isclass(func):
@@ -197,39 +203,9 @@ class ModelFunction:
         return self._name
 
     @property
-    def arguments(self) -> dict:
+    def arguments(self) -> Arguments:
         """TBW."""
         return self._arguments
-
-    def change_argument(self, argument: str, value: t.Any) -> None:
-        """Change a model argument.
-
-        Parameters
-        ----------
-        argument: str
-            Name of the argument to be changed.
-        value
-
-        Returns
-        -------
-        None
-
-        Raises
-        ------
-        TypeError
-            If types of the changed value and default value do not match.
-        KeyError
-            If argument does not exist.
-        """
-        try:
-            if type(self._arguments[argument]) == type(value):
-                self._arguments[argument] = value
-            else:
-                raise TypeError(
-                    f"Type of the changed value should be {type(self._arguments[argument])}, not {type(value)}"
-                )
-        except KeyError:
-            raise
 
     # # TODO: Replace this by __call__ ?
     # @property
