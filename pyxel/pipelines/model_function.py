@@ -9,6 +9,7 @@
 import functools
 import inspect
 import typing as t
+from collections.abc import Collection, Mapping
 
 if t.TYPE_CHECKING:
     from pyxel.detectors import Detector
@@ -18,21 +19,75 @@ if t.TYPE_CHECKING:
 T = t.TypeVar("T")
 
 
-# TODO: Improve this class. See issue #133.
-class Arguments(dict):
+class Arguments(t.MutableMapping):
     """TBW."""
 
-    def __getattr__(self, name: str) -> t.Union[int, float]:
-        if name not in self:
-            raise AttributeError(f"Argument {name!r} does not exist.")
+    def __init__(self, arguments: dict):
 
-        result = self[name]
-        assert isinstance(result, int) or isinstance(result, float)
+        for value in arguments.values():
+            if not isinstance(value, (int, float, str, Collection, type(None))):
+                raise TypeError(f"Cannot set argument {value} with type different to (int, float, str, Sequence)")
+
+        #super().__setattr__("mapping", dict(arguments))
+        self.mapping = dict(arguments)
+
+    def __setitem__(self, key, value):
+
+        if key not in self.mapping:
+            raise KeyError
+
+        if not isinstance(value, (int, float, str, Collection, type(None))):
+            raise TypeError(f"Cannot set value {value} with type different to (int, float, str, Sequence)")
+
+        self.mapping[key] = value
+
+    def __getitem__(self, key):
+
+        if key not in self.mapping:
+            raise KeyError
+
+        result = self.mapping[key]
 
         return result
 
+    def __delitem__(self, key):
+        del self.mapping[key]
+
+    def __iter__(self):
+        return iter(self.mapping)
+
+    def __len__(self):
+        return len(self.mapping)
+
+    def __getattr__(self, key):
+
+        if key == "mapping":
+            return super().__getattr__(key)
+
+        if key not in self.mapping:
+            raise AttributeError
+
+        return self.mapping[key]
+
+    def __setattr__(self, key, value):
+
+        if key == "mapping":
+            super().__setattr__(key, value)
+            return
+
+        if key not in self.mapping:
+            raise KeyError
+
+        if not isinstance(value, (int, float, str, Collection, type(None))):
+            raise TypeError(f"Cannot set argument {value} with type different to (int, float, str, Sequence)")
+
+        self.mapping[key] = value
+
     def __dir__(self):
         return dir(type(self)) + list(self)
+
+    def __repr__(self):
+        return f'Arguments({self.mapping})'
 
     # def __deepcopy__(self, memo) -> "Arguments":
     #     """TBW."""
@@ -77,10 +132,11 @@ class ModelFunction:
         self,
         func: t.Callable,
         name: str,
-        arguments: t.Optional[dict] = None,
+        arguments: t.Optional[Mapping] = None,
         enabled: bool = True,
     ):
-        assert not inspect.isclass(func)
+        if inspect.isclass(func):
+            raise AttributeError("Cannot pass a class to ModelFunction.")
 
         self._func = func  # type: t.Callable
         self._name = name
@@ -171,3 +227,8 @@ class ModelFunction:
         result = func(detector)  # type: T
 
         return result
+
+
+if __name__ == "__main__":
+    a = Arguments({"one": [1, 2, 3], "two": "foo", "three": 0.5})
+    #print(a.one)
