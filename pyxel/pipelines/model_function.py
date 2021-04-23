@@ -9,7 +9,6 @@
 import functools
 import inspect
 import typing as t
-from collections.abc import Collection, Mapping
 
 if t.TYPE_CHECKING:
     from pyxel.detectors import Detector
@@ -20,74 +19,109 @@ T = t.TypeVar("T")
 
 
 class Arguments(t.MutableMapping):
-    """TBW."""
+    """Arguments class for usage in ModelFunction.
 
-    def __init__(self, arguments: dict):
+    Class Arguments is initialized from a dictionary of model function arguments.
+    It resembles the behaviour of the passed dictionary with checking of value types
+    and additional methods __setattr__ and __getattr__,
+    which enable to get and set the model parameters through attribute interface.
+    Dictionary of arguments is saved in private attribute _arguments.
 
-        for value in arguments.values():
-            if not isinstance(value, (int, float, str, Collection, type(None))):
-                raise TypeError(f"Cannot set argument {value} with type different to (int, float, str, Sequence)")
+    Examples
+    --------
+    >>> from pyxel.pipelines.model_function import Arguments
+    >>> arguments = Arguments({"one": 1, "two": 2})
+    >>> arguments
+    Arguments({'one': 1, 'two': 2})
 
-        #super().__setattr__("mapping", dict(arguments))
-        self.mapping = dict(arguments)
+    Access arguments
+    >>> arguments["one"]
+    1
+    or
+    >>> arguments.one
+    1
+
+    Changing parameters
+    >>> arguments["one"]=10
+    >>> arguments["two"]=20
+    >>> arguments
+    Arguments({'one': 10, 'two': 20})
+
+    Non existing arguments
+    >>> arguments["three"]=3
+    KeyError: 'No argument named three !'
+    >>> arguments.three=3
+    AttributeError: 'No argument named three !'
+    """
+
+    def __init__(self, input_arguments: dict):
+
+        # Check the value types in the input dictionary
+        for key, value in input_arguments.items():
+            if not isinstance(value, (int, float, str, t.Collection, type(None))):
+                raise TypeError(f"Cannot set value of {key} with type different to (int, float, str, Collection, NoneType)")
+
+        self._arguments = dict(input_arguments)
 
     def __setitem__(self, key, value):
 
-        if key not in self.mapping:
-            raise KeyError
+        if key not in self._arguments:
+            raise KeyError(f"No argument named {key} !")
 
-        if not isinstance(value, (int, float, str, Collection, type(None))):
-            raise TypeError(f"Cannot set value {value} with type different to (int, float, str, Sequence)")
+        if not isinstance(value, (int, float, str, t.Collection, type(None))):
+            raise TypeError(f"Cannot set value of {key} with type different to (int, float, str, Collection, NoneType)")
 
-        self.mapping[key] = value
+        self._arguments[key] = value
 
     def __getitem__(self, key):
 
-        if key not in self.mapping:
-            raise KeyError
+        if key not in self._arguments:
+            raise KeyError(f"No argument named {key} !")
 
-        result = self.mapping[key]
+        result = self._arguments[key]
 
         return result
 
     def __delitem__(self, key):
-        del self.mapping[key]
+        del self._arguments[key]
 
     def __iter__(self):
-        return iter(self.mapping)
+        return iter(self._arguments)
 
     def __len__(self):
-        return len(self.mapping)
+        return len(self._arguments)
 
     def __getattr__(self, key):
 
-        if key == "mapping":
+        # Use non-modified __getattr__ in this case.
+        if key == "_arguments":
             return super().__getattr__(key)
 
-        if key not in self.mapping:
-            raise AttributeError
+        if key not in self._arguments:
+            raise AttributeError(f"No argument named {key} !")
 
-        return self.mapping[key]
+        return self._arguments[key]
 
     def __setattr__(self, key, value):
 
-        if key == "mapping":
+        # Use non-modified __setattr__ in this case.
+        if key == "_arguments":
             super().__setattr__(key, value)
             return
 
-        if key not in self.mapping:
-            raise KeyError
+        if key not in self._arguments:
+            raise AttributeError(f"No argument named {key} !")
 
-        if not isinstance(value, (int, float, str, Collection, type(None))):
-            raise TypeError(f"Cannot set argument {value} with type different to (int, float, str, Sequence)")
+        if not isinstance(value, (int, float, str, t.Collection, type(None))):
+            raise TypeError(f"Cannot set value of {key} with type different to (int, float, str, Collection, NoneType)")
 
-        self.mapping[key] = value
+        self._arguments[key] = value
 
     def __dir__(self):
         return dir(type(self)) + list(self)
 
     def __repr__(self):
-        return f'Arguments({self.mapping})'
+        return f'Arguments({self._arguments})'
 
     # def __deepcopy__(self, memo) -> "Arguments":
     #     """TBW."""
@@ -132,7 +166,7 @@ class ModelFunction:
         self,
         func: t.Callable,
         name: str,
-        arguments: t.Optional[Mapping] = None,
+        arguments: t.Optional[t.Mapping] = None,
         enabled: bool = True,
     ):
         if inspect.isclass(func):
@@ -227,8 +261,3 @@ class ModelFunction:
         result = func(detector)  # type: T
 
         return result
-
-
-if __name__ == "__main__":
-    a = Arguments({"one": [1, 2, 3], "two": "foo", "three": 0.5})
-    #print(a.one)
