@@ -18,21 +18,97 @@ if t.TYPE_CHECKING:
 T = t.TypeVar("T")
 
 
-# TODO: Improve this class. See issue #133.
-class Arguments(dict):
-    """TBW."""
+class Arguments(t.MutableMapping):
+    """Arguments class for usage in ModelFunction.
 
-    def __getattr__(self, name: str) -> t.Union[int, float]:
-        if name not in self:
-            raise AttributeError(f"Argument {name!r} does not exist.")
+    Class Arguments is initialized from a dictionary of model function arguments.
+    It resembles the behaviour of the passed dictionary with additional methods __setattr__ and __getattr__,
+    which enable to get and set the model parameters through attribute interface.
+    Dictionary of arguments is saved in private attribute _arguments.
 
-        result = self[name]
-        assert isinstance(result, int) or isinstance(result, float)
+    Examples
+    --------
+    >>> from pyxel.pipelines.model_function import Arguments
+    >>> arguments = Arguments({"one": 1, "two": 2})
+    >>> arguments
+    Arguments({'one': 1, 'two': 2})
+
+    Access arguments
+    >>> arguments["one"]
+    1
+    or
+    >>> arguments.one
+    1
+
+    Changing parameters
+    >>> arguments["one"] = 10
+    >>> arguments["two"] = 20
+    >>> arguments
+    Arguments({'one': 10, 'two': 20})
+
+    Non existing arguments
+    >>> arguments["three"] = 3
+    KeyError: 'No argument named three !'
+    >>> arguments.three = 3
+    AttributeError: 'No argument named three !'
+    """
+
+    def __init__(self, input_arguments: dict):
+        self._arguments = dict(input_arguments)
+
+    def __setitem__(self, key, value):
+
+        if key not in self._arguments:
+            raise KeyError(f"No argument named {key} !")
+
+        self._arguments[key] = value
+
+    def __getitem__(self, key):
+
+        if key not in self._arguments:
+            raise KeyError(f"No argument named {key} !")
+
+        result = self._arguments[key]
 
         return result
 
+    def __delitem__(self, key):
+        del self._arguments[key]
+
+    def __iter__(self):
+        return iter(self._arguments)
+
+    def __len__(self):
+        return len(self._arguments)
+
+    def __getattr__(self, key):
+
+        # Use non-modified __getattr__ in this case.
+        if key == "_arguments":
+            return object.__getattribute__(self, "_arguments")
+
+        if key not in self._arguments:
+            raise AttributeError(f"No argument named {key} !")
+
+        return self._arguments[key]
+
+    def __setattr__(self, key, value):
+
+        # Use non-modified __setattr__ in this case.
+        if key == "_arguments":
+            super().__setattr__(key, value)
+            return
+
+        if key not in self._arguments:
+            raise AttributeError(f"No argument named {key} !")
+
+        self._arguments[key] = value
+
     def __dir__(self):
         return dir(type(self)) + list(self)
+
+    def __repr__(self):
+        return f"Arguments({self._arguments})"
 
     # def __deepcopy__(self, memo) -> "Arguments":
     #     """TBW."""
@@ -80,7 +156,8 @@ class ModelFunction:
         arguments: t.Optional[dict] = None,
         enabled: bool = True,
     ):
-        assert not inspect.isclass(func)
+        if inspect.isclass(func):
+            raise AttributeError("Cannot pass a class to ModelFunction.")
 
         self._func = func  # type: t.Callable
         self._name = name
@@ -107,39 +184,9 @@ class ModelFunction:
         return self._name
 
     @property
-    def arguments(self) -> dict:
+    def arguments(self) -> Arguments:
         """TBW."""
         return self._arguments
-
-    def change_argument(self, argument: str, value: t.Any) -> None:
-        """Change a model argument.
-
-        Parameters
-        ----------
-        argument: str
-            Name of the argument to be changed.
-        value
-
-        Returns
-        -------
-        None
-
-        Raises
-        ------
-        TypeError
-            If types of the changed value and default value do not match.
-        KeyError
-            If argument does not exist.
-        """
-        try:
-            if type(self._arguments[argument]) == type(value):
-                self._arguments[argument] = value
-            else:
-                raise TypeError(
-                    f"Type of the changed value should be {type(self._arguments[argument])}, not {type(value)}"
-                )
-        except KeyError:
-            raise
 
     # # TODO: Replace this by __call__ ?
     # @property

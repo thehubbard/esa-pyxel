@@ -10,9 +10,7 @@ from collections import abc
 import pytest
 
 from pyxel.models.photon_generation.illumination import illumination
-from pyxel.pipelines import ModelFunction
-
-# from pyxel.pipelines.model_function import Arguments
+from pyxel.pipelines import Arguments, ModelFunction
 
 
 @pytest.fixture
