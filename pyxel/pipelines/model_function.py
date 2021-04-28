@@ -22,8 +22,7 @@ class Arguments(t.MutableMapping):
     """Arguments class for usage in ModelFunction.
 
     Class Arguments is initialized from a dictionary of model function arguments.
-    It resembles the behaviour of the passed dictionary with checking of value types
-    and additional methods __setattr__ and __getattr__,
+    It resembles the behaviour of the passed dictionary with additional methods __setattr__ and __getattr__,
     which enable to get and set the model parameters through attribute interface.
     Dictionary of arguments is saved in private attribute _arguments.
 
@@ -55,25 +54,12 @@ class Arguments(t.MutableMapping):
     """
 
     def __init__(self, input_arguments: dict):
-
-        # Check the value types in the input dictionary
-        for key, value in input_arguments.items():
-            if not isinstance(value, (int, float, str, t.Collection, type(None))):
-                raise TypeError(
-                    f"Cannot set value of {key} with type different to (int, float, str, Collection, NoneType)"
-                )
-
         self._arguments = dict(input_arguments)
 
     def __setitem__(self, key, value):
 
         if key not in self._arguments:
             raise KeyError(f"No argument named {key} !")
-
-        if not isinstance(value, (int, float, str, t.Collection, type(None))):
-            raise TypeError(
-                f"Cannot set value of {key} with type different to (int, float, str, Collection, NoneType)"
-            )
 
         self._arguments[key] = value
 
@@ -99,7 +85,7 @@ class Arguments(t.MutableMapping):
 
         # Use non-modified __getattr__ in this case.
         if key == "_arguments":
-            return object.__getattribute__(self, "_argument")
+            return object.__getattribute__(self, "_arguments")
 
         if key not in self._arguments:
             raise AttributeError(f"No argument named {key} !")
@@ -115,11 +101,6 @@ class Arguments(t.MutableMapping):
 
         if key not in self._arguments:
             raise AttributeError(f"No argument named {key} !")
-
-        if not isinstance(value, (int, float, str, t.Collection, type(None))):
-            raise TypeError(
-                f"Cannot set value of {key} with type different to (int, float, str, Collection, NoneType)"
-            )
 
         self._arguments[key] = value
 
