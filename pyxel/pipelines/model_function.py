@@ -99,7 +99,7 @@ class Arguments(t.MutableMapping):
 
         # Use non-modified __getattr__ in this case.
         if key == "_arguments":
-            return self._arguments
+            return object.__getattribute__(self, "_argument")
 
         if key not in self._arguments:
             raise AttributeError(f"No argument named {key} !")
