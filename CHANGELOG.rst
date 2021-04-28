@@ -12,6 +12,8 @@ Core
   (See `!193 <https://gitlab.com/esa/pyxel/-/merge_requests/193>`_).
 * Fix issues with 'fsspec' version 0.9.
   (See `!198 <https://gitlab.com/esa/pyxel/-/merge_requests/198>`_).
+* Refactoring class `Arguments.
+  (See `!203 <https://gitlab.com/esa/pyxel/-/merge_requests/203>`_).
 
 Others
 ~~~~~~
