@@ -130,7 +130,7 @@ class Parametric:
                 new_proc.set(key=key, value=value)
             yield new_proc
 
-    def run_parametric(self, processor: Processor) -> None:
+    def run_parametric(self, processor: "Processor") -> None:
         """TBW."""
 
         # Check if all keys from 'parametric' are valid keys for object 'pipeline'
