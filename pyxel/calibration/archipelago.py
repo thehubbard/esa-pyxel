@@ -421,8 +421,9 @@ class MyArchipelago:
         champions["champion_decision"] = xr.DataArray(
             champions_1d_decision, dims=["island", "param_id"]
         )
-        champions["champion_parameters"] = self.problem.convert_to_parameters(
-            champions["champion_decision"]
+        champions["champion_parameters"] = xr.DataArray(
+            self.problem.convert_to_parameters(champions["champion_decision"]),
+            dims=["island", "param_id"],
         )
 
         return champions
