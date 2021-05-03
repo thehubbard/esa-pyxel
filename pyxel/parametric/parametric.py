@@ -11,6 +11,9 @@ import logging
 import typing as t
 from copy import deepcopy
 from enum import Enum
+from tqdm.auto import tqdm
+from dask import delayed
+import dask
 
 import numpy as np
 
@@ -41,6 +44,7 @@ class Parametric:
         parameters: t.Sequence[ParameterValues],
         from_file: t.Optional[str] = None,
         column_range: t.Optional[t.Tuple[int, int]] = None,
+        with_dask: bool = False,
     ):
         self.outputs = outputs
         self.parametric_mode = ParametricMode(mode)  # type: ParametricMode
@@ -49,6 +53,7 @@ class Parametric:
         self.data = None  # type: t.Optional[np.ndarray]
         if column_range:
             self.columns = slice(*column_range)
+        self.with_dask = with_dask
 
     def __repr__(self):
         cls_name = self.__class__.__name__  # type: str
@@ -124,6 +129,51 @@ class Parametric:
                 #         step.current = value
                 new_proc.set(key=key, value=value)
             yield new_proc
+
+    def run_parametric(self, processor: Processor) -> None:
+        """TBW."""
+
+        # Check if all keys from 'parametric' are valid keys for object 'pipeline'
+        for param_value in self.enabled_steps:
+            key = param_value.key  # type: str
+            assert processor.has(key)
+
+        processors_it = self.collect(processor)  # type: t.Iterator[Processor]
+
+        result_list = []  # type: t.List[Result]
+        output_filenames = []  # type: t.List[t.Sequence[Path]]
+
+        # Run all pipelines
+        for proc in tqdm(processors_it):  # type: Processor
+
+            if not self.with_dask:
+                result_proc = proc.run_pipeline()  # type: Processor
+                result_val = self.outputs.extract_func(
+                    processor=result_proc
+                )  # type: Result
+
+                # filenames = parametric_outputs.save_to_file(
+                #    processor=result_proc
+                # )  # type: t.Sequence[Path]
+
+            else:
+                result_proc = delayed(proc.run_pipeline)()
+                result_val = delayed(self.outputs.extract_func)(processor=result_proc)
+
+                # filenames = delayed(parametric_outputs.save_to_file)(processor=result_proc)
+
+            result_list.append(result_val)
+            # output_filenames.append(filenames)  # TODO: This is not used
+
+        if not self.with_dask:
+            plot_array = self.outputs.merge_func(result_list)  # type: np.ndarray
+        else:
+            array = delayed(self.outputs.merge_func)(result_list)
+            plot_array = dask.compute(array)
+
+        # TODO: Plot with dask ?
+        # if parametric_outputs.parametric_plot is not None:
+        #    parametric_outputs.plotting_func(plot_array)
 
     def collect(self, processor: "Processor") -> "t.Iterator[Processor]":
         """TBW."""
