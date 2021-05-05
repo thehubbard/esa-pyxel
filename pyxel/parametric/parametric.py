@@ -14,6 +14,7 @@ from enum import Enum
 from tqdm.auto import tqdm
 from dask import delayed
 import dask
+from pyxel.inputs_outputs.loader import load_table
 
 import numpy as np
 
@@ -23,6 +24,16 @@ from pyxel.state import get_obj_att, get_value
 if t.TYPE_CHECKING:
     from ..inputs_outputs import ParametricOutputs
     from ..pipelines import Processor
+
+
+def create_new_processor(processor: "Processor", parameters) -> "Processor":
+
+    new_processor = deepcopy(processor)
+
+    for key in parameters.keys():
+        new_processor.set(key=key, value=parameters[key])
+
+    return new_processor
 
 
 class ParametricMode(Enum):
@@ -64,17 +75,18 @@ class Parametric:
         """TBW."""
         return [step for step in self._parameters if step.enabled]
 
-    def _parallel(self, processor: "Processor") -> "t.Iterator[Processor]":
+    def _parallel_parameters(self) -> "t.Iterator[Processor]":
         """TBW.
 
         :param processor:
         :return:
         """
-        result = np.loadtxt(self.file)[:, self.columns]  # type: np.ndarray
+        # TODO: is self.data really needed
+        result = load_table(self.file)[:, self.columns]  # type: np.ndarray
         self.data = result
         for data_array in self.data:
             i = 0
-            new_proc = deepcopy(processor)  # type: Processor
+            parameters = {}
             for step in self.enabled_steps:
                 key = step.key
 
@@ -83,23 +95,27 @@ class Parametric:
                 if step.values == "_":
                     value = data_array[i]
                     i += 1
+                    parameters.update({key: value})
 
-                elif isinstance(step.values, list) and all(
-                    x == "_" for x in step.values[:]
-                ):
-                    value = data_array[i : i + len(step.values)]  # noqa: E203
-                    i += len(value)
+                elif isinstance(step.values, list):
 
-                else:
-                    raise ValueError(
-                        'Only "_" characters (or a list of them) should be used to '
-                        "indicate parameters updated from file in parallel"
-                    )
+                    values = np.asarray(deepcopy(step.values))  # type: np.ndarray
+                    sh = values.shape  # type: tuple
+                    values_flattened = values.flatten()
 
-                new_proc.set(key, value)
-            yield new_proc
+                    if all(x == "_" for x in values_flattened):
+                        value = data_array[i : i + len(values_flattened)]  # noqa: E203
+                        i += len(value)
+                        value = value.reshape(sh).tolist()
+                        parameters.update({key: value})
+                    else:
+                        raise ValueError(
+                            'Only "_" characters (or a list of them) should be used to '
+                            "indicate parameters updated from file in parallel"
+                        )
+            yield parameters
 
-    def _sequential(self, processor: "Processor") -> "t.Iterator[Processor]":
+    def _sequential_parameters(self) -> "t.Iterator[dict]":
         """TBW.
 
         :param processor:
@@ -108,12 +124,9 @@ class Parametric:
         for step in self.enabled_steps:  # type: ParameterValues
             key = step.key  # type : str
             for value in step:
-                # step.current = value
-                new_proc = deepcopy(processor)  # type: Processor
-                new_proc.set(key=key, value=value)
-                yield new_proc
+                yield {key: value}
 
-    def _embedded(self, processor: "Processor") -> "t.Iterator[Processor]":
+    def _embedded_parameters(self) -> "t.Iterator[dict]":
         """TBW.
 
         :param processor:
@@ -122,62 +135,51 @@ class Parametric:
         all_steps = self.enabled_steps
         keys = [step.key for step in self.enabled_steps]
         for params in itertools.product(*all_steps):
-            new_proc = deepcopy(processor)  # type: Processor
+            parameters = {}
             for key, value in zip(keys, params):
-                # for step in all_steps:
-                #     if step.key == key:
-                #         step.current = value
-                new_proc.set(key=key, value=value)
-            yield new_proc
+                parameters.update({key: value})
+            yield parameters
+
+    def _parameters_it(self) -> t.Callable:
+        if self.parametric_mode == ParametricMode.Embedded:
+            return self._embedded_parameters
+
+        elif self.parametric_mode == ParametricMode.Sequential:
+            return self._sequential_parameters
+
+        elif self.parametric_mode == ParametricMode.Parallel:
+            return self._parallel_parameters
+
+    def _processors_it(self, processor: "Processor"):
+
+        new_processor = deepcopy(processor)
+        parameters_it = self._parameters_it()
+
+        for parameters in parameters_it():
+            for key in parameters.keys():
+                new_processor.set(key=key, value=parameters[key])
+
+        yield new_processor
+
+    def _delayed_processors(self, processor: "Processor"):
+
+        processors = []
+        processor = delayed(processor)
+        parameters_it = self._parameters_it()
+
+        for parameter in parameters_it():
+            parameter = delayed(parameter)
+            processors.append(delayed(create_new_processor)(processor=processor, parameters=parameter))
+
+        return processors
 
     def run_parametric(self, processor: "Processor") -> None:
         """TBW."""
 
-        # Check if all keys from 'parametric' are valid keys for object 'pipeline'
-        for param_value in self.enabled_steps:
-            key = param_value.key  # type: str
-            assert processor.has(key)
-
-        processors_it = self.collect(processor)  # type: t.Iterator[Processor]
-
-        result_list = []  # type: t.List[Result]
-        output_filenames = []  # type: t.List[t.Sequence[Path]]
-
-        # Run all pipelines
-        for proc in tqdm(processors_it):  # type: Processor
-
-            if not self.with_dask:
-                result_proc = proc.run_pipeline()  # type: Processor
-                result_val = self.outputs.extract_func(
-                    processor=result_proc
-                )  # type: Result
-
-                # filenames = parametric_outputs.save_to_file(
-                #    processor=result_proc
-                # )  # type: t.Sequence[Path]
-
-            else:
-                result_proc = delayed(proc.run_pipeline)()
-                result_val = delayed(self.outputs.extract_func)(processor=result_proc)
-
-                # filenames = delayed(parametric_outputs.save_to_file)(processor=result_proc)
-
-            result_list.append(result_val)
-            # output_filenames.append(filenames)  # TODO: This is not used
-
-        if not self.with_dask:
-            plot_array = self.outputs.merge_func(result_list)  # type: np.ndarray
-        else:
-            array = delayed(self.outputs.merge_func)(result_list)
-            plot_array = dask.compute(array)
-
-        # TODO: Plot with dask ?
-        # if parametric_outputs.parametric_plot is not None:
-        #    parametric_outputs.plotting_func(plot_array)
-
-    def collect(self, processor: "Processor") -> "t.Iterator[Processor]":
-        """TBW."""
         for step in self.enabled_steps:  # type: ParameterValues
+
+            key = step.key  # type: str
+            assert processor.has(key)
 
             # TODO: the string literal expressions are difficult to maintain.
             #     Example: 'pipeline.', '.arguments', '.enabled'
@@ -189,7 +191,7 @@ class Parametric:
                 model_enabled = model_name + ".enabled"  # type: str
                 if not processor.get(model_enabled):
                     raise ValueError(
-                        f"The '{model_name}' model referenced in parametric configuration "
+                        f"The '{model_name}' model referenced in parametric configuration"
                         f"has not been enabled in yaml config!"
                     )
 
@@ -202,20 +204,54 @@ class Parametric:
                     "do not use '_' character in 'values' field"
                 )
 
-        if self.parametric_mode == ParametricMode.Embedded:
-            configs_it = self._embedded(processor)  # type: t.Iterator[Processor]
+        result_list = []
 
-        elif self.parametric_mode == ParametricMode.Sequential:
-            configs_it = self._sequential(processor)
+        if self.with_dask:
 
-        elif self.parametric_mode == ParametricMode.Parallel:
-            configs_it = self._parallel(processor)
+            delayed_processor_list = self._delayed_processors(processor)
 
-        else:
-            # configs_it = iter([])
-            raise NotImplementedError()
+            for proc in delayed_processor_list:
+                result_proc = delayed(proc.run_pipeline())
+                result_list.append(result_proc)
 
-        return configs_it
+        return result_list
+
+        # processors_it = self.collect(processor)  # type: t.Iterator[Processor]
+        #
+        # result_list = []  # type: t.List[Result]
+        # output_filenames = []  # type: t.List[t.Sequence[Path]]
+        #
+        # # Run all pipelines
+        # for proc in tqdm(processors_it):  # type: Processor
+        #
+        #     if not self.with_dask:
+        #         result_proc = proc.run_pipeline()  # type: Processor
+        #         result_val = self.outputs.extract_func(
+        #             processor=result_proc
+        #         )  # type: Result
+        #
+        #         # filenames = parametric_outputs.save_to_file(
+        #         #    processor=result_proc
+        #         # )  # type: t.Sequence[Path]
+        #
+        #     else:
+        #         result_proc = delayed(proc.run_pipeline)()
+        #         result_val = delayed(self.outputs.extract_func)(processor=result_proc)
+        #
+        #         # filenames = delayed(parametric_outputs.save_to_file)(processor=result_proc)
+        #
+        #     result_list.append(result_val)
+        #     # output_filenames.append(filenames)  # TODO: This is not used
+        #
+        # if not self.with_dask:
+        #     plot_array = self.outputs.merge_func(result_list)  # type: np.ndarray
+        # else:
+        #     array = delayed(self.outputs.merge_func)(result_list)
+        #     plot_array = dask.compute(array)
+        #
+        # # TODO: Plot with dask ?
+        # # if parametric_outputs.parametric_plot is not None:
+        # #    parametric_outputs.plotting_func(plot_array)
 
     def debug(self, processor: "Processor") -> list:
         """TBW."""

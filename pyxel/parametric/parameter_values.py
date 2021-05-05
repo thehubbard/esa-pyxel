@@ -26,7 +26,7 @@ class ParameterType(Enum):
 
 
 class ParameterValues:
-    """TBW."""
+    """Contains keys and values of parameters in a parametric step."""
 
     def __init__(
         self,
@@ -38,15 +38,19 @@ class ParameterValues:
         enabled: bool = True,
         logarithmic: bool = False,
     ):
-        # TODO: should these values be checked ?
-        assert values == "_" or (
-            isinstance(values, abc.Sequence)
-            and (
-                all([el == "_" for el in values])
-                or all([isinstance(el, str) for el in values])
-                or all([isinstance(el, Number) for el in values])
-            )
-        )
+
+        # TODO: maybe use numpy to check multi-dimensional input lists
+        # Check YAML input (not real values yet) and define parameter type
+        if values == "_":
+            self.type = ParameterType("multi")
+        elif isinstance(values, str) and "numpy" in values:
+            self.type = ParameterType("simple")
+        elif isinstance(values, abc.Sequence) and any([(el == "_" or isinstance(el, abc.Sequence)) for el in values]):
+            self.type = ParameterType("multi")
+        elif isinstance(values, abc.Sequence) and all([isinstance(el, (Number, str)) for el in values]):
+            self.type = ParameterType("simple")
+        else:
+            raise ValueError("Parameter values cannot be initiated with those values.")
 
         # unique identifier to the step. example: 'detector.geometry.row'
         self._key = key  # type: str
@@ -60,14 +64,6 @@ class ParameterValues:
         self._boundaries = boundaries  # type: t.Optional[t.Tuple[float, float]]
 
         self._current = None  # type: t.Optional[t.Union[Literal['_'], Number, str]]
-
-        # with eval_range(self._values) as value_list:
-        #     if any([x == "_" or isinstance(x, abc.Sequence) for x in value_list]):
-        #         self._type = ParameterType("multi")
-        #     elif all([x != "_" and isinstance(x, (str, Number)) for x in value_list]):
-        #         self._type = ParameterType("simple")
-        #     else:
-        #         raise ValueError
 
 
     def __repr__(self) -> str:
