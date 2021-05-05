@@ -15,6 +15,9 @@ from tqdm.auto import tqdm
 from dask import delayed
 import dask
 from pyxel.inputs_outputs.loader import load_table
+from typing_extensions import Literal
+import xarray as xr
+import operator
 
 import numpy as np
 
@@ -26,12 +29,12 @@ if t.TYPE_CHECKING:
     from ..pipelines import Processor
 
 
-def create_new_processor(processor: "Processor", parameters) -> "Processor":
+def create_new_processor(processor: "Processor", parameter_dict: dict) -> "Processor":
 
     new_processor = deepcopy(processor)
 
-    for key in parameters.keys():
-        new_processor.set(key=key, value=parameters[key])
+    for key in parameter_dict.keys():
+        new_processor.set(key=key, value=parameter_dict[key])
 
     return new_processor
 
@@ -42,6 +45,13 @@ class ParametricMode(Enum):
     Embedded = "embedded"
     Sequential = "sequential"
     Parallel = "parallel"
+
+class ResultType(Enum):
+    """TBW."""
+
+    Image = "image"
+    Signal = "signal"
+    Pixel = "pixel"
 
 
 # TODO: Use `Enum` for `parametric_mode` ?
@@ -56,6 +66,7 @@ class Parametric:
         from_file: t.Optional[str] = None,
         column_range: t.Optional[t.Tuple[int, int]] = None,
         with_dask: bool = False,
+        result_type: Literal["image", "signal", "pixel"] = "image",
     ):
         self.outputs = outputs
         self.parametric_mode = ParametricMode(mode)  # type: ParametricMode
@@ -65,6 +76,7 @@ class Parametric:
         if column_range:
             self.columns = slice(*column_range)
         self.with_dask = with_dask
+        self.parameter_types = {}
 
     def __repr__(self):
         cls_name = self.__class__.__name__  # type: str
@@ -140,7 +152,7 @@ class Parametric:
                 parameters.update({key: value})
             yield parameters
 
-    def _parameters_it(self) -> t.Callable:
+    def _parameter_it(self) -> t.Callable:
         if self.parametric_mode == ParametricMode.Embedded:
             return self._embedded_parameters
 
@@ -152,26 +164,27 @@ class Parametric:
 
     def _processors_it(self, processor: "Processor"):
 
-        new_processor = deepcopy(processor)
-        parameters_it = self._parameters_it()
+        parameter_it = self._parameter_it()
 
-        for parameters in parameters_it():
-            for key in parameters.keys():
-                new_processor.set(key=key, value=parameters[key])
-
-        yield new_processor
+        for parameter_dict in parameter_it():
+            yield create_new_processor(processor=processor, parameter_dict=parameter_dict)
 
     def _delayed_processors(self, processor: "Processor"):
 
         processors = []
-        processor = delayed(processor)
-        parameters_it = self._parameters_it()
+        delayed_processor = delayed(processor)
+        parameter_it = self._parameter_it()
 
-        for parameter in parameters_it():
-            parameter = delayed(parameter)
-            processors.append(delayed(create_new_processor)(processor=processor, parameters=parameter))
+        for parameter_dict in parameter_it():
+            delayed_parameter_dict = delayed(parameter_dict)
+            processors.append(delayed(create_new_processor)(processor=delayed_processor, parameter_dict=delayed_parameter_dict))
 
         return processors
+
+    def _get_parameter_types(self):
+        for step in self.enabled_steps:
+            self.parameter_types.update({step.key: step.type})
+        return self.parameter_types
 
     def run_parametric(self, processor: "Processor") -> None:
         """TBW."""
@@ -205,6 +218,8 @@ class Parametric:
                 )
 
         result_list = []
+        datasets = []
+        output_array_str = "detector.image.array"
 
         if self.with_dask:
 
@@ -214,7 +229,31 @@ class Parametric:
                 result_proc = delayed(proc.run_pipeline())
                 result_list.append(result_proc)
 
-        return result_list
+            out = []
+
+        else:
+            i=0
+            for proc in tqdm(self._processors_it(processor)):
+                result_proc = proc.run_pipeline()
+                self.outputs.save_to_file(result_proc)
+
+                ds = xr.Dataset()
+
+                #for output_array_str in self.output.save_dataset:
+
+                output_array = operator.attrgetter(output_array_str)(result_proc)
+                rows, columns = (result_proc.detector.geometry.row, result_proc.detector.geometry.row)
+
+                da = xr.DataArray(name=output_array_str.split('.')[-2], data=output_array, dims=['x', 'y'], coords={'x': range(rows), 'y': range(columns), "i": [i]})
+
+                datasets.append(da)
+
+                #result_list.append(result_proc)
+
+            #out = xr.concat(datasets, "i").assign_coords({'i': range(len(list(self._parameter_it()())))})
+            out = xr.combine_by_coords(datasets)
+
+        return out
 
         # processors_it = self.collect(processor)  # type: t.Iterator[Processor]
         #
