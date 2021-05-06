@@ -167,7 +167,7 @@ class Parametric:
         parameter_it = self._parameter_it()
 
         for parameter_dict in parameter_it():
-            yield create_new_processor(processor=processor, parameter_dict=parameter_dict)
+            yield create_new_processor(processor=processor, parameter_dict=parameter_dict), parameter_dict
 
     def _delayed_processors(self, processor: "Processor"):
 
@@ -232,8 +232,8 @@ class Parametric:
             out = []
 
         else:
-            i=0
-            for proc in tqdm(self._processors_it(processor)):
+            i = 0
+            for proc, parameter_dict in tqdm(self._processors_it(processor)):
                 result_proc = proc.run_pipeline()
                 self.outputs.save_to_file(result_proc)
 
