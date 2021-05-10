@@ -160,7 +160,6 @@ def display_detector(detector: "Detector") -> t.Union["Layout"]:
     out
         A Holoviews object.
     """
-    hv.extension("bokeh")
 
     # Container for detector data, leave out where there is none.
     det = {}  # type: t.Dict[str, np.ndarray]

@@ -387,6 +387,13 @@ class MyArchipelago:
 
         ds = xr.merge([champions, all_data_fit_range])  # type: xr.Dataset
 
+        ds.attrs["num_islands"] = self.num_islands
+        ds.attrs["population_size"] = self.algorithm.population_size
+        ds.attrs["num_evolutions"] = num_evolutions
+        ds.attrs["generations"] = self.algorithm.generations
+
+        ds = ds.assign_coords({"param_id": range(ds.dims["param_id"])})
+
         return ds, df_processors, df_all_logs
 
     def _get_champions(self) -> xr.Dataset:
