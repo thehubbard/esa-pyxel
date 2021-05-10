@@ -5,6 +5,4 @@ sphinx
 sphinx-book-theme
 sphinxcontrib-bibtex
 sphinxcontrib-napoleon
-
-# sphinxcontrib-plantuml
-# sphinxcontrib-mermaid
+ipython
