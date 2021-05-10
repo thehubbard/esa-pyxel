@@ -18,5 +18,14 @@ from pyxel.notebook.jupyxel import (
 )
 from pyxel.notebook.html_representation import display_html
 
+from pyxel.notebook.calibration import (
+    display_calibration_inputs,
+    display_simulated,
+    display_evolution,
+    champion_heatmap,
+    optimal_parameters,
+)
+
 import holoviews as hv
+
 hv.extension("bokeh")

@@ -24,19 +24,23 @@ if t.TYPE_CHECKING:
     from pyxel.detectors import Detector
 
 
-
-def display_inputs(calibration: Calibration, detector: Detector) -> hv.Layout:
-    """TBW.
+def display_calibration_inputs(
+    calibration: "Calibration", detector: "Detector"
+) -> hv.Layout:
+    """Display calibration inputs and target data based on configuration file.
 
     Parameters
     ----------
-    calibration
-    detector
+    calibration: Calibration
+        Instance of Calibration.
+    detector: Detector
+        Instance of Detector.
 
     Returns
     -------
-
+    plot: hv.Layout
     """
+
     fnames_input = calibration.result_input_arguments[0].values
     fnames_target = [str(os.path.relpath(x)) for x in calibration.target_data_path]
 
@@ -46,9 +50,20 @@ def display_inputs(calibration: Calibration, detector: Detector) -> hv.Layout:
     input_columns = input_range[3] - input_range[2]
     target_columns = target_range[3] - target_range[2]
 
-    def get_data_input(data_id):
+    def get_data_input(data_id: int) -> t.Union[hv.Image, hv.Curve]:
+        """Get input data based on configuration file.
 
-        data = load_image(fnames_input[data_id])
+        Parameters
+        ----------
+        data_id
+
+        Returns
+        -------
+        im
+        """
+
+        # TODO: Fix typing, what if input arguments in calibration not strings?
+        data = load_image(fnames_input[data_id])  # type: ignore
         if data.ndim == 1:
             im = hv.Curve((range(len(data)), data)).opts(
                 tools=["hover"], aspect=1.5, xlabel="x", ylabel="z"
@@ -67,7 +82,17 @@ def display_inputs(calibration: Calibration, detector: Detector) -> hv.Layout:
 
         return im
 
-    def get_data_target(data_id):
+    def get_data_target(data_id: int) -> t.Union[hv.Image, hv.Curve]:
+        """Get target data based on the configuration file.
+
+        Parameters
+        ----------
+        data_id
+
+        Returns
+        -------
+
+        """
 
         data = load_image(fnames_target[data_id])
 
@@ -107,19 +132,22 @@ def display_inputs(calibration: Calibration, detector: Detector) -> hv.Layout:
         .relabel("Filenames")
     )
 
-    return (
+    plot = (
         dmap1.opts(framewise=True, axiswise=True)
         + dmap2.opts(framewise=True, axiswise=True)
         + table
     ).opts(tabs=True)
 
+    return plot
+
 
 def display_simulated(ds: xr.Dataset) -> hv.Layout:
-    """TBW.
+    """Display simulated and target data from the output dataset.
 
     Parameters
     ----------
-    ds
+    ds: xr.Dataset
+        Result dataset.
 
     Returns
     -------
@@ -281,18 +309,20 @@ def display_simulated(ds: xr.Dataset) -> hv.Layout:
 
 
 def display_evolution(ds: xr.Dataset) -> hv.Layout:
-    """TBW.
+    """Display best champion parameter and overall fitness vs evolution.
 
     Parameters
     ----------
-    ds
+    ds: xr.Dataset
+        Result dataset.
 
     Returns
     -------
-
+    plot: hv.Layout
+        Output plot.
     """
     output_champions = xr.Dataset()
-    output_champions["fitness"] = ds["champion_fitness"].drop(labels="evolution")
+    output_champions["fitness"] = ds["champion_fitness"].drop(labels="evolution")  # type: ignore
     output_champions["parameters"] = ds["champion_parameters"].assign_coords(
         {"param_id": range(len(ds.param_id))}
     )
@@ -306,22 +336,26 @@ def display_evolution(ds: xr.Dataset) -> hv.Layout:
         aspect=1.5, axiswise=True, framewise=True, ylabel="Fitness"
     )
 
-    return (
+    plot = (
         plot_fitness.relabel("Fitness")
         + plot_parameters.relabel("Best champion parameters")
     ).opts(tabs=True)
 
+    return plot
+
 
 def optimal_parameters(ds: xr.Dataset) -> pd.DataFrame:
-    """TBW.
+    """Return a dataframe of best parameters.
 
     Parameters
     ----------
-    ds
+    ds: xr.Dataset
+        Result dataset.
 
     Returns
     -------
-
+    best: pd.DataFrame
+        Best champion parameters
     """
 
     best = (
@@ -340,25 +374,32 @@ def champion_heatmap(
     island_slice: slice = slice(None),
     ind_slice: slice = slice(None),
 ) -> hv.Points:
-    """TBW.
+    """Plot a heatmap of champion parameters vs fitness.
 
     Parameters
     ----------
-    ds
+    ds: xr.Dataset
+        Result dataset.
     num_bins
-    logx
-    parameter_slice
-    island_slice
-    ind_slice
+        Number of bins, default is 100.
+    logx: bool
+        Logarithmic x axis.
+    parameter_slice: slice
+        Parameters slice.
+    island_slice: slice
+        Islands slice.
+    ind_slice: slice
+        Individuals slice.
 
     Returns
     -------
-
+    plot: hv.Points
+        Champion heatmap.
     """
 
     if "best_fitness" in ds:
         individuals = xr.Dataset()
-        individuals["fitness"] = ds["best_fitness"].drop(labels="evolution")
+        individuals["fitness"] = ds["best_fitness"].drop(labels="evolution")  # type: ignore
         individuals["parameters"] = ds["best_parameters"].assign_coords(
             {"param_id": range(len(ds.param_id))}
         )
@@ -366,7 +407,7 @@ def champion_heatmap(
         ind_id = individuals.coords["individual"].values
 
     output_champions = xr.Dataset()
-    output_champions["fitness"] = ds["champion_fitness"].drop(labels="evolution")
+    output_champions["fitness"] = ds["champion_fitness"].drop(labels="evolution")  # type: ignore
     output_champions["parameters"] = ds["champion_parameters"].assign_coords(
         {"param_id": range(len(ds.param_id))}
     )
@@ -419,7 +460,10 @@ def champion_heatmap(
     # x=x[x>1e-7]
 
     if logx is True:
-        bins = [np.geomspace(0.9 * np.min(x), 1.1 * np.max(x), num_bins + 1), num_bins]
+        bins = [
+            np.geomspace(0.9 * np.min(x), 1.1 * np.max(x), num_bins + 1),
+            num_bins,
+        ]  # type: t.Union[list, int]
     else:
         bins = num_bins
 

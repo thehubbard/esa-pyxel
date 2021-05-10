@@ -388,6 +388,9 @@ class Calibration:
                 num_best_decisions=self._num_best_decisions,
             )
 
+            ds.attrs["topology"] = self.topology
+            ds.attrs["result_type"] = str(self.fitting.sim_output)
+
         else:
             raise NotImplementedError("Not implemented for 1 island.")
 
