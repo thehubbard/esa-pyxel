@@ -18,6 +18,7 @@ from pyxel.inputs_outputs.loader import load_table
 from typing_extensions import Literal
 import xarray as xr
 import operator
+from pyxel.parametric.parameter_values import ParameterType
 
 import numpy as np
 
@@ -38,6 +39,11 @@ def create_new_processor(processor: "Processor", parameter_dict: dict) -> "Proce
 
     return new_processor
 
+def _id(s: str):
+    return s+"_id"
+
+def short(s: str):
+    return s.split('.')[-1]
 
 class ParametricMode(Enum):
     """TBW."""
@@ -96,9 +102,9 @@ class Parametric:
         # TODO: is self.data really needed
         result = load_table(self.file)[:, self.columns]  # type: np.ndarray
         self.data = result
-        for data_array in self.data:
+        for index, data_array in enumerate(self.data):
             i = 0
-            parameters = {}
+            parameter_dict = {}
             for step in self.enabled_steps:
                 key = step.key
 
@@ -107,7 +113,7 @@ class Parametric:
                 if step.values == "_":
                     value = data_array[i]
                     i += 1
-                    parameters.update({key: value})
+                    parameter_dict.update({key: value})
 
                 elif isinstance(step.values, list):
 
@@ -119,13 +125,13 @@ class Parametric:
                         value = data_array[i : i + len(values_flattened)]  # noqa: E203
                         i += len(value)
                         value = value.reshape(sh).tolist()
-                        parameters.update({key: value})
+                        parameter_dict.update({key: value})
                     else:
                         raise ValueError(
                             'Only "_" characters (or a list of them) should be used to '
                             "indicate parameters updated from file in parallel"
                         )
-            yield parameters
+            yield index, parameter_dict
 
     def _sequential_parameters(self) -> "t.Iterator[dict]":
         """TBW.
@@ -135,8 +141,15 @@ class Parametric:
         """
         for step in self.enabled_steps:  # type: ParameterValues
             key = step.key  # type : str
-            for value in step:
-                yield {key: value}
+            for index, value in enumerate(step):
+                parameter_dict = {key: value}
+                yield index, parameter_dict
+
+    def _embedded_indices(self) -> "t.Iterator[t.Tuple]":
+        step_ranges = []
+        for step in self.enabled_steps:
+            step_ranges.append(range(len(step)))
+        return itertools.product(*step_ranges)
 
     def _embedded_parameters(self) -> "t.Iterator[dict]":
         """TBW.
@@ -146,11 +159,11 @@ class Parametric:
         """
         all_steps = self.enabled_steps
         keys = [step.key for step in self.enabled_steps]
-        for params in itertools.product(*all_steps):
+        for indices, params in zip(self._embedded_indices(), itertools.product(*all_steps)):
             parameters = {}
             for key, value in zip(keys, params):
                 parameters.update({key: value})
-            yield parameters
+            yield indices, parameters
 
     def _parameter_it(self) -> t.Callable:
         if self.parametric_mode == ParametricMode.Embedded:
@@ -166,8 +179,8 @@ class Parametric:
 
         parameter_it = self._parameter_it()
 
-        for parameter_dict in parameter_it():
-            yield create_new_processor(processor=processor, parameter_dict=parameter_dict), parameter_dict
+        for index, parameter_dict in parameter_it():
+            yield create_new_processor(processor=processor, parameter_dict=parameter_dict), index, parameter_dict
 
     def _delayed_processors(self, processor: "Processor"):
 
@@ -175,7 +188,7 @@ class Parametric:
         delayed_processor = delayed(processor)
         parameter_it = self._parameter_it()
 
-        for parameter_dict in parameter_it():
+        for index, parameter_dict in parameter_it():
             delayed_parameter_dict = delayed(parameter_dict)
             processors.append(delayed(create_new_processor)(processor=delayed_processor, parameter_dict=delayed_parameter_dict))
 
@@ -232,28 +245,42 @@ class Parametric:
             out = []
 
         else:
-            i = 0
-            for proc, parameter_dict in tqdm(self._processors_it(processor)):
+            for proc, index, parameter_dict in tqdm(self._processors_it(processor)):
                 result_proc = proc.run_pipeline()
-                self.outputs.save_to_file(result_proc)
+                # self.outputs.save_to_file(result_proc)
+
+                rows, columns = (result_proc.detector.geometry.row, result_proc.detector.geometry.row)
+                coords = {'x': range(columns), 'y': range(rows)}
 
                 ds = xr.Dataset()
 
-                #for output_array_str in self.output.save_dataset:
+                types = self._get_parameter_types()
 
-                output_array = operator.attrgetter(output_array_str)(result_proc)
-                rows, columns = (result_proc.detector.geometry.row, result_proc.detector.geometry.row)
+                if self.parametric_mode == ParametricMode.Embedded:
 
-                da = xr.DataArray(name=output_array_str.split('.')[-2], data=output_array, dims=['x', 'y'], coords={'x': range(rows), 'y': range(columns), "i": [i]})
+                    da = xr.DataArray(result_proc.detector.image.array, dims=['y', 'x'], coords=coords)
 
-                datasets.append(da)
+                    for i, coordinate in enumerate(parameter_dict.keys()):  # type: str
 
-                #result_list.append(result_proc)
+                        if types[coordinate] == ParameterType.Simple:
+                            da.assign_coords(coords={short(coordinate): parameter_dict[coordinate]})
+                            da.expand_dims(dim=short(coordinate))
+                        elif types[coordinate] == ParameterType.Multi:
+                            da.assign_coords({coordinate: parameter_dict[coordinate]})
+                            da_c = xr.DataArray(parameter_dict[coordinate], coords={_id(coordinate): index[i]})
+                            ds[coordinate] = da_c
+                        else:
+                            raise NotImplementedError
 
-            #out = xr.concat(datasets, "i").assign_coords({'i': range(len(list(self._parameter_it()())))})
-            out = xr.combine_by_coords(datasets)
+                    ds['image'] = da
 
-        return out
+                    #coords.update(parameter_dict)
+
+                    datasets.append(ds)
+
+            #out = xr.combine_by_coords(datasets)
+
+        return datasets
 
         # processors_it = self.collect(processor)  # type: t.Iterator[Processor]
         #
