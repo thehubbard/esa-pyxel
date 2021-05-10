@@ -14,6 +14,7 @@ from pathlib import Path
 import numpy as np
 
 from pyxel.data_structure import Charge, Image, Photon, Pixel, Signal
+from pyxel.data_structure.phase import Phase
 from pyxel.detectors import Environment, Material
 from pyxel.detectors.dynamic_properties import DynamicProperties
 from pyxel.util.memory import get_size, memory_usage_details
@@ -42,6 +43,7 @@ class Detector:
         self.header = collections.OrderedDict()  # type: t.Dict[str, object]
 
         self._photon = None  # type: t.Optional[Photon]
+        self._phase = None  # type: t.Optional[Phase]
         self._charge = None  # type: t.Optional[Charge]
         self._pixel = None  # type: t.Optional[Pixel]
         self._signal = None  # type: t.Optional[Signal]
@@ -87,6 +89,14 @@ class Detector:
         self._photon = obj
 
     @property
+    def phase(self) -> Phase:
+        """TBW."""
+        if not self._phase:
+            raise RuntimeError("'phase' not initialized.")
+
+        return self._phase
+
+    @property
     def charge(self) -> Charge:
         """TBW."""
         if not self._charge:
@@ -122,6 +132,7 @@ class Detector:
         """TBW."""
         self._photon = None
         if reset_all:
+            self._phase = Phase(self.geometry)
             self._charge = Charge()
             self._pixel = Pixel(self.geometry)
             self._signal = Signal(self.geometry)
@@ -304,7 +315,7 @@ class Detector:
             "_pixel",
             "_signal",
             "_image",
-            "material",
+            "_phase" "material",
             "environment",
             "_geometry",
             "_characteristics",

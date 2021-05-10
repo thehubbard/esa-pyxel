@@ -215,9 +215,10 @@ class SingleOutputs:
                         data.image.array,
                         data.photon.array,
                         data.pixel.array,
+                        data.phase.array,
                         data.charge.frame,
                     ],
-                    ["Signal", "Image", "Photon", "Pixel", "Charge"],
+                    ["Signal", "Image", "Photon", "Pixel", "Phase", "Charge"],
                 ):
                     dataset = detector_grp.create_dataset(name, shape=np.shape(array))
                     dataset[:] = array

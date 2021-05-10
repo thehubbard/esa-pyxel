@@ -30,7 +30,7 @@ from pyxel import __version__ as version
 from pyxel import inputs_outputs as io
 from pyxel.calibration import Calibration, CalibrationResult
 from pyxel.configuration import Configuration, load, save
-from pyxel.detectors import CCD, CMOS
+from pyxel.detectors import CCD, CMOS, MKIDarray
 from pyxel.dynamic import Dynamic  # , DynamicResult
 from pyxel.parametric import Parametric, ParametricResult
 from pyxel.pipelines import DetectionPipeline, Processor
@@ -51,7 +51,7 @@ if t.TYPE_CHECKING:
 
 def single_mode(
     single: "Single",
-    detector: t.Union["CCD", "CMOS"],
+    detector: t.Union["CCD", "CMOS", "MKIDarray"],
     pipeline: "DetectionPipeline",
 ) -> None:
     """Run a 'single' pipeline.
@@ -81,7 +81,7 @@ def single_mode(
 
 def parametric_mode(
     parametric: "Parametric",
-    detector: t.Union["CCD", "CMOS"],
+    detector: t.Union["CCD", "CMOS", "MKIDarray"],
     pipeline: "DetectionPipeline",
     with_dask: bool = False,
 ) -> "ParametricResult":
@@ -120,7 +120,7 @@ def parametric_mode(
 
 def dynamic_mode(
     dynamic: "Dynamic",
-    detector: t.Union["CCD", "CMOS"],
+    detector: t.Union["CCD", "CMOS", "MKIDarray"],
     pipeline: "DetectionPipeline",
 ) -> xr.Dataset:
     """Run a 'dynamic' pipeline.
@@ -154,7 +154,7 @@ def dynamic_mode(
 
 def calibration_mode(
     calibration: "Calibration",
-    detector: t.Union["CCD", "CMOS"],
+    detector: t.Union["CCD", "CMOS", "MKIDarray"],
     pipeline: "DetectionPipeline",
     compute_and_save: bool = True,
 ) -> t.Tuple[xr.Dataset, pd.DataFrame, pd.DataFrame, t.Sequence]:
@@ -374,9 +374,11 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
     pipeline = configuration.pipeline  # type: DetectionPipeline
 
     if isinstance(configuration.ccd_detector, CCD):
-        detector = configuration.ccd_detector  # type: t.Union[CCD, CMOS]
+        detector = configuration.ccd_detector  # type: t.Union[CCD, CMOS, MKIDarray]
     elif isinstance(configuration.cmos_detector, CMOS):
         detector = configuration.cmos_detector
+    elif isinstance(configuration.MKIDarray_detector, MKIDarray):
+        detector = configuration.MKIDarray_detector
     else:
         raise NotImplementedError("Detector is not defined in YAML config. file!")
 

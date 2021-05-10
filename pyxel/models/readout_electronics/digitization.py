@@ -65,6 +65,24 @@ def simple_processing(detector: Detector) -> None:
     detector.image.array = detector.signal.array
 
 
+def basic_processing(detector: Detector) -> None:
+    """Create an image array from signal array.
+
+    :param detector: Pyxel Detector object
+    """
+
+    detector.image.array = detector.signal.array
+
+
+def phase_conversion(detector: Detector) -> None:
+    """Create an image array from phase array.
+
+    :param detector: Pyxel Detector object
+    """
+
+    detector.image.array = detector.phase.array
+
+
 def sar_adc(detector: Detector, adc_bits: int = 16, range_volt: tuple = (0, 5)) -> None:
     """Digitize signal array using SAR ADC logic.
 

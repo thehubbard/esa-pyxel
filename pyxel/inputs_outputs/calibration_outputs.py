@@ -268,6 +268,7 @@ class CalibrationOutputs:
                         data.image.array,
                         data.photon.array,
                         data.pixel.array,
+                        data.phase.array,
                         data.charge.frame,
                     ],
                     ["Signal", "Image", "Photon", "Pixel", "Charge"],
