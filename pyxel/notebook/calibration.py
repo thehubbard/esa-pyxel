@@ -23,7 +23,6 @@ if t.TYPE_CHECKING:
     from pyxel.calibration import Calibration
     from pyxel.detectors import Detector
 
-hv.extension("bokeh")
 
 
 def display_inputs(calibration: Calibration, detector: Detector) -> hv.Layout:

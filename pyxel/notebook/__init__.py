@@ -17,3 +17,6 @@ from pyxel.notebook.jupyxel import (
     display_persist,
 )
 from pyxel.notebook.html_representation import display_html
+
+import holoviews as hv
+hv.extension("bokeh")
