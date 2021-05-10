@@ -6,7 +6,7 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 #
 #
-"""Tools for display of calibration IO in notebooks"""
+"""Tools for display of calibration IO in notebooks."""
 
 import os
 import typing as t
@@ -91,7 +91,7 @@ def display_calibration_inputs(
 
         Returns
         -------
-
+        im
         """
 
         data = load_image(fnames_target[data_id])
@@ -151,7 +151,7 @@ def display_simulated(ds: xr.Dataset) -> hv.Layout:
 
     Returns
     -------
-
+    hv.Layout
     """
     result_type = ds.attrs["result_type"]
 
@@ -370,9 +370,9 @@ def champion_heatmap(
     ds: xr.Dataset,
     num_bins: int = 100,
     logx: bool = False,
-    parameter_slice: slice = slice(None),
-    island_slice: slice = slice(None),
-    ind_slice: slice = slice(None),
+    parameter_range: t.Optional[list] = None,
+    island_range: t.Optional[list] = None,
+    ind_range: t.Optional[list] = None,
 ) -> hv.Points:
     """Plot a heatmap of champion parameters vs fitness.
 
@@ -396,6 +396,19 @@ def champion_heatmap(
     plot: hv.Points
         Champion heatmap.
     """
+
+    if parameter_range:
+        parameter_slice = slice(parameter_range[0], parameter_range[1])
+    else:
+        parameter_slice = slice(None)
+    if island_range:
+        island_slice = slice(island_range[0], island_range[1])
+    else:
+        island_slice = slice(None)
+    if ind_range:
+        ind_slice = slice(ind_range[0], ind_range[1])
+    else:
+        ind_slice = slice(None)
 
     if "best_fitness" in ds:
         individuals = xr.Dataset()
