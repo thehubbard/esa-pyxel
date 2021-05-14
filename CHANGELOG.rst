@@ -28,6 +28,8 @@ Others
   (See `!200 <https://gitlab.com/esa/pyxel/-/merge_requests/200`>_).
 * Add functions to display calibration inputs and outputs in notebooks.
   (See `!194 <https://gitlab.com/esa/pyxel/-/merge_requests/194`>_).
+* Fix issue with the latest click version and pipeline 'license'.
+  (See `!208 <https://gitlab.com/esa/pyxel/-/merge_requests/208`>_).
 
 
 version 0.9 / 2021-03-25
