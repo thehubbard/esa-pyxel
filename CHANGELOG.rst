@@ -30,6 +30,8 @@ Others
   (See `!194 <https://gitlab.com/esa/pyxel/-/merge_requests/194`>_).
 * Fix issue with the latest click version and pipeline 'license'.
   (See `!208 <https://gitlab.com/esa/pyxel/-/merge_requests/208`>_).
+* Resolve "Add 'LICENSE.txt' in MANIFEST.in".
+  (See `!207 <https://gitlab.com/esa/pyxel/-/merge_requests/207`>_).
 
 
 version 0.9 / 2021-03-25
