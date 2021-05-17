@@ -35,13 +35,13 @@ Others
 * Drop support for Python 3.6.
   (See `!199 <https://gitlab.com/esa/pyxel/-/merge_requests/199>`_).
 * Solve typing issues with numpy.
-  (See `!200 <https://gitlab.com/esa/pyxel/-/merge_requests/200`>_).
+  (See `!200 <https://gitlab.com/esa/pyxel/-/merge_requests/200>`_).
 * Add functions to display calibration inputs and outputs in notebooks.
-  (See `!194 <https://gitlab.com/esa/pyxel/-/merge_requests/194`>_).
+  (See `!194 <https://gitlab.com/esa/pyxel/-/merge_requests/194>`_).
 * Fix issue with the latest click version and pipeline 'license'.
-  (See `!208 <https://gitlab.com/esa/pyxel/-/merge_requests/208`>_).
+  (See `!208 <https://gitlab.com/esa/pyxel/-/merge_requests/208>`_).
 * Resolve "Add 'LICENSE.txt' in MANIFEST.in".
-  (See `!207 <https://gitlab.com/esa/pyxel/-/merge_requests/207`>_).
+  (See `!207 <https://gitlab.com/esa/pyxel/-/merge_requests/207>`_).
 
 
 version 0.9 / 2021-03-25
