@@ -180,7 +180,8 @@ class Parametric:
         parameter_it = self._parameter_it()
 
         for index, parameter_dict in parameter_it():
-            yield create_new_processor(processor=processor, parameter_dict=parameter_dict), index, parameter_dict
+            new_processor = create_new_processor(processor=processor, parameter_dict=parameter_dict)
+            yield new_processor, index, parameter_dict
 
     def _delayed_processors(self, processor: "Processor"):
 
@@ -199,7 +200,7 @@ class Parametric:
             self.parameter_types.update({step.key: step.type})
         return self.parameter_types
 
-    def run_parametric(self, processor: "Processor") -> None:
+    def run_parametric(self, processor: "Processor") -> t.Tuple:
         """TBW."""
 
         for step in self.enabled_steps:  # type: ParameterValues
@@ -231,7 +232,6 @@ class Parametric:
                 )
 
         result_list = []
-        datasets = []
         output_array_str = "detector.image.array"
 
         if self.with_dask:
@@ -245,42 +245,110 @@ class Parametric:
             out = []
 
         else:
-            for proc, index, parameter_dict in tqdm(self._processors_it(processor)):
-                result_proc = proc.run_pipeline()
-                # self.outputs.save_to_file(result_proc)
 
-                rows, columns = (result_proc.detector.geometry.row, result_proc.detector.geometry.row)
-                coords = {'x': range(columns), 'y': range(rows)}
+            if self.parametric_mode == ParametricMode.Embedded:
 
-                ds = xr.Dataset()
+                datasets = []
+                parameters = [[] for _ in range(len(self.enabled_steps))]
 
-                types = self._get_parameter_types()
+                for proc, index, parameter_dict in tqdm(self._processors_it(processor)):
+                    result_proc = proc.run_pipeline()
+                    # self.outputs.save_to_file(result_proc)
 
-                if self.parametric_mode == ParametricMode.Embedded:
+                    rows, columns = (result_proc.detector.geometry.row, result_proc.detector.geometry.row)
+                    coordinates = {'x': range(columns), 'y': range(rows)}
 
-                    da = xr.DataArray(result_proc.detector.image.array, dims=['y', 'x'], coords=coords)
+                    types = self._get_parameter_types()
 
-                    for i, coordinate in enumerate(parameter_dict.keys()):  # type: str
+                    ds = xr.Dataset()
+                    da = xr.DataArray(result_proc.detector.image.array, dims=['y', 'x'], coords=coordinates)
 
+                    for i, coordinate in enumerate(parameter_dict.keys()):
+
+                        #  appending to dataset of parameters
+                        parameter_ds = xr.Dataset()
+                        parameter = xr.DataArray(parameter_dict[coordinate], coords={short(_id(coordinate)): index[i]})
+                        parameter = parameter.expand_dims(dim=short(_id(coordinate)))
+                        parameter_ds[short(coordinate)] = parameter
+                        parameters[i].append(parameter_ds)
+
+                        #  assigning the right coordinates based on type
                         if types[coordinate] == ParameterType.Simple:
-                            da.assign_coords(coords={short(coordinate): parameter_dict[coordinate]})
-                            da.expand_dims(dim=short(coordinate))
+                            da = da.assign_coords(coords={short(coordinate): parameter_dict[coordinate]})
+                            da = da.expand_dims(dim=short(coordinate))
+
                         elif types[coordinate] == ParameterType.Multi:
-                            da.assign_coords({coordinate: parameter_dict[coordinate]})
-                            da_c = xr.DataArray(parameter_dict[coordinate], coords={_id(coordinate): index[i]})
-                            ds[coordinate] = da_c
+                            da = da.assign_coords({short(_id(coordinate)): index[i]})
+                            da = da.expand_dims(dim=short(_id(coordinate)))
+
                         else:
                             raise NotImplementedError
 
                     ds['image'] = da
-
-                    #coords.update(parameter_dict)
-
                     datasets.append(ds)
 
-            #out = xr.combine_by_coords(datasets)
+                final_parameters = [xr.combine_by_coords(p) for p in parameters]
+                final_parameters_merged = xr.merge(final_parameters)
 
-        return datasets
+                out = xr.combine_by_coords(datasets)
+                return out, final_parameters_merged
+
+            # elif self.parametric_mode == ParametricMode.Sequential:
+            #
+            #     datasets = {}
+            #     for proc, index, parameter_dict in tqdm(self._processors_it(processor)):
+            #         print(proc, index, parameter_dict)
+            #
+            #         coordinate = str(parameter_dict.keys()[0])
+            #
+            #         if index == 0:
+            #             datasets.update({short(coordinate): []})
+            #
+            #         coordinates = {'x': range(columns), 'y': range(rows), coordinate: parameter_dict[coordinate]}
+
+
+                #     result_proc = proc.run_pipeline()
+                #     # self.outputs.save_to_file(result_proc)
+                #
+                #     rows, columns = (result_proc.detector.geometry.row, result_proc.detector.geometry.row)
+                #     coords = {'x': range(columns), 'y': range(rows)}
+                #
+                #     types = self._get_parameter_types()
+                #
+                #     ds = xr.Dataset()
+                #     da = xr.DataArray(result_proc.detector.image.array, dims=['y', 'x'], coords=coords)
+                #
+                #     for i, coordinate in enumerate(parameter_dict.keys()):
+                #
+                #         #  appending to dataset of parameters
+                #         parameter_ds = xr.Dataset()
+                #         parameter = xr.DataArray(parameter_dict[coordinate], coords={short(_id(coordinate)): index[i]})
+                #         parameter = parameter.expand_dims(dim=short(_id(coordinate)))
+                #         parameter_ds[short(coordinate)] = parameter
+                #         parameters[i].append(parameter_ds)
+                #
+                #         #  assigning the right coordinates based on type
+                #         if types[coordinate] == ParameterType.Simple:
+                #
+                #             da = da.assign_coords(coords={short(coordinate): parameter_dict[coordinate]})
+                #             da = da.expand_dims(dim=short(coordinate))
+                #
+                #         elif types[coordinate] == ParameterType.Multi:
+                #
+                #             da = da.assign_coords({short(_id(coordinate)): index[i]})
+                #             da = da.expand_dims(dim=short(_id(coordinate)))
+                #
+                #         else:
+                #             raise NotImplementedError
+                #
+                #     ds['image'] = da
+                #     datasets.append(ds)
+                #
+                # final_parameters = [xr.combine_by_coords(p) for p in parameters]
+                # final_parameters_merged = xr.merge(final_parameters)
+                #
+                # out = xr.combine_by_coords(datasets)
+                # return out, final_parameters_merged
 
         # processors_it = self.collect(processor)  # type: t.Iterator[Processor]
         #

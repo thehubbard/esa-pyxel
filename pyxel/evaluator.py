@@ -105,7 +105,7 @@ def eval_entry(
     :param value:
     :return:
     """
-    assert isinstance(value, (str, Number, np.ndarray))
+    assert isinstance(value, (str, Number, list, np.ndarray))
 
     if isinstance(value, str):
         try:
