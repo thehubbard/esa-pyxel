@@ -8,6 +8,16 @@ version 0.10 / UNRELEASED-2021-MM-DD
 Core
 ~~~~
 
+Documentation
+~~~~~~~~~~~~~
+
+
+version 0.9.1 / 2021-05-17
+--------------------------
+
+Core
+~~~~
+
 * Add missing packages when running 'pyxel.show_versions().
   (See `!193 <https://gitlab.com/esa/pyxel/-/merge_requests/193>`_).
 * Fix issues with 'fsspec' version 0.9.
