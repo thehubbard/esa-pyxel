@@ -78,16 +78,14 @@ def test_pipeline_parametric_without_init_photon(mode: ParametricMode, expected)
     pipeline = cfg.pipeline
     assert isinstance(pipeline, DetectionPipeline)
 
-    processor = Processor(
-        detector=detector, pipeline=pipeline
-    )  # type: pyxel.pipelines.processor.Processor
-    result = parametric.debug(processor)
+    processor = Processor(detector=detector, pipeline=pipeline)
+    result = parametric.debug_parameters(processor)
     assert result == expected
 
     processor_generator = parametric._processors_it(processor=processor)
     assert isinstance(processor_generator, abc.Generator)
 
-    for _processor, _, _ in processor_generator:
-        assert isinstance(_processor, Processor)
+    for proc, _, _ in processor_generator:
+        assert isinstance(proc, Processor)
 
-        _processor.run_pipeline()
+        proc.run_pipeline()
