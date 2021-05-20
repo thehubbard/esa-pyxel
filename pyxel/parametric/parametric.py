@@ -196,7 +196,6 @@ class Parametric:
         else:
             raise NotImplementedError
 
-
     def _processors_it(
         self, processor: "Processor"
     ) -> t.Generator[

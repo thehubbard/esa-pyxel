@@ -26,7 +26,7 @@ expected_sequential = [
     (5, [("level", 100), ("initial_energy", 300)]),
 ]
 
-expected_embedded = [
+expected_product = [
     (0, [("level", 10), ("initial_energy", 100)]),
     (1, [("level", 10), ("initial_energy", 200)]),
     (2, [("level", 10), ("initial_energy", 300)]),
@@ -45,7 +45,7 @@ expected_embedded = [
     [
         # ('single', expected_single),
         (ParametricMode.Sequential, expected_sequential),
-        (ParametricMode.Embedded, expected_embedded),
+        (ParametricMode.Product, expected_product),
     ],
 )
 def test_pipeline_parametric_without_init_photon(mode: ParametricMode, expected):
