@@ -37,7 +37,6 @@ if t.TYPE_CHECKING:
         CalibrationOutputs,
         DynamicOutputs,
         ParametricOutputs,
-        Result,
         SingleOutputs,
     )
 

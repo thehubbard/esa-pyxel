@@ -8,8 +8,8 @@
 """TBW."""
 import typing as t
 from collections import abc
-from numbers import Number
 from enum import Enum
+from numbers import Number
 
 from typing_extensions import Literal
 

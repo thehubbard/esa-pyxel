@@ -7,24 +7,22 @@
 
 """TBW."""
 import itertools
-import logging
+import operator
+
+# import logging
 import typing as t
 from copy import deepcopy
 from enum import Enum
-from tqdm.auto import tqdm
-from dask import delayed
-import dask
-from pyxel.inputs_outputs.loader import load_table
-from typing_extensions import Literal
-import xarray as xr
-import operator
-from pyxel.parametric.parameter_values import ParameterType
-from collections import namedtuple
 
 import numpy as np
+import xarray as xr
+from dask import delayed
+from tqdm.auto import tqdm
+from typing_extensions import Literal
 
-from pyxel.parametric.parameter_values import ParameterValues
-from pyxel.state import get_obj_att, get_value
+# import dask
+from pyxel.inputs_outputs.loader import load_table
+from pyxel.parametric.parameter_values import ParameterType, ParameterValues
 
 if t.TYPE_CHECKING:
     from ..inputs_outputs import ParametricOutputs
@@ -45,6 +43,12 @@ class ResultType(Enum):
     Image = "image"
     Signal = "signal"
     Pixel = "pixel"
+
+
+class Result(t.NamedTuple):
+    dataset: t.Union[xr.Dataset, t.Dict[str, xr.Dataset]]
+    parameters: xr.Dataset
+    logs: xr.Dataset
 
 
 # TODO: Use `Enum` for `parametric_mode` ?
@@ -69,7 +73,7 @@ class Parametric:
         if column_range:
             self.columns = slice(*column_range)
         self.with_dask = with_dask
-        self.parameter_types = {}
+        self.parameter_types = {}  # type: dict
 
     def __repr__(self):
         cls_name = self.__class__.__name__  # type: str
@@ -87,7 +91,12 @@ class Parametric:
         :return:
         """
         # TODO: is self.data really needed
-        result = load_table(self.file).to_numpy()[:, self.columns]  # type: np.ndarray
+        if self.file is not None:
+            result = load_table(self.file).to_numpy()[
+                :, self.columns
+            ]  # type: np.ndarray
+        else:
+            raise ValueError("File for parallel parametric mode not specified!")
         self.data = result
         for index, data_array in enumerate(self.data):
             i = 0
@@ -140,7 +149,7 @@ class Parametric:
 
     def _embedded_parameters(
         self,
-    ) -> t.Generator[t.Tuple[t.Tuple[int], dict], None, None]:
+    ) -> t.Generator[t.Tuple[t.Tuple, t.Dict[str, t.Any]], None, None]:
         """TBW.
 
         :param processor:
@@ -165,10 +174,14 @@ class Parametric:
 
         elif self.parametric_mode == ParametricMode.Parallel:
             return self._parallel_parameters
+        else:
+            raise NotImplementedError
 
     def _processors_it(
         self, processor: "Processor"
-    ) -> t.Generator[t.Tuple["Processor", int, t.Tuple[int], dict], None, None]:
+    ) -> t.Generator[
+        t.Tuple["Processor", t.Union[int, t.Tuple[int]], t.Dict], None, None
+    ]:
 
         parameter_it = self._parameter_it()
 
@@ -203,12 +216,13 @@ class Parametric:
         self, processor: "Processor"
     ) -> t.Tuple[t.List["Processor"], xr.Dataset]:
         processors = []
-        logs = []
+        logs = []  # type: t.List
         processor_id = 0
         for proc, index, parameter_dict in tqdm(self._processors_it(processor)):
-            logs = log_parameters(
-                processor_id=processor_id, log=logs, parameter_dict=parameter_dict
+            log = log_parameters(
+                processor_id=processor_id, parameter_dict=parameter_dict
             )
+            logs.append(log)
             result_proc = proc.run_pipeline()
             processors.append(result_proc)
             processor_id += 1
@@ -245,31 +259,34 @@ class Parametric:
                     "do not use '_' character in 'values' field"
                 )
 
-    def run_parametric(self, processor: "Processor") -> t.NamedTuple:
+    def run_parametric(self, processor: "Processor") -> Result:
         """TBW."""
 
         self._check_steps(processor)
 
-        Result = namedtuple("Result", ["dataset", "parameters", "logs"])
         types = self._get_parameter_types()
 
         if self.with_dask:
 
-            delayed_processor_list = self._delayed_processors(processor)
-            result_list = []
+            raise NotImplementedError("Parametric with Dask not implemented yet.")
 
-            for proc in delayed_processor_list:
-                result_proc = delayed(proc.run_pipeline())
-                result_list.append(result_proc)
-
-            out = []
+            # delayed_processor_list = self._delayed_processors(processor)
+            # result_list = []
+            #
+            # for proc in delayed_processor_list:
+            #     result_proc = delayed(proc.run_pipeline())
+            #     result_list.append(result_proc)
+            #
+            # out = []
 
         else:
 
             if self.parametric_mode == ParametricMode.Embedded:
 
-                datasets = []
-                parameters = [[] for _ in range(len(self.enabled_steps))]
+                dataset_list = []
+                parameters = [
+                    [] for _ in range(len(self.enabled_steps))
+                ]  # type: t.List[t.List[xr.Dataset]]
                 logs = []
 
                 for processor_id, (proc, indices, parameter_dict) in enumerate(
@@ -298,21 +315,21 @@ class Parametric:
                         indices=indices,
                         types=types,
                     )
-                    datasets.append(ds)
+                    dataset_list.append(ds)
 
                 final_parameters_list = [xr.combine_by_coords(p) for p in parameters]
                 final_parameters_merged = xr.merge(final_parameters_list)
                 final_logs = xr.combine_by_coords(logs)
 
-                out = xr.combine_by_coords(datasets)
+                out = xr.combine_by_coords(dataset_list)
 
                 return Result(
-                    out, final_parameters_merged, final_logs
-                )  # type: t.NamedTuple
+                    dataset=out, parameters=final_parameters_merged, logs=final_logs
+                )
 
             elif self.parametric_mode == ParametricMode.Sequential:
 
-                datasets = {}
+                dataset_dict = {}  # type: dict
                 parameters = [[] for _ in range(len(self.enabled_steps))]
                 logs = []
 
@@ -329,7 +346,7 @@ class Parametric:
 
                     coordinate = str(list(parameter_dict)[0])
                     if index == 0:
-                        datasets.update({short(coordinate): []})
+                        dataset_dict.update({short(coordinate): []})
                         step_counter += 1
 
                     result_proc = proc.run_pipeline()
@@ -348,22 +365,25 @@ class Parametric:
                         coordinate=coordinate,
                         types=types,
                     )
-                    datasets[short(coordinate)].append(ds)
+                    dataset_dict[short(coordinate)].append(ds)
 
                 final_logs = xr.combine_by_coords(logs)
                 final_datasets = {
-                    key: xr.combine_by_coords(value) for key, value in datasets.items()
+                    key: xr.combine_by_coords(value)
+                    for key, value in dataset_dict.items()
                 }
                 final_parameters_list = [xr.combine_by_coords(p) for p in parameters]
                 final_parameters_merged = xr.merge(final_parameters_list)
 
                 return Result(
-                    final_datasets, final_parameters_merged, final_logs
-                )  # type: t.NamedTuple
+                    dataset=final_datasets,
+                    parameters=final_parameters_merged,
+                    logs=final_logs,
+                )
 
             elif self.parametric_mode == ParametricMode.Parallel:
 
-                datasets = []
+                dataset_list = []
                 logs = []
 
                 for proc, index, parameter_dict in tqdm(self._processors_it(processor)):
@@ -376,15 +396,18 @@ class Parametric:
                     result_proc = proc.run_pipeline()
 
                     ds = _parallel_dataset(processor=result_proc, index=index)
-                    datasets.append(ds)
+                    dataset_list.append(ds)
 
-                final_ds = xr.combine_by_coords(datasets)
+                final_ds = xr.combine_by_coords(dataset_list)
                 final_log = xr.combine_by_coords(logs)
                 final_parameters = final_log  # parameter dataset same as logs
 
                 return Result(
-                    final_ds, final_parameters, final_log
-                )  # type: t.NamedTuple
+                    dataset=final_ds, parameters=final_parameters, logs=final_log
+                )
+
+            else:
+                raise ValueError("Parametric mode not specified.")
 
 
 def create_new_processor(processor: "Processor", parameter_dict: dict) -> "Processor":
@@ -405,7 +428,7 @@ def short(s: str) -> str:
     return s.split(".")[-1]
 
 
-def log_parameters(processor_id: int, parameter_dict: dict) -> t.List[xr.Dataset]:
+def log_parameters(processor_id: int, parameter_dict: dict) -> xr.Dataset:
     """
 
     Parameters
@@ -426,7 +449,9 @@ def log_parameters(processor_id: int, parameter_dict: dict) -> t.List[xr.Dataset
     return out
 
 
-def parameter_to_dataset(parameter_dict: dict, index: int, coordinate: str):
+def parameter_to_dataset(
+    parameter_dict: dict, index: int, coordinate: str
+) -> xr.Dataset:
     parameter_ds = xr.Dataset()
     parameter = xr.DataArray(
         parameter_dict[coordinate], coords={short(_id(coordinate)): index}
@@ -457,7 +482,7 @@ def _parallel_dataset(processor: "Processor", index: int) -> xr.Dataset:
         da = xr.DataArray(
             operator.attrgetter(array)(processor),
             dims=["y", "x"],
-            coords=coordinates,
+            coords=coordinates,  # type: ignore
         )
         da = da.assign_coords({"id": index})
         da = da.expand_dims(dim="id")
@@ -493,7 +518,7 @@ def _sequential_dataset(
         da = xr.DataArray(
             operator.attrgetter(array)(processor),
             dims=["y", "x"],
-            coords=coordinates,
+            coords=coordinates,  # type: ignore
         )
 
         #  assigning the right coordinates based on type
@@ -535,7 +560,7 @@ def _embedded_dataset(
         da = xr.DataArray(
             operator.attrgetter(array)(processor),
             dims=["y", "x"],
-            coords=coordinates,
+            coords=coordinates,  # type: ignore
         )
 
         for i, coordinate in enumerate(parameter_dict):
