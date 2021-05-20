@@ -84,10 +84,10 @@ def test_pipeline_parametric_without_init_photon(mode: ParametricMode, expected)
     result = parametric.debug(processor)
     assert result == expected
 
-    configs = parametric.collect(processor)
-    assert isinstance(configs, abc.Iterator)
+    processor_generator = parametric._processors_it(processor=processor)
+    assert isinstance(processor_generator, abc.Generator)
 
-    for config in configs:
-        assert isinstance(config, Processor)
+    for _processor, _, _ in processor_generator:
+        assert isinstance(_processor, Processor)
 
-        config.run_pipeline()
+        _processor.run_pipeline()

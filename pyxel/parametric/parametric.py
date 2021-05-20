@@ -9,7 +9,7 @@
 import itertools
 import operator
 
-# import logging
+import logging
 import typing as t
 from copy import deepcopy
 from enum import Enum
@@ -23,6 +23,7 @@ from typing_extensions import Literal
 # import dask
 from pyxel.inputs_outputs.loader import load_table
 from pyxel.parametric.parameter_values import ParameterType, ParameterValues
+from pyxel.state import get_obj_att, get_value
 
 if t.TYPE_CHECKING:
     from ..inputs_outputs import ParametricOutputs
@@ -409,6 +410,20 @@ class Parametric:
             else:
                 raise ValueError("Parametric mode not specified.")
 
+    def debug(self, processor: "Processor") -> list:
+        """TBW."""
+        result = []
+        processor_generator = self._processors_it(processor=processor)
+        for i, (_processor, _, _) in enumerate(processor_generator):
+            values = []
+            for step in self.enabled_steps:
+                _, att = get_obj_att(_processor, step.key)
+                value = get_value(_processor, step.key)
+                values.append((att, value))
+            logging.debug("%d: %r" % (i, values))
+            result.append((i, values))
+        return result
+
 
 def create_new_processor(processor: "Processor", parameter_dict: dict) -> "Processor":
 
@@ -620,16 +635,4 @@ def _embedded_dataset(
     # # if parametric_outputs.parametric_plot is not None:
     # #    parametric_outputs.plotting_func(plot_array)
 
-    # def debug(self, processor: "Processor") -> list:
-    #     """TBW."""
-    #     result = []
-    #     configs = self.collect(processor)
-    #     for i, config in enumerate(configs):
-    #         values = []
-    #         for step in self.enabled_steps:
-    #             _, att = get_obj_att(config, step.key)
-    #             value = get_value(config, step.key)
-    #             values.append((att, value))
-    #         logging.debug("%d: %r" % (i, values))
-    #         result.append((i, values))
-    #     return result
+
