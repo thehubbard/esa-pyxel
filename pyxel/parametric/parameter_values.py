@@ -45,16 +45,22 @@ class ParameterValues:
             self.type = ParameterType("multi")
         elif isinstance(values, str) and "numpy" in values:
             self.type = ParameterType("simple")
-        elif isinstance(values, abc.Sequence) and any([(el == "_" or isinstance(el, abc.Sequence)) for el in values]):
+        elif isinstance(values, abc.Sequence) and any(
+            [(el == "_" or isinstance(el, abc.Sequence)) for el in values]
+        ):
             self.type = ParameterType("multi")
-        elif isinstance(values, abc.Sequence) and all([isinstance(el, (Number, str)) for el in values]):
+        elif isinstance(values, abc.Sequence) and all(
+            [isinstance(el, (Number, str)) for el in values]
+        ):
             self.type = ParameterType("simple")
         else:
             raise ValueError("Parameter values cannot be initiated with those values.")
 
         # unique identifier to the step. example: 'detector.geometry.row'
         self._key = key  # type: str
-        self._values = values # type: t.Union[Literal["_"], t.Sequence[Literal["_"]], t.Sequence[Number], t.Sequence[str]]
+        self._values = (
+            values
+        )  # type: t.Union[Literal["_"], t.Sequence[Literal["_"]], t.Sequence[Number], t.Sequence[str]]
 
         # short  name identifier: 'row'
         self._short_name = key.split(".")[-1]
@@ -64,7 +70,6 @@ class ParameterValues:
         self._boundaries = boundaries  # type: t.Optional[t.Tuple[float, float]]
 
         self._current = None  # type: t.Optional[t.Union[Literal['_'], Number, str]]
-
 
     def __repr__(self) -> str:
         cls_name = self.__class__.__name__  # type: str

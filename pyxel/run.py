@@ -104,7 +104,6 @@ def parametric_mode(
     parametric.run_parametric(processor=processor)
 
 
-
 def dynamic_mode(
     dynamic: "Dynamic",
     detector: t.Union["CCD", "CMOS"],

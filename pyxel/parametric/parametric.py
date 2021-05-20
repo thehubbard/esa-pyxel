@@ -31,51 +31,13 @@ if t.TYPE_CHECKING:
     from ..pipelines import Processor
 
 
-def create_new_processor(processor: "Processor", parameter_dict: dict) -> "Processor":
-
-    new_processor = deepcopy(processor)
-
-    for key in parameter_dict.keys():
-        new_processor.set(key=key, value=parameter_dict[key])
-
-    return new_processor
-
-
-def _id(s: str):
-    return s+"_id"
-
-
-def short(s: str):
-    return s.split('.')[-1]
-
-
-def log_parameters(processor_id: int, parameter_dict: dict) -> t.List[xr.Dataset]:
-    """
-
-    Parameters
-    ----------
-    processor_id
-    parameter_dict
-
-    Returns
-    -------
-
-    """
-    out = xr.Dataset()
-    for key, value in parameter_dict.items():
-        da = xr.DataArray(value)
-        da = da.assign_coords(coords={"id": processor_id})
-        da = da.expand_dims(dim="id")
-        out[short(key)] = da
-    return out
-
-
 class ParametricMode(Enum):
     """TBW."""
 
     Embedded = "embedded"
     Sequential = "sequential"
     Parallel = "parallel"
+
 
 class ResultType(Enum):
     """TBW."""
@@ -118,7 +80,7 @@ class Parametric:
         """TBW."""
         return [step for step in self._parameters if step.enabled]
 
-    def _parallel_parameters(self) -> "t.Iterator[Processor]":
+    def _parallel_parameters(self) -> t.Generator[t.Tuple[int, dict], None, None]:
         """TBW.
 
         :param processor:
@@ -158,7 +120,7 @@ class Parametric:
                         )
             yield index, parameter_dict
 
-    def _sequential_parameters(self) -> "t.Iterator[t.Tuple[int, dict]]":
+    def _sequential_parameters(self) -> t.Generator[t.Tuple[int, dict], None, None]:
         """TBW.
 
         :param processor:
@@ -176,7 +138,9 @@ class Parametric:
             step_ranges.append(range(len(step)))
         return itertools.product(*step_ranges)
 
-    def _embedded_parameters(self) -> "t.Iterator[dict]":
+    def _embedded_parameters(
+        self,
+    ) -> t.Generator[t.Tuple[t.Tuple[int], dict], None, None]:
         """TBW.
 
         :param processor:
@@ -184,7 +148,9 @@ class Parametric:
         """
         all_steps = self.enabled_steps
         keys = [step.key for step in self.enabled_steps]
-        for indices, params in zip(self._embedded_indices(), itertools.product(*all_steps)):
+        for indices, params in zip(
+            self._embedded_indices(), itertools.product(*all_steps)
+        ):
             parameters = {}
             for key, value in zip(keys, params):
                 parameters.update({key: value})
@@ -200,15 +166,19 @@ class Parametric:
         elif self.parametric_mode == ParametricMode.Parallel:
             return self._parallel_parameters
 
-    def _processors_it(self, processor: "Processor"):
+    def _processors_it(
+        self, processor: "Processor"
+    ) -> t.Generator[t.Tuple["Processor", int, t.Tuple[int], dict], None, None]:
 
         parameter_it = self._parameter_it()
 
         for index, parameter_dict in parameter_it():
-            new_processor = create_new_processor(processor=processor, parameter_dict=parameter_dict)
+            new_processor = create_new_processor(
+                processor=processor, parameter_dict=parameter_dict
+            )
             yield new_processor, index, parameter_dict
 
-    def _delayed_processors(self, processor: "Processor"):
+    def _delayed_processors(self, processor: "Processor") -> t.List:
 
         processors = []
         delayed_processor = delayed(processor)
@@ -216,31 +186,36 @@ class Parametric:
 
         for index, parameter_dict in parameter_it():
             delayed_parameter_dict = delayed(parameter_dict)
-            processors.append(delayed(create_new_processor)(processor=delayed_processor, parameter_dict=delayed_parameter_dict))
+            processors.append(
+                delayed(create_new_processor)(
+                    processor=delayed_processor, parameter_dict=delayed_parameter_dict
+                )
+            )
 
         return processors
 
-    def _get_parameter_types(self):
+    def _get_parameter_types(self) -> dict:
         for step in self.enabled_steps:
             self.parameter_types.update({step.key: step.type})
         return self.parameter_types
 
-
-    def debug_mode(self, processor: "Processor") -> t.Tuple[t.List["Processor"], xr.Dataset]:
+    def debug_mode(
+        self, processor: "Processor"
+    ) -> t.Tuple[t.List["Processor"], xr.Dataset]:
         processors = []
         logs = []
         processor_id = 0
         for proc, index, parameter_dict in tqdm(self._processors_it(processor)):
-            logs = log_parameters(processor_id=processor_id, log=logs, parameter_dict=parameter_dict)
+            logs = log_parameters(
+                processor_id=processor_id, log=logs, parameter_dict=parameter_dict
+            )
             result_proc = proc.run_pipeline()
             processors.append(result_proc)
             processor_id += 1
         final_logs = xr.combine_by_coords(logs)
         return processors, final_logs
 
-
-    def run_parametric(self, processor: "Processor") -> t.Tuple:
-        """TBW."""
+    def _check_steps(self, processor: "Processor") -> None:
 
         for step in self.enabled_steps:  # type: ParameterValues
 
@@ -270,14 +245,18 @@ class Parametric:
                     "do not use '_' character in 'values' field"
                 )
 
-        result_list = []
-        output_array_str = "detector.image.array"
+    def run_parametric(self, processor: "Processor") -> t.NamedTuple:
+        """TBW."""
+
+        self._check_steps(processor)
 
         Result = namedtuple("Result", ["dataset", "parameters", "logs"])
+        types = self._get_parameter_types()
 
         if self.with_dask:
 
             delayed_processor_list = self._delayed_processors(processor)
+            result_list = []
 
             for proc in delayed_processor_list:
                 result_proc = delayed(proc.run_pipeline())
@@ -293,55 +272,43 @@ class Parametric:
                 parameters = [[] for _ in range(len(self.enabled_steps))]
                 logs = []
 
-                processor_id = 0
-
-                for proc, index, parameter_dict in tqdm(self._processors_it(processor)):
-                    result_proc = proc.run_pipeline()
-                    # self.outputs.save_to_file(result_proc)
-
-                    log = log_parameters(processor_id=processor_id, parameter_dict=parameter_dict)
+                for processor_id, (proc, indices, parameter_dict) in enumerate(
+                    tqdm(self._processors_it(processor))
+                ):
+                    log = log_parameters(
+                        processor_id=processor_id, parameter_dict=parameter_dict
+                    )
                     logs.append(log)
 
-                    rows, columns = (result_proc.detector.geometry.row, result_proc.detector.geometry.row)
-                    coordinates = {'x': range(columns), 'y': range(rows)}
+                    result_proc = proc.run_pipeline()
 
-                    types = self._get_parameter_types()
-
-                    ds = xr.Dataset()
-                    da = xr.DataArray(result_proc.detector.image.array, dims=['y', 'x'], coords=coordinates)
-
-                    for i, coordinate in enumerate(parameter_dict.keys()):
+                    for i, coordinate in enumerate(parameter_dict):
 
                         #  appending to dataset of parameters
-                        parameter_ds = xr.Dataset()
-                        parameter = xr.DataArray(parameter_dict[coordinate], coords={short(_id(coordinate)): index[i]})
-                        parameter = parameter.expand_dims(dim=short(_id(coordinate)))
-                        parameter_ds[short(coordinate)] = parameter
+                        parameter_ds = parameter_to_dataset(
+                            parameter_dict=parameter_dict,
+                            index=indices[i],
+                            coordinate=coordinate,
+                        )
                         parameters[i].append(parameter_ds)
 
-                        #  assigning the right coordinates based on type
-                        if types[coordinate] == ParameterType.Simple:
-                            da = da.assign_coords(coords={short(coordinate): parameter_dict[coordinate]})
-                            da = da.expand_dims(dim=short(coordinate))
-
-                        elif types[coordinate] == ParameterType.Multi:
-                            da = da.assign_coords({short(_id(coordinate)): index[i]})
-                            da = da.expand_dims(dim=short(_id(coordinate)))
-
-                        else:
-                            raise NotImplementedError
-
-                    processor_id += 1
-
-                    ds['image'] = da
+                    ds = _embedded_dataset(
+                        processor=result_proc,
+                        parameter_dict=parameter_dict,
+                        indices=indices,
+                        types=types,
+                    )
                     datasets.append(ds)
 
-                final_parameters = [xr.combine_by_coords(p) for p in parameters]
-                final_parameters_merged = xr.merge(final_parameters)
+                final_parameters_list = [xr.combine_by_coords(p) for p in parameters]
+                final_parameters_merged = xr.merge(final_parameters_list)
                 final_logs = xr.combine_by_coords(logs)
 
                 out = xr.combine_by_coords(datasets)
-                return Result(out, final_parameters_merged, final_logs)  # type: t.NamedTuple
+
+                return Result(
+                    out, final_parameters_merged, final_logs
+                )  # type: t.NamedTuple
 
             elif self.parametric_mode == ParametricMode.Sequential:
 
@@ -349,55 +316,50 @@ class Parametric:
                 parameters = [[] for _ in range(len(self.enabled_steps))]
                 logs = []
 
-                processor_id = 0
                 step_counter = -1
 
-                for proc, index, parameter_dict in tqdm(self._processors_it(processor)):
+                for processor_id, (proc, index, parameter_dict) in enumerate(
+                    tqdm(self._processors_it(processor))
+                ):
 
-                    types = self._get_parameter_types()
-
-                    log = log_parameters(processor_id=processor_id, parameter_dict=parameter_dict)
+                    log = log_parameters(
+                        processor_id=processor_id, parameter_dict=parameter_dict
+                    )
                     logs.append(log)
 
-                    coordinate = str(list(parameter_dict.keys())[0])
+                    coordinate = str(list(parameter_dict)[0])
                     if index == 0:
                         datasets.update({short(coordinate): []})
                         step_counter += 1
 
                     result_proc = proc.run_pipeline()
-                    rows, columns = (result_proc.detector.geometry.row, result_proc.detector.geometry.row)
-                    coordinates = {'x': range(columns), 'y': range(rows)}
 
-                    ds = xr.Dataset()
-                    da = xr.DataArray(result_proc.detector.image.array, dims=['y', 'x'], coords=coordinates)
-
-                    parameter_ds = xr.Dataset()
-                    parameter = xr.DataArray(parameter_dict[coordinate], coords={short(_id(coordinate)): index})
-                    parameter = parameter.expand_dims(dim=short(_id(coordinate)))
-                    parameter_ds[short(coordinate)] = parameter
+                    parameter_ds = parameter_to_dataset(
+                        parameter_dict=parameter_dict,
+                        index=index,
+                        coordinate=coordinate,
+                    )
                     parameters[step_counter].append(parameter_ds)
 
-
-                    #  assigning the right coordinates based on type
-                    if types[coordinate] == ParameterType.Simple:
-                        da = da.assign_coords(coords={short(coordinate): parameter_dict[coordinate]})
-                        da = da.expand_dims(dim=short(coordinate))
-
-                    elif types[coordinate] == ParameterType.Multi:
-                        da = da.assign_coords({short(_id(coordinate)): index})
-                        da = da.expand_dims(dim=short(_id(coordinate)))
-
-                    processor_id += 1
-
-                    ds['image'] = da
+                    ds = _sequential_dataset(
+                        processor=result_proc,
+                        parameter_dict=parameter_dict,
+                        index=index,
+                        coordinate=coordinate,
+                        types=types,
+                    )
                     datasets[short(coordinate)].append(ds)
 
                 final_logs = xr.combine_by_coords(logs)
-                final_datasets = {key: xr.combine_by_coords(value) for key, value in datasets.items()}
-                final_parameters = [xr.combine_by_coords(p) for p in parameters]
-                final_parameters_merged = xr.merge(final_parameters)
+                final_datasets = {
+                    key: xr.combine_by_coords(value) for key, value in datasets.items()
+                }
+                final_parameters_list = [xr.combine_by_coords(p) for p in parameters]
+                final_parameters_merged = xr.merge(final_parameters_list)
 
-                return Result(final_datasets, final_parameters_merged, final_logs)  # type: t.NamedTuple
+                return Result(
+                    final_datasets, final_parameters_merged, final_logs
+                )  # type: t.NamedTuple
 
             elif self.parametric_mode == ParametricMode.Parallel:
 
@@ -406,108 +368,232 @@ class Parametric:
 
                 for proc, index, parameter_dict in tqdm(self._processors_it(processor)):
 
-                    log = log_parameters(processor_id=index, parameter_dict=parameter_dict)
+                    log = log_parameters(
+                        processor_id=index, parameter_dict=parameter_dict
+                    )
+                    logs.append(log)
 
                     result_proc = proc.run_pipeline()
 
-                    rows, columns = (result_proc.detector.geometry.row, result_proc.detector.geometry.row)
-                    coordinates = {'x': range(columns), 'y': range(rows)}
-
-                    ds = xr.Dataset()
-                    da = xr.DataArray(result_proc.detector.image.array, dims=['y', 'x'], coords=coordinates)
-                    da = da.assign_coords({"id": index})
-                    da = da.expand_dims(dim="id")
-                    ds['image'] = da
+                    ds = _parallel_dataset(processor=result_proc, index=index)
                     datasets.append(ds)
-                    logs.append(log)
 
                 final_ds = xr.combine_by_coords(datasets)
-
                 final_log = xr.combine_by_coords(logs)
-                final_parameters = final_log
+                final_parameters = final_log  # parameter dataset same as logs
 
-                return Result(final_ds, final_parameters, final_log)  # type: t.NamedTuple
+                return Result(
+                    final_ds, final_parameters, final_log
+                )  # type: t.NamedTuple
 
 
-                #     result_proc = proc.run_pipeline()
-                #     # self.outputs.save_to_file(result_proc)
-                #
-                #     rows, columns = (result_proc.detector.geometry.row, result_proc.detector.geometry.row)
-                #     coords = {'x': range(columns), 'y': range(rows)}
-                #
-                #     types = self._get_parameter_types()
-                #
-                #     ds = xr.Dataset()
-                #     da = xr.DataArray(result_proc.detector.image.array, dims=['y', 'x'], coords=coords)
-                #
-                #     for i, coordinate in enumerate(parameter_dict.keys()):
-                #
-                #         #  appending to dataset of parameters
-                #         parameter_ds = xr.Dataset()
-                #         parameter = xr.DataArray(parameter_dict[coordinate], coords={short(_id(coordinate)): index[i]})
-                #         parameter = parameter.expand_dims(dim=short(_id(coordinate)))
-                #         parameter_ds[short(coordinate)] = parameter
-                #         parameters[i].append(parameter_ds)
-                #
-                #         #  assigning the right coordinates based on type
-                #         if types[coordinate] == ParameterType.Simple:
-                #
-                #             da = da.assign_coords(coords={short(coordinate): parameter_dict[coordinate]})
-                #             da = da.expand_dims(dim=short(coordinate))
-                #
-                #         elif types[coordinate] == ParameterType.Multi:
-                #
-                #             da = da.assign_coords({short(_id(coordinate)): index[i]})
-                #             da = da.expand_dims(dim=short(_id(coordinate)))
-                #
-                #         else:
-                #             raise NotImplementedError
-                #
-                #     ds['image'] = da
-                #     datasets.append(ds)
-                #
-                # final_parameters = [xr.combine_by_coords(p) for p in parameters]
-                # final_parameters_merged = xr.merge(final_parameters)
-                #
-                # out = xr.combine_by_coords(datasets)
-                # return out, final_parameters_merged
+def create_new_processor(processor: "Processor", parameter_dict: dict) -> "Processor":
 
-        # processors_it = self.collect(processor)  # type: t.Iterator[Processor]
-        #
-        # result_list = []  # type: t.List[Result]
-        # output_filenames = []  # type: t.List[t.Sequence[Path]]
-        #
-        # # Run all pipelines
-        # for proc in tqdm(processors_it):  # type: Processor
-        #
-        #     if not self.with_dask:
-        #         result_proc = proc.run_pipeline()  # type: Processor
-        #         result_val = self.outputs.extract_func(
-        #             processor=result_proc
-        #         )  # type: Result
-        #
-        #         # filenames = parametric_outputs.save_to_file(
-        #         #    processor=result_proc
-        #         # )  # type: t.Sequence[Path]
-        #
-        #     else:
-        #         result_proc = delayed(proc.run_pipeline)()
-        #         result_val = delayed(self.outputs.extract_func)(processor=result_proc)
-        #
-        #         # filenames = delayed(parametric_outputs.save_to_file)(processor=result_proc)
-        #
-        #     result_list.append(result_val)
-        #     # output_filenames.append(filenames)  # TODO: This is not used
-        #
-        # if not self.with_dask:
-        #     plot_array = self.outputs.merge_func(result_list)  # type: np.ndarray
-        # else:
-        #     array = delayed(self.outputs.merge_func)(result_list)
-        #     plot_array = dask.compute(array)
-        #
-        # # TODO: Plot with dask ?
-        # # if parametric_outputs.parametric_plot is not None:
-        # #    parametric_outputs.plotting_func(plot_array)
+    new_processor = deepcopy(processor)
+
+    for key in parameter_dict.keys():
+        new_processor.set(key=key, value=parameter_dict[key])
+
+    return new_processor
+
+
+def _id(s: str) -> str:
+    return s + "_id"
+
+
+def short(s: str) -> str:
+    return s.split(".")[-1]
+
+
+def log_parameters(processor_id: int, parameter_dict: dict) -> t.List[xr.Dataset]:
+    """
+
+    Parameters
+    ----------
+    processor_id
+    parameter_dict
+
+    Returns
+    -------
+
+    """
+    out = xr.Dataset()
+    for key, value in parameter_dict.items():
+        da = xr.DataArray(value)
+        da = da.assign_coords(coords={"id": processor_id})
+        da = da.expand_dims(dim="id")
+        out[short(key)] = da
+    return out
+
+
+def parameter_to_dataset(parameter_dict: dict, index: int, coordinate: str):
+    parameter_ds = xr.Dataset()
+    parameter = xr.DataArray(
+        parameter_dict[coordinate], coords={short(_id(coordinate)): index}
+    )
+    parameter = parameter.expand_dims(dim=short(_id(coordinate)))
+    parameter_ds[short(coordinate)] = parameter
+    return parameter_ds
+
+
+def _parallel_dataset(processor: "Processor", index: int) -> xr.Dataset:
+
+    rows, columns = (
+        processor.detector.geometry.row,
+        processor.detector.geometry.row,
+    )
+    coordinates = {"x": range(columns), "y": range(rows)}
+
+    arrays = {
+        "pixel": "detector.pixel.array",
+        "signal": "detector.signal.array",
+        "image": "detector.image.array",
+    }
+
+    ds = xr.Dataset()
+
+    for key, array in arrays.items():
+
+        da = xr.DataArray(
+            operator.attrgetter(array)(processor),
+            dims=["y", "x"],
+            coords=coordinates,
+        )
+        da = da.assign_coords({"id": index})
+        da = da.expand_dims(dim="id")
+        ds[key] = da
+
+    return ds
+
+
+def _sequential_dataset(
+    processor: "Processor",
+    parameter_dict: dict,
+    index: int,
+    coordinate: str,
+    types: dict,
+) -> xr.Dataset:
+
+    rows, columns = (
+        processor.detector.geometry.row,
+        processor.detector.geometry.row,
+    )
+    coordinates = {"x": range(columns), "y": range(rows)}
+
+    ds = xr.Dataset()
+
+    arrays = {
+        "pixel": "detector.pixel.array",
+        "signal": "detector.signal.array",
+        "image": "detector.image.array",
+    }
+
+    for key, array in arrays.items():
+
+        da = xr.DataArray(
+            operator.attrgetter(array)(processor),
+            dims=["y", "x"],
+            coords=coordinates,
+        )
+
+        #  assigning the right coordinates based on type
+        if types[coordinate] == ParameterType.Simple:
+            da = da.assign_coords(
+                coords={short(coordinate): parameter_dict[coordinate]}
+            )
+            da = da.expand_dims(dim=short(coordinate))
+
+        elif types[coordinate] == ParameterType.Multi:
+            da = da.assign_coords({short(_id(coordinate)): index})
+            da = da.expand_dims(dim=short(_id(coordinate)))
+
+        ds[key] = da
+
+    return ds
+
+
+def _embedded_dataset(
+    processor: "Processor", parameter_dict: dict, indices: t.Tuple[int], types: dict
+) -> xr.Dataset:
+
+    rows, columns = (
+        processor.detector.geometry.row,
+        processor.detector.geometry.row,
+    )
+    coordinates = {"x": range(columns), "y": range(rows)}
+
+    arrays = {
+        "pixel": "detector.pixel.array",
+        "signal": "detector.signal.array",
+        "image": "detector.image.array",
+    }
+
+    ds = xr.Dataset()
+
+    for key, array in arrays.items():
+
+        da = xr.DataArray(
+            operator.attrgetter(array)(processor),
+            dims=["y", "x"],
+            coords=coordinates,
+        )
+
+        for i, coordinate in enumerate(parameter_dict):
+
+            #  assigning the right coordinates based on type
+            if types[coordinate] == ParameterType.Simple:
+                da = da.assign_coords(
+                    coords={short(coordinate): parameter_dict[coordinate]}
+                )
+                da = da.expand_dims(dim=short(coordinate))
+
+            elif types[coordinate] == ParameterType.Multi:
+                da = da.assign_coords({short(_id(coordinate)): indices[i]})
+                da = da.expand_dims(dim=short(_id(coordinate)))
+
+            else:
+                raise NotImplementedError
+
+        ds[key] = da
+
+    return ds
+
+    # processors_it = self.collect(processor)  # type: t.Iterator[Processor]
+    #
+    # result_list = []  # type: t.List[Result]
+    # output_filenames = []  # type: t.List[t.Sequence[Path]]
+    #
+    # # Run all pipelines
+    # for proc in tqdm(processors_it):  # type: Processor
+    #
+    #     if not self.with_dask:
+    #         result_proc = proc.run_pipeline()  # type: Processor
+    #         result_val = self.outputs.extract_func(
+    #             processor=result_proc
+    #         )  # type: Result
+    #
+    #         # filenames = parametric_outputs.save_to_file(
+    #         #    processor=result_proc
+    #         # )  # type: t.Sequence[Path]
+    #
+    #     else:
+    #         result_proc = delayed(proc.run_pipeline)()
+    #         result_val = delayed(self.outputs.extract_func)(processor=result_proc)
+    #
+    #         # filenames = delayed(parametric_outputs.save_to_file)(processor=result_proc)
+    #
+    #     result_list.append(result_val)
+    #     # output_filenames.append(filenames)  # TODO: This is not used
+    #
+    # if not self.with_dask:
+    #     plot_array = self.outputs.merge_func(result_list)  # type: np.ndarray
+    # else:
+    #     array = delayed(self.outputs.merge_func)(result_list)
+    #     plot_array = dask.compute(array)
+    #
+    # # TODO: Plot with dask ?
+    # # if parametric_outputs.parametric_plot is not None:
+    # #    parametric_outputs.plotting_func(plot_array)
 
     # def debug(self, processor: "Processor") -> list:
     #     """TBW."""
