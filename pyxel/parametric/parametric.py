@@ -383,6 +383,8 @@ class Parametric:
                     # run the pipeline
                     result_proc = proc.run_pipeline()
 
+                    _ = self.outputs.save_to_file(processor=result_proc)
+
                     # save parameters with appropriate product mode indices
                     for i, coordinate in enumerate(parameter_dict):
                         parameter_ds = parameter_to_dataset(
@@ -429,6 +431,8 @@ class Parametric:
                     tqdm(self._processors_it(processor))
                 ):
                     # log parameters for this pipeline
+                    # TODO: somehow refactor logger so that default parameters
+                    #  from other steps are also logged in sequential mode
                     log = log_parameters(
                         processor_id=processor_id, parameter_dict=parameter_dict
                     )
@@ -443,6 +447,8 @@ class Parametric:
 
                     # run the pipeline
                     result_proc = proc.run_pipeline()
+
+                    _ = self.outputs.save_to_file(processor=result_proc)
 
                     # save sequential parameter with appropriate index
                     parameter_ds = parameter_to_dataset(
@@ -494,6 +500,8 @@ class Parametric:
 
                     # run the pipeline
                     result_proc = proc.run_pipeline()
+
+                    _ = self.outputs.save_to_file(processor=result_proc)
 
                     # save data for pipeline index
                     ds = _custom_dataset(processor=result_proc, index=index)
