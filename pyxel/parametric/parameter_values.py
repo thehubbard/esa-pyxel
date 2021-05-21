@@ -8,6 +8,7 @@
 """TBW."""
 import typing as t
 from collections import abc
+from enum import Enum
 from numbers import Number
 
 from typing_extensions import Literal
@@ -15,8 +16,17 @@ from typing_extensions import Literal
 from pyxel.evaluator import eval_range
 
 
-class ParameterValues:
+class ParameterType(Enum):
     """TBW."""
+
+    # one-dimensional, can be a dataset coordinate
+    Simple = "simple"
+    # multi-dimensional or loaded from a file in parallel mode, cannot be a dataset coordinate
+    Multi = "multi"
+
+
+class ParameterValues:
+    """Contains keys and values of parameters in a parametric step."""
 
     def __init__(
         self,
@@ -28,21 +38,32 @@ class ParameterValues:
         enabled: bool = True,
         logarithmic: bool = False,
     ):
-        # TODO: should these values be checked ?
-        assert values == "_" or (
-            isinstance(values, abc.Sequence)
-            and (
-                all([el == "_" for el in values])
-                or all([isinstance(el, str) for el in values])
-                or all([isinstance(el, Number) for el in values])
-            )
-        )
+
+        # TODO: maybe use numpy to check multi-dimensional input lists
+        # Check YAML input (not real values yet) and define parameter type
+        if values == "_":
+            self.type = ParameterType("multi")
+        elif isinstance(values, str) and "numpy" in values:
+            self.type = ParameterType("simple")
+        elif isinstance(values, abc.Sequence) and any(
+            [(el == "_" or isinstance(el, abc.Sequence)) for el in values]
+        ):
+            self.type = ParameterType("multi")
+        elif isinstance(values, abc.Sequence) and all(
+            [isinstance(el, (Number, str)) for el in values]
+        ):
+            self.type = ParameterType("simple")
+        else:
+            raise ValueError("Parameter values cannot be initiated with those values.")
 
         # unique identifier to the step. example: 'detector.geometry.row'
         self._key = key  # type: str
         self._values = (
             values
         )  # type: t.Union[Literal["_"], t.Sequence[Literal["_"]], t.Sequence[Number], t.Sequence[str]]
+
+        # short  name identifier: 'row'
+        self._short_name = key.split(".")[-1]
 
         self._enabled = enabled  # type: bool
         self._logarithmic = logarithmic  # type: bool
@@ -69,6 +90,11 @@ class ParameterValues:
     def key(self) -> str:
         """TBW."""
         return self._key
+
+    @property
+    def short_name(self) -> str:
+        """TBW."""
+        return self._short_name
 
     @property
     def values(

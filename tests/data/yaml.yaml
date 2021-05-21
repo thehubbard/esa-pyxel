@@ -15,7 +15,7 @@ parametric:
 
   outputs:
     output_folder: "tests/temp/outputs"
-    parametric_plot:
+#    parametric_plot:
 #      - key:
 #        values:
 #        enabled: false

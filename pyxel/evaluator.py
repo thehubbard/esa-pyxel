@@ -79,6 +79,9 @@ def eval_range(values: t.Union[str, t.Sequence]) -> t.Sequence:
                     "numpy data type is not a float or int: %r", values_array
                 )
                 raise NotImplementedError
+        # Preventing any problems with evaluating _ as a variable in outer scope.
+        elif values == "_":
+            values_lst = ["_"]
         else:
             obj = eval(values)
             values_lst = list(obj)
@@ -102,7 +105,7 @@ def eval_entry(
     :param value:
     :return:
     """
-    assert isinstance(value, (str, Number, np.ndarray))
+    assert isinstance(value, (str, Number, list, np.ndarray))
 
     if isinstance(value, str):
         try:

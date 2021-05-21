@@ -43,7 +43,7 @@ from .calibration_outputs import (
 )
 from .dynamic_outputs import DynamicOutputs
 from .outputs import PlotArguments
-from .parametric_outputs import ParametricOutputs, ParametricPlot
+from .parametric_outputs import ParametricOutputs  # , ParametricPlot
 from .single_outputs import SingleOutputs, SinglePlot
 
 
@@ -188,21 +188,21 @@ def to_dynamic(dct: dict) -> Dynamic:
     return Dynamic(**dct)
 
 
-def to_parametric_plot(dct: t.Optional[dict]) -> t.Optional[ParametricPlot]:
-    """Create a ParametricPlot class from a dictionary.
-
-    Parameters
-    ----------
-    dct
-
-    Returns
-    -------
-    ParametricPlot
-    """
-    if dct is None:
-        return None
-    dct.update({"plot_args": to_plot_arguments(dct["plot_args"])})
-    return ParametricPlot(**dct)
+# def to_parametric_plot(dct: t.Optional[dict]) -> t.Optional[ParametricPlot]:
+#     """Create a ParametricPlot class from a dictionary.
+#
+#     Parameters
+#     ----------
+#     dct
+#
+#     Returns
+#     -------
+#     ParametricPlot
+#     """
+#     if dct is None:
+#         return None
+#     dct.update({"plot_args": to_plot_arguments(dct["plot_args"])})
+#     return ParametricPlot(**dct)
 
 
 def to_parametric_outputs(dct: dict) -> ParametricOutputs:
@@ -216,7 +216,7 @@ def to_parametric_outputs(dct: dict) -> ParametricOutputs:
     -------
     ParametricOutputs
     """
-    dct.update({"parametric_plot": to_parametric_plot(dct["parametric_plot"])})
+    # dct.update({"parametric_plot": to_parametric_plot(dct["parametric_plot"])})
     return ParametricOutputs(**dct)
 
 

@@ -91,7 +91,7 @@ class ModelGroup:
             else:
                 if model.enabled:
                     # TODO: Display here information about the executed model
-                    self._log.info("Model: %r", model.name)
+                    # self._log.info("Model: %r", model.name)
                     model(detector)
 
         return False

@@ -26,7 +26,7 @@ expected_sequential = [
     (5, [("level", 100), ("initial_energy", 300)]),
 ]
 
-expected_embedded = [
+expected_product = [
     (0, [("level", 10), ("initial_energy", 100)]),
     (1, [("level", 10), ("initial_energy", 200)]),
     (2, [("level", 10), ("initial_energy", 300)]),
@@ -45,7 +45,7 @@ expected_embedded = [
     [
         # ('single', expected_single),
         (ParametricMode.Sequential, expected_sequential),
-        (ParametricMode.Embedded, expected_embedded),
+        (ParametricMode.Product, expected_product),
     ],
 )
 def test_pipeline_parametric_without_init_photon(mode: ParametricMode, expected):
@@ -78,16 +78,14 @@ def test_pipeline_parametric_without_init_photon(mode: ParametricMode, expected)
     pipeline = cfg.pipeline
     assert isinstance(pipeline, DetectionPipeline)
 
-    processor = Processor(
-        detector=detector, pipeline=pipeline
-    )  # type: pyxel.pipelines.processor.Processor
-    result = parametric.debug(processor)
+    processor = Processor(detector=detector, pipeline=pipeline)
+    result = parametric.debug_parameters(processor)
     assert result == expected
 
-    configs = parametric.collect(processor)
-    assert isinstance(configs, abc.Iterator)
+    processor_generator = parametric._processors_it(processor=processor)
+    assert isinstance(processor_generator, abc.Generator)
 
-    for config in configs:
-        assert isinstance(config, Processor)
+    for proc, _, _ in processor_generator:
+        assert isinstance(proc, Processor)
 
-        config.run_pipeline()
+        proc.run_pipeline()

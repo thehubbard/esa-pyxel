@@ -18,11 +18,8 @@ import time
 import typing as t
 from pathlib import Path
 
-import dask
 import numpy as np
-from dask import delayed
 from matplotlib import pyplot as plt
-from tqdm.auto import tqdm
 
 from pyxel import __version__ as version
 from pyxel import inputs_outputs as io
@@ -30,7 +27,7 @@ from pyxel.calibration import Calibration
 from pyxel.detectors import CCD, CMOS
 from pyxel.dynamic import Dynamic
 from pyxel.inputs_outputs import Configuration
-from pyxel.parametric import Parametric
+from pyxel.parametric import Parametric, ParametricResult
 from pyxel.pipelines import DetectionPipeline, Processor
 from pyxel.single import Single
 from pyxel.util import download_examples
@@ -40,7 +37,6 @@ if t.TYPE_CHECKING:
         CalibrationOutputs,
         DynamicOutputs,
         ParametricOutputs,
-        Result,
         SingleOutputs,
     )
 
@@ -80,19 +76,19 @@ def parametric_mode(
     detector: t.Union["CCD", "CMOS"],
     pipeline: "DetectionPipeline",
     with_dask: bool = False,
-) -> None:
+) -> "ParametricResult":
     """Run a 'parametric' pipeline.
 
     Parameters
     ----------
-    parametric
-    detector
-    pipeline
-    with_dask
+    parametric: Parametric
+    detector: Detector
+    pipeline: Pipeline
+    with_dask: bool
 
     Returns
     -------
-    None
+    result: ParametricResult
     """
     logging.info("Mode: Parametric")
 
@@ -104,47 +100,13 @@ def parametric_mode(
 
     processor = Processor(detector=detector, pipeline=pipeline)
 
-    # Check if all keys from 'parametric' are valid keys for object 'pipeline'
-    for param_value in parametric.enabled_steps:
-        key = param_value.key  # type: str
-        assert processor.has(key)
+    result = parametric.run_parametric(processor=processor)
 
-    processors_it = parametric.collect(processor)  # type: t.Iterator[Processor]
+    parametric_outputs.save_parametric_datasets(
+        result=result, mode=parametric.parametric_mode
+    )
 
-    result_list = []  # type: t.List[Result]
-    output_filenames = []  # type: t.List[t.Sequence[Path]]
-
-    # Run all pipelines
-    for proc in tqdm(processors_it):  # type: Processor
-
-        if not with_dask:
-            result_proc = proc.run_pipeline()  # type: Processor
-            result_val = parametric_outputs.extract_func(
-                processor=result_proc
-            )  # type: Result
-
-            filenames = parametric_outputs.save_to_file(
-                processor=result_proc
-            )  # type: t.Sequence[Path]
-
-        else:
-            result_proc = delayed(proc.run_pipeline)()
-            result_val = delayed(parametric_outputs.extract_func)(processor=result_proc)
-
-            filenames = delayed(parametric_outputs.save_to_file)(processor=result_proc)
-
-        result_list.append(result_val)
-        output_filenames.append(filenames)  # TODO: This is not used
-
-    if not with_dask:
-        plot_array = parametric_outputs.merge_func(result_list)  # type: np.ndarray
-    else:
-        array = delayed(parametric_outputs.merge_func)(result_list)
-        plot_array, _ = dask.compute(array, output_filenames)
-
-    # TODO: Plot with dask ?
-    if parametric_outputs.parametric_plot is not None:
-        parametric_outputs.plotting_func(plot_array)
+    return result
 
 
 def dynamic_mode(
