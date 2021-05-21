@@ -11,6 +11,9 @@ import logging
 import typing as t
 from pathlib import Path
 from time import strftime
+import operator
+import xarray as xr
+from pyxel.parametric import ParametricMode
 
 import attr
 import h5py as h5
@@ -28,6 +31,7 @@ if t.TYPE_CHECKING:
     from ..parametric.parameter_values import ParameterValues
     from ..parametric.parametric import Parametric
     from ..pipelines import Processor
+    from ..parametric import Result
 
     class SaveToFile(t.Protocol):
         """TBW."""
@@ -69,8 +73,11 @@ class ParametricOutputs:
         save_data_to_file: t.Optional[
             t.Sequence[t.Mapping[str, t.Sequence[str]]]
         ] = None,
-        save_parameter_to_file: t.Optional[dict] = None,
-        #parametric_plot: t.Optional[ParametricPlot] = None,
+        save_parametric_data: t.Optional[
+            t.Sequence[t.Mapping[str, t.Sequence[str]]]
+        ] = None,
+        # save_parameter_to_file: t.Optional[dict] = None,
+        # parametric_plot: t.Optional[ParametricPlot] = None,
     ):
         self._log = logging.getLogger(__name__)
 
@@ -90,9 +97,9 @@ class ParametricOutputs:
         )  # type: Path
 
         # TODO: Not related to a plot. Use by 'single' and 'parametric' modes.
-        self.save_data_to_file = save_data_to_file or [
-            {"detector.image.array": ["fits"]}
-        ]  # type: t.Sequence[t.Mapping[str, t.Sequence[str]]]
+        self.save_data_to_file = save_data_to_file  # type: t.Optional[t.Sequence[t.Mapping[str, t.Sequence[str]]]]
+
+        self.save_parametric_data = save_parametric_data  # type: t.Optional[t.Sequence[t.Mapping[str, t.Sequence[str]]]]
 
         # TODO: reenable
         # if self.output_dir.exists():
@@ -161,37 +168,37 @@ class ParametricOutputs:
 
         return new_filename
 
-    # TODO: Specific to 'single_plot' ?
-    def save_to_png(self, data: np.ndarray, name: str) -> Path:
-        """Write array to bitmap PNG image file.
-
-        Parameters
-        ----------
-        data : array
-        name : str
-
-        Returns
-        -------
-        Path
-            TBW.
-        """
-        row, col = data.shape
-        name = str(name).replace(".", "_")
-        filename = apply_run_number(
-            self.output_dir.joinpath(f"{name}_??.png")
-        )  # type: Path
-
-        dpi = 300
-        self._fig.set_size_inches(min(col / dpi, 10.0), min(row / dpi, 10.0))
-
-        # ax = plt.Axes(fig, [0.0, 0.0, 1.0, 1.0])
-        # ax.set_axis_off()
-        #
-        # fig.add_axes(ax)
-        # plt.imshow(data, cmap="gray", extent=[0, col, 0, row])
-        self._fig.savefig(filename, dpi=dpi)
-
-        return filename
+    # # TODO: Specific to 'single_plot' ?
+    # def save_to_png(self, data: np.ndarray, name: str) -> Path:
+    #     """Write array to bitmap PNG image file.
+    #
+    #     Parameters
+    #     ----------
+    #     data : array
+    #     name : str
+    #
+    #     Returns
+    #     -------
+    #     Path
+    #         TBW.
+    #     """
+    #     row, col = data.shape
+    #     name = str(name).replace(".", "_")
+    #     filename = apply_run_number(
+    #         self.output_dir.joinpath(f"{name}_??.png")
+    #     )  # type: Path
+    #
+    #     dpi = 300
+    #     self._fig.set_size_inches(min(col / dpi, 10.0), min(row / dpi, 10.0))
+    #
+    #     # ax = plt.Axes(fig, [0.0, 0.0, 1.0, 1.0])
+    #     # ax.set_axis_off()
+    #     #
+    #     # fig.add_axes(ax)
+    #     # plt.imshow(data, cmap="gray", extent=[0, col, 0, row])
+    #     self._fig.savefig(filename, dpi=dpi)
+    #
+    #     return filename
 
     def save_to_fits(self, data: np.ndarray, name: str) -> Path:
         """Write array to FITS file.
@@ -271,6 +278,94 @@ class ParametricOutputs:
         filename = apply_run_number(self.output_dir.joinpath(name + "_??.npy"))
         np.save(file=filename, arr=data)
         return filename
+
+    def save_to_netcdf(self, data: xr.Dataset, name: str) -> Path:
+        """Write Xarray dataset to NetCDF file."""
+        name = str(name).replace(".", "_")
+        filename = self.output_dir.joinpath(name + ".nc")
+        data.to_netcdf(filename)
+        return filename
+
+    def save_to_file(self, processor: "Processor") -> t.Sequence[Path]:
+        """Save outputs into file(s).
+
+        Parameters
+        ----------
+        processor : Processor
+
+
+        Returns
+        -------
+        list of ``Path``
+            TBW.
+        """
+        save_methods = {
+            "fits": self.save_to_fits,
+            "hdf": self.save_to_hdf,
+            "npy": self.save_to_npy,
+            "txt": self.save_to_txt,
+            "csv": self.save_to_csv,
+            # "png": self.save_to_png,
+        }  # type: t.Dict[str, SaveToFile]
+
+        filenames = []  # type: t.List[Path]
+
+        if self.save_data_to_file is not None:
+            for dct in self.save_data_to_file:  # type: t.Mapping[str, t.Sequence[str]]
+                # Get first entry of `dict` 'item'
+                first_item, *_ = dct.items()
+
+                obj, format_list = first_item
+                data = processor.get(obj)  # type: np.ndarray
+
+                if format_list is not None:
+                    for out_format in format_list:
+                        func = save_methods[out_format]  # type: SaveToFile
+                        filename = func(data=data, name=obj)  # type: Path
+
+                        filenames.append(filename)
+
+        return filenames
+
+    def save_parametric_datasets(self, result: "Result", mode: "ParametricMode") -> None:
+
+        dataset_names = ("dataset", "parameters", "logs")
+
+        save_methods = {"nc": self.save_to_netcdf}  # type: t.Dict[str, SaveToFile]
+
+        if self.save_parametric_data is not None:
+
+            for dct in self.save_parametric_data:  # type: t.Mapping[str, t.Sequence[str]]
+                first_item, *_ = dct.items()
+                obj, format_list = first_item
+
+                if obj not in dataset_names:
+                    raise ValueError("Please specify a valid result dataset names ('dataset', 'parameters', 'logs').")
+
+                if mode == ParametricMode.Sequential and obj == "dataset":
+                    dct = operator.attrgetter(obj)(result)
+                    for key, value in dct.items():
+
+                        if format_list is not None:
+                            for out_format in format_list:
+
+                                if out_format not in save_methods.keys():
+                                    raise ValueError("Format " + out_format + " not a valid save method!")
+
+                                func = save_methods[out_format]
+                                func(data=value, name=obj+"_"+key)
+
+                else:
+                    ds = operator.attrgetter(obj)(result)
+
+                    if format_list is not None:
+                        for out_format in format_list:
+
+                            if out_format not in save_methods.keys():
+                                raise ValueError("Format "+out_format+" not a valid save method!")
+
+                            func = save_methods[out_format]
+                            func(data=ds, name=obj)
 
     # def save_plot(self, filename: str = "figure_??") -> Path:
     #     """Save plot figure in PNG format, close figure and create new canvas for next plot."""
@@ -403,46 +498,6 @@ class ParametricOutputs:
     #     update_plot(ax_args=ax_args, ax=self._ax)
     #     # plt.draw()
     #     # fig.canvas.draw_idle()
-
-    def save_to_file(self, processor: "Processor") -> t.Sequence[Path]:
-        """Save outputs into file(s).
-
-        Parameters
-        ----------
-        processor : Processor
-
-
-        Returns
-        -------
-        list of ``Path``
-            TBW.
-        """
-        save_methods = {
-            "fits": self.save_to_fits,
-            "hdf": self.save_to_hdf,
-            "npy": self.save_to_npy,
-            "txt": self.save_to_txt,
-            "csv": self.save_to_csv,
-            "png": self.save_to_png,
-        }  # type: t.Dict[str, SaveToFile]
-
-        filenames = []  # type: t.List[Path]
-
-        for dct in self.save_data_to_file:  # type: t.Mapping[str, t.Sequence[str]]
-            # Get first entry of `dict` 'item'
-            first_item, *_ = dct.items()
-
-            obj, format_list = first_item
-            data = processor.get(obj)  # type: np.ndarray
-
-            if format_list is not None:
-                for out_format in format_list:
-                    func = save_methods[out_format]  # type: SaveToFile
-                    filename = func(data=data, name=obj)  # type: Path
-
-                    filenames.append(filename)
-
-        return filenames
 
     # # TODO: Specific to 'parametric_plot' ?
     # def params_func(self, param: "Parametric") -> None:
