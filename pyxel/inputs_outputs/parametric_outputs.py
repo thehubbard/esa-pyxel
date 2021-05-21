@@ -8,30 +8,26 @@
 #
 """TBW."""
 import logging
+import operator
 import typing as t
 from pathlib import Path
 from time import strftime
-import operator
-import xarray as xr
-from pyxel.parametric import ParametricMode
 
-import attr
 import h5py as h5
 import numpy as np
 import pandas as pd
+import xarray as xr
 from astropy.io import fits as fits
-from matplotlib import pyplot as plt
 
 from pyxel import __version__ as version
+from pyxel.parametric import ParametricMode
 
-from .outputs import PlotArguments, PlotType, apply_run_number, update_plot
+from .outputs import apply_run_number
 
 if t.TYPE_CHECKING:
     from ..detectors import Detector
-    from ..parametric.parameter_values import ParameterValues
-    from ..parametric.parametric import Parametric
-    from ..pipelines import Processor
     from ..parametric import Result
+    from ..pipelines import Processor
 
     class SaveToFile(t.Protocol):
         """TBW."""
@@ -84,22 +80,26 @@ class ParametricOutputs:
         # self.input_file = None  # type: t.Optional[Path]
 
         # Parameter(s) specific for 'Parametric'
-        #self.parametric_plot = None  # type: t.Optional[ParametricPlot]
-        #if parametric_plot is not None:
+        # self.parametric_plot = None  # type: t.Optional[ParametricPlot]
+        # if parametric_plot is not None:
         #    self.parametric_plot = parametric_plot
 
-        #self.parameter_keys = []  # type: t.List[str]
+        # self.parameter_keys = []  # type: t.List[str]
 
-        #self.user_plt_args = None  # type: t.Optional[PlotArguments]
-        #self.save_parameter_to_file = save_parameter_to_file  # type: t.Optional[dict]
+        # self.user_plt_args = None  # type: t.Optional[PlotArguments]
+        # self.save_parameter_to_file = save_parameter_to_file  # type: t.Optional[dict]
         self.output_dir = (
             Path(output_folder).joinpath("run_" + strftime("%Y%m%d_%H%M%S")).resolve()
         )  # type: Path
 
         # TODO: Not related to a plot. Use by 'single' and 'parametric' modes.
-        self.save_data_to_file = save_data_to_file  # type: t.Optional[t.Sequence[t.Mapping[str, t.Sequence[str]]]]
+        self.save_data_to_file = (
+            save_data_to_file
+        )  # type: t.Optional[t.Sequence[t.Mapping[str, t.Sequence[str]]]]
 
-        self.save_parametric_data = save_parametric_data  # type: t.Optional[t.Sequence[t.Mapping[str, t.Sequence[str]]]]
+        self.save_parametric_data = (
+            save_parametric_data
+        )  # type: t.Optional[t.Sequence[t.Mapping[str, t.Sequence[str]]]]
 
         # TODO: reenable
         # if self.output_dir.exists():
@@ -280,7 +280,17 @@ class ParametricOutputs:
         return filename
 
     def save_to_netcdf(self, data: xr.Dataset, name: str) -> Path:
-        """Write Xarray dataset to NetCDF file."""
+        """Write Xarray dataset to NetCDF file.
+
+        Parameters
+        ----------
+        data: xr.Dataset
+        name: str
+
+        Returns
+        -------
+        filename: path
+        """
         name = str(name).replace(".", "_")
         filename = self.output_dir.joinpath(name + ".nc")
         data.to_netcdf(filename)
@@ -327,7 +337,20 @@ class ParametricOutputs:
 
         return filenames
 
-    def save_parametric_datasets(self, result: "Result", mode: "ParametricMode") -> None:
+    def save_parametric_datasets(
+        self, result: "Result", mode: "ParametricMode"
+    ) -> None:
+        """Save the result datasets from parametric mode on disk.
+
+        Parameters
+        ----------
+        result: Result
+        mode: ParametricMode
+
+        Returns
+        -------
+        None
+        """
 
         dataset_names = ("dataset", "parameters", "logs")
 
@@ -335,12 +358,16 @@ class ParametricOutputs:
 
         if self.save_parametric_data is not None:
 
-            for dct in self.save_parametric_data:  # type: t.Mapping[str, t.Sequence[str]]
+            for (
+                dct
+            ) in self.save_parametric_data:  # type: t.Mapping[str, t.Sequence[str]]
                 first_item, *_ = dct.items()
                 obj, format_list = first_item
 
                 if obj not in dataset_names:
-                    raise ValueError("Please specify a valid result dataset names ('dataset', 'parameters', 'logs').")
+                    raise ValueError(
+                        "Please specify a valid result dataset names ('dataset', 'parameters', 'logs')."
+                    )
 
                 if mode == ParametricMode.Sequential and obj == "dataset":
                     dct = operator.attrgetter(obj)(result)
@@ -350,10 +377,14 @@ class ParametricOutputs:
                             for out_format in format_list:
 
                                 if out_format not in save_methods.keys():
-                                    raise ValueError("Format " + out_format + " not a valid save method!")
+                                    raise ValueError(
+                                        "Format "
+                                        + out_format
+                                        + " not a valid save method!"
+                                    )
 
                                 func = save_methods[out_format]
-                                func(data=value, name=obj+"_"+key)
+                                func(data=value, name=obj + "_" + key)
 
                 else:
                     ds = operator.attrgetter(obj)(result)
@@ -362,7 +393,9 @@ class ParametricOutputs:
                         for out_format in format_list:
 
                             if out_format not in save_methods.keys():
-                                raise ValueError("Format "+out_format+" not a valid save method!")
+                                raise ValueError(
+                                    "Format " + out_format + " not a valid save method!"
+                                )
 
                             func = save_methods[out_format]
                             func(data=ds, name=obj)

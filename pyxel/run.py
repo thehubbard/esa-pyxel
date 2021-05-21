@@ -102,7 +102,9 @@ def parametric_mode(
 
     result = parametric.run_parametric(processor=processor)
 
-    parametric_outputs.save_parametric_datasets(result=result, mode=parametric.parametric_mode)
+    parametric_outputs.save_parametric_datasets(
+        result=result, mode=parametric.parametric_mode
+    )
 
     return result
 
