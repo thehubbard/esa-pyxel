@@ -26,7 +26,7 @@ from .outputs import apply_run_number
 
 if t.TYPE_CHECKING:
     from ..detectors import Detector
-    from ..parametric import Result
+    from ..parametric import ParametricResult
     from ..pipelines import Processor
 
     class SaveToFile(t.Protocol):
@@ -338,7 +338,7 @@ class ParametricOutputs:
         return filenames
 
     def save_parametric_datasets(
-        self, result: "Result", mode: "ParametricMode"
+        self, result: "ParametricResult", mode: "ParametricMode"
     ) -> None:
         """Save the result datasets from parametric mode on disk.
 

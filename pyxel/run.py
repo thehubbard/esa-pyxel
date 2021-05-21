@@ -27,7 +27,7 @@ from pyxel.calibration import Calibration
 from pyxel.detectors import CCD, CMOS
 from pyxel.dynamic import Dynamic
 from pyxel.inputs_outputs import Configuration
-from pyxel.parametric import Parametric, Result
+from pyxel.parametric import Parametric, ParametricResult
 from pyxel.pipelines import DetectionPipeline, Processor
 from pyxel.single import Single
 from pyxel.util import download_examples
@@ -76,19 +76,19 @@ def parametric_mode(
     detector: t.Union["CCD", "CMOS"],
     pipeline: "DetectionPipeline",
     with_dask: bool = False,
-) -> "Result":
+) -> "ParametricResult":
     """Run a 'parametric' pipeline.
 
     Parameters
     ----------
-    parametric
-    detector
-    pipeline
-    with_dask
+    parametric: Parametric
+    detector: Detector
+    pipeline: Pipeline
+    with_dask: bool
 
     Returns
     -------
-    None
+    result: ParametricResult
     """
     logging.info("Mode: Parametric")
 

@@ -37,7 +37,7 @@ class ParametricMode(Enum):
     Custom = "custom"
 
 
-class Result(t.NamedTuple):
+class ParametricResult(t.NamedTuple):
     """Result class for parametric class."""
 
     dataset: t.Union[xr.Dataset, t.Dict[str, xr.Dataset]]
@@ -331,7 +331,7 @@ class Parametric:
                     "do not use '_' character in 'values' field"
                 )
 
-    def run_parametric(self, processor: "Processor") -> Result:
+    def run_parametric(self, processor: "Processor") -> ParametricResult:
         """Run the parametric pipelines.
 
         Parameters
@@ -409,7 +409,7 @@ class Parametric:
                 final_logs = xr.combine_by_coords(logs)
                 final_dataset = xr.combine_by_coords(dataset_list)
 
-                result = Result(
+                result = ParametricResult(
                     dataset=final_dataset,
                     parameters=final_parameters_merged,
                     logs=final_logs,
@@ -477,7 +477,7 @@ class Parametric:
                 final_parameters_list = [xr.combine_by_coords(p) for p in parameters]
                 final_parameters_merged = xr.merge(final_parameters_list)
 
-                result = Result(
+                result = ParametricResult(
                     dataset=final_datasets,
                     parameters=final_parameters_merged,
                     logs=final_logs,
@@ -512,7 +512,7 @@ class Parametric:
                 final_log = xr.combine_by_coords(logs)
                 final_parameters = final_log  # parameter dataset same as logs
 
-                result = Result(
+                result = ParametricResult(
                     dataset=final_ds, parameters=final_parameters, logs=final_log
                 )
 
