@@ -20,7 +20,6 @@ from tqdm.auto import tqdm
 from typing_extensions import Literal
 
 # import dask
-from pyxel.inputs_outputs.loader import load_table
 from pyxel.parametric.parameter_values import ParameterType, ParameterValues
 from pyxel.state import get_obj_att, get_value
 
@@ -92,6 +91,8 @@ class Parametric:
         index: int
         parameter_dict: dict
         """
+        from pyxel.inputs_outputs import load_table
+
         # TODO: is self.data really needed
         if self.file is not None:
             result = load_table(self.file).to_numpy()[
