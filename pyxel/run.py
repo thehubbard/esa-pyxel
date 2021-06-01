@@ -268,7 +268,7 @@ def output_directory(configuration: Configuration) -> Path:
     return output_dir
 
 
-def create_module(newmodel=None) -> None:
+def create_model(newmodel=None) -> None:
     """Creates a new module using pyxel/templates/MODELTEMPLATE.py.
 
     Parameters
@@ -449,7 +449,7 @@ def main() -> None:
     
     parser.add_argument(
         "-cm",
-        "--createmodule",
+        "--createmodel",
         type=str,
         help="""Use: -cm arg1/arg2. Create a new module in\
         pyxel/models/arg1/arg2 using a template\
@@ -482,8 +482,8 @@ def main() -> None:
         run(input_filename=opts.config, random_seed=opts.seed)
     elif opts.download_examples:
         download_examples(foldername=opts.download_examples, force=opts.force)
-    elif opts.createmodule:
-        create_module(newmodel=opts.createmodule)
+    elif opts.createmodel:
+        create_model(newmodel=opts.createmodel)
     else:
         print("Define a YAML configuration file!")
 

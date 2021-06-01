@@ -82,7 +82,7 @@ Code example
 Model reference in the YAML config file
 =======================================
 
-.. code-block: yaml
+.. code-block:: yaml
 
     pipeline:
 
