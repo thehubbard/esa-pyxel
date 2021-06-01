@@ -14,8 +14,8 @@ in MCT, charge diffusion, crosshatches, noises, crosstalk etc.) on a given image
 import argparse
 import logging
 import os
-import sys
 import shutil
+import sys
 import time
 import typing as t
 from pathlib import Path
@@ -280,46 +280,47 @@ def create_model(newmodel=None) -> None:
     None
     """
     try:
-        arguments = newmodel.split('/')
-        location = f'{arguments[0]}'
-        model_name = f'{arguments[1]}'
+        arguments = newmodel.split("/")
+        location = f"{arguments[0]}"
+        model_name = f"{arguments[1]}"
     except:
-        sys.exit(f"""
+        sys.exit(
+            f"""
         Can't create model {arguments}, please use location/newmodelname
         as an argument for creating a model
-        """)
+        """
+        )
 
     # Is not working on UNIX AND Windows if I do not use os.path.abspath
-    path = os.path.abspath(os.getcwd()+'/pyxel/models/'+location+'/')
-    template_string = '_TEMPLATE'
-    template_location = '_LOCATION'
+    path = os.path.abspath(os.getcwd() + "/pyxel/models/" + location + "/")
+    template_string = "_TEMPLATE"
+    template_location = "_LOCATION"
 
     # Copying the template with the user defined model_name instead
-    src = os.path.abspath(os.getcwd()+'/pyxel/templates/')
-    dest = os.path.abspath(os.getcwd()+'/pyxel/models/'+location+'/')
+    src = os.path.abspath(os.getcwd() + "/pyxel/templates/")
+    dest = os.path.abspath(os.getcwd() + "/pyxel/models/" + location + "/")
     try:
         try:
             os.mkdir(dest)
-        except:
+        except FileExistsError:
             logging.info(f"{dest} already exists, folder not created")
         # Replacing all of template in filenames and directories by model_name
         for dirpath, subdirs, files in os.walk(src):
             for x in files:
                 pathtofile = os.path.join(dirpath, x)
-                new_pathtofile = os.path.join(dest, 
-                                              x.replace(template_string,model_name))
-                shutil.copy(pathtofile,
-                            new_pathtofile)
+                new_pathtofile = os.path.join(
+                    dest, x.replace(template_string, model_name)
+                )
+                shutil.copy(pathtofile, new_pathtofile)
                 # Open file in the created copy
-                with open(new_pathtofile, 'r') as file_tochange:
+                with open(new_pathtofile, "r") as file_tochange:
                     # Replace any mention of template by model_name
                     new_contents = file_tochange.read().replace(
-                            template_string, model_name)
-                    new_contents = new_contents.replace(
-                            template_location, location)
-                    new_contents = new_contents.replace(
-                            '%(date)', time.ctime())
-                with open(new_pathtofile, 'w+') as file_tochange:
+                        template_string, model_name
+                    )
+                    new_contents = new_contents.replace(template_location, location)
+                    new_contents = new_contents.replace("%(date)", time.ctime())
+                with open(new_pathtofile, "w+") as file_tochange:
                     file_tochange.write(new_contents)
                 # Close the file other we can't rename it
                 file_tochange.close()
@@ -327,14 +328,14 @@ def create_model(newmodel=None) -> None:
             for x in subdirs:
                 pathtofile = os.path.join(dirpath, x)
                 os.mkdir(pathtofile.replace(template_string, model_name))
-            logging.info('Module '+model_name+' created.')
-        print('Module '+model_name+' created in '+path+'.')
+            logging.info("Module " + model_name + " created.")
+        print("Module " + model_name + " created in " + path + ".")
     # Directories are the same
     except shutil.Error as e:
-        logging.critical('Error while duplicating '+template_string+': %s' % e)
+        logging.critical("Error while duplicating " + template_string + ": %s" % e)
     # Any error saying that the directory doesn't exist
     except OSError as e:
-        logging.critical(model_name+' not created. Error: %s' % e)
+        logging.critical(model_name + " not created. Error: %s" % e)
     return None
 
 
@@ -446,7 +447,7 @@ def main() -> None:
         action="store_true",
         help="Force flag for saving the examples.",
     )
-    
+
     parser.add_argument(
         "-cm",
         "--createmodel",

@@ -71,7 +71,7 @@ Code example
 
     import sys
 
-    print('Hello world...')
+    print("Hello world...")
 
 
 .. literalinclude:: pyxel/models/_LOCATION/_TEMPLATE.py
@@ -110,11 +110,10 @@ https://sphinx-rtd-theme.readthedocs.io/en/latest/index.html
 import typing as t
 
 # One or the other
-from pyxel.detectors import CMOS
-from pyxel.detectors import CCD
+from pyxel.detectors import CCD, CMOS
 
-def model(detector: CCD,
-          arg1: str, arg2: bool = True, arg3: int = 42) -> None:
+
+def model(detector: CCD, arg1: str, arg2: bool = True, arg3: int = 42) -> None:
     """This method does nothing.
 
     Parameters
@@ -128,7 +127,7 @@ def model(detector: CCD,
     None
     """
 
-    #Access the detector
+    # Access the detector
     """
     photon = detector.photon.array
     pixel = detector.pixel.array
