@@ -17,7 +17,7 @@ Core
 * dynamic mode progress bar.
   (See `!219 <https://gitlab.com/esa/pyxel/-/merge_requests/219>`_).
 * Add capability to create models through command line using a template.
-  (See`!31 <https://gitlab.com/esa/pyxel/-/merge_requests/31>`_).
+  (See`!217 <https://gitlab.com/esa/pyxel/-/merge_requests/217>`_).
 
 Documentation
 ~~~~~~~~~~~~~
