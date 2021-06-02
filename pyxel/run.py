@@ -268,8 +268,8 @@ def output_directory(configuration: Configuration) -> Path:
     return output_dir
 
 
-def create_model(newmodel=None) -> None:
-    """Creates a new module using pyxel/templates/MODELTEMPLATE.py.
+def create_model(newmodel: str) -> None:
+    """Create a new module using pyxel/templates/MODELTEMPLATE.py.
 
     Parameters
     ----------
@@ -283,7 +283,7 @@ def create_model(newmodel=None) -> None:
         arguments = newmodel.split("/")
         location = f"{arguments[0]}"
         model_name = f"{arguments[1]}"
-    except:
+    except Exception:
         sys.exit(
             f"""
         Can't create model {arguments}, please use location/newmodelname
