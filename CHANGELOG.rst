@@ -10,6 +10,8 @@ Core
 
 * Add capability to save outputs of parametric mode as a xarray dataset.
   (See `!212 <https://gitlab.com/esa/pyxel/-/merge_requests/212>`_).
+* Add capability to save calibration result dataset to disk from YAML.
+  (See `!214 <https://gitlab.com/esa/pyxel/-/merge_requests/214>`_).
 
 Documentation
 ~~~~~~~~~~~~~

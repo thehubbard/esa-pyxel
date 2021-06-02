@@ -11,10 +11,12 @@ import typing as t
 from enum import Enum
 from pathlib import Path
 
-import attr
+#  import attr
 import numpy as np
+import pandas as pd
+import xarray as xr
 
-from pyxel.pipelines import Processor
+#  from pyxel.pipelines import Processor
 
 __all__ = [
     "CalibrationResult",
@@ -27,14 +29,23 @@ __all__ = [
 ]
 
 
-@attr.s(frozen=True, auto_attribs=True, slots=True)
-class CalibrationResult:
-    """TBW."""
+# @attr.s(frozen=True, auto_attribs=True, slots=True)
+# class CalibrationResult:
+#     """TBW."""
+#
+#     processors: t.Sequence[Processor]
+#     fitness: float
+#     island: int
+#     results: t.Mapping[str, t.Union[int, float]]
 
-    processors: t.Sequence[Processor]
-    fitness: float
-    island: int
-    results: t.Mapping[str, t.Union[int, float]]
+
+class CalibrationResult(t.NamedTuple):
+    """Result class for calibration class."""
+
+    dataset: xr.Dataset
+    processors: pd.DataFrame
+    logs: pd.DataFrame
+    filenames: t.Sequence
 
 
 class CalibrationMode(Enum):

@@ -337,7 +337,7 @@ def to_calibration_outputs(dct: dict) -> CalibrationOutputs:
     -------
     CalibrationOutputs
     """
-    dct.update({"calibration_plot": to_calibration_plot(dct["calibration_plot"])})
+    # dct.update({"calibration_plot": to_calibration_plot(dct["calibration_plot"])})
     return CalibrationOutputs(**dct)
 
 

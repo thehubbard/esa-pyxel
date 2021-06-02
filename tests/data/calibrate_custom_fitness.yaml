@@ -44,7 +44,6 @@ calibration:
 
   outputs:
     output_folder: "tests/temp/outputs"
-    calibration_plot:
 
 ccd_detector:
 
