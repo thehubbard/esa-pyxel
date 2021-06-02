@@ -17,13 +17,13 @@ import sys
 import time
 import typing as t
 from pathlib import Path
-from tqdm.notebook import tqdm
 
 import dask
 import numpy as np
 import pandas as pd
 import xarray as xr
 from matplotlib import pyplot as plt
+from tqdm.notebook import tqdm
 
 from pyxel import __version__ as version
 from pyxel import inputs_outputs as io
@@ -161,6 +161,7 @@ def dynamic_mode(
             dynamic_outputs.save_to_file(processor)
         pbar.update(1)
     pbar.close()
+
 
 def calibration_mode(
     calibration: "Calibration",

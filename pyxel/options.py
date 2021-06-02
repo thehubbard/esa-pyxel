@@ -119,7 +119,6 @@ class SetOptions:
     Or with a context manager
     >>> with pyxel.set_options(cache_enabled=True, cache_folder="/tmp"):
     ...     print("Do something")
-    ...
     """
 
     def __init__(self, **kwargs):
