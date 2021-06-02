@@ -14,6 +14,10 @@ Core
   (See `!214 <https://gitlab.com/esa/pyxel/-/merge_requests/214>`_).
 * Hide built-in Pyxel plotting capabilities (matplotlib figures from YAML).
   (See `!213 <https://gitlab.com/esa/pyxel/-/merge_requests/213>`_).
+* dynamic mode progress bar.
+  (See `!219 <https://gitlab.com/esa/pyxel/-/merge_requests/219>`_).
+* Add capability to create models through command line using a template.
+  (See`!217 <https://gitlab.com/esa/pyxel/-/merge_requests/217>`_).
 
 Documentation
 ~~~~~~~~~~~~~
