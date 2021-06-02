@@ -18,12 +18,15 @@ import time
 import typing as t
 from pathlib import Path
 
+import dask
 import numpy as np
+import pandas as pd
+import xarray as xr
 from matplotlib import pyplot as plt
 
 from pyxel import __version__ as version
 from pyxel import inputs_outputs as io
-from pyxel.calibration import Calibration
+from pyxel.calibration import Calibration, CalibrationResult
 from pyxel.detectors import CCD, CMOS
 from pyxel.dynamic import Dynamic
 from pyxel.inputs_outputs import Configuration
@@ -160,18 +163,20 @@ def calibration_mode(
     calibration: "Calibration",
     detector: t.Union["CCD", "CMOS"],
     pipeline: "DetectionPipeline",
-) -> t.Tuple:
+    compute_and_save: bool = True,
+) -> t.Tuple[xr.Dataset, pd.DataFrame, pd.DataFrame, t.Sequence]:
     """Run a 'calibration' pipeline.
 
     Parameters
     ----------
-    calibration
-    detector
-    pipeline
+    calibration: Calibration
+    detector: Detector
+    pipeline: DetectionPipeline
+    compute_and_save: bool
 
     Returns
     -------
-    None
+    tuple
     """
     logging.info("Mode: Calibration")
 
@@ -203,7 +208,34 @@ def calibration_mode(
         ds=ds_results, df_processors=df_processors, output=calibration_outputs
     )
 
-    return ds_results, df_processors, df_all_logs, filenames
+    if compute_and_save:
+
+        computed_ds, df_processors, df_logs, filenames = dask.compute(
+            ds_results, df_processors, df_all_logs, filenames
+        )
+
+        if calibration_outputs.save_calibration_data:
+            calibration_outputs.save_calibration_outputs(
+                dataset=computed_ds, logs=df_logs
+            )
+            print(f"Saved calibration outputs to {calibration_outputs.output_dir}")
+
+        result = CalibrationResult(
+            dataset=computed_ds,
+            processors=df_processors,
+            logs=df_logs,
+            filenames=filenames,
+        )
+
+    else:
+        result = CalibrationResult(
+            dataset=ds_results,
+            processors=df_processors,
+            logs=df_all_logs,
+            filenames=filenames,
+        )
+
+    return result
 
 
 def output_directory(configuration: Configuration) -> Path:
