@@ -34,17 +34,13 @@ from ..evaluator import evaluate_reference
 from ..parametric import ParameterValues, Parametric
 from ..pipelines import DetectionPipeline, ModelFunction, ModelGroup
 from ..single import Single
-from .calibration_outputs import (
+from .calibration_outputs import (  # CalibrationPlot,; ChampionsPlot,; FittingPlot,; PopulationPlot,
     CalibrationOutputs,
-    CalibrationPlot,
-    ChampionsPlot,
-    FittingPlot,
-    PopulationPlot,
 )
 from .dynamic_outputs import DynamicOutputs
 from .outputs import PlotArguments
 from .parametric_outputs import ParametricOutputs  # , ParametricPlot
-from .single_outputs import SingleOutputs, SinglePlot
+from .single_outputs import SingleOutputs  # , SinglePlot
 
 
 @attr.s
@@ -110,21 +106,21 @@ def to_plot_arguments(dct: t.Optional[dict]) -> t.Optional[PlotArguments]:
     return PlotArguments(**dct)
 
 
-def to_single_plot(dct: t.Optional[dict]) -> t.Optional[SinglePlot]:
-    """Create a SinglePlot class from a dictionary.
-
-    Parameters
-    ----------
-    dct
-
-    Returns
-    -------
-    SinglePlot
-    """
-    if dct is None:
-        return None
-    dct.update({"plot_args": to_plot_arguments(dct["plot_args"])})
-    return SinglePlot(**dct)
+# def to_single_plot(dct: t.Optional[dict]) -> t.Optional[SinglePlot]:
+#     """Create a SinglePlot class from a dictionary.
+#
+#     Parameters
+#     ----------
+#     dct
+#
+#     Returns
+#     -------
+#     SinglePlot
+#     """
+#     if dct is None:
+#         return None
+#     dct.update({"plot_args": to_plot_arguments(dct["plot_args"])})
+#     return SinglePlot(**dct)
 
 
 def to_single_outputs(dct: dict) -> SingleOutputs:
@@ -138,7 +134,7 @@ def to_single_outputs(dct: dict) -> SingleOutputs:
     -------
     SingleOutputs
     """
-    dct.update({"single_plot": to_single_plot(dct["single_plot"])})
+    # dct.update({"single_plot": to_single_plot(dct["single_plot"])})
     return SingleOutputs(**dct)
 
 
@@ -169,7 +165,7 @@ def to_dynamic_outputs(dct: dict) -> DynamicOutputs:
     -------
     DynamicOutputs
     """
-    dct.update({"single_plot": to_single_plot(dct["single_plot"])})
+    # dct.update({"single_plot": to_single_plot(dct["single_plot"])})
     return DynamicOutputs(**dct)
 
 
@@ -252,78 +248,78 @@ def to_parametric(dct: dict) -> Parametric:
     return Parametric(**dct)
 
 
-def to_champions_plot(dct: t.Optional[dict]) -> t.Optional[ChampionsPlot]:
-    """Create a ChampionsPlot class from a dictionary.
-
-    Parameters
-    ----------
-    dct
-
-    Returns
-    -------
-    ChampionsPlot
-    """
-    if dct is None:
-        return None
-    dct.update({"plot_args": to_plot_arguments(dct["plot_args"])})
-    return ChampionsPlot(**dct)
-
-
-def to_population_plot(dct: t.Optional[dict]) -> t.Optional[PopulationPlot]:
-    """Create a PopulatonPlot class from a dictionary.
-
-    Parameters
-    ----------
-    dct
-
-    Returns
-    -------
-    PopulationPlot
-    """
-    if dct is None:
-        return None
-    dct.update({"plot_args": to_plot_arguments(dct["plot_args"])})
-    return PopulationPlot(**dct)
-
-
-def to_fitting_plot(dct: t.Optional[dict]) -> t.Optional[FittingPlot]:
-    """Create a FittingPlot class from a dictionary.
-
-    Parameters
-    ----------
-    dct
-
-    Returns
-    -------
-    FittingPlot
-    """
-    if dct is None:
-        return None
-    dct.update({"plot_args": to_plot_arguments(dct["plot_args"])})
-    return FittingPlot(**dct)
-
-
-def to_calibration_plot(dct: t.Optional[dict]) -> t.Optional[CalibrationPlot]:
-    """Create a CalibrationPlot class from a dictionary.
-
-    Parameters
-    ----------
-    dct
-
-    Returns
-    -------
-    CalibrationPlot
-    """
-    if dct is None:
-        return None
-    else:
-        if "champions_plot" in dct:
-            dct.update({"champions_plot": to_champions_plot(dct["champions_plot"])})
-        if "population_plot" in dct:
-            dct.update({"population_plot": to_population_plot(dct["population_plot"])})
-        if "fitting_plot" in dct:
-            dct.update({"fitting_plot": to_fitting_plot(dct["fitting_plot"])})
-        return CalibrationPlot(**dct)
+# def to_champions_plot(dct: t.Optional[dict]) -> t.Optional[ChampionsPlot]:
+#     """Create a ChampionsPlot class from a dictionary.
+#
+#     Parameters
+#     ----------
+#     dct
+#
+#     Returns
+#     -------
+#     ChampionsPlot
+#     """
+#     if dct is None:
+#         return None
+#     dct.update({"plot_args": to_plot_arguments(dct["plot_args"])})
+#     return ChampionsPlot(**dct)
+#
+#
+# def to_population_plot(dct: t.Optional[dict]) -> t.Optional[PopulationPlot]:
+#     """Create a PopulatonPlot class from a dictionary.
+#
+#     Parameters
+#     ----------
+#     dct
+#
+#     Returns
+#     -------
+#     PopulationPlot
+#     """
+#     if dct is None:
+#         return None
+#     dct.update({"plot_args": to_plot_arguments(dct["plot_args"])})
+#     return PopulationPlot(**dct)
+#
+#
+# def to_fitting_plot(dct: t.Optional[dict]) -> t.Optional[FittingPlot]:
+#     """Create a FittingPlot class from a dictionary.
+#
+#     Parameters
+#     ----------
+#     dct
+#
+#     Returns
+#     -------
+#     FittingPlot
+#     """
+#     if dct is None:
+#         return None
+#     dct.update({"plot_args": to_plot_arguments(dct["plot_args"])})
+#     return FittingPlot(**dct)
+#
+#
+# def to_calibration_plot(dct: t.Optional[dict]) -> t.Optional[CalibrationPlot]:
+#     """Create a CalibrationPlot class from a dictionary.
+#
+#     Parameters
+#     ----------
+#     dct
+#
+#     Returns
+#     -------
+#     CalibrationPlot
+#     """
+#     if dct is None:
+#         return None
+#     else:
+#         if "champions_plot" in dct:
+#             dct.update({"champions_plot": to_champions_plot(dct["champions_plot"])})
+#         if "population_plot" in dct:
+#             dct.update({"population_plot": to_population_plot(dct["population_plot"])})
+#         if "fitting_plot" in dct:
+#             dct.update({"fitting_plot": to_fitting_plot(dct["fitting_plot"])})
+#         return CalibrationPlot(**dct)
 
 
 def to_calibration_outputs(dct: dict) -> CalibrationOutputs:

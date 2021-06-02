@@ -12,6 +12,8 @@ Core
   (See `!212 <https://gitlab.com/esa/pyxel/-/merge_requests/212>`_).
 * Add capability to save calibration result dataset to disk from YAML.
   (See `!214 <https://gitlab.com/esa/pyxel/-/merge_requests/214>`_).
+* Hide built-in Pyxel plotting capabilities (matplotlib figures from YAML).
+  (See `!213 <https://gitlab.com/esa/pyxel/-/merge_requests/213>`_).
 
 Documentation
 ~~~~~~~~~~~~~

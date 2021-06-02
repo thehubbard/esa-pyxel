@@ -71,7 +71,7 @@ def single_mode(
     _ = processor.run_pipeline()
 
     single_outputs.save_to_file(processor)
-    single_outputs.single_to_plot(processor)
+    # single_outputs.single_to_plot(processor)
 
 
 def parametric_mode(
@@ -156,7 +156,7 @@ def dynamic_mode(
             detector.initialize(reset_all=True)
         processor.run_pipeline()
         if detector.read_out:
-            dynamic_outputs.single_output(processor)
+            dynamic_outputs.save_to_file(processor)
 
 
 def calibration_mode(

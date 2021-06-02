@@ -14,7 +14,7 @@ import typing as t
 from pathlib import Path
 from time import strftime
 
-import attr
+# import attr
 import dask.delayed as delayed
 import h5py as h5
 import numpy as np
@@ -22,7 +22,8 @@ import pandas as pd
 import xarray as xr
 from astropy.io import fits as fits
 from dask.delayed import Delayed
-from matplotlib import pyplot as plt
+
+# from matplotlib import pyplot as plt
 from typing_extensions import Literal
 
 from pyxel import __version__ as version
@@ -44,36 +45,36 @@ if t.TYPE_CHECKING:
             ...
 
 
-# Specific for CalibrationPlot
-@attr.s(auto_attribs=True, slots=True, frozen=True)
-class ChampionsPlot:
-    """TBW."""
-
-    plot_args: t.Optional[PlotArguments] = None
-
-
-@attr.s(auto_attribs=True, slots=True, frozen=True)
-class PopulationPlot:
-    """TBW."""
-
-    columns: t.Optional[t.Tuple[int, int]] = None  # TODO: Check this, with validator ?
-    plot_args: t.Optional[PlotArguments] = None
-
-
-@attr.s(auto_attribs=True, slots=True, frozen=True)
-class FittingPlot:
-    """TBW."""
-
-    plot_args: t.Optional[PlotArguments] = None
-
-
-@attr.s(auto_attribs=True, slots=True, frozen=True)
-class CalibrationPlot:
-    """TBW."""
-
-    champions_plot: t.Optional[ChampionsPlot] = None
-    population_plot: t.Optional[PopulationPlot] = None
-    fitting_plot: t.Optional[FittingPlot] = None
+# # Specific for CalibrationPlot
+# @attr.s(auto_attribs=True, slots=True, frozen=True)
+# class ChampionsPlot:
+#     """TBW."""
+#
+#     plot_args: t.Optional[PlotArguments] = None
+#
+#
+# @attr.s(auto_attribs=True, slots=True, frozen=True)
+# class PopulationPlot:
+#     """TBW."""
+#
+#     columns: t.Optional[t.Tuple[int, int]] = None  # TODO: Check this, with validator ?
+#     plot_args: t.Optional[PlotArguments] = None
+#
+#
+# @attr.s(auto_attribs=True, slots=True, frozen=True)
+# class FittingPlot:
+#     """TBW."""
+#
+#     plot_args: t.Optional[PlotArguments] = None
+#
+#
+# @attr.s(auto_attribs=True, slots=True, frozen=True)
+# class CalibrationPlot:
+#     """TBW."""
+#
+#     champions_plot: t.Optional[ChampionsPlot] = None
+#     population_plot: t.Optional[PopulationPlot] = None
+#     fitting_plot: t.Optional[FittingPlot] = None
 
 
 # Define type aliases
@@ -144,44 +145,44 @@ class CalibrationOutputs:
         #     "sci_x": False,
         #     "sci_y": False,
         # }  # type: dict
-        self.default_ax_args = PlotArguments()
-
-        self.default_plot_args = {
-            "color": None,
-            "marker": ".",
-            "linestyle": "",
-        }  # type: dict
-
-        self.default_hist_args = {
-            "bins": None,
-            "range": None,
-            "density": None,
-            "log": False,
-            "cumulative": False,
-            "histtype": "step",
-            "color": None,
-            "facecolor": None,
-        }  # type: dict
-        self.default_scatter_args = {"size": None, "cbar_label": None}  # type: dict
-
-        self.plt_args = {}  # type: dict
-
-        # TODO: Create an object self._fig here ?
-        fig, ax = plt.subplots(1, 1)
-
-        self._fig = fig  # type: plt.Figure
-        self._ax = ax  # type: plt.Axes
-
-        plt.close(self._fig)
+        # self.default_ax_args = PlotArguments()
+        #
+        # self.default_plot_args = {
+        #     "color": None,
+        #     "marker": ".",
+        #     "linestyle": "",
+        # }  # type: dict
+        #
+        # self.default_hist_args = {
+        #     "bins": None,
+        #     "range": None,
+        #     "density": None,
+        #     "log": False,
+        #     "cumulative": False,
+        #     "histtype": "step",
+        #     "color": None,
+        #     "facecolor": None,
+        # }  # type: dict
+        # self.default_scatter_args = {"size": None, "cbar_label": None}  # type: dict
+        #
+        # self.plt_args = {}  # type: dict
+        #
+        # # TODO: Create an object self._fig here ?
+        # fig, ax = plt.subplots(1, 1)
+        #
+        # self._fig = fig  # type: plt.Figure
+        # self._ax = ax  # type: plt.Axes
+        #
+        # plt.close(self._fig)
 
     def __repr__(self):
         cls_name = self.__class__.__name__  # type: str
         return f"{cls_name}<output_dir={self.output_dir!r}>"
 
-    @property
-    def fig(self) -> plt.Figure:
-        """Get the current ``Figure``."""
-        return self._fig
+    # @property
+    # def fig(self) -> plt.Figure:
+    #     """Get the current ``Figure``."""
+    #     return self._fig
 
     def new_file(self, filename: str) -> Path:
         """TBW."""
@@ -190,44 +191,44 @@ class CalibrationOutputs:
 
         return new_filename
 
-    # TODO: Specific to 'single_plot' ?
-    def save_to_png(
-        self, data: np.ndarray, name: str, with_auto_suffix: bool = True
-    ) -> Path:
-        """Write array to bitmap PNG image file.
-
-        Parameters
-        ----------
-        data : array
-        name : str
-
-        Returns
-        -------
-        Path
-            TBW.
-        """
-        row, col = data.shape
-        name = str(name).replace(".", "_")
-
-        if with_auto_suffix:
-            filename = apply_run_number(self.output_dir.joinpath(f"{name}_??.png"))
-        else:
-            filename = self.output_dir / f"{name}.png"
-
-        full_filename = filename.resolve()  # type: Path
-
-        # TODO: Create a new figure ! Check this
-        dpi = 300
-        self._fig.set_size_inches(min(col / dpi, 10.0), min(row / dpi, 10.0))
-
-        # ax = plt.Axes(fig, [0.0, 0.0, 1.0, 1.0])
-        # ax.set_axis_off()
-        #
-        # fig.add_axes(ax)
-        # plt.imshow(data, cmap="gray", extent=[0, col, 0, row])
-        self._fig.savefig(full_filename, dpi=dpi)
-
-        return full_filename
+    # # TODO: Specific to 'single_plot' ?
+    # def save_to_png(
+    #     self, data: np.ndarray, name: str, with_auto_suffix: bool = True
+    # ) -> Path:
+    #     """Write array to bitmap PNG image file.
+    #
+    #     Parameters
+    #     ----------
+    #     data : array
+    #     name : str
+    #
+    #     Returns
+    #     -------
+    #     Path
+    #         TBW.
+    #     """
+    #     row, col = data.shape
+    #     name = str(name).replace(".", "_")
+    #
+    #     if with_auto_suffix:
+    #         filename = apply_run_number(self.output_dir.joinpath(f"{name}_??.png"))
+    #     else:
+    #         filename = self.output_dir / f"{name}.png"
+    #
+    #     full_filename = filename.resolve()  # type: Path
+    #
+    #     # TODO: Create a new figure ! Check this
+    #     dpi = 300
+    #     self._fig.set_size_inches(min(col / dpi, 10.0), min(row / dpi, 10.0))
+    #
+    #     # ax = plt.Axes(fig, [0.0, 0.0, 1.0, 1.0])
+    #     # ax.set_axis_off()
+    #     #
+    #     # fig.add_axes(ax)
+    #     # plt.imshow(data, cmap="gray", extent=[0, col, 0, row])
+    #     self._fig.savefig(full_filename, dpi=dpi)
+    #
+    #     return full_filename
 
     def save_to_fits(
         self, data: np.ndarray, name: str, with_auto_suffix: bool = True
@@ -491,7 +492,7 @@ class CalibrationOutputs:
             "npy": self.save_to_npy,
             "txt": self.save_to_txt,
             "csv": self.save_to_csv,
-            "png": self.save_to_png,
+            # "png": self.save_to_png,
         }  # type: t.Mapping[ValidFormat, SaveToFile]
 
         filenames = []  # type: t.List[Path]
