@@ -17,6 +17,7 @@ import sys
 import time
 import typing as t
 from pathlib import Path
+from tqdm.notebook import tqdm
 
 import dask
 import numpy as np
@@ -147,6 +148,7 @@ def dynamic_mode(
         ndreadout=dynamic.non_destructive_readout,
     )
 
+    pbar = tqdm(total=dynamic.steps)
     # TODO: Use an iterator for that ?
     while detector.elapse_time():
         logging.info("time = %.3f s", detector.time)
@@ -157,7 +159,8 @@ def dynamic_mode(
         processor.run_pipeline()
         if detector.read_out:
             dynamic_outputs.save_to_file(processor)
-
+        pbar.update(1)
+    pbar.close()
 
 def calibration_mode(
     calibration: "Calibration",
