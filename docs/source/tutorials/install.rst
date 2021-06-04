@@ -140,6 +140,16 @@ You can install all dependencies as well:
     python -m pip install ".[all]"
 
 
+Verify the installation
+=======================
+
+You can verify that Pyxel is installed with the following command:
+
+.. code-block:: bash
+
+    python -c "import pyxel; pyxel.show_versions()"
+
+
 ..
     Python
     ~~~~~~
