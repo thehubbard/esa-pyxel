@@ -22,6 +22,9 @@ Core
 Documentation
 ~~~~~~~~~~~~~
 
+* Update installation section.
+  (See`!220 <https://gitlab.com/esa/pyxel/-/merge_requests/220>`_).
+
 Others
 ~~~~~~
 
