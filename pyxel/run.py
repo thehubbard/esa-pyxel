@@ -67,7 +67,7 @@ def single_mode(
     logging.info("Mode: Single")
 
     single_outputs = single.outputs  # type: SingleOutputs
-    detector.set_output_dir(single_outputs.output_dir)  # TODO: Remove this
+    #detector.set_output_dir(single_outputs.output_dir)  # TODO: Remove this
 
     processor = Processor(detector=detector, pipeline=pipeline)
 
@@ -297,8 +297,10 @@ def create_model(newmodel: str) -> None:
     template_location = "_LOCATION"
 
     # Copying the template with the user defined model_name instead
-    src = os.path.abspath(os.getcwd() + "/pyxel/templates/")
-    dest = os.path.abspath(os.getcwd() + "/pyxel/models/" + location + "/")
+    import pyxel
+    src = os.path.abspath(os.path.dirname(pyxel.__file__) + "/templates/")
+    dest = os.path.abspath(os.path.dirname(pyxel.__file__) + "/models/" + location + "/")
+    
     try:
         try:
             os.mkdir(dest)
