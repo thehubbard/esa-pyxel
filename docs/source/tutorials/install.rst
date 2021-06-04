@@ -86,6 +86,9 @@ If you use `conda`, you can install Pyxel with:
     # Full installation of Pyxel including all dependencies
     pip install -e git+https://gitlab.com/esa/pyxel.git#egg=pyxel-sim[all]
 
+.. warning::
+    Conda 64-bit **must** be installed and not Conda 32-bit.
+
 
 Pip
 ---
