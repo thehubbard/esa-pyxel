@@ -25,7 +25,7 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 from matplotlib import pyplot as plt
-from tqdm.notebook import tqdm
+#from tqdm.notebook import tqdm
 
 from pyxel import __version__ as version
 from pyxel import inputs_outputs as io
@@ -141,28 +141,9 @@ def dynamic_mode(
 
     processor = Processor(detector=detector, pipeline=pipeline)
 
-    if isinstance(detector, CCD):
-        dynamic.non_destructive_readout = False
-
-    detector.set_dynamic(
-        steps=dynamic.steps,
-        time_step=dynamic.t_step,
-        ndreadout=dynamic.non_destructive_readout,
-    )
-
-    pbar = tqdm(total=dynamic.steps)
-    # TODO: Use an iterator for that ?
-    while detector.elapse_time():
-        logging.info("time = %.3f s", detector.time)
-        if detector.is_non_destructive_readout:
-            detector.initialize(reset_all=False)
-        else:
-            detector.initialize(reset_all=True)
-        processor.run_pipeline()
-        if detector.read_out:
-            dynamic_outputs.save_to_file(processor)
-        pbar.update(1)
-    pbar.close()
+    result = dynamic.run_dynamic(processor=processor)
+    
+    return result
 
 
 def calibration_mode(
