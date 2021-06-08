@@ -1,7 +1,7 @@
 #  Copyright (c) YOUR COPYRIGHT HERE
 
 """
-_TEMPLATE module for the PyXel simulation
+_TEMPLATE module for the PyXel simulation.
 
 This module is used in _LOCATION
 
@@ -108,7 +108,7 @@ from pyxel.detectors import CCD, CMOS
 
 
 def model(detector: CCD, arg1: str, arg2: bool = True, arg3: int = 42) -> None:
-    """This method does nothing.
+    """Do nothing.
 
     Parameters
     ----------
