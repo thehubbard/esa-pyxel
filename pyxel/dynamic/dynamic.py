@@ -8,22 +8,25 @@
 #
 """TBW."""
 
-import typing as t
-from tqdm.notebook import tqdm
-import xarray as xr
 import logging
+import typing as t
+
+import xarray as xr
+from tqdm.notebook import tqdm
 
 if t.TYPE_CHECKING:
     from ..inputs_outputs import DynamicOutputs
     from ..pipelines import Processor
-    
+
+
 class DynamicResult(t.NamedTuple):
     """Result class for parametric class."""
 
     dataset: t.Union[xr.Dataset, t.Dict[str, xr.Dataset]]
-    #parameters: xr.Dataset
-    #logs: xr.Dataset
-    
+    # parameters: xr.Dataset
+    # logs: xr.Dataset
+
+
 class Dynamic:
     """TBW."""
 
@@ -62,14 +65,14 @@ class Dynamic:
     def non_destructive_readout(self, non_destructive_readout: bool) -> None:
         """TBW."""
         self._non_destructive_readout = non_destructive_readout
-        
-    def run_dynamic(self, processor: "Processor") -> DynamicResult:
 
-        #if isinstance(detector, CCD):
+    def run_dynamic(self, processor: "Processor") -> DynamicResult:
+        """TBW."""
+        # if isinstance(detector, CCD):
         #    dynamic.non_destructive_readout = False
 
         detector = processor.detector
-        
+
         detector.set_dynamic(
             steps=self._steps,
             time_step=self._t_step,
@@ -77,8 +80,8 @@ class Dynamic:
         )
 
         # prepare lists for to-be-merged datasets
-        listDatasets = []
-        
+        list_datasets = []
+
         pbar = tqdm(total=self._steps)
         # TODO: Use an iterator for that ?
         while detector.elapse_time():
@@ -99,7 +102,7 @@ class Dynamic:
                 processor.detector.geometry.row,
                 processor.detector.geometry.row,
             )
-            # Coordinates 
+            # Coordinates
             coordinates = {"x": range(columns), "y": range(rows)}
             # Dataset is storing the image array at the end of this iter
             da = xr.DataArray(
@@ -108,25 +111,23 @@ class Dynamic:
                 coords=coordinates,  # type: ignore
             )
             # Time coordinate of this iteration
-            da = da.assign_coords(
-                coords={'t': processor.detector.time}
-            )
-            da = da.expand_dims(dim='t')
-            pbar.update(1)        
+            da = da.assign_coords(coords={"t": processor.detector.time})
+            da = da.expand_dims(dim="t")
+            pbar.update(1)
 
             out["image"] = da
             # Append to the list of datasets
-            listDatasets.append(out)
-            
+            list_datasets.append(out)
+
         pbar.close()
 
         # Combine the datasets in the list into one xarray
-        finalDataset = xr.combine_by_coords(listDatasets)
+        final_dataset = xr.combine_by_coords(list_datasets)
 
         result = DynamicResult(
-            dataset=finalDataset,
-            #parameters=final_parameters_merged,
-            #logs=final_logs,
+            dataset=final_dataset,
+            # parameters=final_parameters_merged,
+            # logs=final_logs,
         )
-        
+
         return result
