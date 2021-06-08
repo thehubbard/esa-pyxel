@@ -1,10 +1,4 @@
-#  Copyright (c) European Space Agency, 2017, 2018, 2019, 2020.
-#
-#  This file is subject to the terms and conditions defined in file 'LICENCE.txt', which
-#  is part of this Pyxel package. No part of the package, including
-#  this file, may be copied, modified, propagated, or distributed except according to
-#  the terms contained in the file ‘LICENCE.txt’.
-#
+#  Copyright (c) YOUR COPYRIGHT HERE
 
 """
 _TEMPLATE module for the PyXel simulation.
@@ -89,7 +83,7 @@ Model reference in the YAML config file
       # Small comment on what it does
       _LOCATION:
         - name: _TEMPLATE
-          func: pyxel.models._LOCATION._TEMPLATE.model
+          func: pyxel.models._LOCATION.model
           enabled: true
           arguments:
             arg1: data/fits/Pleiades_HST.fits
