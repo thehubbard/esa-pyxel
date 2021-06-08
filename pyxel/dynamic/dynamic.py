@@ -8,10 +8,23 @@
 #
 """TBW."""
 
+import logging
 import typing as t
+
+import xarray as xr
+from tqdm.notebook import tqdm
 
 if t.TYPE_CHECKING:
     from ..inputs_outputs import DynamicOutputs
+    from ..pipelines import Processor
+
+
+class DynamicResult(t.NamedTuple):
+    """Result class for parametric class."""
+
+    dataset: t.Union[xr.Dataset, t.Dict[str, xr.Dataset]]
+    # parameters: xr.Dataset
+    # logs: xr.Dataset
 
 
 class Dynamic:
@@ -52,3 +65,69 @@ class Dynamic:
     def non_destructive_readout(self, non_destructive_readout: bool) -> None:
         """TBW."""
         self._non_destructive_readout = non_destructive_readout
+
+    def run_dynamic(self, processor: "Processor") -> DynamicResult:
+        """TBW."""
+        # if isinstance(detector, CCD):
+        #    dynamic.non_destructive_readout = False
+
+        detector = processor.detector
+
+        detector.set_dynamic(
+            steps=self._steps,
+            time_step=self._t_step,
+            ndreadout=self._non_destructive_readout,
+        )
+
+        # prepare lists for to-be-merged datasets
+        list_datasets = []
+
+        pbar = tqdm(total=self._steps)
+        # TODO: Use an iterator for that ?
+        while detector.elapse_time():
+            logging.info("time = %.3f s", detector.time)
+            if detector.is_non_destructive_readout:
+                detector.initialize(reset_all=False)
+            else:
+                detector.initialize(reset_all=True)
+            processor.run_pipeline()
+            if detector.read_out:
+                self.outputs.save_to_file(processor)
+            # Saving all image arrays into an xarray dataset for possible
+            # display with holoviews in jupyter notebook
+            # Initialize an xarray dataset
+            out = xr.Dataset()
+            # Dimensions set by the detectors dimensions
+            rows, columns = (
+                processor.detector.geometry.row,
+                processor.detector.geometry.row,
+            )
+            # Coordinates
+            coordinates = {"x": range(columns), "y": range(rows)}
+            # Dataset is storing the image array at the end of this iter
+            da = xr.DataArray(
+                processor.detector.image.array,
+                dims=["y", "x"],
+                coords=coordinates,  # type: ignore
+            )
+            # Time coordinate of this iteration
+            da = da.assign_coords(coords={"t": processor.detector.time})
+            da = da.expand_dims(dim="t")
+            pbar.update(1)
+
+            out["image"] = da
+            # Append to the list of datasets
+            list_datasets.append(out)
+
+        pbar.close()
+
+        # Combine the datasets in the list into one xarray
+        final_dataset = xr.combine_by_coords(list_datasets)
+
+        result = DynamicResult(
+            dataset=final_dataset,
+            # parameters=final_parameters_merged,
+            # logs=final_logs,
+        )
+
+        return result

@@ -8,6 +8,7 @@
 #
 """TBW."""
 
-from .dynamic import Dynamic
+# flake8: noqa
+from .dynamic import Dynamic, DynamicResult
 
 __all__ = ["Dynamic"]
