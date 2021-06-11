@@ -74,11 +74,11 @@ class Simulation:
         )
         self.energy_cut = 1.0e-5  # MeV
 
-        self.e_num_lst_per_step = np.array([])  # type: np.ndarray
-        self.e_energy_lst = np.array([])  # type: np.ndarray
-        self.e_pos0_lst = np.array([])  # type: np.ndarray
-        self.e_pos1_lst = np.array([])  # type: np.ndarray
-        self.e_pos2_lst = np.array([])  # type: np.ndarray
+        self.e_num_lst_per_step = []  # type: t.List[int]
+        self.e_energy_lst = []  # type: t.List[float]
+        self.e_pos0_lst = []  # type: t.List[float]
+        self.e_pos1_lst = []  # type: t.List[float]
+        self.e_pos2_lst = []  # type: t.List[float]
         self.e_vel0_lst = np.array([])  # type: np.ndarray
         self.e_vel1_lst = np.array([])  # type: np.ndarray
         self.e_vel2_lst = np.array([])  # type: np.ndarray
@@ -339,12 +339,12 @@ class Simulation:
             secondary_per_event += 1
             tertiary_per_event += electron_number - 1
             electron_number_per_event += electron_number
-            self.e_num_lst_per_step += [electron_number]
+            self.e_num_lst_per_step.append(electron_number)
 
-            self.e_energy_lst += [e_kin_energy * 1e3]  # eV
-            self.e_pos0_lst += [particle.position[0]]  # um
-            self.e_pos1_lst += [particle.position[1]]  # um
-            self.e_pos2_lst += [particle.position[2]]  # um
+            self.e_energy_lst.append(e_kin_energy * 1e3)  # eV
+            self.e_pos0_lst.append(particle.position[0])  # um
+            self.e_pos1_lst.append(particle.position[1])  # um
+            self.e_pos2_lst.append(particle.position[2])  # um
 
             self.edep_per_step.append(particle.deposited_energy)  # keV
             particle.total_edep += particle.deposited_energy  # keV
@@ -355,9 +355,9 @@ class Simulation:
 
         if track_left:
             self.total_edep_per_particle.append(particle.total_edep)  # keV
-            self.e_num_lst_per_event += [electron_number_per_event]
-            self.sec_lst_per_event += [secondary_per_event]
-            self.ter_lst_per_event += [tertiary_per_event]
+            self.e_num_lst_per_event.append(electron_number_per_event)
+            self.sec_lst_per_event.append(secondary_per_event)
+            self.ter_lst_per_event.append(tertiary_per_event)
 
         return False
 
@@ -399,10 +399,10 @@ class Simulation:
         if particle.track_length < 1.0:
             return True
 
-        self.track_length_lst_per_event += [particle.track_length]
-        self.p_energy_lst_per_event += [particle.energy]
-        self.alpha_lst_per_event += [particle.alpha]
-        self.beta_lst_per_event += [particle.beta]
+        self.track_length_lst_per_event.append(particle.track_length)
+        self.p_energy_lst_per_event.append(particle.energy)
+        self.alpha_lst_per_event.append(particle.alpha)
+        self.beta_lst_per_event.append(particle.beta)
 
         error = subprocess.call(
             [
@@ -432,9 +432,15 @@ class Simulation:
         primary_e_loss = g4energydata[2] * 1.0e6
         secondary_e_loss = g4energydata[3] * 1.0e6
         if all_e_loss > 0.0:
-            self.electron_number_from_eloss += [np.floor(all_e_loss / 3.6).astype(int)]
-            self.secondaries_from_eloss += [np.floor(primary_e_loss / 3.6).astype(int)]
-            self.tertiaries_from_eloss += [np.floor(secondary_e_loss / 3.6).astype(int)]
+            self.electron_number_from_eloss.append(
+                np.floor(all_e_loss / 3.6).astype(int)
+            )
+            self.secondaries_from_eloss.append(
+                np.floor(primary_e_loss / 3.6).astype(int)
+            )
+            self.tertiaries_from_eloss.append(
+                np.floor(secondary_e_loss / 3.6).astype(int)
+            )
 
         g4_data_path = Path(__file__).parent.joinpath(
             "data", "geant4", "tars_geant4.data"
@@ -471,13 +477,13 @@ class Simulation:
                 secondary_per_event += secondaries
                 tertiary_per_event += tertiaries
 
-                self.e_num_lst_per_step += [electron_number_vector[j]]
-                self.e_pos0_lst += [particle.position[0]]  # um
-                self.e_pos1_lst += [particle.position[1]]  # um
-                self.e_pos2_lst += [particle.position[2]]  # um
+                self.e_num_lst_per_step.append(electron_number_vector[j])
+                self.e_pos0_lst.append(particle.position[0])  # um
+                self.e_pos1_lst.append(particle.position[1])  # um
+                self.e_pos2_lst.append(particle.position[2])  # um
 
                 e_kin_energy = 1.0
-                self.e_energy_lst += [e_kin_energy]  # eV
+                self.e_energy_lst.append(e_kin_energy)  # eV
 
                 # self.edep_per_step.append(particle.deposited_energy)    # keV
                 # particle.total_edep += particle.deposited_energy        # keV
@@ -490,9 +496,9 @@ class Simulation:
             # END of loop
 
             # self.total_edep_per_particle.append(particle.total_edep)  # keV
-            self.e_num_lst_per_event += [electron_number_per_event]
-            self.sec_lst_per_event += [secondary_per_event]
-            self.ter_lst_per_event += [tertiary_per_event]
+            self.e_num_lst_per_event.append(electron_number_per_event)
+            self.sec_lst_per_event.append(secondary_per_event)
+            self.ter_lst_per_event.append(tertiary_per_event)
 
         # print('p energy: ', particle.energy, '\ttrack length: ', particle.track_length,
         #       '\telectrons/event: ', electron_number_per_event,

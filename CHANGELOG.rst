@@ -25,6 +25,12 @@ Documentation
 * Update installation section.
   (See`!220 <https://gitlab.com/esa/pyxel/-/merge_requests/220>`_).
 
+Models
+~~~~~~
+
+* Fix TARS model.
+  (See`!227 <https://gitlab.com/esa/pyxel/-/merge_requests/227>`_).
+
 Others
 ~~~~~~
 
