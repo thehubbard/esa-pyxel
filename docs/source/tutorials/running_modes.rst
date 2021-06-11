@@ -244,7 +244,7 @@ Dynamic mode
 ============
 
 The purpose of the Dynamic mode is to execute the same pipeline
-on the same detector object several time. It uses the parameter `steps`
+on the same detector object several times. It uses the parameter `steps`
 to count the number of iteration of the detector through the pipeline.
 The parameter `t_step` is the time in between steps, that can be used
 in the models that use time-dependant computation.
