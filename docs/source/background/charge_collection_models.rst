@@ -27,3 +27,9 @@ Inter-pixel capacitance
 -----------------------
 
 .. autofunction:: simple_ipc
+
+Persistence
+-----------
+
+.. autofunction:: simple_persistence
+.. autofunction:: current_persistence
