@@ -30,7 +30,7 @@ from pyxel import __version__ as version
 from pyxel import inputs_outputs as io
 from pyxel.calibration import Calibration, CalibrationResult
 from pyxel.detectors import CCD, CMOS
-from pyxel.dynamic import Dynamic, DynamicResult
+from pyxel.dynamic import Dynamic  # , DynamicResult
 from pyxel.inputs_outputs import Configuration
 from pyxel.parametric import Parametric, ParametricResult
 from pyxel.pipelines import DetectionPipeline, Processor
@@ -110,9 +110,10 @@ def parametric_mode(
 
     result = parametric.run_parametric(processor=processor)
 
-    parametric_outputs.save_parametric_datasets(
-        result=result, mode=parametric.parametric_mode
-    )
+    if parametric_outputs.save_parametric_data:
+        parametric_outputs.save_parametric_datasets(
+            result=result, mode=parametric.parametric_mode
+        )
 
     return result
 
@@ -121,7 +122,7 @@ def dynamic_mode(
     dynamic: "Dynamic",
     detector: t.Union["CCD", "CMOS"],
     pipeline: "DetectionPipeline",
-) -> DynamicResult:
+) -> xr.Dataset:
     """Run a 'dynamic' pipeline.
 
     Parameters
@@ -144,6 +145,9 @@ def dynamic_mode(
     processor = Processor(detector=detector, pipeline=pipeline)
 
     result = dynamic.run_dynamic(processor=processor)
+
+    if dynamic_outputs.save_dynamic_data:
+        dynamic_outputs.save_dynamic_outputs(dataset=result)
 
     return result
 
@@ -333,6 +337,7 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
     Parameters
     ----------
     input_filename
+    random_seed
     random_seed
     """
     logging.info("Pyxel version %s", version)

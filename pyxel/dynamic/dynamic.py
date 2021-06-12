@@ -9,6 +9,7 @@
 """TBW."""
 
 import logging
+import operator
 import typing as t
 
 import xarray as xr
@@ -19,12 +20,12 @@ if t.TYPE_CHECKING:
     from ..pipelines import Processor
 
 
-class DynamicResult(t.NamedTuple):
-    """Result class for parametric class."""
-
-    dataset: t.Union[xr.Dataset, t.Dict[str, xr.Dataset]]
-    # parameters: xr.Dataset
-    # logs: xr.Dataset
+# class DynamicResult(t.NamedTuple):
+#     """Result class for parametric class."""
+#
+#     dataset: t.Union[xr.Dataset, t.Dict[str, xr.Dataset]]
+#     # parameters: xr.Dataset
+#     # logs: xr.Dataset
 
 
 class Dynamic:
@@ -66,7 +67,7 @@ class Dynamic:
         """TBW."""
         self._non_destructive_readout = non_destructive_readout
 
-    def run_dynamic(self, processor: "Processor") -> DynamicResult:
+    def run_dynamic(self, processor: "Processor") -> xr.Dataset:
         """TBW."""
         # if isinstance(detector, CCD):
         #    dynamic.non_destructive_readout = False
@@ -84,6 +85,14 @@ class Dynamic:
         # prepare lists for to-be-merged datasets
         list_datasets = []
 
+        # Dimensions set by the detectors dimensions
+        rows, columns = (
+            processor.detector.geometry.row,
+            processor.detector.geometry.row,
+        )
+        # Coordinates
+        coordinates = {"x": range(columns), "y": range(rows)}
+
         pbar = tqdm(total=self._steps)
         # TODO: Use an iterator for that ?
         while detector.elapse_time():
@@ -95,41 +104,44 @@ class Dynamic:
             processor.run_pipeline()
             if detector.read_out:
                 self.outputs.save_to_file(processor)
-            # Saving all image arrays into an xarray dataset for possible
+            # Saving all arrays into an xarray dataset for possible
             # display with holoviews in jupyter notebook
             # Initialize an xarray dataset
             out = xr.Dataset()
-            # Dimensions set by the detectors dimensions
-            rows, columns = (
-                processor.detector.geometry.row,
-                processor.detector.geometry.row,
-            )
-            # Coordinates
-            coordinates = {"x": range(columns), "y": range(rows)}
-            # Dataset is storing the image array at the end of this iter
-            da = xr.DataArray(
-                processor.detector.image.array,
-                dims=["y", "x"],
-                coords=coordinates,  # type: ignore
-            )
-            # Time coordinate of this iteration
-            da = da.assign_coords(coords={"t": processor.detector.time})
-            da = da.expand_dims(dim="t")
-            pbar.update(1)
 
-            out["image"] = da
+            # Dataset is storing the arrays at the end of this iter
+            arrays = {
+                "pixel": "detector.pixel.array",
+                "signal": "detector.signal.array",
+                "image": "detector.image.array",
+            }
+
+            for key, array in arrays.items():
+
+                da = xr.DataArray(
+                    operator.attrgetter(array)(processor),
+                    dims=["y", "x"],
+                    coords=coordinates,  # type: ignore
+                )
+                # Time coordinate of this iteration
+                da = da.assign_coords(coords={"t": processor.detector.time})
+                da = da.expand_dims(dim="t")
+
+                out[key] = da
+
+            pbar.update(1)
             # Append to the list of datasets
             list_datasets.append(out)
 
         pbar.close()
 
         # Combine the datasets in the list into one xarray
-        final_dataset = xr.combine_by_coords(list_datasets)
+        final_dataset = xr.combine_by_coords(list_datasets)  # type: xr.Dataset
 
-        result = DynamicResult(
-            dataset=final_dataset,
-            # parameters=final_parameters_merged,
-            # logs=final_logs,
-        )
+        # result = DynamicResult(
+        #     dataset=final_dataset,
+        #     # parameters=final_parameters_merged,
+        #     # logs=final_logs,
+        # )
 
-        return result
+        return final_dataset
