@@ -17,19 +17,23 @@ Core
 * dynamic mode progress bar.
   (See `!219 <https://gitlab.com/esa/pyxel/-/merge_requests/219>`_).
 * Add capability to create models through command line using a template.
-  (See`!217 <https://gitlab.com/esa/pyxel/-/merge_requests/217>`_).
+  (See `!217 <https://gitlab.com/esa/pyxel/-/merge_requests/217>`_).
+* Improved dynamic mode.
+  (See `!229 <https://gitlab.com/esa/pyxel/-/merge_requests/229>`_).
 
 Documentation
 ~~~~~~~~~~~~~
 
 * Update installation section.
-  (See`!220 <https://gitlab.com/esa/pyxel/-/merge_requests/220>`_).
+  (See `!220 <https://gitlab.com/esa/pyxel/-/merge_requests/220>`_).
 
 Models
 ~~~~~~
 
 * Fix TARS model.
-  (See`!227 <https://gitlab.com/esa/pyxel/-/merge_requests/227>`_).
+  (See `!227 <https://gitlab.com/esa/pyxel/-/merge_requests/227>`_).
+* Persistence model updated in charge_collection/persistence.py
+  (See `!224 <https://gitlab.com/esa/pyxel/-/merge_requests/224>`_).
 
 Others
 ~~~~~~
@@ -38,8 +42,7 @@ Others
   (See `!216 <https://gitlab.com/esa/pyxel/-/merge_requests/216>`_).
 * Add compatibility to Mypy 0.900.
   (See `!223 <https://gitlab.com/esa/pyxel/-/merge_requests/223>`_).
-* Persistence model updated in charge_collection/persistence.py
-  (See `!224 <https://gitlab.com/esa/pyxel/-/merge_requests/224>`_).
+
 
 version 0.9.1 / 2021-05-17
 --------------------------
