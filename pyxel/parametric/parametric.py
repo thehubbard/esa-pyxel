@@ -635,9 +635,8 @@ def parameter_to_dataset(
     """
 
     parameter_ds = xr.Dataset()
-    parameter = xr.DataArray(
-        parameter_dict[coordinate_name], coords={short(_id(coordinate_name)): index}
-    )
+    parameter = xr.DataArray(parameter_dict[coordinate_name])
+    parameter = parameter.assign_coords({short(_id(coordinate_name)): index})
     parameter = parameter.expand_dims(dim=short(_id(coordinate_name)))
     parameter_ds[short(coordinate_name)] = parameter
 
