@@ -20,6 +20,8 @@ Core
   (See `!217 <https://gitlab.com/esa/pyxel/-/merge_requests/217>`_).
 * Improved dynamic mode.
   (See `!229 <https://gitlab.com/esa/pyxel/-/merge_requests/229>`_).
+* Fix issue in creating parametric datasets.
+  (See `!230 <https://gitlab.com/esa/pyxel/-/merge_requests/230>`_).
 
 Documentation
 ~~~~~~~~~~~~~
