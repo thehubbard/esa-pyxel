@@ -26,6 +26,8 @@ Documentation
 
 * Update installation section.
   (See `!220 <https://gitlab.com/esa/pyxel/-/merge_requests/220>`_).
+* Update documentation on parametric and dynamic mode.
+  (See `!228 <https://gitlab.com/esa/pyxel/-/merge_requests/228>`_).
 
 Models
 ~~~~~~

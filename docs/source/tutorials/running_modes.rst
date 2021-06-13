@@ -111,16 +111,16 @@ Sequential
 The default values for 'number' and 'level' are defined as the arguments
 of the specific models in the pipeline part of the yaml config file.
 
-Embedded
---------
+Product
+-------
 
 .. code-block:: yaml
 
-  # YAML config file for Parametric mode (embedded)
+  # YAML config file for Parametric mode (product)
 
   parametric:
 
-    mode: embedded
+    mode: product
     parameters:
       - key:      pipeline.charge_generation.tars.arguments.particle_number
         values:   [1, 2, 3]
@@ -137,16 +137,16 @@ Embedded
 The default values for 'number' and 'level' are defined as the arguments
 of the specific models in the pipeline part of the yaml config file.
 
-Parallel
---------
+Custom
+------
 
 .. code-block:: yaml
 
-  # YAML config file for Parametric mode (parallel)
+  # YAML config file for Parametric mode (custom)
 
   parametric:
 
-    mode:  parallel
+    mode:  custom
     from_file:        'outputs/calibration_champions.out'
     column_range:     [2, 17]
     parameters:
@@ -167,7 +167,7 @@ The parametric values (int, float or str) indicated with with '_' character,
 and all are read and changed in parallel from an ASCII file defined
 with ``from_file``.
 
-Can be used for example to read output file of calibration running mode
+Can be used for example to read results of calibration running mode
 containing the champion parameter set for each generation, and create one
 output fits image for each generation to see the evolution.
 
@@ -236,3 +236,30 @@ target dataset the models or detector behaviour shall reproduce.
         values: _
         logarithmic: false
         boundaries: [0., 1.]
+
+
+.. _dynamic_mode:
+
+Dynamic mode
+============
+
+The purpose of the Dynamic mode is to execute the same pipeline
+on the same detector object several times. It uses the parameter `steps`
+to count the number of iteration of the detector through the pipeline.
+The parameter `t_step` is the time in between steps, that can be used
+in the models that use time-dependant computation.
+
+The `non-destructive` mode is used to avoid reseting the detector object
+at each iteration of the detector through the pipeline.
+
+.. code-block:: yaml
+
+  # YAML config file for Dynamic mode
+
+  dynamic:
+    non_destructive_readout:  true
+    steps: 10
+    t_step: 0.5
+
+    outputs:
+      output_folder: 'output'
