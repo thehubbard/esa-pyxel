@@ -76,3 +76,4 @@ dependencies:
     - types-requests
     - types-PyYAML
     - types-pkg_resources
+    - freezegun
