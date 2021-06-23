@@ -19,7 +19,8 @@ Models
 
 Others
 ~~~~~~
-
+* Resolved calibration not allowing one column text files
+  (See `!233 <https://gitlab.com/esa/pyxel/-/merge_requests/233>`_).
 
 
 version 0.10 / 2021-06-13
