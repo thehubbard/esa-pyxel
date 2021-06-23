@@ -354,7 +354,7 @@ def isotropic_direction() -> t.Tuple[float, float, float]:
     return u, v, w
 
 
-def non_isotropic_direction(n: int) -> t.Tuple[float, float, float]:
+def non_isotropic_direction(n: int) -> t.Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """TBW.
 
     :param n:

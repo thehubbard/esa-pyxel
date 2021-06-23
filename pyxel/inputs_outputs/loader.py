@@ -96,7 +96,7 @@ def load_image(filename: t.Union[str, Path]) -> np.ndarray:
         for sep in ["\t", " ", ",", "|", ";"]:
             try:
                 with fsspec.open(url_path, mode="r", **extras) as file_handler:
-                    data_2d = np.loadtxt(file_handler, delimiter=sep)
+                    data_2d = np.loadtxt(file_handler, delimiter=sep, ndmin=2)
                 break
             except ValueError:
                 pass
