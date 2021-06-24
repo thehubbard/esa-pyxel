@@ -11,7 +11,8 @@ Core
 
 Documentation
 ~~~~~~~~~~~~~
-
+* Install a specific conda package version.
+  (See `!235 <https://gitlab.com/esa/pyxel/-/merge_requests/235>`_).
 
 Models
 ~~~~~~
