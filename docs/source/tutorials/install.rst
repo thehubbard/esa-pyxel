@@ -78,7 +78,7 @@ If you use `conda`, you can install Pyxel with:
     conda activate my-env
 
     # Install Python and pip in the environment
-    conda install python>=3.7 pip
+    conda install python">=3.7" pip
 
     # Install Pygmo (needed for calibration)
     conda install -c conda-forge pygmo
