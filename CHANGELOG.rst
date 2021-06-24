@@ -22,6 +22,8 @@ Others
 ~~~~~~
 * Resolved calibration not allowing one column text files
   (See `!233 <https://gitlab.com/esa/pyxel/-/merge_requests/233>`_).
+* Update dependency to 'pygmo' from 2.11 to 2.16.1.
+  (See `!234 <https://gitlab.com/esa/pyxel/-/merge_requests/234>`_).
 
 
 version 0.10 / 2021-06-13
