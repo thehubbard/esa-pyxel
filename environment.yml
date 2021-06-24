@@ -6,14 +6,6 @@
 #   $ conda activate pyxel-dev
 #   (pyxel_dev) $ pip install -e .
 
-###### (Optional) Install 'ipywidgets' as an extension for JupyterLab
-#  (pyxel_dev) $ jupyter labextension install @jupyter-widgets/jupyterlab-manager
-
-###### (Optional) Install 'dask-labextension' as an extension for JupyterLab running on the GRID
-#  (pyxel_dev) $ jupyter labextension install dask-labextension
-#  (pyxel_dev) $ jupyter serverextension enable dask_labextension
-
-
 # Get a list of all the environments:
 #  $ conda env list -v
 
