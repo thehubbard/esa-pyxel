@@ -10,8 +10,10 @@ import os
 import typing as t
 from copy import deepcopy
 
+import numba
 import numpy as np
 from numba import njit
+from numba.experimental import jitclass
 
 from pyxel.detectors import CCD as PyxelCCD
 
@@ -48,6 +50,16 @@ def my_roll_axis0(a: np.ndarray, shift: int) -> np.ndarray:
     return np.roll(a, shift * num_x)
 
 
+@jitclass(
+    {
+        "n_phases": numba.int64,
+        "fraction_of_traps_per_phase": numba.float64[:],
+        "full_well_depth": numba.float64[:],
+        "well_fill_power": numba.float64[:],
+        "well_notch_depth": numba.float64[:],
+        "well_bloom_level": numba.float64[:],
+    }
+)
 class CCD:
     def __init__(
         self,
