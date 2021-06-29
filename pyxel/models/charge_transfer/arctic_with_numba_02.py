@@ -367,10 +367,9 @@ class ROEPhase:
         "empty_traps_for_first_transfers": numba.bool_,
         "empty_traps_between_columns": numba.bool_,
         "force_release_away_from_readout": numba.bool_,
-        "clock_sequence": numba.types.ListType(
-            numba.types.ListType(as_numba_type(ROEPhase))
-        ),
-        # 'clock_sequence': numba.types.ListType(numba.types.ListType(ROEPhase.class_type.instance_type)),
+        "clock_sequence": None
+        if NUMBA_DISABLE_JIT
+        else numba.types.ListType(numba.types.ListType(as_numba_type(ROEPhase))),
         "pixels_accessed_during_clocking_1d": numba.int64[:],
     }
 )
