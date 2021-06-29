@@ -14,6 +14,7 @@ import numba
 import numpy as np
 from numba import njit
 from numba.experimental import jitclass
+from numba.typed import List
 
 from pyxel.detectors import CCD as PyxelCCD
 
@@ -270,6 +271,14 @@ class CCD:
         return volume
 
 
+@jitclass(
+    {
+        "is_high": numba.bool_,
+        "capture_from_which_pixels_1d": numba.int64[:],
+        "release_to_which_pixels_1d": numba.int64[:],
+        "release_fraction_to_pixel_1d": numba.float64[:],
+    }
+)
 class ROEPhase:
     def __init__(
         self,
