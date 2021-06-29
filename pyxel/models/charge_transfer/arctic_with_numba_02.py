@@ -937,6 +937,17 @@ class ROE:
 #     return None
 
 # TODO: This is new
+@jitclass(
+    {
+        "n_trap_species": numba.int64,
+        "density_1d": numba.float64[:],
+        "release_timescale_1d": numba.float64[:],
+        "capture_timescale_1d": numba.float64[:],
+        "surface_1d": numba.bool_[:],
+        "emission_rate_1d": numba.float64[:],
+        "capture_rate_1d": numba.float64[:],
+    }
+)
 class Traps:
     def __init__(
         self,
