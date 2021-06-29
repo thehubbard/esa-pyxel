@@ -14,6 +14,7 @@ import numba
 import numpy as np
 from numba import njit
 from numba.experimental import jitclass
+from numba.extending import as_numba_type
 from numba.typed import List
 
 from pyxel.detectors import CCD as PyxelCCD
@@ -358,6 +359,21 @@ class ROEPhase:
 #         # self.express_matrix_dtype = express_matrix_dtype
 
 
+@jitclass(
+    {
+        "dwell_times": numba.float64[:],
+        "n_steps": numba.int64,
+        "n_phases": numba.int64,
+        "empty_traps_for_first_transfers": numba.bool_,
+        "empty_traps_between_columns": numba.bool_,
+        "force_release_away_from_readout": numba.bool_,
+        "clock_sequence": numba.types.ListType(
+            numba.types.ListType(as_numba_type(ROEPhase))
+        ),
+        # 'clock_sequence': numba.types.ListType(numba.types.ListType(ROEPhase.class_type.instance_type)),
+        "pixels_accessed_during_clocking_1d": numba.int64[:],
+    }
+)
 class ROE:
     def __init__(
         self,
@@ -800,9 +816,9 @@ class ROE:
         n_phases = self.n_phases  # type: int
         integration_step = 0  # type: int
 
-        clock_sequence = []  # type: t.List[t.List[ROEPhase]]
+        clock_sequence = List()  # type: t.List[t.List[ROEPhase]]
         for step in range(n_steps):
-            roe_phases = []  # type: t.List[ROEPhase]
+            roe_phases = List()  # type: t.List[ROEPhase]
 
             # Loop counter (0,1,2,3,2,1,... instead of 0,1,2,3,4,5,...) that is
             # relevant during trap pumping and done but ignored in normal modes
