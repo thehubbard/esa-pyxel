@@ -1000,18 +1000,18 @@ class Traps:
         self.capture_rate_1d = 1.0 / self.capture_timescale_1d  # type: np.ndarray
 
 
-# @jitclass(
-#     {
-#         "_n_trap_species": numba.int64,
-#         "max_n_transfers": numba.int64,
-#         "watermarks_2d": numba.float64[:, :],
-#         "capture_rates_1d": numba.float64[:],
-#         "emission_rates_1d": numba.float64[:],
-#         "total_rates_1d": numba.float64[:],
-#         "surface_1d": numba.bool_[:],
-#         "trap_densities_1d": numba.float64[:],
-#     }
-# )
+@jitclass(
+    {
+        "_n_trap_species": numba.int64,
+        "max_n_transfers": numba.int64,
+        "watermarks_2d": numba.float64[:, :],
+        "capture_rates_1d": numba.float64[:],
+        "emission_rates_1d": numba.float64[:],
+        "total_rates_1d": numba.float64[:],
+        "surface_1d": numba.bool_[:],
+        "trap_densities_1d": numba.float64[:],
+    }
+)
 class TrapManager:
     def __init__(self, traps: Traps, max_n_transfers: int):
         """
