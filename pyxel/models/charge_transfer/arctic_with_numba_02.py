@@ -1907,7 +1907,13 @@ class TrapManager:
         return n_trapped_electrons_initial - n_trapped_electrons_final
 
 
-@jitclass({"traps_managers": numba.types.ListType(as_numba_type(TrapManager))})
+@jitclass(
+    {
+        "traps_managers": None
+        if NUMBA_DISABLE_JIT
+        else numba.types.ListType(as_numba_type(TrapManager))
+    }
+)
 class TrapManagerPhases:
     # def __init__(self, traps: Traps, max_n_transfer: int, ccd: CCD):
     #
@@ -1955,10 +1961,12 @@ def build_trap_manager_phases(
 
 @jitclass(
     {
-        "trap_manager_phases": numba.types.ListType(as_numba_type(TrapManagerPhases)),
-        "_saved_trap_manager_phases": numba.types.ListType(
-            as_numba_type(TrapManagerPhases)
-        ),
+        "trap_manager_phases": None
+        if NUMBA_DISABLE_JIT
+        else numba.types.ListType(as_numba_type(TrapManagerPhases)),
+        "_saved_trap_manager_phases": None
+        if NUMBA_DISABLE_JIT
+        else numba.types.ListType(as_numba_type(TrapManagerPhases)),
         "_n_electrons_trapped_in_save": numba.float64,
         "_n_electrons_trapped_previously": numba.float64,
     }
@@ -2153,7 +2161,7 @@ class AllTrapManager:
         # )
 
         # TODO: Refactor this ?
-        data = []  # type: t.List[TrapManagerPhases]
+        data = List()  # type: t.List[TrapManagerPhases]
         for trap_manager_phase in self.trap_manager_phases:  # type: TrapManagerPhases
             data.append(trap_manager_phase.copy())
 
@@ -2189,6 +2197,7 @@ class AllTrapManager:
             )
 
 
+@njit
 def _clock_charge_in_one_direction(
     image_2d: np.ndarray,
     roe: ROE,
@@ -2356,7 +2365,7 @@ def _clock_charge_in_one_direction(
         for express_index in range(n_express_pass):
             # Restore the trap occupancy levels (to empty, or to a saved state
             # from a previous express pass)
-            trap_managers.restore()
+            # trap_managers.restore()
 
             # Each pixel
             for row_index in range(len(window_row_range)):
@@ -2482,6 +2491,7 @@ def _clock_charge_in_one_direction(
     return image_2d
 
 
+@njit
 def add_cti(
     image_2d: np.ndarray,
     parallel_ccd: CCD,
@@ -2734,7 +2744,7 @@ def arctic_no_numba(
         surface_1d=np.array([False], dtype=np.bool_),
     )
 
-    traps_lst = []
+    traps_lst = List()
     traps_lst.append(traps)
 
     s = add_cti(
