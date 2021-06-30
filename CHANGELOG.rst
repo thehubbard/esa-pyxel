@@ -8,9 +8,13 @@ version 0.11 / UNRELEASED-2021-MM-DD
 Core
 ~~~~
 
+* Add more debugging information when Calibration mode fails.
+  (See `!228 <https://gitlab.com/esa/pyxel/-/merge_requests/228>`_).
+
 
 Documentation
 ~~~~~~~~~~~~~
+
 * Install a specific conda package version.
   (See `!235 <https://gitlab.com/esa/pyxel/-/merge_requests/235>`_).
 
