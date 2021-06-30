@@ -324,41 +324,50 @@ class ModelFitting(ProblemSingleObjective):
             The fitness of the input decision vector (concatenating the objectives,
             the equality and the inequality constraints)
         """
-        # TODO: Fix this
-        if self.pop is None:
-            raise NotImplementedError("'pop' is not initialized.")
+        try:
+            # TODO: Fix this
+            if self.pop is None:
+                raise NotImplementedError("'pop' is not initialized.")
 
-        # TODO: Use directory 'logging.'
-        logger = logging.getLogger("pyxel")
-        prev_log_level = logger.getEffectiveLevel()
+            # TODO: Use directory 'logging.'
+            logger = logging.getLogger("pyxel")
+            prev_log_level = logger.getEffectiveLevel()
 
-        parameter_1d = self.convert_to_parameters(decision_vector_1d)
-        # TODO: deepcopy is not needed. Check this
-        processor_list = self.param_processor_list  # type: t.Sequence[Processor]
+            parameter_1d = self.convert_to_parameters(decision_vector_1d)
+            # TODO: deepcopy is not needed. Check this
+            processor_list = self.param_processor_list  # type: t.Sequence[Processor]
 
-        overall_fitness = 0.0  # type: float
-        for processor, target_data in zip(processor_list, self.all_target_data):
+            overall_fitness = 0.0  # type: float
+            for processor, target_data in zip(processor_list, self.all_target_data):
 
-            processor = self.update_processor(
-                parameter=parameter_1d, processor=processor
+                processor = self.update_processor(
+                    parameter=parameter_1d, processor=processor
+                )
+
+                logger.setLevel(logging.WARNING)
+                # result_proc = None
+                if self.calibration_mode == CalibrationMode.Pipeline:
+                    result_proc = processor.run_pipeline()  # type: Processor
+                # elif self.calibration_mode == 'single_model':
+                #     self.fitted_model.function(processor.detector)               # todo: update
+                else:
+                    raise NotImplementedError
+
+                logger.setLevel(prev_log_level)
+
+                simulated_data = self.get_simulated_data(processor=result_proc)
+
+                overall_fitness += self.calculate_fitness(
+                    simulated_data=simulated_data, target_data=target_data
+                )
+
+        except Exception as exc:
+            logging.exception(
+                "Catch an exception in 'fitness' for ModelFitting: %r. exc: %r",
+                self,
+                exc,
             )
-
-            logger.setLevel(logging.WARNING)
-            # result_proc = None
-            if self.calibration_mode == CalibrationMode.Pipeline:
-                result_proc = processor.run_pipeline()  # type: Processor
-            # elif self.calibration_mode == 'single_model':
-            #     self.fitted_model.function(processor.detector)               # todo: update
-            else:
-                raise NotImplementedError
-
-            logger.setLevel(prev_log_level)
-
-            simulated_data = self.get_simulated_data(processor=result_proc)
-
-            overall_fitness += self.calculate_fitness(
-                simulated_data=simulated_data, target_data=target_data
-            )
+            raise
 
         return [overall_fitness]
 
