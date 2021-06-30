@@ -1907,6 +1907,7 @@ class TrapManager:
         return n_trapped_electrons_initial - n_trapped_electrons_final
 
 
+@jitclass({"traps_managers": numba.types.ListType(as_numba_type(TrapManager))})
 class TrapManagerPhases:
     # def __init__(self, traps: Traps, max_n_transfer: int, ccd: CCD):
     #
@@ -1927,18 +1928,19 @@ class TrapManagerPhases:
         self.traps_managers = trap_manager_phases  # type: t.Sequence[TrapManager]
 
     def copy(self) -> "TrapManagerPhases":
-        copied_data = []  # type: t.List[TrapManager]
+        copied_data = List()  # type: t.List[TrapManager]
         for trap_manager in self.traps_managers:  # type: TrapManager
             copied_data.append(trap_manager.copy())
 
         return TrapManagerPhases(copied_data)
 
 
+@njit
 def build_trap_manager_phases(
     traps: Traps, max_n_transfer: int, ccd: CCD
 ) -> TrapManagerPhases:
 
-    data = []  # type: t.List[TrapManager]
+    data = List()  # type: t.List[TrapManager]
     for phase in range(ccd.n_phases):
         trap_manager = TrapManager(traps, max_n_transfer)
 
@@ -1951,6 +1953,16 @@ def build_trap_manager_phases(
     return TrapManagerPhases(data)
 
 
+@jitclass(
+    {
+        "trap_manager_phases": numba.types.ListType(as_numba_type(TrapManagerPhases)),
+        "_saved_trap_manager_phases": numba.types.ListType(
+            as_numba_type(TrapManagerPhases)
+        ),
+        "_n_electrons_trapped_in_save": numba.float64,
+        "_n_electrons_trapped_previously": numba.float64,
+    }
+)
 class AllTrapManager:
     def __init__(
         self,
@@ -2062,7 +2074,7 @@ class AllTrapManager:
         # self._n_electrons_trapped_in_save = 0.0  # type: float
         # self._n_electrons_trapped_previously = 0.0  # type: float
 
-        data = []  # type: t.List[TrapManagerPhases]
+        data = List()  # type: t.List[TrapManagerPhases]
 
         for traps in traps_lst:  # type: Traps
             # trap_manager_phases = TrapManagerPhases(traps, max_n_transfers, ccd)
@@ -2074,9 +2086,11 @@ class AllTrapManager:
         self.trap_manager_phases = data  # type: t.Sequence[TrapManagerPhases]
 
         # Initialise the empty trap state for future reference
-        self._saved_trap_manager_phases = (
-            None
-        )  # type: t.Optional[t.List[TrapManagerPhases]]
+        # self._saved_trap_manager_phases = (
+        #     None
+        # )  # type: t.Optional[t.List[TrapManagerPhases]]
+        self._saved_trap_manager_phases = self.trap_manager_phases
+
         self._n_electrons_trapped_in_save = 0.0  # type: float
         self._n_electrons_trapped_previously = 0.0  # type: float
 
@@ -2121,7 +2135,7 @@ class AllTrapManager:
     def copy_trap_manager_phases(
         self, trap_manager_phases: t.Sequence[TrapManagerPhases]
     ) -> t.Sequence[TrapManagerPhases]:
-        data = []  # type: t.List[TrapManagerPhases]
+        data = List()  # type: t.List[TrapManagerPhases]
         for trap_manager_phase in trap_manager_phases:  # type: TrapManagerPhases
             data.append(trap_manager_phase.copy())
 
