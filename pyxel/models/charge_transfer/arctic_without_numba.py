@@ -925,27 +925,23 @@ class ROE:
 #     return None
 
 # TODO: This is new
-class Traps:
+class TrapsInstantCapture:
     def __init__(
         self,
         density_1d: np.ndarray,
         release_timescale_1d: np.ndarray,
-        capture_timescale_1d: np.ndarray,
         surface_1d: np.ndarray,
     ):
         assert density_1d.ndim == 1
-        assert (
-            density_1d.shape
-            == release_timescale_1d.shape
-            == capture_timescale_1d.shape
-            == surface_1d.shape
-        )
+        assert density_1d.shape == release_timescale_1d.shape == surface_1d.shape
 
         self.n_trap_species = len(density_1d)
 
         self.density_1d = density_1d  # type: np.ndarray
         self.release_timescale_1d = release_timescale_1d  # type: np.ndarray
-        self.capture_timescale_1d = capture_timescale_1d  # type: np.ndarray
+        self.capture_timescale_1d = np.zeros(
+            shape=density_1d.shape, dtype=np.float64
+        )  # type: np.ndarray
         self.surface_1d = surface_1d  # type: np.ndarray
 
         # Rates
@@ -954,7 +950,7 @@ class Traps:
 
 
 class TrapManager:
-    def __init__(self, traps: Traps, max_n_transfers: int):
+    def __init__(self, traps: TrapsInstantCapture, max_n_transfers: int):
         """
         The manager for potentially multiple trap species that are able to use
         watermarks in the same way as each other.
@@ -1060,10 +1056,9 @@ class TrapManager:
     def copy(self) -> "TrapManager":
         # Create new traps
         # Remove keyword arguments because of Numba
-        traps_copied = Traps(
+        traps_copied = TrapsInstantCapture(
             self.trap_densities_1d,
             1.0 / self.emission_rates_1d,
-            self.capture_rates_1d,
             self.surface_1d,
         )
 
@@ -1876,7 +1871,7 @@ class TrapManagerPhases:
 
 
 def build_trap_manager_phases(
-    traps: Traps, max_n_transfer: int, ccd: CCD
+    traps: TrapsInstantCapture, max_n_transfer: int, ccd: CCD
 ) -> TrapManagerPhases:
 
     data = []  # type: t.List[TrapManager]
@@ -1895,7 +1890,7 @@ def build_trap_manager_phases(
 class AllTrapManager:
     def __init__(
         self,
-        traps_lst: t.Sequence[Traps],
+        traps_lst: t.Sequence[TrapsInstantCapture],
         max_n_transfers: int,
         ccd: CCD,
     ):
@@ -2005,7 +2000,7 @@ class AllTrapManager:
 
         data = []  # type: t.List[TrapManagerPhases]
 
-        for traps in traps_lst:  # type: Traps
+        for traps in traps_lst:  # type: TrapsInstantCapture
             # trap_manager_phases = TrapManagerPhases(traps, max_n_transfers, ccd)
             trap_manager_phases = build_trap_manager_phases(
                 traps, max_n_transfers, ccd
@@ -2120,7 +2115,7 @@ def _clock_charge_in_one_direction(
     image_2d: np.ndarray,
     roe: ROE,
     ccd: CCD,
-    traps: t.Sequence[Traps],
+    traps: t.Sequence[TrapsInstantCapture],
     express: int,
     offset: int,
     window_row_interval: t.Tuple[int, int],
@@ -2413,7 +2408,7 @@ def add_cti(
     image_2d: np.ndarray,
     parallel_ccd: CCD,
     parallel_roe: ROE,
-    parallel_traps: t.Sequence[Traps],
+    parallel_traps: t.Sequence[TrapsInstantCapture],
     parallel_express: int = 0,
     parallel_offset: int = 0,
     parallel_window_range: t.Optional[t.Tuple[int, int]] = None,
@@ -2654,10 +2649,9 @@ def arctic_without_numba(
     # serial_roe = ROE(dwell_times=np.array([1.0], dtype=np.float64))
     # trap = Trap(density=density, release_timescale=release_timescale)
 
-    traps = Traps(
+    traps = TrapsInstantCapture(
         density_1d=np.array([density], dtype=np.float64),
         release_timescale_1d=np.array([release_timescale], dtype=np.float64),
-        capture_timescale_1d=np.array([0.0], dtype=np.float64),
         surface_1d=np.array([False], dtype=np.bool_),
     )
 
