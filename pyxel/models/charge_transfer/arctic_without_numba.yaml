@@ -97,7 +97,7 @@ pipeline:
   # pixel -> pixel
   charge_transfer:
     - name: arctic
-      func: pyxel.models.charge_transfer.arctic_no_numba.arctic_no_numba
+      func: pyxel.models.charge_transfer.arctic_without_numba.arctic_without_numba
       enabled: true
       arguments:
         well_fill_power: 0.8
