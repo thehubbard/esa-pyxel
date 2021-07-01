@@ -2712,7 +2712,7 @@ def add_cti(
     return image_add_cti_2d
 
 
-def arctic_no_numba(
+def arctic_with_numba_02(
     detector: PyxelCCD,
     well_fill_power: float,
     density: float,
