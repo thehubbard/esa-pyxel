@@ -8,7 +8,6 @@
 
 import os
 import typing as t
-from copy import deepcopy
 
 import numba
 import numpy as np
@@ -1514,7 +1513,7 @@ class TrapManager:
             max_watermark_index,
         )
 
-    def collapse_redundant_watermarks_with_copy(
+    def collapse_redundant_watermarks_one_trap_with_copy(
         self, watermarks_2d: np.ndarray, watermarks_copy_2d: np.ndarray
     ) -> t.Tuple[np.ndarray, np.ndarray]:
         """
@@ -1577,19 +1576,7 @@ class TrapManager:
         #         axis=axis,
         #     ) / np.sum(watermarks_copy_2d[:watermark_index_not_filled, 0])
 
-        # Multiple trap species
-        assert num_traps == 1
-        # if 1 < num_traps:
-        #     axis = 1
-        # else:
-        #     axis = None
-        # copy_fill_values = np.sum(
-        #     watermarks_copy_2d[:watermark_index_not_filled, 0]
-        #     * watermarks_copy_2d[:watermark_index_not_filled, 1:].T,
-        #     axis=axis,
-        # ) / np.sum(
-        #     watermarks_copy_2d[:watermark_index_not_filled, 0]
-        # )  # type: float
+        # One trap
         copy_fill_values = np.sum(
             watermarks_copy_2d[:watermark_index_not_filled, 0]
             * watermarks_copy_2d[:watermark_index_not_filled, 1:].T,
@@ -1621,6 +1608,109 @@ class TrapManager:
         #     watermarks_copy_2d[0, 1:] = copy_fill_values
         watermarks_copy_2d[0, 0] = fractional_volume_filled
         watermarks_copy_2d[0, 1:] = copy_fill_values
+
+        # if watermarks_copy_2d is not None:
+        #     return watermarks_2d, watermarks_copy_2d
+        # else:
+        #     return watermarks_2d
+        return watermarks_2d, watermarks_copy_2d
+
+    def collapse_redundant_watermarks_multi_traps_with_copy(
+        self, watermarks_2d: np.ndarray, watermarks_copy_2d: np.ndarray
+    ) -> t.Tuple[np.ndarray, np.ndarray]:
+        """
+        Collapse any redundant watermarks that are completely full.
+
+        Parameters
+        ----------
+        watermarks_2d : np.ndarray
+            The current watermarks. See
+            initial_watermarks_from_n_pixels_and_total_traps().
+
+        watermarks_copy_2d : np.ndarray
+            A copy of the watermarks array that should be edited in the same way
+            as watermarks.
+
+        Returns
+        -------
+        watermarks : np.ndarray
+            The updated watermarks. See
+            initial_watermarks_from_n_pixels_and_total_traps().
+
+        watermarks_copy : np.ndarray
+            The updated watermarks copy, if it was provided.
+        """
+
+        # Number of trap species
+        num_traps = len(watermarks_2d[0, 1:])  # type: int
+
+        # Find the first watermark that is not completely filled for all traps
+        watermark_index_not_filled = min(
+            [
+                np.argmax(watermarks_2d[:, 1 + i_trap] != self.filled_watermark_value)
+                for i_trap in range(num_traps)
+            ]
+        )  # type: int
+
+        # Skip if none or only one are completely filled
+        if watermark_index_not_filled <= 1:
+            # if watermarks_copy_2d is not None:
+            #     return watermarks_2d, watermarks_copy_2d
+            # else:
+            #     return watermarks_2d
+            return watermarks_2d, watermarks_copy_2d
+
+        # Total fractional volume of filled watermarks
+        fractional_volume_filled = np.sum(
+            watermarks_2d[:watermark_index_not_filled, 0]
+        )  # type: float
+
+        # Combined fill values
+        # if watermarks_copy_2d is not None:
+        #     # Multiple trap species
+        #     if 1 < num_traps:
+        #         axis = 1
+        #     else:
+        #         axis = None
+        #     copy_fill_values = np.sum(
+        #         watermarks_copy_2d[:watermark_index_not_filled, 0]
+        #         * watermarks_copy_2d[:watermark_index_not_filled, 1:].T,
+        #         axis=axis,
+        #     ) / np.sum(watermarks_copy_2d[:watermark_index_not_filled, 0])
+
+        # Multi traps
+        copy_fill_values_1d = np.sum(
+            watermarks_copy_2d[:watermark_index_not_filled, 0]
+            * watermarks_copy_2d[:watermark_index_not_filled, 1:].T,
+            axis=1,
+        ) / np.sum(
+            watermarks_copy_2d[:watermark_index_not_filled, 0]
+        )  # type: np.ndarray
+
+        # Remove the no-longer-needed overwritten watermarks
+        watermarks_2d[:watermark_index_not_filled, :] = 0.0
+        # if watermarks_copy_2d is not None:
+        #     watermarks_copy_2d[:watermark_index_not_filled, :] = 0
+        watermarks_copy_2d[:watermark_index_not_filled, :] = 0.0
+
+        # Move the no-longer-needed watermarks to the end of the list
+        watermarks_2d = my_roll_axis0(watermarks_2d, 1 - watermark_index_not_filled)
+        # if watermarks_copy_2d is not None:
+        #     watermarks_copy_2d = np.roll(
+        #         watermarks_copy_2d, 1 - watermark_index_not_filled, axis=0
+        #     )
+        watermarks_copy_2d = my_roll_axis0(
+            watermarks_copy_2d, 1 - watermark_index_not_filled
+        )
+
+        # Edit the new first watermark
+        watermarks_2d[0, 0] = fractional_volume_filled
+        watermarks_2d[0, 1:] = self.filled_watermark_value
+        # if watermarks_copy_2d is not None:
+        #     watermarks_copy_2d[0, 0] = fractional_volume_filled
+        #     watermarks_copy_2d[0, 1:] = copy_fill_values
+        watermarks_copy_2d[0, 0] = fractional_volume_filled
+        watermarks_copy_2d[0, 1:] = copy_fill_values_1d
 
         # if watermarks_copy_2d is not None:
         #     return watermarks_2d, watermarks_copy_2d
@@ -1860,12 +1950,22 @@ class TrapManager:
         )
 
         # Collapse any redundant watermarks that are completely full
-        (
-            self.watermarks_2d,
-            watermarks_initial_2d,
-        ) = self.collapse_redundant_watermarks_with_copy(
-            watermarks_2d=self.watermarks_2d, watermarks_copy_2d=watermarks_initial_2d
-        )
+        if self.n_trap_species == 1:
+            (
+                self.watermarks_2d,
+                watermarks_initial_2d,
+            ) = self.collapse_redundant_watermarks_one_trap_with_copy(
+                watermarks_2d=self.watermarks_2d,
+                watermarks_copy_2d=watermarks_initial_2d,
+            )
+        else:
+            (
+                self.watermarks_2d,
+                watermarks_initial_2d,
+            ) = self.collapse_redundant_watermarks_multi_traps_with_copy(
+                watermarks_2d=self.watermarks_2d,
+                watermarks_copy_2d=watermarks_initial_2d,
+            )
 
         # Final number of electrons in traps
         n_trapped_electrons_final = self.n_trapped_electrons_from_watermarks(
@@ -2732,12 +2832,23 @@ def arctic_with_numba_02(
     # serial_roe = ROE(dwell_times=np.array([1.0], dtype=np.float64))
     # trap = Trap(density=density, release_timescale=release_timescale)
 
-    traps = TrapsInstantCapture(
-        density_1d=np.array([density], dtype=np.float64),
-        release_timescale_1d=np.array([release_timescale], dtype=np.float64),
-        capture_timescale_1d=np.array([0.0], dtype=np.float64),
-        surface_1d=np.array([False], dtype=np.bool_),
-    )
+    WITH_MULTIPLE_TRAPS = True
+    if WITH_MULTIPLE_TRAPS:
+        # Create 5 traps
+        traps = TrapsInstantCapture(
+            density_1d=np.array([density, 90.0, 110.0, 80.0, 120.0], dtype=np.float64),
+            release_timescale_1d=np.array(
+                [release_timescale, 1.1, 1.3, 1.0, 1.4], dtype=np.float64
+            ),
+            surface_1d=np.array([False] * 5, dtype=np.bool_),
+        )
+    else:
+        # Create 1 trap
+        traps = TrapsInstantCapture(
+            density_1d=np.array([density], dtype=np.float64),
+            release_timescale_1d=np.array([release_timescale], dtype=np.float64),
+            surface_1d=np.array([False], dtype=np.bool_),
+        )
 
     traps_lst = List()
     traps_lst.append(traps)
