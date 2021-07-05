@@ -620,7 +620,7 @@ class ROE:
         window_range_start, window_range_stop = pixels
 
         # n_pixels = max(window_range) + 1
-        n_pixels = window_range_stop - window_range_start + 1  # type: int
+        n_pixels = window_range_stop - window_range_start  # type: int
 
         # Set default express to all transfers and check no larger
         if express == 0:
@@ -659,7 +659,7 @@ class ROE:
         # express_matrix_2d[express_matrix_2d > max_multiplier] = max_multiplier
         express_matrix_2d = np.where(express_matrix_2d < 0, 0, express_matrix_2d)
         express_matrix_2d = np.where(
-            express_matrix_2d > max_multiplier, max_multiplier, 0
+            express_matrix_2d > max_multiplier, max_multiplier, express_matrix_2d
         )
 
         # Add an extra (first) transfer for every pixel, the effect of which
@@ -2059,6 +2059,7 @@ def build_trap_manager_phases(
         "trap_manager_phases": None
         if NUMBA_DISABLE_JIT
         else numba.types.ListType(as_numba_type(TrapManagerPhases)),
+        "_is_saved_data": numba.bool_,
         "_saved_trap_manager_phases": None
         if NUMBA_DISABLE_JIT
         else numba.types.ListType(as_numba_type(TrapManagerPhases)),
@@ -2192,6 +2193,7 @@ class AllTrapManager:
         # self._saved_trap_manager_phases = (
         #     None
         # )  # type: t.Optional[t.List[TrapManagerPhases]]
+        self._is_saved_data = False  # type: bool
         self._saved_trap_manager_phases = self.trap_manager_phases
 
         self._n_electrons_trapped_in_save = 0.0  # type: float
@@ -2260,6 +2262,7 @@ class AllTrapManager:
         for trap_manager_phase in self.trap_manager_phases:  # type: TrapManagerPhases
             data.append(trap_manager_phase.copy())
 
+        self._is_saved_data = True
         self._saved_trap_manager_phases = data
 
         self._n_electrons_trapped_in_save = self.n_electrons_trapped_currently
@@ -2284,12 +2287,17 @@ class AllTrapManager:
             self.n_electrons_trapped_currently - self._n_electrons_trapped_in_save
         )
         # Overwrite the current trap state
-        if self._saved_trap_manager_phases is None:
+        if self._is_saved_data is False:
             self.empty_all_traps()
         else:
-            self.trap_manager_phases = self.copy_trap_manager_phases(
-                self._saved_trap_manager_phases
-            )
+            # TODO: Refactoring ?
+            data = List()  # type: t.List[TrapManagerPhases]
+            for (
+                trap_manager_phase
+            ) in self._saved_trap_manager_phases:  # type: TrapManagerPhases
+                data.append(trap_manager_phase.copy())
+
+            self.trap_manager_phases = data
 
 
 @njit
@@ -2460,7 +2468,7 @@ def _clock_charge_in_one_direction(
         for express_index in range(n_express_pass):
             # Restore the trap occupancy levels (to empty, or to a saved state
             # from a previous express pass)
-            # trap_managers.restore()
+            trap_managers.restore()
 
             # Each pixel
             for row_index in range(len(window_row_range)):
@@ -2832,15 +2840,16 @@ def arctic_with_numba_02(
     # serial_roe = ROE(dwell_times=np.array([1.0], dtype=np.float64))
     # trap = Trap(density=density, release_timescale=release_timescale)
 
-    WITH_MULTIPLE_TRAPS = True
-    if WITH_MULTIPLE_TRAPS:
-        # Create 5 traps
+    n_traps = 5
+    if n_traps > 1:
+        rng = np.random.default_rng(seed=1234)
+
         traps = TrapsInstantCapture(
-            density_1d=np.array([density, 90.0, 110.0, 80.0, 120.0], dtype=np.float64),
-            release_timescale_1d=np.array(
-                [release_timescale, 1.1, 1.3, 1.0, 1.4], dtype=np.float64
+            density_1d=rng.normal(loc=density, scale=density * 0.1, size=n_traps),
+            release_timescale_1d=rng.normal(
+                loc=release_timescale, scale=release_timescale * 0.1, size=n_traps
             ),
-            surface_1d=np.array([False] * 5, dtype=np.bool_),
+            surface_1d=np.array([False] * n_traps, dtype=np.bool_),
         )
     else:
         # Create 1 trap
