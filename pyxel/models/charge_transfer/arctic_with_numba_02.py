@@ -2815,6 +2815,73 @@ def add_cti(
     return image_add_cti_2d
 
 
+@njit
+def remove_cti(
+    image_2d: np.ndarray,
+    iterations: int,
+    parallel_ccd: CCD,
+    parallel_roe: ROE,
+    parallel_traps: t.Sequence[TrapsInstantCapture],
+    parallel_express: int = 0,
+    parallel_offset: int = 0,
+    parallel_window_range: t.Optional[t.Tuple[int, int]] = None,
+    # serial_ccd=None,
+    # serial_roe: ROE,
+    # serial_traps=None,
+    # serial_express=0,
+    # serial_offset=0,
+    serial_window_range: t.Optional[t.Tuple[int, int]] = None,
+    time_window_range: t.Optional[t.Tuple[int, int]] = None,
+):
+    """
+    Remove CTI trails from an image by first modelling the addition of CTI.
+
+    See add_cti()'s documentation for the forward modelling. This function
+    iteratively models the addition of more CTI trails to the input image to
+    then extract the corrected image without the original trails.
+
+    Parameters
+    ----------
+    All parameters are identical to those of add_cti() as described in its
+    documentation, with the exception of:
+
+    iterations : int
+        The number of times CTI-adding clocking is run to perform the correction
+        via forward modelling.
+
+    Returns
+    -------
+    image : [[float]] or frames.Frame
+        The output array of pixel values with CTI removed.
+    """
+    # Initialise the iterative estimate of removed CTI; don't modify the external array
+    image_2d_remove_cti = image_2d.copy()
+
+    # Estimate the image with removed CTI more precisely each iteration
+    for iteration in range(iterations):
+        image_2d_add_cti = add_cti(
+            image_2d=image_2d_remove_cti,
+            parallel_ccd=parallel_ccd,
+            parallel_roe=parallel_roe,
+            parallel_traps=parallel_traps,
+            parallel_express=parallel_express,
+            parallel_offset=parallel_offset,
+            parallel_window_range=parallel_window_range,
+            # serial_ccd=serial_ccd,
+            # serial_roe=serial_roe,
+            # serial_traps=serial_traps,
+            # serial_express=serial_express,
+            # serial_offset=serial_offset,
+            serial_window_range=serial_window_range,
+            time_window_range=time_window_range,
+        )
+
+        # Improved estimate of image with CTI trails removed
+        image_2d_remove_cti += image_2d - image_2d_add_cti
+
+    return image_2d_remove_cti
+
+
 def arctic_with_numba_02(
     detector: PyxelCCD,
     well_fill_power: float,
@@ -2862,7 +2929,7 @@ def arctic_with_numba_02(
     traps_lst = List()
     traps_lst.append(traps)
 
-    s = add_cti(
+    image_cti_added = add_cti(
         image_2d=image_2d,
         parallel_traps=traps_lst,
         parallel_ccd=ccd,
@@ -2871,5 +2938,16 @@ def arctic_with_numba_02(
         # serial_roe=serial_roe,
     )
 
-    detector.pixel.array = s
-    return s
+    image_cti_removed = remove_cti(
+        image_2d=image_cti_added,
+        iterations=5,
+        parallel_traps=traps_lst,
+        parallel_ccd=ccd,
+        parallel_roe=parallel_roe,
+        parallel_express=express,
+        # serial_roe=serial_roe,
+    )
+
+    detector.pixel.array = image_cti_removed
+
+    return image_cti_removed

@@ -8,32 +8,45 @@ More information:
 https://pypi.org/project/arcticpy/
 """
 
-import arcticpy as ac
-
-
-from pyxel.detectors import CCD
-import numpy as np
 import typing as t
 
+import arcticpy as ac
+import numpy as np
 
-def arctic(detector: CCD,
-           well_fill_power: float,
-           density: float,
-           release_timescale: t.Sequence[float],
-           express=0
-           ) -> np.ndarray:
+from pyxel.detectors import CCD
+
+
+def arctic(
+    detector: CCD,
+    well_fill_power: float,
+    density: float,
+    release_timescale: t.Sequence[float],
+    express=0,
+) -> np.ndarray:
     char = detector.characteristics
     image = detector.pixel.array
     image = image.astype(float)
     ccd = ac.CCD(well_fill_power=well_fill_power, full_well_depth=char.fwc)
     roe = ac.ROE()
     trap = ac.Trap(density=density, release_timescale=release_timescale)
-    s = ac.add_cti(
+
+    image_cti_added = ac.add_cti(
         image=image,
         parallel_traps=[trap],
         parallel_ccd=ccd,
         parallel_roe=roe,
-        parallel_express=express
+        parallel_express=express,
     )
-    detector.pixel.array = s
-    return s
+
+    image_cti_removed = ac.remove_cti(
+        image=image_cti_added,
+        iterations=5,
+        parallel_traps=[trap],
+        parallel_ccd=ccd,
+        parallel_roe=roe,
+        parallel_express=express,
+    )
+
+    detector.pixel.array = image_cti_removed
+
+    return image_cti_removed
