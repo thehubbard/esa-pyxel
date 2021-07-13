@@ -19,7 +19,7 @@ __all__ = [
 ]
 
 
-# TODO: Remove this function ?
+# TODO: Remove this function ? See issue #230.
 def get_obj_by_type(obj: t.Any, key: str, obj_type: t.Optional[t.Type] = None) -> t.Any:
     """Get the object associated with the class type following the key chain.
 
@@ -34,7 +34,7 @@ def get_obj_by_type(obj: t.Any, key: str, obj_type: t.Optional[t.Type] = None) -
             return obj
 
 
-# TODO: Remove this function ?
+# TODO: Remove this function ? See issue #230.
 def get_obj_att(
     obj: t.Any, key: str, obj_type: t.Optional[t.Type] = None
 ) -> t.Tuple[t.Any, str]:
@@ -75,7 +75,9 @@ def get_obj_att(
             elif hasattr(obj, part):
                 obj = getattr(obj, part)
             else:
-                raise NotImplementedError
+                raise NotImplementedError(
+                    f"obj={obj!r}, key={key!r}, obj_type={obj_type!r}, part={part!r}"
+                )
 
             if obj_type and isinstance(obj, obj_type):
                 return obj, tail
@@ -127,6 +129,7 @@ def get_obj_att(
 #     return result
 
 
+# TODO: Remove this function ? See issue #230.
 def get_state(obj: t.Any) -> t.Mapping[str, t.Any]:
     """Convert the config object to a embedded dict object.
 
@@ -150,6 +153,7 @@ def get_state(obj: t.Any) -> t.Mapping[str, t.Any]:
     return result
 
 
+# TODO: Remove this function ? See issue #230.
 def get_state_ids(
     obj: t.Any,
     parent_key_list: t.Optional[t.Sequence[str]] = None,
@@ -192,7 +196,7 @@ def get_state_ids(
     return result
 
 
-# TODO: Remove this function ?
+# TODO: Remove this function ? See issue #230.
 def get_value(obj: t.Any, key: str) -> t.Any:
     """Retrieve the attribute value of the object given the attribute dot formatted key chain.
 
@@ -219,6 +223,7 @@ def get_value(obj: t.Any, key: str) -> t.Any:
     return value
 
 
+# TODO: Remove this function ? See issue #230.
 def copy_state(obj: t.Any) -> t.Mapping[str, t.Any]:
     """Deep copy the object as a attribute name/value pairs dictionary.
 
