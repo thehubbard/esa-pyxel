@@ -75,7 +75,9 @@ def get_obj_att(
             elif hasattr(obj, part):
                 obj = getattr(obj, part)
             else:
-                raise NotImplementedError
+                raise NotImplementedError(
+                    f"obj={obj!r}, key={key!r}, obj_type={obj_type!r}, part={part!r}"
+                )
 
             if obj_type and isinstance(obj, obj_type):
                 return obj, tail
