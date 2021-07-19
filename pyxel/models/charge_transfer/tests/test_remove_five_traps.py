@@ -30,27 +30,22 @@ def pixel_2d() -> np.ndarray:
     return data_2d[::5, ::5]
 
 
-@pytest.fixture
-def valid_image_removed_five_traps(pixel_2d: np.ndarray) -> np.ndarray:
-    """Generate an image with removed CTI with 1 trap."""
-    # Input parameters
-    well_fill_power = 0.8
-    fwc = 100_000
-
-    trap_1_density = 91.98
-    trap_2_density = 100.32
-    trap_3_density = 103.70
-    trap_4_density = 100.76
-    trap_5_density = 104.31
-
-    trap_1_release_timescale = 2.07
-    trap_2_release_timescale = 0.75
-    trap_3_release_timescale = 1.48
-    trap_4_release_timescale = 0.70
-    trap_5_release_timescale = 1.30
-
-    express = 0
-
+def arctic_model(
+    pixel_2d,
+    well_fill_power,
+    fwc,
+    express,
+    trap_1_density,
+    trap_1_release_timescale,
+    trap_2_density,
+    trap_2_release_timescale,
+    trap_3_density,
+    trap_3_release_timescale,
+    trap_4_density,
+    trap_4_release_timescale,
+    trap_5_density,
+    trap_5_release_timescale,
+):
     image_2d = np.asarray(pixel_2d, dtype=float)
 
     ccd = ac.CCD(well_fill_power=well_fill_power, full_well_depth=fwc)
@@ -76,28 +71,22 @@ def valid_image_removed_five_traps(pixel_2d: np.ndarray) -> np.ndarray:
     return image_cti_removed
 
 
-def test_remove_cti_no_numba_five_traps(
-    pixel_2d: np.ndarray, valid_image_removed_five_traps: np.ndarray
+def arctic_no_numba_model(
+    pixel_2d,
+    well_fill_power,
+    fwc,
+    express,
+    trap_1_density,
+    trap_1_release_timescale,
+    trap_2_density,
+    trap_2_release_timescale,
+    trap_3_density,
+    trap_3_release_timescale,
+    trap_4_density,
+    trap_4_release_timescale,
+    trap_5_density,
+    trap_5_release_timescale,
 ):
-    """Test arctic model without numba."""
-    # Input parameters
-    well_fill_power = 0.8
-    fwc = 100_000
-
-    trap_1_density = 91.98
-    trap_2_density = 100.32
-    trap_3_density = 103.70
-    trap_4_density = 100.76
-    trap_5_density = 104.31
-
-    trap_1_release_timescale = 2.07
-    trap_2_release_timescale = 0.75
-    trap_3_release_timescale = 1.48
-    trap_4_release_timescale = 0.70
-    trap_5_release_timescale = 1.30
-
-    express = 0
-
     image_2d = np.asarray(pixel_2d, dtype=float)
 
     ccd = CCD_no_numba(
@@ -108,7 +97,6 @@ def test_remove_cti_no_numba_five_traps(
         well_fill_power=np.array([well_fill_power], dtype=np.float64),
         well_bloom_level=np.array([fwc]),
     )
-
     parallel_roe = ROE_no_numba(dwell_times=np.array([1.0], dtype=np.float64))
 
     n_traps = 5
@@ -147,4 +135,65 @@ def test_remove_cti_no_numba_five_traps(
         # serial_roe=serial_roe,
     )
 
-    np.testing.assert_equal(image_cti_removed, valid_image_removed_five_traps)
+    return image_cti_removed
+
+
+def test_remove_cti_no_numba_five_traps(pixel_2d: np.ndarray):
+    """Test arctic model without numba."""
+    # Input parameters
+    well_fill_power = 0.8
+    fwc = 100_000
+
+    trap_1_density = 91.98
+    trap_2_density = 100.32
+    trap_3_density = 103.70
+    trap_4_density = 100.76
+    trap_5_density = 104.31
+
+    trap_1_release_timescale = 2.07
+    trap_2_release_timescale = 0.75
+    trap_3_release_timescale = 1.48
+    trap_4_release_timescale = 0.70
+    trap_5_release_timescale = 1.30
+
+    express = 0
+
+    pixel_2d_copied = pixel_2d.copy()
+
+    expected_2d = arctic_model(
+        pixel_2d=pixel_2d,
+        well_fill_power=well_fill_power,
+        fwc=fwc,
+        express=express,
+        trap_1_density=trap_1_density,
+        trap_1_release_timescale=trap_1_release_timescale,
+        trap_2_density=trap_2_density,
+        trap_2_release_timescale=trap_2_release_timescale,
+        trap_3_density=trap_3_density,
+        trap_3_release_timescale=trap_3_release_timescale,
+        trap_4_density=trap_4_density,
+        trap_4_release_timescale=trap_4_release_timescale,
+        trap_5_density=trap_5_density,
+        trap_5_release_timescale=trap_5_release_timescale,
+    )
+    np.testing.assert_equal(pixel_2d, pixel_2d_copied)
+
+    image_cti_removed = arctic_no_numba_model(
+        pixel_2d=pixel_2d,
+        well_fill_power=well_fill_power,
+        fwc=fwc,
+        express=express,
+        trap_1_density=trap_1_density,
+        trap_1_release_timescale=trap_1_release_timescale,
+        trap_2_density=trap_2_density,
+        trap_2_release_timescale=trap_2_release_timescale,
+        trap_3_density=trap_3_density,
+        trap_3_release_timescale=trap_3_release_timescale,
+        trap_4_density=trap_4_density,
+        trap_4_release_timescale=trap_4_release_timescale,
+        trap_5_density=trap_5_density,
+        trap_5_release_timescale=trap_5_release_timescale,
+    )
+
+    np.testing.assert_equal(pixel_2d, pixel_2d_copied)
+    np.testing.assert_equal(image_cti_removed, expected_2d)
