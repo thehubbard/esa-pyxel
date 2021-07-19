@@ -29,42 +29,17 @@ from pyxel.models.charge_transfer.arctic_without_numba import (
 @pytest.fixture
 def pixel_2d() -> np.ndarray:
     """Create a valid 2D image."""
-    return np.array(
-        [
-            [0, 0],
-            [0, 0],
-            [0, 0],
-            [0, 0],
-            [0, 0],
-            [100, 100],
-            [100, 100],
-            [100, 100],
-            [100, 100],
-            [100, 100],
-            [0, 0],
-            [0, 0],
-            [0, 0],
-            [0, 0],
-            [0, 0],
-            [100, 100],
-            [100, 100],
-            [100, 100],
-            [100, 100],
-            [100, 100],
-        ],
-        dtype=int,
-    )
+    data_2d = np.zeros((100, 10), dtype=int)
+
+    data_2d[25:50, :] = 100
+    data_2d[75:, :] = 100
+
+    return data_2d[::5, ::5]
 
 
-@pytest.fixture
-def valid_image_added_one_trap(pixel_2d: np.ndarray) -> np.ndarray:
-    """Generate an image with added CTI with 1 trap."""
-    # Input parameters
-    well_fill_power = 0.8
-    fwc = 100_000
-
-    trap_1_density = 100.0
-    trap_1_release_timescale = 1.2
+def arctic_add_model(
+    pixel_2d, well_fill_power, fwc, trap_1_density, trap_1_release_timescale
+):
 
     image_2d = np.asarray(pixel_2d, dtype=float)
 
@@ -86,15 +61,13 @@ def valid_image_added_one_trap(pixel_2d: np.ndarray) -> np.ndarray:
     return image_cti_added
 
 
-def test_add_cti_no_numba(pixel_2d: np.ndarray, valid_image_added_one_trap: np.ndarray):
-    """Test arctic model without numba."""
-    # Input parameters
-    well_fill_power = 0.8
-    fwc = 100_000
-
-    trap_1_density = 100.0
-    trap_1_release_timescale = 1.2
-
+def arctic_no_numba_add_model(
+    pixel_2d,
+    well_fill_power,
+    fwc,
+    trap_1_density,
+    trap_1_release_timescale,
+):
     image_2d = np.asarray(pixel_2d, dtype=float)
 
     ccd = CCD_no_numba(
@@ -105,7 +78,6 @@ def test_add_cti_no_numba(pixel_2d: np.ndarray, valid_image_added_one_trap: np.n
         well_fill_power=np.array([well_fill_power], dtype=np.float64),
         well_bloom_level=np.array([fwc]),
     )
-
     parallel_roe = ROE_no_numba(dwell_times=np.array([1.0], dtype=np.float64))
 
     n_traps = 1
@@ -127,7 +99,37 @@ def test_add_cti_no_numba(pixel_2d: np.ndarray, valid_image_added_one_trap: np.n
         # serial_roe=serial_roe,
     )
 
-    np.testing.assert_equal(image_cti_added, valid_image_added_one_trap)
+    return image_cti_added
+
+
+def test_add_cti_no_numba(pixel_2d: np.ndarray):
+    """Test arctic model without numba."""
+    # Input parameters
+    well_fill_power = 0.8
+    fwc = 100_000
+
+    trap_1_density = 100.0
+    trap_1_release_timescale = 1.2
+
+    pixel_2d_copied = pixel_2d.copy()
+
+    expected_2d = arctic_add_model(
+        pixel_2d=pixel_2d,
+        well_fill_power=well_fill_power,
+        fwc=fwc,
+        trap_1_density=trap_1_density,
+        trap_1_release_timescale=trap_1_release_timescale,
+    )
+    np.testing.assert_equal(pixel_2d, pixel_2d_copied)
+
+    image_cti_added = arctic_no_numba_add_model(
+        pixel_2d=pixel_2d,
+        well_fill_power=well_fill_power,
+        fwc=fwc,
+        trap_1_density=trap_1_density,
+        trap_1_release_timescale=trap_1_release_timescale,
+    )
+    np.testing.assert_equal(image_cti_added, expected_2d)
 
 
 @pytest.mark.skip(reason="This test is working but takes too much time")

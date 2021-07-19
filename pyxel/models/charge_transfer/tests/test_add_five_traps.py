@@ -35,52 +35,29 @@ from pyxel.models.charge_transfer.arctic_without_numba import (
 @pytest.fixture
 def pixel_2d() -> np.ndarray:
     """Create a valid 2D image."""
-    return np.array(
-        [
-            [0, 0],
-            [0, 0],
-            [0, 0],
-            [0, 0],
-            [0, 0],
-            [100, 100],
-            [100, 100],
-            [100, 100],
-            [100, 100],
-            [100, 100],
-            [0, 0],
-            [0, 0],
-            [0, 0],
-            [0, 0],
-            [0, 0],
-            [100, 100],
-            [100, 100],
-            [100, 100],
-            [100, 100],
-            [100, 100],
-        ],
-        dtype=int,
-    )
+    data_2d = np.zeros((100, 10), dtype=int)
+
+    data_2d[25:50, :] = 100
+    data_2d[75:, :] = 100
+
+    return data_2d[::5, ::5]
 
 
-@pytest.fixture
-def valid_image_added_five_traps(pixel_2d: np.ndarray) -> np.ndarray:
-    """Generate an image with added CTI with 1 trap."""
-    # Input parameters
-    well_fill_power = 0.8
-    fwc = 100_000
-
-    trap_1_density = 91.98
-    trap_2_density = 100.32
-    trap_3_density = 103.70
-    trap_4_density = 100.76
-    trap_5_density = 104.31
-
-    trap_1_release_timescale = 2.07
-    trap_2_release_timescale = 0.75
-    trap_3_release_timescale = 1.48
-    trap_4_release_timescale = 0.70
-    trap_5_release_timescale = 1.30
-
+def arctic_add_model(
+    pixel_2d,
+    well_fill_power,
+    fwc,
+    trap_1_density,
+    trap_1_release_timescale,
+    trap_2_density,
+    trap_2_release_timescale,
+    trap_3_density,
+    trap_3_release_timescale,
+    trap_4_density,
+    trap_4_release_timescale,
+    trap_5_density,
+    trap_5_release_timescale,
+):
     image_2d = np.asarray(pixel_2d, dtype=float)
 
     ccd = ac.CCD(well_fill_power=well_fill_power, full_well_depth=fwc)
@@ -105,28 +82,22 @@ def valid_image_added_five_traps(pixel_2d: np.ndarray) -> np.ndarray:
     return image_cti_added
 
 
-def test_add_cti_no_numba_five_traps(
-    pixel_2d: np.ndarray, valid_image_added_five_traps: np.ndarray
+def arctic_add_no_numba(
+    pixel_2d,
+    well_fill_power,
+    fwc,
+    trap_1_density,
+    trap_1_release_timescale,
+    trap_2_density,
+    trap_2_release_timescale,
+    trap_3_density,
+    trap_3_release_timescale,
+    trap_4_density,
+    trap_4_release_timescale,
+    trap_5_density,
+    trap_5_release_timescale,
 ):
-    """Test arctic model without numba."""
-    # Input parameters
-    well_fill_power = 0.8
-    fwc = 100_000
-
-    trap_1_density = 91.98
-    trap_2_density = 100.32
-    trap_3_density = 103.70
-    trap_4_density = 100.76
-    trap_5_density = 104.31
-
-    trap_1_release_timescale = 2.07
-    trap_2_release_timescale = 0.75
-    trap_3_release_timescale = 1.48
-    trap_4_release_timescale = 0.70
-    trap_5_release_timescale = 1.30
-
     image_2d = np.asarray(pixel_2d, dtype=float)
-
     ccd = CCD_no_numba(
         n_phases=1,
         fraction_of_traps_per_phase=np.array([1.0], dtype=np.float64),
@@ -135,9 +106,7 @@ def test_add_cti_no_numba_five_traps(
         well_fill_power=np.array([well_fill_power], dtype=np.float64),
         well_bloom_level=np.array([fwc]),
     )
-
     parallel_roe = ROE_no_numba(dwell_times=np.array([1.0], dtype=np.float64))
-
     n_traps = 5
     traps = TrapsInstantCapture_no_numba(
         density_1d=np.array(
@@ -160,10 +129,8 @@ def test_add_cti_no_numba_five_traps(
         ),
         surface_1d=np.array([False] * n_traps, dtype=np.bool_),
     )
-
     traps_lst = []
     traps_lst.append(traps)
-
     image_cti_added = add_cti_no_numba(
         image_2d=image_2d,
         parallel_traps=traps_lst,
@@ -172,5 +139,61 @@ def test_add_cti_no_numba_five_traps(
         parallel_express=0,
         # serial_roe=serial_roe,
     )
+    return image_cti_added
 
-    np.testing.assert_equal(image_cti_added, valid_image_added_five_traps)
+
+def test_add_cti_no_numba_five_traps(pixel_2d: np.ndarray):
+    """Test arctic model without numba."""
+    # Input parameters
+    well_fill_power = 0.8
+    fwc = 100_000
+
+    trap_1_density = 91.98081597
+    trap_2_density = 100.32049957
+    trap_3_density = 103.70445648
+    trap_4_density = 100.76309597
+    trap_5_density = 104.31871946
+
+    trap_1_release_timescale = 2.07392977
+    trap_2_release_timescale = 0.75635299
+    trap_3_release_timescale = 1.48364189
+    trap_4_release_timescale = 0.70015936
+    trap_5_release_timescale = 1.30312337
+
+    pixel_2d_copied = pixel_2d.copy()
+
+    expected_2d = arctic_add_model(
+        pixel_2d=pixel_2d,
+        well_fill_power=well_fill_power,
+        fwc=fwc,
+        trap_1_density=trap_1_density,
+        trap_1_release_timescale=trap_1_release_timescale,
+        trap_2_density=trap_2_density,
+        trap_2_release_timescale=trap_2_release_timescale,
+        trap_3_density=trap_3_density,
+        trap_3_release_timescale=trap_3_release_timescale,
+        trap_4_density=trap_4_density,
+        trap_4_release_timescale=trap_4_release_timescale,
+        trap_5_density=trap_5_density,
+        trap_5_release_timescale=trap_5_release_timescale,
+    )
+    np.testing.assert_equal(pixel_2d, pixel_2d_copied)
+
+    image_cti_added = arctic_add_no_numba(
+        pixel_2d=pixel_2d,
+        well_fill_power=well_fill_power,
+        fwc=fwc,
+        trap_1_density=trap_1_density,
+        trap_1_release_timescale=trap_1_release_timescale,
+        trap_2_density=trap_2_density,
+        trap_2_release_timescale=trap_2_release_timescale,
+        trap_3_density=trap_3_density,
+        trap_3_release_timescale=trap_3_release_timescale,
+        trap_4_density=trap_4_density,
+        trap_4_release_timescale=trap_4_release_timescale,
+        trap_5_density=trap_5_density,
+        trap_5_release_timescale=trap_5_release_timescale,
+    )
+
+    np.testing.assert_equal(pixel_2d, pixel_2d_copied)
+    np.testing.assert_equal(image_cti_added, expected_2d)

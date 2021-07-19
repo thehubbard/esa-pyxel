@@ -144,17 +144,17 @@ def test_remove_cti_no_numba_five_traps(pixel_2d: np.ndarray):
     well_fill_power = 0.8
     fwc = 100_000
 
-    trap_1_density = 91.98
-    trap_2_density = 100.32
-    trap_3_density = 103.70
-    trap_4_density = 100.76
-    trap_5_density = 104.31
+    trap_1_density = 91.98081597
+    trap_2_density = 100.32049957
+    trap_3_density = 103.70445648
+    trap_4_density = 100.76309597
+    trap_5_density = 104.31871946
 
-    trap_1_release_timescale = 2.07
-    trap_2_release_timescale = 0.75
-    trap_3_release_timescale = 1.48
-    trap_4_release_timescale = 0.70
-    trap_5_release_timescale = 1.30
+    trap_1_release_timescale = 2.07392977
+    trap_2_release_timescale = 0.75635299
+    trap_3_release_timescale = 1.48364189
+    trap_4_release_timescale = 0.70015936
+    trap_5_release_timescale = 1.30312337
 
     express = 0
 
