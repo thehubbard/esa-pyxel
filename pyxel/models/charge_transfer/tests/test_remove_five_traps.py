@@ -22,31 +22,12 @@ from pyxel.models.charge_transfer.arctic_without_numba import (
 @pytest.fixture
 def pixel_2d() -> np.ndarray:
     """Create a valid 2D image."""
-    return np.array(
-        [
-            [0, 0],
-            [0, 0],
-            [0, 0],
-            [0, 0],
-            [0, 0],
-            [100, 100],
-            [100, 100],
-            [100, 100],
-            [100, 100],
-            [100, 100],
-            [0, 0],
-            [0, 0],
-            [0, 0],
-            [0, 0],
-            [0, 0],
-            [100, 100],
-            [100, 100],
-            [100, 100],
-            [100, 100],
-            [100, 100],
-        ],
-        dtype=int,
-    )
+    data_2d = np.zeros((100, 10), dtype=int)
+
+    data_2d[25:50, :] = 100
+    data_2d[75:, :] = 100
+
+    return data_2d[::5, ::5]
 
 
 @pytest.fixture
@@ -68,6 +49,8 @@ def valid_image_removed_five_traps(pixel_2d: np.ndarray) -> np.ndarray:
     trap_4_release_timescale = 0.70
     trap_5_release_timescale = 1.30
 
+    express = 0
+
     image_2d = np.asarray(pixel_2d, dtype=float)
 
     ccd = ac.CCD(well_fill_power=well_fill_power, full_well_depth=fwc)
@@ -87,13 +70,13 @@ def valid_image_removed_five_traps(pixel_2d: np.ndarray) -> np.ndarray:
         parallel_traps=traps,
         parallel_ccd=ccd,
         parallel_roe=roe,
-        parallel_express=0,
+        parallel_express=express,
     )
 
     return image_cti_removed
 
 
-def test_add_cti_no_numba_five_traps(
+def test_remove_cti_no_numba_five_traps(
     pixel_2d: np.ndarray, valid_image_removed_five_traps: np.ndarray
 ):
     """Test arctic model without numba."""
@@ -112,6 +95,8 @@ def test_add_cti_no_numba_five_traps(
     trap_3_release_timescale = 1.48
     trap_4_release_timescale = 0.70
     trap_5_release_timescale = 1.30
+
+    express = 0
 
     image_2d = np.asarray(pixel_2d, dtype=float)
 
@@ -154,10 +139,11 @@ def test_add_cti_no_numba_five_traps(
 
     image_cti_removed = remove_cti_no_numba(
         image_2d=image_2d,
+        iterations=5,
         parallel_traps=traps_lst,
         parallel_ccd=ccd,
         parallel_roe=parallel_roe,
-        parallel_express=0,
+        parallel_express=express,
         # serial_roe=serial_roe,
     )
 

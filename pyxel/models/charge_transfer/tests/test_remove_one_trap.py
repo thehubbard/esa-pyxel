@@ -22,31 +22,12 @@ from pyxel.models.charge_transfer.arctic_without_numba import (
 @pytest.fixture
 def pixel_2d() -> np.ndarray:
     """Create a valid 2D image."""
-    return np.array(
-        [
-            [0, 0],
-            [0, 0],
-            [0, 0],
-            [0, 0],
-            [0, 0],
-            [100, 100],
-            [100, 100],
-            [100, 100],
-            [100, 100],
-            [100, 100],
-            [0, 0],
-            [0, 0],
-            [0, 0],
-            [0, 0],
-            [0, 0],
-            [100, 100],
-            [100, 100],
-            [100, 100],
-            [100, 100],
-            [100, 100],
-        ],
-        dtype=int,
-    )
+    data_2d = np.zeros((100, 10), dtype=int)
+
+    data_2d[25:50, :] = 100
+    data_2d[75:, :] = 100
+
+    return data_2d[::5, :5]
 
 
 @pytest.fixture
@@ -80,7 +61,7 @@ def valid_image_removed_one_trap(pixel_2d: np.ndarray) -> np.ndarray:
     return image_cti_removed
 
 
-def test_add_cti_no_numba(
+def test_remove_cti_no_numba(
     pixel_2d: np.ndarray, valid_image_removed_one_trap: np.ndarray
 ):
     """Test arctic model without numba."""
