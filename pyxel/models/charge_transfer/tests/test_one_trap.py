@@ -8,7 +8,17 @@
 import arcticpy as ac
 import numpy as np
 import pytest
+from numba.typed import List
 
+from pyxel.models.charge_transfer.arctic_with_numba_02 import CCD as CCD_numba
+from pyxel.models.charge_transfer.arctic_with_numba_02 import ROE as ROE_numba
+from pyxel.models.charge_transfer.arctic_with_numba_02 import (
+    TrapsInstantCapture as TrapsInstantCapture_numba,
+)
+from pyxel.models.charge_transfer.arctic_with_numba_02 import add_cti as add_cti_numba
+from pyxel.models.charge_transfer.arctic_with_numba_02 import (
+    remove_cti as remove_cti_numba,
+)
 from pyxel.models.charge_transfer.arctic_without_numba import CCD as CCD_no_numba
 from pyxel.models.charge_transfer.arctic_without_numba import ROE as ROE_no_numba
 from pyxel.models.charge_transfer.arctic_without_numba import (
@@ -124,3 +134,50 @@ def test_add_cti_no_numba(pixel_2d: np.ndarray, valid_image_added_one_trap: np.n
     )
 
     np.testing.assert_equal(image_cti_added, valid_image_added_one_trap)
+
+
+@pytest.mark.skip(reason="This test is working but takes too much time")
+def test_add_cti_with_numba(
+    pixel_2d: np.ndarray, valid_image_added_one_trap: np.ndarray
+):
+    """Test arctic model without numba."""
+    # Input parameters
+    well_fill_power = 0.8
+    fwc = 100_000
+
+    trap_1_density = 100.0
+    trap_1_release_timescale = 1.2
+
+    image_2d = np.asarray(pixel_2d, dtype=float)
+
+    ccd = CCD_numba(
+        n_phases=1,
+        fraction_of_traps_per_phase=np.array([1.0], dtype=np.float64),
+        full_well_depth=np.array([fwc], dtype=np.float64),
+        well_notch_depth=np.array([0.0], dtype=np.float64),
+        well_fill_power=np.array([well_fill_power], dtype=np.float64),
+        well_bloom_level=np.array([fwc], dtype=np.float64),
+    )
+
+    parallel_roe = ROE_numba(dwell_times=np.array([1.0], dtype=np.float64))
+
+    n_traps = 1
+    traps = TrapsInstantCapture_numba(
+        density_1d=np.array([trap_1_density], dtype=np.float64),
+        release_timescale_1d=np.array([trap_1_release_timescale], dtype=np.float64),
+        surface_1d=np.array([False] * n_traps, dtype=np.bool_),
+    )
+
+    traps_lst = List()
+    traps_lst.append(traps)
+
+    image_cti_added = add_cti_numba(
+        image_2d=image_2d,
+        parallel_traps=traps_lst,
+        parallel_ccd=ccd,
+        parallel_roe=parallel_roe,
+        parallel_express=0,
+        # serial_roe=serial_roe,
+    )
+
+    np.testing.assert_almost_equal(image_cti_added, valid_image_added_one_trap)
