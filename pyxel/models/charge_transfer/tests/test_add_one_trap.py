@@ -16,9 +16,6 @@ from pyxel.models.charge_transfer.arctic_with_numba_02 import (
     TrapsInstantCapture as TrapsInstantCapture_numba,
 )
 from pyxel.models.charge_transfer.arctic_with_numba_02 import add_cti as add_cti_numba
-from pyxel.models.charge_transfer.arctic_with_numba_02 import (
-    remove_cti as remove_cti_numba,
-)
 from pyxel.models.charge_transfer.arctic_without_numba import CCD as CCD_no_numba
 from pyxel.models.charge_transfer.arctic_without_numba import ROE as ROE_no_numba
 from pyxel.models.charge_transfer.arctic_without_numba import (
@@ -26,9 +23,6 @@ from pyxel.models.charge_transfer.arctic_without_numba import (
 )
 from pyxel.models.charge_transfer.arctic_without_numba import (
     add_cti as add_cti_no_numba,
-)
-from pyxel.models.charge_transfer.arctic_without_numba import (
-    remove_cti as remove_cti_no_numba,
 )
 
 
