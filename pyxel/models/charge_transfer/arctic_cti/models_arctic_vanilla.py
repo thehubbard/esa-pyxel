@@ -34,7 +34,9 @@ def _create_traps(instant_traps: t.Sequence[t.Mapping[str, float]]) -> t.List[ac
 def arctic_add(
     detector: CCD,
     well_fill_power: float,
-    instant_traps: t.Sequence[t.Mapping[str, float]],
+    # instant_traps: t.Sequence[t.Mapping[str, float]],
+    trap_1_density: float,
+    trap_1_release_time_scale: float,
     express: int = 0,
 ) -> None:
 
@@ -42,6 +44,10 @@ def arctic_add(
         well_fill_power=well_fill_power, full_well_depth=detector.characteristics.fwc
     )
     roe = ac.ROE()
+
+    instant_traps = [
+        {"density": trap_1_density, "release_timescale": trap_1_release_time_scale}
+    ]  # type: t.Sequence[t.Mapping[str, float]]
 
     # Build the traps
     traps = []  # type: t.List[ac.Trap]

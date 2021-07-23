@@ -17,7 +17,9 @@ from pyxel.detectors import CCD
 def arctic_add_numba(
     detector: CCD,
     well_fill_power: float,
-    instant_traps: t.Sequence[t.Dict[str, float]],
+    # instant_traps: t.Sequence[t.Dict[str, float]],
+    trap_1_density: float,
+    trap_1_release_time_scale: float,
     express: int = 0,
 ) -> None:
     image_2d = np.asarray(detector.pixel.array, dtype=float)  # type: np.ndarray
@@ -31,6 +33,10 @@ def arctic_add_numba(
         well_bloom_level=np.array([detector.characteristics.fwc], dtype=np.float64),
     )
     parallel_roe = ac_numba.ROE(dwell_times=np.array([1.0], dtype=np.float64))
+
+    instant_traps = [
+        {"density": trap_1_density, "release_timescale": trap_1_release_time_scale}
+    ]  # type: t.Sequence[t.Mapping[str, float]]
 
     # Build the traps
     n_traps = len(instant_traps)
