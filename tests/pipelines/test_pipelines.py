@@ -11,7 +11,7 @@ from pathlib import Path
 import cloudpickle
 import pytest
 
-from pyxel.inputs_outputs import load
+from pyxel.configuration import load
 from pyxel.pipelines import DetectionPipeline
 
 

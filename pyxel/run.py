@@ -31,7 +31,7 @@ from pyxel import inputs_outputs as io
 from pyxel.calibration import Calibration, CalibrationResult
 from pyxel.detectors import CCD, CMOS
 from pyxel.dynamic import Dynamic  # , DynamicResult
-from pyxel.inputs_outputs import Configuration
+from pyxel.configuration import Configuration, load, save
 from pyxel.parametric import Parametric, ParametricResult
 from pyxel.pipelines import DetectionPipeline, Processor
 from pyxel.single import Single
@@ -347,13 +347,13 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
     if random_seed:
         np.random.seed(random_seed)
 
-    configuration = io.load(
+    configuration = load(
         Path(input_filename).expanduser().resolve()
     )  # type: Configuration
 
     output_dir = output_directory(configuration)
 
-    io.save(input_filename=input_filename, output_dir=output_dir)
+    save(input_filename=input_filename, output_dir=output_dir)
 
     pipeline = configuration.pipeline  # type: DetectionPipeline
 

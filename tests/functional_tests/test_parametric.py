@@ -3,9 +3,8 @@ from pathlib import Path
 
 import pytest
 
-from pyxel import inputs_outputs as io
 from pyxel.detectors import CCD
-from pyxel.inputs_outputs import Configuration
+from pyxel.configuration import Configuration, load
 from pyxel.parametric.parametric import Parametric, ParametricMode
 from pyxel.pipelines import DetectionPipeline, Processor
 
@@ -50,7 +49,7 @@ expected_product = [
 )
 def test_pipeline_parametric_without_init_photon(mode: ParametricMode, expected):
     input_filename = "tests/data/parametric.yaml"
-    cfg = io.load(Path(input_filename))
+    cfg = load(Path(input_filename))
 
     assert isinstance(cfg, Configuration)
     assert hasattr(cfg, "parametric")

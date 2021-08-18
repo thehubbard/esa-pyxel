@@ -20,7 +20,7 @@ from pyxel.calibration import Algorithm, Calibration, CalibrationMode
 from pyxel.data_structure import Charge, Image, Pixel, Signal
 from pyxel.detectors import CCD, CCDCharacteristics, CCDGeometry, Environment, Material
 from pyxel.dynamic import Dynamic
-from pyxel.inputs_outputs import Configuration
+from pyxel.configuration import Configuration, load
 from pyxel.inputs_outputs.calibration_outputs import CalibrationOutputs
 from pyxel.inputs_outputs.dynamic_outputs import DynamicOutputs
 from pyxel.inputs_outputs.parametric_outputs import ParametricOutputs
@@ -40,7 +40,7 @@ from pyxel.single import Single
     ],
 )
 def test_yaml_load(yaml_file):
-    cfg = io.load(yaml_file)
+    cfg = load(yaml_file)
 
     assert isinstance(cfg, Configuration)
 
