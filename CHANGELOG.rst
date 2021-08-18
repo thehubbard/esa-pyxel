@@ -2,8 +2,24 @@ Changelog
 =========
 
 
-version 0.11 / UNRELEASED-2021-MM-DD
+version 0.11 / UNRELEASED-YYYY-MM-DD
 ------------------------------------
+
+Core
+~~~~
+
+Documentation
+~~~~~~~~~~~~~
+
+Models
+~~~~~~
+
+Others
+~~~~~~
+
+
+version 0.10.1 / 2021-08-18
+---------------------------
 
 Core
 ~~~~
@@ -12,19 +28,14 @@ Core
   (See `!228 <https://gitlab.com/esa/pyxel/-/merge_requests/228>`_).
 * Add more debugging information in function 'get_obj_att'.
   (See `!243 <https://gitlab.com/esa/pyxel/-/merge_requests/243>`_).
-* Separate configuration loader from scripts in inputs_outputs.
+* Separate configuration loader from scripts in 'inputs_outputs'.
   (See `!250 <https://gitlab.com/esa/pyxel/-/merge_requests/250>`_).
-
 
 Documentation
 ~~~~~~~~~~~~~
 
 * Install a specific conda package version.
   (See `!235 <https://gitlab.com/esa/pyxel/-/merge_requests/235>`_).
-
-Models
-~~~~~~
-
 
 Others
 ~~~~~~
