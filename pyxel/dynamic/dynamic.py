@@ -14,6 +14,9 @@ import typing as t
 
 import xarray as xr
 from tqdm.notebook import tqdm
+from pyxel.evaluator import eval_range
+#from pyxel.inputs_outputs import load_table
+import numpy as np
 
 if t.TYPE_CHECKING:
     from ..inputs_outputs import DynamicOutputs
@@ -34,28 +37,51 @@ class Dynamic:
     def __init__(
         self,
         outputs: "DynamicOutputs",
-        t_step: float,
-        steps: int,
+        times: t.Optional[t.Union[t.Sequence, str]],
+        times_from_file: t.Optional[str],
         non_destructive_readout: bool = False,
     ):
         self.outputs = outputs
-        self._t_step = t_step
-        self._steps = steps
+        if times is None and times_from_file is None:
+            raise ValueError("Dynamic times not specified.")
+        elif times is not None and times_from_file is None:
+            self._times = np.array(eval_range(times), dtype= float)
+        elif times is None and times_from_file is not None:
+            self._times = load_table(times_from_file).to_numpy(dtype=float)
+        elif times is not None and times_from_file is not None:
+            raise ValueError("Both times and times_from_file specified. Choose one.")
+        else:
+            raise NotImplementedError
         self._non_destructive_readout = non_destructive_readout
+
+        if np.ndim(times) != 1:
+            raise ValueError("Number of dimensions in the times array is not 1.")
+
+        self._steps = np.concatenate((times[:1], np.diff(times)), axis=0)
 
     def __repr__(self) -> str:
         cls_name = self.__class__.__name__  # type: str
         return f"{cls_name}<outputs={self.outputs!r}>"
 
     @property
-    def t_step(self):
+    def times(self):
         """TBW."""
-        return self._t_step
+        return self._times
 
     @property
     def steps(self):
         """TBW."""
         return self._steps
+
+    def time_it(self):
+        """
+
+        Returns
+        -------
+
+        """
+        for time, step in zip(self.times, self.steps):
+            yield time, step
 
     @property
     def non_destructive_readout(self):

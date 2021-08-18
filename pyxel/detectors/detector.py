@@ -202,14 +202,10 @@ class Detector:
         """TBW."""
         return self._time
 
-    # TODO: This method is used in 'run.py'. We could implement this as an iterator.
-    def elapse_time(self) -> float:
+    @time.setter
+    def time(self, value):
         """TBW."""
-        try:
-            self._time = float(next(self._all_time_steps_it))
-        except StopIteration:
-            self._time = 0.0
-        return self._time
+        self._time = value
 
     @property
     def numbytes(self) -> int:
