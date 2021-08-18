@@ -6,4 +6,6 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 #
 #
+
+# flake8: noqa
 from .configuration import load, Configuration, save

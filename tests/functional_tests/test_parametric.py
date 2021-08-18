@@ -3,8 +3,8 @@ from pathlib import Path
 
 import pytest
 
-from pyxel.detectors import CCD
 from pyxel.configuration import Configuration, load
+from pyxel.detectors import CCD
 from pyxel.parametric.parametric import Parametric, ParametricMode
 from pyxel.pipelines import DetectionPipeline, Processor
 

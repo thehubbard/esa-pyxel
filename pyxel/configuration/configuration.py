@@ -25,7 +25,6 @@ import yaml
 
 from pyxel import __version__ as version
 from pyxel.calibration import Algorithm, Calibration
-
 from pyxel.detectors import (
     CCD,
     CMOS,
@@ -38,16 +37,19 @@ from pyxel.detectors import (
 )
 from pyxel.dynamic import Dynamic
 from pyxel.evaluator import evaluate_reference
-from pyxel.parametric import ParameterValues, Parametric
-from pyxel.pipelines import DetectionPipeline, ModelFunction, ModelGroup
-from pyxel.single import Single
-from pyxel.inputs_outputs.calibration_outputs import (  # CalibrationPlot,; ChampionsPlot,; FittingPlot,; PopulationPlot,
+from pyxel.inputs_outputs.calibration_outputs import (
+    # CalibrationPlot,; ChampionsPlot,; FittingPlot,; PopulationPlot,
     CalibrationOutputs,
 )
 from pyxel.inputs_outputs.dynamic_outputs import DynamicOutputs
 from pyxel.inputs_outputs.outputs import PlotArguments
-from pyxel.inputs_outputs.parametric_outputs import ParametricOutputs  # , ParametricPlot
+from pyxel.inputs_outputs.parametric_outputs import (
+    ParametricOutputs,  # , ParametricPlot
+)
 from pyxel.inputs_outputs.single_outputs import SingleOutputs  # , SinglePlot
+from pyxel.parametric import ParameterValues, Parametric
+from pyxel.pipelines import DetectionPipeline, ModelFunction, ModelGroup
+from pyxel.single import Single
 
 
 @attr.s

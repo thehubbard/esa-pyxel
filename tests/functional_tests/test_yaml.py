@@ -17,10 +17,10 @@ except ImportError:
     WITH_PYGMO = False
 
 from pyxel.calibration import Algorithm, Calibration, CalibrationMode
+from pyxel.configuration import Configuration, load
 from pyxel.data_structure import Charge, Image, Pixel, Signal
 from pyxel.detectors import CCD, CCDCharacteristics, CCDGeometry, Environment, Material
 from pyxel.dynamic import Dynamic
-from pyxel.configuration import Configuration, load
 from pyxel.inputs_outputs.calibration_outputs import CalibrationOutputs
 from pyxel.inputs_outputs.dynamic_outputs import DynamicOutputs
 from pyxel.inputs_outputs.parametric_outputs import ParametricOutputs

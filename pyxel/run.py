@@ -29,9 +29,9 @@ from matplotlib import pyplot as plt
 from pyxel import __version__ as version
 from pyxel import inputs_outputs as io
 from pyxel.calibration import Calibration, CalibrationResult
+from pyxel.configuration import Configuration, load, save
 from pyxel.detectors import CCD, CMOS
 from pyxel.dynamic import Dynamic  # , DynamicResult
-from pyxel.configuration import Configuration, load, save
 from pyxel.parametric import Parametric, ParametricResult
 from pyxel.pipelines import DetectionPipeline, Processor
 from pyxel.single import Single

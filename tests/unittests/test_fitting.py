@@ -14,8 +14,8 @@ import pytest
 from pyxel.calibration import Calibration
 from pyxel.calibration.fitting import ModelFitting
 from pyxel.calibration.util import CalibrationMode, ResultType
-from pyxel.detectors import CCD
 from pyxel.configuration import Configuration, load
+from pyxel.detectors import CCD
 from pyxel.pipelines import DetectionPipeline, Processor
 
 try:

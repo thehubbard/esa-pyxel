@@ -19,8 +19,8 @@ from pyxel.calibration.util import (
     read_data,
     read_single_data,
 )
-from pyxel.detectors import CCD
 from pyxel.configuration import Configuration, load
+from pyxel.detectors import CCD
 from pyxel.pipelines import DetectionPipeline, Processor
 
 try:
