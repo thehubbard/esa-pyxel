@@ -12,7 +12,6 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from pyxel import inputs_outputs as io
 from pyxel.calibration import Calibration
 from pyxel.calibration.util import (
     check_ranges,
@@ -20,8 +19,8 @@ from pyxel.calibration.util import (
     read_data,
     read_single_data,
 )
+from pyxel.configuration import Configuration, load
 from pyxel.detectors import CCD
-from pyxel.inputs_outputs import Configuration
 from pyxel.pipelines import DetectionPipeline, Processor
 
 try:
@@ -47,7 +46,7 @@ except ImportError:
 )
 def test_set_algo(yaml):
     """Test"""
-    cfg = io.load(yaml)
+    cfg = load(yaml)
     calibration = cfg.calibration
     obj = calibration.algorithm.get_algorithm()
     if isinstance(obj, pg.sade):
@@ -181,7 +180,7 @@ def test_check_ranges(targ_range, out_range, row, col):
 @pytest.mark.parametrize("yaml", ["tests/data/calibrate_models.yaml"])
 def test_run_calibration(yaml):
     """Test"""
-    cfg = io.load(yaml)
+    cfg = load(yaml)
     assert isinstance(cfg, Configuration)
 
     detector = cfg.ccd_detector

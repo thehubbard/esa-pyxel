@@ -20,9 +20,10 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable
 if t.TYPE_CHECKING:
     from holoviews import Layout
 
+    from pyxel.configuration import Configuration
+
     # from pyxel.data_structure import Image, Photon, Pixel, Signal
     from pyxel.detectors import Detector
-    from pyxel.inputs_outputs import Configuration
     from pyxel.pipelines import DetectionPipeline, ModelFunction, Processor
 
 

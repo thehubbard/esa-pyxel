@@ -10,9 +10,10 @@ Core
 
 * Add more debugging information when Calibration mode fails.
   (See `!228 <https://gitlab.com/esa/pyxel/-/merge_requests/228>`_).
-
 * Add more debugging information in function 'get_obj_att'.
   (See `!243 <https://gitlab.com/esa/pyxel/-/merge_requests/243>`_).
+* Separate configuration loader from scripts in inputs_outputs.
+  (See `!250 <https://gitlab.com/esa/pyxel/-/merge_requests/250>`_).
 
 
 Documentation

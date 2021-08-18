@@ -1,4 +1,11 @@
-#  Copyright (c) European Space Agency, 2017, 2018, 2019, 2020.
+#  Copyright (c) European Space Agency, 2017, 2018, 2019, 2021.
+#
+#  This file is subject to the terms and conditions defined in file 'LICENCE.txt', which
+#  is part of this Pyxel package. No part of the package, including
+#  this file, may be copied, modified, propagated, or distributed except according to
+#  the terms contained in the file ‘LICENCE.txt’.
+#
+#
 #
 #  This file is subject to the terms and conditions defined in file 'LICENCE.txt', which
 #  is part of this Pyxel package. No part of the package, including
@@ -18,8 +25,7 @@ import yaml
 
 from pyxel import __version__ as version
 from pyxel.calibration import Algorithm, Calibration
-
-from ..detectors import (
+from pyxel.detectors import (
     CCD,
     CMOS,
     CCDCharacteristics,
@@ -29,18 +35,21 @@ from ..detectors import (
     Environment,
     Material,
 )
-from ..dynamic import Dynamic
-from ..evaluator import evaluate_reference
-from ..parametric import ParameterValues, Parametric
-from ..pipelines import DetectionPipeline, ModelFunction, ModelGroup
-from ..single import Single
-from .calibration_outputs import (  # CalibrationPlot,; ChampionsPlot,; FittingPlot,; PopulationPlot,
+from pyxel.dynamic import Dynamic
+from pyxel.evaluator import evaluate_reference
+from pyxel.inputs_outputs.calibration_outputs import (
+    # CalibrationPlot,; ChampionsPlot,; FittingPlot,; PopulationPlot,
     CalibrationOutputs,
 )
-from .dynamic_outputs import DynamicOutputs
-from .outputs import PlotArguments
-from .parametric_outputs import ParametricOutputs  # , ParametricPlot
-from .single_outputs import SingleOutputs  # , SinglePlot
+from pyxel.inputs_outputs.dynamic_outputs import DynamicOutputs
+from pyxel.inputs_outputs.outputs import PlotArguments
+from pyxel.inputs_outputs.parametric_outputs import (
+    ParametricOutputs,  # , ParametricPlot
+)
+from pyxel.inputs_outputs.single_outputs import SingleOutputs  # , SinglePlot
+from pyxel.parametric import ParameterValues, Parametric
+from pyxel.pipelines import DetectionPipeline, ModelFunction, ModelGroup
+from pyxel.single import Single
 
 
 @attr.s
