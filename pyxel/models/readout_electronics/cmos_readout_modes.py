@@ -27,19 +27,20 @@ def non_destructive_readout(detector: CMOS, mode: str, fowler_samples: int = 1) 
     if not detector.is_non_destructive_readout or not detector.is_dynamic:
         raise ValueError()
 
+    if not detector._times_linear:
+        raise ValueError()
+
     detector.read_out = False
     if mode == "uncorrelated":
-        if detector.time == (detector.end_time - detector.time_step):
+        if detector.pipeline_count == detector.num_steps-1:
             detector.read_out = True
     elif mode == "CDS":
-        if detector.time == detector.time_step or detector.time == (
-            detector.end_time - detector.time_step
-        ):
+        if detector.pipeline_count == 0 or detector.pipeline_count == (detector.num_steps -1):
             detector.read_out = True
     elif mode == "Fowler-N":
-        nt = fowler_samples * detector.time_step
+        nt = fowler_samples
         detector.read_out = True
-        if nt < detector.time <= detector.end_time - nt:
+        if nt <= detector.pipeline_count <  (detector.num_steps - nt):
             detector.read_out = False
     elif mode == "UTR":
         detector.read_out = True
