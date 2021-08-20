@@ -105,7 +105,7 @@ class Dynamic:
 
         self._num_steps = len(self.times)
 
-    def time_it(self) -> zip:
+    def time_it(self) -> t.Callable:
         """TBW."""
         return zip(self.times, self.steps)
 
@@ -149,7 +149,7 @@ class Dynamic:
 
         pbar = tqdm(total=self._num_steps)
 
-        for i, (time, step) in enumerate(self.time_it()):
+        for i, (time, step) in enumerate(self.time_it()):  # type: t.Tuple[int, t.Tuple[float, float]]
 
             detector.time = time
             detector.time_step = step
