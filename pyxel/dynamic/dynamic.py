@@ -48,9 +48,7 @@ class Dynamic:
         if times is not None and times_from_file is not None:
             raise ValueError("Both times and times_from_file specified. Choose one.")
         elif times_from_file:
-            self._times = load_table(times_from_file).to_numpy(
-                dtype=float
-            )
+            self._times = load_table(times_from_file).to_numpy(dtype=float)
         elif times:
             self._times = np.array(eval_range(times), dtype=float)
         else:
@@ -73,17 +71,17 @@ class Dynamic:
         return f"{cls_name}<outputs={self.outputs!r}>"
 
     @property
-    def times(self):
+    def times(self) -> t.Any:
         """TBW."""
         return self._times
 
     @times.setter
-    def times(self, value):
+    def times(self, value: np.ndarray) -> None:
         """TBW."""
         self._times = value
 
     @property
-    def steps(self):
+    def steps(self) -> np.ndarray:
         """TBW."""
         return self._steps
 
@@ -92,7 +90,7 @@ class Dynamic:
         """TBW."""
         self._steps = value
 
-    def set_steps(self):
+    def set_steps(self) -> None:
         """TBW."""
         if self._start_time == self.times[0]:
             self.steps = np.diff(self.times, axis=0)
@@ -103,21 +101,16 @@ class Dynamic:
                 axis=0,
             )
 
-        self._linear = np.all(self.steps == self.steps[0])
+        self._linear = bool(np.all(self.steps == self.steps[0]))
 
         self._num_steps = len(self.times)
 
-    def time_it(self):
-        """
-
-        Returns
-        -------
-
-        """
+    def time_it(self) -> zip:
+        """TBW."""
         return zip(self.times, self.steps)
 
     @property
-    def non_destructive_readout(self):
+    def non_destructive_readout(self) -> bool:
         """TBW."""
         return self._non_destructive_readout
 

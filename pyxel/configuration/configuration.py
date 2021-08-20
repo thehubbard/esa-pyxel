@@ -37,10 +37,7 @@ from pyxel.detectors import (
 )
 from pyxel.dynamic import Dynamic
 from pyxel.evaluator import evaluate_reference
-from pyxel.inputs_outputs.calibration_outputs import (
-    # CalibrationPlot,; ChampionsPlot,; FittingPlot,; PopulationPlot,
-    CalibrationOutputs,
-)
+from pyxel.inputs_outputs.calibration_outputs import CalibrationOutputs
 from pyxel.inputs_outputs.dynamic_outputs import DynamicOutputs
 from pyxel.inputs_outputs.outputs import PlotArguments
 from pyxel.inputs_outputs.parametric_outputs import (

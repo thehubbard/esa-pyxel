@@ -32,15 +32,17 @@ def non_destructive_readout(detector: CMOS, mode: str, fowler_samples: int = 1) 
 
     detector.read_out = False
     if mode == "uncorrelated":
-        if detector.pipeline_count == detector.num_steps-1:
+        if detector.pipeline_count == detector.num_steps - 1:
             detector.read_out = True
     elif mode == "CDS":
-        if detector.pipeline_count == 0 or detector.pipeline_count == (detector.num_steps -1):
+        if detector.pipeline_count == 0 or detector.pipeline_count == (
+            detector.num_steps - 1
+        ):
             detector.read_out = True
     elif mode == "Fowler-N":
         nt = fowler_samples
         detector.read_out = True
-        if nt <= detector.pipeline_count <  (detector.num_steps - nt):
+        if nt <= detector.pipeline_count < (detector.num_steps - nt):
             detector.read_out = False
     elif mode == "UTR":
         detector.read_out = True

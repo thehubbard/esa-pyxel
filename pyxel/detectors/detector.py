@@ -203,7 +203,7 @@ class Detector:
         return self._time
 
     @time.setter
-    def time(self, value):
+    def time(self, value: float) -> None:
         """TBW."""
         self._time = value
 
@@ -211,6 +211,11 @@ class Detector:
     def time_step(self) -> float:
         """TBW."""
         return self._time_step
+
+    @time_step.setter
+    def time_step(self, value: float) -> None:
+        """TBW."""
+        self._time_step = value
 
     @property
     def num_steps(self) -> int:
@@ -222,18 +227,13 @@ class Detector:
         """TBW."""
         return self._times_linear
 
-    @time_step.setter
-    def time_step(self, value):
-        """TBW."""
-        self._time_step = value
-
     @property
     def pipeline_count(self) -> float:
         """TBW."""
         return self._pipeline_count
 
     @pipeline_count.setter
-    def pipeline_count(self, value):
+    def pipeline_count(self, value: int) -> None:
         """TBW."""
         self._pipeline_count = value
 
