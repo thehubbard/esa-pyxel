@@ -7,6 +7,8 @@ version 0.11 / UNRELEASED-YYYY-MM-DD
 
 Core
 ~~~~
+* Enable logarithmic timing in dynamic mode.
+  (See `!249 <https://gitlab.com/esa/pyxel/-/merge_requests/249>`_).
 
 Documentation
 ~~~~~~~~~~~~~
