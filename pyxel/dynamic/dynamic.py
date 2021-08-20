@@ -105,7 +105,7 @@ class Dynamic:
 
         self._num_steps = len(self.times)
 
-    def time_it(self) -> t.Callable:
+    def time_it(self) -> t.Iterator[t.Tuple[float, float]]:
         """TBW."""
         return zip(self.times, self.steps)
 
