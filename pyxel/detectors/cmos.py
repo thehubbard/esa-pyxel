@@ -28,7 +28,7 @@ class CMOS(Detector):
         self._characteristics = characteristics  # type: CMOSCharacteristics
 
         super().__init__(material=material, environment=environment)
-        super().initialize()
+        super().reset()
 
     @property
     def geometry(self) -> "CMOSGeometry":

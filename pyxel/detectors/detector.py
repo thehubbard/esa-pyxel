@@ -54,13 +54,14 @@ class Detector:
 
         self.start_time = 0.0  # type: float
         self.end_time = 0.0  # type: float
-        self.steps = 0  # type: int
-        self.time_step = 0.0  # type: float
+        self._time_step = 0.0  # type: float
         self._time = 0.0  # type: float
         self._dynamic = False  # type: bool
         self._non_destructive = False  # type: bool
         self.read_out = True  # type: bool
-        self._all_time_steps_it = iter([])  # type: t.Iterator[float]
+        self._pipeline_count = 0  # type: int
+        self._num_steps = 0  # type: int
+        self._times_linear = True  # type: bool
 
         self._numbytes = 0
 
@@ -125,8 +126,7 @@ class Detector:
 
         return self._image
 
-    # TODO: Rename to 'reset' ?
-    def initialize(self, reset_all: bool = True) -> None:
+    def reset(self, reset_all: bool = True) -> None:
         """TBW."""
         self._photon = None
         if reset_all:
@@ -152,20 +152,20 @@ class Detector:
         return self._output_dir
 
     def set_dynamic(
-        self, time_step: float, steps: int, ndreadout: bool = False
+        self,
+        num_steps: int,
+        start_time: float,
+        end_time: float,
+        ndreadout: bool = False,
+        linear: bool = True,
     ) -> None:
         """Switch on dynamic (time dependent) mode."""
         self._dynamic = True
-        self.time_step = time_step
-        self.steps = steps
+        self._num_steps = num_steps
         self._non_destructive = ndreadout
-        self.end_time = self.time_step * self.steps
-
-        all_time_steps = np.round(
-            np.linspace(self.time_step, self.end_time, self.steps, endpoint=True),
-            decimals=10,
-        )
-        self._all_time_steps_it = map(float, all_time_steps)
+        self._times_linear = linear
+        self.start_time = start_time
+        self.end_time = end_time
 
     @property
     def is_dynamic(self) -> bool:
@@ -206,6 +206,26 @@ class Detector:
     def time(self, value):
         """TBW."""
         self._time = value
+
+    @property
+    def time_step(self) -> float:  # TODO
+        """TBW."""
+        return self._time_step
+
+    @time_step.setter
+    def time_step(self, value):
+        """TBW."""
+        self._time_step = value
+
+    @property
+    def pipeline_count(self) -> float:  # TODO
+        """TBW."""
+        return self._pipeline_count
+
+    @pipeline_count.setter
+    def pipeline_count(self, value):
+        """TBW."""
+        self._pipeline_count = value
 
     @property
     def numbytes(self) -> int:

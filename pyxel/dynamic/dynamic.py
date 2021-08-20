@@ -12,11 +12,12 @@ import logging
 import operator
 import typing as t
 
+import numpy as np
 import xarray as xr
 from tqdm.notebook import tqdm
+
 from pyxel.evaluator import eval_range
-#from pyxel.inputs_outputs import load_table
-import numpy as np
+from pyxel.inputs_outputs import load_table
 
 if t.TYPE_CHECKING:
     from ..inputs_outputs import DynamicOutputs
@@ -37,27 +38,35 @@ class Dynamic:
     def __init__(
         self,
         outputs: "DynamicOutputs",
-        times: t.Optional[t.Union[t.Sequence, str]],
-        times_from_file: t.Optional[str],
+        times: t.Optional[t.Union[t.Sequence, str]] = None,
+        times_from_file: t.Optional[str] = None,
+        start_time: float = 0.0,
         non_destructive_readout: bool = False,
     ):
         self.outputs = outputs
-        if times is None and times_from_file is None:
-            raise ValueError("Dynamic times not specified.")
-        elif times is not None and times_from_file is None:
-            self._times = np.array(eval_range(times), dtype= float)
-        elif times is None and times_from_file is not None:
-            self._times = load_table(times_from_file).to_numpy(dtype=float)
-        elif times is not None and times_from_file is not None:
+
+        if times is not None and times_from_file is not None:
             raise ValueError("Both times and times_from_file specified. Choose one.")
+        elif times_from_file:
+            self._times = load_table(times_from_file).to_numpy(
+                dtype=float
+            )
+        elif times:
+            self._times = np.array(eval_range(times), dtype=float)
         else:
-            raise NotImplementedError
+            raise ValueError("Dynamic times not specified.")
+
         self._non_destructive_readout = non_destructive_readout
 
-        if np.ndim(times) != 1:
+        if np.ndim(self.times) != 1:
             raise ValueError("Number of dimensions in the times array is not 1.")
 
-        self._steps = np.concatenate((times[:1], np.diff(times)), axis=0)
+        self._linear = True  # type: bool
+        self._start_time = start_time  # type:float
+        self._steps = np.array([])  # type: np.ndarray
+        self._num_steps = 0  # type: int
+
+        self.set_steps()
 
     def __repr__(self) -> str:
         cls_name = self.__class__.__name__  # type: str
@@ -68,10 +77,35 @@ class Dynamic:
         """TBW."""
         return self._times
 
+    @times.setter
+    def times(self, value):
+        """TBW."""
+        self._times = value
+
     @property
     def steps(self):
         """TBW."""
         return self._steps
+
+    @steps.setter
+    def steps(self, value: np.ndarray) -> None:
+        """TBW."""
+        self._steps = value
+
+    def set_steps(self):
+        """TBW."""
+        if self._start_time == self.times[0]:
+            self.steps = np.diff(self.times, axis=0)
+            self.times = self.times[1:]
+        else:
+            self.steps = np.diff(
+                np.concatenate((np.array([self._start_time]), self.times), axis=0),
+                axis=0,
+            )
+
+        self._linear = np.all(self.steps == self.steps[0])
+
+        self._num_steps = len(self.times)
 
     def time_it(self):
         """
@@ -80,8 +114,7 @@ class Dynamic:
         -------
 
         """
-        for time, step in zip(self.times, self.steps):
-            yield time, step
+        return zip(self.times, self.steps)
 
     @property
     def non_destructive_readout(self):
@@ -101,12 +134,14 @@ class Dynamic:
         detector = processor.detector
 
         detector.set_dynamic(
-            steps=self._steps,
-            time_step=self._t_step,
+            num_steps=self._num_steps,
             ndreadout=self._non_destructive_readout,
+            linear=self._linear,
+            start_time=self._start_time,
+            end_time=self.times[-1],
         )
         # The detector should be reset before exposure
-        detector.initialize(reset_all=True)
+        detector.reset(reset_all=True)
 
         # prepare lists for to-be-merged datasets
         list_datasets = []
@@ -119,20 +154,26 @@ class Dynamic:
         # Coordinates
         coordinates = {"x": range(columns), "y": range(rows)}
 
-        pbar = tqdm(total=self._steps)
-        # TODO: Use an iterator for that ?
-        while detector.elapse_time():
-            logging.info("time = %.3f s", detector.time)
+        pbar = tqdm(total=self._num_steps)
+
+        for i, (time, step) in enumerate(self.time_it()):
+
+            detector.time = time
+            detector.time_step = step
+
+            logging.info("time = %.3f s", time)
+
             if detector.is_non_destructive_readout:
-                detector.initialize(reset_all=False)
+                detector.reset(reset_all=False)
             else:
-                detector.initialize(reset_all=True)
+                detector.reset(reset_all=True)
+
             processor.run_pipeline()
+            detector.pipeline_count = i
+
             if detector.read_out:
                 self.outputs.save_to_file(processor)
-            # Saving all arrays into an xarray dataset for possible
-            # display with holoviews in jupyter notebook
-            # Initialize an xarray dataset
+
             out = xr.Dataset()
 
             # Dataset is storing the arrays at the end of this iter
@@ -163,11 +204,5 @@ class Dynamic:
 
         # Combine the datasets in the list into one xarray
         final_dataset = xr.combine_by_coords(list_datasets)  # type: xr.Dataset
-
-        # result = DynamicResult(
-        #     dataset=final_dataset,
-        #     # parameters=final_parameters_merged,
-        #     # logs=final_logs,
-        # )
 
         return final_dataset
