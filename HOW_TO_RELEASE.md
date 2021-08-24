@@ -11,30 +11,30 @@ upstream	https://gitlab.com/esa/pyxel.git (push)
 
 1. Write a release summary: ~50 words describing the high level features. This will be used in the release emails, GitLab release notes, blog, etc.
 
-1. Ensure your master branch is synced to upstream:
+2. Ensure your master branch is synced to upstream:
 
    ```fish
    $ git switch master
    $ git pull upstream master
    ```
 
-1. Create a branch 'new_release{X}.{Y}' from 'master' for the new release.
+3. Create a branch 'new_release{X}.{Y}' from 'master' for the new release.
 
    ```fish
    $ git checkout -b new_release{X}.{Y}
    ```
 
-1. Open a merge request linked to the new release branch with the release summary and changes.
+4. Open a merge request linked to the new release branch with the release summary and changes.
 
-1. Update release notes in `CHANGELOG.rst` in the branch and add release summary at the top.
+5. Update release notes in `CHANGELOG.rst` in the branch and add release summary at the top.
 
-1. After merging, again ensure your master branch is synced to upstream:
+6. After merging, again ensure your master branch is synced to upstream:
 
    ```fish
    $ git pull upstream master
    ```
 
-1. If you have any doubts, run the full test suite one final time !
+7. If you have any doubts, run the full test suite one final time !
 
    ```fish
    $ pytest
@@ -44,7 +44,7 @@ upstream	https://gitlab.com/esa/pyxel.git (push)
    $ tox
    ```
 
-1. Tag the release from https://gitlab.com/esa/pyxel/-/tags with the following actions:
+8. Tag the release from https://gitlab.com/esa/pyxel/-/tags with the following actions:
 
    a. Click the button 'new_tag'
 
@@ -56,53 +56,83 @@ upstream	https://gitlab.com/esa/pyxel.git (push)
 
    e. In the field 'Release notes', enter the content of `CHANGELOG.rst` only for this release.
 
-1. Push your changes to master:
+9. Push your changes to master:
    ```fish
    $ git push upstream master
    $ git push upstream --tags
    ```
    :interrobang: This could be done directly inside Gitlab
 
-1. Send the new release 'pyxel-sim' to the Python Package Index (PyPI) repository and
-   the Conda forge channel:
+10. Send the new release 'pyxel-sim' to the Python Package Index (PyPI) repository with
+    the following commands:
+       ```fish
+       # Send the package to https://test.pypi.org (only for testing)
+       $ tox -e release -- --repository testpypi
+
+       # Send the package to https://pypi.org
+       $ tox -e release
+       ```
    
-   a. Send the new release 'pyxel-sim' to the PyPi repository with the following commands:
-      ```fish
-      # Send the package to https://test.pypi.org (only for testing)
-      $ tox -e release -- --repository testpypi
-
-      # Send the package to https://pypi.org
-      $ tox -e release
-      ```
+11. Send the new release 'pyxel-sim' to the Conda forge channel (after sending the 
+    package to PyPi)
    
-   b. Send the new release 'pyxel-sim' to the Conda forge channel (after sending the 
-      package to PyPi)
-      ```fish
-      $ conda install conda-build
-      $ conda skeleton pypi pyxel-sim
-      TBW.
-      ```
+    1. Create a new recipe based on the current version of `pyxel-sim` from the PyPi
+       repository.
+   
+       1. First install 'grayskull' the recipe generator:
+       ```fish
+       $ conda install -c conda-forge grayskull
+       or
+       $ pip install grayskull
+      
+       1. Then create the recipe 'meta.yaml'
+       # Create a new recipe in the folder './pyxel-sim/meta.yaml'
+       $ grayskull pypi pyxel-sim
+       ```
+      
+       2. Edit the new file './pyxel-sim/meta.yaml':
+          * In section 'run:', add '- pygmo'
+          ```yaml
+          requirements:
+            run:
+               ...
+               - pygmo    # <== add this
+          ```
+         
+          * In section 'recipe-maintainers', add your github ID.
+          ```yaml
+          extra:
+            recipe-maintainers:
+               - MyGitHubID
+          ```
+    2. Submit the recipe to 'conda-forge' with the following steps:
+       1. Login to GitHub
+       2. Fork https://github.com/conda-forge/staged-recipes (if it was not already done)
+       3. Go to forked code 'staged-recipes' or https://github.com/YOURGITHUBID/staged-recipes
+       4. Create a new branch 'pyxel-sim' (if it was not already done)
+       5. In folder 'recipes', create a new folder 'pyxel-sim' and copy recipe file 'meta.yaml'
+       6. Submit a pull request to Conda Forge
 
-1. Add a section for the next release {X:Y+1} to `CHANGELOG.rst`
+12. Add a section for the next release {X:Y+1} to `CHANGELOG.rst`
 
-    ```fish
-    version {X:Y+1} / 2020-MM-DD
-    ----------------------------
+     ```fish
+     version {X:Y+1} / 2020-MM-DD
+     ----------------------------
 
-    Core
-    ~~~~
+     Core
+     ~~~~
 
-    Documentation
-    ~~~~~~~~~~~~~
-    ```
+     Documentation
+     ~~~~~~~~~~~~~
+     ```
 
-1. Commit you changes and push to master again:
-    ```fish
-    $ git commit -am "New Changelog section"
-    $ git push upstream master
-    ```
+13. Commit you changes and push to master again:
+     ```fish
+     $ git commit -am "New Changelog section"
+     $ git push upstream master
+     ```
 
-1. Issue the release on GitLab.
-   Click on https://gitlab.com/esa/pyxel/-/releases . Type in the version number and paste the release summary in the notes.
+14. Issue the release on GitLab.
+    Click on https://gitlab.com/esa/pyxel/-/releases . Type in the version number and paste the release summary in the notes.
 
-1. Issue the release announcement to the mailing list pyxel-dev@googlegroups.com and to the Pyxel blog.
+15. Issue the release announcement to the mailing list pyxel-dev@googlegroups.com and to the Pyxel blog.
