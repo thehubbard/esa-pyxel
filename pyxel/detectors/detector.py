@@ -53,9 +53,9 @@ class Detector:
         self.input_image = None  # type: t.Optional[np.ndarray]
         self._output_dir = None  # type: t.Optional[Path]  # TODO: Is it really needed ?
 
-        self._numbytes = 0
-
         self._dynamic_properties = None  # type: t.Optional["DynamicProperties"]
+
+        self._numbytes = get_size(self)
 
     @property
     def geometry(self):
@@ -149,7 +149,7 @@ class Detector:
         start_time: float,
         end_time: float,
         ndreadout: bool = False,
-        linear: bool = True,
+        times_linear: bool = True,
     ) -> None:
         """Switch on dynamic (time dependent) mode."""
         self._dynamic_properties = DynamicProperties(
@@ -157,7 +157,7 @@ class Detector:
             start_time=start_time,
             end_time=end_time,
             ndreadout=ndreadout,
-            linear=linear,
+            times_linear=times_linear,
         )
 
     @property

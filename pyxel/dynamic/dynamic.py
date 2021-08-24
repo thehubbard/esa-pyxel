@@ -35,6 +35,16 @@ class Dynamic:
         start_time: float = 0.0,
         non_destructive_readout: bool = False,
     ):
+        """Create an instance of Dynamic class.
+
+        Parameters
+        ----------
+        outputs
+        times
+        times_from_file
+        start_time
+        non_destructive_readout
+        """
         self.outputs = outputs
 
         if times is not None and times_from_file is not None:
@@ -51,7 +61,7 @@ class Dynamic:
         if np.ndim(self.times) != 1:
             raise ValueError("Number of dimensions in the times array is not 1.")
 
-        self._linear = True  # type: bool
+        self._times_linear = True  # type: bool
         self._start_time = start_time  # type:float
         self._steps = np.array([])  # type: np.ndarray
         self._num_steps = 0  # type: int
@@ -65,10 +75,10 @@ class Dynamic:
     def _set_steps(self) -> None:
         """TBW."""
         self._times, self._steps = calculate_steps(self._times, self._start_time)
-        self._linear = bool(np.all(self._steps == self._steps[0]))
+        self._times_linear = bool(np.all(self._steps == self._steps[0]))
         self._num_steps = len(self._times)
 
-    def time_it(self) -> t.Iterator[t.Tuple[float, float]]:
+    def time_step_it(self) -> t.Iterator[t.Tuple[float, float]]:
         """TBW."""
         return zip(self._times, self._steps)
 
@@ -91,10 +101,10 @@ class Dynamic:
         """TBW."""
         ds = dynamic_pipeline(
             processor=processor,
-            time_step_it=self.time_it(),
+            time_step_it=self.time_step_it(),
             num_steps=self._num_steps,
             ndreadout=self.non_destructive_readout,
-            linear=self._linear,
+            times_linear=self._times_linear,
             start_time=self._start_time,
             end_time=self._times[-1],
             outputs=self.outputs,
@@ -116,7 +126,9 @@ def calculate_steps(
     Returns
     -------
     times: ndarray
+        Modified times according to start time.
     steps: ndarray
+        Steps corresponding to times.
     """
     if start_time == times[0]:
         steps = np.diff(times, axis=0)
@@ -133,14 +145,40 @@ def dynamic_pipeline(
     processor: "Processor",
     time_step_it: t.Iterator[t.Tuple[float, float]],
     num_steps: int,
-    ndreadout: bool,
-    linear: bool,
-    start_time: float,
+    times_linear: bool,
     end_time: float,
+    start_time: float = 0.0,
+    ndreadout: bool = False,
     outputs: t.Optional["DynamicOutputs"] = None,
     progressbar: bool = False,
 ) -> xr.Dataset:
-    """TBW."""
+    """Run standalone dynamic pipeline.
+
+    Parameters
+    ----------
+    processor: Processor
+    time_step_it: Iterator
+        Iterates over pairs of times and elapsed time steps.
+    num_steps: int
+        Number of times.
+    ndreadout: bool
+        Set non destructive readout mode.
+    times_linear: bool
+        Set if times are linear.
+    start_time: float
+        Starting time.
+    end_time:
+        Last time.
+    outputs: DynamicOutputs
+        Dynamic outputs.
+    progressbar: bool
+        Sets visibility of progress bar.
+
+    Returns
+    -------
+    final_dataset: xr.Dataset
+        Results of the pipeline in an xarray dataset.
+    """
     # if isinstance(detector, CCD):
     #    dynamic.non_destructive_readout = False
 
@@ -149,7 +187,7 @@ def dynamic_pipeline(
     detector.set_dynamic(
         num_steps=num_steps,
         ndreadout=ndreadout,
-        linear=linear,
+        times_linear=times_linear,
         start_time=start_time,
         end_time=end_time,
     )
@@ -206,7 +244,7 @@ def dynamic_pipeline(
                 coords=coordinates,  # type: ignore
             )
             # Time coordinate of this iteration
-            da = da.assign_coords(coords={"t": processor.detector.time})
+            da = da.assign_coords(coords={"t": time})
             da = da.expand_dims(dim="t")
 
             out[key] = da
@@ -215,6 +253,7 @@ def dynamic_pipeline(
             pbar.update(1)
         # Append to the list of datasets
         list_datasets.append(out)
+
     if progressbar:
         pbar.close()
 
