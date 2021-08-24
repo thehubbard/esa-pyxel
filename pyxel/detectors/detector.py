@@ -15,6 +15,7 @@ import numpy as np
 
 from pyxel.data_structure import Charge, Image, Photon, Pixel, Signal
 from pyxel.detectors import Environment, Material
+from pyxel.detectors.dynamic_properties import DynamicProperties
 from pyxel.util.memory import get_size, memory_usage_details
 
 __all__ = ["Detector"]
@@ -52,18 +53,9 @@ class Detector:
         self.input_image = None  # type: t.Optional[np.ndarray]
         self._output_dir = None  # type: t.Optional[Path]  # TODO: Is it really needed ?
 
-        self.start_time = 0.0  # type: float
-        self.end_time = 0.0  # type: float
-        self._time_step = 0.0  # type: float
-        self._time = 0.0  # type: float
-        self._dynamic = False  # type: bool
-        self._non_destructive = False  # type: bool
-        self.read_out = True  # type: bool
-        self._pipeline_count = 0  # type: int
-        self._num_steps = 0  # type: int
-        self._times_linear = True  # type: bool
-
         self._numbytes = 0
+
+        self._dynamic_properties = None  # type: t.Optional["DynamicProperties"]
 
     @property
     def geometry(self):
@@ -160,12 +152,93 @@ class Detector:
         linear: bool = True,
     ) -> None:
         """Switch on dynamic (time dependent) mode."""
-        self._dynamic = True
-        self._num_steps = num_steps
-        self._non_destructive = ndreadout
-        self._times_linear = linear
-        self.start_time = start_time
-        self.end_time = end_time
+        self._dynamic_properties = DynamicProperties(
+            num_steps=num_steps,
+            start_time=start_time,
+            end_time=end_time,
+            ndreadout=ndreadout,
+            linear=linear,
+        )
+
+    @property
+    def time(self) -> float:
+        """TBW."""
+        if self._dynamic_properties is not None:
+            return self._dynamic_properties.time
+        else:
+            raise ValueError("Detector is not dynamic.")
+
+    @time.setter
+    def time(self, value: float) -> None:
+        """TBW."""
+        if self._dynamic_properties is not None:
+            self._dynamic_properties.time = value
+        else:
+            raise ValueError("Detector is not dynamic.")
+
+    @property
+    def time_step(self) -> float:
+        """TBW."""
+        if self._dynamic_properties is not None:
+            return self._dynamic_properties.time_step
+        else:
+            raise ValueError("Detector is not dynamic.")
+
+    @time_step.setter
+    def time_step(self, value: float) -> None:
+        """TBW."""
+        if self._dynamic_properties is not None:
+            self._dynamic_properties.time_step = value
+        else:
+            raise ValueError("Detector is not dynamic.")
+
+    @property
+    def times_linear(self) -> bool:
+        """TBW."""
+        if self._dynamic_properties is not None:
+            return self._dynamic_properties.times_linear
+        else:
+            raise ValueError("Detector is not dynamic.")
+
+    @property
+    def num_steps(self) -> int:
+        """TBW."""
+        if self._dynamic_properties is not None:
+            return self._dynamic_properties.num_steps
+        else:
+            raise ValueError("Detector is not dynamic.")
+
+    @property
+    def pipeline_count(self) -> float:
+        """TBW."""
+        if self._dynamic_properties is not None:
+            return self._dynamic_properties.pipeline_count
+        else:
+            raise ValueError("Detector is not dynamic.")
+
+    @pipeline_count.setter
+    def pipeline_count(self, value: int) -> None:
+        """TBW."""
+        if self._dynamic_properties is not None:
+            self._dynamic_properties.pipeline_count = value
+        else:
+            raise ValueError("Detector is not dynamic.")
+
+    @property
+    def read_out(self) -> bool:
+        """TBW."""
+        if self._dynamic_properties is not None:
+            return self._dynamic_properties.read_out
+        else:
+            raise ValueError("Detector is not dynamic.")
+
+    @read_out.setter
+    def read_out(self, value: bool) -> None:
+        """TBW."""
+        if self._dynamic_properties is not None:
+            self._dynamic_properties.read_out = value
+        else:
+            raise ValueError("Detector is not dynamic.")
 
     @property
     def is_dynamic(self) -> bool:
@@ -173,15 +246,21 @@ class Detector:
 
         By default it is not dynamic.
         """
-        return self._dynamic
+        if self._dynamic_properties is not None:
+            return True
+        else:
+            return False
 
     @property
-    def is_non_destructive_readout(self) -> bool:
+    def non_destructive_readout(self) -> bool:
         """Return if detector readout mode is destructive or integrating.
 
         By default it is destructive (non-integrating).
         """
-        return self._non_destructive
+        if self._dynamic_properties is not None:
+            return self._dynamic_properties.non_destructive_readout
+        else:
+            raise ValueError("Detector is not dynamic.")
 
     @property
     def e_thermal_velocity(self) -> float:
@@ -196,46 +275,6 @@ class Detector:
             * self.environment.temperature
             / self.material.e_effective_mass
         )
-
-    @property
-    def time(self) -> float:
-        """TBW."""
-        return self._time
-
-    @time.setter
-    def time(self, value: float) -> None:
-        """TBW."""
-        self._time = value
-
-    @property
-    def time_step(self) -> float:
-        """TBW."""
-        return self._time_step
-
-    @time_step.setter
-    def time_step(self, value: float) -> None:
-        """TBW."""
-        self._time_step = value
-
-    @property
-    def num_steps(self) -> int:
-        """TBW."""
-        return self._num_steps
-
-    @property
-    def times_linear(self) -> bool:
-        """TBW."""
-        return self._times_linear
-
-    @property
-    def pipeline_count(self) -> float:
-        """TBW."""
-        return self._pipeline_count
-
-    @pipeline_count.setter
-    def pipeline_count(self, value: int) -> None:
-        """TBW."""
-        self._pipeline_count = value
 
     @property
     def numbytes(self) -> int:

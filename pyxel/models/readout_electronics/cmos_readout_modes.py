@@ -24,10 +24,10 @@ def non_destructive_readout(detector: CMOS, mode: str, fowler_samples: int = 1) 
     :param fowler_samples:
     """
     logging.info("")
-    if not detector.is_non_destructive_readout or not detector.is_dynamic:
+    if not detector.non_destructive_readout or not detector.is_dynamic:
         raise ValueError()
 
-    if not detector._times_linear:
+    if not detector.times_linear:
         raise ValueError()
 
     detector.read_out = False
