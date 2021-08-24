@@ -107,11 +107,12 @@ upstream	https://gitlab.com/esa/pyxel.git (push)
           ```
     2. Submit the recipe to 'conda-forge' with the following steps:
        1. Login to GitHub
-       2. Fork https://github.com/conda-forge/staged-recipes (if it was not already done)
-       3. Go to forked code 'staged-recipes' or https://github.com/YOURGITHUBID/staged-recipes
-       4. Create a new branch 'pyxel-sim' (if it was not already done)
-       5. In folder 'recipes', create a new folder 'pyxel-sim' and copy recipe file 'meta.yaml'
-       6. Submit a pull request to Conda Forge
+       2. Fork https://github.com/conda-forge/pyxel-sim-feedstock (if it was not already done)
+       3. Go to your forked repository 'pyxel-sim-feedstock' or https://github.com/<YOUR_GITHUB_ID>/pyxel-sim-feedstock
+       4. Create a new branch 'pyxel-version_x_y_z'
+       5. In folder 'recipe', edit the recipe file 'meta.yaml' with the new recipe.
+       6. Propose the change as a pull request to branch 'master' in https://github.com/conda-forge/pyxel-sim-feedstock
+       7. Once the recSubmit a pull request to Conda Forge
 
 12. Add a section for the next release {X:Y+1} to `CHANGELOG.rst`
 
