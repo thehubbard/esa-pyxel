@@ -15,6 +15,7 @@ import numpy as np
 
 from pyxel.data_structure import Charge, Image, Photon, Pixel, Signal
 from pyxel.detectors import Environment, Material
+from pyxel.detectors.dynamic_properties import DynamicProperties
 from pyxel.util.memory import get_size, memory_usage_details
 
 __all__ = ["Detector"]
@@ -52,17 +53,9 @@ class Detector:
         self.input_image = None  # type: t.Optional[np.ndarray]
         self._output_dir = None  # type: t.Optional[Path]  # TODO: Is it really needed ?
 
-        self.start_time = 0.0  # type: float
-        self.end_time = 0.0  # type: float
-        self.steps = 0  # type: int
-        self.time_step = 0.0  # type: float
-        self._time = 0.0  # type: float
-        self._dynamic = False  # type: bool
-        self._non_destructive = False  # type: bool
-        self.read_out = True  # type: bool
-        self._all_time_steps_it = iter([])  # type: t.Iterator[float]
+        self._dynamic_properties = None  # type: t.Optional["DynamicProperties"]
 
-        self._numbytes = 0
+        self._numbytes = get_size(self)
 
     @property
     def geometry(self):
@@ -125,8 +118,7 @@ class Detector:
 
         return self._image
 
-    # TODO: Rename to 'reset' ?
-    def initialize(self, reset_all: bool = True) -> None:
+    def reset(self, reset_all: bool = True) -> None:
         """TBW."""
         self._photon = None
         if reset_all:
@@ -152,20 +144,101 @@ class Detector:
         return self._output_dir
 
     def set_dynamic(
-        self, time_step: float, steps: int, ndreadout: bool = False
+        self,
+        num_steps: int,
+        start_time: float,
+        end_time: float,
+        ndreadout: bool = False,
+        times_linear: bool = True,
     ) -> None:
         """Switch on dynamic (time dependent) mode."""
-        self._dynamic = True
-        self.time_step = time_step
-        self.steps = steps
-        self._non_destructive = ndreadout
-        self.end_time = self.time_step * self.steps
-
-        all_time_steps = np.round(
-            np.linspace(self.time_step, self.end_time, self.steps, endpoint=True),
-            decimals=10,
+        self._dynamic_properties = DynamicProperties(
+            num_steps=num_steps,
+            start_time=start_time,
+            end_time=end_time,
+            ndreadout=ndreadout,
+            times_linear=times_linear,
         )
-        self._all_time_steps_it = map(float, all_time_steps)
+
+    @property
+    def time(self) -> float:
+        """TBW."""
+        if self._dynamic_properties is not None:
+            return self._dynamic_properties.time
+        else:
+            raise ValueError("Detector is not dynamic.")
+
+    @time.setter
+    def time(self, value: float) -> None:
+        """TBW."""
+        if self._dynamic_properties is not None:
+            self._dynamic_properties.time = value
+        else:
+            raise ValueError("Detector is not dynamic.")
+
+    @property
+    def time_step(self) -> float:
+        """TBW."""
+        if self._dynamic_properties is not None:
+            return self._dynamic_properties.time_step
+        else:
+            raise ValueError("Detector is not dynamic.")
+
+    @time_step.setter
+    def time_step(self, value: float) -> None:
+        """TBW."""
+        if self._dynamic_properties is not None:
+            self._dynamic_properties.time_step = value
+        else:
+            raise ValueError("Detector is not dynamic.")
+
+    @property
+    def times_linear(self) -> bool:
+        """TBW."""
+        if self._dynamic_properties is not None:
+            return self._dynamic_properties.times_linear
+        else:
+            raise ValueError("Detector is not dynamic.")
+
+    @property
+    def num_steps(self) -> int:
+        """TBW."""
+        if self._dynamic_properties is not None:
+            return self._dynamic_properties.num_steps
+        else:
+            raise ValueError("Detector is not dynamic.")
+
+    @property
+    def pipeline_count(self) -> float:
+        """TBW."""
+        if self._dynamic_properties is not None:
+            return self._dynamic_properties.pipeline_count
+        else:
+            raise ValueError("Detector is not dynamic.")
+
+    @pipeline_count.setter
+    def pipeline_count(self, value: int) -> None:
+        """TBW."""
+        if self._dynamic_properties is not None:
+            self._dynamic_properties.pipeline_count = value
+        else:
+            raise ValueError("Detector is not dynamic.")
+
+    @property
+    def read_out(self) -> bool:
+        """TBW."""
+        if self._dynamic_properties is not None:
+            return self._dynamic_properties.read_out
+        else:
+            raise ValueError("Detector is not dynamic.")
+
+    @read_out.setter
+    def read_out(self, value: bool) -> None:
+        """TBW."""
+        if self._dynamic_properties is not None:
+            self._dynamic_properties.read_out = value
+        else:
+            raise ValueError("Detector is not dynamic.")
 
     @property
     def is_dynamic(self) -> bool:
@@ -173,15 +246,21 @@ class Detector:
 
         By default it is not dynamic.
         """
-        return self._dynamic
+        if self._dynamic_properties is not None:
+            return True
+        else:
+            return False
 
     @property
-    def is_non_destructive_readout(self) -> bool:
+    def non_destructive_readout(self) -> bool:
         """Return if detector readout mode is destructive or integrating.
 
         By default it is destructive (non-integrating).
         """
-        return self._non_destructive
+        if self._dynamic_properties is not None:
+            return self._dynamic_properties.non_destructive_readout
+        else:
+            raise ValueError("Detector is not dynamic.")
 
     @property
     def e_thermal_velocity(self) -> float:
@@ -196,20 +275,6 @@ class Detector:
             * self.environment.temperature
             / self.material.e_effective_mass
         )
-
-    @property
-    def time(self) -> float:  # TODO
-        """TBW."""
-        return self._time
-
-    # TODO: This method is used in 'run.py'. We could implement this as an iterator.
-    def elapse_time(self) -> float:
-        """TBW."""
-        try:
-            self._time = float(next(self._all_time_steps_it))
-        except StopIteration:
-            self._time = 0.0
-        return self._time
 
     @property
     def numbytes(self) -> int:

@@ -28,7 +28,7 @@ class CCD(Detector):
         self._characteristics = characteristics  # type: CCDCharacteristics
 
         super().__init__(material=material, environment=environment)
-        super().initialize()
+        super().reset()
 
     @property
     def geometry(self) -> "CCDGeometry":
