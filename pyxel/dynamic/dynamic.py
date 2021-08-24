@@ -50,16 +50,13 @@ class Dynamic:
         if times is not None and times_from_file is not None:
             raise ValueError("Both times and times_from_file specified. Choose one.")
         elif times_from_file:
-            self._times = load_table(times_from_file).to_numpy(dtype=float)
+            self._times = load_table(times_from_file).to_numpy(dtype=float).flatten()
         elif times:
             self._times = np.array(eval_range(times), dtype=float)
         else:
             raise ValueError("Dynamic times not specified.")
 
         self._non_destructive_readout = non_destructive_readout
-
-        if np.ndim(self.times) != 1:
-            raise ValueError("Number of dimensions in the times array is not 1.")
 
         self._times_linear = True  # type: bool
         self._start_time = start_time  # type:float
