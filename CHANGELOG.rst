@@ -7,6 +7,7 @@ version 0.11 / UNRELEASED-YYYY-MM-DD
 
 Core
 ~~~~
+
 * Enable logarithmic timing in dynamic mode.
   (See `!249 <https://gitlab.com/esa/pyxel/-/merge_requests/249>`_).
 
@@ -18,6 +19,9 @@ Models
 
 Others
 ~~~~~~
+
+* Fix issue with latest version of Mypy.
+  (See `!253 <https://gitlab.com/esa/pyxel/-/merge_requests/253>`_).
 
 
 version 0.10.1 / 2021-08-18
