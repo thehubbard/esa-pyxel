@@ -12,6 +12,9 @@ Core
 Documentation
 ~~~~~~~~~~~~~
 
+* Add more information about how-to release to Conda Forge.
+  (See `!252 <https://gitlab.com/esa/pyxel/-/merge_requests/252>`_).
+
 Models
 ~~~~~~
 
