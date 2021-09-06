@@ -72,10 +72,10 @@ models in the pipeline.
 
 .. toctree::
 
-   photon_generation_models.rst
-   optical_models.rst
-   charge_generation_models.rst
-   charge_collection_models.rst
-   charge_transfer_models.rst
-   charge_measurement_models.rst
-   readout_electronics.rst
+   model_groups/photon_generation_models.rst
+   model_groups/optical_models.rst
+   model_groups/charge_generation_models.rst
+   model_groups/charge_collection_models.rst
+   model_groups/charge_transfer_models.rst
+   model_groups/charge_measurement_models.rst
+   model_groups/readout_electronics.rst

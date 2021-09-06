@@ -16,46 +16,46 @@ number of electrons per charge packet, signal amplitude, etc.
 DataFrame and Array classes and their methods to store and handle the
 data in Pyxel:
 
+..
+    .. currentmodule:: pyxel.data_structure
 
-.. currentmodule:: pyxel.data_structure
-
-.. autoclass:: Array
-    :special-members:
-    :exclude-members: __eq__, __ge__, __gt__, __le__, __lt__, __ne__, __repr__, __weakref__
-    :members:
-
-
-.. autoclass:: Charge
-    :special-members:
-    :exclude-members: __eq__, __ge__, __gt__, __le__, __lt__, __ne__, __repr__, __weakref__
-    :members:
+    .. autoclass:: Array
+        :special-members:
+        :exclude-members: __eq__, __ge__, __gt__, __le__, __lt__, __ne__, __repr__, __weakref__
+        :members:
 
 
-.. autoclass:: Image
-    :special-members:
-    :exclude-members: __eq__, __ge__, __gt__, __le__, __lt__, __ne__, __repr__, __weakref__
-    :members:
+    .. autoclass:: Charge
+        :special-members:
+        :exclude-members: __eq__, __ge__, __gt__, __le__, __lt__, __ne__, __repr__, __weakref__
+        :members:
 
 
-.. autoclass:: Particle
-    :special-members:
-    :exclude-members: __eq__, __ge__, __gt__, __le__, __lt__, __ne__, __repr__, __weakref__
-    :members:
+    .. autoclass:: Image
+        :special-members:
+        :exclude-members: __eq__, __ge__, __gt__, __le__, __lt__, __ne__, __repr__, __weakref__
+        :members:
 
 
-.. autoclass:: Photon
-    :special-members:
-    :exclude-members: __eq__, __ge__, __gt__, __le__, __lt__, __ne__, __repr__, __weakref__
-    :members:
+    .. autoclass:: Particle
+        :special-members:
+        :exclude-members: __eq__, __ge__, __gt__, __le__, __lt__, __ne__, __repr__, __weakref__
+        :members:
 
 
-.. autoclass:: Pixel
-    :special-members:
-    :exclude-members: __eq__, __ge__, __gt__, __le__, __lt__, __ne__, __repr__, __weakref__
-    :members:
+    .. autoclass:: Photon
+        :special-members:
+        :exclude-members: __eq__, __ge__, __gt__, __le__, __lt__, __ne__, __repr__, __weakref__
+        :members:
 
 
-.. autoclass:: Signal
-    :special-members:
-    :exclude-members: __eq__, __ge__, __gt__, __le__, __lt__, __ne__, __repr__, __weakref__
-    :members:
+    .. autoclass:: Pixel
+        :special-members:
+        :exclude-members: __eq__, __ge__, __gt__, __le__, __lt__, __ne__, __repr__, __weakref__
+        :members:
+
+
+    .. autoclass:: Signal
+        :special-members:
+        :exclude-members: __eq__, __ge__, __gt__, __le__, __lt__, __ne__, __repr__, __weakref__
+        :members:

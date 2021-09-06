@@ -1,6 +1,6 @@
-.. _acknowledgement:
+.. _acknowledgements:
 
-Acknowledgement
+Acknowledgements
 ================
 
 

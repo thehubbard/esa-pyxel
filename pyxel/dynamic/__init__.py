@@ -9,6 +9,6 @@
 """TBW."""
 
 # flake8: noqa
-from .dynamic import Dynamic  # , DynamicResult
+from .dynamic import Dynamic, dynamic_pipeline, calculate_steps  # , DynamicResult
 
 __all__ = ["Dynamic"]

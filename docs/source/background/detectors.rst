@@ -19,83 +19,83 @@ end of the simulation.
 Detector classes and their attributes.
 
 .. _geometry:
+..
+    Geometry
+    ========
 
-Geometry
-========
+    CCD
+    ---
 
-CCD
----
+    .. autoclass:: pyxel.detectors.CCDGeometry
+        :members:
+        :inherited-members:
+        :undoc-members:
+        :show-inheritance:
+        :exclude-members:
 
-.. autoclass:: pyxel.detectors.CCDGeometry
-    :members:
-    :inherited-members:
-    :undoc-members:
-    :show-inheritance:
-    :exclude-members:
+    CMOS
+    ----
 
-CMOS
-----
+    .. autoclass:: pyxel.detectors.CMOSGeometry
+        :members:
+        :inherited-members:
+        :undoc-members:
+        :show-inheritance:
+        :exclude-members:
 
-.. autoclass:: pyxel.detectors.CMOSGeometry
-    :members:
-    :inherited-members:
-    :undoc-members:
-    :show-inheritance:
-    :exclude-members:
+    .. _characteristics:
 
-.. _characteristics:
+    Characteristics
+    ===============
 
-Characteristics
-===============
+    CCD
+    ---
 
-CCD
----
+    .. autoclass:: pyxel.detectors.CCDCharacteristics
+        :members:
+        :inherited-members:
+        :undoc-members:
+        :show-inheritance:
+        :exclude-members:
 
-.. autoclass:: pyxel.detectors.CCDCharacteristics
-    :members:
-    :inherited-members:
-    :undoc-members:
-    :show-inheritance:
-    :exclude-members:
+    CMOS
+    ----
 
-CMOS
-----
+    .. autoclass:: pyxel.detectors.CMOSCharacteristics
+        :members:
+        :inherited-members:
+        :undoc-members:
+        :show-inheritance:
+        :exclude-members:
 
-.. autoclass:: pyxel.detectors.CMOSCharacteristics
-    :members:
-    :inherited-members:
-    :undoc-members:
-    :show-inheritance:
-    :exclude-members:
+    .. _material:
 
-.. _material:
+    Material
+    ========
 
-Material
-========
-
-.. autoclass:: pyxel.detectors.Material
-    :members:
-    :undoc-members:
-    :exclude-members:
-
-
-.. _environment:
-
-Environment
-===========
-
-.. autoclass:: pyxel.detectors.Environment
-    :members:
-    :undoc-members:
-    :exclude-members:
+    .. autoclass:: pyxel.detectors.Material
+        :members:
+        :undoc-members:
+        :exclude-members:
 
 
-.. _optics:
+    .. _environment:
 
-Optics
-======
+    Environment
+    ===========
 
-.. autoclass:: pyxel.detectors.Optics
-    :members:
-    :undoc-members:
-    :exclude-members:
+    .. autoclass:: pyxel.detectors.Environment
+        :members:
+        :undoc-members:
+        :exclude-members:
+
+
+    .. _optics:
+
+    Optics
+    ======
+
+    .. autoclass:: pyxel.detectors.Optics
+        :members:
+        :undoc-members:
+        :exclude-members:

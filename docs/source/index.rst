@@ -4,6 +4,8 @@
 Welcome to the **Pyxel** documentation !
 ========================================
 
+**Version:** |version|
+
 Pyxel is a general detector simulation framework.
 
 An easy-to-use framework that can simulate a variety of imaging detector
@@ -47,11 +49,11 @@ Are you new to Pyxel ? This is the place to start !
 
    tutorials/overview.rst
    tutorials/install.rst
-   tutorials/running_modes.rst
+   tutorials/running.rst
    tutorials/examples.rst
 
 * :doc:`tutorials/install`
-* :doc:`tutorials/running_modes`
+* :doc:`tutorials/running`
 * :doc:`tutorials/examples`
 
 **Before you do anything else, start here** at our :doc:`tutorials/install` tutorial.
@@ -105,41 +107,40 @@ Explanation of key concepts, best practices and techniques in Pyxel.
    background/overview.rst
    background/pipelines.rst
    background/detectors.rst
-   background/models.rst
    background/data_structure.rst
    background/yaml.rst
+   background/running_modes.rst
 
 * :doc:`background/pipelines`
 * :doc:`background/detectors`
-* :doc:`background/models`
 * :doc:`background/data_structure`
 * :doc:`background/yaml`
+* :doc:`background/running_modes`
 
 
 .. _Reference Overview:
 
-Reference guides
-================
+Reference
+=========
 
 **Technical reference**.
 Cover tools, components and resources.
 
 .. toctree::
-   :caption: Reference Guides
+   :caption: Reference
    :maxdepth: 1
    :hidden:
 
    references/overview.rst
-   references/citation.rst
-   contributing.rst
+   references/apireference.rst
+   references/models.rst
+   references/contributing.rst
    references/changelog.rst
-   references/authors.rst
 
-* :doc:`references/citation`
-* Physics Reference (TBW)
-* :doc:`contributing`
+* :doc:`references/apireference`
+* :doc:`references/models`
+* :doc:`references/contributing`
 * :doc:`references/changelog`
-* :doc:`references/authors`
 
 
 .. toctree::
@@ -153,7 +154,9 @@ Cover tools, components and resources.
    :maxdepth: 1
    :hidden:
 
-   faq.rst
-   acronyms.rst
-   license.rst
-   acknowledgement.rst
+   about/citation.rst
+   about/contributors.rst
+   about/license.rst
+   about/faq.rst
+   about/acronyms.rst
+   about/acknowledgements.rst

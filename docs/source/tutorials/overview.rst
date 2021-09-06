@@ -4,15 +4,15 @@
 Overview
 ========
 
-Pyxel :cite:`2018:lucsanyi` is a novel, open-source, modular
+Pyxel :cite:`2020:prodhomme` is a novel, open-source, modular
 Python software framework designed
 to host and pipeline models (analytical, numerical, statistical) simulating
 different types of detector effects on images produced by Charge-Coupled
 Devices (CCD), Monolithic, and Hybrid CMOS imaging sensors.
 
-.. image:: _static/pyxel-logo.png
+.. image:: ../_static/pyxel-logo.png
     :alt: logo
-    :scale: 50 %
+    :scale: 20 %
     :align: center
 
 Users can provide one or more input images to Pyxel, set the detector and
@@ -66,7 +66,7 @@ other projects as well, making knowledge transfer easier.
 Are you new to Pyxel ? This is the place to start !
 
 * :doc:`install`
-* :doc:`running_modes`
+* :doc:`running`
 * :doc:`examples`
 
 **Before you do anything else, start here** at our :doc:`install` tutorial.

@@ -13,7 +13,7 @@ Bibliography
 Cite the library
 ================
 
-TBW.
+Pyxel repository currently does not have a DOI of its own yet.
 
 Citing the paper
 ================
@@ -23,9 +23,29 @@ we would be grateful if you could start the repository and/or cite our work.
 
 For citation purposes, you can use the following BibTex entries:
 
+Pyxel: the collaborative detection simulation framework (2020)
+--------------------------------------------------------------
 
-Pyxel: a novel and multi-purpose Python-based framework for imaging detector simulation
----------------------------------------------------------------------------------------
+From SPIE Astronomical Telescopes + Instrumentation 2020::
+
+    @inproceedings{10.1117/12.2561731,
+        author = {Thibaut Prod'homme and Frédéric Lemmel and Matej Arko and Benoit Serra and Elizabeth George and Enrico Biancalani and Hans Smit and David Lucsanyi},
+        title = {{Pyxel: the collaborative detection simulation framework}},
+        volume = {11454},
+        booktitle = {X-Ray, Optical, and Infrared Detectors for Astronomy IX},
+        editor = {Andrew D. Holland and James Beletic},
+        organization = {International Society for Optics and Photonics},
+        publisher = {SPIE},
+        pages = {26 -- 35},
+        keywords = {Detectors, Modelling, MCT, Instrumentation, Simulation, MKID, Persistence, data analysis},
+        year = {2020},
+        doi = {10.1117/12.2561731},
+        URL = {https://doi.org/10.1117/12.2561731}
+    }
+
+
+Pyxel: a novel and multi-purpose Python-based framework for imaging detector simulation (2018)
+----------------------------------------------------------------------------------------------
 
 From SPIE Astronomical Telescopes + Instrumentation 2018::
 
@@ -44,22 +64,3 @@ From SPIE Astronomical Telescopes + Instrumentation 2018::
         URL = {https://doi.org/10.1117/12.2314047}
     }
 
-Pyxel: the collaborative detection simulation framework
--------------------------------------------------------
-
-From SPIE Astronomical Telescopes + Instrumentation 2020::
-
-    @inproceedings{10.1117/12.2561731,
-        author = {Thibaut Prod'homme and Frédéric Lemmel and Matej Arko and Benoit Serra and Elizabeth George and Enrico Biancalani and Hans Smit and David Lucsanyi},
-        title = {{Pyxel: the collaborative detection simulation framework}},
-        volume = {11454},
-        booktitle = {X-Ray, Optical, and Infrared Detectors for Astronomy IX},
-        editor = {Andrew D. Holland and James Beletic},
-        organization = {International Society for Optics and Photonics},
-        publisher = {SPIE},
-        pages = {26 -- 35},
-        keywords = {Detectors, Modelling, MCT, Instrumentation, Simulation, MKID, Persistence, data analysis},
-        year = {2020},
-        doi = {10.1117/12.2561731},
-        URL = {https://doi.org/10.1117/12.2561731}
-    }
