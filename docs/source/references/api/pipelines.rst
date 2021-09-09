@@ -8,7 +8,7 @@ Pipelines
 
 DetectionPipeline
 -----------------
-.. autoclass::DetectionPipeline
+.. autoclass:: DetectionPipeline
     :members:
     :inherited-members:
     :undoc-members:

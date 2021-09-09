@@ -51,7 +51,7 @@ extensions = [
     "IPython.sphinxext.ipython_console_highlighting",
     "sphinx.ext.viewcode",  # add links to highlighted source code
     "sphinxcontrib.bibtex",
-    # 'sphinx_panels'
+    'sphinx_panels'
 ]
 
 extlinks = {

@@ -2,13 +2,7 @@
 Citation instructions
 =====================
 
-.. _reference:
-
-Bibliography
-============
-
-.. bibliography::
-   :style: unsrt
+.. _citation:
 
 Cite the library
 ================

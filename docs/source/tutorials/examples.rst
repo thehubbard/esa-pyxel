@@ -1,8 +1,8 @@
 .. _examples:
 
-========
-Examples
-========
+======================
+Examples and tutorials
+======================
 
 All Pyxel examples can be found in a separate public repository
 `Pyxel Data <https://gitlab.com/esa/pyxel-data>`_,

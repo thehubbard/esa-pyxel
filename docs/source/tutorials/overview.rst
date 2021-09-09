@@ -1,8 +1,8 @@
-.. _overview:
+.. _introduction:
 
-========
-Overview
-========
+============
+Introduction
+============
 
 Pyxel :cite:`2020:prodhomme` is a novel, open-source, modular
 Python software framework designed
@@ -16,8 +16,8 @@ Devices (CCD), Monolithic, and Hybrid CMOS imaging sensors.
     :align: center
 
 Users can provide one or more input images to Pyxel, set the detector and
-model parameters via a user interface (configuration file or graphical
-interface) and select which effects to simulate: cosmic rays, detector
+model parameters via a user interface (configuration file)
+and select which effects to simulate: cosmic rays, detector
 Point Spread Function (PSF), electronic noises, Charge Transfer Inefficiency
 (CTI), persistence, dark current, charge diffusion, optical effects, etc.
 The output is one or more images including the simulated detector effects
@@ -56,10 +56,10 @@ other projects as well, making knowledge transfer easier.
 
     **This publication should be referenced in context of using Pyxel:**
 
-    D. Lucsanyi, T. Prod’homme, H. Smit, F. Lemmel, P.-E. Crouzet, P. Verhoeve, and B. Shortt.:
-    *"Pyxel - a novel and multi-purpose python-based framework for imaging detector simulation"*
-    Proc. SPIE 10709, High Energy, Optical, and Infrared Detectors for Astronomy VIII, 107091A, 2018.
-    doi:10.1117/12.2314047.
+    Thibaut Prod'homme, Frédéric Lemmel, Matej Arko, Benoit Serra, Elizabeth George, Enrico Biancalani, Hans Smit, and David Lucsanyi.
+    Pyxel: the collaborative detection simulation framework.
+    In Andrew D. Holland and James Beletic, editors, X-Ray, Optical, and Infrared Detectors for Astronomy IX, volume 11454, 26-35.
+    International Society for Optics and Photonics, SPIE, 2020. URL: https://doi.org/10.1117/12.2561731
 
 
 **Tutorials**. Learn about the Pyxel's concepts.
