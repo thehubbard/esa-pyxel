@@ -5,4 +5,5 @@ sphinx
 sphinx-book-theme
 sphinxcontrib-bibtex
 sphinxcontrib-napoleon
+sphinx-panels
 ipython
