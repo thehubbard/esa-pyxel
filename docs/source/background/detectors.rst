@@ -15,87 +15,22 @@ material, environment, characteristics), incident photons, created
 charge-carriers and the generated signals we are interested in at the
 end of the simulation.
 
+.. figure:: _static/pyxel_detector.png
+    :scale: 25%
+    :alt: detector
+    :align: center
 
-Detector classes and their attributes.
+.. _data_structure:
 
-.. _geometry:
+Data Structure
+==============
 
-Geometry
-========
+Models in Pyxel should be able to add photons, charges,
+charge packets, signal or image pixel values to the corresponding
+data structure classes (Photon, Charge, Pixel, Signal or Image class).
 
-CCD
----
-
-.. autoclass:: pyxel.detectors.CCDGeometry
-    :members:
-    :inherited-members:
-    :undoc-members:
-    :show-inheritance:
-    :exclude-members:
-
-CMOS
-----
-
-.. autoclass:: pyxel.detectors.CMOSGeometry
-    :members:
-    :inherited-members:
-    :undoc-members:
-    :show-inheritance:
-    :exclude-members:
-
-.. _characteristics:
-
-Characteristics
-===============
-
-CCD
----
-
-.. autoclass:: pyxel.detectors.CCDCharacteristics
-    :members:
-    :inherited-members:
-    :undoc-members:
-    :show-inheritance:
-    :exclude-members:
-
-CMOS
-----
-
-.. autoclass:: pyxel.detectors.CMOSCharacteristics
-    :members:
-    :inherited-members:
-    :undoc-members:
-    :show-inheritance:
-    :exclude-members:
-
-.. _material:
-
-Material
-========
-
-.. autoclass:: pyxel.detectors.Material
-    :members:
-    :undoc-members:
-    :exclude-members:
-
-
-.. _environment:
-
-Environment
-===========
-
-.. autoclass:: pyxel.detectors.Environment
-    :members:
-    :undoc-members:
-    :exclude-members:
-
-
-.. _optics:
-
-Optics
-======
-
-.. autoclass:: pyxel.detectors.Optics
-    :members:
-    :undoc-members:
-    :exclude-members:
+These classes are storing the data values
+either inside a Pandas DataFrame or in a NumPy array. Via DataFrame or
+NumPy array handling functions, models can also modify properties of photons,
+charges, etc., like position, kinetic energy,
+number of electrons per charge packet, signal amplitude, etc.

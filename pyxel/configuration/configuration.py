@@ -63,11 +63,11 @@ class Configuration:
 
 
 def load(yaml_file: t.Union[str, Path]) -> Configuration:
-    """Load a YAML file.
+    """Load configuration from a YAML file.
 
     Parameters
     ----------
-    yaml_file
+    yaml_file: str or Path
 
     Returns
     -------
@@ -627,7 +627,17 @@ def build_configuration(dct: dict) -> Configuration:
 
 
 def save(input_filename: t.Union[str, Path], output_dir: Path) -> Path:
-    """TBW."""
+    """Save a copy of the input YAML file to output directory.
+
+    Parameters
+    ----------
+    input_filename: str or Path
+    output_dir: Path
+
+    Returns
+    -------
+    copied_input_file: Path
+    """
 
     input_file = Path(input_filename)
     copy2(input_file, output_dir)

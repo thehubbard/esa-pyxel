@@ -1,23 +1,18 @@
-.. _overview:
+.. _introduction:
 
-========
-Overview
-========
+============
+Introduction
+============
 
-Pyxel :cite:`2018:lucsanyi` is a novel, open-source, modular
+Pyxel :cite:`2020:prodhomme` is a novel, open-source, modular
 Python software framework designed
 to host and pipeline models (analytical, numerical, statistical) simulating
 different types of detector effects on images produced by Charge-Coupled
 Devices (CCD), Monolithic, and Hybrid CMOS imaging sensors.
 
-.. image:: _static/pyxel-logo.png
-    :alt: logo
-    :scale: 50 %
-    :align: center
-
 Users can provide one or more input images to Pyxel, set the detector and
-model parameters via a user interface (configuration file or graphical
-interface) and select which effects to simulate: cosmic rays, detector
+model parameters via a user interface (configuration file)
+and select which effects to simulate: cosmic rays, detector
 Point Spread Function (PSF), electronic noises, Charge Transfer Inefficiency
 (CTI), persistence, dark current, charge diffusion, optical effects, etc.
 The output is one or more images including the simulated detector effects
@@ -52,21 +47,11 @@ and avoid duplication of work. For instance, detector models
 developed for a certain project could be reused by
 other projects as well, making knowledge transfer easier.
 
-.. note::
+Get started
+===========
 
-    **This publication should be referenced in context of using Pyxel:**
-
-    D. Lucsanyi, T. Prod’homme, H. Smit, F. Lemmel, P.-E. Crouzet, P. Verhoeve, and B. Shortt.:
-    *"Pyxel - a novel and multi-purpose python-based framework for imaging detector simulation"*
-    Proc. SPIE 10709, High Energy, Optical, and Infrared Detectors for Astronomy VIII, 107091A, 2018.
-    doi:10.1117/12.2314047.
-
-
-**Tutorials**. Learn about the Pyxel's concepts.
 Are you new to Pyxel ? This is the place to start !
 
-* :doc:`install`
-* :doc:`running_modes`
-* :doc:`examples`
-
-**Before you do anything else, start here** at our :doc:`install` tutorial.
+1. Start with installation guide in :doc:`install`.
+2. Once ready you can learn how to run Pyxel in :doc:`running`.
+3. Follow the tutorial and explore the examples in :doc:`examples` to learn how to use Pyxel.

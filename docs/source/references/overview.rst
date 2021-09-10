@@ -1,13 +1,14 @@
+.. _reference:
+
 ========
 Overview
 ========
 
 **Technical reference**.
-Cover tools, components and resources.
+API reference, model reference, contribution guide, changelog. To be used while working with Pyxel.
 
-* :doc:`citation`
-* Physics Reference (TBW)
-* :doc:`../contributing`
+* :doc:`apireference`
+* :doc:`models`
+* :doc:`contributing`
 * :doc:`changelog`
-* :doc:`authors`
 

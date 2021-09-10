@@ -338,7 +338,6 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
     ----------
     input_filename
     random_seed
-    random_seed
     """
     logging.info("Pyxel version %s", version)
     logging.info("Pipeline started.")
