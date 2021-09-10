@@ -4,21 +4,43 @@
 Adding new models
 =================
 
-:ref:`Models <models>`
-
 Users and developers can easily add any kind of new or already existing
 model to Pyxel, thanks to the model plug-in mechanism developed for this
 purpose.
 
+Existing models: :ref:`Models <models>`
 
-The YAML file
-=============
 
-You need to add your model function to the :ref:`YAML config file <yaml>`,
+Model function
+==============
+
+A model function is a function that takes in the ``Detector`` object as one of the arguments
+and edits the data stored in it. To add it to Pyxel, you have to copy the script containing your function,
+let's say ``my_script.py``, into the corresponding model group folder in Pyxel.
+For example if our function edits the photon array, the script ``my_script.py`` should go into ``pyxel/models/optics``.
+A model function that multiplies the photon array with the input argument would look like this:
+
+.. code-block:: python
+
+    from pyxel.detectors import Detector
+
+
+    def my_model_function(detector: Detector, arg: int = 0):
+        """This is my model that will multiply pixel array with the argument.
+        Parameters
+        ----------
+        detector
+        arg
+        """
+        detector.photon.array = detector.photon.array * arg
+        return None
+
+Editing the YAML file
+=====================
+
+To use the new model function in a Pyxel pipeline
+you need to add your model function to the :ref:`YAML config file <yaml>`,
 providing the input arguments for the function.
-
-You should copy the python file including your function in the folder
-``pyxel/pyxel/models/<model_group>/``.
 
 .. code-block:: yaml
 
@@ -26,25 +48,26 @@ You should copy the python file including your function in the folder
 
   pipeline:
 
-    photon_generation:
-      - name: illumination
-        func: pyxel.models.photon_generation.illumination
+    optics:
+      - name: some_other_model
+        func: pyxel.models.optics.some_other_model
         enabled: true
         arguments:
-          level: 1000
+          wavelength: 650
+          NA: 0.9
 
       #######################################################################
       - name: my_model                                                      #
-        func: pyxel.models.photon_generation.my_script.my_model_function    #
+        func: pyxel.models.optics.my_script.my_model_function               #
         enabled: true                                                       #
         arguments:                                                          #
-          file: '/path/to/file.fits'                                        #
           arg:  124                                                         #
       #######################################################################
 
-      - name: shot_noise
-        func: pyxel.models.photon_generation.shot_noise
-        enabled: false
+
+.. tip::
+    If we import ``my_model_function`` in the ``pyxel/models/optics/__init__.py``,
+    then the path to the model is shorter: ``func: pyxel.models.photon_generation.my_model_function``.
 
 
 Model wrapper
@@ -56,24 +79,20 @@ then it is necessary to create a wrapper model function,
 which calls and handles the code (class, package or
 non-Python code).
 
+Creating a new model with a Pyxel command
+=========================================
 
-Argument validation
-===================
+It is possible to create a new model from an already prepared template with the built in command like so:
 
-To validate input arguments of a model function, use the
-``validate`` and ``argument`` Pyxel decorators:
+.. code-block:: bash
 
-.. code-block:: python
+    $ pyxel --createmodel photon_generation/new_model
 
-    from pyxel.detectors import Detector
+    or
 
+    $ pyxel -cm photon_generation/new_model
 
-    def my_model_function(detector: Detector, filename: str, arg: int = 0):
-        """This is my model with validated arguments.
-        Parameters
-        ----------
-        detector
-        filename
-        arg
-        """
-        print("Do something")
+This will create a new python script ``new_model.py`` with a template model function
+in folder ``pyxel/models/photon_generation``. All you have to do is edit your model function
+and the docstring and then copy the YAML configuration section from the docstring into the desired configuration file.
+Don't forget to import your model function in the ``__init__.py`` file of the appropriate model group for faster access.

@@ -12,7 +12,7 @@ or the GUI.
 
   # YAML config file for Single mode
 
-    single
+    single:
 
 
 ..

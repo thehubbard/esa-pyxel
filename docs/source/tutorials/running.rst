@@ -35,6 +35,8 @@ where
 Running Pyxel in jupyter notebooks
 ==================================
 
+An example of running Pyxel as a library:
+
 .. code-block:: python
 
 

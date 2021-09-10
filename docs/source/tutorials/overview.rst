@@ -10,11 +10,6 @@ to host and pipeline models (analytical, numerical, statistical) simulating
 different types of detector effects on images produced by Charge-Coupled
 Devices (CCD), Monolithic, and Hybrid CMOS imaging sensors.
 
-.. image:: ../_static/pyxel-logo.png
-    :alt: logo
-    :scale: 20 %
-    :align: center
-
 Users can provide one or more input images to Pyxel, set the detector and
 model parameters via a user interface (configuration file)
 and select which effects to simulate: cosmic rays, detector
@@ -52,21 +47,11 @@ and avoid duplication of work. For instance, detector models
 developed for a certain project could be reused by
 other projects as well, making knowledge transfer easier.
 
-.. note::
+Get started
+===========
 
-    **This publication should be referenced in context of using Pyxel:**
-
-    Thibaut Prod'homme, Frédéric Lemmel, Matej Arko, Benoit Serra, Elizabeth George, Enrico Biancalani, Hans Smit, and David Lucsanyi.
-    Pyxel: the collaborative detection simulation framework.
-    In Andrew D. Holland and James Beletic, editors, X-Ray, Optical, and Infrared Detectors for Astronomy IX, volume 11454, 26-35.
-    International Society for Optics and Photonics, SPIE, 2020. URL: https://doi.org/10.1117/12.2561731
-
-
-**Tutorials**. Learn about the Pyxel's concepts.
 Are you new to Pyxel ? This is the place to start !
 
-* :doc:`install`
-* :doc:`running`
-* :doc:`examples`
-
-**Before you do anything else, start here** at our :doc:`install` tutorial.
+1. Start with installation guide in :doc:`install`.
+2. Once ready you can learn how to run Pyxel in :doc:`running`.
+3. Follow the tutorial and explore the examples in :doc:`examples` to learn how to use Pyxel.

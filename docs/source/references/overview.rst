@@ -5,9 +5,10 @@ Overview
 ========
 
 **Technical reference**.
-Cover tools, components and resources.
+API reference, model reference, contribution guide, changelog. To be used while working with Pyxel.
 
-* :doc:`contributing`
-* :doc:`changelog`
 * :doc:`apireference`
 * :doc:`models`
+* :doc:`contributing`
+* :doc:`changelog`
+

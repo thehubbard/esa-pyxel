@@ -1,16 +1,23 @@
 .. _examples:
 
 ======================
-Examples and tutorials
+Tutorials and examples
 ======================
 
-All Pyxel examples can be found in a separate public repository
-`Pyxel Data <https://gitlab.com/esa/pyxel-data>`_,
-containing Jupyter notebooks showcasing different running modes or different models.
-You can find the list of available examples below.
+We recommend you to start with the tutorial available in the form of Jupyter notebooks.
+It covers covering all the basics, the four running modes and adding a new model. Apart from the tutorial,
+more examples on running modes and different models are also available. See below for a full list.
 
-Once you’ve installed Pyxel, you can either download them directly
-or get a copy of all the examples in the repository by running the commands:
+All of the tutorials and examples can be found in a separate public repository
+`Pyxel Data <https://gitlab.com/esa/pyxel-data>`_, to access it click on the link below.
+
+.. link-button:: https://gitlab.com/esa/pyxel-data
+    :type: url
+    :text: To tutorials and examples repository
+    :classes: btn-outline-primary btn-block
+
+Once you’ve installed Pyxel, the example repository can be either downloaded directly by clicking on button download
+or using Pyxel by running the command:
 
 .. code-block:: console
 
@@ -24,11 +31,22 @@ Now you can launch JupyterLab to explore them:
 
     jupyter lab
 
-You can run also examples without prior installation of Pyxel in a live session here: |Binder|
+You can run also tutorials and examples without prior installation of Pyxel in a live session here: |Binder|
 
 .. |Binder| image:: https://static.mybinder.org/badge_logo.svg
    :target: https://mybinder.org/v2/gl/esa%2Fpyxel-data/HEAD?urlpath=lab
 
+Tutorial chapters
+-----------------
+
+0. Introduction
+1. First simulation
+2. Pyxel configuration and classes
+3. Create a model
+4. Parametric mode
+5. Calibration mode
+6. Calibration visualisation
+7. Dynamic mode
 
 List of Examples
 ----------------
@@ -36,18 +54,21 @@ List of Examples
 **Single Mode:**
 
 - Basic example
-- Amplifier crosstalk model
-- Inter-pixel capacitance model
 
 **Parametric mode:**
 
-- Photon transfer curve
+- Basic example (product)
+- Basic example (sequential)
+- Basic example (custom)
 
 **Dynamic mode:**
 
-- Persistence model
+- Persistence in H2RG
 
 **Calibration mode:**
 
-- Charge distortion model
-- Charge distortion model with FLEX data
+- Basic example
+
+**Models**
+- Amplifier crosstalk
+- Inter-pixel capacitance
