@@ -38,20 +38,19 @@ def evaluate_reference(reference_str: str) -> t.Callable:
     module_str, function_str = reference_str.rsplit(".", 1)
     try:
         module = importlib.import_module(module_str)
-    except ImportError as exc:
-        raise ImportError("Cannot import module: %r. exc: %s" % (module_str, str(exc)))
 
-    try:
         reference = getattr(module, function_str)  # type: t.Callable
         assert callable(reference)
 
         # if isinstance(reference, type):
         #     # this is a class type, instantiate it using default arguments.
         #     reference = reference()
-    except AttributeError:
+    except ImportError as exc:
+        raise ImportError("Cannot import module: %r. exc: %s" % (module_str, str(exc))) from exc
+    except AttributeError as ex:
         raise ImportError(
             "Module: %s, does not contain %s" % (module_str, function_str)
-        )
+        ) from ex
 
     return reference
 

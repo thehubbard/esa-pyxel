@@ -292,10 +292,7 @@ def create_model(newmodel: str) -> None:
     )
 
     try:
-        try:
-            os.mkdir(dest)
-        except FileExistsError:
-            logging.info(f"{dest} already exists, folder not created")
+        os.mkdir(dest)
         # Replacing all of template in filenames and directories by model_name
         for dirpath, subdirs, files in os.walk(src):
             for x in files:
@@ -322,6 +319,8 @@ def create_model(newmodel: str) -> None:
                 os.mkdir(pathtofile.replace(template_string, model_name))
             logging.info("Module " + model_name + " created.")
         print("Module " + model_name + " created in " + path + ".")
+    except FileExistsError:
+        logging.info(f"{dest} already exists, folder not created")
     # Directories are the same
     except shutil.Error as e:
         logging.critical("Error while duplicating " + template_string + ": %s" % e)
