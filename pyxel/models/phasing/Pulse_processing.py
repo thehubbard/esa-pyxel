@@ -77,7 +77,6 @@ def df_to_array(
     pixel_index_ver: list,
     pixel_index_hor: list,
 ) -> np.ndarray:
-
     """TBW."""
 
     for i, charge_value in enumerate(charge_per_pixel):
