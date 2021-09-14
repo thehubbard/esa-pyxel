@@ -7,8 +7,6 @@
 
 """Phase-pulse processing model."""
 
-import typing as t
-
 import numpy as np
 
 from pyxel.detectors import MKID
@@ -16,14 +14,10 @@ from pyxel.detectors import MKID
 
 def pulse_processing(
     detector: MKID,
-    wavelength: t.Union[float, np.ndarray],
+    wavelength: float,
     responsivity: float,
-    counter: t.Optional[t.Sequence[int]] = None,
 ) -> None:
     """TBW."""
-    if counter is None:
-        counter = [0]
-
     geo = detector.geometry
     ch = detector.characteristics
     ph = detector.photon
@@ -72,11 +66,6 @@ def pulse_processing(
         pixel_index_ver=pixel_index_ver,
         pixel_index_hor=pixel_index_hor,
     ).astype(np.int32)
-
-    if isinstance(wavelength, np.ndarray):
-
-        wavelength = wavelength[counter[0]]
-        counter[0] += 1
 
     detector.phase.array = detector.phase.array * wavelength * 2.5e2 / responsivity
     detector.phase.array = detector.phase.array.astype("float64")
