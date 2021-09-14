@@ -140,4 +140,8 @@ def stripe_pattern(
         angle=angle,
     )
 
-    detector.photon = Photon(photon_array)
+    try:
+        detector.photon.array += photon_array
+    except RuntimeError:
+        # Photon not initialized
+        detector.photon = Photon(photon_array)
