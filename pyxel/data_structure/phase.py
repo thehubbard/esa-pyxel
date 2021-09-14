@@ -21,6 +21,10 @@ cds.enable()
 
 
 class Phase(Array):
+    """Phase class.
+
+    Accepted array types: np.float16, np.float32 and np.float64.
+    """
 
     EXP_TYPE = float
     TYPE_LIST = (np.float16, np.float32, np.float64)
