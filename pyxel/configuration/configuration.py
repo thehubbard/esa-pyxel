@@ -35,6 +35,8 @@ from pyxel.detectors import (
     CMOSGeometry,
     Environment,
     Material,
+    MKIDCharacteristics,
+    MKIDGeometry,
 )
 from pyxel.dynamic import Dynamic
 from pyxel.evaluator import evaluate_reference
@@ -432,6 +434,20 @@ def to_cmos_geometry(dct: dict) -> CMOSGeometry:
     return CMOSGeometry(**dct)
 
 
+def to_mkid_geometry(dct: dict) -> MKIDGeometry:
+    """Create a MKIDGeometry class from a dictionary.
+
+    Parameters
+    ----------
+    dct
+
+    Returns
+    -------
+    CMOSGeometry
+    """
+    return MKIDGeometry(**dct)
+
+
 def to_material(dct: t.Optional[dict]) -> Material:
     """Create a Material class from a dictionary.
 
@@ -496,6 +512,22 @@ def to_cmos_characteristics(dct: t.Optional[dict]) -> CMOSCharacteristics:
     return CMOSCharacteristics(**dct)
 
 
+def to_mkid_characteristics(dct: t.Optional[dict]) -> MKIDCharacteristics:
+    """Create a MKIDCharacteristics class from a dictionary.
+
+    Parameters
+    ----------
+    dct
+
+    Returns
+    -------
+    MKIDCharacteristics
+    """
+    if dct is None:
+        dct = {}
+    return MKIDCharacteristics(**dct)
+
+
 def to_ccd(dct: dict) -> CCD:
     """Create a CCD class from a dictionary.
 
@@ -546,10 +578,10 @@ def to_mkid_array(dct: dict) -> MKID:
     MKID-array
     """
     return MKID(
-        geometry=to_cmos_geometry(dct["geometry"]),
+        geometry=to_mkid_geometry(dct["geometry"]),
         material=to_material(dct["material"]),
         environment=to_environment(dct["environment"]),
-        characteristics=to_cmos_characteristics(dct["characteristics"]),
+        characteristics=to_mkid_characteristics(dct["characteristics"]),
     )
 
 

@@ -12,7 +12,7 @@ import typing as t
 from pyxel.detectors import Detector
 
 if t.TYPE_CHECKING:
-    from pyxel.detectors import CMOSCharacteristics, CMOSGeometry, Environment, Material
+    from pyxel.detectors import Environment, Material, MKIDCharacteristics, MKIDGeometry
 
 
 class MKID(Detector):
@@ -20,23 +20,23 @@ class MKID(Detector):
 
     def __init__(
         self,
-        geometry: "CMOSGeometry",
+        geometry: "MKIDGeometry",
         material: "Material",
         environment: "Environment",
-        characteristics: "CMOSCharacteristics",
+        characteristics: "MKIDCharacteristics",
     ):
-        self._geometry = geometry  # type: CMOSGeometry
-        self._characteristics = characteristics  # type: CMOSCharacteristics
+        self._geometry = geometry  # type: MKIDGeometry
+        self._characteristics = characteristics  # type: MKIDCharacteristics
 
         super().__init__(material=material, environment=environment)
         super().initialize()
 
     @property
-    def geometry(self) -> "CMOSGeometry":
+    def geometry(self) -> "MKIDGeometry":
         """TBW."""
         return self._geometry
 
     @property
-    def characteristics(self) -> "CMOSCharacteristics":
+    def characteristics(self) -> "MKIDCharacteristics":
         """TBW."""
         return self._characteristics
