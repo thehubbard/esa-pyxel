@@ -443,7 +443,7 @@ def to_mkid_geometry(dct: dict) -> MKIDGeometry:
 
     Returns
     -------
-    CMOSGeometry
+    MKIDGeometry
     """
     return MKIDGeometry(**dct)
 

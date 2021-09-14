@@ -11,6 +11,7 @@ import typing as t
 
 from pyxel.data_structure import Phase
 from pyxel.detectors import Detector
+from pyxel.util.memory import memory_usage_details
 
 if t.TYPE_CHECKING:
     from pyxel.detectors import Environment, Material, MKIDCharacteristics, MKIDGeometry
@@ -57,3 +58,30 @@ class MKID(Detector):
             raise RuntimeError("'phase' not initialized.")
 
         return self._phase
+
+    def memory_usage(
+        self, print_result: bool = True, human_readable: bool = True
+    ) -> dict:
+        """TBW.
+
+        Returns
+        -------
+        dict
+            Dictionary of attribute memory usage
+        """
+        attributes = [
+            "_photon",
+            "_charge",
+            "_pixel",
+            "_signal",
+            "_image",
+            "_phase",
+            "material",
+            "environment",
+            "_geometry",
+            "_characteristics",
+        ]
+
+        return memory_usage_details(
+            self, attributes, print_result=print_result, human_readable=human_readable
+        )

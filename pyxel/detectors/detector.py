@@ -304,7 +304,6 @@ class Detector:
             "_pixel",
             "_signal",
             "_image",
-            "_phase",
             "material",
             "environment",
             "_geometry",
