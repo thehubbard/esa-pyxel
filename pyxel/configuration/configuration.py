@@ -63,7 +63,7 @@ class Configuration:
     dynamic: t.Optional[Dynamic] = attr.ib(default=None)
     ccd_detector: t.Optional[CCD] = attr.ib(default=None)
     cmos_detector: t.Optional[CMOS] = attr.ib(default=None)
-    MKIDarray_detector: t.Optional[MKID] = attr.ib(default=None)
+    mkid_detector: t.Optional[MKID] = attr.ib(default=None)
 
 
 def load(yaml_file: t.Union[str, Path]) -> Configuration:
@@ -673,8 +673,8 @@ def build_configuration(dct: dict) -> Configuration:
         configuration.ccd_detector = to_ccd(dct["ccd_detector"])
     elif "cmos_detector" in dct:
         configuration.cmos_detector = to_cmos(dct["cmos_detector"])
-    elif "MKIDarray_detector" in dct:
-        configuration.MKIDarray_detector = to_mkid_array(dct["MKIDarray_detector"])
+    elif "mkid_detector" in dct:
+        configuration.mkid_detector = to_mkid_array(dct["mkid_detector"])
     else:
         raise (ValueError("No detector configuration provided."))
 

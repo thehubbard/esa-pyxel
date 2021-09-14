@@ -377,8 +377,8 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
         detector = configuration.ccd_detector  # type: t.Union[CCD, CMOS, MKID]
     elif isinstance(configuration.cmos_detector, CMOS):
         detector = configuration.cmos_detector
-    elif isinstance(configuration.MKIDarray_detector, MKID):
-        detector = configuration.MKIDarray_detector
+    elif isinstance(configuration.mkid_detector, MKID):
+        detector = configuration.mkid_detector
     else:
         raise NotImplementedError("Detector is not defined in YAML config. file!")
 
