@@ -14,7 +14,7 @@ from .environment import Environment
 from .detector import Detector
 from .ccd import CCD
 from .cmos import CMOS
-from .MKID_array import MKIDarray
+from .MKID_array import MKID
 from .geometry import Geometry
 from .ccd_geometry import CCDGeometry
 from .cmos_geometry import CMOSGeometry

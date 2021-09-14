@@ -15,7 +15,7 @@ if t.TYPE_CHECKING:
     from pyxel.detectors import CMOSCharacteristics, CMOSGeometry, Environment, Material
 
 
-class MKIDarray(Detector):
+class MKID(Detector):
     """MKID-based detector class containing all detector attributes and data."""
 
     def __init__(

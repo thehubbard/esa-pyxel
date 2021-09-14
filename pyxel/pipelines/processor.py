@@ -20,7 +20,7 @@ from pyxel.state import get_obj_att
 from pyxel.util.memory import get_size
 
 if t.TYPE_CHECKING:
-    from pyxel.detectors import CCD, CMOS, MKIDarray
+    from pyxel.detectors import CCD, CMOS, MKID
 
 
 # TODO: Is this class needed ?
@@ -28,7 +28,7 @@ class Processor:
     """TBW."""
 
     def __init__(
-        self, detector: t.Union["CCD", "CMOS", "MKIDarray"], pipeline: DetectionPipeline
+        self, detector: t.Union["CCD", "CMOS", "MKID"], pipeline: DetectionPipeline
     ):
         self._log = logging.getLogger(__name__)
 

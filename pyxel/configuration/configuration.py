@@ -28,13 +28,13 @@ from pyxel.calibration import Algorithm, Calibration
 from pyxel.detectors import (
     CCD,
     CMOS,
+    MKID,
     CCDCharacteristics,
     CCDGeometry,
     CMOSCharacteristics,
     CMOSGeometry,
     Environment,
     Material,
-    MKIDarray,
 )
 from pyxel.dynamic import Dynamic
 from pyxel.evaluator import evaluate_reference
@@ -61,7 +61,7 @@ class Configuration:
     dynamic: t.Optional[Dynamic] = attr.ib(default=None)
     ccd_detector: t.Optional[CCD] = attr.ib(default=None)
     cmos_detector: t.Optional[CMOS] = attr.ib(default=None)
-    MKIDarray_detector: t.Optional[MKIDarray] = attr.ib(default=None)
+    MKIDarray_detector: t.Optional[MKID] = attr.ib(default=None)
 
 
 def load(yaml_file: t.Union[str, Path]) -> Configuration:
@@ -534,7 +534,7 @@ def to_cmos(dct: dict) -> CMOS:
     )
 
 
-def to_mkid_array(dct: dict) -> MKIDarray:
+def to_mkid_array(dct: dict) -> MKID:
     """Create an MKIDarray class from a dictionary.
 
     Parameters
@@ -545,7 +545,7 @@ def to_mkid_array(dct: dict) -> MKIDarray:
     -------
     MKID-array
     """
-    return MKIDarray(
+    return MKID(
         geometry=to_cmos_geometry(dct["geometry"]),
         material=to_material(dct["material"]),
         environment=to_environment(dct["environment"]),
