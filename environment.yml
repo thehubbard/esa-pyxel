@@ -68,6 +68,7 @@ dependencies:
   - pytest-httpserver
   - tox
   - black>=20
+  - tryceratops
 # Pip packages
   - pip:
     - poppy>=0.9
