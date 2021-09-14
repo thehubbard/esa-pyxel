@@ -255,17 +255,19 @@ def output_directory(configuration: Configuration) -> Path:
     return output_dir
 
 
-def create_model(newmodel: str) -> None:
-    """Create a new module using pyxel/templates/MODELTEMPLATE.py.
+def get_name_and_location(newmodel: str) -> t.Tuple[str, str]:
+    """Get name and location of new model from string modeltype/modelname.
 
     Parameters
     ----------
-    newmodel: modeltype/modelname
+    newmodel: str
 
     Returns
     -------
-    None
+    location: str
+    model_name: str
     """
+
     try:
         arguments = newmodel.split("/")
         location = f"{arguments[0]}"
@@ -277,6 +279,22 @@ def create_model(newmodel: str) -> None:
         as an argument for creating a model
         """
         )
+    return location, model_name
+
+
+def create_model(newmodel: str) -> None:
+    """Create a new module using pyxel/templates/MODELTEMPLATE.py.
+
+    Parameters
+    ----------
+    newmodel: modeltype/modelname
+
+    Returns
+    -------
+    None
+    """
+
+    location, model_name = get_name_and_location(newmodel)
 
     # Is not working on UNIX AND Windows if I do not use os.path.abspath
     path = os.path.abspath(os.getcwd() + "/pyxel/models/" + location + "/")

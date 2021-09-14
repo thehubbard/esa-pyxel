@@ -46,7 +46,9 @@ def evaluate_reference(reference_str: str) -> t.Callable:
         #     # this is a class type, instantiate it using default arguments.
         #     reference = reference()
     except ImportError as exc:
-        raise ImportError("Cannot import module: %r. exc: %s" % (module_str, str(exc))) from exc
+        raise ImportError(
+            "Cannot import module: %r. exc: %s" % (module_str, str(exc))
+        ) from exc
     except AttributeError as ex:
         raise ImportError(
             "Module: %s, does not contain %s" % (module_str, function_str)
