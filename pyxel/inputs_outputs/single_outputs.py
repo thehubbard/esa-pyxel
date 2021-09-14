@@ -30,10 +30,12 @@ from .outputs import (  # , update_plot
 )
 
 # from matplotlib import pyplot as plt
+from pyxel.detectors import CCD, CMOS, MKID, Detector
 
 
 if t.TYPE_CHECKING:
-    from ..detectors import Detector
+    from numpy.typing import ArrayLike
+
     from ..pipelines import Processor
 
     class SaveToFile(t.Protocol):
@@ -201,7 +203,7 @@ class SingleOutputs:
 
         return filename
 
-    def save_to_hdf(self, data: "Detector", name: str) -> Path:
+    def save_to_hdf(self, data: Detector, name: str) -> Path:
         """Write detector object to HDF5 file."""
         name = str(name).replace(".", "_")
         filename = apply_run_number(self.output_dir.joinpath(f"{name}_??.h5"))
@@ -209,17 +211,38 @@ class SingleOutputs:
             h5file.attrs["pyxel-version"] = str(version)
             if name == "detector":
                 detector_grp = h5file.create_group("detector")
-                for array, name in zip(
-                    [
+
+                if isinstance(data, (CCD, CMOS)):
+                    arrays = (
+                        data.signal.array,
+                        data.image.array,
+                        data.photon.array,
+                        data.pixel.array,
+                        data.charge.frame,
+                    )  # type: t.Tuple[ArrayLike, ...]
+                    names = (
+                        "Signal",
+                        "Image",
+                        "Photon",
+                        "Pixel",
+                        "Charge",
+                    )  # type: t.Tuple[str, ...]
+
+                elif isinstance(data, MKID):
+                    arrays = (
                         data.signal.array,
                         data.image.array,
                         data.photon.array,
                         data.pixel.array,
                         data.phase.array,
                         data.charge.frame,
-                    ],
-                    ["Signal", "Image", "Photon", "Pixel", "Phase", "Charge"],
-                ):
+                    )
+                    names = ("Signal", "Image", "Photon", "Pixel", "Phase", "Charge")
+
+                else:
+                    raise NotImplementedError(f"Unknown detector: {data!r}")
+
+                for array, name in zip(arrays, names):
                     dataset = detector_grp.create_dataset(name, shape=np.shape(array))
                     dataset[:] = array
             else:
