@@ -320,6 +320,7 @@ class Detector:
     def to_hdf5(self, filename: t.Union[str, Path]) -> None:
         """Convert the detector to a HDF5 object."""
         with h5.File(filename, "w") as h5file:
+            h5file.attrs["type"] = self.__class__.__name__
             h5file.attrs["pyxel-version"] = str(__version__)
             detector_grp = h5file.create_group("detector")
             for array, name in zip(
