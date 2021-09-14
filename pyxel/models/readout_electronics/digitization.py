@@ -31,10 +31,10 @@ def simple_digitization(detector: Detector, data_type: str = "uint16") -> None:
 
     try:
         d_type = np.dtype(data_type)  # type: np.dtype
-    except TypeError:
+    except TypeError as ex:
         raise TypeError(
             "Can not locate the type defined as `data_type` argument in yaml file."
-        )
+        ) from ex
 
     # Gain of the Analog-Digital Converter
     detector.signal.array *= detector.characteristics.a2

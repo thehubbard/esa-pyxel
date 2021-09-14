@@ -324,10 +324,11 @@ class ModelFitting(ProblemSingleObjective):
             The fitness of the input decision vector (concatenating the objectives,
             the equality and the inequality constraints)
         """
+        # TODO: Fix this
+        if self.pop is None:
+            raise NotImplementedError("'pop' is not initialized.")
+
         try:
-            # TODO: Fix this
-            if self.pop is None:
-                raise NotImplementedError("'pop' is not initialized.")
 
             # TODO: Use directory 'logging.'
             logger = logging.getLogger("pyxel")
@@ -361,11 +362,10 @@ class ModelFitting(ProblemSingleObjective):
                     simulated_data=simulated_data, target_data=target_data
                 )
 
-        except Exception as exc:
+        except Exception:
             logging.exception(
                 "Catch an exception in 'fitness' for ModelFitting: %r. exc: %r",
                 self,
-                exc,
             )
             raise
 

@@ -19,7 +19,7 @@ __all__ = ["DaskBFE", "DaskIsland"]
 try:
     import pygmo as pg
 except Exception:
-    pass
+    logging.exception("Pygmo could not be imported.")
 
 
 class ProblemSerializable:

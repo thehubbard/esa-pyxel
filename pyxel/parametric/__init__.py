@@ -8,4 +8,10 @@
 """TBW."""
 
 # flake8: noqa
-from .parametric import Parametric, ParameterValues, ParametricMode, ParametricResult, log_parameters
+from .parametric import (
+    Parametric,
+    ParameterValues,
+    ParametricMode,
+    ParametricResult,
+    log_parameters,
+)

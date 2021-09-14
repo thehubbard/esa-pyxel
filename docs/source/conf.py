@@ -51,7 +51,7 @@ extensions = [
     "IPython.sphinxext.ipython_console_highlighting",
     "sphinx.ext.viewcode",  # add links to highlighted source code
     "sphinxcontrib.bibtex",
-    'sphinx_panels'
+    "sphinx_panels",
 ]
 
 extlinks = {
@@ -97,7 +97,7 @@ author = "Pyxel Developers"
 version = pyxel.__version__
 # The full version, including alpha/beta/rc tags.
 release = pyxel.__version__
-tag = version.split('+')[0]
+tag = version.split("+")[0]
 
 # There are two options for replacing |today|: either, you set today to some
 # non-false value, then it is used:
@@ -130,7 +130,7 @@ todo_include_todos = False
 # a list of builtin themes.
 #
 html_theme = "sphinx_book_theme"
-html_title = "Pyxel documentation "+tag
+html_title = "Pyxel documentation " + tag
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the

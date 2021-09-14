@@ -21,6 +21,8 @@ Models
 Others
 ~~~~~~
 
+* Use tryceratops for try and except styling.
+  (See `!255 <https://gitlab.com/esa/pyxel/-/merge_requests/255>`_).
 
 
 version 0.10.2 / 2021-09-02
