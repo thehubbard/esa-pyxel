@@ -118,7 +118,7 @@ def illumination(
 
     try:
         detector.photon.array += photon_array
-    except TypeError:
+    except RuntimeError:
         detector.photon = Photon(photon_array)
     except ValueError as ex:
         raise ValueError("Shapes of arrays do not match") from ex

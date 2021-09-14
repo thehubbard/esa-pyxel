@@ -18,6 +18,9 @@ Documentation
 Models
 ~~~~~~
 
+* Fix for consecutive photon generation models.
+  (See `!193 <https://gitlab.com/esa/pyxel/-/merge_requests/193>`_).
+
 Others
 ~~~~~~
 
