@@ -15,7 +15,6 @@ import typing as t
 from pathlib import Path
 
 import attr
-import h5py as h5
 import numpy as np
 import pandas as pd
 from astropy.io import fits as fits
@@ -30,12 +29,10 @@ from .outputs import (  # , update_plot
 )
 
 # from matplotlib import pyplot as plt
-from pyxel.detectors import CCD, CMOS, MKID, Detector
+from pyxel.detectors import Detector
 
 
 if t.TYPE_CHECKING:
-    from numpy.typing import ArrayLike
-
     from ..pipelines import Processor
 
     class SaveToFile(t.Protocol):
@@ -207,49 +204,11 @@ class SingleOutputs:
         """Write detector object to HDF5 file."""
         name = str(name).replace(".", "_")
         filename = apply_run_number(self.output_dir.joinpath(f"{name}_??.h5"))
-        with h5.File(filename, "w") as h5file:
-            h5file.attrs["pyxel-version"] = str(version)
-            if name == "detector":
-                detector_grp = h5file.create_group("detector")
 
-                if isinstance(data, (CCD, CMOS)):
-                    arrays = (
-                        data.signal.array,
-                        data.image.array,
-                        data.photon.array,
-                        data.pixel.array,
-                        data.charge.frame,
-                    )  # type: t.Tuple[ArrayLike, ...]
-                    names = (
-                        "Signal",
-                        "Image",
-                        "Photon",
-                        "Pixel",
-                        "Charge",
-                    )  # type: t.Tuple[str, ...]
-
-                elif isinstance(data, MKID):
-                    arrays = (
-                        data.signal.array,
-                        data.image.array,
-                        data.photon.array,
-                        data.pixel.array,
-                        data.phase.array,
-                        data.charge.frame,
-                    )
-                    names = ("Signal", "Image", "Photon", "Pixel", "Phase", "Charge")
-
-                else:
-                    raise NotImplementedError(f"Unknown detector: {data!r}")
-
-                for array, name in zip(arrays, names):
-                    dataset = detector_grp.create_dataset(name, shape=np.shape(array))
-                    dataset[:] = array
-            else:
-                raise NotImplementedError
-                # detector_grp = h5file.create_group("data")
-                # dataset = detector_grp.create_dataset(name, shape=np.shape(data))
-                # dataset[:] = data
+        if name == "detector":
+            data.to_hdf5(filename=filename)
+        else:
+            raise NotImplementedError
 
         return filename
 

@@ -11,8 +11,10 @@ import typing as t
 from math import sqrt
 from pathlib import Path
 
+import h5py as h5
 import numpy as np
 
+from pyxel import __version__
 from pyxel.data_structure import Charge, Image, Photon, Pixel, Signal
 from pyxel.detectors import Environment, Material
 from pyxel.detectors.dynamic_properties import DynamicProperties
@@ -313,3 +315,22 @@ class Detector:
         return memory_usage_details(
             self, attributes, print_result=print_result, human_readable=human_readable
         )
+
+    # TODO: Move this to another place
+    def to_hdf5(self, filename: t.Union[str, Path]) -> None:
+        """Convert the detector to a HDF5 object."""
+        with h5.File(filename, "w") as h5file:
+            h5file.attrs["pyxel-version"] = str(__version__)
+            detector_grp = h5file.create_group("detector")
+            for array, name in zip(
+                [
+                    self.signal.array,
+                    self.image.array,
+                    self.photon.array,
+                    self.pixel.array,
+                    self.charge.frame,
+                ],
+                ["Signal", "Image", "Photon", "Pixel", "Charge"],
+            ):
+                dataset = detector_grp.create_dataset(name, shape=np.shape(array))
+                dataset[:] = array
