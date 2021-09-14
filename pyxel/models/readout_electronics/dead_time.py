@@ -7,10 +7,10 @@
 
 import logging
 
-from pyxel.detectors import Detector
+from pyxel.detectors import MKID
 
 
-def dead_time_filter(detector: Detector, dead_time: float) -> None:
+def dead_time_filter(detector: MKID, dead_time: float) -> None:
     """TBW."""
     logging.info("")
 

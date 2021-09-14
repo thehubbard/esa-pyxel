@@ -9,6 +9,7 @@
 
 import typing as t
 
+from pyxel.data_structure import Phase
 from pyxel.detectors import Detector
 
 if t.TYPE_CHECKING:
@@ -27,9 +28,17 @@ class MKID(Detector):
     ):
         self._geometry = geometry  # type: MKIDGeometry
         self._characteristics = characteristics  # type: MKIDCharacteristics
+        self._phase = None  # type: t.Optional[Phase]
 
         super().__init__(material=material, environment=environment)
-        super().initialize()
+        super().reset()
+
+    def reset(self, reset_all: bool = True) -> None:
+        """TBW."""
+        super().reset(reset_all=reset_all)
+
+        if reset_all:
+            self._phase = Phase(self.geometry)
 
     @property
     def geometry(self) -> "MKIDGeometry":
@@ -40,3 +49,11 @@ class MKID(Detector):
     def characteristics(self) -> "MKIDCharacteristics":
         """TBW."""
         return self._characteristics
+
+    @property
+    def phase(self) -> Phase:
+        """TBW."""
+        if not self._phase:
+            raise RuntimeError("'phase' not initialized.")
+
+        return self._phase

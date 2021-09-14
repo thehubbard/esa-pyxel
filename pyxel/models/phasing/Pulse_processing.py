@@ -11,11 +11,11 @@ import typing as t
 
 import numpy as np
 
-from pyxel.detectors import Detector
+from pyxel.detectors import MKID
 
 
 def pulse_processing(
-    detector: Detector,
+    detector: MKID,
     wavelength: t.Union[float, np.ndarray],
     responsivity: float,
     counter: t.Optional[t.Sequence[int]] = None,
