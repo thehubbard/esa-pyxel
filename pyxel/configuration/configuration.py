@@ -676,7 +676,7 @@ def build_configuration(dct: dict) -> Configuration:
     elif "mkid_detector" in dct:
         configuration.mkid_detector = to_mkid_array(dct["mkid_detector"])
     else:
-        raise (ValueError("No detector configuration provided."))
+        raise ValueError("No detector configuration provided.")
 
     return configuration
 
