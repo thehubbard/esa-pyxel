@@ -17,3 +17,4 @@ API reference
     api/calibration.rst
     api/inputsoutputs.rst
     api/notebook.rst
+    api/util.rst

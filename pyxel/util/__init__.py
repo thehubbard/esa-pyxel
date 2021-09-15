@@ -17,6 +17,7 @@ import numpy as np
 
 from pyxel.util.memory import get_size, memory_usage_details
 from pyxel.util.examples import download_examples
+from pyxel.util.timing import time_pipeline
 
 __all__ = [
     "convert_to_int",
