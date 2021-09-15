@@ -11,11 +11,11 @@ import typing as t
 from enum import Enum
 from glob import glob
 from pathlib import Path
+from time import strftime
 
 import attr
 from matplotlib import pyplot as plt
 from matplotlib.ticker import ScalarFormatter
-from time import strftime
 
 
 @attr.s(auto_attribs=True, slots=True, frozen=True)
@@ -190,9 +190,10 @@ def create_output_directory(output_folder: t.Union[str, Path]) -> Path:
 
             output_dir.mkdir(parents=True, exist_ok=False)
 
-            return output_dir
-
         except FileExistsError:
             count += 1
             add = "_" + str(count)
             continue
+
+        else:
+            return output_dir

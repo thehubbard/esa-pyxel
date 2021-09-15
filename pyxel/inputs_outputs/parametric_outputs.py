@@ -11,7 +11,6 @@ import logging
 import operator
 import typing as t
 from pathlib import Path
-from .outputs import create_output_directory
 
 import h5py as h5
 import numpy as np
@@ -22,7 +21,7 @@ from astropy.io import fits as fits
 from pyxel import __version__ as version
 from pyxel.parametric import ParametricMode
 
-from .outputs import apply_run_number
+from .outputs import apply_run_number, create_output_directory
 
 if t.TYPE_CHECKING:
     from ..detectors import Detector

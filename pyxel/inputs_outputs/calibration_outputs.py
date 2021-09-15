@@ -12,7 +12,6 @@ import typing as t
 
 # from numbers import Number
 from pathlib import Path
-from .outputs import create_output_directory
 
 # import attr
 import dask.delayed as delayed
@@ -28,7 +27,11 @@ from typing_extensions import Literal
 
 from pyxel import __version__ as version
 
-from .outputs import PlotArguments, apply_run_number  # , update_plot, PlotType,
+from .outputs import (  # , update_plot, PlotType,
+    PlotArguments,
+    apply_run_number,
+    create_output_directory,
+)
 
 if t.TYPE_CHECKING:
     # from ..calibration import ResultType

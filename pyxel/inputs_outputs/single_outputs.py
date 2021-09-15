@@ -19,11 +19,15 @@ import h5py as h5
 import numpy as np
 import pandas as pd
 from astropy.io import fits as fits
-from .outputs import create_output_directory
 
 from pyxel import __version__ as version
 
-from .outputs import PlotArguments, PlotType, apply_run_number  # , update_plot
+from .outputs import (  # , update_plot
+    PlotArguments,
+    PlotType,
+    apply_run_number,
+    create_output_directory,
+)
 
 # from matplotlib import pyplot as plt
 
