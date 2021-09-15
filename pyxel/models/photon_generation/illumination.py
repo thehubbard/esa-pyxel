@@ -14,6 +14,85 @@ from pyxel.detectors import Detector
 
 
 # TODO: add documentation about size and center, tuples?, change editing of photon array
+
+def rectangular_hole(
+    shape: t.Tuple[int, int],
+    level: float,
+    hole_size: t.Optional[t.Sequence[int]] = None,
+    hole_center: t.Optional[t.Sequence[int]] = None,
+) -> np.ndarray:
+    """TBW.
+
+    Parameters
+    ----------
+    shape
+    hole_size
+    hole_center
+    level
+
+    Returns
+    -------
+    photon_array
+    """
+    if not hole_size:
+        raise ValueError("hole_size argument should be defined for illumination model")
+
+    photon_array = np.zeros(shape, dtype=float)
+    if hole_center is not None:
+        if not (
+            (0 <= hole_center[0] <= shape[0]) and (0 <= hole_center[1] <= shape[1])
+        ):
+            raise ValueError('Argument "hole_center" should be inside Photon array.')
+    else:
+        hole_center = [int(shape[0] / 2), int(shape[1] / 2)]
+    p = hole_center[0] - int(hole_size[0] / 2)
+    q = hole_center[1] - int(hole_size[1] / 2)
+    p0 = int(np.clip(p, a_min=0, a_max=shape[0]))
+    q0 = int(np.clip(q, a_min=0, a_max=shape[1]))
+    photon_array[slice(p0, p + hole_size[0]), slice(q0, q + hole_size[1])] = level
+
+    return photon_array
+
+
+def elliptic_hole(
+    shape: t.Tuple[int, int],
+    level: float,
+    hole_size: t.Optional[t.Sequence[int]] = None,
+    hole_center: t.Optional[t.Sequence[int]] = None,
+) -> np.ndarray:
+    """TBW.
+
+    Parameters
+    ----------
+    shape
+    hole_size
+    hole_center
+    level
+
+    Returns
+    -------
+    photon_array
+    """
+    if not hole_size:
+        raise ValueError("hole_size argument should be defined for illumination model")
+
+    photon_array = np.zeros(shape, dtype=float)
+    if hole_center is not None:
+        if not (
+            (0 <= hole_center[0] <= shape[0]) and (0 <= hole_center[1] <= shape[1])
+        ):
+            raise ValueError('Argument "hole_center" should be inside Photon array.')
+    else:
+        hole_center = [int(shape[0] / 2), int(shape[1] / 2)]
+    y, x = np.ogrid[: shape[0], : shape[1]]
+    dist_from_center = np.sqrt(
+        ((x - hole_center[1]) / hole_size[1]) ** 2
+        + ((y - hole_center[0]) / hole_size[0]) ** 2
+    )
+    photon_array[dist_from_center < 1] = level
+    return photon_array
+
+
 # TODO: Fix this
 # @validators.validate
 # @config.argument(name='level', label='number of photon', units='', validate=check_type(int))
@@ -62,56 +141,14 @@ def illumination(
 
     if option == "uniform":
         photon_array = np.ones(shape, dtype=float) * level
-
     elif option == "rectangular_hole":
-        if hole_size:
-            photon_array = np.zeros(shape, dtype=float)
-            if hole_center is not None:
-                if not (
-                    (0 <= hole_center[0] <= shape[0])
-                    and (0 <= hole_center[1] <= shape[1])
-                ):
-                    raise ValueError(
-                        'Argument "hole_center" should be inside Photon array.'
-                    )
-            else:
-                hole_center = [int(shape[0] / 2), int(shape[1] / 2)]
-            p = hole_center[0] - int(hole_size[0] / 2)
-            q = hole_center[1] - int(hole_size[1] / 2)
-            p0 = int(np.clip(p, a_min=0, a_max=shape[0]))
-            q0 = int(np.clip(q, a_min=0, a_max=shape[1]))
-            photon_array[
-                slice(p0, p + hole_size[0]), slice(q0, q + hole_size[1])
-            ] = level
-        else:
-            raise ValueError(
-                "hole_size argument should be defined for illumination model"
-            )
-
+        photon_array = rectangular_hole(
+            shape=shape, hole_size=hole_size, hole_center=hole_center, level=level
+        )
     elif option == "elliptic_hole":
-        if hole_size:
-            photon_array = np.zeros(shape, dtype=float)
-            if hole_center is not None:
-                if not (
-                    (0 <= hole_center[0] <= shape[0])
-                    and (0 <= hole_center[1] <= shape[1])
-                ):
-                    raise ValueError(
-                        'Argument "hole_center" should be inside Photon array.'
-                    )
-            else:
-                hole_center = [int(shape[0] / 2), int(shape[1] / 2)]
-            y, x = np.ogrid[: shape[0], : shape[1]]
-            dist_from_center = np.sqrt(
-                ((x - hole_center[1]) / hole_size[1]) ** 2
-                + ((y - hole_center[0]) / hole_size[0]) ** 2
-            )
-            photon_array[dist_from_center < 1] = level
-        else:
-            raise ValueError(
-                "hole_size argument should be defined for illumination model"
-            )
-
+        photon_array = elliptic_hole(
+            shape=shape, hole_size=hole_size, hole_center=hole_center, level=level
+        )
     else:
         raise NotImplementedError
 
