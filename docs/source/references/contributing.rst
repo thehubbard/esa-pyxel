@@ -387,12 +387,12 @@ Requirements
 ~~~~~~~~~~~~
 Make sure to follow the instructions on :ref:`creating a development
 environment above <contributing.dev_env>`, but to build the docs you need
-to use the environment file ``requirements.yml``.
+to use the environment file ``environment.yml``.
 
 .. code-block:: fish
 
     # Create and activate the docs environment
-    $ conda env create -f requirements.yml
+    $ conda env create -f environment.yml
     $ conda activate pyxel-dev
 
     # or with older versions of Anaconda:
