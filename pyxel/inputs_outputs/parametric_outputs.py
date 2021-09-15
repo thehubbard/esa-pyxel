@@ -11,7 +11,7 @@ import logging
 import operator
 import typing as t
 from pathlib import Path
-from time import strftime
+from .outputs import create_output_directory
 
 import h5py as h5
 import numpy as np
@@ -88,9 +88,7 @@ class ParametricOutputs:
 
         # self.user_plt_args = None  # type: t.Optional[PlotArguments]
         # self.save_parameter_to_file = save_parameter_to_file  # type: t.Optional[dict]
-        self.output_dir = (
-            Path(output_folder).joinpath("run_" + strftime("%Y%m%d_%H%M%S")).resolve()
-        )  # type: Path
+        self.output_dir = create_output_directory(output_folder)  # type: Path
 
         # TODO: Not related to a plot. Use by 'single' and 'parametric' modes.
         self.save_data_to_file = (
@@ -100,12 +98,6 @@ class ParametricOutputs:
         self.save_parametric_data = (
             save_parametric_data
         )  # type: t.Optional[t.Sequence[t.Mapping[str, t.Sequence[str]]]]
-
-        # TODO: reenable
-        # if self.output_dir.exists():
-        #    raise IsADirectoryError("Directory exists.")
-
-        self.output_dir.mkdir(parents=True, exist_ok=True)
 
         # self.default_ax_args = {
         #     "xlabel": None,
