@@ -7,7 +7,8 @@ version 0.11 / UNRELEASED-YYYY-MM-DD
 
 Core
 ~~~~
-
+* Output folder already existing when running 'load' two times.
+  (See `!232 <https://gitlab.com/esa/pyxel/-/merge_requests/232>`_).
 
 Documentation
 ~~~~~~~~~~~~~

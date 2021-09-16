@@ -11,6 +11,7 @@ import typing as t
 from enum import Enum
 from glob import glob
 from pathlib import Path
+from time import strftime
 
 import attr
 from matplotlib import pyplot as plt
@@ -162,3 +163,37 @@ def save_log_file(output_dir: Path) -> None:
 
     new_log_filename = output_dir.joinpath(log_file.name)
     log_file.rename(new_log_filename)
+
+
+def create_output_directory(output_folder: t.Union[str, Path]) -> Path:
+    """Create output directory in the output folder.
+
+    Parameters
+    ----------
+    output_folder: str or Path
+
+    Returns
+    -------
+    output_dir: Path
+    """
+
+    add = ""
+    count = 0
+
+    while True:
+        try:
+            output_dir = (
+                Path(output_folder)
+                .joinpath("run_" + strftime("%Y%m%d_%H%M%S") + add)
+                .resolve()
+            )  # type: Path
+
+            output_dir.mkdir(parents=True, exist_ok=False)
+
+        except FileExistsError:
+            count += 1
+            add = "_" + str(count)
+            continue
+
+        else:
+            return output_dir

@@ -13,7 +13,6 @@ import typing as t
 
 # import warnings
 from pathlib import Path
-from time import strftime
 
 import attr
 import h5py as h5
@@ -23,7 +22,12 @@ from astropy.io import fits as fits
 
 from pyxel import __version__ as version
 
-from .outputs import PlotArguments, PlotType, apply_run_number  # , update_plot
+from .outputs import (  # , update_plot
+    PlotArguments,
+    PlotType,
+    apply_run_number,
+    create_output_directory,
+)
 
 # from matplotlib import pyplot as plt
 
@@ -71,19 +75,12 @@ class SingleOutputs:
         #     self._single_plot = single_plot
 
         # self.user_plt_args = None  # type: t.Optional[PlotArguments]
-        self.output_dir = (
-            Path(output_folder).joinpath("run_" + strftime("%Y%m%d_%H%M%S")).resolve()
-        )  # type: Path
+        self.output_dir = create_output_directory(output_folder)  # type: Path
 
         # TODO: Not related to a plot. Use by 'single' and 'parametric' modes.
         self.save_data_to_file = (
             save_data_to_file
         )  # type: t.Optional[t.Sequence[t.Mapping[str, t.Sequence[str]]]]
-
-        if self.output_dir.exists():
-            raise IsADirectoryError("Directory exists.")
-
-        self.output_dir.mkdir(parents=True, exist_ok=True)
 
         # self.default_ax_args = {
         #     "xlabel": None,

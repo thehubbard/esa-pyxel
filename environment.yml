@@ -69,6 +69,7 @@ dependencies:
   - tox
   - black>=20
   - tryceratops
+  - freezegun
 # Pip packages
   - pip:
     - poppy>=0.9

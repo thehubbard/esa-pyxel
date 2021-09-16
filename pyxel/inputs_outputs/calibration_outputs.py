@@ -12,7 +12,6 @@ import typing as t
 
 # from numbers import Number
 from pathlib import Path
-from time import strftime
 
 # import attr
 import dask.delayed as delayed
@@ -28,7 +27,11 @@ from typing_extensions import Literal
 
 from pyxel import __version__ as version
 
-from .outputs import PlotArguments, apply_run_number  # , update_plot, PlotType,
+from .outputs import (  # , update_plot, PlotType,
+    PlotArguments,
+    apply_run_number,
+    create_output_directory,
+)
 
 if t.TYPE_CHECKING:
     # from ..calibration import ResultType
@@ -112,9 +115,7 @@ class CalibrationOutputs:
 
         self.user_plt_args = None  # type: t.Optional[PlotArguments]
         self.save_parameter_to_file = save_parameter_to_file  # type: t.Optional[dict]
-        self.output_dir = (
-            Path(output_folder).joinpath("run_" + strftime("%Y%m%d_%H%M%S")).resolve()
-        )  # type: Path
+        self.output_dir = create_output_directory(output_folder)  # type: Path
 
         # if save_data_to_file is None:
         #     self.save_data_to_file = [{'detector.image.array': ['fits']}]       # type: list
@@ -123,12 +124,6 @@ class CalibrationOutputs:
         self.save_data_to_file = (
             save_data_to_file
         )  # type: t.Optional[t.Sequence[t.Mapping[ValidName, t.Sequence[ValidFormat]]]]
-
-        # TODO: reenable
-        # if self.output_dir.exists():
-        #    raise IsADirectoryError("Directory exists.")
-
-        self.output_dir.mkdir(parents=True, exist_ok=True)
 
         # self.default_ax_args = {
         #     "xlabel": None,
