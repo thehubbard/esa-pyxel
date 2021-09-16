@@ -20,16 +20,13 @@ from freezegun import freeze_time
 from pyxel.configuration import load
 
 
-def test_load_2_times(tmp_path: Path):
+def test_load_2_times():
     """Test function 'pyxel.inputs_outputs.load' called two times."""
-    filename = "../data/dummy_simple.yaml"
+    filename = "tests/data/dummy_simple.yaml"
 
     # Get full filename
-    full_filename = Path(__file__).parent / filename  # type: Path
+    full_filename = Path(filename)  # type: Path
     assert full_filename.exists()
-
-    # Change working folder
-    os.chdir(tmp_path)
 
     # Load the configuration file for the first time
     with freeze_time("2021-06-15 14:11"):
