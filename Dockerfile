@@ -2,6 +2,7 @@
 # Pyxel with Jupyter notebook server
 #
 
+# Use LTS version
 FROM ubuntu:20.04
 
 # Set the timezone
@@ -16,8 +17,9 @@ RUN apt-get update --fix-missing \
 
 # Copy Pyxel source code
 COPY . $PYXEL_HOME/src
-COPY examples $PYXEL_HOME/notebooks/examples
-COPY data $PYXEL_HOME/notebooks/data
+#COPY examples $PYXEL_HOME/notebooks/examples
+#COPY data $PYXEL_HOME/notebooks/data
+RUN mkdir -p $PYXEL_HOME/notebooks
 
 # Add a new user (no need to run as roo)
 RUN mkdir -p $PYXEL_HOME \
@@ -60,9 +62,9 @@ RUN conda activate pyxel-dev && \
     conda deactivate
 
 # Install Jupyterlab extensions
-RUN conda activate pyxel-dev && \
-    jupyter labextension install @jupyter-widgets/jupyterlab-manager && \
-    conda deactivate
+#RUN conda activate pyxel-dev && \
+#    jupyter labextension install @jupyter-widgets/jupyterlab-manager && \
+#    conda deactivate
 
 # Add aliases
 RUN echo "alias ll='ls -alF'" >> ~/.bashrc \
