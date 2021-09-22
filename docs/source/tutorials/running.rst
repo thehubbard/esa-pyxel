@@ -39,7 +39,6 @@ An example of running Pyxel as a library:
 
 .. code-block:: python
 
-
     from pyxel.configuration import load
     from pyxel.run import single_mode
 
@@ -49,3 +48,92 @@ An example of running Pyxel as a library:
     pipeline = configuration.pipeline
 
     single_mode(single, detector, pipeline)
+
+Running Pyxel from a Docker container
+=====================================
+
+Folder ‘./volumes/notebooks’ is linked to ‘/home/pyxel/notebooks’ in the container
+
+
+Create the container
+--------------------
+
+.. tab:: docker-compose
+
+    .. code-block:: shell
+
+        docker-compose build
+
+.. tab:: only docker
+
+    .. code-block:: shell
+
+        docker build -t pyxel .
+
+
+Start the container
+-------------------
+
+.. tab:: docker-compose
+
+    .. code-block:: shell
+
+        docker-compose up -d
+
+.. tab:: only docker
+
+    .. code-block:: shell
+
+        docker run -d -p 8888:8888 -v ./volumes/notebooks:/home/pyxel/notebooks pyxel
+
+
+Stop the container
+------------------
+
+.. tab:: docker-compose
+
+    .. code-block:: shell
+
+        docker-compose down -d
+
+.. tab:: only docker
+
+    .. code-block:: shell
+
+        TBW
+
+Check if the container is running
+----------------------------------
+
+.. tab:: docker-compose
+
+    .. code-block:: shell
+
+        docker-compose ps
+            Name                   Command               State           Ports
+        -------------------------------------------------------------------------------
+        pyxel_pyxel_1   /bin/bash --login -c conda ...   Up      0.0.0.0:8888->8888/tcp
+
+
+.. tab:: only docker
+
+    .. code-block:: shell
+
+        docker ps
+
+
+Get logs
+--------
+
+.. tab:: docker-compose
+
+    .. code-block:: shell
+
+        docker-compose logs -f
+
+
+.. tab:: only docker
+
+    .. code-block:: shell
+
+        TBW
