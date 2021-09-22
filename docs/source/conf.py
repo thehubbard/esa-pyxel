@@ -52,6 +52,7 @@ extensions = [
     "sphinx.ext.viewcode",  # add links to highlighted source code
     "sphinxcontrib.bibtex",
     "sphinx_panels",
+    "sphinx_inline_tabs",  # Add inline tabs
 ]
 
 extlinks = {
