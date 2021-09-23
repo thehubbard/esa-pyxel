@@ -62,8 +62,8 @@ from the `Pyxel GitLab repository <https://gitlab.com/esa/pyxel>`_.
 
 
 .. Note::
-    Folder ‘pyxel/volumes/notebooks’ is linked to
-    folder ‘/home/pyxel/notebooks’ in the container.
+    Folder ‘./pyxel/volumes/notebooks’ is linked to
+    folder ‘/home/pyxel/jupyter/notebooks’ in the container.
 
 
 Build an image
@@ -101,7 +101,7 @@ Run Pyxel with a Jupyter Lab server from a new docker container:
     .. code-block:: console
 
         Create and start new container 'my_pyxel' from image 'pyxel'
-        $ docker create -p 8888:8888 -v $PWD/volumes/notebooks:/home/pyxel/notebooks pyxel --name my_pyxel
+        $ docker create -p 8888:8888 -v $PWD/volumes/notebooks:/home/pyxel/jupyter/notebooks pyxel --name my_pyxel
         $ docker start my_pyxel
 
 Stop and remove the container
