@@ -8,4 +8,4 @@ services:
     ports:
       - "8888:8888"
     volumes:
-      - "./volumes/notebooks:/home/pyxel/notebooks"
+      - "./volumes/notebooks:/home/pyxel/jupyter/notebooks"
