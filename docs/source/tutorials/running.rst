@@ -52,7 +52,18 @@ An example of running Pyxel as a library:
 Running Pyxel from a Docker container
 =====================================
 
-Folder ‘./volumes/notebooks’ is linked to ‘/home/pyxel/notebooks’ in the container
+If you want to run Pyxel in a Docker container, you must first get the source code
+from the `Pyxel GitLab repository <https://gitlab.com/esa/pyxel>`_.
+
+.. code-block:: console
+
+    $ git clone https://gitlab.com/esa/pyxel.git
+    $ cd pyxel
+
+
+.. Note::
+    Folder ‘pyxel/volumes/notebooks’ is linked to
+    folder ‘/home/pyxel/notebooks’ in the container.
 
 
 Create the container
@@ -60,54 +71,58 @@ Create the container
 
 .. tab:: docker-compose
 
-    .. code-block:: shell
+    .. code-block:: console
 
-        docker-compose build
+        $ docker-compose build
 
 .. tab:: only docker
 
-    .. code-block:: shell
+    .. code-block:: console
 
-        docker build -t pyxel .
+        $ docker build -t pyxel .
 
 
 Start the container
 -------------------
 
+Run Pyxel with a Jupyter Lab server from a docker container:
+
 .. tab:: docker-compose
 
-    .. code-block:: shell
+    .. code-block:: console
 
-        docker-compose up -d
+        $ docker-compose up -d
 
 .. tab:: only docker
 
-    .. code-block:: shell
+    .. code-block:: console
 
-        docker run -d -p 8888:8888 -v ./volumes/notebooks:/home/pyxel/notebooks pyxel
+        $ docker run -d -p 8888:8888 -v ./volumes/notebooks:/home/pyxel/notebooks pyxel
 
 
 Stop the container
 ------------------
 
+Stop a running Pyxel container.
+
 .. tab:: docker-compose
 
-    .. code-block:: shell
+    .. code-block:: console
 
-        docker-compose down -d
+        $ docker-compose down
 
 .. tab:: only docker
 
-    .. code-block:: shell
+    .. code-block:: console
 
-        TBW
+        $ docker stop
 
 Check if the container is running
 ----------------------------------
 
 .. tab:: docker-compose
 
-    .. code-block:: shell
+    .. code-block:: console
 
         docker-compose ps
             Name                   Command               State           Ports
@@ -117,7 +132,7 @@ Check if the container is running
 
 .. tab:: only docker
 
-    .. code-block:: shell
+    .. code-block:: console
 
         docker ps
 
@@ -127,13 +142,13 @@ Get logs
 
 .. tab:: docker-compose
 
-    .. code-block:: shell
+    .. code-block:: console
 
         docker-compose logs -f
 
 
 .. tab:: only docker
 
-    .. code-block:: shell
+    .. code-block:: console
 
         TBW
