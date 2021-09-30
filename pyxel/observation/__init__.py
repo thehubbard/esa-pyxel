@@ -6,5 +6,6 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 #
 #
+# flake8: noqa
 from .dynamic import dynamic_pipeline, Dynamic
 from .observation import Observation, single_pipeline, run_observation

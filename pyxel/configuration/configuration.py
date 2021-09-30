@@ -38,18 +38,15 @@ from pyxel.detectors import (
     MKIDCharacteristics,
     MKIDGeometry,
 )
-from pyxel.dynamic import Dynamic
+from pyxel.observation import Dynamic, Observation
 from pyxel.evaluator import evaluate_reference
 from pyxel.inputs_outputs.calibration_outputs import CalibrationOutputs
-from pyxel.inputs_outputs.dynamic_outputs import DynamicOutputs
-from pyxel.inputs_outputs.outputs import PlotArguments
+from pyxel.inputs_outputs.observation_outputs import ObservationOutputs
 from pyxel.inputs_outputs.parametric_outputs import (
-    ParametricOutputs,  # , ParametricPlot
+    ParametricOutputs,
 )
-from pyxel.inputs_outputs.single_outputs import SingleOutputs  # , SinglePlot
 from pyxel.parametric import ParameterValues, Parametric
 from pyxel.pipelines import DetectionPipeline, ModelFunction, ModelGroup
-from pyxel.single import Single
 
 
 @attr.s
@@ -57,10 +54,9 @@ class Configuration:
     """Configuration class."""
 
     pipeline: DetectionPipeline = attr.ib(init=False)
-    single: t.Optional[Single] = attr.ib(default=None)
+    observation: t.Optional[Observation] = attr.ib(default=None)
     parametric: t.Optional[Parametric] = attr.ib(default=None)
     calibration: t.Optional[Calibration] = attr.ib(default=None)
-    dynamic: t.Optional[Dynamic] = attr.ib(default=None)
     ccd_detector: t.Optional[CCD] = attr.ib(default=None)
     cmos_detector: t.Optional[CMOS] = attr.ib(default=None)
     mkid_detector: t.Optional[MKID] = attr.ib(default=None)
@@ -100,41 +96,8 @@ def load_yaml(stream: t.Union[str, t.IO]) -> t.Any:
     return result
 
 
-def to_plot_arguments(dct: t.Optional[dict]) -> t.Optional[PlotArguments]:
-    """Create a PlotArguments class from a dictionary.
-
-    Parameters
-    ----------
-    dct
-
-    Returns
-    -------
-    PlotArguments
-    """
-    if dct is None:
-        return None
-    return PlotArguments(**dct)
-
-
-# def to_single_plot(dct: t.Optional[dict]) -> t.Optional[SinglePlot]:
-#     """Create a SinglePlot class from a dictionary.
-#
-#     Parameters
-#     ----------
-#     dct
-#
-#     Returns
-#     -------
-#     SinglePlot
-#     """
-#     if dct is None:
-#         return None
-#     dct.update({"plot_args": to_plot_arguments(dct["plot_args"])})
-#     return SinglePlot(**dct)
-
-
-def to_single_outputs(dct: dict) -> SingleOutputs:
-    """Create a SingleOutputs class from a dictionary.
+def to_observation_outputs(dct: dict) -> ObservationOutputs:
+    """Create a ObservationOutputs class from a dictionary.
 
     Parameters
     ----------
@@ -144,39 +107,7 @@ def to_single_outputs(dct: dict) -> SingleOutputs:
     -------
     SingleOutputs
     """
-    # dct.update({"single_plot": to_single_plot(dct["single_plot"])})
-    return SingleOutputs(**dct)
-
-
-def to_single(dct: dict) -> Single:
-    """Create a Single class from a dictionary.
-
-    Parameters
-    ----------
-    dct
-
-    Returns
-    -------
-    Single
-    """
-    dct.update({"outputs": to_single_outputs(dct["outputs"])})
-    return Single(**dct)
-
-
-# TODO: Dynamic uses single plot for now
-def to_dynamic_outputs(dct: dict) -> DynamicOutputs:
-    """Create a DynamicOutputs class from a dictionary.
-
-    Parameters
-    ----------
-    dct
-
-    Returns
-    -------
-    DynamicOutputs
-    """
-    # dct.update({"single_plot": to_single_plot(dct["single_plot"])})
-    return DynamicOutputs(**dct)
+    return ObservationOutputs(**dct)
 
 
 def to_dynamic(dct: dict) -> Dynamic:
@@ -188,27 +119,28 @@ def to_dynamic(dct: dict) -> Dynamic:
 
     Returns
     -------
-    Dynamic
+    Single
     """
-    dct.update({"outputs": to_dynamic_outputs(dct["outputs"])})
     return Dynamic(**dct)
 
 
-# def to_parametric_plot(dct: t.Optional[dict]) -> t.Optional[ParametricPlot]:
-#     """Create a ParametricPlot class from a dictionary.
-#
-#     Parameters
-#     ----------
-#     dct
-#
-#     Returns
-#     -------
-#     ParametricPlot
-#     """
-#     if dct is None:
-#         return None
-#     dct.update({"plot_args": to_plot_arguments(dct["plot_args"])})
-#     return ParametricPlot(**dct)
+def to_observation(dct: dict) -> Observation:
+    """Create a Observation class from a dictionary.
+
+    Parameters
+    ----------
+    dct
+
+    Returns
+    -------
+    Single
+    """
+    dct.update({"outputs": to_observation_outputs(dct["outputs"])})
+    if "dynamic" in dct:
+        dct.update({"dynamic": to_dynamic(dct["dynamic"])})
+    else:
+        dct.update({"dynamic": None})
+    return Observation(**dct)
 
 
 def to_parametric_outputs(dct: dict) -> ParametricOutputs:
@@ -256,80 +188,6 @@ def to_parametric(dct: dict) -> Parametric:
     )
     dct.update({"outputs": to_parametric_outputs(dct["outputs"])})
     return Parametric(**dct)
-
-
-# def to_champions_plot(dct: t.Optional[dict]) -> t.Optional[ChampionsPlot]:
-#     """Create a ChampionsPlot class from a dictionary.
-#
-#     Parameters
-#     ----------
-#     dct
-#
-#     Returns
-#     -------
-#     ChampionsPlot
-#     """
-#     if dct is None:
-#         return None
-#     dct.update({"plot_args": to_plot_arguments(dct["plot_args"])})
-#     return ChampionsPlot(**dct)
-#
-#
-# def to_population_plot(dct: t.Optional[dict]) -> t.Optional[PopulationPlot]:
-#     """Create a PopulatonPlot class from a dictionary.
-#
-#     Parameters
-#     ----------
-#     dct
-#
-#     Returns
-#     -------
-#     PopulationPlot
-#     """
-#     if dct is None:
-#         return None
-#     dct.update({"plot_args": to_plot_arguments(dct["plot_args"])})
-#     return PopulationPlot(**dct)
-#
-#
-# def to_fitting_plot(dct: t.Optional[dict]) -> t.Optional[FittingPlot]:
-#     """Create a FittingPlot class from a dictionary.
-#
-#     Parameters
-#     ----------
-#     dct
-#
-#     Returns
-#     -------
-#     FittingPlot
-#     """
-#     if dct is None:
-#         return None
-#     dct.update({"plot_args": to_plot_arguments(dct["plot_args"])})
-#     return FittingPlot(**dct)
-#
-#
-# def to_calibration_plot(dct: t.Optional[dict]) -> t.Optional[CalibrationPlot]:
-#     """Create a CalibrationPlot class from a dictionary.
-#
-#     Parameters
-#     ----------
-#     dct
-#
-#     Returns
-#     -------
-#     CalibrationPlot
-#     """
-#     if dct is None:
-#         return None
-#     else:
-#         if "champions_plot" in dct:
-#             dct.update({"champions_plot": to_champions_plot(dct["champions_plot"])})
-#         if "population_plot" in dct:
-#             dct.update({"population_plot": to_population_plot(dct["population_plot"])})
-#         if "fitting_plot" in dct:
-#             dct.update({"fitting_plot": to_fitting_plot(dct["fitting_plot"])})
-#         return CalibrationPlot(**dct)
 
 
 def to_calibration_outputs(dct: dict) -> CalibrationOutputs:
@@ -658,14 +516,12 @@ def build_configuration(dct: dict) -> Configuration:
 
     configuration.pipeline = to_pipeline(dct["pipeline"])
 
-    if "single" in dct:
-        configuration.single = to_single(dct["single"])
+    if "observation" in dct:
+        configuration.observation = to_observation(dct["single"])
     elif "parametric" in dct:
         configuration.parametric = to_parametric(dct["parametric"])
     elif "calibration" in dct:
         configuration.calibration = to_calibration(dct["calibration"])
-    elif "dynamic" in dct:
-        configuration.dynamic = to_dynamic(dct["dynamic"])
     else:
         raise ValueError("No mode configuration provided.")
 

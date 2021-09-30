@@ -64,7 +64,7 @@ class Dynamic:
 
     def __repr__(self) -> str:
         cls_name = self.__class__.__name__  # type: str
-        return f"{cls_name}<outputs={self.outputs!r}>"
+        return f"{cls_name}"
 
     def _set_steps(self) -> None:
         """TBW."""

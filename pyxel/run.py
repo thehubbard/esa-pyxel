@@ -31,34 +31,30 @@ from pyxel import inputs_outputs as io
 from pyxel.calibration import Calibration, CalibrationResult
 from pyxel.configuration import Configuration, load, save
 from pyxel.detectors import CCD, CMOS, MKID, Detector
-from pyxel.dynamic import Dynamic  # , DynamicResult
+from pyxel.observation import Observation
 from pyxel.parametric import Parametric, ParametricResult
 from pyxel.pipelines import DetectionPipeline, Processor
-from pyxel.single import Single
 from pyxel.util import download_examples
-
-# from tqdm.notebook import tqdm
 
 
 if t.TYPE_CHECKING:
     from .inputs_outputs import (
         CalibrationOutputs,
-        DynamicOutputs,
+        ObservationOutputs,
         ParametricOutputs,
-        SingleOutputs,
     )
 
 
 def single_mode(
-    single: "Single",
+    observation: "Observation",
     detector: Detector,
     pipeline: "DetectionPipeline",
-) -> None:
-    """Run a 'single' pipeline.
+) -> xr.Dataset:
+    """Run an 'observation' pipeline.
 
     Parameters
     ----------
-    single
+    observation
     detector
     pipeline
 
@@ -66,17 +62,21 @@ def single_mode(
     -------
     None
     """
-    logging.info("Mode: Single")
 
-    single_outputs = single.outputs  # type: SingleOutputs
-    # detector.set_output_dir(single_outputs.output_dir)  # TODO: Remove this
+    logging.info("Mode: Dynamic")
+
+    observation_outputs = observation.outputs  # type: ObservationOutputs
+
+    detector.set_output_dir(observation_outputs.output_dir)  # TODO: Remove this
 
     processor = Processor(detector=detector, pipeline=pipeline)
 
-    _ = processor.run_pipeline()
+    result = observation.run_observation(processor=processor)
 
-    single_outputs.save_to_file(processor)
-    # single_outputs.single_to_plot(processor)
+    if observation_outputs.save_observation_data:
+        observation_outputs.save_observation_outputs(dataset=result)
+
+    return result
 
 
 def parametric_mode(
@@ -114,40 +114,6 @@ def parametric_mode(
         parametric_outputs.save_parametric_datasets(
             result=result, mode=parametric.parametric_mode
         )
-
-    return result
-
-
-def dynamic_mode(
-    dynamic: "Dynamic",
-    detector: Detector,
-    pipeline: "DetectionPipeline",
-) -> xr.Dataset:
-    """Run a 'dynamic' pipeline.
-
-    Parameters
-    ----------
-    dynamic
-    detector
-    pipeline
-
-    Returns
-    -------
-    None
-    """
-
-    logging.info("Mode: Dynamic")
-
-    dynamic_outputs = dynamic.outputs  # type: DynamicOutputs
-
-    detector.set_output_dir(dynamic_outputs.output_dir)  # TODO: Remove this
-
-    processor = Processor(detector=detector, pipeline=pipeline)
-
-    result = dynamic.run_dynamic(processor=processor)
-
-    if dynamic_outputs.save_dynamic_data:
-        dynamic_outputs.save_dynamic_outputs(dataset=result)
 
     return result
 
@@ -242,12 +208,10 @@ def output_directory(configuration: Configuration) -> Path:
     -------
     output_dir
     """
-    if isinstance(configuration.single, Single):
-        output_dir = configuration.single.outputs.output_dir
+    if isinstance(configuration.observation, Observation):
+        output_dir = configuration.observation.outputs.output_dir
     elif isinstance(configuration.calibration, Calibration):
         output_dir = configuration.calibration.outputs.output_dir
-    elif isinstance(configuration.dynamic, Dynamic):
-        output_dir = configuration.dynamic.outputs.output_dir
     elif isinstance(configuration.parametric, Parametric):
         output_dir = configuration.parametric.outputs.output_dir
     else:
@@ -382,9 +346,9 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
     else:
         raise NotImplementedError("Detector is not defined in YAML config. file!")
 
-    if isinstance(configuration.single, Single):
-        single = configuration.single  # type: Single
-        single_mode(single=single, detector=detector, pipeline=pipeline)
+    if isinstance(configuration.observation, Observation):
+        observation = configuration.observation  # type: Observation
+        observation_mode(observation=observation, detector=detector, pipeline=pipeline)
 
     elif isinstance(configuration.calibration, Calibration):
 
@@ -396,11 +360,6 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
     elif isinstance(configuration.parametric, Parametric):
         parametric = configuration.parametric  # type: Parametric
         parametric_mode(parametric=parametric, detector=detector, pipeline=pipeline)
-
-    elif isinstance(configuration.dynamic, Dynamic):
-
-        dynamic = configuration.dynamic  # type: Dynamic
-        dynamic_mode(dynamic=dynamic, detector=detector, pipeline=pipeline)
 
     else:
         raise NotImplementedError("Please provide a valid simulation mode !")

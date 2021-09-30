@@ -59,7 +59,7 @@ class Outputs:
         # TODO: Not related to a plot. Use by 'single' and 'parametric' modes.
         self.save_data_to_file = (
             save_data_to_file
-        )  # type: t.Optional[t.Sequence[t.Mapping[str, t.Sequence[str]]]]
+        )  # type: t.Optional[t.Sequence[t.Mapping[ValidName, t.Sequence[ValidFormat]]]]
 
     def __repr__(self):
         cls_name = self.__class__.__name__  # type: str
