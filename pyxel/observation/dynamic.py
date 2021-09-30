@@ -20,7 +20,7 @@ from pyxel.evaluator import eval_range
 from pyxel.inputs_outputs import load_table
 
 if t.TYPE_CHECKING:
-    from ..inputs_outputs import DynamicOutputs
+    from ..inputs_outputs import ObservationOutputs
     from ..pipelines import Processor
 
 
@@ -29,7 +29,6 @@ class Dynamic:
 
     def __init__(
         self,
-        outputs: "DynamicOutputs",
         times: t.Optional[t.Union[t.Sequence, str]] = None,
         times_from_file: t.Optional[str] = None,
         start_time: float = 0.0,
@@ -45,8 +44,6 @@ class Dynamic:
         start_time
         non_destructive_readout
         """
-        self.outputs = outputs
-
         if times is not None and times_from_file is not None:
             raise ValueError("Both times and times_from_file specified. Choose one.")
         elif times_from_file:
@@ -94,21 +91,6 @@ class Dynamic:
         """TBW."""
         return self._non_destructive_readout
 
-    def run_dynamic(self, processor: "Processor") -> xr.Dataset:
-        """TBW."""
-        ds = dynamic_pipeline(
-            processor=processor,
-            time_step_it=self.time_step_it(),
-            num_steps=self._num_steps,
-            ndreadout=self.non_destructive_readout,
-            times_linear=self._times_linear,
-            start_time=self._start_time,
-            end_time=self._times[-1],
-            outputs=self.outputs,
-            progressbar=True,
-        )
-        return ds
-
 
 def calculate_steps(
     times: np.ndarray, start_time: float
@@ -146,7 +128,7 @@ def dynamic_pipeline(
     end_time: float,
     start_time: float = 0.0,
     ndreadout: bool = False,
-    outputs: t.Optional["DynamicOutputs"] = None,
+    outputs: t.Optional["ObservationOutputs"] = None,
     progressbar: bool = False,
 ) -> xr.Dataset:
     """Run standalone dynamic pipeline.

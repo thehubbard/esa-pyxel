@@ -6,14 +6,15 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 #
 #
-"""Dynamic outputs."""
+"""Single outputs."""
 
 import typing as t
 from pathlib import Path
 
 import xarray as xr
+from typing_extensions import Literal
 
-from .single_outputs import SingleOutputs
+from .outputs import Outputs
 
 if t.TYPE_CHECKING:
 
@@ -27,47 +28,35 @@ if t.TYPE_CHECKING:
             ...
 
 
-class DynamicOutputs(SingleOutputs):
+ValidName = Literal[
+    "detector.image.array", "detector.signal.array", "detector.pixel.array"
+]
+ValidFormat = Literal["fits", "hdf", "npy", "txt", "csv", "png"]
+
+
+class ObservationOutputs(Outputs):
     """TBW."""
 
     def __init__(
         self,
         output_folder: t.Union[str, Path],
         save_data_to_file: t.Optional[
-            t.Sequence[t.Mapping[str, t.Sequence[str]]]
+            t.Sequence[t.Mapping[ValidName, t.Sequence[ValidFormat]]]
         ] = None,
-        save_dynamic_data: t.Optional[
+        save_observation_data: t.Optional[
             t.Sequence[t.Mapping[str, t.Sequence[str]]]
         ] = None,
     ):
         super().__init__(
             output_folder=output_folder, save_data_to_file=save_data_to_file
         )
-        self.save_dynamic_data = (
-            save_dynamic_data
+
+        self.save_observation_data = (
+            save_observation_data
         )  # type: t.Optional[t.Sequence[t.Mapping[str, t.Sequence[str]]]]
 
-    def save_to_netcdf(
-        self, data: xr.Dataset, name: str, with_auto_suffix: bool = False
-    ) -> Path:
-        """Write Xarray dataset to NetCDF file.
-
-        Parameters
-        ----------
-        data: xr.Dataset
-        name: str
-
-        Returns
-        -------
-        filename: path
-        """
-        name = str(name).replace(".", "_")
-        filename = self.output_dir.joinpath(name + ".nc")
-        data.to_netcdf(filename)
-        return filename
-
-    def save_dynamic_outputs(self, dataset: xr.Dataset) -> None:
-        """Save the dynamic outputs such as the dataset.
+    def save_observation_outputs(self, dataset: xr.Dataset) -> None:
+        """Save the observation outputs such as the dataset.
 
         Parameters
         ----------
@@ -80,9 +69,9 @@ class DynamicOutputs(SingleOutputs):
 
         save_methods = {"nc": self.save_to_netcdf}  # type: t.Dict[str, SaveToFile]
 
-        if self.save_dynamic_data is not None:
+        if self.save_observation_data is not None:
 
-            for dct in self.save_dynamic_data:  # type: t.Mapping[str, t.Sequence[str]]
+            for dct in self.save_observation_data:  # type: t.Mapping[str, t.Sequence[str]]
 
                 first_item, *_ = dct.items()
                 obj, format_list = first_item
