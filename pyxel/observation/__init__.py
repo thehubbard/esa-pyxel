@@ -6,6 +6,7 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 #
 #
+"""Observation classes and function."""
 # flake8: noqa
 from .sampling import Sampling
 from .observation import Observation, run_observation

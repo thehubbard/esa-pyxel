@@ -71,7 +71,9 @@ class ObservationOutputs(Outputs):
 
         if self.save_observation_data is not None:
 
-            for dct in self.save_observation_data:  # type: t.Mapping[str, t.Sequence[str]]
+            for (
+                dct
+            ) in self.save_observation_data:  # type: t.Mapping[str, t.Sequence[str]]
 
                 first_item, *_ = dct.items()
                 obj, format_list = first_item

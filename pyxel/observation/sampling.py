@@ -39,9 +39,13 @@ class Sampling:
         if readout_times is not None and readout_times_from_file is not None:
             raise ValueError("Both times and times_from_file specified. Choose one.")
         elif readout_times is None and readout_times_from_file is None:
-            self._times = np.array([1])  # by convention default sampling/exposure time is 1 second
+            self._times = np.array(
+                [1]
+            )  # by convention default sampling/exposure time is 1 second
         elif readout_times_from_file:
-            self._times = load_table(readout_times_from_file).to_numpy(dtype=float).flatten()
+            self._times = (
+                load_table(readout_times_from_file).to_numpy(dtype=float).flatten()
+            )
         elif readout_times:
             self._times = np.array(eval_range(readout_times), dtype=float)
         else:
@@ -58,7 +62,7 @@ class Sampling:
 
     def __repr__(self) -> str:
         cls_name = self.__class__.__name__  # type: str
-        return f"{cls_name}"
+        return f"{cls_name}<num_steps={self._num_steps}>"
 
     def _set_steps(self) -> None:
         """TBW."""

@@ -6,9 +6,11 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 #
 #
+"""Observation class and functions."""
+
+import logging
 import operator
 import typing as t
-import logging
 
 import xarray as xr
 from tqdm.auto import tqdm
@@ -23,9 +25,7 @@ if t.TYPE_CHECKING:
 class Observation:
     """TBW."""
 
-    def __init__(
-        self, outputs: "ObservationOutputs", sampling: t.Optional[Sampling] = None
-    ):
+    def __init__(self, outputs: "ObservationOutputs", sampling: "Sampling"):
         self.outputs = outputs
         self.sampling = sampling
 
@@ -34,6 +34,16 @@ class Observation:
         return f"{cls_name}<outputs={self.outputs!r}>"
 
     def run_observation(self, processor: "Processor") -> xr.Dataset:
+        """Run a an observation pipeline.
+
+        Parameters
+        ----------
+        processor
+
+        Returns
+        -------
+        result: xarrray.Dataset
+        """
         result = run_observation(
             processor=processor,
             sampling=self.sampling,
@@ -45,11 +55,11 @@ class Observation:
 
 def run_observation(
     processor: "Processor",
-    sampling: t.Optional["Sampling"] = None,
+    sampling: "Sampling",
     outputs: t.Optional["ObservationOutputs"] = None,
     progressbar: bool = False,
 ) -> xr.Dataset:
-    """Run a single or dynamic pipeline.
+    """Run a an observation pipeline.
 
     Parameters
     ----------

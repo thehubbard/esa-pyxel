@@ -38,13 +38,11 @@ from pyxel.detectors import (
     MKIDCharacteristics,
     MKIDGeometry,
 )
-from pyxel.observation import Sampling, Observation
 from pyxel.evaluator import evaluate_reference
 from pyxel.inputs_outputs.calibration_outputs import CalibrationOutputs
 from pyxel.inputs_outputs.observation_outputs import ObservationOutputs
-from pyxel.inputs_outputs.parametric_outputs import (
-    ParametricOutputs,
-)
+from pyxel.inputs_outputs.parametric_outputs import ParametricOutputs
+from pyxel.observation import Observation, Sampling
 from pyxel.parametric import ParameterValues, Parametric
 from pyxel.pipelines import DetectionPipeline, ModelFunction, ModelGroup
 

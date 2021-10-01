@@ -36,7 +36,6 @@ from pyxel.parametric import Parametric, ParametricResult
 from pyxel.pipelines import DetectionPipeline, Processor
 from pyxel.util import download_examples
 
-
 if t.TYPE_CHECKING:
     from .inputs_outputs import (
         CalibrationOutputs,

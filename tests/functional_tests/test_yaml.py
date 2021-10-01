@@ -21,11 +21,11 @@ from pyxel.configuration import Configuration, load
 from pyxel.data_structure import Charge, Image, Pixel, Signal
 from pyxel.detectors import CCD, CCDCharacteristics, CCDGeometry, Environment, Material
 from pyxel.inputs_outputs.calibration_outputs import CalibrationOutputs
-from pyxel.inputs_outputs.parametric_outputs import ParametricOutputs
 from pyxel.inputs_outputs.observation_outputs import ObservationOutputs
+from pyxel.inputs_outputs.parametric_outputs import ParametricOutputs
+from pyxel.observation import Observation
 from pyxel.parametric import Parametric, ParametricMode
 from pyxel.pipelines import DetectionPipeline, ModelFunction, ModelGroup
-from pyxel.observation import Observation
 
 
 @pytest.mark.skipif(not WITH_PYGMO, reason="Package 'pygmo' is not installed.")
