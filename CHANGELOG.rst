@@ -267,7 +267,7 @@ Core
   (See `#61 <https://gitlab.com/esa/pyxel/issues/61>`_).
 * Refactored YAML loader, returns a class Configuration instead of a dictionary.
   (See `#60 <https://gitlab.com/esa/pyxel/issues/60>`_).
-* Created new classes Single and Sampling to store running mode parameters.
+* Created new classes Single and Dynamic to store running mode parameters.
   (See `#121 <https://gitlab.com/esa/pyxel/issues/121>`_).
 * Split class Outputs for different modes and moved to inputs_ouputs.
   (See `#149 <https://gitlab.com/esa/pyxel/issues/149>`_).
@@ -388,7 +388,7 @@ version 0.4 / 2019-07-09
 
 * Running modes implemented:
   * Calibration mode for model fitting and detector optimization
-  * Sampling mode for time-dependent (destructive and non-destructive) detector readout
+  * Dynamic mode for time-dependent (destructive and non-destructive) detector readout
   * Parallel option for Parametric mode
 * Models added:
   * CDM Charge Transfer Inefficiency model
