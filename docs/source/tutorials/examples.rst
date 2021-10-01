@@ -46,7 +46,7 @@ Tutorial chapters
 4. Parametric mode
 5. Calibration mode
 6. Calibration visualisation
-7. Sampling mode
+7. Dynamic mode
 
 List of Examples
 ----------------
@@ -61,7 +61,7 @@ List of Examples
 - Basic example (sequential)
 - Basic example (custom)
 
-**Sampling mode:**
+**Dynamic mode:**
 
 - Persistence in H2RG
 
