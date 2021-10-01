@@ -53,8 +53,9 @@ def arctic_add(
     roe = ac.ROE()
 
     traps = []
+    i = 0
     for trap_density in trap_densities:
-        i = 0
+
         instant_traps = [
             {"density": trap_density, "release_timescale": trap_release_timescales[i]}
         ]  # type: t.Sequence[t.Mapping[str, float]]
@@ -77,6 +78,7 @@ def arctic_add(
         parallel_ccd=ccd,
         parallel_roe=roe,
         parallel_express=express,
+        verbosity=0
     )
 
     detector.pixel.array = image_cti_added_2d
