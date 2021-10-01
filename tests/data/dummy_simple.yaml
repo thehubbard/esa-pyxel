@@ -6,7 +6,11 @@
 # ########################################################### #
 
 
-single:
+observation:
+
+  dynamic:
+    times:
+    non_destructive: ...
 
   outputs:
     output_folder: "output"

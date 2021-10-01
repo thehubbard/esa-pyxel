@@ -517,7 +517,7 @@ def build_configuration(dct: dict) -> Configuration:
     configuration.pipeline = to_pipeline(dct["pipeline"])
 
     if "observation" in dct:
-        configuration.observation = to_observation(dct["single"])
+        configuration.observation = to_observation(dct["observation"])
     elif "parametric" in dct:
         configuration.parametric = to_parametric(dct["parametric"])
     elif "calibration" in dct:

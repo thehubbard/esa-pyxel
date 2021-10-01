@@ -20,14 +20,12 @@ from pyxel.calibration import Algorithm, Calibration, CalibrationMode
 from pyxel.configuration import Configuration, load
 from pyxel.data_structure import Charge, Image, Pixel, Signal
 from pyxel.detectors import CCD, CCDCharacteristics, CCDGeometry, Environment, Material
-from pyxel.dynamic import Dynamic
 from pyxel.inputs_outputs.calibration_outputs import CalibrationOutputs
-from pyxel.inputs_outputs.dynamic_outputs import DynamicOutputs
 from pyxel.inputs_outputs.parametric_outputs import ParametricOutputs
-from pyxel.inputs_outputs.single_outputs import SingleOutputs
+from pyxel.inputs_outputs.observation_outputs import ObservationOutputs
 from pyxel.parametric import Parametric, ParametricMode
 from pyxel.pipelines import DetectionPipeline, ModelFunction, ModelGroup
-from pyxel.single import Single
+from pyxel.observation import Observation
 
 
 @pytest.mark.skipif(not WITH_PYGMO, reason="Package 'pygmo' is not installed.")
@@ -44,14 +42,12 @@ def test_yaml_load(yaml_file):
 
     assert isinstance(cfg, Configuration)
 
-    if isinstance(cfg.single, Single):
-        assert isinstance(cfg.single.outputs, SingleOutputs)
+    if isinstance(cfg.observation, Observation):
+        assert isinstance(cfg.observation.outputs, ObservationOutputs)
     elif isinstance(cfg.calibration, Calibration):
         assert isinstance(cfg.calibration.outputs, CalibrationOutputs)
         assert isinstance(cfg.calibration.algorithm, Algorithm)
         assert isinstance(cfg.calibration.calibration_mode, CalibrationMode)
-    elif isinstance(cfg.dynamic, Dynamic):
-        assert isinstance(cfg.dynamic.outputs, DynamicOutputs)
     elif isinstance(cfg.parametric, Parametric):
         assert isinstance(cfg.parametric.outputs, ParametricOutputs)
         assert isinstance(cfg.parametric.parametric_mode, ParametricMode)
