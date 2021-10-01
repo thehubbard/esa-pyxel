@@ -8,10 +8,6 @@
 
 observation:
 
-  dynamic:
-    times:
-    non_destructive: ...
-
   outputs:
     output_folder: "output"
     save_data_to_file:

@@ -8,10 +8,12 @@
 #
 import operator
 import typing as t
+import logging
 
 import xarray as xr
+from tqdm.auto import tqdm
 
-from .dynamic import Dynamic, dynamic_pipeline
+from .sampling import Sampling
 
 if t.TYPE_CHECKING:
     from ..inputs_outputs import ObservationOutputs
@@ -22,10 +24,10 @@ class Observation:
     """TBW."""
 
     def __init__(
-        self, outputs: "ObservationOutputs", dynamic: t.Optional[Dynamic] = None
+        self, outputs: "ObservationOutputs", sampling: t.Optional[Sampling] = None
     ):
         self.outputs = outputs
-        self.dynamic = dynamic
+        self.sampling = sampling
 
     def __repr__(self) -> str:
         cls_name = self.__class__.__name__  # type: str
@@ -34,95 +36,167 @@ class Observation:
     def run_observation(self, processor: "Processor") -> xr.Dataset:
         result = run_observation(
             processor=processor,
-            dynamic=self.dynamic,
+            sampling=self.sampling,
             outputs=self.outputs,
-            dynamic_progressbar=True,
+            progressbar=True,
         )
         return result
 
 
 def run_observation(
     processor: "Processor",
-    dynamic: t.Optional["Dynamic"] = None,
+    sampling: t.Optional["Sampling"] = None,
     outputs: t.Optional["ObservationOutputs"] = None,
-    dynamic_progressbar: bool = False,
+    progressbar: bool = False,
 ) -> xr.Dataset:
     """Run a single or dynamic pipeline.
 
     Parameters
     ----------
     processor
-    dynamic
+    sampling
     outputs
-    dynamic_progressbar
+    progressbar
 
     Returns
     -------
     result: xr.Dataset
     """
-    if not dynamic:
-        result = single_pipeline(processor=processor, outputs=outputs)
+    if sampling._num_steps == 1:
+        progressbar = False
 
-    else:
-        result = dynamic_pipeline(
-            processor=processor,
-            time_step_it=dynamic.time_step_it(),
-            num_steps=dynamic._num_steps,
-            ndreadout=dynamic.non_destructive_readout,
-            times_linear=dynamic._times_linear,
-            start_time=dynamic._start_time,
-            end_time=dynamic._times[-1],
-            outputs=outputs,
-            progressbar=dynamic_progressbar,
-        )
+    result = observation_pipeline(
+        processor=processor,
+        time_step_it=sampling.time_step_it(),
+        num_steps=sampling._num_steps,
+        ndreadout=sampling.non_destructive_readout,
+        times_linear=sampling._times_linear,
+        start_time=sampling._start_time,
+        end_time=sampling._times[-1],
+        outputs=outputs,
+        progressbar=progressbar,
+    )
 
     return result
 
 
-def single_pipeline(
-    processor: "Processor", outputs: t.Optional["ObservationOutputs"] = None
+def observation_pipeline(
+    processor: "Processor",
+    time_step_it: t.Iterator[t.Tuple[float, float]],
+    num_steps: int,
+    times_linear: bool,
+    end_time: float,
+    start_time: float = 0.0,
+    ndreadout: bool = False,
+    outputs: t.Optional["ObservationOutputs"] = None,
+    progressbar: bool = False,
 ) -> xr.Dataset:
-    """Run a single pipeline and return the result dataset.
+    """Run standalone dynamic pipeline.
 
     Parameters
     ----------
     processor: Processor
-    outputs: ObservationOutputs
+    time_step_it: Iterator
+        Iterates over pairs of times and elapsed time steps.
+    num_steps: int
+        Number of times.
+    ndreadout: bool
+        Set non destructive readout mode.
+    times_linear: bool
+        Set if times are linear.
+    start_time: float
+        Starting time.
+    end_time:
+        Last time.
+    outputs: DynamicOutputs
+        Sampling outputs.
+    progressbar: bool
+        Sets visibility of progress bar.
 
     Returns
     -------
-    dataset: xr.Dataset
+    final_dataset: xr.Dataset
+        Results of the pipeline in an xarray dataset.
     """
-    _ = processor.run_pipeline()
-
-    if outputs:
-        outputs.save_to_file(processor)
+    # if isinstance(detector, CCD):
+    #    dynamic.non_destructive_readout = False
 
     detector = processor.detector
 
-    rows, columns = (
-        detector.geometry.row,
-        detector.geometry.row,
+    detector.set_sampling(
+        num_steps=num_steps,
+        ndreadout=ndreadout,
+        times_linear=times_linear,
+        start_time=start_time,
+        end_time=end_time,
     )
+    # The detector should be reset before exposure
+    detector.reset(reset_all=True)
 
+    # prepare lists for to-be-merged datasets
+    list_datasets = []
+
+    # Dimensions set by the detectors dimensions
+    rows, columns = (
+        processor.detector.geometry.row,
+        processor.detector.geometry.row,
+    )
+    # Coordinates
     coordinates = {"x": range(columns), "y": range(rows)}
 
-    dataset = xr.Dataset()
+    if progressbar:
+        pbar = tqdm(total=num_steps)
 
-    # Dataset is storing the arrays at the end of this iter
-    arrays = {
-        "pixel": "detector.pixel.array",
-        "signal": "detector.signal.array",
-        "image": "detector.image.array",
-    }
+    for i, (time, step) in enumerate(
+        time_step_it
+    ):  # type: t.Tuple[int, t.Tuple[float, float]]
 
-    for key, array in arrays.items():
-        da = xr.DataArray(
-            operator.attrgetter(array)(processor),
-            dims=["y", "x"],
-            coords=coordinates,  # type: ignore
-        )
+        detector.time = time
+        detector.time_step = step
 
-        dataset[key] = da
+        logging.info("time = %.3f s", time)
 
-    return dataset
+        if detector.non_destructive_readout:
+            detector.reset(reset_all=False)
+        else:
+            detector.reset(reset_all=True)
+
+        processor.run_pipeline()
+        detector.pipeline_count = i
+
+        if outputs and detector.read_out:
+            outputs.save_to_file(processor)
+
+        out = xr.Dataset()
+
+        # Dataset is storing the arrays at the end of this iter
+        arrays = {
+            "pixel": "detector.pixel.array",
+            "signal": "detector.signal.array",
+            "image": "detector.image.array",
+        }
+
+        for key, array in arrays.items():
+            da = xr.DataArray(
+                operator.attrgetter(array)(processor),
+                dims=["y", "x"],
+                coords=coordinates,  # type: ignore
+            )
+            # Time coordinate of this iteration
+            da = da.assign_coords(coords={"readout_time": time})
+            da = da.expand_dims(dim="readout_time")
+
+            out[key] = da
+
+        if progressbar:
+            pbar.update(1)
+        # Append to the list of datasets
+        list_datasets.append(out)
+
+    if progressbar:
+        pbar.close()
+
+    # Combine the datasets in the list into one xarray
+    final_dataset = xr.combine_by_coords(list_datasets)  # type: xr.Dataset
+
+    return final_dataset

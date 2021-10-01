@@ -1,15 +1,15 @@
 .. _dynamic_api:
 
 =======
-Dynamic
+Sampling
 =======
 
 .. currentmodule:: pyxel.dynamic
 
-Dynamic
+Sampling
 -------
 
-.. autoclass:: Dynamic
+.. autoclass:: Sampling
     :members:
     :inherited-members:
     :undoc-members:

@@ -4,7 +4,7 @@ Pyxel development plans
 Features
 -------------
 
-* Dynamic mode `ongoing`
+* Sampling mode `ongoing`
   * clocking, time dependant (destructive and non-destructive) CMOS readout
   * time dependant modelling, global time increases each cycle, models depend on global time
 * Material properties, compound materials

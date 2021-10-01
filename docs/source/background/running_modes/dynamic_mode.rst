@@ -1,10 +1,10 @@
 .. _dynamic_mode:
 
 ============
-Dynamic mode
+Sampling mode
 ============
 
-The purpose of the Dynamic mode is to execute the same pipeline
+The purpose of the Sampling mode is to execute the same pipeline
 on the same detector object several times. It uses the parameter `steps`
 to count the number of iteration of the detector through the pipeline.
 The parameter `t_step` is the time in between steps, that can be used
@@ -15,7 +15,7 @@ at each iteration of the detector through the pipeline.
 
 .. code-block:: yaml
 
-  # YAML config file for Dynamic mode
+  # YAML config file for Sampling mode
 
   dynamic:
     non_destructive_readout:  true

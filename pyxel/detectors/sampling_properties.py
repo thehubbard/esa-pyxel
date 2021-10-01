@@ -6,11 +6,11 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 #
 #
-"""Dynamic detector properties class."""
+"""Sampling detector properties class."""
 
 
-class DynamicProperties:
-    """Dynamic detector properties."""
+class SamplingProperties:
+    """Sampling detector properties."""
 
     def __init__(
         self,

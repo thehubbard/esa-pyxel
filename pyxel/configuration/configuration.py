@@ -38,7 +38,7 @@ from pyxel.detectors import (
     MKIDCharacteristics,
     MKIDGeometry,
 )
-from pyxel.observation import Dynamic, Observation
+from pyxel.observation import Sampling, Observation
 from pyxel.evaluator import evaluate_reference
 from pyxel.inputs_outputs.calibration_outputs import CalibrationOutputs
 from pyxel.inputs_outputs.observation_outputs import ObservationOutputs
@@ -105,13 +105,13 @@ def to_observation_outputs(dct: dict) -> ObservationOutputs:
 
     Returns
     -------
-    SingleOutputs
+    ObservationOutputs
     """
     return ObservationOutputs(**dct)
 
 
-def to_dynamic(dct: dict) -> Dynamic:
-    """Create a Dynamic class from a dictionary.
+def to_sampling(dct: t.Optional[dict]) -> Sampling:
+    """Create a Sampling class from a dictionary.
 
     Parameters
     ----------
@@ -119,9 +119,11 @@ def to_dynamic(dct: dict) -> Dynamic:
 
     Returns
     -------
-    Single
+    Sampling
     """
-    return Dynamic(**dct)
+    if dct is None:
+        dct = {}
+    return Sampling(**dct)
 
 
 def to_observation(dct: dict) -> Observation:
@@ -136,10 +138,10 @@ def to_observation(dct: dict) -> Observation:
     Single
     """
     dct.update({"outputs": to_observation_outputs(dct["outputs"])})
-    if "dynamic" in dct:
-        dct.update({"dynamic": to_dynamic(dct["dynamic"])})
+    if "sampling" in dct:
+        dct.update({"sampling": to_sampling(dct["sampling"])})
     else:
-        dct.update({"dynamic": None})
+        dct.update({"sampling": to_sampling(None)})
     return Observation(**dct)
 
 
@@ -154,7 +156,6 @@ def to_parametric_outputs(dct: dict) -> ParametricOutputs:
     -------
     ParametricOutputs
     """
-    # dct.update({"parametric_plot": to_parametric_plot(dct["parametric_plot"])})
     return ParametricOutputs(**dct)
 
 
@@ -201,7 +202,6 @@ def to_calibration_outputs(dct: dict) -> CalibrationOutputs:
     -------
     CalibrationOutputs
     """
-    # dct.update({"calibration_plot": to_calibration_plot(dct["calibration_plot"])})
     return CalibrationOutputs(**dct)
 
 

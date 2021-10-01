@@ -7,5 +7,5 @@
 #
 #
 # flake8: noqa
-from .dynamic import dynamic_pipeline, Dynamic
-from .observation import Observation, single_pipeline, run_observation
+from .sampling import Sampling
+from .observation import Observation, run_observation

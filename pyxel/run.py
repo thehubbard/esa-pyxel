@@ -63,7 +63,7 @@ def single_mode(
     None
     """
 
-    logging.info("Mode: Dynamic")
+    logging.info("Mode: Observation")
 
     observation_outputs = observation.outputs  # type: ObservationOutputs
 
