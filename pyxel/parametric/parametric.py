@@ -71,6 +71,9 @@ class Parametric:
         self.with_dask = with_dask
         self.parameter_types = {}  # type: dict
 
+        if self.parametric_mode == ParametricMode.Custom:
+            self._load_custom_parameters()
+
     def __repr__(self):
         cls_name = self.__class__.__name__  # type: str
         return f"{cls_name}<mode={self.parametric_mode!s}>"
@@ -86,6 +89,19 @@ class Parametric:
         out = [step for step in self._parameters if step.enabled]
         return out
 
+    # TODO: is self.data really needed?
+    def _load_custom_parameters(self) -> None:
+        """Load custom parameters from file."""
+        from pyxel.inputs import load_table
+
+        if self.file is not None:
+            result = load_table(self.file).to_numpy()[
+                :, self.columns
+            ]  # type: np.ndarray
+        else:
+            raise ValueError("File for custom parametric mode not specified!")
+        self.data = result
+
     def _custom_parameters(self) -> t.Generator[t.Tuple[int, dict], None, None]:
         """Generate custom mode parameters based on input file.
 
@@ -94,46 +110,40 @@ class Parametric:
         index: int
         parameter_dict: dict
         """
-        from pyxel.inputs import load_table
+        if self.data:
+            for index, data_array in enumerate(self.data):
+                i = 0
+                parameter_dict = {}
+                for step in self.enabled_steps:
+                    key = step.key
 
-        # TODO: is self.data really needed
-        if self.file is not None:
-            result = load_table(self.file).to_numpy()[
-                :, self.columns
-            ]  # type: np.ndarray
-        else:
-            raise ValueError("File for custom parametric mode not specified!")
-        self.data = result
-        for index, data_array in enumerate(self.data):
-            i = 0
-            parameter_dict = {}
-            for step in self.enabled_steps:
-                key = step.key
-
-                # TODO: this is confusing code. Fix this.
-                #       Furthermore 'step.values' should be a `t.List[int, float]` and not a `str`
-                if step.values == "_":
-                    value = data_array[i]
-                    i += 1
-                    parameter_dict.update({key: value})
-
-                elif isinstance(step.values, list):
-
-                    values = np.asarray(deepcopy(step.values))  # type: np.ndarray
-                    sh = values.shape  # type: tuple
-                    values_flattened = values.flatten()
-
-                    if all(x == "_" for x in values_flattened):
-                        value = data_array[i : i + len(values_flattened)]  # noqa: E203
-                        i += len(value)
-                        value = value.reshape(sh).tolist()
+                    # TODO: this is confusing code. Fix this.
+                    #       Furthermore 'step.values' should be a `t.List[int, float]` and not a `str`
+                    if step.values == "_":
+                        value = data_array[i]
+                        i += 1
                         parameter_dict.update({key: value})
-                    else:
-                        raise ValueError(
-                            'Only "_" characters (or a list of them) should be used to '
-                            "indicate parameters updated from file in custom mode"
-                        )
-            yield index, parameter_dict
+
+                    elif isinstance(step.values, list):
+
+                        values = np.asarray(deepcopy(step.values))  # type: np.ndarray
+                        sh = values.shape  # type: tuple
+                        values_flattened = values.flatten()
+
+                        if all(x == "_" for x in values_flattened):
+                            value = data_array[i : i + len(values_flattened)]  # noqa: E203
+                            i += len(value)
+                            value = value.reshape(sh).tolist()
+                            parameter_dict.update({key: value})
+                        else:
+                            raise ValueError(
+                                'Only "_" characters (or a list of them) should be used to '
+                                "indicate parameters updated from file in custom mode"
+                            )
+                yield index, parameter_dict
+
+            else:
+                raise ValueError("Custom parameters not loaded from file.")
 
     def _sequential_parameters(self) -> t.Generator[t.Tuple[int, dict], None, None]:
         """Generate sequential mode parameters.
@@ -200,12 +210,12 @@ class Parametric:
         else:
             raise NotImplementedError
 
-    def _processors_it(
+    def _custom_processors_it(
         self, processor: "Processor"
     ) -> t.Generator[
-        t.Tuple["Processor", t.Union[int, t.Tuple[int]], t.Dict], None, None
+        t.Tuple["Processor", int, t.Dict], None, None
     ]:
-        """Generate processors with different parameters.
+        """Generate processors with different custom parameters.
 
         Parameters
         ----------
@@ -214,7 +224,79 @@ class Parametric:
         Yields
         ------
         new_processor: Processor
-        index: int or tuple
+        index: int
+        parameter_dict: dict
+        """
+
+        for index, parameter_dict in self._custom_parameters():
+            new_processor = create_new_processor(
+                processor=processor, parameter_dict=parameter_dict
+            )
+            yield new_processor, index, parameter_dict
+
+    def _product_processors_it(
+        self, processor: "Processor"
+    ) -> t.Generator[
+        t.Tuple["Processor", t.Tuple, t.Dict], None, None
+    ]:
+        """Generate processors with different product parameters.
+
+        Parameters
+        ----------
+        processor: Processor
+
+        Yields
+        ------
+        new_processor: Processor
+        index: tuple of int
+        parameter_dict: dict
+        """
+
+        for index, parameter_dict in self._product_parameters():
+            new_processor = create_new_processor(
+                processor=processor, parameter_dict=parameter_dict
+            )
+            yield new_processor, index, parameter_dict
+
+    def _sequential_processors_it(
+        self, processor: "Processor"
+    ) -> t.Generator[
+        t.Tuple["Processor", int, t.Dict], None, None
+    ]:
+        """Generate processors with different sequential parameters.
+
+        Parameters
+        ----------
+        processor: Processor
+
+        Yields
+        ------
+        new_processor: Processor
+        index: int
+        parameter_dict: dict
+        """
+
+        for index, parameter_dict in self._sequential_parameters():
+            new_processor = create_new_processor(
+                processor=processor, parameter_dict=parameter_dict
+            )
+            yield new_processor, index, parameter_dict
+
+    def _processors_it(
+        self, processor: "Processor"
+    ) -> t.Generator[
+        t.Tuple["Processor", t.Union[int, t.Tuple[int]], t.Dict], None, None
+    ]:
+        """Generate processors with different product parameters.
+
+        Parameters
+        ----------
+        processor: Processor
+
+        Yields
+        ------
+        new_processor: Processor
+        index: tuple of int
         parameter_dict: dict
         """
 
@@ -305,6 +387,17 @@ class Parametric:
 
         return processors, final_logs
 
+    def number_of_parameters(self):
+        """TBW."""
+        if self.parametric_mode == ParametricMode.Sequential:
+            number = np.sum([len(step) for step in self.enabled_steps])
+        elif self.parametric_mode == ParametricMode.Product:
+            number = np.prod([len(step) for step in self.enabled_steps])
+        elif self.parametric_mode == ParametricMode.Custom:
+            number = len(self.data)
+
+        return number
+
     def _check_steps(self, processor: "Processor") -> None:
         """Validate enabled parameter steps in processor before running the pipelines.
 
@@ -376,6 +469,8 @@ class Parametric:
 
         else:
 
+            pbar = tqdm(total=self.number_of_parameters())
+
             if self.parametric_mode == ParametricMode.Product:
 
                 # prepare lists for to-be-merged datasets
@@ -386,7 +481,7 @@ class Parametric:
                 logs = []
 
                 for processor_id, (proc, indices, parameter_dict) in enumerate(
-                    tqdm(self._processors_it(processor))
+                    self._product_processors_it(processor)
                 ):
                     # log parameters for this pipeline
                     log = log_parameters(
@@ -428,6 +523,8 @@ class Parametric:
                     )
                     dataset_list.append(ds)
 
+                    pbar.update(1)
+
                 # merging/combining the outputs
                 final_parameters_list = [xr.combine_by_coords(p) for p in parameters]
                 final_parameters_merged = xr.merge(final_parameters_list)
@@ -439,7 +536,7 @@ class Parametric:
                     parameters=final_parameters_merged,
                     logs=final_logs,
                 )
-
+                pbar.close()
                 return result
 
             elif self.parametric_mode == ParametricMode.Sequential:
@@ -453,7 +550,7 @@ class Parametric:
                 step_counter = -1
 
                 for processor_id, (proc, index, parameter_dict) in enumerate(
-                    tqdm(self._processors_it(processor))
+                    self._sequential_processors_it(processor)
                 ):
                     # log parameters for this pipeline
                     # TODO: somehow refactor logger so that default parameters
@@ -504,6 +601,8 @@ class Parametric:
                     )
                     dataset_dict[short(coordinate)].append(ds)
 
+                    pbar.update(1)
+
                 # merging/combining the outputs
                 final_logs = xr.combine_by_coords(logs)
                 final_datasets = {
@@ -518,7 +617,7 @@ class Parametric:
                     parameters=final_parameters_merged,
                     logs=final_logs,
                 )
-
+                pbar.close()
                 return result
 
             elif self.parametric_mode == ParametricMode.Custom:
@@ -527,7 +626,7 @@ class Parametric:
                 dataset_list = []
                 logs = []
 
-                for proc, index, parameter_dict in tqdm(self._processors_it(processor)):
+                for proc, index, parameter_dict in self._custom_processors_it(processor):
                     # log parameters for this pipeline
                     log = log_parameters(
                         processor_id=index, parameter_dict=parameter_dict
@@ -547,7 +646,7 @@ class Parametric:
                         progressbar=False,
                     )
 
-                    _ = self.outputs.save_to_file(processor=processor)
+                    _ = self.outputs.save_to_file(processor=proc)
 
                     # save data for pipeline index
                     # ds = _custom_dataset(processor=result_proc, index=index)
@@ -555,6 +654,8 @@ class Parametric:
                     ds = _add_custom_parameters(ds=ds, index=index)
 
                     dataset_list.append(ds)
+
+                    pbar.update(1)
 
                 # merging/combining the outputs
                 final_ds = xr.combine_by_coords(dataset_list)
@@ -564,7 +665,7 @@ class Parametric:
                 result = ParametricResult(
                     dataset=final_ds, parameters=final_parameters, logs=final_log
                 )
-
+                pbar.close()
                 return result
 
             else:
@@ -747,7 +848,7 @@ def _add_sequential_parameters(
 
 
 def _add_product_parameters(
-    ds: xr.Dataset, parameter_dict: dict, indices: t.Tuple[int], types: dict
+    ds: xr.Dataset, parameter_dict: dict, indices: t.Tuple, types: dict
 ) -> xr.Dataset:
     """Add true coordinates or index to product mode dataset.
 
