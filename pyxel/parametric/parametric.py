@@ -8,7 +8,6 @@
 """Parametric mode class and helper functions."""
 import itertools
 import logging
-import operator
 import typing as t
 from copy import deepcopy
 from enum import Enum
@@ -18,6 +17,7 @@ import xarray as xr
 from dask import delayed
 from tqdm.auto import tqdm
 from typing_extensions import Literal
+
 from pyxel.observation import observation_pipeline
 
 # import dask
@@ -25,9 +25,9 @@ from pyxel.parametric.parameter_values import ParameterType, ParameterValues
 from pyxel.state import get_obj_att, get_value
 
 if t.TYPE_CHECKING:
+    from ..observation import Sampling
     from ..outputs import ParametricOutputs
     from ..pipelines import Processor
-    from ..observation import Sampling
 
 
 class ParametricMode(Enum):
@@ -552,7 +552,7 @@ class Parametric:
                     # save data for pipeline index
                     # ds = _custom_dataset(processor=result_proc, index=index)
 
-                    ds = _add_custom_parameters(dsds, index=index)
+                    ds = _add_custom_parameters(ds=ds, index=index)
 
                     dataset_list.append(ds)
 

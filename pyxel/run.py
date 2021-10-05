@@ -35,11 +35,7 @@ from pyxel.pipelines import DetectionPipeline, Processor
 from pyxel.util import create_model, download_examples
 
 if t.TYPE_CHECKING:
-    from .outputs import (
-        CalibrationOutputs,
-        ObservationOutputs,
-        ParametricOutputs,
-    )
+    from .outputs import CalibrationOutputs, ObservationOutputs, ParametricOutputs
 
 
 def observation_mode(

@@ -18,7 +18,7 @@ from tqdm.auto import tqdm
 from .sampling import Sampling
 
 if t.TYPE_CHECKING:
-    from ..outputs import CalibrationOutputs, ParametricOutputs, ObservationOutputs
+    from ..outputs import CalibrationOutputs, ObservationOutputs, ParametricOutputs
     from ..pipelines import Processor
 
 
