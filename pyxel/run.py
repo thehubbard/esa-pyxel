@@ -25,7 +25,7 @@ import xarray as xr
 from matplotlib import pyplot as plt
 
 from pyxel import __version__ as version
-from pyxel import inputs_outputs as io
+from pyxel import outputs
 from pyxel.calibration import Calibration, CalibrationResult
 from pyxel.configuration import Configuration, load, save
 from pyxel.detectors import CCD, CMOS, MKID, Detector
@@ -35,7 +35,7 @@ from pyxel.pipelines import DetectionPipeline, Processor
 from pyxel.util import create_model, download_examples
 
 if t.TYPE_CHECKING:
-    from .inputs_outputs import (
+    from .outputs import (
         CalibrationOutputs,
         ObservationOutputs,
         ParametricOutputs,
@@ -272,7 +272,7 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
     logging.info("Running time: %.3f seconds" % (time.time() - start_time))
     # Closing the logger in order to be able to move the file in the output dir
     logging.shutdown()
-    io.save_log_file(output_dir)
+    outputs.save_log_file(output_dir)
     plt.close()
 
 

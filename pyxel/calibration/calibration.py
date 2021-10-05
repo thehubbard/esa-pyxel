@@ -37,7 +37,7 @@ except ImportError:
     WITH_PYGMO = False
 
 if t.TYPE_CHECKING:
-    from ..inputs_outputs import CalibrationOutputs
+    from ..outputs import CalibrationOutputs
 
 
 def to_path_list(values: t.Sequence[t.Union[str, Path]]) -> t.List[Path]:

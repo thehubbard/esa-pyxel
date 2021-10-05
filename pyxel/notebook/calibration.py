@@ -17,7 +17,7 @@ import pandas as pd
 import xarray as xr
 from bokeh.models import PrintfTickFormatter
 
-from pyxel.inputs_outputs import load_image
+from pyxel.inputs import load_image
 
 if t.TYPE_CHECKING:
     from pyxel.calibration import Calibration

@@ -18,7 +18,7 @@ from tqdm.auto import tqdm
 from .sampling import Sampling
 
 if t.TYPE_CHECKING:
-    from ..inputs_outputs import ObservationOutputs
+    from ..outputs import CalibrationOutputs, ParametricOutputs, ObservationOutputs
     from ..pipelines import Processor
 
 
@@ -98,7 +98,7 @@ def observation_pipeline(
     end_time: float,
     start_time: float = 0.0,
     ndreadout: bool = False,
-    outputs: t.Optional["ObservationOutputs"] = None,
+    outputs: t.Optional[t.Union["CalibrationOutputs", "ParametricOutputs", "ObservationOutputs"]] = None,
     progressbar: bool = False,
 ) -> xr.Dataset:
     """Run standalone dynamic pipeline.

@@ -39,9 +39,9 @@ from pyxel.detectors import (
     MKIDGeometry,
 )
 from pyxel.evaluator import evaluate_reference
-from pyxel.inputs_outputs.calibration_outputs import CalibrationOutputs
-from pyxel.inputs_outputs.observation_outputs import ObservationOutputs
-from pyxel.inputs_outputs.parametric_outputs import ParametricOutputs
+from pyxel.outputs.calibration_outputs import CalibrationOutputs
+from pyxel.outputs.observation_outputs import ObservationOutputs
+from pyxel.outputs.parametric_outputs import ParametricOutputs
 from pyxel.observation import Observation, Sampling
 from pyxel.parametric import ParameterValues, Parametric
 from pyxel.pipelines import DetectionPipeline, ModelFunction, ModelGroup
@@ -186,6 +186,10 @@ def to_parametric(dct: dict) -> Parametric:
         {"parameters": [to_parameters(param_dict) for param_dict in dct["parameters"]]}
     )
     dct.update({"outputs": to_parametric_outputs(dct["outputs"])})
+    if "sampling" in dct:
+        dct.update({"sampling": to_sampling(dct["sampling"])})
+    else:
+        dct.update({"sampling": to_sampling(None)})
     return Parametric(**dct)
 
 
