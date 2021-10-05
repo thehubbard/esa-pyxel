@@ -395,9 +395,20 @@ class Parametric:
                     logs.append(log)
 
                     # run the pipeline
-                    result_proc = proc.run_pipeline()
+                    # run the pipeline
+                    ds = observation_pipeline(
+                        processor=proc,
+                        time_step_it=self.sampling.time_step_it(),
+                        num_steps=self.sampling._num_steps,
+                        ndreadout=self.sampling.non_destructive_readout,
+                        times_linear=self.sampling._times_linear,
+                        start_time=self.sampling._start_time,
+                        end_time=self.sampling._times[-1],
+                        outputs=self.outputs,
+                        progressbar=False,
+                    )
 
-                    _ = self.outputs.save_to_file(processor=result_proc)
+                    _ = self.outputs.save_to_file(processor=proc)
 
                     # save parameters with appropriate product mode indices
                     for i, coordinate in enumerate(parameter_dict):
@@ -409,8 +420,8 @@ class Parametric:
                         parameters[i].append(parameter_ds)
 
                     # save data, use simple or multi coordinate+index
-                    ds = _product_dataset(
-                        processor=result_proc,
+                    ds = _add_product_parameters(
+                        ds=ds,
                         parameter_dict=parameter_dict,
                         indices=indices,
                         types=types,
@@ -460,9 +471,20 @@ class Parametric:
                         step_counter += 1
 
                     # run the pipeline
-                    result_proc = proc.run_pipeline()
+                    # run the pipeline
+                    ds = observation_pipeline(
+                        processor=proc,
+                        time_step_it=self.sampling.time_step_it(),
+                        num_steps=self.sampling._num_steps,
+                        ndreadout=self.sampling.non_destructive_readout,
+                        times_linear=self.sampling._times_linear,
+                        start_time=self.sampling._start_time,
+                        end_time=self.sampling._times[-1],
+                        outputs=self.outputs,
+                        progressbar=False,
+                    )
 
-                    _ = self.outputs.save_to_file(processor=result_proc)
+                    _ = self.outputs.save_to_file(processor=proc)
 
                     # save sequential parameter with appropriate index
                     parameter_ds = parameter_to_dataset(
@@ -473,8 +495,8 @@ class Parametric:
                     parameters[step_counter].append(parameter_ds)
 
                     # save data, use simple or multi coordinate+index
-                    ds = _sequential_dataset(
-                        processor=result_proc,
+                    ds = _add_sequential_parameters(
+                        ds=ds,
                         parameter_dict=parameter_dict,
                         index=index,
                         coordinate_name=coordinate,
@@ -530,8 +552,7 @@ class Parametric:
                     # save data for pipeline index
                     # ds = _custom_dataset(processor=result_proc, index=index)
 
-                    ds = ds.assign_coords({"id": index})
-                    ds = ds.expand_dims(dim="id")
+                    ds = _add_custom_parameters(dsds, index=index)
 
                     dataset_list.append(ds)
 
@@ -670,12 +691,12 @@ def parameter_to_dataset(
     return parameter_ds
 
 
-def _custom_dataset(processor: "Processor", index: int) -> xr.Dataset:
-    """Return detector data for a parameter set in a dataset at coordinate "index".
+def _add_custom_parameters(ds: xr.Dataset, index: int) -> xr.Dataset:
+    """Add coordinate coordinate "index" to the dataset.
 
     Parameters
     ----------
-    processor: Processor
+    ds: xarray.Dataset
     index: ind
 
     Returns
@@ -683,46 +704,24 @@ def _custom_dataset(processor: "Processor", index: int) -> xr.Dataset:
     ds: xr.Dataset
     """
 
-    rows, columns = (
-        processor.detector.geometry.row,
-        processor.detector.geometry.row,
-    )
-    coordinates = {"x": range(columns), "y": range(rows)}
-
-    arrays = {
-        "pixel": "detector.pixel.array",
-        "signal": "detector.signal.array",
-        "image": "detector.image.array",
-    }
-
-    ds = xr.Dataset()
-
-    for key, array in arrays.items():
-
-        da = xr.DataArray(
-            operator.attrgetter(array)(processor),
-            dims=["y", "x"],
-            coords=coordinates,  # type: ignore
-        )
-        da = da.assign_coords({"id": index})
-        da = da.expand_dims(dim="id")
-        ds[key] = da
+    ds = ds.assign_coords({"id": index})
+    ds = ds.expand_dims(dim="id")
 
     return ds
 
 
-def _sequential_dataset(
-    processor: "Processor",
+def _add_sequential_parameters(
+    ds: xr.Dataset,
     parameter_dict: dict,
     index: int,
     coordinate_name: str,
     types: dict,
 ) -> xr.Dataset:
-    """Return detector data for an sequential parameter in a xarray dataset using true coordinates or index.
+    """Add true coordinates or index to sequential mode dataset.
 
     Parameters
     ----------
-    processor: Processor
+    ds: xr.Dataset
     parameter_dict: dict
     index: int
     coordinate_name: str
@@ -733,52 +732,28 @@ def _sequential_dataset(
     ds: xr.Dataset
     """
 
-    rows, columns = (
-        processor.detector.geometry.row,
-        processor.detector.geometry.row,
-    )
-    coordinates = {"x": range(columns), "y": range(rows)}
-
-    ds = xr.Dataset()
-
-    arrays = {
-        "pixel": "detector.pixel.array",
-        "signal": "detector.signal.array",
-        "image": "detector.image.array",
-    }
-
-    for key, array in arrays.items():
-
-        da = xr.DataArray(
-            operator.attrgetter(array)(processor),
-            dims=["y", "x"],
-            coords=coordinates,  # type: ignore
+    #  assigning the right coordinates based on type
+    if types[coordinate_name] == ParameterType.Simple:
+        ds = ds.assign_coords(
+            coords={short(coordinate_name): parameter_dict[coordinate_name]}
         )
+        ds = ds.expand_dims(dim=short(coordinate_name))
 
-        #  assigning the right coordinates based on type
-        if types[coordinate_name] == ParameterType.Simple:
-            da = da.assign_coords(
-                coords={short(coordinate_name): parameter_dict[coordinate_name]}
-            )
-            da = da.expand_dims(dim=short(coordinate_name))
-
-        elif types[coordinate_name] == ParameterType.Multi:
-            da = da.assign_coords({short(_id(coordinate_name)): index})
-            da = da.expand_dims(dim=short(_id(coordinate_name)))
-
-        ds[key] = da
+    elif types[coordinate_name] == ParameterType.Multi:
+        ds = ds.assign_coords({short(_id(coordinate_name)): index})
+        ds = ds.expand_dims(dim=short(_id(coordinate_name)))
 
     return ds
 
 
-def _product_dataset(
-    processor: "Processor", parameter_dict: dict, indices: t.Tuple[int], types: dict
+def _add_product_parameters(
+    ds: xr.Dataset, parameter_dict: dict, indices: t.Tuple[int], types: dict
 ) -> xr.Dataset:
-    """Return detector data for an product parameter set in a xarray dataset using true coordinates or indices.
+    """Add true coordinates or index to product mode dataset.
 
     Parameters
     ----------
-    processor: Processor
+    ds: xr.Dataset
     parameter_dict: dict
     indices: tuple
     types: dict
@@ -788,81 +763,20 @@ def _product_dataset(
     ds: xr.Dataset
     """
 
-    rows, columns = (
-        processor.detector.geometry.row,
-        processor.detector.geometry.row,
-    )
-    coordinates = {"x": range(columns), "y": range(rows)}
+    for i, coordinate in enumerate(parameter_dict):
 
-    arrays = {
-        "pixel": "detector.pixel.array",
-        "signal": "detector.signal.array",
-        "image": "detector.image.array",
-    }
+        #  assigning the right coordinates based on type
+        if types[coordinate] == ParameterType.Simple:
+            ds = ds.assign_coords(
+                coords={short(coordinate): parameter_dict[coordinate]}
+            )
+            ds = ds.expand_dims(dim=short(coordinate))
 
-    ds = xr.Dataset()
+        elif types[coordinate] == ParameterType.Multi:
+            ds = ds.assign_coords({short(_id(coordinate)): indices[i]})
+            ds = ds.expand_dims(dim=short(_id(coordinate)))
 
-    for key, array in arrays.items():
-
-        da = xr.DataArray(
-            operator.attrgetter(array)(processor),
-            dims=["y", "x"],
-            coords=coordinates,  # type: ignore
-        )
-
-        for i, coordinate in enumerate(parameter_dict):
-
-            #  assigning the right coordinates based on type
-            if types[coordinate] == ParameterType.Simple:
-                da = da.assign_coords(
-                    coords={short(coordinate): parameter_dict[coordinate]}
-                )
-                da = da.expand_dims(dim=short(coordinate))
-
-            elif types[coordinate] == ParameterType.Multi:
-                da = da.assign_coords({short(_id(coordinate)): indices[i]})
-                da = da.expand_dims(dim=short(_id(coordinate)))
-
-            else:
-                raise NotImplementedError
-
-        ds[key] = da
+        else:
+            raise NotImplementedError
 
     return ds
-
-    # processors_it = self.collect(processor)  # type: t.Iterator[Processor]
-    #
-    # result_list = []  # type: t.List[Result]
-    # output_filenames = []  # type: t.List[t.Sequence[Path]]
-    #
-    # # Run all pipelines
-    # for proc in tqdm(processors_it):  # type: Processor
-    #
-    #     if not self.with_dask:
-    #         result_proc = proc.run_pipeline()  # type: Processor
-    #         result_val = self.outputs.extract_func(
-    #             processor=result_proc
-    #         )  # type: Result
-    #
-    #         # filenames = parametric_outputs.save_to_file(
-    #         #    processor=result_proc
-    #         # )  # type: t.Sequence[Path]
-    #
-    #     else:
-    #         result_proc = delayed(proc.run_pipeline)()
-    #         result_val = delayed(self.outputs.extract_func)(processor=result_proc)
-    #
-    #         # filenames = delayed(parametric_outputs.save_to_file)(processor=result_proc)
-    #
-    #     result_list.append(result_val)
-    #     # output_filenames.append(filenames)  # TODO: This is not used
-    #
-    # if not self.with_dask:
-    #     plot_array = self.outputs.merge_func(result_list)  # type: np.ndarray
-    # else:
-    #     array = delayed(self.outputs.merge_func)(result_list)
-    #     plot_array = dask.compute(array)
-    #
-    # # TODO: Plot with dask ?
-    # # if parametric_outputs.parametric_plot is not None:
-    # #    parametric_outputs.plotting_func(plot_array)

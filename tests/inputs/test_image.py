@@ -18,7 +18,7 @@ from PIL import Image
 from pytest_httpserver import HTTPServer  # pip install pytest-httpserver
 
 import pyxel
-from pyxel.inputs_outputs import load_image, load_table
+from pyxel.inputs import load_image, load_table
 
 
 @pytest.fixture

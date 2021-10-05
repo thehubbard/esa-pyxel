@@ -98,7 +98,9 @@ def observation_pipeline(
     end_time: float,
     start_time: float = 0.0,
     ndreadout: bool = False,
-    outputs: t.Optional[t.Union["CalibrationOutputs", "ParametricOutputs", "ObservationOutputs"]] = None,
+    outputs: t.Optional[
+        t.Union["CalibrationOutputs", "ParametricOutputs", "ObservationOutputs"]
+    ] = None,
     progressbar: bool = False,
 ) -> xr.Dataset:
     """Run standalone dynamic pipeline.
