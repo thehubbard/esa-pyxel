@@ -38,6 +38,7 @@ except ImportError:
 
 if t.TYPE_CHECKING:
     from ..outputs import CalibrationOutputs
+    from pyxel.observation import Sampling
 
 
 def to_path_list(values: t.Sequence[t.Union[str, Path]]) -> t.List[Path]:
@@ -51,6 +52,7 @@ class Calibration:
     def __init__(
         self,
         outputs: "CalibrationOutputs",
+        sampling: "Sampling",
         output_dir: t.Optional[Path] = None,
         fitting: t.Optional[ModelFitting] = None,
         mode: Literal["pipeline", "single_model"] = "pipeline",
@@ -89,6 +91,7 @@ class Calibration:
         self._log = logging.getLogger(__name__)
 
         self.outputs = outputs
+        self.sampling = sampling
 
         self._output_dir = output_dir  # type:t.Optional[Path]
         self._fitting = fitting  # type: t.Optional[ModelFitting]
@@ -370,6 +373,7 @@ class Calibration:
             weights=self.weights,
             weights_from_file=self.weights_from_file,
             file_path=output_dir,
+            sampling = self.sampling,
         )
 
         if self.num_islands > 1:  # default

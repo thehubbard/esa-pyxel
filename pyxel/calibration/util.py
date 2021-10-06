@@ -111,7 +111,7 @@ def read_data(filenames: t.Sequence[Path]) -> t.Sequence[np.ndarray]:
 # TODO: Create unit tests for this function
 def list_to_slice(
     input_list: t.Optional[t.Sequence[int]] = None,
-) -> t.Union[slice, t.Tuple[slice, slice]]:
+) -> t.Union[slice, t.Tuple[slice, slice], t.Tuple[slice, slice, slice]]:
     """TBW.
 
     :return:
@@ -125,8 +125,15 @@ def list_to_slice(
     elif len(input_list) == 4:
         return slice(input_list[0], input_list[1]), slice(input_list[2], input_list[3])
 
+    elif len(input_list) == 6:
+        return (
+            slice(input_list[0], input_list[1]),
+            slice(input_list[2], input_list[3]),
+            slice(input_list[4], input_list[5]),
+        )
+
     else:
-        raise ValueError("Fitting range should have 2 or 4 values")
+        raise ValueError("Fitting range should have 2 or 4 or 6 values")
 
 
 # TODO: Write unit tests for this function
@@ -135,14 +142,15 @@ def check_ranges(
     out_fit_range: t.Sequence[int],
     rows: int,
     cols: t.Optional[int] = None,
+    readout_times: t.Optional[int] = None,
 ) -> None:
     """TBW."""
     if target_fit_range:
-        if len(target_fit_range) not in (2, 4):
+        if len(target_fit_range) not in (2, 4, 6):
             raise ValueError
 
         if out_fit_range:
-            if len(out_fit_range) not in (2, 4):
+            if len(out_fit_range) not in (2, 4, 6):
                 raise ValueError
 
             if (target_fit_range[1] - target_fit_range[0]) != (
@@ -161,6 +169,14 @@ def check_ranges(
                         "Fitting ranges have different lengths in 2nd dimension"
                     )
 
+            if len(target_fit_range) == 6 and len(out_fit_range) == 6:
+                if (target_fit_range[5] - target_fit_range[4]) != (
+                    out_fit_range[5] - out_fit_range[4]
+                ):
+                    raise ValueError(
+                        "Fitting ranges have different lengths in third dimension"
+                    )
+
         for i in [0, 1]:
             # TODO: It could be refactor in a more pythonic way
             if not (0 <= target_fit_range[i] <= rows):
@@ -173,4 +189,13 @@ def check_ranges(
             for i in [2, 3]:
                 # TODO: It could be refactor in a more pythonic way (this is optional)
                 if not (0 <= target_fit_range[i] <= cols):
+                    raise ValueError("Value of target fit range is wrong")
+
+        if len(target_fit_range) == 6:
+            if readout_times is None:
+                raise ValueError("Target data is not a 3 dimensional array")
+
+            for i in [4, 5]:
+                # TODO: It could be refactor in a more pythonic way (this is optional)
+                if not (0 <= target_fit_range[i] <= readout_times):
                     raise ValueError("Value of target fit range is wrong")

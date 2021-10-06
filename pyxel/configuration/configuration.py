@@ -261,7 +261,10 @@ def to_calibration(dct: dict) -> Calibration:
     dct["result_input_arguments"] = [
         to_parameters(value) for value in dct.get("result_input_arguments", {})
     ]
-
+    if "sampling" in dct:
+        dct.update({"sampling": to_sampling(dct["sampling"])})
+    else:
+        dct.update({"sampling": to_sampling(None)})
     return Calibration(**dct)
 
 

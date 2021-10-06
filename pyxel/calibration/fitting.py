@@ -36,6 +36,7 @@ from pyxel.pipelines import Processor
 
 if t.TYPE_CHECKING:
     from numpy.typing import ArrayLike
+    from pyxel.observation import Sampling
 
 
 class ModelFitting(ProblemSingleObjective):
@@ -49,6 +50,7 @@ class ModelFitting(ProblemSingleObjective):
         self.original_processor = None  # type: t.Optional[Processor]
         self.generations = None  # type: t.Optional[int]
         self.pop = None  # type: t.Optional[int]
+        self.sampling = None # type: t.Optional[Sampling]
 
         self.all_target_data = []  # type: t.List[np.ndarray]
         self.weighting = (
@@ -69,8 +71,12 @@ class ModelFitting(ProblemSingleObjective):
         self.lbd = []  # type: t.Sequence[float]  # lower boundary
         self.ubd = []  # type: t.Sequence[float]  # upper boundary
 
-        self.sim_fit_range = slice(None)  # type: t.Union[slice, t.Tuple[slice, slice]]
-        self.targ_fit_range = slice(None)  # type: t.Union[slice, t.Tuple[slice, slice]]
+        self.sim_fit_range = slice(
+            None
+        )  # type: t.Union[slice, t.Tuple[slice, slice], t.Tuple[slice, slice, slice]]
+        self.targ_fit_range = slice(
+            None
+        )  # type: t.Union[slice, t.Tuple[slice, slice], t.Tuple[slice, slice, slice]]
 
         self.match = {}  # type: t.Dict[int, t.List[str]]
 
@@ -93,6 +99,7 @@ class ModelFitting(ProblemSingleObjective):
         calibration_mode: CalibrationMode,
         simulation_output: ResultType,
         fitness_func: t.Callable,
+        sampling: "Sampling",
         population_size: int,
         generations: int,
         file_path: t.Optional[Path],
@@ -125,6 +132,7 @@ class ModelFitting(ProblemSingleObjective):
         self.fitness_func = fitness_func
         self.pop = population_size
         self.generations = generations
+        self.sampling = sampling
 
         # TODO: Remove 'assert'
         # assert isinstance(self.pop, int)
