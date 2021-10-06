@@ -56,6 +56,9 @@ class ParameterValues:
         else:
             raise ValueError("Parameter values cannot be initiated with those values.")
 
+        if "sampling.start_time" in key:
+            key = "detector.sampling_properties.start_time"
+
         # unique identifier to the step. example: 'detector.geometry.row'
         self._key = key  # type: str
         self._values = (

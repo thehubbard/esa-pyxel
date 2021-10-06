@@ -179,6 +179,30 @@ class Detector:
             raise ValueError("No sampling defined.")
 
     @property
+    def start_time(self) -> float:
+        """TBW."""
+        if self._sampling_properties is not None:
+            return self._sampling_properties.start_time
+        else:
+            raise ValueError("No sampling defined.")
+
+    @start_time.setter
+    def start_time(self, value: float) -> None:
+        """TBW."""
+        if self._sampling_properties is not None:
+            self._sampling_properties.start_time = value
+        else:
+            raise ValueError("No sampling defined.")
+
+    @property
+    def absolute_time(self) -> float:
+        """TBW."""
+        if self._sampling_properties is not None:
+            return self._sampling_properties.absolute_time
+        else:
+            raise ValueError("No sampling defined.")
+
+    @property
     def time_step(self) -> float:
         """TBW."""
         if self._sampling_properties is not None:

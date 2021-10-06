@@ -53,6 +53,11 @@ class SamplingProperties:
         """TBW."""
         return self._end_time
 
+    @start_time.setter
+    def start_time(self, value: float) -> None:
+        """TBW."""
+        self._start_time = value
+
     @property
     def end_time(self) -> float:
         """TBW."""
@@ -77,6 +82,11 @@ class SamplingProperties:
     def time(self, value: float) -> None:
         """TBW."""
         self._time = value
+
+    @property
+    def absolute_time(self) -> float:
+        """TBW."""
+        return self._start_time + self._time
 
     @property
     def time_step(self) -> float:
