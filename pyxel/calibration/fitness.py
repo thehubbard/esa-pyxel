@@ -13,7 +13,7 @@ import numpy as np
 
 
 def sum_of_abs_residuals(
-    simulated: np.ndarray, target: np.ndarray, weighting: t.Optional[float] = None
+    simulated: np.ndarray, target: np.ndarray, weighting: t.Optional[np.ndarray] = None
 ) -> float:
     """TBW.
 
@@ -41,7 +41,7 @@ def sum_of_abs_residuals(
 
 
 def sum_of_squared_residuals(
-    simulated: np.ndarray, target: np.ndarray, weighting: t.Optional[float] = None
+    simulated: np.ndarray, target: np.ndarray, weighting: t.Optional[np.ndarray] = None
 ) -> float:
     """TBW.
 
