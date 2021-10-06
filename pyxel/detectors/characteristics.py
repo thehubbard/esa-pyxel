@@ -191,3 +191,23 @@ class Characteristics:
         """
         self._numbytes = get_size(self)
         return self._numbytes
+
+    def to_dict(self) -> dict:
+        """Get the attributes of this instance as a `dict`."""
+        return {
+            "qe": self._qe,
+            "eta": self._eta,
+            "sv": self._sv,
+            "amp": self._amp,
+            "a1": self._a1,
+            "a2": self._a2,
+            "fwc": self._fwc,
+            "vg": self._vg,
+            "dt": self._dt,
+        }
+
+    @classmethod
+    def from_dict(cls, dct: dict):
+        """Create a new instance of `Geometry` from a `dict`."""
+        # TODO: This is a simplistic implementation. Improve this.
+        return cls(**dct)

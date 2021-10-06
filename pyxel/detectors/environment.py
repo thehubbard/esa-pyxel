@@ -60,3 +60,17 @@ class Environment:
         """
         self._numbytes = get_size(self)
         return self._numbytes
+
+    def to_dict(self) -> dict:
+        """Get the attributes of this instance as a `dict`."""
+        return {
+            "temperature": self._temperature,
+            "total_ionising_dose": self._total_ionising_dose,
+            "total_non_ionising_dose": self._total_non_ionising_dose,
+        }
+
+    @classmethod
+    def from_dict(cls, dct: dict):
+        """Create a new instance of `Geometry` from a `dict`."""
+        # TODO: This is a simplistic implementation. Improve this.
+        return cls(**dct)
