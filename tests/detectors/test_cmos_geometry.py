@@ -295,7 +295,7 @@ def test_create_invalid_geometry(
     ],
 )
 def test_is_equal(other_obj, is_equal):
-    """Test equality statement for Geometry."""
+    """Test equality statement for CMOSGeometry."""
     obj = CMOSGeometry(
         row=100,
         col=120,
