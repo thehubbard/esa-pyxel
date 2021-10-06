@@ -201,16 +201,6 @@ def test_is_equal(other_obj, is_equal):
     "obj, exp_dict",
     [
         (
-            Geometry(),
-            {
-                "row": 0,
-                "col": 0,
-                "total_thickness": 0.0,
-                "pixel_vert_size": 0.0,
-                "pixel_horz_size": 0.0,
-            },
-        ),
-        (
             Geometry(
                 row=100,
                 col=120,

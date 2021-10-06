@@ -4,6 +4,7 @@
 #  is part of this Pyxel package. No part of the package, including
 #  this file, may be copied, modified, propagated, or distributed except according to
 #  the terms contained in the file ‘LICENCE.txt’.
+
 from copy import deepcopy
 
 import pytest
@@ -107,16 +108,6 @@ def test_is_equal(other_obj, is_equal):
 @pytest.mark.parametrize(
     "obj, exp_dict",
     [
-        (
-            CCDGeometry(),
-            {
-                "row": 0,
-                "col": 0,
-                "total_thickness": 0.0,
-                "pixel_vert_size": 0.0,
-                "pixel_horz_size": 0.0,
-            },
-        ),
         (
             CCDGeometry(
                 row=100,
