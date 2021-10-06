@@ -233,3 +233,18 @@ class Geometry:
         """Create a new instance of `Geometry` from a `dict`."""
         # TODO: This is a simplistic implementation. Improve this.
         return cls(**dct)
+
+    def __eq__(self, other) -> bool:
+        return type(self) == type(other) and (
+            self.row,
+            self.col,
+            self.total_thickness,
+            self.pixel_vert_size,
+            self.pixel_horz_size,
+        ) == (
+            other.row,
+            other.col,
+            other.total_thickness,
+            other.pixel_vert_size,
+            other.pixel_horz_size,
+        )
