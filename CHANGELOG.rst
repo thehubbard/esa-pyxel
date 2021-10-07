@@ -252,6 +252,8 @@ Core
 
 * Implement array-like data structures as numpy custom array containers.
   (See `!325 <https://gitlab.com/esa/pyxel/-/merge_requests/325>`_).
+* Convert a Detector (CCD, CMOS...) to a dictionary and vice versa.
+  (See `!267 <https://gitlab.com/esa/pyxel/-/merge_requests/267>`_).
 
 Documentation
 -------------
