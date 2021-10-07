@@ -301,7 +301,7 @@ class ModelFitting(ProblemSingleObjective):
         self,
         simulated_data: np.ndarray,
         target_data: np.ndarray,
-        weighting: t.Optional[t.Union[np.ndarray, float]]=None,
+        weighting: t.Optional[t.Union[np.ndarray, float]] = None,
     ) -> float:
         """TBW.
 

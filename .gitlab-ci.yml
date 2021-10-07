@@ -78,7 +78,7 @@ python38_numpy119:
 
 # Run mypy
 mypy:
-  image: python:3
+  image: python:3.9
   stage: test
   script:
     - tox -e mypy
