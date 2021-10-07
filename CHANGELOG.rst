@@ -9,6 +9,8 @@ Core
 ~~~~
 * Output folder already existing when running 'load' two times.
   (See `!232 <https://gitlab.com/esa/pyxel/-/merge_requests/232>`_).
+* Implement normalisation for calibration mode.
+  (See `!266 <https://gitlab.com/esa/pyxel/-/merge_requests/266>`_).
 
 Documentation
 ~~~~~~~~~~~~~
