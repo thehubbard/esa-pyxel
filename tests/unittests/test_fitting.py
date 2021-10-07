@@ -42,7 +42,8 @@ def configure(mf: ModelFitting, sim: Configuration) -> None:
         target_output=sim.calibration.target_data_path,
         target_fit_range=sim.calibration.target_fit_range,
         out_fit_range=sim.calibration.result_fit_range,
-        weighting=sim.calibration.weighting_path,
+        weights_from_file=sim.calibration.weights_from_file,
+        weights=sim.calibration.weights,
         file_path=None,
     )
 
@@ -160,8 +161,8 @@ def test_calculate_fitness(simulated_data, target_data, expected_fitness):
     "yaml, factor, expected_fitness",
     [
         (Path("tests/data/calibrate_weighting.yaml"), 1, 0.0),
-        (Path("tests/data/calibrate_weighting.yaml"), 2, 310815803081.51117),
-        (Path("tests/data/calibrate_weighting.yaml"), 3, 621631606163.0223),
+        (Path("tests/data/calibrate_weighting.yaml"), 2, 965633.1990208979),
+        (Path("tests/data/calibrate_weighting.yaml"), 3, 1931266.398041796),
     ],
 )
 def test_weighting(yaml, factor, expected_fitness):

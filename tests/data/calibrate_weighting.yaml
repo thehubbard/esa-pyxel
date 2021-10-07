@@ -10,7 +10,7 @@ calibration:
 
   target_data_path: ['tests/data/calibrate-data.txt']   # not used
   target_fit_range: [1, 4]
-  weighting_path: ['tests/data/calibrate-data.txt']
+  weights_from_file: ['tests/data/calibrate-data-weights.txt']
 
   fitness_function:
     func: pyxel.calibration.fitness.sum_of_abs_residuals
