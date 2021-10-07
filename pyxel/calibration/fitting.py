@@ -117,7 +117,8 @@ class ModelFitting(ProblemSingleObjective):
         out_fit_range
         target_output
         input_arguments
-        weighting
+        weights
+        weights_from_file
         """
         self.calibration_mode = CalibrationMode(calibration_mode)
         self.sim_output = ResultType(simulation_output)
@@ -187,10 +188,10 @@ class ModelFitting(ProblemSingleObjective):
         for target in target_list:  # type: np.ndarray
             self.all_target_data += [target[self.targ_fit_range]]
 
-        if weights_from_file:
+        if weights_from_file is not None:
             wf = read_data(weights_from_file)
             self.weighting = [weight_array[self.targ_fit_range] for weight_array in wf]
-        elif weights:
+        elif weights is not None:
             self.weighting = np.array(weights)
 
     # def single_model_calibration(self):     # TODO update
@@ -300,13 +301,15 @@ class ModelFitting(ProblemSingleObjective):
         self,
         simulated_data: np.ndarray,
         target_data: np.ndarray,
-        weighting: t.Optional[np.ndarray],
+        weighting: t.Optional[t.Union[np.ndarray, float]],
     ) -> float:
         """TBW.
 
-        :param simulated_data:
-        :param target_data:
-        :return:
+        Parameters
+        ----------
+        simulated_data
+        target_data
+        weighting
         """
         # TODO: Remove 'assert'
         assert self.fitness_func is not None
@@ -368,10 +371,9 @@ class ModelFitting(ProblemSingleObjective):
 
                 simulated_data = self.get_simulated_data(processor=result_proc)
 
-                if self.weighting:
+                weighting = None  # type: t.Optional[t.Union[np.ndarray, float]]
+                if self.weighting is not None:
                     weighting = self.weighting[i]
-                else:
-                    weighting = None
 
                 overall_fitness += self.calculate_fitness(
                     simulated_data=simulated_data,
