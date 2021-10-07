@@ -174,7 +174,7 @@ coverage:
 # Scan sourcecode for licenses, copyrights & dependencies
 # experimental, latest version
 licenses-latest:
-  image: python:3
+  image: python:3.9
   stage: build
   script:
     - tox -e licenses
