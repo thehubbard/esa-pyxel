@@ -20,7 +20,7 @@ from pyxel.detectors import Detector
 # @config.argument(name='txt_file', label='file path', units='', validate=checkers.check_path)
 def charge_profile(
     detector: Detector,
-    txt_file: str,
+    txt_file: t.Union[str, Path],
     fit_profile_to_det: bool = False,
     profile_position: t.Optional[list] = None,
 ) -> None:
