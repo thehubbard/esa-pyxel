@@ -78,7 +78,7 @@ python38_numpy119:
 
 # Run mypy
 mypy:
-  image: python:3
+  image: python:3.9
   stage: test
   script:
     - tox -e mypy
@@ -174,7 +174,7 @@ coverage:
 # Scan sourcecode for licenses, copyrights & dependencies
 # experimental, latest version
 licenses-latest:
-  image: python:3
+  image: python:3.9
   stage: build
   script:
     - tox -e licenses

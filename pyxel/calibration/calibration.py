@@ -70,7 +70,8 @@ class Calibration:
         type_islands: Literal[
             "multiprocessing", "multithreading", "ipyparallel"
         ] = "multiprocessing",
-        weighting_path: t.Optional[t.Sequence[Path]] = None,
+        weights_from_file: t.Optional[t.Sequence[Path]] = None,
+        weights: t.Optional[t.Sequence[float]] = None,
     ):
         if not WITH_PYGMO:
             raise ImportError(
@@ -128,7 +129,13 @@ class Calibration:
             topology
         )  # type: t.Literal['unconnected', 'ring', 'fully_connected']
 
-        self._weighting_path = weighting_path  # type: t.Optional[t.Sequence[Path]]
+        if weights and weights_from_file:
+            raise ValueError("Cannot define both weights and weights from file.")
+
+        self._weights_from_file = (
+            weights_from_file
+        )  # type: t.Optional[t.Sequence[Path]]
+        self._weights = weights  # type: t.Optional[t.Sequence[float]]
 
     @property
     def output_dir(self) -> Path:
@@ -318,14 +325,24 @@ class Calibration:
         self._topology = value
 
     @property
-    def weighting_path(self) -> t.Optional[t.Sequence[Path]]:
+    def weights_from_file(self) -> t.Optional[t.Sequence[Path]]:
         """TBW."""
-        return self._weighting_path
+        return self._weights_from_file
 
-    @weighting_path.setter
-    def weighting_path(self, value: t.Sequence[Path]) -> None:
+    @weights_from_file.setter
+    def weights_from_file(self, value: t.Sequence[Path]) -> None:
         """TBW."""
-        self._weighting_path = value
+        self._weights_from_file = value
+
+    @property
+    def weights(self) -> t.Optional[t.Sequence[float]]:
+        """TBW."""
+        return self._weights
+
+    @weights.setter
+    def weights(self, value: t.Sequence[float]) -> None:
+        """TBW."""
+        self._weights = value
 
     def run_calibration(
         self,
@@ -350,7 +367,8 @@ class Calibration:
             target_fit_range=self.target_fit_range,
             out_fit_range=self.result_fit_range,
             input_arguments=self.result_input_arguments,
-            weighting=self.weighting_path,
+            weights=self.weights,
+            weights_from_file=self.weights_from_file,
             file_path=output_dir,
         )
 

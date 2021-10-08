@@ -51,7 +51,9 @@ class ModelFitting(ProblemSingleObjective):
         self.pop = None  # type: t.Optional[int]
 
         self.all_target_data = []  # type: t.List[np.ndarray]
-        self.weighting = None  # type: t.Optional[np.ndarray]
+        self.weighting = (
+            None
+        )  # type: t.Optional[t.Union[np.ndarray, t.Sequence[np.ndarray]]]
         self.fitness_func = None  # type: t.Optional[t.Callable]
         self.sim_output = None  # type: t.Optional[ResultType]
         # self.fitted_model = None            # type: t.Optional['ModelFunction']
@@ -98,7 +100,8 @@ class ModelFitting(ProblemSingleObjective):
         out_fit_range: t.Sequence[int],
         target_output: t.Sequence[Path],
         input_arguments: t.Optional[t.Sequence[ParameterValues]] = None,
-        weighting: t.Optional[t.Sequence[Path]] = None,
+        weights: t.Optional[t.Sequence[float]] = None,
+        weights_from_file: t.Optional[t.Sequence[Path]] = None,
     ) -> None:
         """TBW.
 
@@ -114,7 +117,8 @@ class ModelFitting(ProblemSingleObjective):
         out_fit_range
         target_output
         input_arguments
-        weighting
+        weights
+        weights_from_file
         """
         self.calibration_mode = CalibrationMode(calibration_mode)
         self.sim_output = ResultType(simulation_output)
@@ -184,9 +188,11 @@ class ModelFitting(ProblemSingleObjective):
         for target in target_list:  # type: np.ndarray
             self.all_target_data += [target[self.targ_fit_range]]
 
-        if weighting:
-            wf = read_data(weighting)[0]  # type: np.ndarray
-            self.weighting = wf[self.targ_fit_range]
+        if weights_from_file is not None:
+            wf = read_data(weights_from_file)
+            self.weighting = [weight_array[self.targ_fit_range] for weight_array in wf]
+        elif weights is not None:
+            self.weighting = np.array(weights)
 
     # def single_model_calibration(self):     # TODO update
     #     """TBW.
@@ -292,19 +298,24 @@ class ModelFitting(ProblemSingleObjective):
     #     return population_fitness_vector
 
     def calculate_fitness(
-        self, simulated_data: np.ndarray, target_data: np.ndarray
+        self,
+        simulated_data: np.ndarray,
+        target_data: np.ndarray,
+        weighting: t.Optional[t.Union[np.ndarray, float]] = None,
     ) -> float:
         """TBW.
 
-        :param simulated_data:
-        :param target_data:
-        :return:
+        Parameters
+        ----------
+        simulated_data
+        target_data
+        weighting
         """
         # TODO: Remove 'assert'
         assert self.fitness_func is not None
 
         fitness = self.fitness_func(
-            simulated=simulated_data, target=target_data, weighting=self.weighting
+            simulated=simulated_data, target=target_data, weighting=weighting
         )  # type: float
 
         return fitness
@@ -339,7 +350,9 @@ class ModelFitting(ProblemSingleObjective):
             processor_list = self.param_processor_list  # type: t.Sequence[Processor]
 
             overall_fitness = 0.0  # type: float
-            for processor, target_data in zip(processor_list, self.all_target_data):
+            for i, (processor, target_data) in enumerate(
+                zip(processor_list, self.all_target_data)
+            ):
 
                 processor = self.update_processor(
                     parameter=parameter_1d, processor=processor
@@ -358,8 +371,14 @@ class ModelFitting(ProblemSingleObjective):
 
                 simulated_data = self.get_simulated_data(processor=result_proc)
 
+                weighting = None  # type: t.Optional[t.Union[np.ndarray, float]]
+                if self.weighting is not None:
+                    weighting = self.weighting[i]
+
                 overall_fitness += self.calculate_fitness(
-                    simulated_data=simulated_data, target_data=target_data
+                    simulated_data=simulated_data,
+                    target_data=target_data,
+                    weighting=weighting,
                 )
 
         except Exception:
