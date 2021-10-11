@@ -5,9 +5,10 @@
 #  this file, may be copied, modified, propagated, or distributed except according to
 #  the terms contained in the file ‘LICENCE.txt’.
 
-import typing as t
+
 from dataclasses import dataclass
 
+import numpy as np
 import pandas as pd
 import pytest
 
@@ -50,31 +51,31 @@ def test_add_one_charge():
 
     charge.add_charge(
         particle_type="e",
-        particles_per_cluster=[1],
-        init_energy=[0.1],
-        init_ver_position=[1.1],
-        init_hor_position=[2.2],
-        init_z_position=[3.3],
-        init_ver_velocity=[4.4],
-        init_hor_velocity=[-5.5],
-        init_z_velocity=[6.6],
+        particles_per_cluster=np.array([1]),
+        init_energy=np.array([0.1]),
+        init_ver_position=np.array([1.1]),
+        init_hor_position=np.array([2.2]),
+        init_z_position=np.array([3.3]),
+        init_ver_velocity=np.array([4.4]),
+        init_hor_velocity=np.array([-5.5]),
+        init_z_velocity=np.array([6.6]),
     )
 
     exp_df_charges = pd.DataFrame(
         {
-            "charge": [-1.0],
-            "number": [1.0],
-            "init_energy": [0.1],
-            "energy": [0.1],
-            "init_pos_ver": [1.1],
-            "init_pos_hor": [2.2],
-            "init_pos_z": [3.3],
-            "position_ver": [1.1],
-            "position_hor": [2.2],
-            "position_z": [3.3],
-            "velocity_ver": [4.4],
-            "velocity_hor": [-5.5],
-            "velocity_z": [6.6],
+            "charge": np.array([-1.0]),
+            "number": np.array([1.0]),
+            "init_energy": np.array([0.1]),
+            "energy": np.array([0.1]),
+            "init_pos_ver": np.array([1.1]),
+            "init_pos_hor": np.array([2.2]),
+            "init_pos_z": np.array([3.3]),
+            "position_ver": np.array([1.1]),
+            "position_hor": np.array([2.2]),
+            "position_z": np.array([3.3]),
+            "velocity_ver": np.array([4.4]),
+            "velocity_hor": np.array([-5.5]),
+            "velocity_z": np.array([6.6]),
         }
     )
 
@@ -88,14 +89,14 @@ def test_add_one_hole():
 
     charge.add_charge(
         particle_type="h",
-        particles_per_cluster=[1],
-        init_energy=[0.1],
-        init_ver_position=[1.1],
-        init_hor_position=[2.2],
-        init_z_position=[3.3],
-        init_ver_velocity=[4.4],
-        init_hor_velocity=[-5.5],
-        init_z_velocity=[6.6],
+        particles_per_cluster=np.array([1]),
+        init_energy=np.array([0.1]),
+        init_ver_position=np.array([1.1]),
+        init_hor_position=np.array([2.2]),
+        init_z_position=np.array([3.3]),
+        init_ver_velocity=np.array([4.4]),
+        init_hor_velocity=np.array([-5.5]),
+        init_z_velocity=np.array([6.6]),
     )
 
     exp_df_charges = pd.DataFrame(
@@ -128,14 +129,14 @@ class ChargeInfo:
     """
 
     particle_type: str
-    particles_per_cluster: t.Sequence[int]
-    init_energy: t.Sequence[float]
-    init_ver_position: t.Sequence[float]
-    init_hor_position: t.Sequence[float]
-    init_z_position: t.Sequence[float]
-    init_ver_velocity: t.Sequence[float]
-    init_hor_velocity: t.Sequence[float]
-    init_z_velocity: t.Sequence[float]
+    particles_per_cluster: np.ndarray
+    init_energy: np.ndarray
+    init_ver_position: np.ndarray
+    init_hor_position: np.ndarray
+    init_z_position: np.ndarray
+    init_ver_velocity: np.ndarray
+    init_hor_velocity: np.ndarray
+    init_z_velocity: np.ndarray
 
 
 @pytest.mark.parametrize(
@@ -196,14 +197,14 @@ def test_invalid_add_charge(
     # Create valid parameters
     params = ChargeInfo(
         particle_type="e",
-        particles_per_cluster=[1],
-        init_energy=[0.1],
-        init_ver_position=[1.1],
-        init_hor_position=[2.2],
-        init_z_position=[3.3],
-        init_ver_velocity=[4.4],
-        init_hor_velocity=[-5.5],
-        init_z_velocity=[6.6],
+        particles_per_cluster=np.array([1]),
+        init_energy=np.array([0.1]),
+        init_ver_position=np.array([1.1]),
+        init_hor_position=np.array([2.2]),
+        init_z_position=np.array([3.3]),
+        init_ver_velocity=np.array([4.4]),
+        init_hor_velocity=np.array([-5.5]),
+        init_z_velocity=np.array([6.6]),
     )
 
     # Add the valid parameters
@@ -243,14 +244,14 @@ def test_add_two_charges():
 
     charge.add_charge(
         particle_type="e",
-        particles_per_cluster=[1, 2],
-        init_energy=[0.1, 0.2],
-        init_ver_position=[1.11, 1.12],
-        init_hor_position=[2.21, 2.22],
-        init_z_position=[3.31, 3.32],
-        init_ver_velocity=[4.41, 4.42],
-        init_hor_velocity=[-5.51, 5.52],
-        init_z_velocity=[6.61, 6.62],
+        particles_per_cluster=np.array([1, 2]),
+        init_energy=np.array([0.1, 0.2]),
+        init_ver_position=np.array([1.11, 1.12]),
+        init_hor_position=np.array([2.21, 2.22]),
+        init_z_position=np.array([3.31, 3.32]),
+        init_ver_velocity=np.array([4.41, 4.42]),
+        init_hor_velocity=np.array([-5.51, 5.52]),
+        init_z_velocity=np.array([6.61, 6.62]),
     )
 
     exp_df_charges = pd.DataFrame(
@@ -282,27 +283,27 @@ def test_add_two_charges_one_hole():
     # Add 2 charges
     charge.add_charge(
         particle_type="e",
-        particles_per_cluster=[1, 2],
-        init_energy=[0.1, 0.2],
-        init_ver_position=[1.11, 1.12],
-        init_hor_position=[2.21, 2.22],
-        init_z_position=[3.31, 3.32],
-        init_ver_velocity=[4.41, 4.42],
-        init_hor_velocity=[-5.51, 5.52],
-        init_z_velocity=[6.61, 6.62],
+        particles_per_cluster=np.array([1, 2]),
+        init_energy=np.array([0.1, 0.2]),
+        init_ver_position=np.array([1.11, 1.12]),
+        init_hor_position=np.array([2.21, 2.22]),
+        init_z_position=np.array([3.31, 3.32]),
+        init_ver_velocity=np.array([4.41, 4.42]),
+        init_hor_velocity=np.array([-5.51, 5.52]),
+        init_z_velocity=np.array([6.61, 6.62]),
     )
 
     # Add 1 hole
     charge.add_charge(
         particle_type="h",
-        particles_per_cluster=[3],
-        init_energy=[0.3],
-        init_ver_position=[1.13],
-        init_hor_position=[2.23],
-        init_z_position=[3.33],
-        init_ver_velocity=[4.43],
-        init_hor_velocity=[5.53],
-        init_z_velocity=[6.63],
+        particles_per_cluster=np.array([3]),
+        init_energy=np.array([0.3]),
+        init_ver_position=np.array([1.13]),
+        init_hor_position=np.array([2.23]),
+        init_z_position=np.array([3.33]),
+        init_ver_velocity=np.array([4.43]),
+        init_hor_velocity=np.array([5.53]),
+        init_z_velocity=np.array([6.63]),
     )
 
     exp_df_charges = pd.DataFrame(
