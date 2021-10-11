@@ -42,7 +42,7 @@ def ccd_10x1() -> CCD:
 
 @pytest.fixture
 def profile_10x1() -> np.ndarray:
-    """Create a profile of 100x1."""
+    """Create a profile of 10x1."""
     data_1d = np.array([100.0, 100.0, 100.0, 100.0, 100.0, 0.0, 0.0, 0.0, 0.0, 0.0])
 
     return data_1d
@@ -50,8 +50,8 @@ def profile_10x1() -> np.ndarray:
 
 @pytest.fixture
 def profile_10x1_txt_filename(profile_10x1: np.ndarray, tmp_path: Path) -> Path:
-    """Create a filename with a profile of 100x1."""
-    filename = tmp_path / "profile_100x1.txt"
+    """Create a filename with a profile of 10x1."""
+    filename = tmp_path / "profile_10x1.txt"
     np.savetxt(fname=filename, X=profile_10x1)
 
     return filename
@@ -76,7 +76,7 @@ def ccd_10x3() -> CCD:
 
 @pytest.fixture
 def profile_10x3() -> np.ndarray:
-    """Create a profile of 100x1."""
+    """Create a profile of 10x3."""
     data_2d = np.zeros(shape=(10, 3))
     data_2d[:5, 0] = 100.0
     data_2d[:5, 1] = 200.0
@@ -102,8 +102,8 @@ def profile_10x3() -> np.ndarray:
 
 @pytest.fixture
 def profile_10x3_txt_filename(profile_10x3: np.ndarray, tmp_path: Path) -> Path:
-    """Create a filename with a profile of 100x3."""
-    filename = tmp_path / "profile_100x3.txt"
+    """Create a filename with a profile of 10x3."""
+    filename = tmp_path / "profile_10x3.txt"
     np.savetxt(fname=filename, X=profile_10x3)
 
     return filename
