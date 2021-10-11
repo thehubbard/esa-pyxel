@@ -329,3 +329,35 @@ def test_add_two_charges_one_hole():
 
     assert charge.nextid == 3
     pd.testing.assert_frame_equal(charge.frame, exp_df_charges)
+
+
+def test_invalid_add_charge_dataframe():
+    """Test method `Charge.add_charge_dataframe` with an invalid input."""
+    charge = Charge()
+
+    df = pd.DataFrame(
+        {
+            "charge": [1.0],
+            "number": [1.0],
+            "init_energy": [0.1],
+            "energy": [0.1],
+            "init_pos_ver": [1.1],
+            "init_pos_hor": [2.2],
+            "init_pos_z": [3.3],
+            "position_ver": [1.1],
+            "position_hor": [2.2],
+            "position_z": [3.3],
+            "BAD_COLUMN": [4.4],  # Wrong column
+            "velocity_hor": [-5.5],
+            "velocity_z": [6.6],
+        }
+    )
+
+    with pytest.raises(
+        ValueError,
+        match=r"Expected columns: 'charge', 'number', 'init_energy', 'energy', "
+        r"'init_pos_ver', 'init_pos_hor', 'init_pos_z', "
+        r"'position_ver', 'position_hor', 'position_z', "
+        r"'velocity_ver', 'velocity_hor', 'velocity_z'",
+    ):
+        charge.add_charge_dataframe(new_charges=df)
