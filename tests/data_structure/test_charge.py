@@ -140,57 +140,39 @@ class ChargeInfo:
 
 
 @pytest.mark.parametrize(
-    "param_name, new_value, exp_exc, exp_error",
+    "param_name",
     [
-        # Wrong parameter 'particle_type'
+        "particles_per_cluster",
+        "init_energy",
+        "init_ver_position",
+        "init_hor_position",
+        "init_z_position",
+        "init_ver_velocity",
+        "init_hor_velocity",
+        "init_z_velocity",
+    ],
+)
+@pytest.mark.parametrize(
+    "new_value, exp_error",
+    [
         pytest.param(
-            "particle_type",
-            "E",
-            ValueError,
-            "Given charged particle type can not be simulated",
-            id="Wrong 'particle_type': 'E'",
+            np.array([]),
+            r"List arguments have different lengths",
+            id="Too few values",
         ),
         pytest.param(
-            "particle_type",
-            "H",
-            ValueError,
-            "Given charged particle type can not be simulated",
-            id="Wrong 'particle_type': 'H'",
+            np.array([1.0, 2.0]),
+            r"List arguments have different lengths",
+            id="Too much values",
         ),
         pytest.param(
-            "particle_type",
-            "electron",
-            ValueError,
-            "Given charged particle type can not be simulated",
-            id="Wrong 'particle_type': 'electron'",
-        ),
-        pytest.param(
-            "particle_type",
-            "hole",
-            ValueError,
-            "Given charged particle type can not be simulated",
-            id="Wrong 'particle_type': 'hole'",
-        ),
-        # Wrong parameter 'particles_per_cluster'
-        pytest.param(
-            "particles_per_cluster",
-            [],
-            ValueError,
-            "List arguments have different lengths",
-            id="Too little 'particles_per_cluster'",
-        ),
-        pytest.param(
-            "particles_per_cluster",
-            [1, 2],
-            ValueError,
-            "List arguments have different lengths",
-            id="Too many 'particles_per_cluster'",
+            np.array([[1.0]]),
+            r"List arguments must have only one dimension",
+            id="More than one dimension",
         ),
     ],
 )
-def test_invalid_add_charge(
-    param_name: str, new_value, exp_exc: Exception, exp_error: str
-):
+def test_invalid_add_charge(param_name: str, new_value, exp_error):
     """Test method `Charge.add_charge` with invalid parameters."""
     charge = Charge()
 
@@ -224,7 +206,7 @@ def test_invalid_add_charge(
     # This is equivalent to 'params.param_name = new_value'
     setattr(params, param_name, new_value)
 
-    with pytest.raises(exp_exc, match=exp_error):
+    with pytest.raises(ValueError, match=exp_error):
         charge.add_charge(
             particle_type=params.particle_type,
             particles_per_cluster=params.particles_per_cluster,
@@ -235,6 +217,27 @@ def test_invalid_add_charge(
             init_ver_velocity=params.init_ver_velocity,
             init_hor_velocity=params.init_hor_velocity,
             init_z_velocity=params.init_z_velocity,
+        )
+
+
+@pytest.mark.parametrize("particle_type", ["E", "H", "electron", "hole"])
+def test_invalid_particle_type(particle_type: str):
+    """Test method `Charge.add_charge` with invalid 'particle_type."""
+    charge = Charge()
+
+    with pytest.raises(
+        ValueError, match="Given charged particle type can not be simulated"
+    ):
+        charge.add_charge(
+            particle_type=particle_type,
+            particles_per_cluster=np.array([1]),
+            init_energy=np.array([0.1]),
+            init_ver_position=np.array([1.1]),
+            init_hor_position=np.array([2.2]),
+            init_z_position=np.array([3.3]),
+            init_ver_velocity=np.array([4.4]),
+            init_hor_velocity=np.array([-5.5]),
+            init_z_velocity=np.array([6.6]),
         )
 
 
