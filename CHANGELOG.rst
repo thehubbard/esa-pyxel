@@ -35,6 +35,8 @@ Others
   (See `!259 <https://gitlab.com/esa/pyxel/-/merge_requests/259>`_).
 * Add unit tests for model 'charge_profile'.
   (See `!269 <https://gitlab.com/esa/pyxel/-/merge_requests/269>`_).
+* Add unit tests for class 'Charge'.
+  (See `!270 <https://gitlab.com/esa/pyxel/-/merge_requests/270.>`_).
 
 
 version 0.10.2 / 2021-09-02
