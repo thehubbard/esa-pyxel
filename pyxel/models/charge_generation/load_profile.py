@@ -20,36 +20,47 @@ from pyxel.detectors import Detector
 # @config.argument(name='txt_file', label='file path', units='', validate=checkers.check_path)
 def charge_profile(
     detector: Detector,
-    txt_file: str,
+    txt_file: t.Union[str, Path],
     fit_profile_to_det: bool = False,
     profile_position: t.Optional[list] = None,
 ) -> None:
     """Load charge profile from txt file for detector, mostly for but not limited to CCDs.
 
-    :param detector: Pyxel Detector object
-    :param txt_file: file path
-    :param fit_profile_to_det: bool
-    :param profile_position: list
+    Parameters
+    ----------
+    detector : Detector
+        Pyxel Detector object.
+    txt_file : str or Path
+        File path.
+    fit_profile_to_det : bool
+    profile_position : list
     """
     logging.info("")
     geo = detector.geometry
 
-    full_path = Path(txt_file).resolve()
-
     # All pixels has zero charge by default
     detector_charge = np.zeros((geo.row, geo.col))
-    # Load 2d charge profile (which can be smaller or larger in dimensions than detector imaging area)
-    charge_from_file = np.loadtxt(full_path, ndmin=2)
+
+    # Load 2d charge profile (which can be smaller or
+    #                         larger in dimensions than detector imaging area)
+    full_path = Path(txt_file).resolve()
+    charge_from_file = np.loadtxt(str(full_path), ndmin=2)
+
     if fit_profile_to_det:
-        # Crop 2d charge profile, so it is not larger in dimensions than detector imaging area)
+        # Crop 2d charge profile, so it is not larger in dimensions than
+        # detector imaging area
         charge_from_file = charge_from_file[slice(0, geo.row), slice(0, geo.col)]
+
     profile_rows, profile_cols = charge_from_file.shape
+
     if profile_position is None:
         profile_position = [0, 0]
+
     detector_charge[
         slice(profile_position[0], profile_position[0] + profile_rows),
         slice(profile_position[1], profile_position[1] + profile_cols),
     ] = charge_from_file
+
     charge_number = detector_charge.flatten()
     where_non_zero = np.where(charge_number > 0.0)
     charge_number = charge_number[where_non_zero]

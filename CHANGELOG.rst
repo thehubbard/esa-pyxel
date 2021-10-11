@@ -31,6 +31,8 @@ Others
   (See `!255 <https://gitlab.com/esa/pyxel/-/merge_requests/255>`_).
 * Add a pipeline time profiling function.
   (See `!259 <https://gitlab.com/esa/pyxel/-/merge_requests/259>`_).
+* Add unit tests for model 'charge_profile'.
+  (See `!269 <https://gitlab.com/esa/pyxel/-/merge_requests/269>`_).
 
 
 version 0.10.2 / 2021-09-02
