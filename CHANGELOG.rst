@@ -27,6 +27,8 @@ Models
   (See `!193 <https://gitlab.com/esa/pyxel/-/merge_requests/193>`_).
 * Add model Arctic.
   (See `!229 <https://gitlab.com/esa/pyxel/-/merge_requests/229>`_).
+* Improve the speed of model 'charge_profile'.
+  (See `!268 <https://gitlab.com/esa/pyxel/-/merge_requests/268>`_).
 
 Others
 ~~~~~~
