@@ -158,7 +158,10 @@ class Charge(Particle):
             expected_columns = ", ".join(map(repr, self.columns))  # type: str
             raise ValueError(f"Expected columns: {expected_columns}")
 
-        new_frame = self.frame.append(new_charges, ignore_index=True)
+        if self.frame.empty:
+            new_frame = new_charges  # type: pd.DataFrame
+        else:
+            new_frame = self.frame.append(new_charges, ignore_index=True)
 
         # Get last 'id'
         last_id = new_frame.index[-1]  # type: int
