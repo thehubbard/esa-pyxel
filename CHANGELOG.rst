@@ -23,6 +23,8 @@ Models
 
 * Fix for consecutive photon generation models.
   (See `!193 <https://gitlab.com/esa/pyxel/-/merge_requests/193>`_).
+* Add model Arctic.
+  (See `!229 <https://gitlab.com/esa/pyxel/-/merge_requests/229>`_).
 
 Others
 ~~~~~~
