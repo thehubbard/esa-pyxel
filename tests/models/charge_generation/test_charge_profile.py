@@ -128,8 +128,8 @@ def test_charge_profile_10x1(ccd_10x1: CCD, profile_10x1_txt_filename: Path) -> 
     # Check modified charges in 'detector'
     exp_charges = pd.DataFrame(
         {
-            "charge": [-1.0, -1.0, -1.0, -1.0, -1.0],
-            "number": [100.0, 100.0, 100.0, 100.0, 100.0],
+            "charge": [-1, -1, -1, -1, -1],
+            "number": [100.0, 100, 100, 100, 100],
             "init_energy": [0.0, 0.0, 0.0, 0.0, 0.0],
             "energy": [0.0, 0.0, 0.0, 0.0, 0.0],
             "init_pos_ver": [5.0, 15.0, 25.0, 35.0, 45.0],
@@ -167,8 +167,8 @@ def test_charge_profile_10x3(ccd_10x3: CCD, profile_10x3_txt_filename: Path) -> 
     # Check modified charges in 'detector'
     exp_charges = pd.DataFrame(
         {
-            "charge": [-1.0, -1.0, -1.0] * 5,
-            "number": [100.0, 200.0, 300.0] * 5,
+            "charge": [-1, -1, -1] * 5,
+            "number": [100.0, 200, 300] * 5,
             "init_energy": [0.0, 0.0, 0.0] * 5,
             "energy": [0.0, 0.0, 0.0] * 5,
             "init_pos_ver": [
