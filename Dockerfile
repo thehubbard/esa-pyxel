@@ -2,6 +2,7 @@
 # Pyxel with Jupyter notebook server
 #
 
+# Use LTS version
 FROM ubuntu:20.04
 
 # Set the timezone
@@ -10,14 +11,17 @@ ENV TZ=Europe/Amsterdam
 ARG PYXEL_HOME="/home/pyxel"
 
 RUN apt-get update --fix-missing \
-    && apt-get install -y wget bzip2 git \
+    && apt-get install -y wget bzip2 git git-lfs \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy Pyxel source code
 COPY . $PYXEL_HOME/src
-COPY examples $PYXEL_HOME/notebooks/examples
-COPY data $PYXEL_HOME/notebooks/data
+RUN mkdir -p $PYXEL_HOME/jupyter
+
+# Get Pyxel data code
+RUN git lfs install
+RUN git clone https://gitlab.com/esa/pyxel-data.git $PYXEL_HOME/jupyter/pyxel-data
 
 # Add a new user (no need to run as roo)
 RUN mkdir -p $PYXEL_HOME \
@@ -60,9 +64,9 @@ RUN conda activate pyxel-dev && \
     conda deactivate
 
 # Install Jupyterlab extensions
-RUN conda activate pyxel-dev && \
-    jupyter labextension install @jupyter-widgets/jupyterlab-manager && \
-    conda deactivate
+#RUN conda activate pyxel-dev && \
+#    jupyter labextension install @jupyter-widgets/jupyterlab-manager && \
+#    conda deactivate
 
 # Add aliases
 RUN echo "alias ll='ls -alF'" >> ~/.bashrc \
@@ -71,4 +75,4 @@ RUN echo "alias ll='ls -alF'" >> ~/.bashrc \
 # Expose Jupyter notebook port
 EXPOSE 8888
 CMD conda activate pyxel-dev && \
-    jupyter lab --ip=0.0.0.0 --no-browser --NotebookApp.quit_button=True --notebook-dir=~/notebooks 
+    jupyter lab --ip=0.0.0.0 --no-browser --NotebookApp.quit_button=True --notebook-dir=~/jupyter 
