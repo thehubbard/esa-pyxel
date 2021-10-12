@@ -11,8 +11,46 @@ import numpy as np
 from pyxel.util.memory import get_size
 
 
+def get_vertical_pixel_center_pos(
+    num_rows: int,
+    num_cols: int,
+    pixel_vertical_size: float,
+) -> np.ndarray:
+    """Generate vertical position list of all pixel centers in detector imaging area."""
+    init_ver_position = np.arange(0.0, num_rows, 1.0) * pixel_vertical_size
+    init_ver_position += pixel_vertical_size / 2.0
+
+    return np.repeat(init_ver_position, num_cols)
+
+
+def get_horizontal_pixel_center_pos(
+    num_rows: int,
+    num_cols: int,
+    pixel_horizontal_size: float,
+) -> np.ndarray:
+    """Generate horizontal position list of all pixel centers in detector imaging area."""
+    init_hor_position = np.arange(0.0, num_cols, 1.0) * pixel_horizontal_size
+    init_hor_position += pixel_horizontal_size / 2.0
+
+    return np.tile(init_hor_position, reps=num_rows)
+
+
 class Geometry:
-    """Geometrical attributes of the detector."""
+    """Geometrical attributes of the detector.
+
+    Parameters
+    ----------
+    row: int
+        Number of pixel rows.
+    col: int
+        Number of pixel columns.
+    total_thickness: float
+        Thickness of detector. Unit: um
+    pixel_vert_size: float
+        Vertical dimension of pixel. Unit: um
+    pixel_horz_size: float
+        Horizontal dimension of pixel. Unit: um
+    """
 
     def __init__(
         self,
@@ -22,21 +60,6 @@ class Geometry:
         pixel_vert_size: float = 0.0,  # unit: um
         pixel_horz_size: float = 0.0,  # unit: um
     ):
-        """Create a new instance of `Geometry`.
-
-        Parameters
-        ----------
-        row: int
-            Number of pixel rows.
-        col: int
-            Number of pixel columns.
-        total_thickness: float
-            Thickness of detector. Unit: um
-        pixel_vert_size: float
-            Vertical dimension of pixel. Unit: um
-        pixel_horz_size: float
-            Horizontal dimension of pixel. Unit: um
-        """
         if row not in range(10001):
             raise ValueError("'row' must be between 0 and 10000.")
 
@@ -68,10 +91,6 @@ class Geometry:
             f"pixel_vert_size={self._pixel_vert_size!r}, "
             f"pixel_horz_size={self._pixel_horz_size})"
         )
-
-    # def _repr_html_(self):
-    #     """TBW."""
-    #     return "Hello World"
 
     @property
     def row(self) -> int:
@@ -162,17 +181,19 @@ class Geometry:
 
     def vertical_pixel_center_pos_list(self) -> np.ndarray:
         """Generate horizontal position list of all pixel centers in detector imaging area."""
-        init_ver_position = np.arange(0.0, self.row, 1.0) * self.pixel_vert_size
-        init_ver_position += self.pixel_vert_size / 2.0
-        return np.repeat(init_ver_position, self.col)
+        return get_vertical_pixel_center_pos(
+            num_rows=self.row,
+            num_cols=self.col,
+            pixel_vertical_size=self.pixel_vert_size,
+        )
 
     def horizontal_pixel_center_pos_list(self) -> np.ndarray:
         """Generate horizontal position list of all pixel centers in detector imaging area."""
-        init_hor_position = np.arange(0.0, self.col, 1.0) * self.pixel_horz_size
-        init_hor_position += self.pixel_horz_size / 2.0
-
-        result = np.tile(init_hor_position, reps=self.row)  # type: np.ndarray
-        return result
+        return get_horizontal_pixel_center_pos(
+            num_rows=self.row,
+            num_cols=self.col,
+            pixel_horizontal_size=self.pixel_horz_size,
+        )
 
     @property
     def numbytes(self) -> int:
