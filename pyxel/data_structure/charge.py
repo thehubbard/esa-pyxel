@@ -55,11 +55,11 @@ class Charge(Particle):
         self,
         *,
         particle_type: str,  # TODO: Use Enum
-        particles_per_cluster: t.Union[t.Sequence[int], np.ndarray],
-        init_energy: t.Union[t.Sequence[float], np.ndarray],
-        init_ver_position: t.Union[t.Sequence[float], np.ndarray],
-        init_hor_position: t.Union[t.Sequence[float], np.ndarray],
-        init_z_position: t.Union[t.Sequence[float], np.ndarray],
+        particles_per_cluster: np.ndarray,
+        init_energy: np.ndarray,
+        init_ver_position: np.ndarray,
+        init_hor_position: np.ndarray,
+        init_z_position: np.ndarray,
         init_ver_velocity: np.ndarray,
         init_hor_velocity: np.ndarray,
         init_z_velocity: np.ndarray,
@@ -81,9 +81,26 @@ class Charge(Particle):
             len(particles_per_cluster)
             == len(init_energy)
             == len(init_ver_position)
+            == len(init_hor_position)
+            == len(init_z_position)
             == len(init_ver_velocity)
+            == len(init_hor_velocity)
+            == len(init_z_velocity)
         ):
-            raise ValueError("List arguments have different lengths")
+            raise ValueError("List arguments have different lengths.")
+
+        if not (
+            particles_per_cluster.ndim
+            == init_energy.ndim
+            == init_ver_position.ndim
+            == init_hor_position.ndim
+            == init_z_position.ndim
+            == init_ver_velocity.ndim
+            == init_hor_velocity.ndim
+            == init_z_velocity.ndim
+            == 1
+        ):
+            raise ValueError("List arguments must have only one dimension.")
 
         elements = len(init_energy)
 
@@ -103,8 +120,8 @@ class Charge(Particle):
         # if all(init_ver_velocity) == 0 and all(init_hor_velocity) == 0 and all(init_z_velocity) == 0:
         #     random_direction(1.0)
 
-        # dict
-        new_charge = {
+        # Create new charges as a `dict`
+        new_charges = {
             "charge": charge,
             "number": particles_per_cluster,
             "init_energy": init_energy,
@@ -118,10 +135,12 @@ class Charge(Particle):
             "velocity_ver": init_ver_velocity,
             "velocity_hor": init_hor_velocity,
             "velocity_z": init_z_velocity,
-        }
+        }  # type: t.Mapping[str, t.Union[t.Sequence, np.ndarray]]
 
+        # Create a new `DataFrame
         new_charge_df = pd.DataFrame(
-            new_charge, index=range(self.nextid, self.nextid + elements)
+            new_charges, index=range(self.nextid, self.nextid + elements)
         )
+
         self.nextid = self.nextid + elements
         self.frame = self.frame.append(new_charge_df, sort=False)

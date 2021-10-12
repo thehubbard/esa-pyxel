@@ -502,11 +502,11 @@ class TARS:
 
         self.charge_obj.add_charge(
             particle_type="e",
-            particles_per_cluster=self.sim_obj.e_num_lst_per_step,
-            init_energy=self.sim_obj.e_energy_lst,
-            init_ver_position=self.sim_obj.e_pos0_lst,
-            init_hor_position=self.sim_obj.e_pos1_lst,
-            init_z_position=self.sim_obj.e_pos2_lst,
+            particles_per_cluster=np.asarray(self.sim_obj.e_num_lst_per_step),
+            init_energy=np.asarray(self.sim_obj.e_energy_lst),
+            init_ver_position=np.asarray(self.sim_obj.e_pos0_lst),
+            init_hor_position=np.asarray(self.sim_obj.e_pos1_lst),
+            init_z_position=np.asarray(self.sim_obj.e_pos2_lst),
             init_ver_velocity=self.sim_obj.e_vel0_lst,
             init_hor_velocity=self.sim_obj.e_vel1_lst,
             init_z_velocity=self.sim_obj.e_vel2_lst,
