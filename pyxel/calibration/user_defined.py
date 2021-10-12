@@ -102,37 +102,37 @@ class DaskBFE:
             else:
                 chunk_size = self._chunk_size
 
-                # [dvs_1_1, ..., dvs_1_n, dvs_2_1, ..., dvs_2_n, ..., dvs_m_1, ..., dvs_m_n]
+            # [dvs_1_1, ..., dvs_1_n, dvs_2_1, ..., dvs_2_n, ..., dvs_m_1, ..., dvs_m_n]
 
-                # [[dvs_1_1, ..., dvs_1_n],
-                #  [dvs_2_1, ..., dvs_2_n],
-                #  ...
-                #  [dvs_m_1, ..., dvs_m_n]]
+            # [[dvs_1_1, ..., dvs_1_n],
+            #  [dvs_2_1, ..., dvs_2_n],
+            #  ...
+            #  [dvs_m_1, ..., dvs_m_n]]
 
-                # Convert 1D Decision Vectors to 2D `dask.Array`
-                dvs_2d = da.from_array(
-                    dvs_1d.reshape((-1, ndims_dvs)),
-                    chunks=(chunk_size, ndims_dvs),
-                )  # type: da.Array
+            # Convert 1D Decision Vectors to 2D `dask.Array`
+            dvs_2d = da.from_array(
+                dvs_1d.reshape((-1, ndims_dvs)),
+                chunks=(chunk_size, ndims_dvs),
+            )  # type: da.Array
 
-                logging.info("DaskBFE: %i, %i, %r", len(dvs_1d), ndims_dvs, dvs_2d.shape)
+            logging.info("DaskBFE: %i, %i, %r", len(dvs_1d), ndims_dvs, dvs_2d.shape)
 
-                # Create a new problem with a serializable method '.fitness'
-                problem_pickable = ProblemSerializable(prob)
+            # Create a new problem with a serializable method '.fitness'
+            problem_pickable = ProblemSerializable(prob)
 
-                # Create a generalized function to run a 2D input with 'prob.fitness'
-                fitness_func = da.gufunc(
-                    problem_pickable.fitness,
-                    signature="(i)->(j)",
-                    output_dtypes=float,
-                    output_sizes={"j": num_fitness},
-                    vectorize=True,
-                )
+            # Create a generalized function to run a 2D input with 'prob.fitness'
+            fitness_func = da.gufunc(
+                problem_pickable.fitness,
+                signature="(i)->(j)",
+                output_dtypes=float,
+                output_sizes={"j": num_fitness},
+                vectorize=True,
+            )
 
-                fitness_2d = fitness_func(dvs_2d)  # type: da.Array
-                fitness_1d = fitness_2d.ravel()  # type: da.Array
+            fitness_2d = fitness_func(dvs_2d)  # type: da.Array
+            fitness_1d = fitness_2d.ravel()  # type: da.Array
 
-                return fitness_1d
+            return fitness_1d
 
         except Exception as exc:
             logging.exception(

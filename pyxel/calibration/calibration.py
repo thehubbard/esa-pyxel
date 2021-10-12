@@ -373,7 +373,7 @@ class Calibration:
             weights=self.weights,
             weights_from_file=self.weights_from_file,
             file_path=output_dir,
-            sampling = self.sampling,
+            sampling=self.sampling,
         )
 
         if self.num_islands > 1:  # default
@@ -406,6 +406,7 @@ class Calibration:
 
             # Run several evolutions in the archipelago
             ds, df_processors, df_all_logs = my_archipelago.run_evolve(
+                sampling=self.sampling,
                 num_evolutions=self._num_evolutions,
                 num_best_decisions=self._num_best_decisions,
             )

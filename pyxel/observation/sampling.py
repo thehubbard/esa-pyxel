@@ -36,12 +36,15 @@ class Sampling:
         start_time
         non_destructive_readout
         """
+        self._time_domain_simulation = True
+
         if readout_times is not None and readout_times_from_file is not None:
             raise ValueError("Both times and times_from_file specified. Choose one.")
         elif readout_times is None and readout_times_from_file is None:
             self._times = np.array(
                 [1]
             )  # by convention default sampling/exposure time is 1 second
+            self._time_domain_simulation = False
         elif readout_times_from_file:
             self._times = (
                 load_table(readout_times_from_file).to_numpy(dtype=float).flatten()
@@ -78,6 +81,11 @@ class Sampling:
     def times(self) -> t.Any:
         """TBW."""
         return self._times
+
+    @property
+    def time_domain_simulation(self) -> bool:
+        """TBW."""
+        return self._time_domain_simulation
 
     @property
     def steps(self) -> np.ndarray:

@@ -19,6 +19,7 @@ from .util import (
     check_ranges,
     list_to_slice,
     read_data,
+    read_datacubes,
 )
 from .archipelago import MyArchipelago
 from .calibration import Calibration, CalibrationMode

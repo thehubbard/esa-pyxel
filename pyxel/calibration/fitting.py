@@ -22,6 +22,7 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 from typing_extensions import Literal
+from pyxel.observation import run_observation
 
 from pyxel.calibration import (
     CalibrationMode,
@@ -30,6 +31,7 @@ from pyxel.calibration import (
     check_ranges,
     list_to_slice,
     read_data,
+    read_datacubes,
 )
 from pyxel.parametric.parameter_values import ParameterValues
 from pyxel.pipelines import Processor
@@ -50,7 +52,7 @@ class ModelFitting(ProblemSingleObjective):
         self.original_processor = None  # type: t.Optional[Processor]
         self.generations = None  # type: t.Optional[int]
         self.pop = None  # type: t.Optional[int]
-        self.sampling = None # type: t.Optional[Sampling]
+        self.sampling = None  # type: t.Optional[Sampling]
 
         self.all_target_data = []  # type: t.List[np.ndarray]
         self.weighting = (
@@ -114,6 +116,7 @@ class ModelFitting(ProblemSingleObjective):
 
         Parameters
         ----------
+        sampling
         calibration_mode
         simulation_output
         fitness_func
@@ -179,26 +182,71 @@ class ModelFitting(ProblemSingleObjective):
         self.champion_x_list = np.zeros((1, params))
         self.file_path = file_path
 
-        target_list = read_data(filenames=target_output)  # type: t.Sequence[np.ndarray]
-        try:
-            rows, cols = target_list[0].shape  # type: t.Tuple[int, t.Optional[int]]
-        except AttributeError:
-            rows = len(target_list[0])
-            cols = None
-        check_ranges(
-            target_fit_range=target_fit_range,
-            out_fit_range=out_fit_range,
-            rows=rows,
-            cols=cols,
-        )
-        self.targ_fit_range = list_to_slice(target_fit_range)
-        self.sim_fit_range = list_to_slice(out_fit_range)
-        for target in target_list:  # type: np.ndarray
-            self.all_target_data += [target[self.targ_fit_range]]
+        if self.sampling.time_domain_simulation:
+            target_list = read_datacubes(
+                filenames=target_output
+            )  # type: t.Sequence[np.ndarray]
+            times, rows, cols = target_list[0].shape
+            check_ranges(
+                target_fit_range=target_fit_range,
+                out_fit_range=out_fit_range,
+                rows=rows,
+                cols=cols,
+                readout_times=times,
+            )
+            self.targ_fit_range = list_to_slice(target_fit_range)
+            self.sim_fit_range = list_to_slice(out_fit_range)
+            for target in target_list:  # type: np.ndarray
+                self.all_target_data += [target[self.targ_fit_range]]
 
+        else:
+            target_list = read_data(
+                filenames=target_output
+            )  # type: t.Sequence[np.ndarray]
+            rows, cols = target_list[0].shape
+            check_ranges(
+                target_fit_range=target_fit_range,
+                out_fit_range=out_fit_range,
+                rows=rows,
+                cols=cols,
+            )
+            self.targ_fit_range = list_to_slice(target_fit_range)
+            out_fit_range = [None, None] + out_fit_range
+            self.sim_fit_range = list_to_slice(out_fit_range)
+            for target in target_list:  # type: np.ndarray
+                self.all_target_data += [target[self.targ_fit_range]]
+
+            self._configure_weights(
+                weights=weights, weights_from_file=weights_from_file
+            )
+
+    def _configure_weights(
+        self,
+        weights: t.Optional[t.Sequence[float]] = None,
+        weights_from_file: t.Optional[t.Sequence[Path]] = None,
+    ) -> None:
+        """TBW.
+
+        Parameters
+        ----------
+        weights
+        weights_from_file
+
+        Returns
+        -------
+
+        """
         if weights_from_file is not None:
-            wf = read_data(weights_from_file)
-            self.weighting = [weight_array[self.targ_fit_range] for weight_array in wf]
+            if self.sampling.time_domain_simulation:
+                wf = read_datacubes(weights_from_file)
+                self.weighting = [
+                    weight_array[self.targ_fit_range] for weight_array in wf
+                ]
+            else:
+                wf = read_data(weights_from_file)
+                self.weighting = [
+                    weight_array[self.targ_fit_range] for weight_array in wf
+                ]
         elif weights is not None:
             self.weighting = np.array(weights)
 
@@ -239,19 +287,41 @@ class ModelFitting(ProblemSingleObjective):
                     "indicate variables need to be calibrated"
                 )
 
-    def get_simulated_data(self, processor: Processor) -> np.ndarray:
+    # def get_simulated_data(self, processor: Processor) -> np.ndarray:
+    #     """Extract 2D data from a processor."""
+    #     if self.sim_output == ResultType.Image:
+    #         simulated_data = processor.detector.image.array[
+    #             self.sim_fit_range
+    #         ]  # type: np.ndarray
+    #
+    #     elif self.sim_output == ResultType.Signal:
+    #         simulated_data = processor.detector.signal.array[self.sim_fit_range]
+    #     elif self.sim_output == ResultType.Pixel:
+    #         simulated_data = processor.detector.pixel.array[self.sim_fit_range]
+    #
+    #     return simulated_data
+
+    def get_simulated_data(self, dataset: xr.Dataset) -> np.ndarray:
         """Extract 2D data from a processor."""
         if self.sim_output == ResultType.Image:
-            simulated_data = processor.detector.image.array[
+            simulated_data = dataset["image"].data[
                 self.sim_fit_range
             ]  # type: np.ndarray
-
         elif self.sim_output == ResultType.Signal:
-            simulated_data = processor.detector.signal.array[self.sim_fit_range]
+            simulated_data = dataset["signal"].data[
+                self.sim_fit_range
+            ]  # type: np.ndarray
         elif self.sim_output == ResultType.Pixel:
-            simulated_data = processor.detector.pixel.array[self.sim_fit_range]
+            simulated_data = dataset["pixel"].data[
+                self.sim_fit_range
+            ]  # type: np.ndarray
+        else:
+            raise NotImplementedError
 
-        return simulated_data
+        if not self.sampling.time_domain_simulation:
+            return simulated_data[0]
+        else:
+            return simulated_data
 
     # def batch_fitness(self, population_parameter_vector: np.ndarray) -> np.ndarray:
     #     """Batch Fitness Evaluation.
@@ -369,7 +439,9 @@ class ModelFitting(ProblemSingleObjective):
                 logger.setLevel(logging.WARNING)
                 # result_proc = None
                 if self.calibration_mode == CalibrationMode.Pipeline:
-                    result_proc = processor.run_pipeline()  # type: Processor
+                    result, _ = run_observation(
+                        processor=processor, sampling=self.sampling
+                    )
                 # elif self.calibration_mode == 'single_model':
                 #     self.fitted_model.function(processor.detector)               # todo: update
                 else:
@@ -377,7 +449,7 @@ class ModelFitting(ProblemSingleObjective):
 
                 logger.setLevel(prev_log_level)
 
-                simulated_data = self.get_simulated_data(processor=result_proc)
+                simulated_data = self.get_simulated_data(dataset=result)
 
                 weighting = None  # type: t.Optional[t.Union[np.ndarray, float]]
                 if self.weighting is not None:
@@ -426,19 +498,59 @@ class ModelFitting(ProblemSingleObjective):
 
         return parameters
 
-    # TODO: Check this
+    # # TODO: Check this
+    # def apply_parameters(
+    #     self, processor: Processor, parameter: np.ndarray
+    # ) -> Processor:
+    #     """Create a new ``Processor`` with new parameters."""
+    #     new_processor = self.update_processor(parameter=parameter, processor=processor)
+    #
+    #     if self.calibration_mode is CalibrationMode.Pipeline:
+    #         new_processor.run_pipeline()
+    #
+    #     return new_processor
+
     def apply_parameters(
         self, processor: Processor, parameter: np.ndarray
-    ) -> Processor:
+    ) -> t.Tuple[xr.Dataset, Processor]:
         """Create a new ``Processor`` with new parameters."""
         new_processor = self.update_processor(parameter=parameter, processor=processor)
 
-        if self.calibration_mode is CalibrationMode.Pipeline:
-            new_processor.run_pipeline()
+        result, result_proc = run_observation(
+            processor=new_processor, sampling=self.sampling
+        )
 
-        return new_processor
+        return result, result_proc
 
-    # TODO: Check this
+    # # TODO: Check this
+    # def apply_parameters_to_processors(self, parameters: xr.DataArray) -> pd.DataFrame:
+    #     """TBW."""
+    #     assert "island" in parameters.dims
+    #     assert "param_id" in parameters.dims
+    #
+    #     lst = []
+    #     for id_processor, processor in enumerate(self.param_processor_list):
+    #         delayed_processor = delayed(processor)
+    #
+    #         for idx_island, params_array in parameters.groupby("island"):
+    #             params = params_array.data  # type: np.ndarray
+    #
+    #             new_processor = delayed(self.apply_parameters)(
+    #                 processor=delayed_processor, parameter=params
+    #             )
+    #
+    #             lst.append(
+    #                 {
+    #                     "island": idx_island,
+    #                     "id_processor": id_processor,
+    #                     "processor": new_processor,
+    #                 }
+    #             )
+    #
+    #     df = pd.DataFrame(lst).sort_values(["island", "id_processor"])
+    #
+    #     return df
+
     def apply_parameters_to_processors(self, parameters: xr.DataArray) -> pd.DataFrame:
         """TBW."""
         assert "island" in parameters.dims
@@ -451,7 +563,7 @@ class ModelFitting(ProblemSingleObjective):
             for idx_island, params_array in parameters.groupby("island"):
                 params = params_array.data  # type: np.ndarray
 
-                new_processor = delayed(self.apply_parameters)(
+                result, result_processor = delayed(self.apply_parameters, nout=2)(
                     processor=delayed_processor, parameter=params
                 )
 
@@ -459,7 +571,8 @@ class ModelFitting(ProblemSingleObjective):
                     {
                         "island": idx_island,
                         "id_processor": id_processor,
-                        "processor": new_processor,
+                        "result": result,
+                        "processor": result_processor,
                     }
                 )
 

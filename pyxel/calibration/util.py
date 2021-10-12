@@ -16,6 +16,9 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 
+from pyxel.inputs.loader import load_datacube
+from pyxel.inputs.loader import load_image
+
 #  from pyxel.pipelines import Processor
 
 __all__ = [
@@ -84,7 +87,6 @@ def read_single_data(filename: Path) -> np.ndarray:
         TBW.
     """
     # Late import to avoid circular import
-    from pyxel.inputs.loader import load_image
 
     data = load_image(filename)
 
@@ -93,6 +95,41 @@ def read_single_data(filename: Path) -> np.ndarray:
     #     raise OSError(f"Input file '{filename}' can not be read by Pyxel.")
 
     return data
+
+
+def read_single_datacube(filename: Path) -> np.ndarray:
+    """Read a numpy array from a FITS or NPY file.
+
+    Parameters
+    ----------
+    filename : Path
+
+    Returns
+    -------
+    array
+        TBW.
+    """
+
+    data = load_datacube(filename)
+
+    # # TODO: Is it the right manner ?
+    # if data is None:
+    #     raise OSError(f"Input file '{filename}' can not be read by Pyxel.")
+
+    return data
+
+
+def read_datacubes(filenames: t.Sequence[Path]) -> t.Sequence[np.ndarray]:
+    """Read numpy array(s) from several FITS or NPY files.
+
+    :param filenames:
+    :return:
+    """
+    output = [
+        read_single_datacube(Path(filename)) for filename in filenames
+    ]  # type: t.Sequence[np.ndarray]
+
+    return output
 
 
 def read_data(filenames: t.Sequence[Path]) -> t.Sequence[np.ndarray]:

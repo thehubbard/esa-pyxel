@@ -29,6 +29,7 @@ except ImportError:
 
 if t.TYPE_CHECKING:
     from numpy.typing import ArrayLike
+    from pyxel.observation import Sampling
 
 
 class ArchipelagoLogs:
@@ -103,73 +104,127 @@ class ArchipelagoLogs:
         ]
 
 
-def extract_data_2d(df_processors: pd.DataFrame, rows: int, cols: int) -> xr.Dataset:
-    """Extract 'image', 'signal' and 'pixel' arrays from several delayed processors.
+# def extract_data_2d(df_processors: pd.DataFrame, rows: int, cols: int) -> xr.Dataset:
+#     """Extract 'image', 'signal' and 'pixel' arrays from several delayed processors.
+#
+#     Parameters
+#     ----------
+#     df_processors : DataFrame
+#         A dataframe with the columns 'island', 'id_processor' and 'processor'.
+#         Data under column 'processor' are ``Delayed`` ``Processor`` objects.
+#     rows : int
+#         rows and cols are extracted from the geometry of the processor
+#     cols : int
+#
+#     Returns
+#     -------
+#     Dataset
+#         TBW.
+#
+#     Examples
+#     --------
+#     >>> df
+#         island  id_processor                                          processor
+#     0        0             0  Delayed('apply_parameters-f74290ab-874e-44b3-b...
+#     2        0             1  Delayed('apply_parameters-467369d7-ea31-497e-a...
+#     4        0             2  Delayed('apply_parameters-5bebe432-128d-406c-b...
+#     6        0             3  Delayed('apply_parameters-28de0355-77c4-4a4d-b...
+#     8        0             4  Delayed('apply_parameters-dbe2b999-8d03-416b-b...
+#     10       0             5  Delayed('apply_parameters-482ec044-6245-42a5-9...
+#     1        1             0  Delayed('apply_parameters-8e0e9828-740a-4292-9...
+#     3        1             1  Delayed('apply_parameters-e1fe8b45-41da-4304-a...
+#     5        1             2  Delayed('apply_parameters-910ff196-e8c9-41ad-8...
+#     7        1             3  Delayed('apply_parameters-fa6c5430-752a-49b1-8...
+#     9        1             4  Delayed('apply_parameters-9a29b340-f0e0-48d0-8...
+#     11       1             5  Delayed('apply_parameters-5b8cf0e1-d62f-4fcb-9...
+#
+#     >>> rows, cols
+#     (835, 1)
+#     >>> extract_data_2d(df_processors=df, rows=rows, cols=cols)
+#     <xarray.Dataset>
+#     Dimensions:           (id_processor: 6, island: 2, x: 1, y: 835)
+#     Coordinates:
+#       * island            (island) int64 0 1
+#       * id_processor      (id_processor) int64 0 1 2 3 4 5
+#       * y                 (y) int64 0 1 2 3 4 5 6 7 ... 828 829 830 831 832 833 834
+#       * x                 (x) int64 0
+#     Data variables:
+#         simulated_image   (island, id_processor, y, x) float64 dask.array<chunksize=(1, 1, 835, 1), meta=np.ndarray>
+#         simulated_signal  (island, id_processor, y, x) float64 dask.array<chunksize=(1, 1, 835, 1), meta=np.ndarray>
+#         simulated_pixel   (island, id_processor, y, x) float64 dask.array<chunksize=(1, 1, 835, 1), meta=np.ndarray>
+#     """
+#     lst = []
+#     for _, row in df_processors.iterrows():
+#         island = row["island"]  # type: int
+#         id_processor = row["id_processor"]  # type: int
+#         processor = row["processor"]  # type: delayed.Delayed
+#
+#         image_delayed = processor.detector.image.array  # type: delayed.Delayed
+#         signal_delayed = processor.detector.signal.array  # type: delayed.Delayed
+#         pixel_delayed = processor.detector.pixel.array  # type: delayed.Delayed
+#
+#         image_2d = da.from_delayed(image_delayed, shape=(rows, cols), dtype=float)
+#         signal_2d = da.from_delayed(signal_delayed, shape=(rows, cols), dtype=float)
+#         pixel_2d = da.from_delayed(pixel_delayed, shape=(rows, cols), dtype=float)
+#
+#         partial_ds = xr.Dataset()
+#         partial_ds["simulated_image"] = xr.DataArray(image_2d, dims=["y", "x"])
+#         partial_ds["simulated_signal"] = xr.DataArray(signal_2d, dims=["y", "x"])
+#         partial_ds["simulated_pixel"] = xr.DataArray(pixel_2d, dims=["y", "x"])
+#
+#         lst.append(
+#             partial_ds.assign_coords(
+#                 island=island,
+#                 id_processor=id_processor,
+#             ).expand_dims(["island", "id_processor"])
+#         )
+#
+#     ds = xr.combine_by_coords(lst).assign_coords(
+#         y=range(rows),
+#         x=range(cols),
+#     )  # type: xr.Dataset
+#
+#     return ds
 
-    Parameters
-    ----------
-    df_processors : DataFrame
-        A dataframe with the columns 'island', 'id_processor' and 'processor'.
-        Data under column 'processor' are ``Delayed`` ``Processor`` objects.
-    rows : int
-        rows and cols are extracted from the geometry of the processor
-    cols : int
 
-    Returns
-    -------
-    Dataset
-        TBW.
-
-    Examples
-    --------
-    >>> df
-        island  id_processor                                          processor
-    0        0             0  Delayed('apply_parameters-f74290ab-874e-44b3-b...
-    2        0             1  Delayed('apply_parameters-467369d7-ea31-497e-a...
-    4        0             2  Delayed('apply_parameters-5bebe432-128d-406c-b...
-    6        0             3  Delayed('apply_parameters-28de0355-77c4-4a4d-b...
-    8        0             4  Delayed('apply_parameters-dbe2b999-8d03-416b-b...
-    10       0             5  Delayed('apply_parameters-482ec044-6245-42a5-9...
-    1        1             0  Delayed('apply_parameters-8e0e9828-740a-4292-9...
-    3        1             1  Delayed('apply_parameters-e1fe8b45-41da-4304-a...
-    5        1             2  Delayed('apply_parameters-910ff196-e8c9-41ad-8...
-    7        1             3  Delayed('apply_parameters-fa6c5430-752a-49b1-8...
-    9        1             4  Delayed('apply_parameters-9a29b340-f0e0-48d0-8...
-    11       1             5  Delayed('apply_parameters-5b8cf0e1-d62f-4fcb-9...
-
-    >>> rows, cols
-    (835, 1)
-    >>> extract_data_2d(df_processors=df, rows=rows, cols=cols)
-    <xarray.Dataset>
-    Dimensions:           (id_processor: 6, island: 2, x: 1, y: 835)
-    Coordinates:
-      * island            (island) int64 0 1
-      * id_processor      (id_processor) int64 0 1 2 3 4 5
-      * y                 (y) int64 0 1 2 3 4 5 6 7 ... 828 829 830 831 832 833 834
-      * x                 (x) int64 0
-    Data variables:
-        simulated_image   (island, id_processor, y, x) float64 dask.array<chunksize=(1, 1, 835, 1), meta=np.ndarray>
-        simulated_signal  (island, id_processor, y, x) float64 dask.array<chunksize=(1, 1, 835, 1), meta=np.ndarray>
-        simulated_pixel   (island, id_processor, y, x) float64 dask.array<chunksize=(1, 1, 835, 1), meta=np.ndarray>
-    """
+def extract_data_3d(
+    df_results: pd.DataFrame,
+    rows: int,
+    cols: int,
+    times: int,
+    readout_times: np.ndarray,
+) -> xr.Dataset:
+    """Extract 'image', 'signal' and 'pixel' arrays from several delayed dynamic results."""
     lst = []
-    for _, row in df_processors.iterrows():
+    for _, row in df_results.iterrows():
         island = row["island"]  # type: int
         id_processor = row["id_processor"]  # type: int
-        processor = row["processor"]  # type: delayed.Delayed
+        result = row["result"]  # type: delayed.Delayed
 
-        image_delayed = processor.detector.image.array  # type: delayed.Delayed
-        signal_delayed = processor.detector.signal.array  # type: delayed.Delayed
-        pixel_delayed = processor.detector.pixel.array  # type: delayed.Delayed
+        image_delayed = result["image"]  # type: delayed.Delayed
+        signal_delayed = result["signal"]  # type: delayed.Delayed
+        pixel_delayed = result["pixel"]  # type: delayed.Delayed
 
-        image_2d = da.from_delayed(image_delayed, shape=(rows, cols), dtype=float)
-        signal_2d = da.from_delayed(signal_delayed, shape=(rows, cols), dtype=float)
-        pixel_2d = da.from_delayed(pixel_delayed, shape=(rows, cols), dtype=float)
+        image_3d = da.from_delayed(
+            image_delayed, shape=(times, rows, cols), dtype=float
+        )
+        signal_3d = da.from_delayed(
+            signal_delayed, shape=(times, rows, cols), dtype=float
+        )
+        pixel_3d = da.from_delayed(
+            pixel_delayed, shape=(times, rows, cols), dtype=float
+        )
 
         partial_ds = xr.Dataset()
-        partial_ds["simulated_image"] = xr.DataArray(image_2d, dims=["y", "x"])
-        partial_ds["simulated_signal"] = xr.DataArray(signal_2d, dims=["y", "x"])
-        partial_ds["simulated_pixel"] = xr.DataArray(pixel_2d, dims=["y", "x"])
+        partial_ds["simulated_image"] = xr.DataArray(
+            image_3d, dims=["readout_time", "y", "x"]
+        )
+        partial_ds["simulated_signal"] = xr.DataArray(
+            signal_3d, dims=["readout_time", "y", "x"]
+        )
+        partial_ds["simulated_pixel"] = xr.DataArray(
+            pixel_3d, dims=["readout_time", "y", "x"]
+        )
 
         lst.append(
             partial_ds.assign_coords(
@@ -179,6 +234,7 @@ def extract_data_2d(df_processors: pd.DataFrame, rows: int, cols: int) -> xr.Dat
         )
 
     ds = xr.combine_by_coords(lst).assign_coords(
+        readout_time=readout_times,
         y=range(rows),
         x=range(cols),
     )  # type: xr.Dataset
@@ -286,6 +342,7 @@ class MyArchipelago:
 
     def run_evolve(
         self,
+        sampling: "Sampling",
         num_evolutions: int = 1,
         num_best_decisions: t.Optional[int] = None,
     ) -> t.Tuple[xr.Dataset, pd.DataFrame, pd.DataFrame]:
@@ -363,27 +420,38 @@ class MyArchipelago:
         last_champions = champions.isel(evolution=-1)
 
         # Get the processor(s) in a `DataFrame`
-        df_processors = self.problem.apply_parameters_to_processors(
+        df_results = self.problem.apply_parameters_to_processors(
             parameters=last_champions["champion_parameters"],
         )  # type: pd.DataFrame
 
         assert isinstance(self.problem.sim_fit_range, tuple)
-        slice_rows, slice_cols = self.problem.sim_fit_range
+        slice_times, slice_rows, slice_cols = self.problem.sim_fit_range
 
         geometry = self.problem.processor.detector.geometry
+        no_times = len(sampling.times)
 
         # Extract simulated 'image', 'signal' and 'pixel' from the processors
-        all_simulated_full = extract_data_2d(
-            df_processors=df_processors,
+        all_simulated_full = extract_data_3d(
+            df_results=df_results,
             rows=geometry.row,
             cols=geometry.col,
+            times=no_times,
+            readout_times=sampling.times,
         )
 
         # Get the target data
-        all_data_fit_range = all_simulated_full.sel(y=slice_rows, x=slice_cols)
-        all_data_fit_range["target"] = xr.DataArray(
-            self.problem.all_target_data, dims=["id_processor", "y", "x"]
+        all_data_fit_range = all_simulated_full.sel(
+            y=slice_rows, x=slice_cols, readout_time=slice_times
         )
+        if sampling.time_domain_simulation:
+            all_data_fit_range["target"] = xr.DataArray(
+                self.problem.all_target_data,
+                dims=["id_processor", "readout_time", "y", "x"],
+            )
+        else:
+            all_data_fit_range["target"] = xr.DataArray(
+                self.problem.all_target_data, dims=["id_processor", "y", "x"]
+            )
 
         ds = xr.merge([champions, all_data_fit_range])  # type: xr.Dataset
 
@@ -394,7 +462,41 @@ class MyArchipelago:
 
         ds = ds.assign_coords({"param_id": range(ds.dims["param_id"])})
 
-        return ds, df_processors, df_all_logs
+        return ds, df_results, df_all_logs
+
+        # # Get the processor(s) in a `DataFrame`
+        # df_processors = self.problem.apply_parameters_to_processors(
+        #     parameters=last_champions["champion_parameters"],
+        # )  # type: pd.DataFrame
+        #
+        # assert isinstance(self.problem.sim_fit_range, tuple)
+        # slice_rows, slice_cols = self.problem.sim_fit_range
+        #
+        # geometry = self.problem.processor.detector.geometry
+        #
+        # # Extract simulated 'image', 'signal' and 'pixel' from the processors
+        # all_simulated_full = extract_data_2d(
+        #     df_processors=df_processors,
+        #     rows=geometry.row,
+        #     cols=geometry.col,
+        # )
+        #
+        # # Get the target data
+        # all_data_fit_range = all_simulated_full.sel(y=slice_rows, x=slice_cols)
+        # all_data_fit_range["target"] = xr.DataArray(
+        #     self.problem.all_target_data, dims=["id_processor", "y", "x"]
+        # )
+        #
+        # ds = xr.merge([champions, all_data_fit_range])  # type: xr.Dataset
+        #
+        # ds.attrs["num_islands"] = self.num_islands
+        # ds.attrs["population_size"] = self.algorithm.population_size
+        # ds.attrs["num_evolutions"] = num_evolutions
+        # ds.attrs["generations"] = self.algorithm.generations
+        #
+        # ds = ds.assign_coords({"param_id": range(ds.dims["param_id"])})
+        #
+        # return ds, df_processors, df_all_logs
 
     def _get_champions(self) -> xr.Dataset:
         """Extract the champions.
