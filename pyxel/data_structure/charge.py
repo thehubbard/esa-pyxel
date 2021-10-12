@@ -51,8 +51,8 @@ class Charge(Particle):
 
         self.frame = self.EMPTY_FRAME.copy()  # type: pd.DataFrame
 
-    def add_charge(
-        self,
+    @staticmethod
+    def create_charges(
         *,
         particle_type: str,  # TODO: Use Enum
         particles_per_cluster: np.ndarray,
@@ -63,19 +63,26 @@ class Charge(Particle):
         init_ver_velocity: np.ndarray,
         init_hor_velocity: np.ndarray,
         init_z_velocity: np.ndarray,
-    ) -> None:
-        """Create new charge or group of charge inside the detector stored in a pandas DataFrame.
+    ) -> pd.DataFrame:
+        """Create new charge(s) or group of charge(s) as a `DataFrame`.
 
-        :param particle_type:
-        :param particles_per_cluster:
-        :param init_energy:
-        :param init_ver_position:
-        :param init_hor_position:
-        :param init_z_position:
-        :param init_ver_velocity:
-        :param init_hor_velocity:
-        :param init_z_velocity:
-        :return:
+        Parameters
+        ----------
+        particle_type : str
+            Type of particle. Valid values: 'e' for an electron or 'h' for a hole.
+        particles_per_cluster : array-like
+        init_energy : array-like
+        init_ver_position : array-like
+        init_hor_position : array-like
+        init_z_position : array-like
+        init_ver_velocity : array-like
+        init_hor_velocity : array-like
+        init_z_velocity : array-like
+
+        Returns
+        -------
+        dataframe
+            Charge(s) stored in a `DataFrame`.
         """
         if not (
             len(particles_per_cluster)
@@ -137,10 +144,68 @@ class Charge(Particle):
             "velocity_z": init_z_velocity,
         }  # type: t.Mapping[str, t.Union[t.Sequence, np.ndarray]]
 
-        # Create a new `DataFrame
-        new_charge_df = pd.DataFrame(
-            new_charges, index=range(self.nextid, self.nextid + elements)
-        )
+        return pd.DataFrame(new_charges)
 
-        self.nextid = self.nextid + elements
-        self.frame = self.frame.append(new_charge_df, sort=False)
+    def add_charge_dataframe(self, new_charges: pd.DataFrame) -> None:
+        """Add new charge(s) or group of charge(s) inside the detector.
+
+        Parameters
+        ----------
+        new_charges : DataFrame
+            Charges as a `DataFrame`
+        """
+        if set(new_charges.columns) != set(self.columns):
+            expected_columns = ", ".join(map(repr, self.columns))  # type: str
+            raise ValueError(f"Expected columns: {expected_columns}")
+
+        new_frame = self.frame.append(new_charges, ignore_index=True)
+
+        # Get last 'id'
+        last_id = new_frame.index[-1]  # type: int
+
+        self.frame = new_frame
+        self.nextid = last_id + 1
+
+    def add_charge(
+        self,
+        *,
+        particle_type: str,  # TODO: Use Enum
+        particles_per_cluster: np.ndarray,
+        init_energy: np.ndarray,
+        init_ver_position: np.ndarray,
+        init_hor_position: np.ndarray,
+        init_z_position: np.ndarray,
+        init_ver_velocity: np.ndarray,
+        init_hor_velocity: np.ndarray,
+        init_z_velocity: np.ndarray,
+    ) -> None:
+        """Add new charge(s) or group of charge(s) inside the detector.
+
+        Parameters
+        ----------
+        particle_type : str
+            Type of particle. Valid values: 'e' for an electron or 'h' for a hole.
+        particles_per_cluster : array-like
+        init_energy : array-like
+        init_ver_position : array-like
+        init_hor_position : array-like
+        init_z_position : array-like
+        init_ver_velocity : array-like
+        init_hor_velocity : array-like
+        init_z_velocity : array-like
+        """
+        # Create charge(s)
+        new_charges = Charge.create_charges(
+            particle_type=particle_type,
+            particles_per_cluster=particles_per_cluster,
+            init_energy=init_energy,
+            init_ver_position=init_ver_position,
+            init_hor_position=init_hor_position,
+            init_z_position=init_z_position,
+            init_ver_velocity=init_ver_velocity,
+            init_hor_velocity=init_hor_velocity,
+            init_z_velocity=init_z_velocity,
+        )  # type: pd.DataFrame
+
+        # Add charge(s)
+        self.add_charge_dataframe(new_charges=new_charges)
