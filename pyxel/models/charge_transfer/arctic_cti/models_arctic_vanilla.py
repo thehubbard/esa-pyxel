@@ -10,25 +10,21 @@
 #  this file, may be copied, modified, propagated, or distributed except according to
 #  the terms contained in the file ‘LICENCE.txt’.
 
+"""TBW."""
+
 import typing as t
 
-import arcticpy as ac
 import numpy as np
 
 from pyxel.detectors import CCD
 
+try:
+    import arcticpy as ac
 
-def _create_traps(instant_traps: t.Sequence[t.Mapping[str, float]]) -> t.List[ac.TrapInstantCapture]:
-    """Create traps
-
-    Parameters
-    ----------
-    instant_traps
-
-    Returns
-    -------
-
-    """
+    WITH_ARTICPY = True
+except ImportError:
+    # No 'arcticpy' library
+    WITH_ARTICPY = False
 
 
 def arctic_add(
@@ -38,8 +34,22 @@ def arctic_add(
     trap_release_timescales: list,
     express: int = 0,
     # instant_traps: t.Sequence[t.Mapping[str, float]],
-
 ) -> None:
+    """Add trap species.
+
+    Parameters
+    ----------
+    detector : CCD
+    well_fill_power
+    trap_densities
+    trap_release_timescales
+    express
+    """
+    if not WITH_ARTICPY:
+        raise RuntimeError(
+            "ArCTIC python wrapper is not installed ! "
+            "See https://github.com/jkeger/arctic"
+        )
 
     ccd = ac.CCD(
         phases=[
@@ -52,7 +62,7 @@ def arctic_add(
 
     roe = ac.ROE()
 
-    traps = []
+    traps = []  # type: t.List[ac.TrapInstantCapture]
     i = 0
     for trap_density in trap_densities:
 
@@ -61,14 +71,15 @@ def arctic_add(
         ]  # type: t.Sequence[t.Mapping[str, float]]
 
         # Build the traps
-        # type: t.List[ac.TrapInstantCapture]
         for trap_info in instant_traps:
             density = trap_info["density"]  # type: float
             release_timescale = trap_info["release_timescale"]  # type: float
-            trap = ac.TrapInstantCapture(density=density, release_timescale=release_timescale)
+            trap = ac.TrapInstantCapture(
+                density=density, release_timescale=release_timescale
+            )
             traps.append(trap)
         # Add CTI
-        i+=1
+        i += 1
 
     image_2d = np.asarray(detector.pixel.array, dtype=float)  # type: np.ndarray
 
@@ -78,7 +89,7 @@ def arctic_add(
         parallel_ccd=ccd,
         parallel_roe=roe,
         parallel_express=express,
-        verbosity=0
+        verbosity=0,
     )
 
     detector.pixel.array = image_cti_added_2d
@@ -91,6 +102,21 @@ def arctic_remove(
     num_iterations: int,
     express: int = 0,
 ) -> None:
+    """Remove trap species.
+
+    Parameters
+    ----------
+    detector
+    well_fill_power
+    instant_traps
+    num_iterations
+    express
+    """
+    if not WITH_ARTICPY:
+        raise RuntimeError(
+            "ArCTIC python wrapper is not installed ! "
+            "See https://github.com/jkeger/arctic"
+        )
 
     ccd = ac.CCD(
         well_fill_power=well_fill_power, full_well_depth=detector.characteristics.fwc
