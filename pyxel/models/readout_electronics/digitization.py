@@ -10,7 +10,7 @@ import logging
 
 import numpy as np
 
-from pyxel.detectors import Detector
+from pyxel.detectors import MKID, Detector
 
 # from astropy import units as u
 
@@ -20,7 +20,7 @@ from pyxel.detectors import Detector
 # @config.argument(name='data_type', label='type of output data array', units='ADU',
 #                  validate=checkers.check_choices(['numpy.uint16', 'numpy.uint32', 'numpy.uint64',
 #                                                   'numpy.int32', 'numpy.int64']))
-def simple_digitization(detector: Detector, data_type: str = "uint16") -> None:
+def simple_digitization(detector: MKID, data_type: str = "uint16") -> None:
     """Digitize signal array mimicking readout electronics.
 
     :param detector: Pyxel Detector object
@@ -63,6 +63,24 @@ def simple_processing(detector: Detector) -> None:
     logging.info("")
     detector.signal.array *= detector.characteristics.a2
     detector.image.array = detector.signal.array
+
+
+def basic_processing(detector: Detector) -> None:
+    """Create an image array from signal array.
+
+    :param detector: Pyxel Detector object
+    """
+
+    detector.image.array = detector.signal.array
+
+
+def phase_conversion(detector: MKID) -> None:
+    """Create an image array from phase array.
+
+    :param detector: Pyxel Detector object
+    """
+
+    detector.image.array = detector.phase.array
 
 
 def sar_adc(detector: Detector, adc_bits: int = 16, range_volt: tuple = (0, 5)) -> None:

@@ -14,10 +14,13 @@ from .environment import Environment
 from .detector import Detector
 from .ccd import CCD
 from .cmos import CMOS
+from .MKID_array import MKID
 from .geometry import Geometry
 from .ccd_geometry import CCDGeometry
 from .cmos_geometry import CMOSGeometry
+from .mkid_geometry import MKIDGeometry
 from .characteristics import Characteristics
 from .ccd_characteristics import CCDCharacteristics
 from .cmos_characteristics import CMOSCharacteristics
+from .mkid_characteristics import MKIDCharacteristics
 from .optics import Optics

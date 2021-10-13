@@ -7,12 +7,15 @@
 
 """TBW."""
 
-# flake8: noqa
-from .array import Array
-from .particle import Particle
-from .photon import Photon
-from .pixel import Pixel
-from .signal import Signal
-from .charge import Charge
-from .image import Image
-from .phase import Phase
+import logging
+
+from pyxel.detectors import MKID
+
+
+def dead_time_filter(detector: MKID, dead_time: float) -> None:
+    """TBW."""
+    logging.info("")
+
+    maximum_count = 1.0 / dead_time
+
+    detector.phase.array[detector.phase.array >= maximum_count] = maximum_count

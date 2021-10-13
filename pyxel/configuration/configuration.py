@@ -28,12 +28,15 @@ from pyxel.calibration import Algorithm, Calibration
 from pyxel.detectors import (
     CCD,
     CMOS,
+    MKID,
     CCDCharacteristics,
     CCDGeometry,
     CMOSCharacteristics,
     CMOSGeometry,
     Environment,
     Material,
+    MKIDCharacteristics,
+    MKIDGeometry,
 )
 from pyxel.dynamic import Dynamic
 from pyxel.evaluator import evaluate_reference
@@ -60,6 +63,7 @@ class Configuration:
     dynamic: t.Optional[Dynamic] = attr.ib(default=None)
     ccd_detector: t.Optional[CCD] = attr.ib(default=None)
     cmos_detector: t.Optional[CMOS] = attr.ib(default=None)
+    mkid_detector: t.Optional[MKID] = attr.ib(default=None)
 
 
 def load(yaml_file: t.Union[str, Path]) -> Configuration:
@@ -430,6 +434,20 @@ def to_cmos_geometry(dct: dict) -> CMOSGeometry:
     return CMOSGeometry(**dct)
 
 
+def to_mkid_geometry(dct: dict) -> MKIDGeometry:
+    """Create a MKIDGeometry class from a dictionary.
+
+    Parameters
+    ----------
+    dct
+
+    Returns
+    -------
+    MKIDGeometry
+    """
+    return MKIDGeometry(**dct)
+
+
 def to_material(dct: t.Optional[dict]) -> Material:
     """Create a Material class from a dictionary.
 
@@ -494,6 +512,22 @@ def to_cmos_characteristics(dct: t.Optional[dict]) -> CMOSCharacteristics:
     return CMOSCharacteristics(**dct)
 
 
+def to_mkid_characteristics(dct: t.Optional[dict]) -> MKIDCharacteristics:
+    """Create a MKIDCharacteristics class from a dictionary.
+
+    Parameters
+    ----------
+    dct
+
+    Returns
+    -------
+    MKIDCharacteristics
+    """
+    if dct is None:
+        dct = {}
+    return MKIDCharacteristics(**dct)
+
+
 def to_ccd(dct: dict) -> CCD:
     """Create a CCD class from a dictionary.
 
@@ -529,6 +563,25 @@ def to_cmos(dct: dict) -> CMOS:
         material=to_material(dct["material"]),
         environment=to_environment(dct["environment"]),
         characteristics=to_cmos_characteristics(dct["characteristics"]),
+    )
+
+
+def to_mkid_array(dct: dict) -> MKID:
+    """Create an MKIDarray class from a dictionary.
+
+    Parameters
+    ----------
+    dct
+
+    Returns
+    -------
+    MKID-array
+    """
+    return MKID(
+        geometry=to_mkid_geometry(dct["geometry"]),
+        material=to_material(dct["material"]),
+        environment=to_environment(dct["environment"]),
+        characteristics=to_mkid_characteristics(dct["characteristics"]),
     )
 
 
@@ -620,8 +673,10 @@ def build_configuration(dct: dict) -> Configuration:
         configuration.ccd_detector = to_ccd(dct["ccd_detector"])
     elif "cmos_detector" in dct:
         configuration.cmos_detector = to_cmos(dct["cmos_detector"])
+    elif "mkid_detector" in dct:
+        configuration.mkid_detector = to_mkid_array(dct["mkid_detector"])
     else:
-        raise (ValueError("No detector configuration provided."))
+        raise ValueError("No detector configuration provided.")
 
     return configuration
 

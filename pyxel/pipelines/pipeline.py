@@ -19,6 +19,7 @@ class DetectionPipeline:
         self,  # TODO: Too many instance attributes
         photon_generation: t.Optional[ModelGroup] = None,
         optics: t.Optional[ModelGroup] = None,
+        phasing: t.Optional[ModelGroup] = None,
         charge_generation: t.Optional[ModelGroup] = None,
         charge_collection: t.Optional[ModelGroup] = None,
         charge_transfer: t.Optional[ModelGroup] = None,
@@ -32,6 +33,7 @@ class DetectionPipeline:
 
         self.photon_generation = photon_generation  # type: t.Optional[ModelGroup]
         self.optics = optics  # type: t.Optional[ModelGroup]
+        self.phasing = phasing  # type: t.Optional[ModelGroup] # MKID-array
         self.charge_generation = charge_generation  # type: t.Optional[ModelGroup]
         self.charge_collection = charge_collection  # type: t.Optional[ModelGroup]
         self.charge_measurement = charge_measurement  # type: t.Optional[ModelGroup]
@@ -44,6 +46,7 @@ class DetectionPipeline:
         self.MODEL_GROUPS = (
             "photon_generation",
             "optics",
+            "phasing",
             "charge_generation",
             "charge_collection",
             "charge_transfer",

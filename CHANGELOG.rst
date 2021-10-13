@@ -7,12 +7,15 @@ version 0.11 / UNRELEASED-YYYY-MM-DD
 
 Core
 ~~~~
+
 * Output folder already existing when running 'load' two times.
   (See `!232 <https://gitlab.com/esa/pyxel/-/merge_requests/232>`_).
 * Implement normalisation for calibration mode.
   (See `!266 <https://gitlab.com/esa/pyxel/-/merge_requests/266>`_).
 * Refactor class `Charge`.
   (See `!271 <https://gitlab.com/esa/pyxel/-/merge_requests/271>`_).
+* Add new detector MKID. `Enrico Biancalani <https://gitlab.com/Dr_Bombero>`
+  (See `!206 <https://gitlab.com/esa/pyxel/-/merge_requests/206>`_).
 
 Documentation
 ~~~~~~~~~~~~~
@@ -146,6 +149,8 @@ Core
   (See `!198 <https://gitlab.com/esa/pyxel/-/merge_requests/198>`_).
 * Refactoring class `Arguments.
   (See `!203 <https://gitlab.com/esa/pyxel/-/merge_requests/203>`_).
+* Add new detector MKID. `Enrico Biancalani <https://gitlab.com/Dr_Bombero>`
+  (See `!206 <https://gitlab.com/esa/pyxel/-/merge_requests/206>`_).
 
 Others
 ~~~~~~

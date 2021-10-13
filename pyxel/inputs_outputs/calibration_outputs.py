@@ -15,7 +15,6 @@ from pathlib import Path
 
 # import attr
 import dask.delayed as delayed
-import h5py as h5
 import numpy as np
 import pandas as pd
 import xarray as xr
@@ -258,27 +257,11 @@ class CalibrationOutputs:
 
         full_filename = filename.resolve()  # type: Path
 
-        with h5.File(full_filename, "w") as h5file:
-            h5file.attrs["pyxel-version"] = str(version)
-            if name == "detector":
-                detector_grp = h5file.create_group("detector")
-                for array, name in zip(
-                    [
-                        data.signal.array,
-                        data.image.array,
-                        data.photon.array,
-                        data.pixel.array,
-                        data.charge.frame,
-                    ],
-                    ["Signal", "Image", "Photon", "Pixel", "Charge"],
-                ):
-                    dataset = detector_grp.create_dataset(name, shape=np.shape(array))
-                    dataset[:] = array
-            else:
-                raise NotImplementedError
-                # detector_grp = h5file.create_group("data")
-                # dataset = detector_grp.create_dataset(name, shape=np.shape(data))
-                # dataset[:] = data
+        if name == "detector":
+            data.to_hdf5(filename=full_filename)
+        else:
+            raise NotImplementedError
+
         return filename
 
     def save_to_txt(
