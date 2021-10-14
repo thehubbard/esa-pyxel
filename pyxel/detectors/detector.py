@@ -129,6 +129,27 @@ class Detector:
             self._signal = Signal(self.geometry)
             self._image = Image(self.geometry)
 
+    def empty(self, empty_all: bool = True) -> None:
+        """Empties the data in the detector.
+
+        Returns
+        -------
+        None
+        """
+        if self._photon:
+            self.photon.array *= 0
+        if empty_all:
+            if self._charge:
+                self.charge.nextid = 0
+                self.charge.frame = self.charge.frame[0:0]
+            if self._pixel:
+                self.pixel.array *= 0
+            if self._signal:
+                self.signal.array *= 0
+            if self._image:
+                self.image.array *= 0
+
+
     # TODO: Set an `Output` object ?
     # TODO: Is it really needed ?
     def set_output_dir(self, path: t.Union[str, Path]) -> None:

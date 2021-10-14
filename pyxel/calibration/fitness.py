@@ -8,10 +8,12 @@
 """Fitness functions for model fitting."""
 
 import typing as t
+import numba
 
 import numpy as np
 
 
+@numba.njit()
 def sum_of_abs_residuals(
     simulated: np.ndarray,
     target: np.ndarray,
@@ -30,18 +32,16 @@ def sum_of_abs_residuals(
     array
         TBW.
     """
-    try:
-        diff = target.astype(float) - simulated.astype(float)
-    except AttributeError:
-        diff = float(target) - float(simulated)
+    diff = target - simulated
 
     if weighting is not None:
         diff *= weighting
 
-    result = float(np.sum(np.abs(diff)))
+    result = np.sum(np.abs(diff))  # type: float
     return result
 
 
+@numba.njit()
 def sum_of_squared_residuals(
     simulated: np.ndarray,
     target: np.ndarray,
@@ -60,10 +60,8 @@ def sum_of_squared_residuals(
     array
         TBW.
     """
-    try:
-        diff = target.astype(float) - simulated.astype(float)
-    except AttributeError:
-        diff = float(target) - float(simulated)
+    diff = target - simulated
+
     diff_square = diff * diff
 
     if weighting is not None:
