@@ -232,7 +232,7 @@ def check_ranges(
             if readout_times is None:
                 raise ValueError("Target data is not a 3 dimensional array")
 
-            for i in [4, 5]:
+            for i in [0, 1]:
                 # TODO: It could be refactor in a more pythonic way (this is optional)
                 if not (0 <= target_fit_range[i] <= readout_times):
                     raise ValueError("Value of target fit range is wrong")
