@@ -132,15 +132,14 @@ class DaskBFE:
             fitness_2d = fitness_func(dvs_2d)  # type: da.Array
             fitness_1d = fitness_2d.ravel()  # type: da.Array
 
-            return fitness_1d
-
-        except Exception as exc:
+        except Exception:
             logging.exception(
-                "Catch an exception in 'fitness' for ModelFitting: %r. exc: %r",
-                self,
-                exc,
+                "Caught an exception in 'fitness' for ModelFitting."
             )
             raise
+
+        else:
+            return fitness_1d
 
     def get_name(self) -> str:
         """Return name of this evaluator."""

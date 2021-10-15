@@ -20,6 +20,7 @@ from .util import (
     list_to_slice,
     read_data,
     read_datacubes,
+    list_to_3d_slice
 )
 from .archipelago import MyArchipelago
 from .calibration import Calibration, CalibrationMode

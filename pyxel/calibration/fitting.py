@@ -22,7 +22,6 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 from typing_extensions import Literal
-from pyxel.observation import run_observation
 
 from pyxel.calibration import (
     CalibrationMode,
@@ -30,21 +29,24 @@ from pyxel.calibration import (
     ResultType,
     check_ranges,
     list_to_slice,
+    list_to_3d_slice,
     read_data,
     read_datacubes,
 )
+from pyxel.observation import run_observation
 from pyxel.parametric.parameter_values import ParameterValues
 from pyxel.pipelines import Processor
 
 if t.TYPE_CHECKING:
     from numpy.typing import ArrayLike
+
     from pyxel.observation import Sampling
 
 
 class ModelFitting(ProblemSingleObjective):
     """Pygmo problem class to fit data with any model in Pyxel."""
 
-    def __init__(self, processor: Processor, variables: t.Sequence[ParameterValues]):
+    def __init__(self, processor: Processor, variables: t.Sequence[ParameterValues], sampling: "Sampling"):
         self.processor = processor  # type: Processor
         self.variables = variables  # type: t.Sequence[ParameterValues]
 
@@ -52,7 +54,7 @@ class ModelFitting(ProblemSingleObjective):
         self.original_processor = None  # type: t.Optional[Processor]
         self.generations = None  # type: t.Optional[int]
         self.pop = None  # type: t.Optional[int]
-        self.sampling = None  # type: t.Optional[Sampling]
+        self.sampling = sampling  # type: Sampling
 
         self.all_target_data = []  # type: t.List[np.ndarray]
         self.weighting = (
@@ -73,12 +75,8 @@ class ModelFitting(ProblemSingleObjective):
         self.lbd = []  # type: t.Sequence[float]  # lower boundary
         self.ubd = []  # type: t.Sequence[float]  # upper boundary
 
-        self.sim_fit_range = slice(
-            None
-        )  # type: t.Union[slice, t.Tuple[slice, slice], t.Tuple[slice, slice, slice]]
-        self.targ_fit_range = slice(
-            None
-        )  # type: t.Union[slice, t.Tuple[slice, slice], t.Tuple[slice, slice, slice]]
+        self.sim_fit_range = (slice(None), slice(None), slice(None))  # type: t.Tuple[slice, slice, slice]
+        self.targ_fit_range = (slice(None), slice(None))  # type: t.Union[t.Tuple[slice, slice], t.Tuple[slice, slice, slice]]
 
         self.match = {}  # type: t.Dict[int, t.List[str]]
 
@@ -101,7 +99,6 @@ class ModelFitting(ProblemSingleObjective):
         calibration_mode: CalibrationMode,
         simulation_output: ResultType,
         fitness_func: t.Callable,
-        sampling: "Sampling",
         population_size: int,
         generations: int,
         file_path: t.Optional[Path],
@@ -135,7 +132,6 @@ class ModelFitting(ProblemSingleObjective):
         self.fitness_func = fitness_func
         self.pop = population_size
         self.generations = generations
-        self.sampling = sampling
 
         # TODO: Remove 'assert'
         # assert isinstance(self.pop, int)
@@ -183,10 +179,10 @@ class ModelFitting(ProblemSingleObjective):
         self.file_path = file_path
 
         if self.sampling.time_domain_simulation:
-            target_list = read_datacubes(
+            target_list_3d = read_datacubes(
                 filenames=target_output
             )  # type: t.Sequence[np.ndarray]
-            times, rows, cols = target_list[0].shape
+            times, rows, cols = target_list_3d[0].shape
             check_ranges(
                 target_fit_range=target_fit_range,
                 out_fit_range=out_fit_range,
@@ -195,15 +191,15 @@ class ModelFitting(ProblemSingleObjective):
                 readout_times=times,
             )
             self.targ_fit_range = list_to_slice(target_fit_range)
-            self.sim_fit_range = list_to_slice(out_fit_range)
-            for target in target_list:  # type: np.ndarray
-                self.all_target_data += [target[self.targ_fit_range]]
+            self.sim_fit_range = list_to_3d_slice(out_fit_range)
+            for target_3d in target_list_3d:  # type: np.ndarray
+                self.all_target_data += [target_3d[self.targ_fit_range]]
 
         else:
-            target_list = read_data(
+            target_list_2d = read_data(
                 filenames=target_output
             )  # type: t.Sequence[np.ndarray]
-            rows, cols = target_list[0].shape
+            rows, cols = target_list_2d[0].shape
             check_ranges(
                 target_fit_range=target_fit_range,
                 out_fit_range=out_fit_range,
@@ -211,10 +207,10 @@ class ModelFitting(ProblemSingleObjective):
                 cols=cols,
             )
             self.targ_fit_range = list_to_slice(target_fit_range)
-            out_fit_range = [None, None] + out_fit_range
-            self.sim_fit_range = list_to_slice(out_fit_range)
-            for target in target_list:  # type: np.ndarray
-                self.all_target_data += [target[self.targ_fit_range]]
+            out_fit_range = [None, None] + out_fit_range  # type: ignore
+            self.sim_fit_range = list_to_3d_slice(out_fit_range)
+            for target_2d in target_list_2d:  # type: np.ndarray
+                self.all_target_data += [target_2d[self.targ_fit_range]]
 
             self._configure_weights(
                 weights=weights, weights_from_file=weights_from_file
@@ -234,7 +230,7 @@ class ModelFitting(ProblemSingleObjective):
 
         Returns
         -------
-
+        None
         """
         if weights_from_file is not None:
             if self.sampling.time_domain_simulation:
@@ -304,24 +300,31 @@ class ModelFitting(ProblemSingleObjective):
     def get_simulated_data(self, dataset: xr.Dataset) -> np.ndarray:
         """Extract 2D data from a processor."""
         if self.sim_output == ResultType.Image:
-            simulated_data = dataset["image"].data[
+            simulated_image = dataset["image"].data[
                 self.sim_fit_range
             ]  # type: np.ndarray
+            if not self.sampling.time_domain_simulation:
+                return simulated_image[0]
+            else:
+                return simulated_image
         elif self.sim_output == ResultType.Signal:
-            simulated_data = dataset["signal"].data[
+            simulated_signal = dataset["signal"].data[
                 self.sim_fit_range
             ]  # type: np.ndarray
+            if not self.sampling.time_domain_simulation:
+                return simulated_signal[0]
+            else:
+                return simulated_signal
         elif self.sim_output == ResultType.Pixel:
-            simulated_data = dataset["pixel"].data[
+            simulated_pixel = dataset["pixel"].data[
                 self.sim_fit_range
             ]  # type: np.ndarray
+            if not self.sampling.time_domain_simulation:
+                return simulated_pixel[0]
+            else:
+                return simulated_pixel
         else:
             raise NotImplementedError
-
-        if not self.sampling.time_domain_simulation:
-            return simulated_data[0]
-        else:
-            return simulated_data
 
     # def batch_fitness(self, population_parameter_vector: np.ndarray) -> np.ndarray:
     #     """Batch Fitness Evaluation.

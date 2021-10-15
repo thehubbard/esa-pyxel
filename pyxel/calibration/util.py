@@ -16,8 +16,7 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 
-from pyxel.inputs.loader import load_datacube
-from pyxel.inputs.loader import load_image
+from pyxel.inputs.loader import load_datacube, load_image
 
 #  from pyxel.pipelines import Processor
 
@@ -148,16 +147,13 @@ def read_data(filenames: t.Sequence[Path]) -> t.Sequence[np.ndarray]:
 # TODO: Create unit tests for this function
 def list_to_slice(
     input_list: t.Optional[t.Sequence[int]] = None,
-) -> t.Union[slice, t.Tuple[slice, slice], t.Tuple[slice, slice, slice]]:
+) -> t.Union[t.Tuple[slice, slice], t.Tuple[slice, slice, slice]]:
     """TBW.
 
     :return:
     """
     if not input_list:
-        return slice(None)
-
-    if len(input_list) == 2:
-        return slice(input_list[0], input_list[1])
+        return slice(None), slice(None)
 
     elif len(input_list) == 4:
         return slice(input_list[0], input_list[1]), slice(input_list[2], input_list[3])
@@ -170,7 +166,29 @@ def list_to_slice(
         )
 
     else:
-        raise ValueError("Fitting range should have 2 or 4 or 6 values")
+        raise ValueError("Fitting range should have 4 or 6 values")
+
+
+# TODO: Create unit tests for this function
+def list_to_3d_slice(
+    input_list: t.Optional[t.Sequence[int]] = None,
+) -> t.Tuple[slice, slice, slice]:
+    """TBW.
+
+    :return:
+    """
+    if not input_list:
+        return slice(None), slice(None), slice(None)
+
+    elif len(input_list) == 6:
+        return (
+            slice(input_list[0], input_list[1]),
+            slice(input_list[2], input_list[3]),
+            slice(input_list[4], input_list[5]),
+        )
+
+    else:
+        raise ValueError("Fitting range should have 6 values")
 
 
 # TODO: Write unit tests for this function
@@ -183,11 +201,11 @@ def check_ranges(
 ) -> None:
     """TBW."""
     if target_fit_range:
-        if len(target_fit_range) not in (2, 4, 6):
+        if len(target_fit_range) not in (4, 6):
             raise ValueError
 
         if out_fit_range:
-            if len(out_fit_range) not in (2, 4, 6):
+            if len(out_fit_range) not in (4, 6):
                 raise ValueError
 
             if (target_fit_range[1] - target_fit_range[0]) != (

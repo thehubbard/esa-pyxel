@@ -37,8 +37,9 @@ except ImportError:
     WITH_PYGMO = False
 
 if t.TYPE_CHECKING:
-    from ..outputs import CalibrationOutputs
     from pyxel.observation import Sampling
+
+    from ..outputs import CalibrationOutputs
 
 
 def to_path_list(values: t.Sequence[t.Union[str, Path]]) -> t.List[Path]:
@@ -359,7 +360,7 @@ class Calibration:
 
         self.output_dir = output_dir
 
-        self.fitting = ModelFitting(processor=processor, variables=self.parameters)
+        self.fitting = ModelFitting(processor=processor, variables=self.parameters, sampling=self.sampling)
         self.fitting.configure(
             calibration_mode=self.calibration_mode,
             generations=self.algorithm.generations,
@@ -373,7 +374,6 @@ class Calibration:
             weights=self.weights,
             weights_from_file=self.weights_from_file,
             file_path=output_dir,
-            sampling=self.sampling,
         )
 
         if self.num_islands > 1:  # default

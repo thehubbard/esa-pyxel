@@ -29,6 +29,7 @@ except ImportError:
 
 if t.TYPE_CHECKING:
     from numpy.typing import ArrayLike
+
     from pyxel.observation import Sampling
 
 
@@ -350,6 +351,7 @@ class MyArchipelago:
 
         Parameters
         ----------
+        sampling
         num_evolutions : int
             Number of time to run the evolutions.
         num_best_decisions : int or None, optional.
