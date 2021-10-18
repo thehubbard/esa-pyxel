@@ -54,6 +54,11 @@ class Sampling:
         else:
             raise ValueError("Sampling times not specified.")
 
+        if self._times[0] == 0:
+            raise ValueError("Readout times should be non-zero values.")
+        elif start_time == self._times[0]:
+            raise ValueError("Readout times should be greater than start time.")
+
         self._non_destructive_readout = non_destructive_readout
 
         self._times_linear = True  # type: bool
@@ -115,12 +120,9 @@ def calculate_steps(
     steps: ndarray
         Steps corresponding to times.
     """
-    if start_time == times[0]:
-        steps = np.diff(times, axis=0)
-        times = times[1:]
-    else:
-        steps = np.diff(
-            np.concatenate((np.array([start_time]), times), axis=0),
-            axis=0,
-        )
+    steps = np.diff(
+        np.concatenate((np.array([start_time]), times), axis=0),
+        axis=0,
+    )
+
     return times, steps
