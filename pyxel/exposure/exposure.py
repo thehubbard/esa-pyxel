@@ -18,14 +18,14 @@ from tqdm.auto import tqdm
 from .readout import Readout
 
 if t.TYPE_CHECKING:
-    from ..outputs import CalibrationOutputs, ObservationOutputs, ParametricOutputs
+    from ..outputs import CalibrationOutputs, ExposureOutputs, ParametricOutputs
     from ..pipelines import Processor
 
 
-class Observation:
+class Exposure:
     """TBW."""
 
-    def __init__(self, outputs: "ObservationOutputs", readout: "Readout"):
+    def __init__(self, outputs: "ExposureOutputs", readout: "Readout"):
         self.outputs = outputs
         self.readout = readout
 
@@ -33,7 +33,7 @@ class Observation:
         cls_name = self.__class__.__name__  # type: str
         return f"{cls_name}<outputs={self.outputs!r}>"
 
-    def run_observation(self, processor: "Processor") -> xr.Dataset:
+    def run_exposure(self, processor: "Processor") -> xr.Dataset:
         """Run a an observation pipeline.
 
         Parameters
@@ -44,7 +44,7 @@ class Observation:
         -------
         result: xarrray.Dataset
         """
-        result, _ = run_observation(
+        result, _ = run_exposure(
             processor=processor,
             readout=self.readout,
             outputs=self.outputs,
@@ -53,18 +53,18 @@ class Observation:
         return result
 
 
-def run_observation(
+def run_exposure(
     processor: "Processor",
     readout: "Readout",
-    outputs: t.Optional["ObservationOutputs"] = None,
+    outputs: t.Optional["ExposureOutputs"] = None,
     progressbar: bool = False,
 ) -> t.Tuple[xr.Dataset, "Processor"]:
-    """Run a an observation pipeline.
+    """Run a an exposure pipeline.
 
     Parameters
     ----------
     processor
-    sampling
+    readout
     outputs
     progressbar
 
@@ -75,7 +75,7 @@ def run_observation(
     if readout._num_steps == 1:
         progressbar = False
 
-    result = observation_pipeline(
+    result = exposure_pipeline(
         processor=processor,
         time_step_it=readout.time_step_it(),
         num_steps=readout._num_steps,
@@ -90,7 +90,7 @@ def run_observation(
     return result, processor
 
 
-def observation_pipeline(
+def exposure_pipeline(
     processor: "Processor",
     time_step_it: t.Iterator[t.Tuple[float, float]],
     num_steps: int,
@@ -99,11 +99,11 @@ def observation_pipeline(
     start_time: float = 0.0,
     ndreadout: bool = False,
     outputs: t.Optional[
-        t.Union["CalibrationOutputs", "ParametricOutputs", "ObservationOutputs"]
+        t.Union["CalibrationOutputs", "ParametricOutputs", "ExposureOutputs"]
     ] = None,
     progressbar: bool = False,
 ) -> xr.Dataset:
-    """Run standalone dynamic pipeline.
+    """Run standalone exposure pipeline.
 
     Parameters
     ----------

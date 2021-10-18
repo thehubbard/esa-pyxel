@@ -45,9 +45,7 @@ class Readout:
             )  # by convention default readout/exposure time is 1 second
             self._time_domain_simulation = False
         elif times_from_file:
-            self._times = (
-                load_table(times_from_file).to_numpy(dtype=float).flatten()
-            )
+            self._times = load_table(times_from_file).to_numpy(dtype=float).flatten()
         elif times:
             self._times = np.array(eval_range(times), dtype=float)
         else:

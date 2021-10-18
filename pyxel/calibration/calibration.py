@@ -37,7 +37,7 @@ except ImportError:
     WITH_PYGMO = False
 
 if t.TYPE_CHECKING:
-    from pyxel.observation import Readout
+    from pyxel.exposure import Readout
 
     from ..outputs import CalibrationOutputs
 

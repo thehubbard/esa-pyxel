@@ -18,9 +18,9 @@ from pyxel.calibration import Algorithm, Calibration, CalibrationMode
 from pyxel.configuration import Configuration, load
 from pyxel.data_structure import Charge, Image, Pixel, Signal
 from pyxel.detectors import CCD, CCDCharacteristics, CCDGeometry, Environment, Material
-from pyxel.observation import Observation
+from pyxel.exposure import Exposure
 from pyxel.outputs.calibration_outputs import CalibrationOutputs
-from pyxel.outputs.observation_outputs import ObservationOutputs
+from pyxel.outputs.exposure_outputs import ExposureOutputs
 from pyxel.outputs.parametric_outputs import ParametricOutputs
 from pyxel.parametric import Parametric, ParametricMode
 from pyxel.pipelines import DetectionPipeline, ModelFunction, ModelGroup
@@ -40,8 +40,8 @@ def test_yaml_load(yaml_file):
 
     assert isinstance(cfg, Configuration)
 
-    if isinstance(cfg.observation, Observation):
-        assert isinstance(cfg.observation.outputs, ObservationOutputs)
+    if isinstance(cfg.observation, Exposure):
+        assert isinstance(cfg.observation.outputs, ExposureOutputs)
     elif isinstance(cfg.calibration, Calibration):
         assert isinstance(cfg.calibration.outputs, CalibrationOutputs)
         assert isinstance(cfg.calibration.algorithm, Algorithm)

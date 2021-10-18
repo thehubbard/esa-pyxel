@@ -39,9 +39,9 @@ from pyxel.detectors import (
     MKIDGeometry,
 )
 from pyxel.evaluator import evaluate_reference
-from pyxel.observation import Observation, Readout
+from pyxel.exposure import Exposure, Readout
 from pyxel.outputs.calibration_outputs import CalibrationOutputs
-from pyxel.outputs.observation_outputs import ObservationOutputs
+from pyxel.outputs.exposure_outputs import ExposureOutputs
 from pyxel.outputs.parametric_outputs import ParametricOutputs
 from pyxel.parametric import ParameterValues, Parametric
 from pyxel.pipelines import DetectionPipeline, ModelFunction, ModelGroup
@@ -52,7 +52,7 @@ class Configuration:
     """Configuration class."""
 
     pipeline: DetectionPipeline = attr.ib(init=False)
-    observation: t.Optional[Observation] = attr.ib(default=None)
+    exposure: t.Optional[Exposure] = attr.ib(default=None)
     parametric: t.Optional[Parametric] = attr.ib(default=None)
     calibration: t.Optional[Calibration] = attr.ib(default=None)
     ccd_detector: t.Optional[CCD] = attr.ib(default=None)
@@ -94,8 +94,8 @@ def load_yaml(stream: t.Union[str, t.IO]) -> t.Any:
     return result
 
 
-def to_observation_outputs(dct: dict) -> ObservationOutputs:
-    """Create a ObservationOutputs class from a dictionary.
+def to_exposure_outputs(dct: dict) -> ExposureOutputs:
+    """Create a ExposureOutputs class from a dictionary.
 
     Parameters
     ----------
@@ -103,13 +103,13 @@ def to_observation_outputs(dct: dict) -> ObservationOutputs:
 
     Returns
     -------
-    ObservationOutputs
+    ExposureOutputs
     """
-    return ObservationOutputs(**dct)
+    return ExposureOutputs(**dct)
 
 
 def to_readout(dct: t.Optional[dict]) -> Readout:
-    """Create a Sampling class from a dictionary.
+    """Create a Readout class from a dictionary.
 
     Parameters
     ----------
@@ -124,8 +124,8 @@ def to_readout(dct: t.Optional[dict]) -> Readout:
     return Readout(**dct)
 
 
-def to_observation(dct: dict) -> Observation:
-    """Create a Observation class from a dictionary.
+def to_exposure(dct: dict) -> Exposure:
+    """Create a Exposure class from a dictionary.
 
     Parameters
     ----------
@@ -135,12 +135,12 @@ def to_observation(dct: dict) -> Observation:
     -------
     Single
     """
-    dct.update({"outputs": to_observation_outputs(dct["outputs"])})
+    dct.update({"outputs": to_exposure_outputs(dct["outputs"])})
     if "readout" in dct:
         dct.update({"readout": to_readout(dct["readout"])})
     else:
         dct.update({"readout": to_readout(None)})
-    return Observation(**dct)
+    return Exposure(**dct)
 
 
 def to_parametric_outputs(dct: dict) -> ParametricOutputs:
@@ -521,8 +521,8 @@ def build_configuration(dct: dict) -> Configuration:
 
     configuration.pipeline = to_pipeline(dct["pipeline"])
 
-    if "observation" in dct:
-        configuration.observation = to_observation(dct["observation"])
+    if "exposure" in dct:
+        configuration.exposure = to_exposure(dct["exposure"])
     elif "parametric" in dct:
         configuration.parametric = to_parametric(dct["parametric"])
     elif "calibration" in dct:

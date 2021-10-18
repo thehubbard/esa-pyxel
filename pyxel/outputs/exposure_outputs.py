@@ -34,7 +34,7 @@ ValidName = Literal[
 ValidFormat = Literal["fits", "hdf", "npy", "txt", "csv", "png"]
 
 
-class ObservationOutputs(Outputs):
+class ExposureOutputs(Outputs):
     """TBW."""
 
     def __init__(
@@ -43,7 +43,7 @@ class ObservationOutputs(Outputs):
         save_data_to_file: t.Optional[
             t.Sequence[t.Mapping[ValidName, t.Sequence[ValidFormat]]]
         ] = None,
-        save_observation_data: t.Optional[
+        save_exposure_data: t.Optional[
             t.Sequence[t.Mapping[str, t.Sequence[str]]]
         ] = None,
     ):
@@ -51,11 +51,11 @@ class ObservationOutputs(Outputs):
             output_folder=output_folder, save_data_to_file=save_data_to_file
         )
 
-        self.save_observation_data = (
-            save_observation_data
+        self.save_exposure_data = (
+            save_exposure_data
         )  # type: t.Optional[t.Sequence[t.Mapping[str, t.Sequence[str]]]]
 
-    def save_observation_outputs(self, dataset: xr.Dataset) -> None:
+    def save_exposure_outputs(self, dataset: xr.Dataset) -> None:
         """Save the observation outputs such as the dataset.
 
         Parameters
@@ -69,11 +69,9 @@ class ObservationOutputs(Outputs):
 
         save_methods = {"nc": self.save_to_netcdf}  # type: t.Dict[str, SaveToFile]
 
-        if self.save_observation_data is not None:
+        if self.save_exposure_data is not None:
 
-            for (
-                dct
-            ) in self.save_observation_data:  # type: t.Mapping[str, t.Sequence[str]]
+            for dct in self.save_exposure_data:  # type: t.Mapping[str, t.Sequence[str]]
 
                 first_item, *_ = dct.items()
                 obj, format_list = first_item

@@ -18,14 +18,14 @@ from dask import delayed
 from tqdm.auto import tqdm
 from typing_extensions import Literal
 
-from pyxel.observation import observation_pipeline
+from pyxel.exposure import exposure_pipeline
 
 # import dask
 from pyxel.parametric.parameter_values import ParameterType, ParameterValues
 from pyxel.state import get_obj_att, get_value
 
 if t.TYPE_CHECKING:
-    from ..observation import Readout
+    from ..exposure import Readout
     from ..outputs import ParametricOutputs
     from ..pipelines import Processor
 
@@ -366,7 +366,7 @@ class Parametric:
                 processor_id=processor_id, parameter_dict=parameter_dict
             )
             logs.append(log)
-            _ = observation_pipeline(
+            _ = exposure_pipeline(
                 processor=proc,
                 time_step_it=self.readout.time_step_it(),
                 num_steps=self.readout._num_steps,
@@ -487,7 +487,7 @@ class Parametric:
 
                     # run the pipeline
                     # run the pipeline
-                    ds = observation_pipeline(
+                    ds = exposure_pipeline(
                         processor=proc,
                         time_step_it=self.readout.time_step_it(),
                         num_steps=self.readout._num_steps,
@@ -565,7 +565,7 @@ class Parametric:
 
                     # run the pipeline
                     # run the pipeline
-                    ds = observation_pipeline(
+                    ds = exposure_pipeline(
                         processor=proc,
                         time_step_it=self.readout.time_step_it(),
                         num_steps=self.readout._num_steps,
@@ -632,7 +632,7 @@ class Parametric:
                     logs.append(log)
 
                     # run the pipeline
-                    ds = observation_pipeline(
+                    ds = exposure_pipeline(
                         processor=proc,
                         time_step_it=self.readout.time_step_it(),
                         num_steps=self.readout._num_steps,

@@ -30,7 +30,7 @@ except ImportError:
 if t.TYPE_CHECKING:
     from numpy.typing import ArrayLike
 
-    from pyxel.observation import Readout
+    from pyxel.exposure import Readout
 
 
 class ArchipelagoLogs:

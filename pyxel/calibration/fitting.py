@@ -33,14 +33,14 @@ from pyxel.calibration import (
     read_data,
     read_datacubes,
 )
-from pyxel.observation import run_observation
+from pyxel.exposure import run_exposure
 from pyxel.parametric.parameter_values import ParameterValues
 from pyxel.pipelines import Processor
 
 if t.TYPE_CHECKING:
     from numpy.typing import ArrayLike
 
-    from pyxel.observation import Readout
+    from pyxel.exposure import Readout
 
 
 class ModelFitting(ProblemSingleObjective):
@@ -454,9 +454,7 @@ class ModelFitting(ProblemSingleObjective):
                 logger.setLevel(logging.WARNING)
                 # result_proc = None
                 if self.calibration_mode == CalibrationMode.Pipeline:
-                    result, _ = run_observation(
-                        processor=processor, readout=self.readout
-                    )
+                    result, _ = run_exposure(processor=processor, readout=self.readout)
                 # elif self.calibration_mode == 'single_model':
                 #     self.fitted_model.function(processor.detector)               # todo: update
                 else:
@@ -531,7 +529,7 @@ class ModelFitting(ProblemSingleObjective):
         """Create a new ``Processor`` with new parameters."""
         new_processor = self.update_processor(parameter=parameter, processor=processor)
 
-        result, result_proc = run_observation(
+        result, result_proc = run_exposure(
             processor=new_processor, readout=self.readout
         )
 

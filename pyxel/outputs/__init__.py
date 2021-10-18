@@ -10,5 +10,5 @@
 # flake8: noqa
 from .parametric_outputs import ParametricOutputs  # , Result
 from .calibration_outputs import CalibrationOutputs
-from .observation_outputs import ObservationOutputs
+from .exposure_outputs import ExposureOutputs
 from .outputs import save_log_file, Outputs

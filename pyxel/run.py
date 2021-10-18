@@ -29,25 +29,25 @@ from pyxel import outputs
 from pyxel.calibration import Calibration, CalibrationResult
 from pyxel.configuration import Configuration, load, save
 from pyxel.detectors import CCD, CMOS, MKID, Detector
-from pyxel.observation import Observation
+from pyxel.exposure import Exposure
 from pyxel.parametric import Parametric, ParametricResult
 from pyxel.pipelines import DetectionPipeline, Processor
 from pyxel.util import create_model, download_examples
 
 if t.TYPE_CHECKING:
-    from .outputs import CalibrationOutputs, ObservationOutputs, ParametricOutputs
+    from .outputs import CalibrationOutputs, ExposureOutputs, ParametricOutputs
 
 
-def observation_mode(
-    observation: "Observation",
+def exposure_mode(
+    exposure: "Exposure",
     detector: Detector,
     pipeline: "DetectionPipeline",
 ) -> xr.Dataset:
-    """Run an 'observation' pipeline.
+    """Run an 'exposure' pipeline.
 
     Parameters
     ----------
-    observation
+    exposure
     detector
     pipeline
 
@@ -56,18 +56,18 @@ def observation_mode(
     None
     """
 
-    logging.info("Mode: Observation")
+    logging.info("Mode: Exposure")
 
-    observation_outputs = observation.outputs  # type: ObservationOutputs
+    exposure_outputs = exposure.outputs  # type: ExposureOutputs
 
-    detector.set_output_dir(observation_outputs.output_dir)  # TODO: Remove this
+    detector.set_output_dir(exposure_outputs.output_dir)  # TODO: Remove this
 
     processor = Processor(detector=detector, pipeline=pipeline)
 
-    result = observation.run_observation(processor=processor)
+    result = exposure.run_exposure(processor=processor)
 
-    if observation_outputs.save_observation_data:
-        observation_outputs.save_observation_outputs(dataset=result)
+    if exposure_outputs.save_exposure_data:
+        exposure_outputs.save_exposure_outputs(dataset=result)
 
     return result
 
@@ -201,8 +201,8 @@ def output_directory(configuration: Configuration) -> Path:
     -------
     output_dir
     """
-    if isinstance(configuration.observation, Observation):
-        output_dir = configuration.observation.outputs.output_dir
+    if isinstance(configuration.exposure, Exposure):
+        output_dir = configuration.exposure.outputs.output_dir
     elif isinstance(configuration.calibration, Calibration):
         output_dir = configuration.calibration.outputs.output_dir
     elif isinstance(configuration.parametric, Parametric):
@@ -246,9 +246,9 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
     else:
         raise NotImplementedError("Detector is not defined in YAML config. file!")
 
-    if isinstance(configuration.observation, Observation):
-        observation = configuration.observation  # type: Observation
-        observation_mode(observation=observation, detector=detector, pipeline=pipeline)
+    if isinstance(configuration.exposure, Exposure):
+        exposure = configuration.exposure  # type: Exposure
+        exposure_mode(exposure=exposure, detector=detector, pipeline=pipeline)
 
     elif isinstance(configuration.calibration, Calibration):
 
