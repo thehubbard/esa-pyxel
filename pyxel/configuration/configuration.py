@@ -39,7 +39,7 @@ from pyxel.detectors import (
     MKIDGeometry,
 )
 from pyxel.evaluator import evaluate_reference
-from pyxel.observation import Observation, Sampling
+from pyxel.observation import Observation, Readout
 from pyxel.outputs.calibration_outputs import CalibrationOutputs
 from pyxel.outputs.observation_outputs import ObservationOutputs
 from pyxel.outputs.parametric_outputs import ParametricOutputs
@@ -108,7 +108,7 @@ def to_observation_outputs(dct: dict) -> ObservationOutputs:
     return ObservationOutputs(**dct)
 
 
-def to_sampling(dct: t.Optional[dict]) -> Sampling:
+def to_readout(dct: t.Optional[dict]) -> Readout:
     """Create a Sampling class from a dictionary.
 
     Parameters
@@ -117,11 +117,11 @@ def to_sampling(dct: t.Optional[dict]) -> Sampling:
 
     Returns
     -------
-    Sampling
+    Readout
     """
     if dct is None:
         dct = {}
-    return Sampling(**dct)
+    return Readout(**dct)
 
 
 def to_observation(dct: dict) -> Observation:
@@ -136,10 +136,10 @@ def to_observation(dct: dict) -> Observation:
     Single
     """
     dct.update({"outputs": to_observation_outputs(dct["outputs"])})
-    if "sampling" in dct:
-        dct.update({"sampling": to_sampling(dct["sampling"])})
+    if "readout" in dct:
+        dct.update({"readout": to_readout(dct["readout"])})
     else:
-        dct.update({"sampling": to_sampling(None)})
+        dct.update({"readout": to_readout(None)})
     return Observation(**dct)
 
 
@@ -186,10 +186,10 @@ def to_parametric(dct: dict) -> Parametric:
         {"parameters": [to_parameters(param_dict) for param_dict in dct["parameters"]]}
     )
     dct.update({"outputs": to_parametric_outputs(dct["outputs"])})
-    if "sampling" in dct:
-        dct.update({"sampling": to_sampling(dct["sampling"])})
+    if "readout" in dct:
+        dct.update({"readout": to_readout(dct["readout"])})
     else:
-        dct.update({"sampling": to_sampling(None)})
+        dct.update({"readout": to_readout(None)})
     return Parametric(**dct)
 
 
@@ -261,10 +261,10 @@ def to_calibration(dct: dict) -> Calibration:
     dct["result_input_arguments"] = [
         to_parameters(value) for value in dct.get("result_input_arguments", {})
     ]
-    if "sampling" in dct:
-        dct.update({"sampling": to_sampling(dct["sampling"])})
+    if "readout" in dct:
+        dct.update({"readout": to_readout(dct["readout"])})
     else:
-        dct.update({"sampling": to_sampling(None)})
+        dct.update({"readout": to_readout(None)})
     return Calibration(**dct)
 
 

@@ -15,7 +15,7 @@ import typing as t
 import xarray as xr
 from tqdm.auto import tqdm
 
-from .sampling import Sampling
+from .readout import Readout
 
 if t.TYPE_CHECKING:
     from ..outputs import CalibrationOutputs, ObservationOutputs, ParametricOutputs
@@ -25,9 +25,9 @@ if t.TYPE_CHECKING:
 class Observation:
     """TBW."""
 
-    def __init__(self, outputs: "ObservationOutputs", sampling: "Sampling"):
+    def __init__(self, outputs: "ObservationOutputs", readout: "Readout"):
         self.outputs = outputs
-        self.sampling = sampling
+        self.readout = readout
 
     def __repr__(self) -> str:
         cls_name = self.__class__.__name__  # type: str
@@ -46,7 +46,7 @@ class Observation:
         """
         result, _ = run_observation(
             processor=processor,
-            sampling=self.sampling,
+            readout=self.readout,
             outputs=self.outputs,
             progressbar=True,
         )
@@ -55,7 +55,7 @@ class Observation:
 
 def run_observation(
     processor: "Processor",
-    sampling: "Sampling",
+    readout: "Readout",
     outputs: t.Optional["ObservationOutputs"] = None,
     progressbar: bool = False,
 ) -> t.Tuple[xr.Dataset, "Processor"]:
@@ -72,17 +72,17 @@ def run_observation(
     -------
     result: xr.Dataset
     """
-    if sampling._num_steps == 1:
+    if readout._num_steps == 1:
         progressbar = False
 
     result = observation_pipeline(
         processor=processor,
-        time_step_it=sampling.time_step_it(),
-        num_steps=sampling._num_steps,
-        ndreadout=sampling.non_destructive_readout,
-        times_linear=sampling._times_linear,
-        start_time=sampling._start_time,
-        end_time=sampling._times[-1],
+        time_step_it=readout.time_step_it(),
+        num_steps=readout._num_steps,
+        ndreadout=readout.non_destructive,
+        times_linear=readout._times_linear,
+        start_time=readout._start_time,
+        end_time=readout._times[-1],
         outputs=outputs,
         progressbar=progressbar,
     )

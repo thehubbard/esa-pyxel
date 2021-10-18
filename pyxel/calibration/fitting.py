@@ -40,7 +40,7 @@ from pyxel.pipelines import Processor
 if t.TYPE_CHECKING:
     from numpy.typing import ArrayLike
 
-    from pyxel.observation import Sampling
+    from pyxel.observation import Readout
 
 
 class ModelFitting(ProblemSingleObjective):
@@ -50,7 +50,7 @@ class ModelFitting(ProblemSingleObjective):
         self,
         processor: Processor,
         variables: t.Sequence[ParameterValues],
-        sampling: "Sampling",
+        readout: "Readout",
     ):
         self.processor = processor  # type: Processor
         self.variables = variables  # type: t.Sequence[ParameterValues]
@@ -59,7 +59,7 @@ class ModelFitting(ProblemSingleObjective):
         self.original_processor = None  # type: t.Optional[Processor]
         self.generations = None  # type: t.Optional[int]
         self.pop = None  # type: t.Optional[int]
-        self.sampling = sampling  # type: Sampling
+        self.readout = readout  # type: Readout
 
         self.all_target_data = []  # type: t.List[np.ndarray]
         self.weighting = (
@@ -190,7 +190,7 @@ class ModelFitting(ProblemSingleObjective):
         self.champion_x_list = np.zeros((1, params))
         self.file_path = file_path
 
-        if self.sampling.time_domain_simulation:
+        if self.readout.time_domain_simulation:
             target_list_3d = read_datacubes(
                 filenames=target_output
             )  # type: t.Sequence[np.ndarray]
@@ -245,7 +245,7 @@ class ModelFitting(ProblemSingleObjective):
         None
         """
         if weights_from_file is not None:
-            if self.sampling.time_domain_simulation:
+            if self.readout.time_domain_simulation:
                 wf = read_datacubes(weights_from_file)
                 self.weighting = [
                     weight_array[self.targ_fit_range] for weight_array in wf
@@ -315,7 +315,7 @@ class ModelFitting(ProblemSingleObjective):
             simulated_image = dataset["image"].data[
                 self.sim_fit_range
             ]  # type: np.ndarray
-            if not self.sampling.time_domain_simulation:
+            if not self.readout.time_domain_simulation:
                 return simulated_image[0]
             else:
                 return simulated_image
@@ -323,7 +323,7 @@ class ModelFitting(ProblemSingleObjective):
             simulated_signal = dataset["signal"].data[
                 self.sim_fit_range
             ]  # type: np.ndarray
-            if not self.sampling.time_domain_simulation:
+            if not self.readout.time_domain_simulation:
                 return simulated_signal[0]
             else:
                 return simulated_signal
@@ -331,7 +331,7 @@ class ModelFitting(ProblemSingleObjective):
             simulated_pixel = dataset["pixel"].data[
                 self.sim_fit_range
             ]  # type: np.ndarray
-            if not self.sampling.time_domain_simulation:
+            if not self.readout.time_domain_simulation:
                 return simulated_pixel[0]
             else:
                 return simulated_pixel
@@ -455,7 +455,7 @@ class ModelFitting(ProblemSingleObjective):
                 # result_proc = None
                 if self.calibration_mode == CalibrationMode.Pipeline:
                     result, _ = run_observation(
-                        processor=processor, sampling=self.sampling
+                        processor=processor, readout=self.readout
                     )
                 # elif self.calibration_mode == 'single_model':
                 #     self.fitted_model.function(processor.detector)               # todo: update
@@ -532,7 +532,7 @@ class ModelFitting(ProblemSingleObjective):
         new_processor = self.update_processor(parameter=parameter, processor=processor)
 
         result, result_proc = run_observation(
-            processor=new_processor, sampling=self.sampling
+            processor=new_processor, readout=self.readout
         )
 
         return result, result_proc

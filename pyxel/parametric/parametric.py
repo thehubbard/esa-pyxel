@@ -25,7 +25,7 @@ from pyxel.parametric.parameter_values import ParameterType, ParameterValues
 from pyxel.state import get_obj_att, get_value
 
 if t.TYPE_CHECKING:
-    from ..observation import Sampling
+    from ..observation import Readout
     from ..outputs import ParametricOutputs
     from ..pipelines import Processor
 
@@ -53,7 +53,7 @@ class Parametric:
         self,
         outputs: "ParametricOutputs",
         parameters: t.Sequence[ParameterValues],
-        sampling: "Sampling",
+        readout: "Readout",
         mode: str = "product",
         from_file: t.Optional[str] = None,
         column_range: t.Optional[t.Tuple[int, int]] = None,
@@ -61,7 +61,7 @@ class Parametric:
         result_type: Literal["image", "signal", "pixel"] = "image",
     ):
         self.outputs = outputs
-        self.sampling = sampling
+        self.readout = readout
         self.parametric_mode = ParametricMode(mode)  # type: ParametricMode
         self._parameters = parameters
         self.file = from_file
@@ -368,12 +368,12 @@ class Parametric:
             logs.append(log)
             _ = observation_pipeline(
                 processor=proc,
-                time_step_it=self.sampling.time_step_it(),
-                num_steps=self.sampling._num_steps,
-                ndreadout=self.sampling.non_destructive_readout,
-                times_linear=self.sampling._times_linear,
-                start_time=self.sampling._start_time,
-                end_time=self.sampling._times[-1],
+                time_step_it=self.readout.time_step_it(),
+                num_steps=self.readout._num_steps,
+                ndreadout=self.readout.non_destructive,
+                times_linear=self.readout._times_linear,
+                start_time=self.readout._start_time,
+                end_time=self.readout._times[-1],
                 outputs=self.outputs,
                 progressbar=False,
             )
@@ -489,12 +489,12 @@ class Parametric:
                     # run the pipeline
                     ds = observation_pipeline(
                         processor=proc,
-                        time_step_it=self.sampling.time_step_it(),
-                        num_steps=self.sampling._num_steps,
-                        ndreadout=self.sampling.non_destructive_readout,
-                        times_linear=self.sampling._times_linear,
-                        start_time=self.sampling._start_time,
-                        end_time=self.sampling._times[-1],
+                        time_step_it=self.readout.time_step_it(),
+                        num_steps=self.readout._num_steps,
+                        ndreadout=self.readout.non_destructive,
+                        times_linear=self.readout._times_linear,
+                        start_time=self.readout._start_time,
+                        end_time=self.readout._times[-1],
                         outputs=self.outputs,
                         progressbar=False,
                     )
@@ -567,12 +567,12 @@ class Parametric:
                     # run the pipeline
                     ds = observation_pipeline(
                         processor=proc,
-                        time_step_it=self.sampling.time_step_it(),
-                        num_steps=self.sampling._num_steps,
-                        ndreadout=self.sampling.non_destructive_readout,
-                        times_linear=self.sampling._times_linear,
-                        start_time=self.sampling._start_time,
-                        end_time=self.sampling._times[-1],
+                        time_step_it=self.readout.time_step_it(),
+                        num_steps=self.readout._num_steps,
+                        ndreadout=self.readout.non_destructive,
+                        times_linear=self.readout._times_linear,
+                        start_time=self.readout._start_time,
+                        end_time=self.readout._times[-1],
                         outputs=self.outputs,
                         progressbar=False,
                     )
@@ -634,12 +634,12 @@ class Parametric:
                     # run the pipeline
                     ds = observation_pipeline(
                         processor=proc,
-                        time_step_it=self.sampling.time_step_it(),
-                        num_steps=self.sampling._num_steps,
-                        ndreadout=self.sampling.non_destructive_readout,
-                        times_linear=self.sampling._times_linear,
-                        start_time=self.sampling._start_time,
-                        end_time=self.sampling._times[-1],
+                        time_step_it=self.readout.time_step_it(),
+                        num_steps=self.readout._num_steps,
+                        ndreadout=self.readout.non_destructive,
+                        times_linear=self.readout._times_linear,
+                        start_time=self.readout._start_time,
+                        end_time=self.readout._times[-1],
                         outputs=self.outputs,
                         progressbar=False,
                     )
