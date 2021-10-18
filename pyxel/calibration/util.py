@@ -238,11 +238,11 @@ def check_ranges(
         #         raise ValueError("Value of target fit range is wrong")
 
         for i in [-3, -4]:
-            if not (0 <= target_fit_range[i] <= cols):
+            if not (0 <= target_fit_range[i] <= rows):
                 raise ValueError("Value of target fit range is wrong")
 
         for i in [-1, 2]:
-            if not (0 <= target_fit_range[i] <= rows):
+            if not (0 <= target_fit_range[i] <= cols):
                 raise ValueError("Value of target fit range is wrong")
 
         if len(target_fit_range) == 6:
