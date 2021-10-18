@@ -28,8 +28,8 @@ from pyxel.calibration import (
     ProblemSingleObjective,
     ResultType,
     check_ranges,
-    list_to_slice,
     list_to_3d_slice,
+    list_to_slice,
     read_data,
     read_datacubes,
 )
@@ -46,7 +46,12 @@ if t.TYPE_CHECKING:
 class ModelFitting(ProblemSingleObjective):
     """Pygmo problem class to fit data with any model in Pyxel."""
 
-    def __init__(self, processor: Processor, variables: t.Sequence[ParameterValues], sampling: "Sampling"):
+    def __init__(
+        self,
+        processor: Processor,
+        variables: t.Sequence[ParameterValues],
+        sampling: "Sampling",
+    ):
         self.processor = processor  # type: Processor
         self.variables = variables  # type: t.Sequence[ParameterValues]
 
@@ -75,8 +80,15 @@ class ModelFitting(ProblemSingleObjective):
         self.lbd = []  # type: t.Sequence[float]  # lower boundary
         self.ubd = []  # type: t.Sequence[float]  # upper boundary
 
-        self.sim_fit_range = (slice(None), slice(None), slice(None))  # type: t.Tuple[slice, slice, slice]
-        self.targ_fit_range = (slice(None), slice(None))  # type: t.Union[t.Tuple[slice, slice], t.Tuple[slice, slice, slice]]
+        self.sim_fit_range = (
+            slice(None),
+            slice(None),
+            slice(None),
+        )  # type: t.Tuple[slice, slice, slice]
+        self.targ_fit_range = (
+            slice(None),
+            slice(None),
+        )  # type: t.Union[t.Tuple[slice, slice], t.Tuple[slice, slice, slice]]
 
         self.match = {}  # type: t.Dict[int, t.List[str]]
 

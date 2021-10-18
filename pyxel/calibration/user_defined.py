@@ -133,9 +133,7 @@ class DaskBFE:
             fitness_1d = fitness_2d.ravel()  # type: da.Array
 
         except Exception:
-            logging.exception(
-                "Caught an exception in 'fitness' for ModelFitting."
-            )
+            logging.exception("Caught an exception in 'fitness' for ModelFitting.")
             raise
 
         else:

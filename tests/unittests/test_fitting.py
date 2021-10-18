@@ -57,7 +57,11 @@ def test_configure_params(yaml_file):
     pipeline = cfg.pipeline
     processor = Processor(detector, pipeline)
     calibration = cfg.calibration
-    mf = ModelFitting(processor, calibration.parameters)
+    mf = ModelFitting(
+        processor=processor,
+        variables=calibration.parameters,
+        sampling=calibration.sampling,
+    )
 
     if not isinstance(mf.processor, Processor):
         raise ValueError
@@ -65,8 +69,12 @@ def test_configure_params(yaml_file):
     configure(mf, cfg)
 
     assert mf.calibration_mode == CalibrationMode.Pipeline
-    assert mf.sim_fit_range == slice(2, 5, None)
-    assert mf.targ_fit_range == slice(1, 4, None)
+    assert mf.sim_fit_range == (
+        slice(None, None, None),
+        slice(2, 4, None),
+        slice(0, 4, None),
+    )
+    assert mf.targ_fit_range == (slice(0, 2, None), slice(1, 5, None))
     assert mf.sim_output == ResultType.Image
 
 
@@ -79,9 +87,17 @@ def test_configure_fits_target(yaml):
     pipeline = cfg.pipeline
     processor = Processor(detector, pipeline)
     calibration = cfg.calibration
-    mf = ModelFitting(processor, calibration.parameters)
+    mf = ModelFitting(
+        processor=processor,
+        variables=calibration.parameters,
+        sampling=calibration.sampling,
+    )
     configure(mf, cfg)
-    assert mf.sim_fit_range == (slice(2, 5, None), slice(4, 7, None))
+    assert mf.sim_fit_range == (
+        slice(None, None, None),
+        slice(2, 5, None),
+        slice(4, 7, None),
+    )
     assert mf.targ_fit_range == (slice(1, 4, None), slice(5, 8, None))
     assert mf.sim_output == ResultType.Image
     expected = np.array(
@@ -107,7 +123,11 @@ def test_boundaries(yaml):
     pipeline = cfg.pipeline
     processor = Processor(detector, pipeline)
     calibration = cfg.calibration
-    mf = ModelFitting(processor, calibration.parameters)
+    mf = ModelFitting(
+        processor=processor,
+        variables=calibration.parameters,
+        sampling=calibration.sampling,
+    )
 
     configure(mf, cfg)
 
@@ -149,7 +169,11 @@ def test_calculate_fitness(simulated_data, target_data, expected_fitness):
     pipeline = cfg.pipeline
     processor = Processor(detector, pipeline)
     calibration = cfg.calibration
-    mf = ModelFitting(processor, calibration.parameters)
+    mf = ModelFitting(
+        processor=processor,
+        variables=calibration.parameters,
+        sampling=calibration.sampling,
+    )
     configure(mf, cfg)
     fitness = mf.calculate_fitness(simulated_data, target_data)
     assert fitness == expected_fitness
@@ -161,8 +185,8 @@ def test_calculate_fitness(simulated_data, target_data, expected_fitness):
     "yaml, factor, expected_fitness",
     [
         (Path("tests/data/calibrate_weighting.yaml"), 1, 0.0),
-        (Path("tests/data/calibrate_weighting.yaml"), 2, 965633.1990208979),
-        (Path("tests/data/calibrate_weighting.yaml"), 3, 1931266.398041796),
+        (Path("tests/data/calibrate_weighting.yaml"), 2, 0.032616665238771034),
+        (Path("tests/data/calibrate_weighting.yaml"), 3, 0.06523333047754205),
     ],
 )
 def test_weighting(yaml, factor, expected_fitness):
@@ -172,7 +196,11 @@ def test_weighting(yaml, factor, expected_fitness):
     pipeline = cfg.pipeline
     processor = Processor(detector, pipeline)
     calibration = cfg.calibration
-    mf = ModelFitting(processor, calibration.parameters)
+    mf = ModelFitting(
+        processor=processor,
+        variables=calibration.parameters,
+        sampling=calibration.sampling,
+    )
     configure(mf, cfg)
     fitness = mf.calculate_fitness(
         mf.all_target_data[0] * factor, mf.all_target_data[0]
@@ -219,7 +247,11 @@ def test_custom_fitness(yaml, simulated, target, weighting):
 
     assert cfg.calibration is not None
 
-    mf = ModelFitting(processor, variables=calibration.parameters)
+    mf = ModelFitting(
+        processor=processor,
+        variables=calibration.parameters,
+        sampling=calibration.sampling,
+    )
     configure(mf=mf, sim=cfg)
 
     fitness = mf.calculate_fitness(simulated, target)
@@ -267,7 +299,11 @@ def test_fitness(yaml, parameter, expected_fitness):
     processor = Processor(detector, pipeline)
     calibration = cfg.calibration
 
-    mf = ModelFitting(processor, calibration.parameters)
+    mf = ModelFitting(
+        processor=processor,
+        variables=calibration.parameters,
+        sampling=calibration.sampling,
+    )
 
     configure(mf, cfg)
 
@@ -314,7 +350,11 @@ def test_split_and_update(yaml, parameter, expected_array):
     pipeline = cfg.pipeline
     processor = Processor(detector, pipeline)
     calibration = cfg.calibration
-    mf = ModelFitting(processor, calibration.parameters)
+    mf = ModelFitting(
+        processor=processor,
+        variables=calibration.parameters,
+        sampling=calibration.sampling,
+    )
     configure(mf, cfg)
     array = mf.convert_to_parameters(parameter)
     np.testing.assert_array_equal(array, expected_array)
@@ -358,7 +398,11 @@ def test_detector_and_model_update(yaml: str, param_array: np.ndarray):
 
     processor = Processor(detector, pipeline)
     calibration = cfg.calibration
-    mf = ModelFitting(processor=processor, variables=calibration.parameters)
+    mf = ModelFitting(
+        processor=processor,
+        variables=calibration.parameters,
+        sampling=calibration.sampling,
+    )
     configure(mf=mf, sim=cfg)
     mf.processor = mf.update_processor(param_array, processor)
 

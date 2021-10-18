@@ -196,7 +196,7 @@ def check_ranges(
     target_fit_range: t.Sequence[int],
     out_fit_range: t.Sequence[int],
     rows: int,
-    cols: t.Optional[int] = None,
+    cols: int,
     readout_times: t.Optional[int] = None,
 ) -> None:
     """TBW."""
@@ -232,19 +232,18 @@ def check_ranges(
                         "Fitting ranges have different lengths in third dimension"
                     )
 
-        for i in [0, 1]:
-            # TODO: It could be refactor in a more pythonic way
-            if not (0 <= target_fit_range[i] <= rows):
+        # for i in [0, 1]:
+        #     # TODO: It could be refactor in a more pythonic way
+        #     if not (0 <= target_fit_range[i] <= rows):
+        #         raise ValueError("Value of target fit range is wrong")
+
+        for i in [-3, -4]:
+            if not (0 <= target_fit_range[i] <= cols):
                 raise ValueError("Value of target fit range is wrong")
 
-        if len(target_fit_range) == 4:
-            if cols is None:
-                raise ValueError("Target data is not a 2 dimensional array")
-
-            for i in [2, 3]:
-                # TODO: It could be refactor in a more pythonic way (this is optional)
-                if not (0 <= target_fit_range[i] <= cols):
-                    raise ValueError("Value of target fit range is wrong")
+        for i in [-1, 2]:
+            if not (0 <= target_fit_range[i] <= rows):
+                raise ValueError("Value of target fit range is wrong")
 
         if len(target_fit_range) == 6:
             if readout_times is None:

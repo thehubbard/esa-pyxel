@@ -360,7 +360,9 @@ class Calibration:
 
         self.output_dir = output_dir
 
-        self.fitting = ModelFitting(processor=processor, variables=self.parameters, sampling=self.sampling)
+        self.fitting = ModelFitting(
+            processor=processor, variables=self.parameters, sampling=self.sampling
+        )
         self.fitting.configure(
             calibration_mode=self.calibration_mode,
             generations=self.algorithm.generations,
