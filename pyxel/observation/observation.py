@@ -21,37 +21,37 @@ from typing_extensions import Literal
 from pyxel.exposure import exposure_pipeline
 
 # import dask
-from pyxel.parametric.parameter_values import ParameterType, ParameterValues
+from pyxel.observation.parameter_values import ParameterType, ParameterValues
 from pyxel.state import get_obj_att, get_value
 
 if t.TYPE_CHECKING:
     from ..exposure import Readout
-    from ..outputs import ParametricOutputs
+    from ..outputs import ObservationOutputs
     from ..pipelines import Processor
 
 
-class ParametricMode(Enum):
-    """Parametric mode class."""
+class ParameterMode(Enum):
+    """Parameter mode class."""
 
     Product = "product"
     Sequential = "sequential"
     Custom = "custom"
 
 
-class ParametricResult(t.NamedTuple):
-    """Result class for parametric class."""
+class ObservationResult(t.NamedTuple):
+    """Result class for observation class."""
 
     dataset: t.Union[xr.Dataset, t.Dict[str, xr.Dataset]]
     parameters: xr.Dataset
     logs: xr.Dataset
 
 
-class Parametric:
-    """Parametric class."""
+class Observation:
+    """Observation class."""
 
     def __init__(
         self,
-        outputs: "ParametricOutputs",
+        outputs: "ObservationOutputs",
         parameters: t.Sequence[ParameterValues],
         readout: "Readout",
         mode: str = "product",
@@ -62,7 +62,7 @@ class Parametric:
     ):
         self.outputs = outputs
         self.readout = readout
-        self.parametric_mode = ParametricMode(mode)  # type: ParametricMode
+        self.parameter_mode = ParameterMode(mode)  # type: ParameterMode
         self._parameters = parameters
         self.file = from_file
         self.data = None  # type: t.Optional[np.ndarray]
@@ -71,12 +71,12 @@ class Parametric:
         self.with_dask = with_dask
         self.parameter_types = {}  # type: dict
 
-        if self.parametric_mode == ParametricMode.Custom:
+        if self.parameter_mode == ParameterMode.Custom:
             self._load_custom_parameters()
 
     def __repr__(self):
         cls_name = self.__class__.__name__  # type: str
-        return f"{cls_name}<mode={self.parametric_mode!s}>"
+        return f"{cls_name}<mode={self.parameter_mode!s}>"
 
     @property
     def enabled_steps(self) -> t.Sequence[ParameterValues]:
@@ -201,13 +201,13 @@ class Parametric:
         -------
         callable
         """
-        if self.parametric_mode == ParametricMode.Product:
+        if self.parameter_mode == ParameterMode.Product:
             return self._product_parameters
 
-        elif self.parametric_mode == ParametricMode.Sequential:
+        elif self.parameter_mode == ParameterMode.Sequential:
             return self._sequential_parameters
 
-        elif self.parametric_mode == ParametricMode.Custom:
+        elif self.parameter_mode == ParameterMode.Custom:
             return self._custom_parameters
         else:
             raise NotImplementedError
@@ -345,7 +345,7 @@ class Parametric:
     def run_debug_mode(
         self, processor: "Processor"
     ) -> t.Tuple[t.List["Processor"], xr.Dataset]:
-        """Run parametric pipelines in debug mode and return list of processors and parameter logs.
+        """Run obsevration pipelines in debug mode and return list of processors and parameter logs.
 
         Parameters
         ----------
@@ -385,11 +385,11 @@ class Parametric:
 
     def number_of_parameters(self):
         """TBW."""
-        if self.parametric_mode == ParametricMode.Sequential:
+        if self.parameter_mode == ParameterMode.Sequential:
             number = np.sum([len(step) for step in self.enabled_steps])
-        elif self.parametric_mode == ParametricMode.Product:
+        elif self.parameter_mode == ParameterMode.Product:
             number = np.prod([len(step) for step in self.enabled_steps])
-        elif self.parametric_mode == ParametricMode.Custom:
+        elif self.parameter_mode == ParameterMode.Custom:
             number = len(self.data)
 
         return number
@@ -427,15 +427,15 @@ class Parametric:
 
             if (
                 any(x == "_" for x in step.values[:])
-                and self.parametric_mode != ParametricMode.Custom
+                and self.parameter_mode != ParameterMode.Custom
             ):
                 raise ValueError(
                     "Either define 'custom' as parametric mode or "
                     "do not use '_' character in 'values' field"
                 )
 
-    def run_parametric(self, processor: "Processor") -> ParametricResult:
-        """Run the parametric pipelines.
+    def run_parametric(self, processor: "Processor") -> ObservationResult:
+        """Run the observation pipelines.
 
         Parameters
         ----------
@@ -467,7 +467,7 @@ class Parametric:
 
             pbar = tqdm(total=self.number_of_parameters())
 
-            if self.parametric_mode == ParametricMode.Product:
+            if self.parameter_mode == ParameterMode.Product:
 
                 # prepare lists for to-be-merged datasets
                 dataset_list = []
@@ -527,7 +527,7 @@ class Parametric:
                 final_logs = xr.combine_by_coords(logs)
                 final_dataset = xr.combine_by_coords(dataset_list)
 
-                result = ParametricResult(
+                result = ObservationResult(
                     dataset=final_dataset,
                     parameters=final_parameters_merged,
                     logs=final_logs,
@@ -535,7 +535,7 @@ class Parametric:
                 pbar.close()
                 return result
 
-            elif self.parametric_mode == ParametricMode.Sequential:
+            elif self.parameter_mode == ParameterMode.Sequential:
 
                 # prepare lists/dictionaries for to-be-merged datasets
                 dataset_dict = {}  # type: dict
@@ -608,7 +608,7 @@ class Parametric:
                 final_parameters_list = [xr.combine_by_coords(p) for p in parameters]
                 final_parameters_merged = xr.merge(final_parameters_list)
 
-                result = ParametricResult(
+                result = ObservationResult(
                     dataset=final_datasets,
                     parameters=final_parameters_merged,
                     logs=final_logs,
@@ -616,7 +616,7 @@ class Parametric:
                 pbar.close()
                 return result
 
-            elif self.parametric_mode == ParametricMode.Custom:
+            elif self.parameter_mode == ParameterMode.Custom:
 
                 # prepare lists for to-be-merged datasets
                 dataset_list = []
@@ -660,7 +660,7 @@ class Parametric:
                 final_log = xr.combine_by_coords(logs)
                 final_parameters = final_log  # parameter dataset same as logs
 
-                result = ParametricResult(
+                result = ObservationResult(
                     dataset=final_ds, parameters=final_parameters, logs=final_log
                 )
                 pbar.close()

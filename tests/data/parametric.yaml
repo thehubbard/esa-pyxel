@@ -1,5 +1,5 @@
 
-parametric:
+observation:
   mode: sequential
   parameters:
     - enabled: true

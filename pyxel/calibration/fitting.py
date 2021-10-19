@@ -34,7 +34,7 @@ from pyxel.calibration import (
     read_datacubes,
 )
 from pyxel.exposure import run_exposure
-from pyxel.parametric.parameter_values import ParameterValues
+from pyxel.observation.parameter_values import ParameterValues
 from pyxel.pipelines import Processor
 
 if t.TYPE_CHECKING:

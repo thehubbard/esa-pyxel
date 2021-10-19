@@ -40,10 +40,10 @@ from pyxel.detectors import (
 )
 from pyxel.evaluator import evaluate_reference
 from pyxel.exposure import Exposure, Readout
+from pyxel.observation import Observation, ParameterValues
 from pyxel.outputs.calibration_outputs import CalibrationOutputs
 from pyxel.outputs.exposure_outputs import ExposureOutputs
-from pyxel.outputs.parametric_outputs import ParametricOutputs
-from pyxel.parametric import ParameterValues, Parametric
+from pyxel.outputs.observation_outputs import ObservationOutputs
 from pyxel.pipelines import DetectionPipeline, ModelFunction, ModelGroup
 
 
@@ -53,7 +53,7 @@ class Configuration:
 
     pipeline: DetectionPipeline = attr.ib(init=False)
     exposure: t.Optional[Exposure] = attr.ib(default=None)
-    parametric: t.Optional[Parametric] = attr.ib(default=None)
+    observation: t.Optional[Observation] = attr.ib(default=None)
     calibration: t.Optional[Calibration] = attr.ib(default=None)
     ccd_detector: t.Optional[CCD] = attr.ib(default=None)
     cmos_detector: t.Optional[CMOS] = attr.ib(default=None)
@@ -143,8 +143,8 @@ def to_exposure(dct: dict) -> Exposure:
     return Exposure(**dct)
 
 
-def to_parametric_outputs(dct: dict) -> ParametricOutputs:
-    """Create a ParametricOutputs class from a dictionary.
+def to_observation_outputs(dct: dict) -> ObservationOutputs:
+    """Create a ObservationOutputs class from a dictionary.
 
     Parameters
     ----------
@@ -152,9 +152,9 @@ def to_parametric_outputs(dct: dict) -> ParametricOutputs:
 
     Returns
     -------
-    ParametricOutputs
+    ObservationOutputs
     """
-    return ParametricOutputs(**dct)
+    return ObservationOutputs(**dct)
 
 
 def to_parameters(dct: dict) -> ParameterValues:
@@ -171,7 +171,7 @@ def to_parameters(dct: dict) -> ParameterValues:
     return ParameterValues(**dct)
 
 
-def to_parametric(dct: dict) -> Parametric:
+def to_observation(dct: dict) -> Observation:
     """Create a Parametric class from a dictionary.
 
     Parameters
@@ -180,17 +180,17 @@ def to_parametric(dct: dict) -> Parametric:
 
     Returns
     -------
-    Parametric
+    Observation
     """
     dct.update(
         {"parameters": [to_parameters(param_dict) for param_dict in dct["parameters"]]}
     )
-    dct.update({"outputs": to_parametric_outputs(dct["outputs"])})
+    dct.update({"outputs": to_observation_outputs(dct["outputs"])})
     if "readout" in dct:
         dct.update({"readout": to_readout(dct["readout"])})
     else:
         dct.update({"readout": to_readout(None)})
-    return Parametric(**dct)
+    return Observation(**dct)
 
 
 def to_calibration_outputs(dct: dict) -> CalibrationOutputs:
@@ -523,8 +523,8 @@ def build_configuration(dct: dict) -> Configuration:
 
     if "exposure" in dct:
         configuration.exposure = to_exposure(dct["exposure"])
-    elif "parametric" in dct:
-        configuration.parametric = to_parametric(dct["parametric"])
+    elif "observation" in dct:
+        configuration.observation = to_observation(dct["observation"])
     elif "calibration" in dct:
         configuration.calibration = to_calibration(dct["calibration"])
     else:

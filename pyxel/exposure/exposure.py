@@ -18,7 +18,7 @@ from tqdm.auto import tqdm
 from .readout import Readout
 
 if t.TYPE_CHECKING:
-    from ..outputs import CalibrationOutputs, ExposureOutputs, ParametricOutputs
+    from ..outputs import CalibrationOutputs, ExposureOutputs, ObservationOutputs
     from ..pipelines import Processor
 
 
@@ -99,7 +99,7 @@ def exposure_pipeline(
     start_time: float = 0.0,
     ndreadout: bool = False,
     outputs: t.Optional[
-        t.Union["CalibrationOutputs", "ParametricOutputs", "ExposureOutputs"]
+        t.Union["CalibrationOutputs", "ObservationOutputs", "ExposureOutputs"]
     ] = None,
     progressbar: bool = False,
 ) -> xr.Dataset:

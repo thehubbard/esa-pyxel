@@ -14,12 +14,12 @@ from pathlib import Path
 
 from typing_extensions import Literal
 
-from pyxel.parametric import ParametricMode
+from pyxel.observation import ParameterMode
 
 from .outputs import Outputs
 
 if t.TYPE_CHECKING:
-    from ..parametric import ParametricResult
+    from ..observation import ObservationResult
 
     class SaveToFile(t.Protocol):
         """TBW."""
@@ -37,7 +37,7 @@ ValidName = Literal[
 ValidFormat = Literal["fits", "hdf", "npy", "txt", "csv", "png"]
 
 
-class ParametricOutputs(Outputs):
+class ObservationOutputs(Outputs):
     """TBW."""
 
     def __init__(
@@ -46,7 +46,7 @@ class ParametricOutputs(Outputs):
         save_data_to_file: t.Optional[
             t.Sequence[t.Mapping[ValidName, t.Sequence[ValidFormat]]]
         ] = None,
-        save_parametric_data: t.Optional[
+        save_observation_data: t.Optional[
             t.Sequence[t.Mapping[str, t.Sequence[str]]]
         ] = None,
     ):
@@ -54,19 +54,19 @@ class ParametricOutputs(Outputs):
             output_folder=output_folder, save_data_to_file=save_data_to_file
         )
 
-        self.save_parametric_data = (
-            save_parametric_data
+        self.save_observation_data = (
+            save_observation_data
         )  # type: t.Optional[t.Sequence[t.Mapping[str, t.Sequence[str]]]]
 
-    def save_parametric_datasets(
-        self, result: "ParametricResult", mode: "ParametricMode"
+    def save_observation_datasets(
+        self, result: "ObservationResult", mode: "ParameterMode"
     ) -> None:
         """Save the result datasets from parametric mode on disk.
 
         Parameters
         ----------
         result: Result
-        mode: ParametricMode
+        mode: ParameterMode
 
         Returns
         -------
@@ -77,11 +77,11 @@ class ParametricOutputs(Outputs):
 
         save_methods = {"nc": self.save_to_netcdf}  # type: t.Dict[str, SaveToFile]
 
-        if self.save_parametric_data is not None:
+        if self.save_observation_data is not None:
 
             for (
                 dct
-            ) in self.save_parametric_data:  # type: t.Mapping[str, t.Sequence[str]]
+            ) in self.save_observation_data:  # type: t.Mapping[str, t.Sequence[str]]
                 first_item, *_ = dct.items()
                 obj, format_list = first_item
 
@@ -90,7 +90,7 @@ class ParametricOutputs(Outputs):
                         "Please specify a valid result dataset names ('dataset', 'parameters', 'logs')."
                     )
 
-                if mode == ParametricMode.Sequential and obj == "dataset":
+                if mode == ParameterMode.Sequential and obj == "dataset":
                     dct = operator.attrgetter(obj)(result)
                     for key, value in dct.items():
 

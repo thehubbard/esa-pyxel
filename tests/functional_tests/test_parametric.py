@@ -5,7 +5,7 @@ import pytest
 
 from pyxel.configuration import Configuration, load
 from pyxel.detectors import CCD
-from pyxel.parametric.parametric import Parametric, ParametricMode
+from pyxel.observation.observation import Observation, ParameterMode
 from pyxel.pipelines import DetectionPipeline, Processor
 
 try:
@@ -43,11 +43,11 @@ expected_product = [
     "mode, expected",
     [
         # ('single', expected_single),
-        (ParametricMode.Sequential, expected_sequential),
-        (ParametricMode.Product, expected_product),
+        (ParameterMode.Sequential, expected_sequential),
+        (ParameterMode.Product, expected_product),
     ],
 )
-def test_pipeline_parametric_without_init_photon(mode: ParametricMode, expected):
+def test_pipeline_parametric_without_init_photon(mode: ParameterMode, expected):
     input_filename = "tests/data/parametric.yaml"
     cfg = load(Path(input_filename))
 
@@ -57,9 +57,9 @@ def test_pipeline_parametric_without_init_photon(mode: ParametricMode, expected)
     assert hasattr(cfg, "pipeline")
 
     parametric = cfg.parametric
-    assert isinstance(parametric, Parametric)
+    assert isinstance(parametric, Observation)
 
-    parametric.parametric_mode = mode
+    parametric.parameter_mode = mode
 
     detector = cfg.ccd_detector
     assert isinstance(detector, CCD)

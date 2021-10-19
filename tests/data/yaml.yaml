@@ -3,7 +3,7 @@
 #  mode: single
 #  outputs:
 
-parametric:
+observation:
   mode: sequential
   parameters:
     - key: pipeline.photon_generation.illumination.arguments.level

@@ -30,12 +30,12 @@ from pyxel.calibration import Calibration, CalibrationResult
 from pyxel.configuration import Configuration, load, save
 from pyxel.detectors import CCD, CMOS, MKID, Detector
 from pyxel.exposure import Exposure
-from pyxel.parametric import Parametric, ParametricResult
+from pyxel.observation import Observation, ObservationResult
 from pyxel.pipelines import DetectionPipeline, Processor
 from pyxel.util import create_model, download_examples
 
 if t.TYPE_CHECKING:
-    from .outputs import CalibrationOutputs, ExposureOutputs, ParametricOutputs
+    from .outputs import CalibrationOutputs, ExposureOutputs, ObservationOutputs
 
 
 def exposure_mode(
@@ -72,40 +72,40 @@ def exposure_mode(
     return result
 
 
-def parametric_mode(
-    parametric: "Parametric",
+def observation_mode(
+    observation: "Observation",
     detector: Detector,
     pipeline: "DetectionPipeline",
     with_dask: bool = False,
-) -> "ParametricResult":
-    """Run a 'parametric' pipeline.
+) -> "ObservationResult":
+    """Run an 'observation' pipeline.
 
     Parameters
     ----------
-    parametric: Parametric
+    observation: Observation
     detector: Detector
     pipeline: Pipeline
     with_dask: bool
 
     Returns
     -------
-    result: ParametricResult
+    result: ObservationResult
     """
     logging.info("Mode: Parametric")
 
-    parametric_outputs = parametric.outputs  # type: ParametricOutputs
-    detector.set_output_dir(parametric_outputs.output_dir)  # TODO: Remove this
+    observation_outputs = observation.outputs  # type: ObservationOutputs
+    detector.set_output_dir(observation_outputs.output_dir)  # TODO: Remove this
 
     # TODO: This should be done during initializing of object `Configuration`
     # parametric_outputs.params_func(parametric)
 
     processor = Processor(detector=detector, pipeline=pipeline)
 
-    result = parametric.run_parametric(processor=processor)
+    result = observation.run_parametric(processor=processor)
 
-    if parametric_outputs.save_parametric_data:
-        parametric_outputs.save_parametric_datasets(
-            result=result, mode=parametric.parametric_mode
+    if observation_outputs.save_observation_data:
+        observation_outputs.save_observation_datasets(
+            result=result, mode=observation.parameter_mode
         )
 
     return result
@@ -205,8 +205,8 @@ def output_directory(configuration: Configuration) -> Path:
         output_dir = configuration.exposure.outputs.output_dir
     elif isinstance(configuration.calibration, Calibration):
         output_dir = configuration.calibration.outputs.output_dir
-    elif isinstance(configuration.parametric, Parametric):
-        output_dir = configuration.parametric.outputs.output_dir
+    elif isinstance(configuration.observation, Observation):
+        output_dir = configuration.observation.outputs.output_dir
     else:
         raise (ValueError("Outputs not initialized."))
     return output_dir
@@ -257,9 +257,9 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
             calibration=calibration, detector=detector, pipeline=pipeline
         )
 
-    elif isinstance(configuration.parametric, Parametric):
-        parametric = configuration.parametric  # type: Parametric
-        parametric_mode(parametric=parametric, detector=detector, pipeline=pipeline)
+    elif isinstance(configuration.observation, Observation):
+        observation = configuration.observation  # type: Observation
+        observation_mode(observation=observation, detector=detector, pipeline=pipeline)
 
     else:
         raise NotImplementedError("Please provide a valid simulation mode !")

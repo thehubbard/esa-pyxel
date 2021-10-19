@@ -8,10 +8,10 @@
 """TBW."""
 
 # flake8: noqa
-from .parametric import (
-    Parametric,
+from .observation import (
+    Observation,
     ParameterValues,
-    ParametricMode,
-    ParametricResult,
+    ParameterMode,
+    ObservationResult,
     log_parameters,
 )

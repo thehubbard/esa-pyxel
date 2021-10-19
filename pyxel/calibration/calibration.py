@@ -26,7 +26,7 @@ from pyxel.calibration import (
     ResultType,
 )
 from pyxel.calibration.fitting import ModelFitting
-from pyxel.parametric.parameter_values import ParameterValues
+from pyxel.observation.parameter_values import ParameterValues
 from pyxel.pipelines import ModelFunction, Processor
 
 try:

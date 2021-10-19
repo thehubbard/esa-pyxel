@@ -8,7 +8,7 @@
 """TBW."""
 
 # flake8: noqa
-from .parametric_outputs import ParametricOutputs  # , Result
+from .observation_outputs import ObservationOutputs  # , Result
 from .calibration_outputs import CalibrationOutputs
 from .exposure_outputs import ExposureOutputs
 from .outputs import save_log_file, Outputs
