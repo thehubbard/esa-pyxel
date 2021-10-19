@@ -6,7 +6,7 @@
 # ########################################################### #
 
 
-observation:
+exposure:
 
   outputs:
     output_folder: "output"

@@ -60,7 +60,7 @@ def test_configure_params(yaml_file):
     mf = ModelFitting(
         processor=processor,
         variables=calibration.parameters,
-        sampling=calibration.sampling,
+        readout=calibration.readout,
     )
 
     if not isinstance(mf.processor, Processor):
@@ -90,7 +90,7 @@ def test_configure_fits_target(yaml):
     mf = ModelFitting(
         processor=processor,
         variables=calibration.parameters,
-        sampling=calibration.sampling,
+        readout=calibration.readout,
     )
     configure(mf, cfg)
     assert mf.sim_fit_range == (
@@ -127,7 +127,7 @@ def test_boundaries(yaml):
     mf = ModelFitting(
         processor=processor,
         variables=calibration.parameters,
-        sampling=calibration.sampling,
+        readout=calibration.readout,
     )
 
     configure(mf, cfg)
@@ -173,7 +173,7 @@ def test_calculate_fitness(simulated_data, target_data, expected_fitness):
     mf = ModelFitting(
         processor=processor,
         variables=calibration.parameters,
-        sampling=calibration.sampling,
+        readout=calibration.readout,
     )
     configure(mf, cfg)
     fitness = mf.calculate_fitness(simulated_data, target_data)
@@ -200,7 +200,7 @@ def test_weighting(yaml, factor, expected_fitness):
     mf = ModelFitting(
         processor=processor,
         variables=calibration.parameters,
-        sampling=calibration.sampling,
+        readout=calibration.readout,
     )
     configure(mf, cfg)
     fitness = mf.calculate_fitness(
@@ -251,7 +251,7 @@ def test_custom_fitness(yaml, simulated, target, weighting):
     mf = ModelFitting(
         processor=processor,
         variables=calibration.parameters,
-        sampling=calibration.sampling,
+        readout=calibration.readout,
     )
     configure(mf=mf, sim=cfg)
 
@@ -303,7 +303,7 @@ def test_fitness(yaml, parameter, expected_fitness):
     mf = ModelFitting(
         processor=processor,
         variables=calibration.parameters,
-        sampling=calibration.sampling,
+        readout=calibration.readout,
     )
 
     configure(mf, cfg)
@@ -354,7 +354,7 @@ def test_split_and_update(yaml, parameter, expected_array):
     mf = ModelFitting(
         processor=processor,
         variables=calibration.parameters,
-        sampling=calibration.sampling,
+        readout=calibration.readout,
     )
     configure(mf, cfg)
     array = mf.convert_to_parameters(parameter)
@@ -402,7 +402,7 @@ def test_detector_and_model_update(yaml: str, param_array: np.ndarray):
     mf = ModelFitting(
         processor=processor,
         variables=calibration.parameters,
-        sampling=calibration.sampling,
+        readout=calibration.readout,
     )
     configure(mf=mf, sim=cfg)
     mf.processor = mf.update_processor(param_array, processor)

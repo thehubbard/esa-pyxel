@@ -40,8 +40,8 @@ def test_yaml_load(yaml_file):
 
     assert isinstance(cfg, Configuration)
 
-    if isinstance(cfg.observation, Exposure):
-        assert isinstance(cfg.observation.outputs, ExposureOutputs)
+    if isinstance(cfg.exposure, Exposure):
+        assert isinstance(cfg.exposure.outputs, ExposureOutputs)
     elif isinstance(cfg.calibration, Calibration):
         assert isinstance(cfg.calibration.outputs, CalibrationOutputs)
         assert isinstance(cfg.calibration.algorithm, Algorithm)
