@@ -18,7 +18,7 @@ from dask import delayed
 from tqdm.auto import tqdm
 from typing_extensions import Literal
 
-from pyxel.exposure import exposure_pipeline
+from pyxel.exposure import run_exposure_pipeline
 
 # import dask
 from pyxel.observation.parameter_values import ParameterType, ParameterValues
@@ -366,14 +366,9 @@ class Observation:
                 processor_id=processor_id, parameter_dict=parameter_dict
             )
             logs.append(log)
-            _ = exposure_pipeline(
+            _ = run_exposure_pipeline(
                 processor=proc,
-                time_step_it=self.readout.time_step_it(),
-                num_steps=self.readout._num_steps,
-                ndreadout=self.readout.non_destructive,
-                times_linear=self.readout._times_linear,
-                start_time=self.readout._start_time,
-                end_time=self.readout._times[-1],
+                readout=self.readout,
                 outputs=self.outputs,
                 progressbar=False,
             )
@@ -487,14 +482,9 @@ class Observation:
 
                     # run the pipeline
                     # run the pipeline
-                    ds = exposure_pipeline(
+                    ds, _ = run_exposure_pipeline(
                         processor=proc,
-                        time_step_it=self.readout.time_step_it(),
-                        num_steps=self.readout._num_steps,
-                        ndreadout=self.readout.non_destructive,
-                        times_linear=self.readout._times_linear,
-                        start_time=self.readout._start_time,
-                        end_time=self.readout._times[-1],
+                        readout=self.readout,
                         outputs=self.outputs,
                         progressbar=False,
                     )
@@ -565,14 +555,9 @@ class Observation:
 
                     # run the pipeline
                     # run the pipeline
-                    ds = exposure_pipeline(
+                    ds, _ = run_exposure_pipeline(
                         processor=proc,
-                        time_step_it=self.readout.time_step_it(),
-                        num_steps=self.readout._num_steps,
-                        ndreadout=self.readout.non_destructive,
-                        times_linear=self.readout._times_linear,
-                        start_time=self.readout._start_time,
-                        end_time=self.readout._times[-1],
+                        readout = self.readout,
                         outputs=self.outputs,
                         progressbar=False,
                     )
@@ -632,14 +617,9 @@ class Observation:
                     logs.append(log)
 
                     # run the pipeline
-                    ds = exposure_pipeline(
+                    ds, _ = run_exposure_pipeline(
                         processor=proc,
-                        time_step_it=self.readout.time_step_it(),
-                        num_steps=self.readout._num_steps,
-                        ndreadout=self.readout.non_destructive,
-                        times_linear=self.readout._times_linear,
-                        start_time=self.readout._start_time,
-                        end_time=self.readout._times[-1],
+                        readout = self.readout,
                         outputs=self.outputs,
                         progressbar=False,
                     )

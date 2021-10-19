@@ -9,4 +9,4 @@
 """Observation classes and function."""
 # flake8: noqa
 from .readout import Readout
-from .exposure import Exposure, run_exposure, exposure_pipeline
+from .exposure import Exposure, run_exposure_pipeline

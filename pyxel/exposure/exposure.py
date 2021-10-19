@@ -44,82 +44,34 @@ class Exposure:
         -------
         result: xarrray.Dataset
         """
-        result, _ = run_exposure(
+        if self.readout._num_steps == 1:
+            progressbar = False
+        else:
+            progressbar = True
+
+        result, _ = run_exposure_pipeline(
             processor=processor,
             readout=self.readout,
             outputs=self.outputs,
-            progressbar=True,
+            progressbar=progressbar,
         )
         return result
 
 
-def run_exposure(
+def run_exposure_pipeline(
     processor: "Processor",
     readout: "Readout",
-    outputs: t.Optional["ExposureOutputs"] = None,
-    progressbar: bool = False,
-) -> t.Tuple[xr.Dataset, "Processor"]:
-    """Run a an exposure pipeline.
-
-    Parameters
-    ----------
-    processor
-    readout
-    outputs
-    progressbar
-
-    Returns
-    -------
-    result: xr.Dataset
-    """
-    if readout._num_steps == 1:
-        progressbar = False
-
-    result = exposure_pipeline(
-        processor=processor,
-        time_step_it=readout.time_step_it(),
-        num_steps=readout._num_steps,
-        ndreadout=readout.non_destructive,
-        times_linear=readout._times_linear,
-        start_time=readout._start_time,
-        end_time=readout._times[-1],
-        outputs=outputs,
-        progressbar=progressbar,
-    )
-
-    return result, processor
-
-
-def exposure_pipeline(
-    processor: "Processor",
-    time_step_it: t.Iterator[t.Tuple[float, float]],
-    num_steps: int,
-    times_linear: bool,
-    end_time: float,
-    start_time: float = 0.0,
-    ndreadout: bool = False,
     outputs: t.Optional[
         t.Union["CalibrationOutputs", "ObservationOutputs", "ExposureOutputs"]
     ] = None,
     progressbar: bool = False,
-) -> xr.Dataset:
+) -> t.Tuple[xr.Dataset, "Processor"]:
     """Run standalone exposure pipeline.
 
     Parameters
     ----------
     processor: Processor
-    time_step_it: Iterator
-        Iterates over pairs of times and elapsed time steps.
-    num_steps: int
-        Number of times.
-    ndreadout: bool
-        Set non destructive readout mode.
-    times_linear: bool
-        Set if times are linear.
-    start_time: float
-        Starting time.
-    end_time:
-        Last time.
+    readout: Readout
     outputs: DynamicOutputs
         Sampling outputs.
     progressbar: bool
@@ -132,6 +84,14 @@ def exposure_pipeline(
     """
     # if isinstance(detector, CCD):
     #    dynamic.non_destructive_readout = False
+
+    num_steps = readout._num_steps
+    ndreadout = readout.non_destructive
+    times_linear = readout._times_linear
+    start_time = readout._start_time
+    end_time = readout._times[-1]
+    time_step_it = readout.time_step_it()
+    times = readout.times
 
     detector = processor.detector
 
@@ -211,4 +171,4 @@ def exposure_pipeline(
     # Combine the datasets in the list into one xarray
     final_dataset = xr.combine_by_coords(list_datasets)  # type: xr.Dataset
 
-    return final_dataset
+    return final_dataset, processor
