@@ -110,7 +110,7 @@ class Parametric:
         index: int
         parameter_dict: dict
         """
-        if self.data:
+        if isinstance(self.data, np.ndarray):
             for index, data_array in enumerate(self.data):
                 i = 0
                 parameter_dict = {}
@@ -131,7 +131,9 @@ class Parametric:
                         values_flattened = values.flatten()
 
                         if all(x == "_" for x in values_flattened):
-                            value = data_array[i : i + len(values_flattened)]  # noqa: E203
+                            value = data_array[
+                                i : i + len(values_flattened)
+                            ]  # noqa: E203
                             i += len(value)
                             value = value.reshape(sh).tolist()
                             parameter_dict.update({key: value})
@@ -142,8 +144,8 @@ class Parametric:
                             )
                 yield index, parameter_dict
 
-            else:
-                raise ValueError("Custom parameters not loaded from file.")
+        else:
+            raise ValueError("Custom parameters not loaded from file.")
 
     def _sequential_parameters(self) -> t.Generator[t.Tuple[int, dict], None, None]:
         """Generate sequential mode parameters.
@@ -212,9 +214,7 @@ class Parametric:
 
     def _custom_processors_it(
         self, processor: "Processor"
-    ) -> t.Generator[
-        t.Tuple["Processor", int, t.Dict], None, None
-    ]:
+    ) -> t.Generator[t.Tuple["Processor", int, t.Dict], None, None]:
         """Generate processors with different custom parameters.
 
         Parameters
@@ -236,9 +236,7 @@ class Parametric:
 
     def _product_processors_it(
         self, processor: "Processor"
-    ) -> t.Generator[
-        t.Tuple["Processor", t.Tuple, t.Dict], None, None
-    ]:
+    ) -> t.Generator[t.Tuple["Processor", t.Tuple, t.Dict], None, None]:
         """Generate processors with different product parameters.
 
         Parameters
@@ -260,9 +258,7 @@ class Parametric:
 
     def _sequential_processors_it(
         self, processor: "Processor"
-    ) -> t.Generator[
-        t.Tuple["Processor", int, t.Dict], None, None
-    ]:
+    ) -> t.Generator[t.Tuple["Processor", int, t.Dict], None, None]:
         """Generate processors with different sequential parameters.
 
         Parameters
@@ -626,7 +622,9 @@ class Parametric:
                 dataset_list = []
                 logs = []
 
-                for proc, index, parameter_dict in self._custom_processors_it(processor):
+                for proc, index, parameter_dict in self._custom_processors_it(
+                    processor
+                ):
                     # log parameters for this pipeline
                     log = log_parameters(
                         processor_id=index, parameter_dict=parameter_dict
