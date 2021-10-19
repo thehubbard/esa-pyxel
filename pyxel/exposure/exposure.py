@@ -11,6 +11,7 @@
 import logging
 import operator
 import typing as t
+import numpy as np
 
 import xarray as xr
 from tqdm.auto import tqdm
@@ -95,6 +96,9 @@ def run_exposure_pipeline(
 
     detector = processor.detector
 
+    y = range(detector.geometry.row)
+    x = range(detector.geometry.col)
+
     detector.set_readout(
         num_steps=num_steps,
         ndreadout=ndreadout,
@@ -105,19 +109,12 @@ def run_exposure_pipeline(
     # The detector should be reset before exposure
     detector.empty()
 
-    # prepare lists for to-be-merged datasets
-    list_datasets = []
-
-    # Dimensions set by the detectors dimensions
-    rows, columns = (
-        processor.detector.geometry.row,
-        processor.detector.geometry.col,
-    )
-    # Coordinates
-    coordinates = {"x": range(columns), "y": range(rows)}
-
     if progressbar:
         pbar = tqdm(total=num_steps)
+
+    pixel_list = []
+    signal_list = []
+    image_list = []
 
     for i, (time, step) in enumerate(
         time_step_it
@@ -139,36 +136,42 @@ def run_exposure_pipeline(
         if outputs and detector.read_out:
             outputs.save_to_file(processor)
 
-        out = xr.Dataset()
-
-        # Dataset is storing the arrays at the end of this iter
-        arrays = {
-            "pixel": "detector.pixel.array",
-            "signal": "detector.signal.array",
-            "image": "detector.image.array",
-        }
-
-        for key, array in arrays.items():
-            da = xr.DataArray(
-                operator.attrgetter(array)(processor),
-                dims=["y", "x"],
-                coords=coordinates,  # type: ignore
-            )
-            # Time coordinate of this iteration
-            da = da.assign_coords(coords={"readout_time": time})
-            da = da.expand_dims(dim="readout_time")
-
-            out[key] = da
+        pixel_list.append(detector.pixel.array)
+        signal_list.append(detector.signal.array)
+        image_list.append(detector.image.array)
 
         if progressbar:
             pbar.update(1)
         # Append to the list of datasets
-        list_datasets.append(out)
+
+    pixel_array = np.stack(pixel_list)
+    signal_array = np.stack(signal_list)
+    image_array = np.stack(image_list)
+
+    pixel_da = xr.DataArray(
+        pixel_array,
+        dims=("readout_time", "y", "x"),
+        name="pixel",
+        coords={"readout_time": times, "y": y, "x": x},
+    )
+
+    signal_da = xr.DataArray(
+        signal_array,
+        dims=("readout_time", "y", "x"),
+        name="signal",
+        coords={"readout_time": times, "y": y, "x": x},
+    )
+
+    image_da = xr.DataArray(
+        image_array,
+        dims=("readout_time", "y", "x"),
+        name="image",
+        coords={"readout_time": times, "y": y, "x": x},
+    )
 
     if progressbar:
         pbar.close()
 
-    # Combine the datasets in the list into one xarray
-    final_dataset = xr.combine_by_coords(list_datasets)  # type: xr.Dataset
+    final_dataset = xr.merge([pixel_da, signal_da, image_da])
 
     return final_dataset, processor
