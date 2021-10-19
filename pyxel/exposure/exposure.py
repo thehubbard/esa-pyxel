@@ -135,7 +135,7 @@ def exposure_pipeline(
 
     detector = processor.detector
 
-    detector.set_sampling(
+    detector.set_readout(
         num_steps=num_steps,
         ndreadout=ndreadout,
         times_linear=times_linear,

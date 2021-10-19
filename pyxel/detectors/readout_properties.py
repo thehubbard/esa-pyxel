@@ -9,7 +9,7 @@
 """Sampling detector properties class."""
 
 
-class SamplingProperties:
+class ReadoutProperties:
     """Sampling detector properties."""
 
     def __init__(
@@ -20,7 +20,7 @@ class SamplingProperties:
         ndreadout: bool = False,
         times_linear: bool = True,
     ):
-        """Create an instance of DynamicProperties.
+        """Create an instance of ReadoutProperties.
 
         Parameters
         ----------
@@ -64,7 +64,7 @@ class SamplingProperties:
         return self._end_time
 
     @property
-    def non_destructive_readout(self) -> bool:
+    def non_destructive(self) -> bool:
         """TBW."""
         return self._non_destructive
 
