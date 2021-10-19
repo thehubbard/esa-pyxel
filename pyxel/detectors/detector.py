@@ -130,7 +130,7 @@ class Detector:
             self._image = Image(self.geometry)
 
     def empty(self, empty_all: bool = True) -> None:
-        """Empties the data in the detector.
+        """Empty the data in the detector.
 
         Returns
         -------
@@ -148,7 +148,6 @@ class Detector:
                 self.signal.array *= 0
             if self._image:
                 self.image.array *= 0
-
 
     # TODO: Set an `Output` object ?
     # TODO: Is it really needed ?

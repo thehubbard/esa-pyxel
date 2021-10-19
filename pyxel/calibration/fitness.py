@@ -8,8 +8,8 @@
 """Fitness functions for model fitting."""
 
 import typing as t
-import numba
 
+import numba
 import numpy as np
 
 
