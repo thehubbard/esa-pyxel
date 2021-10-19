@@ -46,9 +46,9 @@ def test_yaml_load(yaml_file):
         assert isinstance(cfg.calibration.outputs, CalibrationOutputs)
         assert isinstance(cfg.calibration.algorithm, Algorithm)
         assert isinstance(cfg.calibration.calibration_mode, CalibrationMode)
-    elif isinstance(cfg.parametric, Observation):
-        assert isinstance(cfg.parametric.outputs, ObservationOutputs)
-        assert isinstance(cfg.parametric.parameter_mode, ParameterMode)
+    elif isinstance(cfg.observation, Observation):
+        assert isinstance(cfg.observation.outputs, ObservationOutputs)
+        assert isinstance(cfg.observation.parameter_mode, ParameterMode)
     else:
         raise AssertionError("Running mode not initialized.")
 

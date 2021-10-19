@@ -52,14 +52,14 @@ def test_pipeline_parametric_without_init_photon(mode: ParameterMode, expected):
     cfg = load(Path(input_filename))
 
     assert isinstance(cfg, Configuration)
-    assert hasattr(cfg, "parametric")
+    assert hasattr(cfg, "observation")
     assert hasattr(cfg, "ccd_detector")
     assert hasattr(cfg, "pipeline")
 
-    parametric = cfg.parametric
-    assert isinstance(parametric, Observation)
+    observation = cfg.observation
+    assert isinstance(observation, Observation)
 
-    parametric.parameter_mode = mode
+    observation.parameter_mode = mode
 
     detector = cfg.ccd_detector
     assert isinstance(detector, CCD)
@@ -78,10 +78,10 @@ def test_pipeline_parametric_without_init_photon(mode: ParameterMode, expected):
     assert isinstance(pipeline, DetectionPipeline)
 
     processor = Processor(detector=detector, pipeline=pipeline)
-    result = parametric.debug_parameters(processor)
+    result = observation.debug_parameters(processor)
     assert result == expected
 
-    processor_generator = parametric._processors_it(processor=processor)
+    processor_generator = observation._processors_it(processor=processor)
     assert isinstance(processor_generator, abc.Generator)
 
     for proc, _, _ in processor_generator:
