@@ -143,7 +143,7 @@ def exposure_pipeline(
         end_time=end_time,
     )
     # The detector should be reset before exposure
-    detector.reset(reset_all=True)
+    detector.empty()
 
     # prepare lists for to-be-merged datasets
     list_datasets = []
@@ -169,9 +169,9 @@ def exposure_pipeline(
         logging.info("time = %.3f s", time)
 
         if detector.non_destructive_readout:
-            detector.reset(reset_all=False)
+            detector.empty(empty_all=False)
         else:
-            detector.reset(reset_all=True)
+            detector.empty(empty_all=True)
 
         processor.run_pipeline()
         detector.pipeline_count = i
