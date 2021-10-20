@@ -200,7 +200,7 @@ def extract_data_3d(
     for _, row in df_results.iterrows():
         island = row["island"]  # type: int
         id_processor = row["id_processor"]  # type: int
-        result = row["result"]  # type: delayed.Delayed
+        result = row["processor"].result  # type: delayed.Delayed
 
         image_delayed = result["image"]  # type: delayed.Delayed
         signal_delayed = result["signal"]  # type: delayed.Delayed

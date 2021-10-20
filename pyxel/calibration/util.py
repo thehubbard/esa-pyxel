@@ -24,7 +24,6 @@ __all__ = [
     "CalibrationResult",
     "CalibrationMode",
     "Island",
-    "ResultType",
     "check_ranges",
     "list_to_slice",
     "read_data",
@@ -55,14 +54,6 @@ class CalibrationMode(Enum):
 
     Pipeline = "pipeline"
     SingleModel = "single_model"
-
-
-class ResultType(Enum):
-    """TBW."""
-
-    Image = "image"
-    Signal = "signal"
-    Pixel = "pixel"
 
 
 class Island(Enum):

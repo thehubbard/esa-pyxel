@@ -23,11 +23,12 @@ from pyxel.calibration import (
     DaskIsland,
     Island,
     MyArchipelago,
-    ResultType,
 )
 from pyxel.calibration.fitting import ModelFitting
 from pyxel.observation.parameter_values import ParameterValues
 from pyxel.pipelines import ModelFunction, Processor
+
+from ..pipelines.processor import ResultType
 
 try:
     import pygmo as pg

@@ -11,10 +11,13 @@
 import logging
 import operator
 import typing as t
-import numpy as np
 
+import numpy as np
 import xarray as xr
 from tqdm.auto import tqdm
+from typing_extensions import Literal
+
+from pyxel.pipelines import ResultType, result_keys
 
 from .readout import Readout
 
@@ -26,13 +29,29 @@ if t.TYPE_CHECKING:
 class Exposure:
     """TBW."""
 
-    def __init__(self, outputs: "ExposureOutputs", readout: "Readout"):
+    def __init__(
+        self,
+        outputs: "ExposureOutputs",
+        readout: "Readout",
+        result_type: Literal["image", "signal", "pixel", "all"] = "all",
+    ):
         self.outputs = outputs
         self.readout = readout
+        self._result_type = ResultType(result_type)
 
     def __repr__(self) -> str:
         cls_name = self.__class__.__name__  # type: str
         return f"{cls_name}<outputs={self.outputs!r}>"
+
+    @property
+    def result_type(self) -> ResultType:
+        """TBW."""
+        return self._result_type
+
+    @result_type.setter
+    def result_type(self, value: ResultType) -> None:
+        """TBW."""
+        self._result_type = value
 
     def run_exposure(self, processor: "Processor") -> xr.Dataset:
         """Run a an observation pipeline.
@@ -50,13 +69,24 @@ class Exposure:
         else:
             progressbar = True
 
-        result, _ = run_exposure_pipeline(
+        y = range(processor.detector.geometry.row)
+        x = range(processor.detector.geometry.col)
+        times = self.readout.times
+
+        # Unpure changing of processor
+        _ = run_exposure_pipeline(
             processor=processor,
             readout=self.readout,
             outputs=self.outputs,
             progressbar=progressbar,
+            result_type=self.result_type,
         )
-        return result
+
+        result_dataset = processor.result_to_dataset(
+            x=x, y=y, times=times, result_type=self.result_type
+        )
+
+        return result_dataset
 
 
 def run_exposure_pipeline(
@@ -66,11 +96,13 @@ def run_exposure_pipeline(
         t.Union["CalibrationOutputs", "ObservationOutputs", "ExposureOutputs"]
     ] = None,
     progressbar: bool = False,
-) -> t.Tuple[xr.Dataset, "Processor"]:
+    result_type: ResultType = ResultType.All,
+) -> "Processor":
     """Run standalone exposure pipeline.
 
     Parameters
     ----------
+    result_type: ResultType
     processor: Processor
     readout: Readout
     outputs: DynamicOutputs
@@ -92,12 +124,8 @@ def run_exposure_pipeline(
     start_time = readout._start_time
     end_time = readout._times[-1]
     time_step_it = readout.time_step_it()
-    times = readout.times
 
     detector = processor.detector
-
-    y = range(detector.geometry.row)
-    x = range(detector.geometry.col)
 
     detector.set_readout(
         num_steps=num_steps,
@@ -112,9 +140,14 @@ def run_exposure_pipeline(
     if progressbar:
         pbar = tqdm(total=num_steps)
 
-    pixel_list = []
-    signal_list = []
-    image_list = []
+    keys = result_keys(result_type)
+
+    attributes = {
+        "image": "image.array",
+        "pixel": "pixel.array",
+        "signal": "signal.array",
+    }
+    unstacked_result = {key: [] for key in keys}  # type: t.Mapping[str, list]
 
     for i, (time, step) in enumerate(
         time_step_it
@@ -136,42 +169,15 @@ def run_exposure_pipeline(
         if outputs and detector.read_out:
             outputs.save_to_file(processor)
 
-        pixel_list.append(detector.pixel.array)
-        signal_list.append(detector.signal.array)
-        image_list.append(detector.image.array)
+        for key in keys:
+            unstacked_result[key].append(operator.attrgetter(attributes[key])(detector))
 
         if progressbar:
             pbar.update(1)
-        # Append to the list of datasets
 
-    pixel_array = np.stack(pixel_list)
-    signal_array = np.stack(signal_list)
-    image_array = np.stack(image_list)
-
-    pixel_da = xr.DataArray(
-        pixel_array,
-        dims=("readout_time", "y", "x"),
-        name="pixel",
-        coords={"readout_time": times, "y": y, "x": x},
-    )
-
-    signal_da = xr.DataArray(
-        signal_array,
-        dims=("readout_time", "y", "x"),
-        name="signal",
-        coords={"readout_time": times, "y": y, "x": x},
-    )
-
-    image_da = xr.DataArray(
-        image_array,
-        dims=("readout_time", "y", "x"),
-        name="image",
-        coords={"readout_time": times, "y": y, "x": x},
-    )
+    processor.result = {key: np.stack(unstacked_result[key]) for key in keys}
 
     if progressbar:
         pbar.close()
 
-    final_dataset = xr.merge([pixel_da, signal_da, image_da])
-
-    return final_dataset, processor
+    return processor
