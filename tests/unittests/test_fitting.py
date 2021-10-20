@@ -145,10 +145,10 @@ def test_boundaries(yaml):
 @pytest.mark.parametrize(
     "simulated_data, target_data, expected_fitness",
     [
-        (231, 231, 0.0),
-        (231, 145, 86.0),
-        (2.31, 1.45, 0.8600000000000001),
-        (2.0, 1, 1.0),
+        # (231, 231, 0.0),
+        # (231, 145, 86.0),
+        # (2.31, 1.45, 0.8600000000000001),
+        # (2.0, 1, 1.0),
         (np.array([1, 9, 45, 548, 2, 2]), np.array([1, 9, 45, 548, 2, 2]), 0.0),
         (np.array([1, 9, 45, 548, 2, 2]), np.array([1, 3, 56, 21, 235, 11]), 786.0),
         (
@@ -187,7 +187,7 @@ def test_calculate_fitness(simulated_data, target_data, expected_fitness):
     [
         (Path("tests/data/calibrate_weighting.yaml"), 1, 0.0),
         (Path("tests/data/calibrate_weighting.yaml"), 2, 1287593.3479011902),
-        (Path("tests/data/calibrate_weighting.yaml"), 3, 2575186.6958023803),
+        (Path("tests/data/calibrate_weighting.yaml"), 3, 2575186.695802381),
     ],
 )
 def test_weighting(yaml, factor, expected_fitness):
@@ -219,14 +219,24 @@ def custom_fitness_func(simulated, target, weighting=None):
 @pytest.mark.parametrize(
     "yaml, simulated, target, weighting",
     [
-        ("tests/data/calibrate_custom_fitness.yaml", 1.0, 2.0, 4.5),
+        (
+            "tests/data/calibrate_custom_fitness.yaml",
+            np.array([1.0]),
+            np.array([2.0]),
+            np.array([4.5]),
+        ),
         (
             "tests/data/calibrate_custom_fitness.yaml",
             np.array([1.0, 2.0, 3.0]),
             np.array([2.0, 5.0, 6.0]),
-            26.0,
+            np.array([26.0]),
         ),
-        ("tests/data/calibrate_least_squares.yaml", 2.0, 4.0, 4.0),
+        (
+            "tests/data/calibrate_least_squares.yaml",
+            np.array([2.0]),
+            np.array([4.0]),
+            np.array([4.0]),
+        ),
     ],
 )
 def test_custom_fitness(yaml, simulated, target, weighting):
@@ -286,7 +296,7 @@ def test_custom_fitness(yaml, simulated, target, weighting):
                     100.0,
                 ]
             ),
-            88663.74498686477,
+            88663.74498686475,
         )
     ],
 )

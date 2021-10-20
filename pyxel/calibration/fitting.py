@@ -394,7 +394,7 @@ class ModelFitting(ProblemSingleObjective):
         self,
         simulated_data: np.ndarray,
         target_data: np.ndarray,
-        weighting: t.Optional[t.Union[np.ndarray, float]] = None,
+        weighting: t.Optional[np.ndarray] = None,
     ) -> float:
         """TBW.
 
@@ -407,8 +407,15 @@ class ModelFitting(ProblemSingleObjective):
         # TODO: Remove 'assert'
         assert self.fitness_func is not None
 
+        if weighting is not None:
+            factor = weighting
+        else:
+            factor = np.ones(np.shape(target_data))
+
         fitness = self.fitness_func(
-            simulated=simulated_data, target=target_data, weighting=weighting
+            simulated=simulated_data.astype(np.float64),
+            target=target_data.astype(np.float64),
+            weighting=factor.astype(np.float64),
         )  # type: float
 
         return fitness
@@ -464,9 +471,18 @@ class ModelFitting(ProblemSingleObjective):
 
                 simulated_data = self.get_simulated_data(dataset=result)
 
-                weighting = None  # type: t.Optional[t.Union[np.ndarray, float]]
+                weighting = None  # type: t.Optional[np.ndarray]
+
                 if self.weighting is not None:
-                    weighting = self.weighting[i]
+                    if np.ndim(self.weighting) == 1:
+                        weighting = self.weighting[i] * np.ones(
+                            (
+                                processor.detector.geometry.row,
+                                processor.detector.geometry.col,
+                            )
+                        )
+                    else:
+                        weighting = self.weighting[i]
 
                 overall_fitness += self.calculate_fitness(
                     simulated_data=simulated_data,

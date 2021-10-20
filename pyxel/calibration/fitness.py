@@ -13,11 +13,11 @@ import numba
 import numpy as np
 
 
-@numba.njit()
+@numba.njit
 def sum_of_abs_residuals(
     simulated: np.ndarray,
     target: np.ndarray,
-    weighting: t.Optional[t.Union[np.ndarray, float]] = None,
+    weighting: np.ndarray,
 ) -> float:
     """TBW.
 
@@ -33,19 +33,17 @@ def sum_of_abs_residuals(
         TBW.
     """
     diff = target - simulated
+    diff *= weighting
 
-    if weighting is not None:
-        diff *= weighting
-
-    result = np.sum(np.abs(diff))  # type: float
+    result = float(np.sum(np.abs(diff)))
     return result
 
 
-@numba.njit()
+@numba.njit
 def sum_of_squared_residuals(
     simulated: np.ndarray,
     target: np.ndarray,
-    weighting: t.Optional[t.Union[np.ndarray, float]] = None,
+    weighting: np.ndarray,
 ) -> float:
     """TBW.
 
@@ -61,11 +59,8 @@ def sum_of_squared_residuals(
         TBW.
     """
     diff = target - simulated
-
     diff_square = diff * diff
+    diff_square *= weighting
 
-    if weighting is not None:
-        diff_square *= weighting
-
-    result = np.sum(diff_square)  # type: float
+    result = float(np.sum(diff_square))
     return result
