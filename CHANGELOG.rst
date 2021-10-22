@@ -24,6 +24,8 @@ Core
   (See `!265 <https://gitlab.com/esa/pyxel/-/merge_requests/265>`_).
 * Rename observation to exposure and parametric to observation.
   (See `!274 <https://gitlab.com/esa/pyxel/-/merge_requests/274>`_).
+* Improve the speed of function detector.reset.
+  (See `!273 <https://gitlab.com/esa/pyxel/-/merge_requests/273>`_).
 
 Documentation
 ~~~~~~~~~~~~~
