@@ -17,7 +17,7 @@ Core
 * Add new detector MKID. `Enrico Biancalani <https://gitlab.com/Dr_Bombero>`
   (See `!206 <https://gitlab.com/esa/pyxel/-/merge_requests/206>`_).
 * Refactor single and dynamic mode into one named observation.
-  (See `!263 <https://gitlab.com/esa/pyxel/-/merge_requests/63>`_).
+  (See `!263 <https://gitlab.com/esa/pyxel/-/merge_requests/263>`_).
 
 Documentation
 ~~~~~~~~~~~~~
