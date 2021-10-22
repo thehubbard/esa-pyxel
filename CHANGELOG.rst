@@ -26,6 +26,8 @@ Core
   (See `!274 <https://gitlab.com/esa/pyxel/-/merge_requests/274>`_).
 * Improve the speed of function detector.reset.
   (See `!273 <https://gitlab.com/esa/pyxel/-/merge_requests/273>`_).
+* Optimize the speed of calibration in time-domain.
+  (See `!276 <https://gitlab.com/esa/pyxel/-/merge_requests/276>`_).
 
 Documentation
 ~~~~~~~~~~~~~
