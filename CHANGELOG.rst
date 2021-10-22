@@ -18,6 +18,8 @@ Core
   (See `!206 <https://gitlab.com/esa/pyxel/-/merge_requests/206>`_).
 * Refactor single and dynamic mode into one named observation.
   (See `!263 <https://gitlab.com/esa/pyxel/-/merge_requests/263>`_).
+* Include observation mode functions in parametric mode.
+  (See `!264 <https://gitlab.com/esa/pyxel/-/merge_requests/264>`_).
 
 Documentation
 ~~~~~~~~~~~~~
