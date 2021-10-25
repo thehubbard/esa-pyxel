@@ -6,7 +6,7 @@
 # ########################################################### #
 
 
-single:
+observation:
 
   outputs:
     output_folder: "output"

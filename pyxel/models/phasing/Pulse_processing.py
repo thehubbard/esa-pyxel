@@ -7,6 +7,7 @@
 
 """Phase-pulse processing model."""
 
+import numba
 import numpy as np
 
 from pyxel.detectors import MKID
@@ -71,11 +72,12 @@ def pulse_processing(
     detector.phase.array = detector.phase.array.astype("float64")
 
 
+@numba.jit(nopython=True)
 def df_to_array(
     array: np.ndarray,
     charge_per_pixel: np.ndarray,
-    pixel_index_ver: list,
-    pixel_index_hor: list,
+    pixel_index_ver: np.ndarray,
+    pixel_index_hor: np.ndarray,
 ) -> np.ndarray:
     """TBW."""
 

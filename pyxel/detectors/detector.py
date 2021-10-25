@@ -17,7 +17,7 @@ import numpy as np
 from pyxel import __version__
 from pyxel.data_structure import Charge, Image, Photon, Pixel, Signal
 from pyxel.detectors import Environment, Material
-from pyxel.detectors.dynamic_properties import DynamicProperties
+from pyxel.detectors.sampling_properties import SamplingProperties
 from pyxel.util.memory import get_size, memory_usage_details
 
 __all__ = ["Detector"]
@@ -55,7 +55,7 @@ class Detector:
         self.input_image = None  # type: t.Optional[np.ndarray]
         self._output_dir = None  # type: t.Optional[Path]  # TODO: Is it really needed ?
 
-        self._dynamic_properties = None  # type: t.Optional["DynamicProperties"]
+        self._sampling_properties = None  # type: t.Optional["SamplingProperties"]
 
         self._numbytes = get_size(self)
 
@@ -145,7 +145,7 @@ class Detector:
 
         return self._output_dir
 
-    def set_dynamic(
+    def set_sampling(
         self,
         num_steps: int,
         start_time: float,
@@ -153,8 +153,8 @@ class Detector:
         ndreadout: bool = False,
         times_linear: bool = True,
     ) -> None:
-        """Switch on dynamic (time dependent) mode."""
-        self._dynamic_properties = DynamicProperties(
+        """Set sampling."""
+        self._sampling_properties = SamplingProperties(
             num_steps=num_steps,
             start_time=start_time,
             end_time=end_time,
@@ -165,82 +165,106 @@ class Detector:
     @property
     def time(self) -> float:
         """TBW."""
-        if self._dynamic_properties is not None:
-            return self._dynamic_properties.time
+        if self._sampling_properties is not None:
+            return self._sampling_properties.time
         else:
-            raise ValueError("Detector is not dynamic.")
+            raise ValueError("No sampling defined.")
 
     @time.setter
     def time(self, value: float) -> None:
         """TBW."""
-        if self._dynamic_properties is not None:
-            self._dynamic_properties.time = value
+        if self._sampling_properties is not None:
+            self._sampling_properties.time = value
         else:
-            raise ValueError("Detector is not dynamic.")
+            raise ValueError("No sampling defined.")
+
+    @property
+    def start_time(self) -> float:
+        """TBW."""
+        if self._sampling_properties is not None:
+            return self._sampling_properties.start_time
+        else:
+            raise ValueError("No sampling defined.")
+
+    @start_time.setter
+    def start_time(self, value: float) -> None:
+        """TBW."""
+        if self._sampling_properties is not None:
+            self._sampling_properties.start_time = value
+        else:
+            raise ValueError("No sampling defined.")
+
+    @property
+    def absolute_time(self) -> float:
+        """TBW."""
+        if self._sampling_properties is not None:
+            return self._sampling_properties.absolute_time
+        else:
+            raise ValueError("No sampling defined.")
 
     @property
     def time_step(self) -> float:
         """TBW."""
-        if self._dynamic_properties is not None:
-            return self._dynamic_properties.time_step
+        if self._sampling_properties is not None:
+            return self._sampling_properties.time_step
         else:
-            raise ValueError("Detector is not dynamic.")
+            raise ValueError("No sampling defined.")
 
     @time_step.setter
     def time_step(self, value: float) -> None:
         """TBW."""
-        if self._dynamic_properties is not None:
-            self._dynamic_properties.time_step = value
+        if self._sampling_properties is not None:
+            self._sampling_properties.time_step = value
         else:
-            raise ValueError("Detector is not dynamic.")
+            raise ValueError("No sampling defined.")
 
     @property
     def times_linear(self) -> bool:
         """TBW."""
-        if self._dynamic_properties is not None:
-            return self._dynamic_properties.times_linear
+        if self._sampling_properties is not None:
+            return self._sampling_properties.times_linear
         else:
-            raise ValueError("Detector is not dynamic.")
+            raise ValueError("No sampling defined.")
 
     @property
     def num_steps(self) -> int:
         """TBW."""
-        if self._dynamic_properties is not None:
-            return self._dynamic_properties.num_steps
+        if self._sampling_properties is not None:
+            return self._sampling_properties.num_steps
         else:
-            raise ValueError("Detector is not dynamic.")
+            raise ValueError("No sampling defined.")
 
     @property
     def pipeline_count(self) -> float:
         """TBW."""
-        if self._dynamic_properties is not None:
-            return self._dynamic_properties.pipeline_count
+        if self._sampling_properties is not None:
+            return self._sampling_properties.pipeline_count
         else:
-            raise ValueError("Detector is not dynamic.")
+            raise ValueError("No sampling defined.")
 
     @pipeline_count.setter
     def pipeline_count(self, value: int) -> None:
         """TBW."""
-        if self._dynamic_properties is not None:
-            self._dynamic_properties.pipeline_count = value
+        if self._sampling_properties is not None:
+            self._sampling_properties.pipeline_count = value
         else:
-            raise ValueError("Detector is not dynamic.")
+            raise ValueError("No sampling defined.")
 
     @property
     def read_out(self) -> bool:
         """TBW."""
-        if self._dynamic_properties is not None:
-            return self._dynamic_properties.read_out
+        if self._sampling_properties is not None:
+            return self._sampling_properties.read_out
         else:
-            raise ValueError("Detector is not dynamic.")
+            raise ValueError("No sampling defined.")
 
     @read_out.setter
     def read_out(self, value: bool) -> None:
         """TBW."""
-        if self._dynamic_properties is not None:
-            self._dynamic_properties.read_out = value
+        if self._sampling_properties is not None:
+            self._sampling_properties.read_out = value
         else:
-            raise ValueError("Detector is not dynamic.")
+            raise ValueError("No sampling defined.")
 
     @property
     def is_dynamic(self) -> bool:
@@ -248,7 +272,7 @@ class Detector:
 
         By default it is not dynamic.
         """
-        if self._dynamic_properties is not None:
+        if self._sampling_properties is not None:
             return True
         else:
             return False
@@ -259,10 +283,10 @@ class Detector:
 
         By default it is destructive (non-integrating).
         """
-        if self._dynamic_properties is not None:
-            return self._dynamic_properties.non_destructive_readout
+        if self._sampling_properties is not None:
+            return self._sampling_properties.non_destructive_readout
         else:
-            raise ValueError("Detector is not dynamic.")
+            raise ValueError("No sampling defined.")
 
     @property
     def e_thermal_velocity(self) -> float:

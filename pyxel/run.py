@@ -13,8 +13,6 @@ in MCT, charge diffusion, crosshatches, noises, crosstalk etc.) on a given image
 """
 import argparse
 import logging
-import os
-import shutil
 import sys
 import time
 import typing as t
@@ -31,34 +29,29 @@ from pyxel import inputs_outputs as io
 from pyxel.calibration import Calibration, CalibrationResult
 from pyxel.configuration import Configuration, load, save
 from pyxel.detectors import CCD, CMOS, MKID, Detector
-from pyxel.dynamic import Dynamic  # , DynamicResult
+from pyxel.observation import Observation
 from pyxel.parametric import Parametric, ParametricResult
 from pyxel.pipelines import DetectionPipeline, Processor
-from pyxel.single import Single
-from pyxel.util import download_examples
-
-# from tqdm.notebook import tqdm
-
+from pyxel.util import create_model, download_examples
 
 if t.TYPE_CHECKING:
     from .inputs_outputs import (
         CalibrationOutputs,
-        DynamicOutputs,
+        ObservationOutputs,
         ParametricOutputs,
-        SingleOutputs,
     )
 
 
-def single_mode(
-    single: "Single",
+def observation_mode(
+    observation: "Observation",
     detector: Detector,
     pipeline: "DetectionPipeline",
-) -> None:
-    """Run a 'single' pipeline.
+) -> xr.Dataset:
+    """Run an 'observation' pipeline.
 
     Parameters
     ----------
-    single
+    observation
     detector
     pipeline
 
@@ -66,17 +59,21 @@ def single_mode(
     -------
     None
     """
-    logging.info("Mode: Single")
 
-    single_outputs = single.outputs  # type: SingleOutputs
-    # detector.set_output_dir(single_outputs.output_dir)  # TODO: Remove this
+    logging.info("Mode: Observation")
+
+    observation_outputs = observation.outputs  # type: ObservationOutputs
+
+    detector.set_output_dir(observation_outputs.output_dir)  # TODO: Remove this
 
     processor = Processor(detector=detector, pipeline=pipeline)
 
-    _ = processor.run_pipeline()
+    result = observation.run_observation(processor=processor)
 
-    single_outputs.save_to_file(processor)
-    # single_outputs.single_to_plot(processor)
+    if observation_outputs.save_observation_data:
+        observation_outputs.save_observation_outputs(dataset=result)
+
+    return result
 
 
 def parametric_mode(
@@ -114,40 +111,6 @@ def parametric_mode(
         parametric_outputs.save_parametric_datasets(
             result=result, mode=parametric.parametric_mode
         )
-
-    return result
-
-
-def dynamic_mode(
-    dynamic: "Dynamic",
-    detector: Detector,
-    pipeline: "DetectionPipeline",
-) -> xr.Dataset:
-    """Run a 'dynamic' pipeline.
-
-    Parameters
-    ----------
-    dynamic
-    detector
-    pipeline
-
-    Returns
-    -------
-    None
-    """
-
-    logging.info("Mode: Dynamic")
-
-    dynamic_outputs = dynamic.outputs  # type: DynamicOutputs
-
-    detector.set_output_dir(dynamic_outputs.output_dir)  # TODO: Remove this
-
-    processor = Processor(detector=detector, pipeline=pipeline)
-
-    result = dynamic.run_dynamic(processor=processor)
-
-    if dynamic_outputs.save_dynamic_data:
-        dynamic_outputs.save_dynamic_outputs(dataset=result)
 
     return result
 
@@ -242,110 +205,15 @@ def output_directory(configuration: Configuration) -> Path:
     -------
     output_dir
     """
-    if isinstance(configuration.single, Single):
-        output_dir = configuration.single.outputs.output_dir
+    if isinstance(configuration.observation, Observation):
+        output_dir = configuration.observation.outputs.output_dir
     elif isinstance(configuration.calibration, Calibration):
         output_dir = configuration.calibration.outputs.output_dir
-    elif isinstance(configuration.dynamic, Dynamic):
-        output_dir = configuration.dynamic.outputs.output_dir
     elif isinstance(configuration.parametric, Parametric):
         output_dir = configuration.parametric.outputs.output_dir
     else:
         raise (ValueError("Outputs not initialized."))
     return output_dir
-
-
-def get_name_and_location(newmodel: str) -> t.Tuple[str, str]:
-    """Get name and location of new model from string modeltype/modelname.
-
-    Parameters
-    ----------
-    newmodel: str
-
-    Returns
-    -------
-    location: str
-    model_name: str
-    """
-
-    try:
-        arguments = newmodel.split("/")
-        location = f"{arguments[0]}"
-        model_name = f"{arguments[1]}"
-    except Exception:
-        sys.exit(
-            f"""
-        Can't create model {arguments}, please use location/newmodelname
-        as an argument for creating a model
-        """
-        )
-    return location, model_name
-
-
-def create_model(newmodel: str) -> None:
-    """Create a new module using pyxel/templates/MODELTEMPLATE.py.
-
-    Parameters
-    ----------
-    newmodel: modeltype/modelname
-
-    Returns
-    -------
-    None
-    """
-
-    location, model_name = get_name_and_location(newmodel)
-
-    # Is not working on UNIX AND Windows if I do not use os.path.abspath
-    path = os.path.abspath(os.getcwd() + "/pyxel/models/" + location + "/")
-    template_string = "_TEMPLATE"
-    template_location = "_LOCATION"
-
-    # Copying the template with the user defined model_name instead
-    import pyxel
-
-    src = os.path.abspath(os.path.dirname(pyxel.__file__) + "/templates/")
-    dest = os.path.abspath(
-        os.path.dirname(pyxel.__file__) + "/models/" + location + "/"
-    )
-
-    try:
-        os.mkdir(dest)
-        # Replacing all of template in filenames and directories by model_name
-        for dirpath, subdirs, files in os.walk(src):
-            for x in files:
-                pathtofile = os.path.join(dirpath, x)
-                new_pathtofile = os.path.join(
-                    dest, x.replace(template_string, model_name)
-                )
-                shutil.copy(pathtofile, new_pathtofile)
-                # Open file in the created copy
-                with open(new_pathtofile, "r") as file_tochange:
-                    # Replace any mention of template by model_name
-                    new_contents = file_tochange.read().replace(
-                        template_string, model_name
-                    )
-                    new_contents = new_contents.replace(template_location, location)
-                    new_contents = new_contents.replace("%(date)", time.ctime())
-                with open(new_pathtofile, "w+") as file_tochange:
-                    file_tochange.write(new_contents)
-                # Close the file other we can't rename it
-                file_tochange.close()
-
-            for x in subdirs:
-                pathtofile = os.path.join(dirpath, x)
-                os.mkdir(pathtofile.replace(template_string, model_name))
-            logging.info("Module " + model_name + " created.")
-        print("Module " + model_name + " created in " + path + ".")
-    except FileExistsError:
-        logging.info(f"{dest} already exists, folder not created")
-    # Directories are the same
-    except shutil.Error as e:
-        logging.critical("Error while duplicating " + template_string + ": %s" % e)
-    # Any error saying that the directory doesn't exist
-    except OSError as e:
-        logging.critical(model_name + " not created. Error: %s" % e)
-    return None
 
 
 def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
@@ -382,9 +250,9 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
     else:
         raise NotImplementedError("Detector is not defined in YAML config. file!")
 
-    if isinstance(configuration.single, Single):
-        single = configuration.single  # type: Single
-        single_mode(single=single, detector=detector, pipeline=pipeline)
+    if isinstance(configuration.observation, Observation):
+        observation = configuration.observation  # type: Observation
+        observation_mode(observation=observation, detector=detector, pipeline=pipeline)
 
     elif isinstance(configuration.calibration, Calibration):
 
@@ -396,11 +264,6 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
     elif isinstance(configuration.parametric, Parametric):
         parametric = configuration.parametric  # type: Parametric
         parametric_mode(parametric=parametric, detector=detector, pipeline=pipeline)
-
-    elif isinstance(configuration.dynamic, Dynamic):
-
-        dynamic = configuration.dynamic  # type: Dynamic
-        dynamic_mode(dynamic=dynamic, detector=detector, pipeline=pipeline)
 
     else:
         raise NotImplementedError("Please provide a valid simulation mode !")

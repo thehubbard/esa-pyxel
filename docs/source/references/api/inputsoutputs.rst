@@ -6,9 +6,9 @@ Inputs and outputs
 
 .. currentmodule:: pyxel.inputs_outputs
 
-SingleOutputs
--------------
-.. autoclass:: SingleOutputs
+ObservationOutputs
+------------------
+.. autoclass:: ObservationOutputs
     :members:
     :inherited-members:
     :undoc-members:
@@ -18,15 +18,6 @@ SingleOutputs
 ParametricOutputs
 -----------------
 .. autoclass:: ParametricOutputs
-    :members:
-    :inherited-members:
-    :undoc-members:
-    :show-inheritance:
-    :exclude-members:
-
-DynamicOutputs
---------------
-.. autoclass:: DynamicOutputs
     :members:
     :inherited-members:
     :undoc-members:

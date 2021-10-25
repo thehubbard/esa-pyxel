@@ -1,4 +1,4 @@
-#  Copyright (c) European Space Agency, 2017, 2018, 2019, 2020.
+#  Copyright (c) European Space Agency, 2017, 2018, 2019, 2021.
 #
 #  This file is subject to the terms and conditions defined in file 'LICENCE.txt', which
 #  is part of this Pyxel package. No part of the package, including
@@ -6,139 +6,91 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 #
 #
-"""TBW."""
+"""Observation class and functions."""
 
 import logging
 import operator
 import typing as t
 
-import numpy as np
 import xarray as xr
-from tqdm.notebook import tqdm
+from tqdm.auto import tqdm
 
-from pyxel.evaluator import eval_range
-from pyxel.inputs_outputs import load_table
+from .sampling import Sampling
 
 if t.TYPE_CHECKING:
-    from ..inputs_outputs import DynamicOutputs
+    from ..inputs_outputs import ObservationOutputs
     from ..pipelines import Processor
 
 
-class Dynamic:
+class Observation:
     """TBW."""
 
-    def __init__(
-        self,
-        outputs: "DynamicOutputs",
-        times: t.Optional[t.Union[t.Sequence, str]] = None,
-        times_from_file: t.Optional[str] = None,
-        start_time: float = 0.0,
-        non_destructive_readout: bool = False,
-    ):
-        """Create an instance of Dynamic class.
-
-        Parameters
-        ----------
-        outputs
-        times
-        times_from_file
-        start_time
-        non_destructive_readout
-        """
+    def __init__(self, outputs: "ObservationOutputs", sampling: "Sampling"):
         self.outputs = outputs
-
-        if times is not None and times_from_file is not None:
-            raise ValueError("Both times and times_from_file specified. Choose one.")
-        elif times_from_file:
-            self._times = load_table(times_from_file).to_numpy(dtype=float).flatten()
-        elif times:
-            self._times = np.array(eval_range(times), dtype=float)
-        else:
-            raise ValueError("Dynamic times not specified.")
-
-        self._non_destructive_readout = non_destructive_readout
-
-        self._times_linear = True  # type: bool
-        self._start_time = start_time  # type:float
-        self._steps = np.array([])  # type: np.ndarray
-        self._num_steps = 0  # type: int
-
-        self._set_steps()
+        self.sampling = sampling
 
     def __repr__(self) -> str:
         cls_name = self.__class__.__name__  # type: str
         return f"{cls_name}<outputs={self.outputs!r}>"
 
-    def _set_steps(self) -> None:
-        """TBW."""
-        self._times, self._steps = calculate_steps(self._times, self._start_time)
-        self._times_linear = bool(np.all(self._steps == self._steps[0]))
-        self._num_steps = len(self._times)
+    def run_observation(self, processor: "Processor") -> xr.Dataset:
+        """Run a an observation pipeline.
 
-    def time_step_it(self) -> t.Iterator[t.Tuple[float, float]]:
-        """TBW."""
-        return zip(self._times, self._steps)
+        Parameters
+        ----------
+        processor
 
-    @property
-    def times(self) -> t.Any:
-        """TBW."""
-        return self._times
-
-    @property
-    def steps(self) -> np.ndarray:
-        """TBW."""
-        return self._steps
-
-    @property
-    def non_destructive_readout(self) -> bool:
-        """TBW."""
-        return self._non_destructive_readout
-
-    def run_dynamic(self, processor: "Processor") -> xr.Dataset:
-        """TBW."""
-        ds = dynamic_pipeline(
+        Returns
+        -------
+        result: xarrray.Dataset
+        """
+        result = run_observation(
             processor=processor,
-            time_step_it=self.time_step_it(),
-            num_steps=self._num_steps,
-            ndreadout=self.non_destructive_readout,
-            times_linear=self._times_linear,
-            start_time=self._start_time,
-            end_time=self._times[-1],
+            sampling=self.sampling,
             outputs=self.outputs,
             progressbar=True,
         )
-        return ds
+        return result
 
 
-def calculate_steps(
-    times: np.ndarray, start_time: float
-) -> t.Tuple[np.ndarray, np.ndarray]:
-    """Calculate time differences for a given array and start time.
+def run_observation(
+    processor: "Processor",
+    sampling: "Sampling",
+    outputs: t.Optional["ObservationOutputs"] = None,
+    progressbar: bool = False,
+) -> xr.Dataset:
+    """Run a an observation pipeline.
 
     Parameters
     ----------
-    times: ndarray
-    start_time: float
+    processor
+    sampling
+    outputs
+    progressbar
 
     Returns
     -------
-    times: ndarray
-        Modified times according to start time.
-    steps: ndarray
-        Steps corresponding to times.
+    result: xr.Dataset
     """
-    if start_time == times[0]:
-        steps = np.diff(times, axis=0)
-        times = times[1:]
-    else:
-        steps = np.diff(
-            np.concatenate((np.array([start_time]), times), axis=0),
-            axis=0,
-        )
-    return times, steps
+    if sampling._num_steps == 1:
+        progressbar = False
+
+    result = observation_pipeline(
+        processor=processor,
+        time_step_it=sampling.time_step_it(),
+        num_steps=sampling._num_steps,
+        ndreadout=sampling.non_destructive_readout,
+        times_linear=sampling._times_linear,
+        start_time=sampling._start_time,
+        end_time=sampling._times[-1],
+        outputs=outputs,
+        progressbar=progressbar,
+    )
+
+    return result
 
 
-def dynamic_pipeline(
+def observation_pipeline(
     processor: "Processor",
     time_step_it: t.Iterator[t.Tuple[float, float]],
     num_steps: int,
@@ -146,7 +98,7 @@ def dynamic_pipeline(
     end_time: float,
     start_time: float = 0.0,
     ndreadout: bool = False,
-    outputs: t.Optional["DynamicOutputs"] = None,
+    outputs: t.Optional["ObservationOutputs"] = None,
     progressbar: bool = False,
 ) -> xr.Dataset:
     """Run standalone dynamic pipeline.
@@ -167,7 +119,7 @@ def dynamic_pipeline(
     end_time:
         Last time.
     outputs: DynamicOutputs
-        Dynamic outputs.
+        Sampling outputs.
     progressbar: bool
         Sets visibility of progress bar.
 
@@ -181,7 +133,7 @@ def dynamic_pipeline(
 
     detector = processor.detector
 
-    detector.set_dynamic(
+    detector.set_sampling(
         num_steps=num_steps,
         ndreadout=ndreadout,
         times_linear=times_linear,
@@ -241,8 +193,8 @@ def dynamic_pipeline(
                 coords=coordinates,  # type: ignore
             )
             # Time coordinate of this iteration
-            da = da.assign_coords(coords={"t": time})
-            da = da.expand_dims(dim="t")
+            da = da.assign_coords(coords={"readout_time": time})
+            da = da.expand_dims(dim="readout_time")
 
             out[key] = da
 
