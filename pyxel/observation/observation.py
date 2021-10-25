@@ -44,7 +44,7 @@ class Observation:
         -------
         result: xarrray.Dataset
         """
-        result = run_observation(
+        result, _ = run_observation(
             processor=processor,
             sampling=self.sampling,
             outputs=self.outputs,
@@ -58,7 +58,7 @@ def run_observation(
     sampling: "Sampling",
     outputs: t.Optional["ObservationOutputs"] = None,
     progressbar: bool = False,
-) -> xr.Dataset:
+) -> t.Tuple[xr.Dataset, "Processor"]:
     """Run a an observation pipeline.
 
     Parameters
@@ -87,7 +87,7 @@ def run_observation(
         progressbar=progressbar,
     )
 
-    return result
+    return result, processor
 
 
 def observation_pipeline(
@@ -151,7 +151,7 @@ def observation_pipeline(
     # Dimensions set by the detectors dimensions
     rows, columns = (
         processor.detector.geometry.row,
-        processor.detector.geometry.row,
+        processor.detector.geometry.col,
     )
     # Coordinates
     coordinates = {"x": range(columns), "y": range(rows)}

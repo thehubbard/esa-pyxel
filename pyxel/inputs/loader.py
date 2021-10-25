@@ -1,4 +1,11 @@
-#  Copyright (c) European Space Agency, 2017, 2018, 2019, 2020, 2021.
+#  Copyright (c) European Space Agency, 2017, 2018, 2019, 2021.
+#
+#  This file is subject to the terms and conditions defined in file 'LICENCE.txt', which
+#  is part of this Pyxel package. No part of the package, including
+#  this file, may be copied, modified, propagated, or distributed except according to
+#  the terms contained in the file ‘LICENCE.txt’.
+#
+#
 #
 #  This file is subject to the terms and conditions defined in file 'LICENCE.txt', which
 #  is part of this Pyxel package. No part of the package, including
@@ -202,3 +209,59 @@ def load_table(filename: t.Union[str, Path]) -> pd.DataFrame:
         raise ValueError("Only .npy, .xlsx, .csv, .txt and .data implemented.")
 
     return table
+
+
+def load_datacube(filename: t.Union[str, Path]) -> np.ndarray:
+    """Load a 3D datacube.
+
+    Parameters
+    ----------
+    filename : str or Path
+        Filename to read a datacube.
+        {.npy} are accepted.
+
+    Returns
+    -------
+    array : ndarray
+        A 3D array.
+
+    Raises
+    ------
+    FileNotFoundError
+        If an image is not found.
+    ValueError
+        When the extension of the filename is unknown or separator is not found.
+    """
+    # Extract suffix (e.g. '.txt', '.fits'...)
+    suffix = Path(filename).suffix.lower()  # type: str
+
+    if isinstance(filename, Path):
+        full_filename = filename.expanduser().resolve()  # type: Path
+        if not full_filename.exists():
+            raise FileNotFoundError(f"Input file '{full_filename}' can not be found.")
+
+        url_path = str(full_filename)  # type: str
+
+    else:
+        url_path = filename
+
+    # Define extra parameters to use with 'fsspec'
+    extras = {}
+    if global_options.cache_enabled:
+        url_path = f"simplecache::{url_path}"
+
+        if global_options.cache_folder:
+            extras["simplecache"] = {"cache_storage": global_options.cache_folder}
+
+    if suffix.startswith(".npy"):
+        with fsspec.open(url_path, mode="rb", **extras) as file_handler:
+            data_3d = np.load(file_handler)  # type: np.ndarray
+        if np.ndim(data_3d) != 3:
+            raise ValueError("Input datacube is not 3-dimensional!")
+
+    else:
+        raise ValueError(
+            "Image format not supported. List of supported image formats: .npy"
+        )
+
+    return data_3d

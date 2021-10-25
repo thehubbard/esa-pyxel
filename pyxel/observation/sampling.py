@@ -36,12 +36,15 @@ class Sampling:
         start_time
         non_destructive_readout
         """
+        self._time_domain_simulation = True
+
         if readout_times is not None and readout_times_from_file is not None:
             raise ValueError("Both times and times_from_file specified. Choose one.")
         elif readout_times is None and readout_times_from_file is None:
             self._times = np.array(
                 [1]
             )  # by convention default sampling/exposure time is 1 second
+            self._time_domain_simulation = False
         elif readout_times_from_file:
             self._times = (
                 load_table(readout_times_from_file).to_numpy(dtype=float).flatten()
@@ -50,6 +53,11 @@ class Sampling:
             self._times = np.array(eval_range(readout_times), dtype=float)
         else:
             raise ValueError("Sampling times not specified.")
+
+        if self._times[0] == 0:
+            raise ValueError("Readout times should be non-zero values.")
+        elif start_time == self._times[0]:
+            raise ValueError("Readout times should be greater than start time.")
 
         self._non_destructive_readout = non_destructive_readout
 
@@ -80,6 +88,11 @@ class Sampling:
         return self._times
 
     @property
+    def time_domain_simulation(self) -> bool:
+        """TBW."""
+        return self._time_domain_simulation
+
+    @property
     def steps(self) -> np.ndarray:
         """TBW."""
         return self._steps
@@ -107,12 +120,9 @@ def calculate_steps(
     steps: ndarray
         Steps corresponding to times.
     """
-    if start_time == times[0]:
-        steps = np.diff(times, axis=0)
-        times = times[1:]
-    else:
-        steps = np.diff(
-            np.concatenate((np.array([start_time]), times), axis=0),
-            axis=0,
-        )
+    steps = np.diff(
+        np.concatenate((np.array([start_time]), times), axis=0),
+        axis=0,
+    )
+
     return times, steps

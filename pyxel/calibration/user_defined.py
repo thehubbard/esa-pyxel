@@ -93,45 +93,51 @@ class DaskBFE:
         array_like
             A 1d array with the fitness parameters.
         """
-        ndims_dvs = prob.get_nx()  # type: int
-        num_fitness = prob.get_nf()  # type: int
+        try:
+            ndims_dvs = prob.get_nx()  # type: int
+            num_fitness = prob.get_nf()  # type: int
 
-        if self._chunk_size is None:
-            chunk_size = max(1, num_fitness // 10)  # type: int
+            if self._chunk_size is None:
+                chunk_size = max(1, num_fitness // 10)  # type: int
+            else:
+                chunk_size = self._chunk_size
+
+            # [dvs_1_1, ..., dvs_1_n, dvs_2_1, ..., dvs_2_n, ..., dvs_m_1, ..., dvs_m_n]
+
+            # [[dvs_1_1, ..., dvs_1_n],
+            #  [dvs_2_1, ..., dvs_2_n],
+            #  ...
+            #  [dvs_m_1, ..., dvs_m_n]]
+
+            # Convert 1D Decision Vectors to 2D `dask.Array`
+            dvs_2d = da.from_array(
+                dvs_1d.reshape((-1, ndims_dvs)),
+                chunks=(chunk_size, ndims_dvs),
+            )  # type: da.Array
+
+            logging.info("DaskBFE: %i, %i, %r", len(dvs_1d), ndims_dvs, dvs_2d.shape)
+
+            # Create a new problem with a serializable method '.fitness'
+            problem_pickable = ProblemSerializable(prob)
+
+            # Create a generalized function to run a 2D input with 'prob.fitness'
+            fitness_func = da.gufunc(
+                problem_pickable.fitness,
+                signature="(i)->(j)",
+                output_dtypes=float,
+                output_sizes={"j": num_fitness},
+                vectorize=True,
+            )
+
+            fitness_2d = fitness_func(dvs_2d)  # type: da.Array
+            fitness_1d = fitness_2d.ravel()  # type: da.Array
+
+        except Exception:
+            logging.exception("Caught an exception in 'fitness' for ModelFitting.")
+            raise
+
         else:
-            chunk_size = self._chunk_size
-
-        # [dvs_1_1, ..., dvs_1_n, dvs_2_1, ..., dvs_2_n, ..., dvs_m_1, ..., dvs_m_n]
-
-        # [[dvs_1_1, ..., dvs_1_n],
-        #  [dvs_2_1, ..., dvs_2_n],
-        #  ...
-        #  [dvs_m_1, ..., dvs_m_n]]
-
-        # Convert 1D Decision Vectors to 2D `dask.Array`
-        dvs_2d = da.from_array(
-            dvs_1d.reshape((-1, ndims_dvs)),
-            chunks=(chunk_size, ndims_dvs),
-        )  # type: da.Array
-
-        logging.info("DaskBFE: %i, %i, %r", len(dvs_1d), ndims_dvs, dvs_2d.shape)
-
-        # Create a new problem with a serializable method '.fitness'
-        problem_pickable = ProblemSerializable(prob)
-
-        # Create a generalized function to run a 2D input with 'prob.fitness'
-        fitness_func = da.gufunc(
-            problem_pickable.fitness,
-            signature="(i)->(j)",
-            output_dtypes=float,
-            output_sizes={"j": num_fitness},
-            vectorize=True,
-        )
-
-        fitness_2d = fitness_func(dvs_2d)  # type: da.Array
-        fitness_1d = fitness_2d.ravel()  # type: da.Array
-
-        return fitness_1d
+            return fitness_1d
 
     def get_name(self) -> str:
         """Return name of this evaluator."""

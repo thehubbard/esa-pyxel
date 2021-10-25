@@ -37,6 +37,8 @@ except ImportError:
     WITH_PYGMO = False
 
 if t.TYPE_CHECKING:
+    from pyxel.observation import Sampling
+
     from ..outputs import CalibrationOutputs
 
 
@@ -51,6 +53,7 @@ class Calibration:
     def __init__(
         self,
         outputs: "CalibrationOutputs",
+        sampling: "Sampling",
         output_dir: t.Optional[Path] = None,
         fitting: t.Optional[ModelFitting] = None,
         mode: Literal["pipeline", "single_model"] = "pipeline",
@@ -89,6 +92,7 @@ class Calibration:
         self._log = logging.getLogger(__name__)
 
         self.outputs = outputs
+        self.sampling = sampling
 
         self._output_dir = output_dir  # type:t.Optional[Path]
         self._fitting = fitting  # type: t.Optional[ModelFitting]
@@ -356,7 +360,9 @@ class Calibration:
 
         self.output_dir = output_dir
 
-        self.fitting = ModelFitting(processor=processor, variables=self.parameters)
+        self.fitting = ModelFitting(
+            processor=processor, variables=self.parameters, sampling=self.sampling
+        )
         self.fitting.configure(
             calibration_mode=self.calibration_mode,
             generations=self.algorithm.generations,
@@ -402,6 +408,7 @@ class Calibration:
 
             # Run several evolutions in the archipelago
             ds, df_processors, df_all_logs = my_archipelago.run_evolve(
+                sampling=self.sampling,
                 num_evolutions=self._num_evolutions,
                 num_best_decisions=self._num_best_decisions,
             )

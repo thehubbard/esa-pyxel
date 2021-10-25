@@ -20,6 +20,8 @@ Core
   (See `!263 <https://gitlab.com/esa/pyxel/-/merge_requests/263>`_).
 * Include observation mode functions in parametric mode.
   (See `!264 <https://gitlab.com/esa/pyxel/-/merge_requests/264>`_).
+* Include observation mode functions in calibration mode.
+  (See `!265 <https://gitlab.com/esa/pyxel/-/merge_requests/265>`_).
 
 Documentation
 ~~~~~~~~~~~~~
