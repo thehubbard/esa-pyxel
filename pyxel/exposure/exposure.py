@@ -62,7 +62,7 @@ class Exposure:
 
         Returns
         -------
-        result: xarrray.Dataset
+        result_dataset: xarrray.Dataset
         """
         if self.readout._num_steps == 1:
             progressbar = False
@@ -112,8 +112,7 @@ def run_exposure_pipeline(
 
     Returns
     -------
-    final_dataset: xr.Dataset
-        Results of the pipeline in an xarray dataset.
+    processor: Processor
     """
     # if isinstance(detector, CCD):
     #    dynamic.non_destructive_readout = False

@@ -40,14 +40,14 @@ An example of running Pyxel as a library:
 .. code-block:: python
 
     from pyxel.configuration import load
-    from pyxel.run import single_mode
+    from pyxel.run import exposure_mode
 
     configuration = load("configuration.yaml")
-    single = configuration.single
+    exposure = configuration.exposure
     detector = configuration.ccd_detector
     pipeline = configuration.pipeline
 
-    single_mode(single, detector, pipeline)
+    exposure_mode(exposure, detector, pipeline)
 
 Running Pyxel from a Docker container
 =====================================

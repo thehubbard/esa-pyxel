@@ -43,27 +43,24 @@ Tutorial chapters
 1. First simulation
 2. Pyxel configuration and classes
 3. Create a model
-4. Parametric mode
+4. Observation mode
 5. Calibration mode
 6. Calibration visualisation
-7. Dynamic mode
+7. Simulating multiple readouts
 
 List of Examples
 ----------------
 
-**Single Mode:**
+**Exposure Mode:**
 
 - Basic example
+- Persistence in H2RG (time-domain simulation)
 
-**Parametric mode:**
+**Observation mode:**
 
 - Basic example (product)
 - Basic example (sequential)
 - Basic example (custom)
-
-**Dynamic mode:**
-
-- Persistence in H2RG
 
 **Calibration mode:**
 
