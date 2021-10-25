@@ -5,17 +5,13 @@ Run
 ===
 .. currentmodule:: pyxel.run
 
-single_mode
------------
-.. autofunction:: single_mode
+observation_mode
+----------------
+.. autofunction:: observation_mode
 
 parametric_mode
 ---------------
 .. autofunction:: parametric_mode
-
-dynamic_mode
-------------
-.. autofunction:: dynamic_mode
 
 calibration_mode
 ----------------
