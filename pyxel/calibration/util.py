@@ -84,7 +84,7 @@ def read_single_data(filename: Path) -> np.ndarray:
         TBW.
     """
     # Late import to avoid circular import
-    from pyxel.inputs_outputs.loader import load_image
+    from pyxel.inputs.loader import load_image
 
     data = load_image(filename)
 

@@ -11,7 +11,7 @@
 import typing as t
 from pathlib import Path
 
-from pyxel.inputs_outputs import load_image
+from pyxel.inputs import load_image
 
 if t.TYPE_CHECKING:
     from pyxel.detectors import Detector

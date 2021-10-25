@@ -1,10 +1,10 @@
-.. _inputs_outputs_api:
+.. _outputs_api:
 
-==================
-Inputs and outputs
-==================
+=======
+Outputs
+=======
 
-.. currentmodule:: pyxel.inputs_outputs
+.. currentmodule:: pyxel.outputs
 
 ObservationOutputs
 ------------------
@@ -32,11 +32,3 @@ CalibrationOutputs
     :undoc-members:
     :show-inheritance:
     :exclude-members:
-
-load_image
-----------
-.. autofunction:: load_image
-
-load_table
-----------
-.. autofunction:: load_table

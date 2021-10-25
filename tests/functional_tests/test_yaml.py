@@ -7,8 +7,6 @@
 
 import pytest
 
-from pyxel import inputs_outputs as io
-
 try:
     import pygmo as pg
 
@@ -20,10 +18,10 @@ from pyxel.calibration import Algorithm, Calibration, CalibrationMode
 from pyxel.configuration import Configuration, load
 from pyxel.data_structure import Charge, Image, Pixel, Signal
 from pyxel.detectors import CCD, CCDCharacteristics, CCDGeometry, Environment, Material
-from pyxel.inputs_outputs.calibration_outputs import CalibrationOutputs
-from pyxel.inputs_outputs.observation_outputs import ObservationOutputs
-from pyxel.inputs_outputs.parametric_outputs import ParametricOutputs
 from pyxel.observation import Observation
+from pyxel.outputs.calibration_outputs import CalibrationOutputs
+from pyxel.outputs.observation_outputs import ObservationOutputs
+from pyxel.outputs.parametric_outputs import ParametricOutputs
 from pyxel.parametric import Parametric, ParametricMode
 from pyxel.pipelines import DetectionPipeline, ModelFunction, ModelGroup
 
