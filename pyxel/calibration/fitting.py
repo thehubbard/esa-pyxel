@@ -62,9 +62,8 @@ class ModelFitting(ProblemSingleObjective):
         self.readout = readout  # type: Readout
 
         self.all_target_data = []  # type: t.List[np.ndarray]
-        self.weighting = (
-            None
-        )  # type: t.Optional[t.Union[np.ndarray, t.Sequence[np.ndarray]]]
+        self.weighting = None  # type: t.Optional[np.ndarray]
+        self.weighting_from_file = None  # type: t.Optional[t.Sequence[np.ndarray]]
         self.fitness_func = None  # type: t.Optional[t.Callable]
         self.sim_output = None  # type: t.Optional[ResultType]
         # self.fitted_model = None            # type: t.Optional['ModelFunction']
@@ -247,12 +246,12 @@ class ModelFitting(ProblemSingleObjective):
         if weights_from_file is not None:
             if self.readout.time_domain_simulation:
                 wf = read_datacubes(weights_from_file)
-                self.weighting = [
+                self.weighting_from_file = [
                     weight_array[self.targ_fit_range] for weight_array in wf
                 ]
             else:
                 wf = read_data(weights_from_file)
-                self.weighting = [
+                self.weighting_from_file = [
                     weight_array[self.targ_fit_range] for weight_array in wf
                 ]
         elif weights is not None:
@@ -474,15 +473,14 @@ class ModelFitting(ProblemSingleObjective):
                 weighting = None  # type: t.Optional[np.ndarray]
 
                 if self.weighting is not None:
-                    if np.ndim(self.weighting) == 1:
-                        weighting = self.weighting[i] * np.ones(
-                            (
-                                processor.detector.geometry.row,
-                                processor.detector.geometry.col,
-                            )
+                    weighting = self.weighting[i] * np.ones(
+                        (
+                            processor.detector.geometry.row,
+                            processor.detector.geometry.col,
                         )
-                    else:
-                        weighting = self.weighting[i]
+                    )
+                elif self.weighting_from_file is not None:
+                    weighting = self.weighting_from_file[i]
 
                 overall_fitness += self.calculate_fitness(
                     simulated_data=simulated_data,
