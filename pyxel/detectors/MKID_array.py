@@ -46,6 +46,19 @@ class MKID(Detector):
         if reset_all:
             self._phase = Phase(self.geometry)
 
+    def empty(self, empty_all: bool = True) -> None:
+        """Empty the data in the detector.
+
+        Returns
+        -------
+        None
+        """
+        super().empty(empty_all)
+
+        if empty_all:
+            if self._phase:
+                self.phase.array *= 0
+
     @property
     def geometry(self) -> "MKIDGeometry":
         """TBW."""
