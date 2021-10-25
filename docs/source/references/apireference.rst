@@ -14,6 +14,7 @@ API reference
     api/parametric.rst
     api/observation.rst
     api/calibration.rst
-    api/inputsoutputs.rst
+    api/inputs.rst
+    api/outputs.rst
     api/notebook.rst
     api/util.rst
