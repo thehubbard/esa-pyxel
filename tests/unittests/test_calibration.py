@@ -7,6 +7,7 @@
 #  this file, may be copied, modified, propagated, or distributed except according to
 #  the terms contained in the file ‘LICENCE.txt’.
 
+import typing as t
 from pathlib import Path
 
 import numpy as np
@@ -148,29 +149,148 @@ def test_list_to_slice(input_data):
 
 
 @pytest.mark.parametrize(
-    "targ_range, out_range, row, col",
+    "target_range, out_range, rows, cols, readout_times",
     [
-        ([0, 3, 0, 2], [0, 2, 0, 2], 5, 5),
-        ([0, 2, 0, 2], [0, 2, 0, 3], 5, 5),
-        ([0, 2, 0, 2], [0, 2, 0, 2], 1, 5),
-        ([0, 2, 0, 2], [0, 2, 0, 2], 1, 1),
-        ([0, 2, 0, 2], [0, 2, 0, 2], 0, 0),
-        ([0, 2], [0, 3], 3, 3),
-        ([-1, 2], [0, 2], 3, 3),
-        ([-1, 1], [0, 2], 3, 3),
-        ([0, 2], [0, 2], 1, 1),
-        ([0, 2], [0, 2], 0, 0),
-        ([0, 2], [0, 2], 0, 0),
-        ([0], [0, 2], 4, 4),
-        ([0, 2], [0, 2, 3], 4, 4),
-        ([0, 2, 0, 4], [0, 2, 0, 4], 3, 3),
-        ([0, 2, -2, 2], [0, 2, -2, 2], 3, 3),
+        ([], [], 10, 10, None),
+        # 2D
+        ([0, 5, 0, 10], [0, 5, 0, 10], 5, 10, None),  # No 'readout_times'
+        ([0, 5, 0, 10], [10, 15, 10, 20], 5, 10, None),  # No 'readout_times'
+        ([0, 5, 0, 10], [0, 5, 0, 10], 5, 10, 0),  # Lowest 'readout_times'
+        ([0, 5, 0, 10], [0, 5, 0, 10], 5, 10, 5),  # Highest 'readout_times'
+        # 3D
+        (
+            [0, 5, 0, 10, 0, 20],
+            [0, 5, 0, 10, 0, 20],
+            10,
+            20,
+            None,
+        ),  # No 'readout_times'
     ],
 )
-def test_check_ranges(targ_range, out_range, row, col):
+def test_check_range_valid(
+    target_range: list,
+    out_range: list,
+    rows: int,
+    cols: int,
+    readout_times: t.Optional[int],
+):
+    """Test valid values for function 'check_range'."""
+    check_ranges(
+        target_fit_range=target_range,
+        out_fit_range=out_range,
+        rows=rows,
+        cols=cols,
+        readout_times=readout_times,
+    )
+
+
+@pytest.mark.parametrize(
+    "target_range, out_range, rows, cols, readout_times, exp_error",
+    [
+        # 'target_range' is neither 2D nor 3D
+        pytest.param([0], [0, 5, 0, 10], 5, 10, None, "", id="Target 1 element"),
+        pytest.param([0, 5], [0, 5, 0, 10], 5, 10, None, "", id="Target 2 elements"),
+        pytest.param([0, 5, 0], [0, 5, 0, 10], 5, 10, None, "", id="Target 3 elements"),
+        pytest.param(
+            [0, 5, 10, 0, 5], [0, 5, 0, 10], 5, 10, None, "", id="Target 5 elements"
+        ),
+        # 'out_range' is neither 2D nor 3D
+        pytest.param([0, 5, 0, 10], [0], 5, 10, None, "", id="Out 1 element"),
+        pytest.param([0, 5, 0, 10], [0, 5], 5, 10, None, "", id="Out 2 element"),
+        pytest.param([0, 5, 0, 10], [0, 5, 0], 5, 10, None, "", id="Out 3 element"),
+        pytest.param(
+            [0, 5, 0, 10], [0, 5, 0, 10, 11], 5, 10, None, "", id="Out 5 element"
+        ),
+        # Different span for 'target_range' and 'out_range'
+        pytest.param(
+            [0, 5, 0, 10],
+            [0, 6, 0, 10],
+            5,
+            10,
+            None,
+            "Fitting ranges have different lengths in 1st dimension",
+            id="1D length - too long",
+        ),
+        pytest.param(
+            [0, 5, 0, 10],
+            [1, 5, 0, 10],
+            5,
+            10,
+            None,
+            "Fitting ranges have different lengths in 1st dimension",
+            id="1D length - too short",
+        ),
+        pytest.param(
+            [0, 5, 0, 10],
+            [0, 5, 0, 11],
+            5,
+            10,
+            None,
+            "Fitting ranges have different lengths in 2nd dimension",
+            id="2D length - too long",
+        ),
+        pytest.param(
+            [0, 5, 0, 10],
+            [0, 5, 0, 9],
+            5,
+            10,
+            None,
+            "Fitting ranges have different lengths in 2nd dimension",
+            id="2D length - too short",
+        ),
+        pytest.param(
+            [0, 5, 0, 10, 0, 20],
+            [0, 5, 0, 10, 0, 19],
+            5,
+            10,
+            None,
+            "Fitting ranges have different lengths in third dimension",
+            id="3D length - too short",
+        ),
+        pytest.param(
+            [0, 5, 0, 10, 0, 20],
+            [0, 5, 0, 10, 0, 21],
+            5,
+            10,
+            None,
+            "Fitting ranges have different lengths in third dimension",
+            id="3D length - too long",
+        ),
+        # ([0, 2], [0, 3], 3, 3, None),
+        # ([-1, 2], [0, 2], 3, 3, None),
+        # ([-1, 1], [0, 2], 3, 3, None),
+        # ([0, 2], [0, 2], 1, 1, None),
+        # ([0, 2], [0, 2], 0, 0, None),
+        # ([0, 2], [0, 2], 0, 0, None),
+        # ([0], [0, 2], 4, 4, None),
+        # ([0, 2], [0, 2, 3], 4, 4, None),
+        # 2D
+        # ([0, 3, 0, 2], [0, 2, 0, 2], 5, 5, None),
+        # ([0, 2, 0, 2], [0, 2, 0, 3], 5, 5, None),
+        # ([0, 2, 0, 2], [0, 2, 0, 2], 1, 5, None),
+        # ([0, 2, 0, 2], [0, 2, 0, 2], 1, 1, None),
+        # ([0, 2, 0, 2], [0, 2, 0, 2], 0, 0, None),
+        # ([0, 2, 0, 4], [0, 2, 0, 4], 3, 3, None),
+        # ([0, 2, -2, 2], [0, 2, -2, 2], 3, 3, None),
+    ],
+)
+def test_check_ranges_invalid(
+    target_range: list,
+    out_range: list,
+    rows: int,
+    cols: int,
+    readout_times: t.Optional[int],
+    exp_error,
+):
     """Test"""
-    with pytest.raises(ValueError):
-        check_ranges(targ_range, out_range, row, col)
+    with pytest.raises(ValueError, match=exp_error):
+        check_ranges(
+            target_fit_range=target_range,
+            out_fit_range=out_range,
+            rows=rows,
+            cols=cols,
+            readout_times=readout_times,
+        )
 
 
 @pytest.mark.skip(reason="!! FIX THIS TEST !!")
