@@ -11,7 +11,7 @@ API reference
     api/detectors.rst
     api/detectorproperties.rst
     api/pipelines.rst
-    api/parametric.rst
+    api/exposure.rst
     api/observation.rst
     api/calibration.rst
     api/inputs.rst
