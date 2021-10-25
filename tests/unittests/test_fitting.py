@@ -13,10 +13,11 @@ import pytest
 
 from pyxel.calibration import Calibration
 from pyxel.calibration.fitting import ModelFitting
-from pyxel.calibration.util import CalibrationMode, ResultType
+from pyxel.calibration.util import CalibrationMode
 from pyxel.configuration import Configuration, load
 from pyxel.detectors import CCD
 from pyxel.pipelines import DetectionPipeline, Processor
+from pyxel.pipelines.processor import ResultType
 
 try:
     import pygmo as pg

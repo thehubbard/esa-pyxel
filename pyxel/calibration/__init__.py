@@ -15,13 +15,13 @@ from .util import (
     CalibrationResult,
     CalibrationMode,
     Island,
-    ResultType,
     check_ranges,
     list_to_slice,
     read_data,
     read_datacubes,
     list_to_3d_slice,
 )
+from ..pipelines.processor import ResultType
 from .archipelago import MyArchipelago
 from .calibration import Calibration, CalibrationMode
 from .fitness import sum_of_abs_residuals, sum_of_squared_residuals

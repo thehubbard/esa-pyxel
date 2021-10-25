@@ -26,16 +26,16 @@ from typing_extensions import Literal
 from pyxel.calibration import (
     CalibrationMode,
     ProblemSingleObjective,
-    ResultType,
     check_ranges,
     list_to_3d_slice,
     list_to_slice,
     read_data,
     read_datacubes,
 )
-from pyxel.exposure import run_exposure
+from pyxel.exposure import run_exposure_pipeline
 from pyxel.observation.parameter_values import ParameterValues
 from pyxel.pipelines import Processor
+from pyxel.pipelines.processor import ResultType
 
 if t.TYPE_CHECKING:
     from numpy.typing import ArrayLike
@@ -294,48 +294,19 @@ class ModelFitting(ProblemSingleObjective):
                     "indicate variables need to be calibrated"
                 )
 
-    # def get_simulated_data(self, processor: Processor) -> np.ndarray:
-    #     """Extract 2D data from a processor."""
-    #     if self.sim_output == ResultType.Image:
-    #         simulated_data = processor.detector.image.array[
-    #             self.sim_fit_range
-    #         ]  # type: np.ndarray
-    #
-    #     elif self.sim_output == ResultType.Signal:
-    #         simulated_data = processor.detector.signal.array[self.sim_fit_range]
-    #     elif self.sim_output == ResultType.Pixel:
-    #         simulated_data = processor.detector.pixel.array[self.sim_fit_range]
-    #
-    #     return simulated_data
-
-    def get_simulated_data(self, dataset: xr.Dataset) -> np.ndarray:
+    def get_simulated_data(self, processor: Processor) -> np.ndarray:
         """Extract 2D data from a processor."""
         if self.sim_output == ResultType.Image:
-            simulated_image = dataset["image"].data[
+            simulated_data = processor.result["image"][
                 self.sim_fit_range
             ]  # type: np.ndarray
-            if not self.readout.time_domain_simulation:
-                return simulated_image[0]
-            else:
-                return simulated_image
+
         elif self.sim_output == ResultType.Signal:
-            simulated_signal = dataset["signal"].data[
-                self.sim_fit_range
-            ]  # type: np.ndarray
-            if not self.readout.time_domain_simulation:
-                return simulated_signal[0]
-            else:
-                return simulated_signal
+            simulated_data = processor.result["signal"][self.sim_fit_range]
         elif self.sim_output == ResultType.Pixel:
-            simulated_pixel = dataset["pixel"].data[
-                self.sim_fit_range
-            ]  # type: np.ndarray
-            if not self.readout.time_domain_simulation:
-                return simulated_pixel[0]
-            else:
-                return simulated_pixel
-        else:
-            raise NotImplementedError
+            simulated_data = processor.result["pixel"][self.sim_fit_range]
+
+        return simulated_data
 
     # def batch_fitness(self, population_parameter_vector: np.ndarray) -> np.ndarray:
     #     """Batch Fitness Evaluation.
@@ -460,7 +431,7 @@ class ModelFitting(ProblemSingleObjective):
                 logger.setLevel(logging.WARNING)
                 # result_proc = None
                 if self.calibration_mode == CalibrationMode.Pipeline:
-                    result, _ = run_exposure(processor=processor, readout=self.readout)
+                    _ = run_exposure_pipeline(processor=processor, readout=self.readout)
                 # elif self.calibration_mode == 'single_model':
                 #     self.fitted_model.function(processor.detector)               # todo: update
                 else:
@@ -468,7 +439,7 @@ class ModelFitting(ProblemSingleObjective):
 
                 logger.setLevel(prev_log_level)
 
-                simulated_data = self.get_simulated_data(dataset=result)
+                simulated_data = self.get_simulated_data(processor=processor)
 
                 weighting = None  # type: t.Optional[np.ndarray]
 
@@ -539,15 +510,13 @@ class ModelFitting(ProblemSingleObjective):
 
     def apply_parameters(
         self, processor: Processor, parameter: np.ndarray
-    ) -> t.Tuple[xr.Dataset, Processor]:
+    ) -> Processor:
         """Create a new ``Processor`` with new parameters."""
         new_processor = self.update_processor(parameter=parameter, processor=processor)
 
-        result, result_proc = run_exposure(
-            processor=new_processor, readout=self.readout
-        )
+        _ = run_exposure_pipeline(processor=new_processor, readout=self.readout)
 
-        return result, result_proc
+        return new_processor
 
     # # TODO: Check this
     # def apply_parameters_to_processors(self, parameters: xr.DataArray) -> pd.DataFrame:
@@ -590,7 +559,7 @@ class ModelFitting(ProblemSingleObjective):
             for idx_island, params_array in parameters.groupby("island"):
                 params = params_array.data  # type: np.ndarray
 
-                result, result_processor = delayed(self.apply_parameters, nout=2)(
+                result_processor = delayed(self.apply_parameters)(
                     processor=delayed_processor, parameter=params
                 )
 
@@ -598,7 +567,6 @@ class ModelFitting(ProblemSingleObjective):
                     {
                         "island": idx_island,
                         "id_processor": id_processor,
-                        "result": result,
                         "processor": result_processor,
                     }
                 )

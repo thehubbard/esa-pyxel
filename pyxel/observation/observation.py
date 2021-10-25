@@ -18,10 +18,11 @@ from dask import delayed
 from tqdm.auto import tqdm
 from typing_extensions import Literal
 
-from pyxel.exposure import exposure_pipeline
+from pyxel.exposure import run_exposure_pipeline
 
 # import dask
 from pyxel.observation.parameter_values import ParameterType, ParameterValues
+from pyxel.pipelines import ResultType
 from pyxel.state import get_obj_att, get_value
 
 if t.TYPE_CHECKING:
@@ -58,7 +59,7 @@ class Observation:
         from_file: t.Optional[str] = None,
         column_range: t.Optional[t.Tuple[int, int]] = None,
         with_dask: bool = False,
-        result_type: Literal["image", "signal", "pixel"] = "image",
+        result_type: Literal["image", "signal", "pixel", "all"] = "all",
     ):
         self.outputs = outputs
         self.readout = readout
@@ -70,6 +71,7 @@ class Observation:
             self.columns = slice(*column_range)
         self.with_dask = with_dask
         self.parameter_types = {}  # type: dict
+        self._result_type = ResultType(result_type)
 
         if self.parameter_mode == ParameterMode.Custom:
             self._load_custom_parameters()
@@ -77,6 +79,16 @@ class Observation:
     def __repr__(self):
         cls_name = self.__class__.__name__  # type: str
         return f"{cls_name}<mode={self.parameter_mode!s}>"
+
+    @property
+    def result_type(self) -> ResultType:
+        """TBW."""
+        return self._result_type
+
+    @result_type.setter
+    def result_type(self, value: ResultType) -> None:
+        """TBW."""
+        self._result_type = value
 
     @property
     def enabled_steps(self) -> t.Sequence[ParameterValues]:
@@ -366,14 +378,9 @@ class Observation:
                 processor_id=processor_id, parameter_dict=parameter_dict
             )
             logs.append(log)
-            _ = exposure_pipeline(
+            _ = run_exposure_pipeline(
                 processor=proc,
-                time_step_it=self.readout.time_step_it(),
-                num_steps=self.readout._num_steps,
-                ndreadout=self.readout.non_destructive,
-                times_linear=self.readout._times_linear,
-                start_time=self.readout._start_time,
-                end_time=self.readout._times[-1],
+                readout=self.readout,
                 outputs=self.outputs,
                 progressbar=False,
             )
@@ -450,6 +457,10 @@ class Observation:
 
         types = self._get_parameter_types()
 
+        y = range(processor.detector.geometry.row)
+        x = range(processor.detector.geometry.col)
+        times = self.readout.times
+
         if self.with_dask:
 
             raise NotImplementedError("Parametric with Dask not implemented yet.")
@@ -486,17 +497,16 @@ class Observation:
                     logs.append(log)
 
                     # run the pipeline
-                    # run the pipeline
-                    ds = exposure_pipeline(
+                    _ = run_exposure_pipeline(
                         processor=proc,
-                        time_step_it=self.readout.time_step_it(),
-                        num_steps=self.readout._num_steps,
-                        ndreadout=self.readout.non_destructive,
-                        times_linear=self.readout._times_linear,
-                        start_time=self.readout._start_time,
-                        end_time=self.readout._times[-1],
+                        readout=self.readout,
                         outputs=self.outputs,
                         progressbar=False,
+                        result_type=self.result_type,
+                    )
+
+                    ds = proc.result_to_dataset(
+                        x=x, y=y, times=times, result_type=self.result_type
                     )
 
                     _ = self.outputs.save_to_file(processor=proc)
@@ -564,17 +574,16 @@ class Observation:
                         step_counter += 1
 
                     # run the pipeline
-                    # run the pipeline
-                    ds = exposure_pipeline(
+                    _ = run_exposure_pipeline(
                         processor=proc,
-                        time_step_it=self.readout.time_step_it(),
-                        num_steps=self.readout._num_steps,
-                        ndreadout=self.readout.non_destructive,
-                        times_linear=self.readout._times_linear,
-                        start_time=self.readout._start_time,
-                        end_time=self.readout._times[-1],
+                        readout=self.readout,
                         outputs=self.outputs,
                         progressbar=False,
+                        result_type=self.result_type,
+                    )
+
+                    ds = proc.result_to_dataset(
+                        x=x, y=y, times=times, result_type=self.result_type
                     )
 
                     _ = self.outputs.save_to_file(processor=proc)
@@ -632,16 +641,16 @@ class Observation:
                     logs.append(log)
 
                     # run the pipeline
-                    ds = exposure_pipeline(
+                    _ = run_exposure_pipeline(
                         processor=proc,
-                        time_step_it=self.readout.time_step_it(),
-                        num_steps=self.readout._num_steps,
-                        ndreadout=self.readout.non_destructive,
-                        times_linear=self.readout._times_linear,
-                        start_time=self.readout._start_time,
-                        end_time=self.readout._times[-1],
+                        readout=self.readout,
                         outputs=self.outputs,
                         progressbar=False,
+                        result_type=self.result_type,
+                    )
+
+                    ds = proc.result_to_dataset(
+                        x=x, y=y, times=times, result_type=self.result_type
                     )
 
                     _ = self.outputs.save_to_file(processor=proc)

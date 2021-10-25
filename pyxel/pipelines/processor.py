@@ -10,9 +10,11 @@ import logging
 import operator
 import typing as t
 from copy import deepcopy
+from enum import Enum
 from numbers import Number
 
 import numpy as np
+import xarray as xr
 
 from pyxel.evaluator import eval_entry
 from pyxel.pipelines import DetectionPipeline, ModelGroup
@@ -21,6 +23,38 @@ from pyxel.util.memory import get_size
 
 if t.TYPE_CHECKING:
     from pyxel.detectors import Detector
+
+
+class ResultType(Enum):
+    """Result type class."""
+
+    Image = "image"
+    Signal = "signal"
+    Pixel = "pixel"
+    All = "all"
+
+
+def result_keys(result_type: ResultType = ResultType.All) -> t.Sequence[str]:
+    """Return result keys based on result type.
+
+    Parameters
+    ----------
+    result_type
+
+    Returns
+    -------
+    list
+    """
+    if result_type == ResultType.Image:
+        return ["image"]
+    elif result_type == ResultType.Signal:
+        return ["signal"]
+    elif result_type == ResultType.Pixel:
+        return ["pixel"]
+    elif result_type == ResultType.All:
+        return ["image", "signal", "pixel"]
+    else:
+        raise ValueError("Result type unknown.")
 
 
 # TODO: Is this class needed ?
@@ -32,6 +66,7 @@ class Processor:
 
         self.detector = detector
         self.pipeline = pipeline
+        self._result = None  # type: t.Optional[dict]
 
         self._numbytes = 0
 
@@ -183,6 +218,42 @@ class Processor:
 
         # TODO: Is is necessary to return 'self' ??
         return self
+
+    @property
+    def result(self) -> dict:
+        """Return exposure pipeline final result in a dicitonary."""
+        if not self._result:
+            raise ValueError("No result saved in the processor.")
+        return self._result
+
+    @result.setter
+    def result(self, result_to_save: dict) -> None:
+        """Set result."""
+        self._result = result_to_save
+
+    def result_to_dataset(
+        self, y: range, x: range, times: np.ndarray, result_type: ResultType
+    ) -> xr.Dataset:
+        """Return the result in an xarray dataset."""
+        if not self._result:
+            raise ValueError("No result saved in the processor.")
+
+        lst = []
+
+        for key in result_keys(result_type):
+
+            da = xr.DataArray(
+                self.result[key],
+                dims=("readout_time", "y", "x"),
+                name=key,
+                coords={"readout_time": times, "y": y, "x": x},
+            )
+
+            lst.append(da)
+
+        final_dataset = xr.merge(lst)
+
+        return final_dataset
 
     @property
     def numbytes(self) -> int:
