@@ -1,4 +1,4 @@
-.. _dynamic_api:
+.. _observation_api:
 
 ===========
 Observation
@@ -15,3 +15,17 @@ Observation
     :undoc-members:
     :show-inheritance:
     :exclude-members:
+
+ParametricResult
+----------------
+
+.. autoclass:: ObservationResult
+    :members:
+    :inherited-members:
+    :undoc-members:
+    :show-inheritance:
+    :exclude-members:
+
+log_parameters
+--------------
+.. autofunction:: log_parameters

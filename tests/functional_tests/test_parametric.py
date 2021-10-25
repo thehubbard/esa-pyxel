@@ -5,7 +5,7 @@ import pytest
 
 from pyxel.configuration import Configuration, load
 from pyxel.detectors import CCD
-from pyxel.parametric.parametric import Parametric, ParametricMode
+from pyxel.observation.observation import Observation, ParameterMode
 from pyxel.pipelines import DetectionPipeline, Processor
 
 try:
@@ -43,23 +43,23 @@ expected_product = [
     "mode, expected",
     [
         # ('single', expected_single),
-        (ParametricMode.Sequential, expected_sequential),
-        (ParametricMode.Product, expected_product),
+        (ParameterMode.Sequential, expected_sequential),
+        (ParameterMode.Product, expected_product),
     ],
 )
-def test_pipeline_parametric_without_init_photon(mode: ParametricMode, expected):
+def test_pipeline_parametric_without_init_photon(mode: ParameterMode, expected):
     input_filename = "tests/data/parametric.yaml"
     cfg = load(Path(input_filename))
 
     assert isinstance(cfg, Configuration)
-    assert hasattr(cfg, "parametric")
+    assert hasattr(cfg, "observation")
     assert hasattr(cfg, "ccd_detector")
     assert hasattr(cfg, "pipeline")
 
-    parametric = cfg.parametric
-    assert isinstance(parametric, Parametric)
+    observation = cfg.observation
+    assert isinstance(observation, Observation)
 
-    parametric.parametric_mode = mode
+    observation.parameter_mode = mode
 
     detector = cfg.ccd_detector
     assert isinstance(detector, CCD)
@@ -78,10 +78,10 @@ def test_pipeline_parametric_without_init_photon(mode: ParametricMode, expected)
     assert isinstance(pipeline, DetectionPipeline)
 
     processor = Processor(detector=detector, pipeline=pipeline)
-    result = parametric.debug_parameters(processor)
+    result = observation.debug_parameters(processor)
     assert result == expected
 
-    processor_generator = parametric._processors_it(processor=processor)
+    processor_generator = observation._processors_it(processor=processor)
     assert isinstance(processor_generator, abc.Generator)
 
     for proc, _, _ in processor_generator:

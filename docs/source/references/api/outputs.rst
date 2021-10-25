@@ -6,18 +6,18 @@ Outputs
 
 .. currentmodule:: pyxel.outputs
 
-ObservationOutputs
-------------------
-.. autoclass:: ObservationOutputs
+ExposureOutputs
+---------------
+.. autoclass:: ExposureOutputs
     :members:
     :inherited-members:
     :undoc-members:
     :show-inheritance:
     :exclude-members:
 
-ParametricOutputs
------------------
-.. autoclass:: ParametricOutputs
+ObservationOutputs
+------------------
+.. autoclass:: ObservationOutputs
     :members:
     :inherited-members:
     :undoc-members:

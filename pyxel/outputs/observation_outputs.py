@@ -6,17 +6,20 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 #
 #
-"""Single outputs."""
+"""TBW."""
 
+import operator
 import typing as t
 from pathlib import Path
 
-import xarray as xr
 from typing_extensions import Literal
+
+from pyxel.observation import ParameterMode
 
 from .outputs import Outputs
 
 if t.TYPE_CHECKING:
+    from ..observation import ObservationResult
 
     class SaveToFile(t.Protocol):
         """TBW."""
@@ -55,17 +58,22 @@ class ObservationOutputs(Outputs):
             save_observation_data
         )  # type: t.Optional[t.Sequence[t.Mapping[str, t.Sequence[str]]]]
 
-    def save_observation_outputs(self, dataset: xr.Dataset) -> None:
-        """Save the observation outputs such as the dataset.
+    def save_observation_datasets(
+        self, result: "ObservationResult", mode: "ParameterMode"
+    ) -> None:
+        """Save the result datasets from parametric mode on disk.
 
         Parameters
         ----------
-        dataset: xr.Dataset
+        result: Result
+        mode: ParameterMode
 
         Returns
         -------
         None
         """
+
+        dataset_names = ("dataset", "parameters", "logs")
 
         save_methods = {"nc": self.save_to_netcdf}  # type: t.Dict[str, SaveToFile]
 
@@ -74,11 +82,33 @@ class ObservationOutputs(Outputs):
             for (
                 dct
             ) in self.save_observation_data:  # type: t.Mapping[str, t.Sequence[str]]
-
                 first_item, *_ = dct.items()
                 obj, format_list = first_item
 
-                if obj == "dataset":
+                if obj not in dataset_names:
+                    raise ValueError(
+                        "Please specify a valid result dataset names ('dataset', 'parameters', 'logs')."
+                    )
+
+                if mode == ParameterMode.Sequential and obj == "dataset":
+                    dct = operator.attrgetter(obj)(result)
+                    for key, value in dct.items():
+
+                        if format_list is not None:
+                            for out_format in format_list:
+
+                                if out_format not in save_methods.keys():
+                                    raise ValueError(
+                                        "Format "
+                                        + out_format
+                                        + " not a valid save method!"
+                                    )
+
+                                func = save_methods[out_format]
+                                func(data=value, name=obj + "_" + key)
+
+                else:
+                    ds = operator.attrgetter(obj)(result)
 
                     if format_list is not None:
                         for out_format in format_list:
@@ -89,7 +119,4 @@ class ObservationOutputs(Outputs):
                                 )
 
                             func = save_methods[out_format]
-                            func(data=dataset, name=obj)
-
-                else:
-                    raise NotImplementedError(f"Object {obj} unknown.")
+                            func(data=ds, name=obj)

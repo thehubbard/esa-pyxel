@@ -26,7 +26,7 @@ from pyxel.calibration import (
     ResultType,
 )
 from pyxel.calibration.fitting import ModelFitting
-from pyxel.parametric.parameter_values import ParameterValues
+from pyxel.observation.parameter_values import ParameterValues
 from pyxel.pipelines import ModelFunction, Processor
 
 try:
@@ -37,7 +37,7 @@ except ImportError:
     WITH_PYGMO = False
 
 if t.TYPE_CHECKING:
-    from pyxel.observation import Sampling
+    from pyxel.exposure import Readout
 
     from ..outputs import CalibrationOutputs
 
@@ -53,7 +53,7 @@ class Calibration:
     def __init__(
         self,
         outputs: "CalibrationOutputs",
-        sampling: "Sampling",
+        readout: "Readout",
         output_dir: t.Optional[Path] = None,
         fitting: t.Optional[ModelFitting] = None,
         mode: Literal["pipeline", "single_model"] = "pipeline",
@@ -92,7 +92,7 @@ class Calibration:
         self._log = logging.getLogger(__name__)
 
         self.outputs = outputs
-        self.sampling = sampling
+        self.readout = readout
 
         self._output_dir = output_dir  # type:t.Optional[Path]
         self._fitting = fitting  # type: t.Optional[ModelFitting]
@@ -361,7 +361,7 @@ class Calibration:
         self.output_dir = output_dir
 
         self.fitting = ModelFitting(
-            processor=processor, variables=self.parameters, sampling=self.sampling
+            processor=processor, variables=self.parameters, readout=self.readout
         )
         self.fitting.configure(
             calibration_mode=self.calibration_mode,
@@ -408,7 +408,7 @@ class Calibration:
 
             # Run several evolutions in the archipelago
             ds, df_processors, df_all_logs = my_archipelago.run_evolve(
-                sampling=self.sampling,
+                readout=self.readout,
                 num_evolutions=self._num_evolutions,
                 num_best_decisions=self._num_best_decisions,
             )

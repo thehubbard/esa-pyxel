@@ -6,20 +6,17 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 #
 #
-"""TBW."""
+"""Single outputs."""
 
-import operator
 import typing as t
 from pathlib import Path
 
+import xarray as xr
 from typing_extensions import Literal
-
-from pyxel.parametric import ParametricMode
 
 from .outputs import Outputs
 
 if t.TYPE_CHECKING:
-    from ..parametric import ParametricResult
 
     class SaveToFile(t.Protocol):
         """TBW."""
@@ -37,7 +34,7 @@ ValidName = Literal[
 ValidFormat = Literal["fits", "hdf", "npy", "txt", "csv", "png"]
 
 
-class ParametricOutputs(Outputs):
+class ExposureOutputs(Outputs):
     """TBW."""
 
     def __init__(
@@ -46,7 +43,7 @@ class ParametricOutputs(Outputs):
         save_data_to_file: t.Optional[
             t.Sequence[t.Mapping[ValidName, t.Sequence[ValidFormat]]]
         ] = None,
-        save_parametric_data: t.Optional[
+        save_exposure_data: t.Optional[
             t.Sequence[t.Mapping[str, t.Sequence[str]]]
         ] = None,
     ):
@@ -54,61 +51,32 @@ class ParametricOutputs(Outputs):
             output_folder=output_folder, save_data_to_file=save_data_to_file
         )
 
-        self.save_parametric_data = (
-            save_parametric_data
+        self.save_exposure_data = (
+            save_exposure_data
         )  # type: t.Optional[t.Sequence[t.Mapping[str, t.Sequence[str]]]]
 
-    def save_parametric_datasets(
-        self, result: "ParametricResult", mode: "ParametricMode"
-    ) -> None:
-        """Save the result datasets from parametric mode on disk.
+    def save_exposure_outputs(self, dataset: xr.Dataset) -> None:
+        """Save the observation outputs such as the dataset.
 
         Parameters
         ----------
-        result: Result
-        mode: ParametricMode
+        dataset: xr.Dataset
 
         Returns
         -------
         None
         """
 
-        dataset_names = ("dataset", "parameters", "logs")
-
         save_methods = {"nc": self.save_to_netcdf}  # type: t.Dict[str, SaveToFile]
 
-        if self.save_parametric_data is not None:
+        if self.save_exposure_data is not None:
 
-            for (
-                dct
-            ) in self.save_parametric_data:  # type: t.Mapping[str, t.Sequence[str]]
+            for dct in self.save_exposure_data:  # type: t.Mapping[str, t.Sequence[str]]
+
                 first_item, *_ = dct.items()
                 obj, format_list = first_item
 
-                if obj not in dataset_names:
-                    raise ValueError(
-                        "Please specify a valid result dataset names ('dataset', 'parameters', 'logs')."
-                    )
-
-                if mode == ParametricMode.Sequential and obj == "dataset":
-                    dct = operator.attrgetter(obj)(result)
-                    for key, value in dct.items():
-
-                        if format_list is not None:
-                            for out_format in format_list:
-
-                                if out_format not in save_methods.keys():
-                                    raise ValueError(
-                                        "Format "
-                                        + out_format
-                                        + " not a valid save method!"
-                                    )
-
-                                func = save_methods[out_format]
-                                func(data=value, name=obj + "_" + key)
-
-                else:
-                    ds = operator.attrgetter(obj)(result)
+                if obj == "dataset":
 
                     if format_list is not None:
                         for out_format in format_list:
@@ -119,4 +87,7 @@ class ParametricOutputs(Outputs):
                                 )
 
                             func = save_methods[out_format]
-                            func(data=ds, name=obj)
+                            func(data=dataset, name=obj)
+
+                else:
+                    raise NotImplementedError(f"Object {obj} unknown.")

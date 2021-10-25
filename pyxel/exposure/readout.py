@@ -16,41 +16,38 @@ from pyxel.evaluator import eval_range
 from pyxel.inputs.loader import load_table
 
 
-class Sampling:
+class Readout:
     """TBW."""
 
     def __init__(
         self,
-        readout_times: t.Optional[t.Union[t.Sequence, str]] = None,
-        readout_times_from_file: t.Optional[str] = None,
+        times: t.Optional[t.Union[t.Sequence, str]] = None,
+        times_from_file: t.Optional[str] = None,
         start_time: float = 0.0,
-        non_destructive_readout: bool = False,
+        non_destructive: bool = False,
     ):
-        """Create an instance of Sampling class.
+        """Create an instance of Readout class.
 
         Parameters
         ----------
-        outputs
         times
         times_from_file
         start_time
-        non_destructive_readout
+        non_destructive
         """
         self._time_domain_simulation = True
 
-        if readout_times is not None and readout_times_from_file is not None:
+        if times is not None and times_from_file is not None:
             raise ValueError("Both times and times_from_file specified. Choose one.")
-        elif readout_times is None and readout_times_from_file is None:
+        elif times is None and times_from_file is None:
             self._times = np.array(
                 [1]
-            )  # by convention default sampling/exposure time is 1 second
+            )  # by convention default readout/exposure time is 1 second
             self._time_domain_simulation = False
-        elif readout_times_from_file:
-            self._times = (
-                load_table(readout_times_from_file).to_numpy(dtype=float).flatten()
-            )
-        elif readout_times:
-            self._times = np.array(eval_range(readout_times), dtype=float)
+        elif times_from_file:
+            self._times = load_table(times_from_file).to_numpy(dtype=float).flatten()
+        elif times:
+            self._times = np.array(eval_range(times), dtype=float)
         else:
             raise ValueError("Sampling times not specified.")
 
@@ -59,13 +56,12 @@ class Sampling:
         elif start_time == self._times[0]:
             raise ValueError("Readout times should be greater than start time.")
 
-        self._non_destructive_readout = non_destructive_readout
+        self._non_destructive = non_destructive
 
         self._times_linear = True  # type: bool
         self._start_time = start_time  # type:float
         self._steps = np.array([])  # type: np.ndarray
         self._num_steps = 0  # type: int
-
         self._set_steps()
 
     def __repr__(self) -> str:
@@ -98,9 +94,9 @@ class Sampling:
         return self._steps
 
     @property
-    def non_destructive_readout(self) -> bool:
+    def non_destructive(self) -> bool:
         """TBW."""
-        return self._non_destructive_readout
+        return self._non_destructive
 
 
 def calculate_steps(
