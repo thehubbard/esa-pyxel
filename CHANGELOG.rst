@@ -58,6 +58,8 @@ Others
   (See `!269 <https://gitlab.com/esa/pyxel/-/merge_requests/269>`_).
 * Add unit tests for class 'Charge'.
   (See `!270 <https://gitlab.com/esa/pyxel/-/merge_requests/270.>`_).
+* Add unit tests for function 'calibration.util.check_range.
+  (See `!278 <https://gitlab.com/esa/pyxel/-/merge_requests/278.>`_).
 
 
 version 0.10.2 / 2021-09-02
