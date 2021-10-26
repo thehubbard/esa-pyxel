@@ -1,5 +1,3 @@
-"""Unittests for the 'Calibration' class."""
-
 #  Copyright (c) European Space Agency, 2017, 2018, 2019, 2020.
 #
 #  This file is subject to the terms and conditions defined in file 'LICENCE.txt', which
@@ -7,18 +5,15 @@
 #  this file, may be copied, modified, propagated, or distributed except according to
 #  the terms contained in the file ‘LICENCE.txt’.
 
+"""Unittests for the 'Calibration' class."""
+
 from pathlib import Path
 
 import numpy as np
 import pytest
 
 from pyxel.calibration import Calibration
-from pyxel.calibration.util import (
-    check_ranges,
-    list_to_slice,
-    read_data,
-    read_single_data,
-)
+from pyxel.calibration.util import list_to_slice, read_data, read_single_data
 from pyxel.configuration import Configuration, load
 from pyxel.detectors import CCD
 from pyxel.pipelines import DetectionPipeline, Processor
@@ -145,32 +140,6 @@ def test_list_to_slice(input_data):
     else:
         raise TypeError
     print(output)
-
-
-@pytest.mark.parametrize(
-    "targ_range, out_range, row, col",
-    [
-        ([0, 3, 0, 2], [0, 2, 0, 2], 5, 5),
-        ([0, 2, 0, 2], [0, 2, 0, 3], 5, 5),
-        ([0, 2, 0, 2], [0, 2, 0, 2], 1, 5),
-        ([0, 2, 0, 2], [0, 2, 0, 2], 1, 1),
-        ([0, 2, 0, 2], [0, 2, 0, 2], 0, 0),
-        ([0, 2], [0, 3], 3, 3),
-        ([-1, 2], [0, 2], 3, 3),
-        ([-1, 1], [0, 2], 3, 3),
-        ([0, 2], [0, 2], 1, 1),
-        ([0, 2], [0, 2], 0, 0),
-        ([0, 2], [0, 2], 0, 0),
-        ([0], [0, 2], 4, 4),
-        ([0, 2], [0, 2, 3], 4, 4),
-        ([0, 2, 0, 4], [0, 2, 0, 4], 3, 3),
-        ([0, 2, -2, 2], [0, 2, -2, 2], 3, 3),
-    ],
-)
-def test_check_ranges(targ_range, out_range, row, col):
-    """Test"""
-    with pytest.raises(ValueError):
-        check_ranges(targ_range, out_range, row, col)
 
 
 @pytest.mark.skip(reason="!! FIX THIS TEST !!")
