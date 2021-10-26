@@ -195,15 +195,10 @@ class Characteristics:
     def to_dict(self) -> dict:
         """Get the attributes of this instance as a `dict`."""
         return {
-            "qe": self._qe,
-            "eta": self._eta,
-            "sv": self._sv,
-            "amp": self._amp,
-            "a1": self._a1,
-            "a2": self._a2,
-            "fwc": self._fwc,
-            "vg": self._vg,
-            "dt": self._dt,
+            "qe": self._quantum_efficiency,
+            "sv": self._charge_to_volt_conversion,
+            "a2": self._adc_gain,
+            "fwc": self.full_well_capacity,
         }
 
     @classmethod
