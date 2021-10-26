@@ -33,6 +33,17 @@ class Environment:
         cls_name = self.__class__.__name__  # type: str
         return f"{cls_name}(temperature={self._temperature!r})"
 
+    def __eq__(self, other) -> bool:
+        return type(self) == type(other) and (
+            self.temperature,
+            self.total_ionising_dose,
+            self.total_non_ionising_dose,
+        ) == (
+            other.temperature,
+            other.total_ionising_dose,
+            other.total_non_ionising_dose,
+        )
+
     @property
     def temperature(self) -> float:
         """Get Temperature of the detector."""
