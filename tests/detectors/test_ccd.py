@@ -231,6 +231,13 @@ def test_is_equal(valid_ccd: CCD, other_obj, is_equal):
                     "t": 0.12,
                     "st": 0.13,
                 },
+                "arrays": {
+                    "photon": None,
+                    "pixel": None,
+                    "signal": None,
+                    "image": None,
+                },
+                "particles": {"charge": None},
             },
         )
     ],

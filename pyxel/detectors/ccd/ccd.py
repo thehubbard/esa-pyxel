@@ -57,6 +57,15 @@ class CCD(Detector):
             "material": self.material.to_dict(),
             "environment": self.environment.to_dict(),
             "characteristics": self.characteristics.to_dict(),
+            "arrays": {
+                "photon": None if self._photon is None else self._photon.array.copy(),
+                "pixel": None if self._pixel is None else self._pixel.array.copy(),
+                "signal": None if self._signal is None else self._signal.array.copy(),
+                "image": None if self._image is None else self._image.array.copy(),
+            },
+            "particles": {
+                "charge": None if self._charge is None else self._charge.frame.copy()
+            },
         }
 
         return dct
