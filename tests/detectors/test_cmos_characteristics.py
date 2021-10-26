@@ -104,7 +104,7 @@ def test_create_valid_cmoscharacteristics(
                 preampref=3.0,
             ),
             True,
-            id="Almost same parameters, different class",
+            id="Same parameters, same class",
         ),
     ],
 )

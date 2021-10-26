@@ -385,10 +385,17 @@ class Detector:
             from pyxel.detectors import CCD
 
             obj = CCD.from_dict(dct)
+
         elif dct["type"] == "cmos":
             from pyxel.detectors import CMOS
 
             obj = CMOS.from_dict(dct)
+
+        elif dct["type"] == "mkid":
+            from pyxel.detectors import MKID
+
+            obj = MKID.from_dict(dct)
+
         else:
             raise NotImplementedError
 

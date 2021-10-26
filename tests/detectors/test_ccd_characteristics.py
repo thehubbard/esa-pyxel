@@ -84,7 +84,7 @@ def test_create_valid_ccdcharacteristics(
                 st=0.13,
             ),
             True,
-            id="Almost same parameters, different class",
+            id="Same parameters, same class",
         ),
     ],
 )

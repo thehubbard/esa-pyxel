@@ -135,7 +135,7 @@ def valid_ccd() -> CCD:
                 ),
             ),
             True,
-            id="Almost same parameters, different class",
+            id="Same parameters, same class",
         ),
     ],
 )

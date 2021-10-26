@@ -22,14 +22,13 @@ import numpy as np
 
 from pyxel import __version__
 from pyxel.data_structure import Phase
-from pyxel.detectors import Detector
+from pyxel.detectors import (
+    Detector,
+    Environment,
+    MKIDCharacteristics,
+    MKIDGeometry,
+)
 from pyxel.util.memory import memory_usage_details
-
-if t.TYPE_CHECKING:
-    from pyxel.detectors import Environment
-
-    from .mkid_characteristics import MKIDCharacteristics
-    from .mkid_geometry import MKIDGeometry
 
 
 class MKID(Detector):
@@ -37,9 +36,9 @@ class MKID(Detector):
 
     def __init__(
         self,
-        geometry: "MKIDGeometry",
-        environment: "Environment",
-        characteristics: "MKIDCharacteristics",
+        geometry: MKIDGeometry,
+        environment: Environment,
+        characteristics: MKIDCharacteristics,
     ):
         self._geometry = geometry  # type: MKIDGeometry
         self._characteristics = characteristics  # type: MKIDCharacteristics
@@ -47,6 +46,14 @@ class MKID(Detector):
 
         super().__init__(environment=environment)
         self.reset()
+
+    def __eq__(self, other) -> bool:
+        return (
+            type(self) == type(other)
+            and self.geometry == other.geometry
+            and self.environment == other.environment
+            and self.characteristics == other.characteristics
+        )
 
     def reset(self) -> None:
         """TBW."""
@@ -66,12 +73,12 @@ class MKID(Detector):
             self.phase.array *= 0
 
     @property
-    def geometry(self) -> "MKIDGeometry":
+    def geometry(self) -> MKIDGeometry:
         """TBW."""
         return self._geometry
 
     @property
-    def characteristics(self) -> "MKIDCharacteristics":
+    def characteristics(self) -> MKIDCharacteristics:
         """TBW."""
         return self._characteristics
 
@@ -130,3 +137,31 @@ class MKID(Detector):
             ):
                 dataset = detector_grp.create_dataset(name, shape=np.shape(array))
                 dataset[:] = array
+
+    def to_dict(self) -> dict:
+        """Get the attributes of this instance as a `dict`."""
+        dct = {
+            "type": "mkid",
+            "geometry": self.geometry.to_dict(),
+            "environment": self.environment.to_dict(),
+            "characteristics": self.characteristics.to_dict(),
+        }
+
+        return dct
+
+    @classmethod
+    def from_dict(cls, dct: dict):
+        """Create a new instance of `CCD` from a `dict`."""
+        # TODO: This is a simplistic implementation. Improve this.
+        if dct["type"] != "mkid":
+            raise ValueError
+
+        geometry = MKIDGeometry.from_dict(dct["geometry"])
+        environment = Environment.from_dict(dct["environment"])
+        characteristics = MKIDCharacteristics.from_dict(dct["characteristics"])
+
+        return cls(
+            geometry=geometry,
+            environment=environment,
+            characteristics=characteristics,
+        )

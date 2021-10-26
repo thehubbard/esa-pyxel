@@ -10,21 +10,21 @@ from copy import deepcopy
 import pytest
 
 from pyxel.detectors import (
-    CMOS,
-    CMOSCharacteristics,
-    CMOSGeometry,
+    MKID,
     Detector,
     Environment,
     Material,
+    MKIDCharacteristics,
+    MKIDGeometry,
 )
 from pyxel.detectors.material import MaterialType
 
 
 @pytest.fixture
-def valid_cmos() -> CMOS:
-    """Create a valid `CMOS`."""
-    return CMOS(
-        geometry=CMOSGeometry(
+def valid_mkid() -> MKID:
+    """Create a valid `MKID`."""
+    return MKID(
+        geometry=MKIDGeometry(
             row=100,
             col=120,
             total_thickness=123.1,
@@ -51,7 +51,7 @@ def valid_cmos() -> CMOS:
             total_ionising_dose=200.2,
             total_non_ionising_dose=300.3,
         ),
-        characteristics=CMOSCharacteristics(
+        characteristics=MKIDCharacteristics(
             qe=0.1,
             eta=0.2,
             sv=3.3,
@@ -76,18 +76,18 @@ def valid_cmos() -> CMOS:
     [
         pytest.param(None, False, id="None"),
         pytest.param(
-            CMOS(
-                geometry=CMOSGeometry(),
+            MKID(
+                geometry=MKIDGeometry(),
                 material=Material(),
                 environment=Environment(),
-                characteristics=CMOSCharacteristics(),
+                characteristics=MKIDCharacteristics(),
             ),
             False,
-            id="Empty 'CMOS'",
+            id="Empty 'MKID'",
         ),
         pytest.param(
-            CMOS(
-                geometry=CMOSGeometry(
+            MKID(
+                geometry=MKIDGeometry(
                     row=100,
                     col=120,
                     total_thickness=123.1,
@@ -101,14 +101,14 @@ def valid_cmos() -> CMOS:
                 ),
                 material=Material(),
                 environment=Environment(),
-                characteristics=CMOSCharacteristics(),
+                characteristics=MKIDCharacteristics(),
             ),
             False,
             id="Almost same parameters, different class",
         ),
         pytest.param(
-            CMOS(
-                geometry=CMOSGeometry(
+            MKID(
+                geometry=MKIDGeometry(
                     row=100,
                     col=120,
                     total_thickness=123.1,
@@ -135,7 +135,7 @@ def valid_cmos() -> CMOS:
                     total_ionising_dose=200.2,
                     total_non_ionising_dose=300.3,
                 ),
-                characteristics=CMOSCharacteristics(
+                characteristics=MKIDCharacteristics(
                     qe=0.1,
                     eta=0.2,
                     sv=3.3,
@@ -158,22 +158,22 @@ def valid_cmos() -> CMOS:
         ),
     ],
 )
-def test_is_equal(valid_cmos: CMOS, other_obj, is_equal):
-    """Test equality statement for `CMOS`."""
+def test_is_equal(valid_mkid: MKID, other_obj, is_equal):
+    """Test equality statement for `MKID`."""
 
     if is_equal:
-        assert valid_cmos == other_obj
+        assert valid_mkid == other_obj
     else:
-        assert valid_cmos != other_obj
+        assert valid_mkid != other_obj
 
 
-@pytest.mark.parametrize("klass", [CMOS, Detector])
+@pytest.mark.parametrize("klass", [MKID, Detector])
 @pytest.mark.parametrize(
     "obj, exp_dict",
     [
         (
-            CMOS(
-                geometry=CMOSGeometry(
+            MKID(
+                geometry=MKIDGeometry(
                     row=100,
                     col=120,
                     total_thickness=123.1,
@@ -200,7 +200,7 @@ def test_is_equal(valid_cmos: CMOS, other_obj, is_equal):
                     total_ionising_dose=200.2,
                     total_non_ionising_dose=300.3,
                 ),
-                characteristics=CMOSCharacteristics(
+                characteristics=MKIDCharacteristics(
                     qe=0.1,
                     eta=0.2,
                     sv=3.3,
@@ -219,7 +219,7 @@ def test_is_equal(valid_cmos: CMOS, other_obj, is_equal):
                 ),
             ),
             {
-                "type": "cmos",
+                "type": "mkid",
                 "geometry": {
                     "row": 100,
                     "col": 120,
@@ -270,9 +270,9 @@ def test_is_equal(valid_cmos: CMOS, other_obj, is_equal):
 )
 def test_to_and_from_dict(klass, obj, exp_dict):
     """Test methods 'to_dict', 'from_dict'."""
-    assert type(obj) == CMOS
+    assert type(obj) == MKID
 
-    # Convert from `CMOS` to a `dict`
+    # Convert from `MKID` to a `dict`
     dct = obj.to_dict()
     assert dct == exp_dict
 
@@ -281,9 +281,9 @@ def test_to_and_from_dict(klass, obj, exp_dict):
     assert copied_dct is not exp_dict
     assert copied_dct == exp_dict
 
-    # Convert from `dict` to `CMOS`
+    # Convert from `dict` to `MKID`
     other_obj = klass.from_dict(copied_dct)
-    assert type(other_obj) == CMOS
+    assert type(other_obj) == MKID
     assert obj == other_obj
     assert obj is not other_obj
     assert copied_dct == exp_dict
