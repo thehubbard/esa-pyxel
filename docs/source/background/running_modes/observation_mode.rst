@@ -1,11 +1,12 @@
 .. _parametric_mode:
 
-===============
-Parametric mode
-===============
+================
+Observation mode
+================
 
-The parametric mode of Pyxel can automatically change the value of any
-detector or model parameter to make a sensitivity analysis for any parameter.
+The observation mode of Pyxel can automatically change the value of any
+detector or model parameter to simulate an observation or make a sensitivity analysis for any parameter.
+Iterating over different start times of exposures is also possible.
 
 The variable parameter have to be defined in the YAML
 configuration file with ranges or lists. The framework generates and runs
@@ -14,14 +15,16 @@ a stack of different Detector objects and pipelines.
 At the end, the user can plot and analyze the data
 in function of the variable parameter.
 
+There are three different modes of defining parameters:
+
 Sequential
 ----------
 
 .. code-block:: yaml
 
-  # YAML config file for Parametric mode (sequential)
+  # YAML config file for Observation mode (sequential)
 
-  parametric:
+  observation:
 
     mode: sequential
     parameters:
@@ -43,9 +46,9 @@ Product
 
 .. code-block:: yaml
 
-  # YAML config file for Parametric mode (product)
+  # YAML config file for Observation mode (product)
 
-  parametric:
+  observation:
 
     mode: product
     parameters:
@@ -69,9 +72,9 @@ Custom
 
 .. code-block:: yaml
 
-  # YAML config file for Parametric mode (custom)
+  # YAML config file for Observation mode (custom)
 
-  parametric:
+  observation:
 
     mode:  custom
     from_file:        'outputs/calibration_champions.out'
@@ -90,7 +93,7 @@ Custom
       - key:      detector.environment.temperature
         values:   _
 
-The parametric values (int, float or str) indicated with with '_' character,
+The parameter values (int, float or str) indicated with with '_' character,
 and all are read and changed in parallel from an ASCII file defined
 with ``from_file``.
 

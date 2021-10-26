@@ -34,7 +34,7 @@ or subgroup.
 * **running mode:**
 
     In the beginning of the configuration file, the user should define
-    the running mode. This can be single, parametric, dynamic and calibration.
+    the running mode. This can be exposure, observation, calibration.
     For details, see :ref:`running_modes`.
 
 * **detector:**

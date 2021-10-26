@@ -34,6 +34,8 @@ Documentation
 
 * Add more information about how-to release to Conda Forge.
   (See `!252 <https://gitlab.com/esa/pyxel/-/merge_requests/252>`_).
+* Update documentation on the refactored running modes.
+  (See `!277 <https://gitlab.com/esa/pyxel/-/merge_requests/277>`_).
 
 Models
 ~~~~~~

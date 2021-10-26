@@ -6,7 +6,7 @@ Exposure
 
 .. currentmodule:: pyxel.exposure
 
-Parametric
+Exposure
 ----------
 .. autoclass:: Exposure
     :members:
@@ -14,5 +14,10 @@ Parametric
     :undoc-members:
     :show-inheritance:
     :exclude-members:
+
+run_exposure_pipeline
+---------------------
+
+.. autofunction:: run_exposure_pipeline
 
 
