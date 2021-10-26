@@ -182,7 +182,6 @@ def list_to_3d_slice(
         raise ValueError("Fitting range should have 6 values")
 
 
-# TODO: Write unit tests for this function
 def check_ranges(
     target_fit_range: t.Sequence[int],
     out_fit_range: t.Sequence[int],
@@ -232,7 +231,7 @@ def check_ranges(
             if not (0 <= target_fit_range[i] <= rows):
                 raise ValueError("Value of target fit range is wrong")
 
-        for i in [-1, 2]:
+        for i in [-1, -2]:
             if not (0 <= target_fit_range[i] <= cols):
                 raise ValueError("Value of target fit range is wrong")
 
