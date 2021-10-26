@@ -12,14 +12,13 @@ from pyxel.detectors import Material
 from pyxel.detectors.material import MaterialType
 
 
-@pytest.mark.parametrize("trapped_charge", [None])
-@pytest.mark.parametrize("n_acceptor", [0.0, 1000.0])
-@pytest.mark.parametrize("n_donor", [0.0, 1000.0])
-@pytest.mark.parametrize("material", [MaterialType.Silicon, MaterialType.HXRG])
-@pytest.mark.parametrize("material_density", [0, 10000.0])
-@pytest.mark.parametrize("ionization_energy", [0.0, 100.0])
-@pytest.mark.parametrize("band_gap", [0, 10.0])
-@pytest.mark.parametrize("e_effective_mass", [0, 1.0e-10])
+@pytest.mark.parametrize(
+    "trapped_charge, n_acceptor, n_donor, material, material_density, ionization_energy, band_gap, e_effective_mass",
+    [
+        (None, 0.0, 0.0, MaterialType.Silicon, 0, 0.0, 0, 0),
+        (None, 1000.0, 1000.0, MaterialType.HXRG, 10000.0, 100.0, 10.0, 1.0e-10),
+    ],
+)
 def test_create_valid_material(
     trapped_charge,
     n_acceptor,

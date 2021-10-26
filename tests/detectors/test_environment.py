@@ -12,9 +12,10 @@ import pytest
 from pyxel.detectors import Environment
 
 
-@pytest.mark.parametrize("temperature", [0.0, 1000.0])
-@pytest.mark.parametrize("total_ionising_dose", [0.0, 1e15])
-@pytest.mark.parametrize("total_non_ionising_dose", [0.0, 1e15])
+@pytest.mark.parametrize(
+    "temperature, total_ionising_dose, total_non_ionising_dose",
+    [(0.0, 0.0, 0.0), (1000.0, 1e15, 1e15)],
+)
 def test_create_environment(
     temperature: float, total_ionising_dose: float, total_non_ionising_dose: float
 ):

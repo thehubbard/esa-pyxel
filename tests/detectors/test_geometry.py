@@ -5,11 +5,11 @@
 #  this file, may be copied, modified, propagated, or distributed except according to
 #  the terms contained in the file ‘LICENCE.txt’.
 
-from copy import deepcopy
 import typing as t
+from copy import deepcopy
 from dataclasses import dataclass
-import numpy as np
 
+import numpy as np
 import pytest
 
 from pyxel.detectors import CCDGeometry, CMOSGeometry, Geometry
@@ -104,11 +104,10 @@ def test_horizontal_pixel_center_pos(
     np.testing.assert_allclose(values, exp_values)
 
 
-@pytest.mark.parametrize("row", [0, 10000])
-@pytest.mark.parametrize("col", [0, 10000])
-@pytest.mark.parametrize("total_thickness", [0.0, 10000.0])
-@pytest.mark.parametrize("pixel_vert_size", [0.0, 1000.0])
-@pytest.mark.parametrize("pixel_horz_size", [0.0, 1000.0])
+@pytest.mark.parametrize(
+    "row, col, total_thickness, pixel_vert_size, pixel_horz_size",
+    [(0, 0, 0.0, 0.0, 0.0), (10000, 10000, 10000.0, 1000.0, 1000.0)],
+)
 def test_create_valid_geometry(
     row, col, total_thickness, pixel_vert_size, pixel_horz_size
 ):

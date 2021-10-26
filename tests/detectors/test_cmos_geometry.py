@@ -12,16 +12,13 @@ import pytest
 from pyxel.detectors import CMOSGeometry, Geometry
 
 
-@pytest.mark.parametrize("row", [0, 10000])
-@pytest.mark.parametrize("col", [0, 10000])
-@pytest.mark.parametrize("total_thickness", [0.0, 10000.0])
-@pytest.mark.parametrize("pixel_vert_size", [0.0, 1000.0])
-@pytest.mark.parametrize("pixel_horz_size", [0.0, 1000.0])
-@pytest.mark.parametrize("n_output", [0, 32])
-@pytest.mark.parametrize("n_row_overhead", [0, 100])
-@pytest.mark.parametrize("n_frame_overhead", [0, 100])
-@pytest.mark.parametrize("reverse_scan_direction", [True, False])
-@pytest.mark.parametrize("reference_pixel_border_width", [0, 32])
+@pytest.mark.parametrize(
+    "row, col, total_thickness, pixel_vert_size, pixel_horz_size, n_output, n_row_overhead, n_frame_overhead, reverse_scan_direction, reference_pixel_border_width",
+    [
+        (0, 0, 0.0, 0.0, 0.0, 0, 0, 0, True, 0),
+        (10000, 10000, 10000.0, 1000.0, 1000.0, 32, 100, 100, False, 32),
+    ],
+)
 def test_create_valid_geometry(
     row,
     col,

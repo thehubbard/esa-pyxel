@@ -12,11 +12,10 @@ import pytest
 from pyxel.detectors import CCDGeometry, Geometry
 
 
-@pytest.mark.parametrize("row", [0, 10000])
-@pytest.mark.parametrize("col", [0, 10000])
-@pytest.mark.parametrize("total_thickness", [0.0, 10000.0])
-@pytest.mark.parametrize("pixel_vert_size", [0.0, 1000.0])
-@pytest.mark.parametrize("pixel_horz_size", [0.0, 1000.0])
+@pytest.mark.parametrize(
+    "row, col, total_thickness, pixel_vert_size, pixel_horz_size",
+    [(0, 0, 0.0, 0.0, 0.0), (10000, 10000, 10000.0, 1000.0, 1000.0)],
+)
 def test_create_valid_geometry(
     row, col, total_thickness, pixel_vert_size, pixel_horz_size
 ):
