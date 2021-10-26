@@ -376,3 +376,16 @@ class Detector:
             ):
                 dataset = detector_grp.create_dataset(name, shape=np.shape(array))
                 dataset[:] = array
+
+    @classmethod
+    def from_dict(cls, dct: dict) -> "Detector":
+        """Create a new instance of a `Detector` from a `dict`."""
+        # TODO: This is a simplistic implementation. Improve this.
+        if dct["type"] == "ccd":
+            from pyxel.detectors import CCD
+
+            obj = CCD.from_dict(dct)
+        else:
+            raise NotImplementedError
+
+        return obj

@@ -18,4 +18,7 @@ from .apd import APD, APDCharacteristics, APDGeometry
 from .characteristics import Characteristics
 from pyxel.detectors.cmos import CMOSGeometry, CMOS, CMOSCharacteristics
 from .optics import Optics
+from .ccd import CCD
+from .cmos import CMOS
+from .MKID_array import MKID
 from .readout_properties import ReadoutProperties

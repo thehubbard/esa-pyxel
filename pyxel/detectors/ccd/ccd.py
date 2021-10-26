@@ -4,24 +4,15 @@
 #  is part of this Pyxel package. No part of the package, including
 #  this file, may be copied, modified, propagated, or distributed except according to
 #  the terms contained in the file ‘LICENCE.txt’.
-#
-#
-#
-#  This file is subject to the terms and conditions defined in file 'LICENCE.txt', which
-#  is part of this Pyxel package. No part of the package, including
-#  this file, may be copied, modified, propagated, or distributed except according to
-#  the terms contained in the file ‘LICENCE.txt’.
 
 """CCD detector modeling class."""
-import typing as t
 
-from pyxel.detectors import Detector
-
-if t.TYPE_CHECKING:
-    from pyxel.detectors import Environment
-
-    from .ccd_characteristics import CCDCharacteristics
-    from .ccd_geometry import CCDGeometry
+from pyxel.detectors import (
+    CCDCharacteristics,
+    CCDGeometry,
+    Detector,
+    Environment,
+)
 
 
 class CCD(Detector):
@@ -29,9 +20,9 @@ class CCD(Detector):
 
     def __init__(
         self,
-        geometry: "CCDGeometry",
-        environment: "Environment",
-        characteristics: "CCDCharacteristics",
+        geometry: CCDGeometry,
+        environment: Environment,
+        characteristics: CCDCharacteristics,
     ):
         self._geometry = geometry  # type: CCDGeometry
         self._characteristics = characteristics  # type: CCDCharacteristics
@@ -39,12 +30,52 @@ class CCD(Detector):
         super().__init__(environment=environment)
         super().reset()
 
+    def __eq__(self, other) -> bool:
+        return (
+            type(self) == type(other)
+            and self.geometry == other.geometry
+            and self.material == other.material
+            and self.environment == other.environment
+            and self.characteristics == other.characteristics
+        )
+
     @property
-    def geometry(self) -> "CCDGeometry":
+    def geometry(self) -> CCDGeometry:
         """TBW."""
         return self._geometry
 
     @property
-    def characteristics(self) -> "CCDCharacteristics":
+    def characteristics(self) -> CCDCharacteristics:
         """TBW."""
         return self._characteristics
+
+    def to_dict(self) -> dict:
+        """Get the attributes of this instance as a `dict`."""
+        dct = {
+            "type": "ccd",
+            "geometry": self.geometry.to_dict(),
+            "material": self.material.to_dict(),
+            "environment": self.environment.to_dict(),
+            "characteristics": self.characteristics.to_dict(),
+        }
+
+        return dct
+
+    @classmethod
+    def from_dict(cls, dct: dict):
+        """Create a new instance of `CCD` from a `dict`."""
+        # TODO: This is a simplistic implementation. Improve this.
+        if dct["type"] != "ccd":
+            raise ValueError
+
+        geometry = CCDGeometry.from_dict(dct["geometry"])
+        material = Material.from_dict(dct["material"])
+        environment = Environment.from_dict(dct["environment"])
+        characteristics = CCDCharacteristics.from_dict(dct["characteristics"])
+
+        return cls(
+            geometry=geometry,
+            material=material,
+            environment=environment,
+            characteristics=characteristics,
+        )
