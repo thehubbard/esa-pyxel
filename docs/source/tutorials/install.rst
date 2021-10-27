@@ -10,6 +10,91 @@ Pyxel can be installed with `conda <https://docs.conda.io/>`_,
 If you want to have a full installation of Pyxel, then the recommended installation
 method is to use `conda <https://docs.conda.io/>`__ into a conda environment.
 
+The following instructions are valid for MacOS, Windows and Linux.
+
+Conda
+=====
+
+If you use `conda`, you can install Pyxel with:
+
+.. code-block:: bash
+
+    # Best practice, use an environment rather than install in the base env
+    conda create -n my-env
+    conda activate my-env
+
+    # Install Python and pip in the environment
+    conda install python">=3.7" pip
+
+    # Install Pygmo (needed for calibration)
+    conda install -c conda-forge pygmo
+
+    # Full installation of Pyxel including all dependencies
+    pip install -e git+https://gitlab.com/esa/pyxel.git#egg=pyxel-sim[all]
+
+.. warning::
+    Conda 64-bit **must** be installed and not Conda 32-bit.
+
+
+Pip
+===
+
+If you use pip, you can install Pyxel with:
+
+.. code-block:: bash
+
+    # Install Pyxel without optional dependencies
+    pip install -e git+https://gitlab.com/esa/pyxel.git#egg=pyxel-sim
+
+    # Or install Pyxel with some optional dependencies
+    pip install -e git+https://gitlab.com/esa/pyxel.git#egg=pyxel-sim[calibration]
+    pip install -e git+https://gitlab.com/esa/pyxel.git#egg=pyxel-sim[model]
+
+    # Or install Pyxel with all optional dependencies
+    pip install -e git+https://gitlab.com/esa/pyxel.git#egg=pyxel-sim[all]
+
+
+To update Pyxel with pip, you can use the same previous instructions to install Pyxel.
+
+When using pip, it's good practice to use a virtual environment.
+See `this guide <https://dev.to/bowmanjd/python-tools-for-managing-virtual-environments-3bko#howto>`_
+for details on using virtual environments.
+
+
+Install from source
+===================
+
+To install Pyxel from source, clone the repository from the
+`Pyxel GitLab repository <https://gitlab.com/esa/pyxel>`_
+
+.. code-block:: bash
+
+    # Get source code
+    git clone https://gitlab.com/esa/pyxel.git
+    cd pyxel
+    python install -m pip install .
+
+.. note::
+    The `Pyxel GitLab repository <https://gitlab.com/esa/pyxel>`__ is not yet open to
+    all users. To get access to this repository, you must contact the maintainers
+    (pyxel at esa dot int).
+
+You can install all dependencies as well:
+
+.. code-block:: bash
+
+    python -m pip install ".[all]"
+
+
+Verify the installation
+=======================
+
+You can verify that Pyxel is installed with the following command:
+
+.. code-block:: bash
+
+    python -c "import pyxel; pyxel.show_versions()"
+
 
 Dependencies
 ============
@@ -51,103 +136,6 @@ Additionally, Pyxel has the following **optional** dependencies:
     on `conda`, only on the `PyPI` repository.
 
 
-Instructions
-============
-
-Pyxel itself is a pure Python package, but its dependencies are not.
-The easiest way to get everything installed is to use
-`conda <https://docs.conda.io>`__.
-
-The following instructions are valid for MacOS, Windows and Linux.
-
-.. note::
-    Pyxel is not yet officially available on the `PyPI <https://pypi.org>`_ repository or
-    any conda channels
-    (e.g. `Conda-forge community channel <https://anaconda.org/conda-forge/repo>`_).
-
-
-Conda
------
-
-If you use `conda`, you can install Pyxel with:
-
-.. code-block:: bash
-
-    # Best practice, use an environment rather than install in the base env
-    conda create -n my-env
-    conda activate my-env
-
-    # Install Python and pip in the environment
-    conda install python">=3.7" pip
-
-    # Install Pygmo (needed for calibration)
-    conda install -c conda-forge pygmo
-
-    # Full installation of Pyxel including all dependencies
-    pip install -e git+https://gitlab.com/esa/pyxel.git#egg=pyxel-sim[all]
-
-.. warning::
-    Conda 64-bit **must** be installed and not Conda 32-bit.
-
-
-Pip
----
-
-If you use pip, you can install Pyxel with:
-
-.. code-block:: bash
-
-    # Install Pyxel without optional dependencies
-    pip install -e git+https://gitlab.com/esa/pyxel.git#egg=pyxel-sim
-
-    # Or install Pyxel with some optional dependencies
-    pip install -e git+https://gitlab.com/esa/pyxel.git#egg=pyxel-sim[calibration]
-    pip install -e git+https://gitlab.com/esa/pyxel.git#egg=pyxel-sim[model]
-
-    # Or install Pyxel with all optional dependencies
-    pip install -e git+https://gitlab.com/esa/pyxel.git#egg=pyxel-sim[all]
-
-
-To update Pyxel with pip, you can use the same previous instructions to install Pyxel.
-
-When using pip, it's good practice to use a virtual environment.
-See `this guide <https://dev.to/bowmanjd/python-tools-for-managing-virtual-environments-3bko#howto>`_
-for details on using virtual environments.
-
-
-Install from source
--------------------
-
-To install Pyxel from source, clone the repository from the
-`Pyxel GitLab repository <https://gitlab.com/esa/pyxel>`_
-
-.. code-block:: bash
-
-    # Get source code
-    git clone https://gitlab.com/esa/pyxel.git
-    cd pyxel
-    python install -m pip install .
-
-.. note::
-    The `Pyxel GitLab repository <https://gitlab.com/esa/pyxel>`__ is not yet open to
-    all users. To get access to this repository, you must contact the maintainers
-    (pyxel at esa dot int).
-
-You can install all dependencies as well:
-
-.. code-block:: bash
-
-    python -m pip install ".[all]"
-
-
-Verify the installation
-=======================
-
-You can verify that Pyxel is installed with the following command:
-
-.. code-block:: bash
-
-    python -c "import pyxel; pyxel.show_versions()"
 
 
 ..
