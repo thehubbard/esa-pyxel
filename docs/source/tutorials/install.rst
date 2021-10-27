@@ -12,53 +12,83 @@ method is to use `conda <https://docs.conda.io/>`__ into a conda environment.
 
 The following instructions are valid for MacOS, Windows and Linux.
 
+
+.. warning::
+    It is **strongly** encouraged to install optional package
+    `pygmo <https://esa.github.io/pygmo2/>`_ with ``conda`` rather than ``pip``.
+    See `here <https://esa.github.io/pygmo2/install.html#pip>`_ for more information.
+
+    Moreover, only the binaries of ``pygmo`` for Linux (not MacOS or Windows)
+    are available on ``pip``.
+
+    The binaries of ``pygmo`` for MacOS, Windows and Linux are only available
+    on Conda 64bit (**not 32bit**).
+
+
 Conda
 =====
 
-If you use `conda`, you can install Pyxel with:
+If you use ``conda``, you can install Pyxel from ``conda-forge`` channels:
 
 .. code-block:: bash
 
     # Best practice, use an environment rather than install in the base env
+    # This is optional
     conda create -n my-env
     conda activate my-env
 
-    # Install Python and pip in the environment
-    conda install python">=3.7" pip
-
-    # Install Pygmo (needed for calibration)
-    conda install -c conda-forge pygmo
-
-    # Full installation of Pyxel including all dependencies
-    pip install -e git+https://gitlab.com/esa/pyxel.git#egg=pyxel-sim[all]
+    # The actual install command
+    conda install -c conda-forge pyxel-sim
 
 .. warning::
     Conda 64-bit **must** be installed and not Conda 32-bit.
 
+To update Pyxel with ``conda``, you can use the following command:
+
+.. code-block:: bash
+
+   conda update pyxel-dev
 
 Pip
 ===
 
-If you use pip, you can install Pyxel with:
-
-.. code-block:: bash
-
-    # Install Pyxel without optional dependencies
-    pip install -e git+https://gitlab.com/esa/pyxel.git#egg=pyxel-sim
-
-    # Or install Pyxel with some optional dependencies
-    pip install -e git+https://gitlab.com/esa/pyxel.git#egg=pyxel-sim[calibration]
-    pip install -e git+https://gitlab.com/esa/pyxel.git#egg=pyxel-sim[model]
-
-    # Or install Pyxel with all optional dependencies
-    pip install -e git+https://gitlab.com/esa/pyxel.git#egg=pyxel-sim[all]
-
-
-To update Pyxel with pip, you can use the same previous instructions to install Pyxel.
-
 When using pip, it's good practice to use a virtual environment.
 See `this guide <https://dev.to/bowmanjd/python-tools-for-managing-virtual-environments-3bko#howto>`_
 for details on using virtual environments.
+
+If you use ``pip``, you can install Pyxel with its compulsory requirements.
+
+.. code-block:: bash
+
+    pip install pyxel-dev           # Install without 'pygmo2' and 'poppy'
+
+.. note::
+    The libraries ``pygmo2`` and ``poppy`` are not installed with these
+    compulsory requirements.
+
+    ``pygmo2`` is needed for the calibration mode.
+    ``poppy`` is needed for 'optical_psf' model.
+
+
+You can install Pyxel with all its requirements (included ``pygmo2`` and ``poppy``)
+with the following command:
+
+.. code-block:: bash
+
+    pip install pyxel-dev[all]      # Install everything
+
+.. warning::
+    Library ``pygmo2`` is only available for Linux on PyPi.
+
+    If you want to use the calibration mode on Windows or MacOS, you must
+    install Pyxel with ``conda``.
+
+
+To update Pyxel with ``pip``, you can use the following command:
+
+.. code-block:: bash
+
+    pip install -U pyxel-dev
 
 
 Install from source
@@ -118,18 +148,6 @@ Additionally, Pyxel has the following **optional** dependencies:
 
 * `pygmo <https://esa.github.io/pygmo2/>`_, version 2.16.1 or later
 * `poppy <https://poppy-optics.readthedocs.io/>`_, version 0.8 or later
-
-.. warning::
-    It is **strongly** encouraged to install optional package
-    `pygmo <https://esa.github.io/pygmo2/>`_ with `conda` rather than `pip`.
-    See `here <https://esa.github.io/pygmo2/install.html#pip>`_ for more information.
-
-    Moreover, only the binaries of `pygmo` for Linux (not MacOS or Windows)
-    are available on `pip`.
-
-    The binaries of `pygmo` for MacOS, Windows and Linux are only available
-    on Conda 64bit (**not 32bit**).
-
 
 .. note::
     Optional package `poppy <https://poppy-optics.readthedocs.io/>`_ is not available
