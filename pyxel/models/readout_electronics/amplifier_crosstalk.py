@@ -105,7 +105,7 @@ def get_matrix(coupling_matrix: t.Union[str, Path, list]) -> np.ndarray:
         return np.array(load_table(coupling_matrix))
 
 
-@numba.njit(parallel=True)
+@numba.njit
 def crosstalk_signal_ac(
     array: np.ndarray,
     coupling_matrix: np.ndarray,
@@ -155,7 +155,7 @@ def crosstalk_signal_ac(
     return array
 
 
-@numba.njit(parallel=True)
+@numba.njit
 def crosstalk_signal_dc(
     array: np.ndarray,
     coupling_matrix: np.ndarray,
