@@ -36,6 +36,8 @@ Documentation
   (See `!252 <https://gitlab.com/esa/pyxel/-/merge_requests/252>`_).
 * Update documentation on the refactored running modes.
   (See `!277 <https://gitlab.com/esa/pyxel/-/merge_requests/277>`_).
+* Update installation instructions for using pip and conda.
+  (See `!279 <https://gitlab.com/esa/pyxel/-/merge_requests/279>`_).
 
 Models
 ~~~~~~

@@ -10,113 +10,89 @@ Pyxel can be installed with `conda <https://docs.conda.io/>`_,
 If you want to have a full installation of Pyxel, then the recommended installation
 method is to use `conda <https://docs.conda.io/>`__ into a conda environment.
 
+The following instructions are valid for MacOS, Windows and Linux.
 
-Dependencies
-============
-
-Pyxel has the following **mandatory** dependencies:
-
-* `python <https://www.python.org>`_ 3.7 or later
-* `numpy <https://numpy.org>`_
-* `xarray <http://xarray.pydata.org/>`_
-* `dask <https://dask.org>`_
-* `jupyterlab <https://jupyterlab.readthedocs.io>`_
-* `astropy <https://www.astropy.org>`_
-* `pandas <https://pandas.pydata.org>`_
-* `numba <https://numba.pydata.org>`_
-* `tqdm <https://tqdm.github.io>`_
-* `holoviews <https://holoviews.org>`_
-* `matplotlib <https://matplotlib.org>`_
-* `h5py <https://www.h5py.org>`_
-
-Additionally, Pyxel has the following **optional** dependencies:
-
-* `pygmo <https://esa.github.io/pygmo2/>`_, version 2.16.1 or later
-* `poppy <https://poppy-optics.readthedocs.io/>`_, version 0.8 or later
 
 .. warning::
     It is **strongly** encouraged to install optional package
-    `pygmo <https://esa.github.io/pygmo2/>`_ with `conda` rather than `pip`.
+    `pygmo <https://esa.github.io/pygmo2/>`_ with ``conda`` rather than ``pip``.
     See `here <https://esa.github.io/pygmo2/install.html#pip>`_ for more information.
 
-    Moreover, only the binaries of `pygmo` for Linux (not MacOS or Windows)
-    are available on `pip`.
+    Moreover, only the binaries of ``pygmo`` for Linux (not MacOS or Windows)
+    are available on ``pip``.
 
-    The binaries of `pygmo` for MacOS, Windows and Linux are only available
+    The binaries of ``pygmo`` for MacOS, Windows and Linux are only available
     on Conda 64bit (**not 32bit**).
 
 
-.. note::
-    Optional package `poppy <https://poppy-optics.readthedocs.io/>`_ is not available
-    on `conda`, only on the `PyPI` repository.
-
-
-Instructions
-============
-
-Pyxel itself is a pure Python package, but its dependencies are not.
-The easiest way to get everything installed is to use
-`conda <https://docs.conda.io>`__.
-
-The following instructions are valid for MacOS, Windows and Linux.
-
-.. note::
-    Pyxel is not yet officially available on the `PyPI <https://pypi.org>`_ repository or
-    any conda channels
-    (e.g. `Conda-forge community channel <https://anaconda.org/conda-forge/repo>`_).
-
-
 Conda
------
+=====
 
-If you use `conda`, you can install Pyxel with:
+If you use ``conda``, you can install Pyxel from ``conda-forge`` channels:
 
 .. code-block:: bash
 
     # Best practice, use an environment rather than install in the base env
+    # This is optional
     conda create -n my-env
     conda activate my-env
 
-    # Install Python and pip in the environment
-    conda install python">=3.7" pip
-
-    # Install Pygmo (needed for calibration)
-    conda install -c conda-forge pygmo
-
-    # Full installation of Pyxel including all dependencies
-    pip install -e git+https://gitlab.com/esa/pyxel.git#egg=pyxel-sim[all]
+    # The actual install command
+    conda install -c conda-forge pyxel-sim
 
 .. warning::
     Conda 64-bit **must** be installed and not Conda 32-bit.
 
-
-Pip
----
-
-If you use pip, you can install Pyxel with:
+To update Pyxel with ``conda``, you can use the following command:
 
 .. code-block:: bash
 
-    # Install Pyxel without optional dependencies
-    pip install -e git+https://gitlab.com/esa/pyxel.git#egg=pyxel-sim
+   conda update pyxel-dev
 
-    # Or install Pyxel with some optional dependencies
-    pip install -e git+https://gitlab.com/esa/pyxel.git#egg=pyxel-sim[calibration]
-    pip install -e git+https://gitlab.com/esa/pyxel.git#egg=pyxel-sim[model]
-
-    # Or install Pyxel with all optional dependencies
-    pip install -e git+https://gitlab.com/esa/pyxel.git#egg=pyxel-sim[all]
-
-
-To update Pyxel with pip, you can use the same previous instructions to install Pyxel.
+Pip
+===
 
 When using pip, it's good practice to use a virtual environment.
 See `this guide <https://dev.to/bowmanjd/python-tools-for-managing-virtual-environments-3bko#howto>`_
 for details on using virtual environments.
 
+If you use ``pip``, you can install Pyxel with its compulsory requirements.
+
+.. code-block:: bash
+
+    pip install pyxel-dev           # Install without 'pygmo2' and 'poppy'
+
+.. note::
+    The libraries ``pygmo2`` and ``poppy`` are not installed with these
+    compulsory requirements.
+
+    ``pygmo2`` is needed for the calibration mode.
+    ``poppy`` is needed for 'optical_psf' model.
+
+
+You can install Pyxel with all its requirements (included ``pygmo2`` and ``poppy``)
+with the following command:
+
+.. code-block:: bash
+
+    pip install pyxel-dev[all]      # Install everything
+
+.. warning::
+    Library ``pygmo2`` is only available for Linux on PyPi.
+
+    If you want to use the calibration mode on Windows or MacOS, you must
+    install Pyxel with ``conda``.
+
+
+To update Pyxel with ``pip``, you can use the following command:
+
+.. code-block:: bash
+
+    pip install -U pyxel-dev
+
 
 Install from source
--------------------
+===================
 
 To install Pyxel from source, clone the repository from the
 `Pyxel GitLab repository <https://gitlab.com/esa/pyxel>`_
@@ -148,6 +124,36 @@ You can verify that Pyxel is installed with the following command:
 .. code-block:: bash
 
     python -c "import pyxel; pyxel.show_versions()"
+
+
+Dependencies
+============
+
+Pyxel has the following **mandatory** dependencies:
+
+* `python <https://www.python.org>`_ 3.7 or later
+* `numpy <https://numpy.org>`_
+* `xarray <http://xarray.pydata.org/>`_
+* `dask <https://dask.org>`_
+* `jupyterlab <https://jupyterlab.readthedocs.io>`_
+* `astropy <https://www.astropy.org>`_
+* `pandas <https://pandas.pydata.org>`_
+* `numba <https://numba.pydata.org>`_
+* `tqdm <https://tqdm.github.io>`_
+* `holoviews <https://holoviews.org>`_
+* `matplotlib <https://matplotlib.org>`_
+* `h5py <https://www.h5py.org>`_
+
+Additionally, Pyxel has the following **optional** dependencies:
+
+* `pygmo <https://esa.github.io/pygmo2/>`_, version 2.16.1 or later
+* `poppy <https://poppy-optics.readthedocs.io/>`_, version 0.8 or later
+
+.. note::
+    Optional package `poppy <https://poppy-optics.readthedocs.io/>`_ is not available
+    on `conda`, only on the `PyPI` repository.
+
+
 
 
 ..
