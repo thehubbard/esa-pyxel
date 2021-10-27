@@ -60,7 +60,7 @@ If you use ``pip``, you can install Pyxel with its compulsory requirements.
 
 .. code-block:: bash
 
-    pip install pyxel-dev           # Install without 'pygmo2' and 'poppy'
+    pip install pyxel-sim           # Install without 'pygmo2' and 'poppy'
 
 .. note::
     The libraries ``pygmo2`` and ``poppy`` are not installed with these
@@ -75,7 +75,7 @@ with the following command:
 
 .. code-block:: bash
 
-    pip install pyxel-dev[all]      # Install everything
+    pip install pyxel-sim[all]      # Install everything
 
 .. warning::
     Library ``pygmo2`` is only available for Linux on PyPi.
@@ -88,7 +88,7 @@ To update Pyxel with ``pip``, you can use the following command:
 
 .. code-block:: bash
 
-    pip install -U pyxel-dev
+    pip install -U pyxel-sim
 
 
 Install from source
