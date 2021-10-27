@@ -2,8 +2,12 @@ Changelog
 =========
 
 
-version 0.11 / UNRELEASED-YYYY-MM-DD
-------------------------------------
+version 1.0 / UNRELEASED-YYYY-MM-DD
+-----------------------------------
+
+
+version 0.11 / 2021-10-27
+-------------------------
 
 Core
 ~~~~
