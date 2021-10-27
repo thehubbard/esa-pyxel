@@ -50,6 +50,8 @@ Models
   (See `!229 <https://gitlab.com/esa/pyxel/-/merge_requests/229>`_).
 * Improve the speed of model 'charge_profile'.
   (See `!268 <https://gitlab.com/esa/pyxel/-/merge_requests/268>`_).
+* Simple conversion model not working with dark frames.
+  (See `!281 <https://gitlab.com/esa/pyxel/-/merge_requests/281>`_).
 
 Others
 ~~~~~~
