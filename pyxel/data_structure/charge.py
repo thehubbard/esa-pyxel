@@ -163,11 +163,8 @@ class Charge(Particle):
         else:
             new_frame = self.frame.append(new_charges, ignore_index=True)
 
-        # Get last 'id'
-        last_id = new_frame.index[-1]  # type: int
-
         self.frame = new_frame
-        self.nextid = last_id + 1
+        self.nextid = self.nextid + len(new_charges)
 
     def add_charge(
         self,
