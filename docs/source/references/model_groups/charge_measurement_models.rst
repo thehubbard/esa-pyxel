@@ -17,6 +17,11 @@ Output node noise
 
 .. autofunction:: output_node_noise
 
+Output node noise CMOS
+----------------------
+
+.. autofunction:: output_node_noise_cmos
+
 HxRG noise generator
 --------------------
 
