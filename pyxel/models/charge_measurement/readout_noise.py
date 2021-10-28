@@ -43,16 +43,16 @@ def output_node_noise(
     detector.signal.array = signal
 
 
-def output_node_noise_CMOS(
+def output_node_noise_cmos(
     detector: "CMOS", readout_noise: float, readout_noise_std: float, random_seed: t.Optional[int] = None,
 ) -> None:
-    """
+    """Output node noise model for CMOS detectors where readout is statistically independent for each pixel.
 
     Parameters
     ----------
     detector
-    readout_noise: Mean readout noise for the array
-    readout_noise_std: Readout noise standard deviation
+    readout_noise: Mean readout noise for the array in units of electrons.
+    readout_noise_std: Readout noise standard deviation in units of electrons.
     random_seed
 
     Returns
@@ -63,8 +63,11 @@ def output_node_noise_CMOS(
     if random_seed:
         np.random.seed(random_seed)
 
+    # sv is charge readout sensitivity
+    sv=detector.characteristics.sv
+
     signal_mean_array = detector.signal.array.astype("float64")
-    sigma_array = np.abs(np.random.normal(loc=readout_noise, scale=readout_noise_std, size=signal_mean_array.shape))
+    sigma_array = np.random.normal(loc=readout_noise*sv, scale=readout_noise_std*sv, size=signal_mean_array.shape)
 
     signal = np.random.normal(loc=signal_mean_array, scale=sigma_array)
 

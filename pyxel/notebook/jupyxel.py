@@ -193,6 +193,7 @@ def display_detector(detector: "Detector") -> t.Union["Layout"]:
                 cmap="gray",
                 tools=["hover"],
                 aspect=(detector.geometry.col / detector.geometry.row),
+                invert_yaxis=True
             )
         return im
 
