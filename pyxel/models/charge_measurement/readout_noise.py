@@ -11,7 +11,7 @@ import typing as t
 
 import numpy as np
 
-from pyxel.detectors import Detector, CMOS
+from pyxel.detectors import CMOS, Detector
 
 # from astropy import units as u
 
@@ -44,7 +44,10 @@ def output_node_noise(
 
 
 def output_node_noise_cmos(
-    detector: "CMOS", readout_noise: float, readout_noise_std: float, random_seed: t.Optional[int] = None,
+    detector: "CMOS",
+    readout_noise: float,
+    readout_noise_std: float,
+    random_seed: t.Optional[int] = None,
 ) -> None:
     """Output node noise model for CMOS detectors where readout is statistically independent for each pixel.
 
@@ -64,10 +67,14 @@ def output_node_noise_cmos(
         np.random.seed(random_seed)
 
     # sv is charge readout sensitivity
-    sv=detector.characteristics.sv
+    sv = detector.characteristics.sv
 
     signal_mean_array = detector.signal.array.astype("float64")
-    sigma_array = np.random.normal(loc=readout_noise*sv, scale=readout_noise_std*sv, size=signal_mean_array.shape)
+    sigma_array = np.random.normal(
+        loc=readout_noise * sv,
+        scale=readout_noise_std * sv,
+        size=signal_mean_array.shape,
+    )
 
     signal = np.random.normal(loc=signal_mean_array, scale=sigma_array)
 
