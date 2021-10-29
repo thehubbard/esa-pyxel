@@ -9,5 +9,5 @@
 
 # flake8: noqa
 from .measurement import simple_measurement
-from .readout_noise import output_node_noise
+from .readout_noise import output_node_noise, output_node_noise_cmos
 from .nghxrg.nghxrg import nghxrg

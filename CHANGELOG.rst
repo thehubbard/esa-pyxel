@@ -2,8 +2,14 @@ Changelog
 =========
 
 
-version 1.0 / UNRELEASED-YYYY-MM-DD
------------------------------------
+version 0.11.1 / UNRELEASED-YYYY-MM-DD
+--------------------------------------
+
+Models
+~~~~~~
+
+* Add a readout noise model for CMOS detectors.
+  (See `!283 <https://gitlab.com/esa/pyxel/-/merge_requests/283>`_).
 
 
 version 0.11 / 2021-10-27

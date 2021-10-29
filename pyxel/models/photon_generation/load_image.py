@@ -27,6 +27,7 @@ def load_image(
     fit_image_to_det: bool = False,
     position: t.Tuple[int, int] = (0, 0),  # TODO Too many arguments
     convert_to_photons: bool = False,
+    multiplier: float = 1.0,
 ) -> None:
     r"""Load FITS file as a numpy array and add to the detector as input image.
 
@@ -62,5 +63,7 @@ def load_image(
         photon_array = photon_array / (
             cht.qe * cht.eta * cht.sv * cht.amp * cht.a1 * cht.a2
         )
+
+    photon_array *= multiplier
 
     detector.photon = Photon(photon_array)
