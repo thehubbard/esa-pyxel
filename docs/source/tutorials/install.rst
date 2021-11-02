@@ -12,6 +12,16 @@ method is to use `conda <https://docs.conda.io/>`__ into a conda environment.
 
 The following instructions are valid for MacOS, Windows and Linux.
 
+.. important::
+    Because of its optional and required dependencies, Pyxel is not compatible with
+    all versions of Python.
+
+    You can install Pyxel with `pygmo <https://esa.github.io/pygmo2/>`_ only for
+    **Python 3.7** and **Python 3.8** (not Python 3.9+).
+
+    If you don't use `pygmo <https://esa.github.io/pygmo2/>`_ then you can Pyxel with
+    **Python 3.7**, **Python 3.8** and **Python 3.9** (not Python 3.10+).
+
 
 .. warning::
     It is **strongly** encouraged to install optional package
@@ -20,7 +30,6 @@ The following instructions are valid for MacOS, Windows and Linux.
 
     Moreover, only the binaries of ``pygmo`` for Linux (not MacOS or Windows)
     are available on ``pip``.
-
     The binaries of ``pygmo`` for MacOS, Windows and Linux are only available
     on Conda 64bit (**not 32bit**).
 
@@ -104,11 +113,6 @@ To install Pyxel from source, clone the repository from the
     cd pyxel
     python install -m pip install .
 
-.. note::
-    The `Pyxel GitLab repository <https://gitlab.com/esa/pyxel>`__ is not yet open to
-    all users. To get access to this repository, you must contact the maintainers
-    (pyxel at esa dot int).
-
 You can install all dependencies as well:
 
 .. code-block:: bash
@@ -151,7 +155,7 @@ Additionally, Pyxel has the following **optional** dependencies:
 
 .. note::
     Optional package `poppy <https://poppy-optics.readthedocs.io/>`_ is not available
-    on `conda`, only on the `PyPI` repository.
+    on ``conda``, only on the ``PyPI`` repository.
 
 
 
