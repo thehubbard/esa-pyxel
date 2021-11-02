@@ -11,9 +11,11 @@ Core
 * Remove unnecessary warnings when Pygmo is not installed.
   (See `!286 <https://gitlab.com/esa/pyxel/-/merge_requests/286>`_).
 
-
 Documentation
 ~~~~~~~~~~~~~
+
+* Make pyxel compatible with Python 3.9.
+  (See `!289 <https://gitlab.com/esa/pyxel/-/merge_requests/289>`_).
 
 Models
 ~~~~~~
