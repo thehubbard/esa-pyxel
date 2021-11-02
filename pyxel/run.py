@@ -276,20 +276,56 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
 # TODO: Add an option to display colors ?
 @click.command()
 @click.option(
-    "-v", "--verbosity", count=True, help="Increase output verbosity (-v/-vv/-vvv)"
+    "-v",
+    "--verbosity",
+    count=True,
+    show_default=True,
+    help="Increase output verbosity (-v/-vv/-vvv)",
 )
 @click.option(
     "-c",
     "--config",
-    default=None,
-    type=click.Path(),
+    # default=None,
+    type=click.Path(exists=True),
     help="Configuration file to load (YAML)",
 )
 @click.option(
-    "-s", "--seed", default=None, type=int, help="Random seed for the framework"
+    "-s",
+    "--seed",
+    default=None,
+    type=int,
+    show_default=True,
+    help="Random seed for the framework",
 )
+# @click.option(
+#     "--download-examples",
+#     is_flag=False,
+#     flag_value="download_examples_folder",
+#     default="pyxel-examples",
+#     help="Install examples to the specified directory, default is /pyxel-examples.",
+# )
+# @click.option(
+#     "-f", "--force", default=False, help="Force flag for saving the examples."
+# )
+# @click.option(
+#     "-cm",
+#     "--createmodel",
+#     is_flag=True,
+#     flag_value="create_model_name",
+#     type=str,
+#     help="""Use: -cm arg1/arg2. Create a new module in\
+#         pyxel/models/arg1/arg2 using a template\
+#         (pyxel/templates/MODELTEMPLATE.py)""",
+# )
 @click.version_option(version=version)
-def main(verbosity: int, config: str, seed: t.Optional[int]) -> None:
+def main(
+    verbosity: int,
+    config: str,
+    seed: t.Optional[int],
+    # download_examples_folder,
+    # force: bool,
+    # create_model_name,
+) -> None:
     """Define the argument parser and run Pyxel."""
     # parser = argparse.ArgumentParser(
     #     formatter_class=argparse.ArgumentDefaultsHelpFormatter, description=__doc__
@@ -319,28 +355,28 @@ def main(verbosity: int, config: str, seed: t.Optional[int]) -> None:
 
     # parser.add_argument("-s", "--seed", type=int, help="Random seed for the framework")
 
-    parser.add_argument(
-        "--download-examples",
-        nargs="?",
-        const="pyxel-examples",
-        help="Install examples to the specified directory, default is /pyxel-examples.",
-    )
+    # parser.add_argument(
+    #     "--download-examples",
+    #     nargs="?",
+    #     const="pyxel-examples",
+    #     help="Install examples to the specified directory, default is /pyxel-examples.",
+    # )
 
-    parser.add_argument(
-        "-f",
-        "--force",
-        action="store_true",
-        help="Force flag for saving the examples.",
-    )
+    # parser.add_argument(
+    #     "-f",
+    #     "--force",
+    #     action="store_true",
+    #     help="Force flag for saving the examples.",
+    # )
 
-    parser.add_argument(
-        "-cm",
-        "--createmodel",
-        type=str,
-        help="""Use: -cm arg1/arg2. Create a new module in\
-        pyxel/models/arg1/arg2 using a template\
-        (pyxel/templates/MODELTEMPLATE.py)""",
-    )
+    # parser.add_argument(
+    #     "-cm",
+    #     "--createmodel",
+    #     type=str,
+    #     help="""Use: -cm arg1/arg2. Create a new module in\
+    #     pyxel/models/arg1/arg2 using a template\
+    #     (pyxel/templates/MODELTEMPLATE.py)""",
+    # )
 
     logging_level = [logging.ERROR, logging.WARNING, logging.INFO, logging.DEBUG][
         min(verbosity, 3)
@@ -361,10 +397,10 @@ def main(verbosity: int, config: str, seed: t.Optional[int]) -> None:
 
     if config:
         run(input_filename=config, random_seed=seed)
-    # elif opts.download_examples:
-    #     download_examples(foldername=opts.download_examples, force=opts.force)
-    # elif opts.createmodel:
-    #     create_model(newmodel=opts.createmodel)
+    # elif download_examples_folder:
+    #     download_examples(foldername=download_examples_folder, force=force)
+    # elif create_model_name:
+    #     create_model(newmodel=create_model_name)
     else:
         print("Define a YAML configuration file!")
 
