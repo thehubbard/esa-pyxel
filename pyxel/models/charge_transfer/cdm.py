@@ -109,7 +109,7 @@ def cdm(
     )
 
 
-@numba.jit(nopython=True, nogil=True, parallel=False)
+@numba.njit(nogil=True)
 def run_cdm(
     s: np.ndarray,
     beta_p: float,
@@ -184,7 +184,7 @@ def run_cdm(
             else:
                 gamma_p = g_p * i  # TODO: (i+1) ?????????????
             for k in range(kdim_p):
-                for j in numba.prange(0, xdim):
+                for j in range(xdim):
                     nc = 0.0
                     if s[i, j] > 0.01:
                         nc = max(
@@ -212,7 +212,7 @@ def run_cdm(
         for j in range(0, xdim):
             gamma_s = g_s * j  # TODO: (j+1) ?????????????
             for k in range(kdim_s):
-                for i in numba.prange(0, ydim):
+                for i in range(ydim):
                     nc = 0.0
                     if s[i, j] > 0.01:
                         nc = max(
