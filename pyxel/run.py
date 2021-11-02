@@ -5,13 +5,7 @@
 #  this file, may be copied, modified, propagated, or distributed except according to
 #  the terms contained in the file ‘LICENCE.txt’.
 
-"""Pyxel detector simulation framework.
-
-Pyxel is a detector simulation framework, that can simulate a variety of
-detector effects (e.g., cosmic rays, radiation-induced CTI in CCDs, persistence
-in MCT, charge diffusion, crosshatches, noises, crosstalk etc.) on a given image.
-"""
-import argparse
+"""CLI to run Pyxel."""
 import logging
 import sys
 import time
@@ -214,7 +208,7 @@ def output_directory(configuration: Configuration) -> Path:
 
 
 def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
-    """TBW.
+    """Run a configuration file.
 
     Parameters
     ----------
@@ -274,7 +268,7 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
 
 
 # TODO: Add an option to display colors ?
-@click.command()
+@click.group()
 @click.option(
     "-v",
     "--verbosity",
@@ -282,102 +276,14 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
     show_default=True,
     help="Increase output verbosity (-v/-vv/-vvv)",
 )
-@click.option(
-    "-c",
-    "--config",
-    # default=None,
-    type=click.Path(exists=True),
-    help="Configuration file to load (YAML)",
-)
-@click.option(
-    "-s",
-    "--seed",
-    default=None,
-    type=int,
-    show_default=True,
-    help="Random seed for the framework",
-)
-# @click.option(
-#     "--download-examples",
-#     is_flag=False,
-#     flag_value="download_examples_folder",
-#     default="pyxel-examples",
-#     help="Install examples to the specified directory, default is /pyxel-examples.",
-# )
-# @click.option(
-#     "-f", "--force", default=False, help="Force flag for saving the examples."
-# )
-# @click.option(
-#     "-cm",
-#     "--createmodel",
-#     is_flag=True,
-#     flag_value="create_model_name",
-#     type=str,
-#     help="""Use: -cm arg1/arg2. Create a new module in\
-#         pyxel/models/arg1/arg2 using a template\
-#         (pyxel/templates/MODELTEMPLATE.py)""",
-# )
 @click.version_option(version=version)
-def main(
-    verbosity: int,
-    config: str,
-    seed: t.Optional[int],
-    # download_examples_folder,
-    # force: bool,
-    # create_model_name,
-) -> None:
-    """Define the argument parser and run Pyxel."""
-    # parser = argparse.ArgumentParser(
-    #     formatter_class=argparse.ArgumentDefaultsHelpFormatter, description=__doc__
-    # )
+def main(verbosity: int):
+    """Pyxel detector simulation framework.
 
-    # parser.add_argument(
-    #     "-v",
-    #     "--verbosity",
-    #     action="count",
-    #     default=0,
-    #     help="Increase output verbosity (-v/-vv/-vvv)",
-    # )
-
-    # parser.add_argument(
-    #     "-V",
-    #     "--version",
-    #     action="version",
-    #     version="Pyxel, version {version}".format(version=version),
-    # )
-
-    # parser.add_argument(
-    #     "-c",
-    #     "--config",
-    #     type=str,
-    #     help="Configuration file to load (YAML)",
-    # )
-
-    # parser.add_argument("-s", "--seed", type=int, help="Random seed for the framework")
-
-    # parser.add_argument(
-    #     "--download-examples",
-    #     nargs="?",
-    #     const="pyxel-examples",
-    #     help="Install examples to the specified directory, default is /pyxel-examples.",
-    # )
-
-    # parser.add_argument(
-    #     "-f",
-    #     "--force",
-    #     action="store_true",
-    #     help="Force flag for saving the examples.",
-    # )
-
-    # parser.add_argument(
-    #     "-cm",
-    #     "--createmodel",
-    #     type=str,
-    #     help="""Use: -cm arg1/arg2. Create a new module in\
-    #     pyxel/models/arg1/arg2 using a template\
-    #     (pyxel/templates/MODELTEMPLATE.py)""",
-    # )
-
+    Pyxel is a detector simulation framework, that can simulate a variety of
+    detector effects (e.g., cosmic rays, radiation-induced CTI in CCDs, persistence
+    in MCT, charge diffusion, crosshatches, noises, crosstalk etc.) on a given image.
+    """
     logging_level = [logging.ERROR, logging.WARNING, logging.INFO, logging.DEBUG][
         min(verbosity, 3)
     ]
@@ -390,19 +296,48 @@ def main(
         format=log_format,
         datefmt="%d-%m-%Y %H:%M:%S",
     )
+
     # If user wants the log in stdout AND in file, use the three lines below
     stream_stdout = logging.StreamHandler(sys.stdout)
     stream_stdout.setFormatter(logging.Formatter(log_format))
     logging.getLogger().addHandler(stream_stdout)
 
-    if config:
-        run(input_filename=config, random_seed=seed)
-    # elif download_examples_folder:
-    #     download_examples(foldername=download_examples_folder, force=force)
-    # elif create_model_name:
-    #     create_model(newmodel=create_model_name)
-    else:
-        print("Define a YAML configuration file!")
+
+@main.command(name="download-examples")
+@click.argument("folder", type=click.Path(), default="pyxel-examples", required=False)
+@click.option("-f", "--force", is_flag=True, help="Force flag for saving the examples.")
+def download_pyxel_examples(folder, force: bool):
+    """Install examples to a specified directory.
+
+    Default folder is './pyxel-examples'.
+    """
+    download_examples(foldername=folder, force=force)
+
+
+@main.command(name="create-model")
+@click.argument("model_name", type=str)
+def create_new_model(model_name: str):
+    """Create a new model.
+
+    Use: arg1/arg2. Create a new module in ``pyxel/models/arg1/arg2`` using a template
+    (``pyxel/templates/MODELTEMPLATE.py``)
+    """
+    create_model(newmodel=model_name)
+
+
+@main.command()
+@click.argument("config", type=click.Path(exists=True))
+@click.option(
+    "-s",
+    "--seed",
+    default=None,
+    type=int,
+    show_default=True,
+    help="Random seed for the framework.",
+)
+def config(config: str, seed: t.Optional[int]):
+    """Run Pyxel with a YAML configuration file."""
+    run(input_filename=config, random_seed=seed)
 
 
 if __name__ == "__main__":
