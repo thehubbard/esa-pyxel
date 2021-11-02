@@ -26,12 +26,3 @@ from .archipelago import MyArchipelago
 from .calibration import Calibration, CalibrationMode
 from .fitness import sum_of_abs_residuals, sum_of_squared_residuals
 from .fitting import ModelFitting
-
-try:
-    import pygmo
-
-    del pygmo
-except ImportError:
-    import warnings
-
-    warnings.warn("Cannot import 'pygmo", RuntimeWarning, stacklevel=2)
