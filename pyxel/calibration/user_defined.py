@@ -14,12 +14,10 @@ import numpy as np
 from dask import array as da
 from dask import delayed as delayed
 
-__all__ = ["DaskBFE", "DaskIsland"]
-
-try:
+if t.TYPE_CHECKING:
     import pygmo as pg
-except Exception:
-    logging.exception("Pygmo could not be imported.")
+
+__all__ = ["DaskBFE", "DaskIsland"]
 
 
 class ProblemSerializable:

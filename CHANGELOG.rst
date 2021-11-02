@@ -5,6 +5,22 @@ Changelog
 version 1.0 / UNRELEASED-YYYY-MM-DD
 -----------------------------------
 
+Core
+~~~~
+
+* Remove unnecessary warnings when Pygmo is not installed.
+  (See `!286 <https://gitlab.com/esa/pyxel/-/merge_requests/286>`_).
+
+
+Documentation
+~~~~~~~~~~~~~
+
+Models
+~~~~~~
+
+Others
+~~~~~~
+
 
 version 0.11.1 / 2021-10-29
 ---------------------------
