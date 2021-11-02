@@ -18,6 +18,7 @@ import time
 import typing as t
 from pathlib import Path
 
+import click
 import dask
 import numpy as np
 import pandas as pd
@@ -272,37 +273,51 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
     plt.close()
 
 
-# TODO: Use library 'click' instead of 'parser' ? See issue #62
-#       Add an option to display colors ? (very optional)
-def main() -> None:
+# TODO: Add an option to display colors ?
+@click.command()
+@click.option(
+    "-v", "--verbosity", count=True, help="Increase output verbosity (-v/-vv/-vvv)"
+)
+@click.option(
+    "-c",
+    "--config",
+    default=None,
+    type=click.Path(),
+    help="Configuration file to load (YAML)",
+)
+@click.option(
+    "-s", "--seed", default=None, type=int, help="Random seed for the framework"
+)
+@click.version_option(version=version)
+def main(verbosity: int, config: str, seed: t.Optional[int]) -> None:
     """Define the argument parser and run Pyxel."""
-    parser = argparse.ArgumentParser(
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter, description=__doc__
-    )
+    # parser = argparse.ArgumentParser(
+    #     formatter_class=argparse.ArgumentDefaultsHelpFormatter, description=__doc__
+    # )
 
-    parser.add_argument(
-        "-v",
-        "--verbosity",
-        action="count",
-        default=0,
-        help="Increase output verbosity (-v/-vv/-vvv)",
-    )
+    # parser.add_argument(
+    #     "-v",
+    #     "--verbosity",
+    #     action="count",
+    #     default=0,
+    #     help="Increase output verbosity (-v/-vv/-vvv)",
+    # )
 
-    parser.add_argument(
-        "-V",
-        "--version",
-        action="version",
-        version="Pyxel, version {version}".format(version=version),
-    )
+    # parser.add_argument(
+    #     "-V",
+    #     "--version",
+    #     action="version",
+    #     version="Pyxel, version {version}".format(version=version),
+    # )
 
-    parser.add_argument(
-        "-c",
-        "--config",
-        type=str,
-        help="Configuration file to load (YAML)",
-    )
+    # parser.add_argument(
+    #     "-c",
+    #     "--config",
+    #     type=str,
+    #     help="Configuration file to load (YAML)",
+    # )
 
-    parser.add_argument("-s", "--seed", type=int, help="Random seed for the framework")
+    # parser.add_argument("-s", "--seed", type=int, help="Random seed for the framework")
 
     parser.add_argument(
         "--download-examples",
@@ -327,13 +342,8 @@ def main() -> None:
         (pyxel/templates/MODELTEMPLATE.py)""",
     )
 
-    # parser.add_argument('-g', '--gui', default=False, type=bool, help='run Graphical User Interface')
-    # parser.add_argument('-p', '--port', default=9999, type=int, help='The port to run the web server on')
-
-    opts = parser.parse_args()
-
     logging_level = [logging.ERROR, logging.WARNING, logging.INFO, logging.DEBUG][
-        min(opts.verbosity, 3)
+        min(verbosity, 3)
     ]
     log_format = (
         "%(asctime)s - %(name)s - %(threadName)30s - %(funcName)30s \t %(message)s"
@@ -349,12 +359,12 @@ def main() -> None:
     stream_stdout.setFormatter(logging.Formatter(log_format))
     logging.getLogger().addHandler(stream_stdout)
 
-    if opts.config:
-        run(input_filename=opts.config, random_seed=opts.seed)
-    elif opts.download_examples:
-        download_examples(foldername=opts.download_examples, force=opts.force)
-    elif opts.createmodel:
-        create_model(newmodel=opts.createmodel)
+    if config:
+        run(input_filename=config, random_seed=seed)
+    # elif opts.download_examples:
+    #     download_examples(foldername=opts.download_examples, force=opts.force)
+    # elif opts.createmodel:
+    #     create_model(newmodel=opts.createmodel)
     else:
         print("Define a YAML configuration file!")
 
