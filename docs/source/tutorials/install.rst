@@ -20,7 +20,6 @@ The following instructions are valid for MacOS, Windows and Linux.
 
     Moreover, only the binaries of ``pygmo`` for Linux (not MacOS or Windows)
     are available on ``pip``.
-
     The binaries of ``pygmo`` for MacOS, Windows and Linux are only available
     on Conda 64bit (**not 32bit**).
 
@@ -103,11 +102,6 @@ To install Pyxel from source, clone the repository from the
     git clone https://gitlab.com/esa/pyxel.git
     cd pyxel
     python install -m pip install .
-
-.. note::
-    The `Pyxel GitLab repository <https://gitlab.com/esa/pyxel>`__ is not yet open to
-    all users. To get access to this repository, you must contact the maintainers
-    (pyxel at esa dot int).
 
 You can install all dependencies as well:
 
