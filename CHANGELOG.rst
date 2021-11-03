@@ -27,6 +27,8 @@ Others
 
 * Fix issue with xarray 0.20.
   (See `!291 <https://gitlab.com/esa/pyxel/-/merge_requests/291>`_).
+* Updated black, isort and blackdoc in '.pre-commit.yaml'.
+  (See `!294 <https://gitlab.com/esa/pyxel/-/merge_requests/294>`_).
 
 
 version 0.11.1 / 2021-10-29
