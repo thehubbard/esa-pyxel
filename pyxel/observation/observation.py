@@ -369,14 +369,14 @@ class Observation:
         final_logs: xr.Dataset
         """
         processors = []
-        logs = []  # type: t.List
+        logs = []  # type: t.List[xr.Dataset]
 
         for processor_id, (proc, _index, parameter_dict) in enumerate(
             tqdm(self._processors_it(processor))
         ):
             log = log_parameters(
                 processor_id=processor_id, parameter_dict=parameter_dict
-            )
+            )  # type: xr.Dataset
             logs.append(log)
             _ = run_exposure_pipeline(
                 processor=proc,
@@ -386,7 +386,10 @@ class Observation:
             )
             processors.append(processor)
 
+        # See issue #276
         final_logs = xr.combine_by_coords(logs)
+        if not isinstance(final_logs, xr.Dataset):
+            raise TypeError("Expecting 'Dataset'.")
 
         return processors, final_logs
 
@@ -532,10 +535,26 @@ class Observation:
                     pbar.update(1)
 
                 # merging/combining the outputs
-                final_parameters_list = [xr.combine_by_coords(p) for p in parameters]
+                final_parameters_list = []  # type: t.List[xr.Dataset]
+                for p in parameters:
+                    # See issue #276
+                    new_dataset = xr.combine_by_coords(p)
+                    if not isinstance(new_dataset, xr.Dataset):
+                        raise TypeError("Expecting 'Dataset'.")
+
+                    final_parameters_list.append(new_dataset)
+
                 final_parameters_merged = xr.merge(final_parameters_list)
+
+                # See issue #276
                 final_logs = xr.combine_by_coords(logs)
+                if not isinstance(final_logs, xr.Dataset):
+                    raise TypeError("Expecting 'Dataset'.")
+
+                # See issue #276
                 final_dataset = xr.combine_by_coords(dataset_list)
+                if not isinstance(final_dataset, xr.Dataset):
+                    raise TypeError("Expecting 'Dataset'.")
 
                 result = ObservationResult(
                     dataset=final_dataset,
@@ -609,12 +628,29 @@ class Observation:
                     pbar.update(1)
 
                 # merging/combining the outputs
+                # See issue #276
                 final_logs = xr.combine_by_coords(logs)
-                final_datasets = {
-                    key: xr.combine_by_coords(value)
-                    for key, value in dataset_dict.items()
-                }
-                final_parameters_list = [xr.combine_by_coords(p) for p in parameters]
+                if not isinstance(final_logs, xr.Dataset):
+                    raise TypeError("Expecting 'Dataset'.")
+
+                final_datasets = {}  # type: t.Dict[str, xr.Dataset]
+                for key, value in dataset_dict.items():
+                    # See issue #276
+                    new_dataset = xr.combine_by_coords(value)
+                    if not isinstance(new_dataset, xr.Dataset):
+                        raise TypeError("Expecting 'Dataset'.")
+
+                    final_datasets[key] = new_dataset
+
+                final_parameters_list = []
+                for p in parameters:
+                    # See issue #276
+                    new_dataset = xr.combine_by_coords(p)
+                    if not isinstance(new_dataset, xr.Dataset):
+                        raise TypeError("Expecting 'Dataset'.")
+
+                    final_parameters_list.append(new_dataset)
+
                 final_parameters_merged = xr.merge(final_parameters_list)
 
                 result = ObservationResult(
@@ -667,6 +703,13 @@ class Observation:
                 # merging/combining the outputs
                 final_ds = xr.combine_by_coords(dataset_list)
                 final_log = xr.combine_by_coords(logs)
+
+                # See issue #276
+                if not isinstance(final_ds, xr.Dataset):
+                    raise TypeError("Expecting 'Dataset'.")
+                if not isinstance(final_log, xr.Dataset):
+                    raise TypeError("Expecting 'Dataset'.")
+
                 final_parameters = final_log  # parameter dataset same as logs
 
                 result = ObservationResult(
