@@ -10,7 +10,7 @@ import numpy as np
 import logging
 from pyxel.detectors import Detector
 
-def calculate_dark_current(image, current, exposure_time,gain=1.0) -> np.ndarray:
+def calculate_dark_current(geo, current, exposure_time,gain=1.0) -> np.ndarray:
     """
     Simulate dark current in a CCD, optionally including hot pixels.
     Parameters
@@ -36,20 +36,36 @@ def calculate_dark_current(image, current, exposure_time,gain=1.0) -> np.ndarray
 
     # This random number generation should change on each call.
     rng = np.random.default_rng()
-    dark_im_array_2d = rng.poisson(base_current, image.shape)
-    #dark_im_array_2d = np.default_rng.poisson(base_current, size=image.shape)
+    dark_im_array_2d = rng.poisson(base_current, size=(geo.row, geo.col))
+
     return dark_im_array_2d
 
 
-def dark_current(detector, dark_rate, exposure_time, gain) -> None:
+def dark_current(detector, dark_rate, gain) -> None:
     """Adding dark current"""
     logging.info("")
-    data_2d = detector.image.array
-    #exposure_time = detector.time_step
 
-    dark_current_array = calculate_dark_current(data_2d,
-                                                dark_rate,
-                                                exposure_time,
-                                                gain)
-    detector.image.array = dark_current_array
+    exposure_time = detector.time_step
+    geo = detector.geometry
 
+    dark_current_array = calculate_dark_current(geo, dark_rate, exposure_time, gain)
+
+    dark_current_value = dark_current_array.flatten()
+    where_non_zero = np.where(dark_current_value > 0)
+    dark_current_value = dark_current_value[where_non_zero]
+    size = dark_current_value.size
+
+    init_hor_pix_position = geo.horizontal_pixel_center_pos_list()[where_non_zero]
+    init_ver_pix_position = geo.vertical_pixel_center_pos_list()[where_non_zero]
+
+    detector.charge.add_charge(
+        particle_type="e",
+        particles_per_cluster=dark_current_value,
+        init_energy=np.zeros(size),
+        init_ver_pix_position=init_ver_pix_position,
+        init_hor_pix_position=init_hor_pix_position,
+        init_z_position=np.zeros(size),
+        init_ver_velocity=np.zeros(size),
+        init_hor_velocity=np.zerps(size),
+        init_z_velocity=np.zeros(size)
+    )
