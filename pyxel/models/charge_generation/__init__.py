@@ -14,3 +14,4 @@ from .load_profile import charge_profile
 from .photoelectrons import simple_conversion
 from .tars.tars import run_tars
 from .qe_map import qe_map
+from .dark_current import dark_current
