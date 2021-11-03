@@ -25,6 +25,9 @@ Models
 Others
 ~~~~~~
 
+* Fix issue with xarray 0.20.
+  (See `!291 <https://gitlab.com/esa/pyxel/-/merge_requests/291>`_).
+
 
 version 0.11.1 / 2021-10-29
 ---------------------------
