@@ -7,7 +7,7 @@
 """Notebook functions."""
 
 # flake8: noqa
-from pyxel.notebook.jupyxel import (
+from .jupyxel import (
     display_config,
     display_dict,
     display_model,
@@ -16,9 +16,9 @@ from pyxel.notebook.jupyxel import (
     display_detector,
     display_persist,
 )
-from pyxel.notebook.html_representation import display_html
+from .html_representation import display_html
 
-from pyxel.notebook.calibration import (
+from .calibration import (
     display_calibration_inputs,
     display_simulated,
     display_evolution,
