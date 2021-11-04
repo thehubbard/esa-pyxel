@@ -49,7 +49,7 @@ def load_image(filename: t.Union[str, Path]) -> np.ndarray:
 
     Examples
     --------
-    >>> from pyxel.inputs_outputs import load_image
+    >>> from pyxel import load_image
     >>> load_image("frame.fits")
     array([[-0.66328494, -0.63205819, ...]])
 

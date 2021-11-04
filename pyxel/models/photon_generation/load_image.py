@@ -11,7 +11,7 @@ from pathlib import Path
 
 import numpy as np
 
-from pyxel import inputs
+import pyxel
 from pyxel.data_structure import Photon
 from pyxel.detectors import Detector
 
@@ -44,7 +44,7 @@ def load_image(
     if not Path(filename).exists():
         raise FileNotFoundError(f"Image file '{filename}' does not exist !")
 
-    image = inputs.load_image(filename)  # type: np.ndarray
+    image = pyxel.load_image(filename)  # type: np.ndarray
 
     if fit_image_to_det:
         geo = detector.geometry

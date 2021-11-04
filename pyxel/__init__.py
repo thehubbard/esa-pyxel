@@ -15,6 +15,7 @@ del get_versions
 
 from .options import SetOptions as set_options
 from .show_versions import show_versions
+from .inputs import load_image, load_table, load_datacube
 from .configuration import load, save
 from .run import calibration_mode, exposure_mode, observation_mode, run
 from .notebook import (

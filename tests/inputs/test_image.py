@@ -18,7 +18,6 @@ from PIL import Image
 from pytest_httpserver import HTTPServer  # pip install pytest-httpserver
 
 import pyxel
-from pyxel.inputs import load_image, load_table
 
 
 @pytest.fixture
@@ -307,7 +306,7 @@ def test_invalid_filename(
         filename = filename.format(host=invalid_data2d_hostname)  # type: str
 
     with pytest.raises(exp_error, match=exp_message):
-        _ = load_image(filename)
+        _ = pyxel.load_image(filename)
 
 
 @pytest.mark.parametrize("with_caching", [False, True])
@@ -377,12 +376,12 @@ def test_load_image(
     with pyxel.set_options(cache_enabled=with_caching):
         if isinstance(filename, Path):
             # Load data
-            data_2d = load_image(filename)
+            data_2d = pyxel.load_image(filename)
         else:
             full_url = filename.format(host=valid_data2d_http_hostname)  # type: str
 
             # Load data
-            data_2d = load_image(full_url)
+            data_2d = pyxel.load_image(full_url)
 
         # Check 'data_2d
         np.testing.assert_equal(data_2d, exp_data)
@@ -423,7 +422,7 @@ def test_load_table_invalid_filename(
         filename = filename.format(host=invalid_table_http_hostname)
 
     with pytest.raises(exp_error, match=exp_message):
-        _ = load_table(filename)
+        _ = pyxel.load_table(filename)
 
 
 @pytest.mark.parametrize("with_caching", [False, True])
@@ -458,12 +457,12 @@ def test_load_table(with_caching: bool, valid_table_http_hostname: str, filename
     with pyxel.set_options(cache_enabled=with_caching):
         if isinstance(filename, Path):
             # Load data
-            table = load_table(filename)
+            table = pyxel.load_table(filename)
         else:
             full_url = filename.format(host=valid_table_http_hostname)  # type: str
 
             # Load data
-            table = load_table(full_url)
+            table = pyxel.load_table(full_url)
 
         exp_table = pd.DataFrame([[1, 2, 3], [4, 5, 6], [7, 8, 9]], dtype="float64")
         pd.testing.assert_frame_equal(table, exp_table)
@@ -476,4 +475,4 @@ def test_load_table_invalid_format(tmp_path: Path, filename: str):
     full_filename.touch()
 
     with pytest.raises(ValueError):
-        _ = load_table(full_filename)
+        _ = pyxel.load_table(full_filename)
