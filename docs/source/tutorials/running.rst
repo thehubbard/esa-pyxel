@@ -11,26 +11,34 @@ To run Pyxel on your local computer, simply run it from the command-line:
 
 .. code-block:: bash
 
-    $ python pyxel/run.py -c input.yaml
+    $ pyxel run input.yaml
 
     or
 
-    $ pyxel --config input.yaml
+    $ python -m pyxel run input.yaml
 
-    or
+Usage:
 
-    $ python -m pyxel --config input.yaml
+.. code-block:: bash
 
+    Usage: pyxel run [OPTIONS] CONFIG
+
+      Run Pyxel with a YAML configuration file.
+
+    Options:
+      -v, --verbosity     Increase output verbosity (-v/-vv/-vvv)  [default: 0]
+      -s, --seed INTEGER  Random seed for the framework.
+      --help              Show this message and exit.
 
 where
 
-======  ===============  =======================================  ========
-``-c``  ``--config``     defines the path of the input YAML file  required
-``-s``  ``--seed``       defines a seed for random number         optional
-                         generator
-``-v``  ``--verbosity``  increases the output verbosity (-v/-vv)  optional
-``-V``  ``--version``    prints the version of Pyxel              optional
-======  ===============  =======================================  ========
+========================  =======================================  ========
+``CONFIG``                defines the path of the input YAML file  required
+``-s`` / ``--seed``       defines a seed for random number         optional
+                          generator
+``-v`` / ``--verbosity``  increases the output verbosity (-v/-vv)  optional
+``-V`` / ``--version``    prints the version of Pyxel              optional
+========================  =======================================  ========
 
 Running Pyxel in jupyter notebooks
 ==================================
