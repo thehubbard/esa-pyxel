@@ -269,38 +269,14 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
 
 # TODO: Add an option to display colors ?
 @click.group()
-@click.option(
-    "-v",
-    "--verbosity",
-    count=True,
-    show_default=True,
-    help="Increase output verbosity (-v/-vv/-vvv)",
-)
 @click.version_option(version=version)
-def main(verbosity: int):
+def main():
     """Pyxel detector simulation framework.
 
     Pyxel is a detector simulation framework, that can simulate a variety of
     detector effects (e.g., cosmic rays, radiation-induced CTI in CCDs, persistence
     in MCT, charge diffusion, crosshatches, noises, crosstalk etc.) on a given image.
     """
-    logging_level = [logging.ERROR, logging.WARNING, logging.INFO, logging.DEBUG][
-        min(verbosity, 3)
-    ]
-    log_format = (
-        "%(asctime)s - %(name)s - %(threadName)30s - %(funcName)30s \t %(message)s"
-    )
-    logging.basicConfig(
-        filename="pyxel.log",
-        level=logging_level,
-        format=log_format,
-        datefmt="%d-%m-%Y %H:%M:%S",
-    )
-
-    # If user wants the log in stdout AND in file, use the three lines below
-    stream_stdout = logging.StreamHandler(sys.stdout)
-    stream_stdout.setFormatter(logging.Formatter(log_format))
-    logging.getLogger().addHandler(stream_stdout)
 
 
 @main.command(name="download-examples")
@@ -325,8 +301,15 @@ def create_new_model(model_name: str):
     create_model(newmodel=model_name)
 
 
-@main.command()
+@main.command(name="run")
 @click.argument("config", type=click.Path(exists=True))
+@click.option(
+    "-v",
+    "--verbosity",
+    count=True,
+    show_default=True,
+    help="Increase output verbosity (-v/-vv/-vvv)",
+)
 @click.option(
     "-s",
     "--seed",
@@ -335,8 +318,26 @@ def create_new_model(model_name: str):
     show_default=True,
     help="Random seed for the framework.",
 )
-def config(config: str, seed: t.Optional[int]):
+def run_config(config: str, verbosity: int, seed: t.Optional[int]):
     """Run Pyxel with a YAML configuration file."""
+    logging_level = [logging.ERROR, logging.WARNING, logging.INFO, logging.DEBUG][
+        min(verbosity, 3)
+    ]
+    log_format = (
+        "%(asctime)s - %(name)s - %(threadName)30s - %(funcName)30s \t %(message)s"
+    )
+    logging.basicConfig(
+        filename="pyxel.log",
+        level=logging_level,
+        format=log_format,
+        datefmt="%d-%m-%Y %H:%M:%S",
+    )
+
+    # If user wants the log in stdout AND in file, use the three lines below
+    stream_stdout = logging.StreamHandler(sys.stdout)
+    stream_stdout.setFormatter(logging.Formatter(log_format))
+    logging.getLogger().addHandler(stream_stdout)
+
     run(input_filename=config, random_seed=seed)
 
 

@@ -22,4 +22,4 @@ $ python -m pyxel --config my_config.yaml
 from pyxel.run import main
 
 if __name__ == "__main__":
-    main()
+    main(prog_name="python -m pyxel")
