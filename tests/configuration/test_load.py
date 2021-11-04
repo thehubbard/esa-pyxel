@@ -12,12 +12,12 @@
 #  this file, may be copied, modified, propagated, or distributed except according to
 #  the terms contained in the file ‘LICENCE.txt’.
 
-import os
+
 from pathlib import Path
 
 from freezegun import freeze_time
 
-from pyxel.configuration import load
+import pyxel
 
 
 def test_load_2_times():
@@ -30,8 +30,8 @@ def test_load_2_times():
 
     # Load the configuration file for the first time
     with freeze_time("2021-06-15 14:11"):
-        _ = load(full_filename)
+        _ = pyxel.load(full_filename)
 
     # Load the configuration file for the second time
     with freeze_time("2021-06-15 14:11"):
-        _ = load(full_filename)
+        _ = pyxel.load(full_filename)

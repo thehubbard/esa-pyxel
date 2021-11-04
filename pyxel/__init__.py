@@ -8,26 +8,21 @@
 """Pyxel detector simulation framework."""
 
 # flake8: noqa
-try:
-    # Try to import library 'attr'
-    import attr
-
-    del attr
-    WITH_ATTR = True
-
-except ImportError:
-    WITH_ATTR = False
-
 from ._version import get_versions
-from .show_versions import show_versions
 
-__all__ = ["get_versions", "show_versions"]
 __version__ = get_versions()["version"]
 del get_versions
 
-
-if WITH_ATTR:
-    # Library 'attr' is installed therefore 'set_options' can be used.
-    from .options import SetOptions as set_options
-
-    __all__ += ["set_options"]
+from .options import SetOptions as set_options
+from .show_versions import show_versions
+from .configuration import load, save
+from .run import calibration_mode, exposure_mode, observation_mode
+from .notebook import (
+    display_detector,
+    display_html,
+    display_calibration_inputs,
+    display_simulated,
+    display_evolution,
+    champion_heatmap,
+    optimal_parameters,
+)

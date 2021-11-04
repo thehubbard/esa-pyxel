@@ -11,7 +11,7 @@ from pathlib import Path
 import cloudpickle
 import pytest
 
-from pyxel.configuration import load
+import pyxel
 from pyxel.pipelines import DetectionPipeline
 
 
@@ -20,7 +20,7 @@ def pipeline_single() -> DetectionPipeline:
     filename_single = Path("tests/data/yaml.yaml")
     assert filename_single.exists()
 
-    cfg = load(filename_single)
+    cfg = pyxel.load(filename_single)
     pipeline = cfg.pipeline  # type: DetectionPipeline
 
     return pipeline

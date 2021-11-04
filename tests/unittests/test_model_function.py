@@ -9,7 +9,7 @@ from collections import abc
 
 import pytest
 
-from pyxel.models.photon_generation.illumination import illumination
+from pyxel.models.photon_generation import illumination
 from pyxel.pipelines import Arguments, ModelFunction
 
 

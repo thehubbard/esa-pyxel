@@ -5,9 +5,9 @@
 #  this file, may be copied, modified, propagated, or distributed except according to
 #  the terms contained in the file ‘LICENCE.txt’.
 
-from pyxel import show_versions
+import pyxel
 
 
 def test_show_versions():
     """Test function 'show_versions()'."""
-    show_versions()
+    pyxel.show_versions()

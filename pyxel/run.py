@@ -20,9 +20,9 @@ import xarray as xr
 from matplotlib import pyplot as plt
 
 from pyxel import __version__ as version
-from pyxel import outputs
+from pyxel import load, outputs, save
 from pyxel.calibration import Calibration, CalibrationResult
-from pyxel.configuration import Configuration, load, save
+from pyxel.configuration import Configuration
 from pyxel.detectors import CCD, CMOS, MKID, Detector
 from pyxel.exposure import Exposure
 from pyxel.observation import Observation, ObservationResult

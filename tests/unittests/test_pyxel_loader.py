@@ -12,14 +12,10 @@ import re
 import numpy as np
 import pytest
 import yaml
-
-try:
-    from yaml import UnsafeLoader as Loader  # For pyyaml >= 5.1
-except ImportError:
-    from yaml import Loader  # For pyyaml < 5.1
+from yaml import SafeLoader
 
 
-def _expr_processor(loader: Loader, node: yaml.ScalarNode):
+def _expr_processor(loader: SafeLoader, node: yaml.ScalarNode):
     value = loader.construct_scalar(node)
 
     try:
@@ -34,8 +30,8 @@ def _expr_processor(loader: Loader, node: yaml.ScalarNode):
     return result
 
 
-Loader.add_implicit_resolver("!expr", re.compile(r"^.*$"), None)
-Loader.add_constructor("!expr", _expr_processor)
+SafeLoader.add_implicit_resolver("!expr", re.compile(r"^.*$"), None)
+SafeLoader.add_constructor("!expr", _expr_processor)
 
 
 @pytest.mark.parametrize(
@@ -73,7 +69,7 @@ Loader.add_constructor("!expr", _expr_processor)
 )
 def test_expr_with_tag(data, expected):
     """Test tag '!expr'."""
-    obj = yaml.load(data, Loader=Loader)
+    obj = yaml.load(data, Loader=SafeLoader)
 
     if isinstance(expected, np.ndarray):
         # Test `numpy.ndarray`
