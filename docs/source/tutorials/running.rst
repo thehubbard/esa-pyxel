@@ -47,8 +47,7 @@ An example of running Pyxel as a library:
 
 .. code-block:: python
 
-    from pyxel.configuration import load
-    from pyxel.run import exposure_mode
+    from pyxel import load, exposure_mode
 
     configuration = load("configuration.yaml")
     exposure = configuration.exposure

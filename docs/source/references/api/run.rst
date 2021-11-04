@@ -3,7 +3,7 @@
 ===
 Run
 ===
-.. currentmodule:: pyxel.run
+.. currentmodule:: pyxel
 
 exposure_mode
 -------------

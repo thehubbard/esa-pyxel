@@ -16,7 +16,7 @@ del get_versions
 from .options import SetOptions as set_options
 from .show_versions import show_versions
 from .configuration import load, save
-from .run import calibration_mode, exposure_mode, observation_mode
+from .run import calibration_mode, exposure_mode, observation_mode, run
 from .notebook import (
     display_detector,
     display_html,
