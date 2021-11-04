@@ -96,3 +96,84 @@ This will create a new python script ``new_model.py`` with a template model func
 in folder ``pyxel/models/photon_generation``. All you have to do is edit your model function
 and the docstring and then copy the YAML configuration section from the docstring into the desired configuration file.
 Don't forget to import your model function in the ``__init__.py`` file of the appropriate model group for faster access.
+
+Best Practices
+==============
+
+Write models as pairs of pure and impure functions
+--------------------------------------------------
+
+If a model is changing one of the data structures stored in the ``Detector`` object,
+when possible it is better to write the model as a pair of an impure function
+that changes the state of the ``Detector`` object and pure function
+that does the actual calculation without changing the state of input arguments.
+More info on pure and impure functions: https://en.wikipedia.org/wiki/Pure_function,
+https://alvinalexander.com/scala/fp-book/benefits-of-pure-functions/.
+
+So instead of this:
+
+.. code-block:: python
+
+    # impure function
+    def my_model(detector: Detector, arg: int):
+
+        input_array = detector.pixel.array
+        # do computations with array
+        output_array = arg * input_array
+
+        detector.pixel.array = output_array
+
+
+Do this:
+
+.. code-block:: python
+
+    # pure function
+    def compute_model_effect(input_array: numpy.ndarray, arg: int):
+
+        # do computations with array
+        output_array = arg * input_array
+
+        return output_array
+
+
+    # impure function
+    def my_model(detector: Detector, arg: int):
+
+        input_array = detector.pixel.array
+
+        output_array = compute_model_effect(input_array=input_array, arg=arg)
+
+        detector.pixel.array = output_array
+
+This way the model effect and the function ``compute_model_effect`` are much easier to test,
+also it simplifies the use of package ``numba`` for speeding up code.
+
+
+Use a separate instance of a random number generator
+----------------------------------------------------
+
+If a model uses the numpy random number generator,
+instead of using and setting the seed of the global random number generator,
+create and use a separate local instance of a random generator.
+More info at https://numpy.org/doc/stable/reference/random/.
+
+Example:
+
+.. code-block:: python
+
+    seed = 42
+
+    # Instead of this (legacy version, global setting)
+
+    from numpy import random
+
+    random.seed(seed)
+    vals = random.standard_normal(10)
+
+    # Do this (local setting)
+
+    from numpy.random import default_rng
+
+    rng = default_rng(seed=seed)
+    vals = rng.standard_normal(10)

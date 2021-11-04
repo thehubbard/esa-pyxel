@@ -18,6 +18,8 @@ Documentation
 
 * Make pyxel compatible with Python 3.9.
   (See `!289 <https://gitlab.com/esa/pyxel/-/merge_requests/289>`_).
+* Update adding new models documentation with best practices.
+  (See `!293 <https://gitlab.com/esa/pyxel/-/merge_requests/293>`_).
 
 Models
 ~~~~~~
