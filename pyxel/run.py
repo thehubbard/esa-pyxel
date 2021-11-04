@@ -71,7 +71,6 @@ def observation_mode(
     observation: "Observation",
     detector: Detector,
     pipeline: "DetectionPipeline",
-    with_dask: bool = False,
 ) -> "ObservationResult":
     """Run an 'observation' pipeline.
 
@@ -96,7 +95,7 @@ def observation_mode(
 
     processor = Processor(detector=detector, pipeline=pipeline)
 
-    result = observation.run_parametric(processor=processor)
+    result = observation.run_observation(processor=processor)
 
     if observation_outputs.save_observation_data:
         observation_outputs.save_observation_datasets(
