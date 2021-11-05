@@ -3,7 +3,7 @@
 =============
 Configuration
 =============
-.. currentmodule:: pyxel.configuration
+.. currentmodule:: pyxel
 
 Configuration
 -------------

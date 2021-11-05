@@ -4,7 +4,7 @@
 Inputs
 ======
 
-.. currentmodule:: pyxel.inputs
+.. currentmodule:: pyxel
 
 load_image
 ----------
