@@ -54,4 +54,5 @@ Are you new to Pyxel ? This is the place to start !
 
 1. Start with installation guide in :doc:`install`.
 2. Once ready you can learn how to run Pyxel in :doc:`running`.
-3. Follow the tutorial and explore the examples in :doc:`examples` to learn how to use Pyxel.
+3. Don't forget to take a look at :doc:`get_help` page.
+4. Follow the tutorial and explore the examples in :doc:`examples` to learn how to use Pyxel.
