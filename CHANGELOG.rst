@@ -12,6 +12,8 @@ Core
   (See `!286 <https://gitlab.com/esa/pyxel/-/merge_requests/286>`_).
 * Remove parallel computing with Numba.
   (See `!290 <https://gitlab.com/esa/pyxel/-/merge_requests/290>`_).
+* Use library 'click' to generate a Command Line Interface for script 'pyxel/run.py'.
+  (See `!287 <https://gitlab.com/esa/pyxel/-/merge_requests/287>`_).
 
 Documentation
 ~~~~~~~~~~~~~

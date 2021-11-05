@@ -5,19 +5,14 @@
 #  this file, may be copied, modified, propagated, or distributed except according to
 #  the terms contained in the file ‘LICENCE.txt’.
 
-"""Pyxel detector simulation framework.
-
-Pyxel is a detector simulation framework, that can simulate a variety of
-detector effects (e.g., cosmic rays, radiation-induced CTI in CCDs, persistence
-in MCT, charge diffusion, crosshatches, noises, crosstalk etc.) on a given image.
-"""
-import argparse
+"""CLI to run Pyxel."""
 import logging
 import sys
 import time
 import typing as t
 from pathlib import Path
 
+import click
 import dask
 import numpy as np
 import pandas as pd
@@ -213,7 +208,7 @@ def output_directory(configuration: Configuration) -> Path:
 
 
 def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
-    """TBW.
+    """Run a configuration file.
 
     Parameters
     ----------
@@ -272,68 +267,61 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
     plt.close()
 
 
-# TODO: Use library 'click' instead of 'parser' ? See issue #62
-#       Add an option to display colors ? (very optional)
-def main() -> None:
-    """Define the argument parser and run Pyxel."""
-    parser = argparse.ArgumentParser(
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter, description=__doc__
-    )
+# TODO: Add an option to display colors ?
+@click.group()
+@click.version_option(version=version)
+def main():
+    """Pyxel detector simulation framework.
 
-    parser.add_argument(
-        "-v",
-        "--verbosity",
-        action="count",
-        default=0,
-        help="Increase output verbosity (-v/-vv/-vvv)",
-    )
+    Pyxel is a detector simulation framework, that can simulate a variety of
+    detector effects (e.g., cosmic rays, radiation-induced CTI in CCDs, persistence
+    in MCT, charge diffusion, crosshatches, noises, crosstalk etc.) on a given image.
+    """
 
-    parser.add_argument(
-        "-V",
-        "--version",
-        action="version",
-        version="Pyxel, version {version}".format(version=version),
-    )
 
-    parser.add_argument(
-        "-c",
-        "--config",
-        type=str,
-        help="Configuration file to load (YAML)",
-    )
+@main.command(name="download-examples")
+@click.argument("folder", type=click.Path(), default="pyxel-examples", required=False)
+@click.option("-f", "--force", is_flag=True, help="Force flag for saving the examples.")
+def download_pyxel_examples(folder, force: bool):
+    """Install examples to a specified directory.
 
-    parser.add_argument("-s", "--seed", type=int, help="Random seed for the framework")
+    Default folder is './pyxel-examples'.
+    """
+    download_examples(foldername=folder, force=force)
 
-    parser.add_argument(
-        "--download-examples",
-        nargs="?",
-        const="pyxel-examples",
-        help="Install examples to the specified directory, default is /pyxel-examples.",
-    )
 
-    parser.add_argument(
-        "-f",
-        "--force",
-        action="store_true",
-        help="Force flag for saving the examples.",
-    )
+@main.command(name="create-model")
+@click.argument("model_name", type=str)
+def create_new_model(model_name: str):
+    """Create a new model.
 
-    parser.add_argument(
-        "-cm",
-        "--createmodel",
-        type=str,
-        help="""Use: -cm arg1/arg2. Create a new module in\
-        pyxel/models/arg1/arg2 using a template\
-        (pyxel/templates/MODELTEMPLATE.py)""",
-    )
+    Use: arg1/arg2. Create a new module in ``pyxel/models/arg1/arg2`` using a template
+    (``pyxel/templates/MODELTEMPLATE.py``)
+    """
+    create_model(newmodel=model_name)
 
-    # parser.add_argument('-g', '--gui', default=False, type=bool, help='run Graphical User Interface')
-    # parser.add_argument('-p', '--port', default=9999, type=int, help='The port to run the web server on')
 
-    opts = parser.parse_args()
-
+@main.command(name="run")
+@click.argument("config", type=click.Path(exists=True))
+@click.option(
+    "-v",
+    "--verbosity",
+    count=True,
+    show_default=True,
+    help="Increase output verbosity (-v/-vv/-vvv)",
+)
+@click.option(
+    "-s",
+    "--seed",
+    default=None,
+    type=int,
+    show_default=True,
+    help="Random seed for the framework.",
+)
+def run_config(config: str, verbosity: int, seed: t.Optional[int]):
+    """Run Pyxel with a YAML configuration file."""
     logging_level = [logging.ERROR, logging.WARNING, logging.INFO, logging.DEBUG][
-        min(opts.verbosity, 3)
+        min(verbosity, 3)
     ]
     log_format = (
         "%(asctime)s - %(name)s - %(threadName)30s - %(funcName)30s \t %(message)s"
@@ -344,19 +332,13 @@ def main() -> None:
         format=log_format,
         datefmt="%d-%m-%Y %H:%M:%S",
     )
+
     # If user wants the log in stdout AND in file, use the three lines below
     stream_stdout = logging.StreamHandler(sys.stdout)
     stream_stdout.setFormatter(logging.Formatter(log_format))
     logging.getLogger().addHandler(stream_stdout)
 
-    if opts.config:
-        run(input_filename=opts.config, random_seed=opts.seed)
-    elif opts.download_examples:
-        download_examples(foldername=opts.download_examples, force=opts.force)
-    elif opts.createmodel:
-        create_model(newmodel=opts.createmodel)
-    else:
-        print("Define a YAML configuration file!")
+    run(input_filename=config, random_seed=seed)
 
 
 if __name__ == "__main__":

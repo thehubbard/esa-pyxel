@@ -86,11 +86,7 @@ It is possible to create a new model from an already prepared template with the 
 
 .. code-block:: bash
 
-    $ pyxel --createmodel photon_generation/new_model
-
-    or
-
-    $ pyxel -cm photon_generation/new_model
+    $ pyxel create-model photon_generation/new_model
 
 This will create a new python script ``new_model.py`` with a template model function
 in folder ``pyxel/models/photon_generation``. All you have to do is edit your model function

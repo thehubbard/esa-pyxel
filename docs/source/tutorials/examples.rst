@@ -21,7 +21,7 @@ or using Pyxel by running the command:
 
 .. code-block:: console
 
-    pyxel --download-examples
+    pyxel download-examples
 
 Now you can launch JupyterLab to explore them:
 
