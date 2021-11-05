@@ -4,7 +4,7 @@ from pathlib import Path
 import pytest
 
 import pyxel
-from pyxel.configuration import Configuration
+from pyxel import Configuration
 from pyxel.detectors import CCD
 from pyxel.observation.observation import Observation, ParameterMode
 from pyxel.pipelines import DetectionPipeline, Processor

@@ -15,7 +15,6 @@ import pyxel
 from pyxel.calibration import Calibration
 from pyxel.calibration.fitting import ModelFitting
 from pyxel.calibration.util import CalibrationMode
-from pyxel.configuration import Configuration
 from pyxel.detectors import CCD
 from pyxel.pipelines import DetectionPipeline, Processor
 from pyxel.pipelines.processor import ResultType
@@ -28,7 +27,7 @@ except ImportError:
     WITH_PYGMO = False
 
 
-def configure(mf: ModelFitting, sim: Configuration) -> None:
+def configure(mf: ModelFitting, sim: pyxel.Configuration) -> None:
     """TBW."""
     assert sim.calibration is not None
 
@@ -244,7 +243,7 @@ def custom_fitness_func(simulated, target, weighting=None):
 def test_custom_fitness(yaml, simulated, target, weighting):
     """Test"""
     cfg = pyxel.load(yaml)
-    assert isinstance(cfg, Configuration)
+    assert isinstance(cfg, pyxel.Configuration)
 
     detector = cfg.ccd_detector
     assert isinstance(detector, CCD)

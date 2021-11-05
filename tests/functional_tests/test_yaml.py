@@ -15,8 +15,8 @@ except ImportError:
     WITH_PYGMO = False
 
 import pyxel
+from pyxel import Configuration
 from pyxel.calibration import Algorithm, Calibration, CalibrationMode
-from pyxel.configuration import Configuration
 from pyxel.data_structure import Charge, Image, Pixel, Signal
 from pyxel.detectors import CCD, CCDCharacteristics, CCDGeometry, Environment, Material
 from pyxel.exposure import Exposure
