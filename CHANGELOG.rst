@@ -14,6 +14,8 @@ Core
   (See `!290 <https://gitlab.com/esa/pyxel/-/merge_requests/290>`_).
 * Use library 'click' to generate a Command Line Interface for script 'pyxel/run.py'.
   (See `!287 <https://gitlab.com/esa/pyxel/-/merge_requests/287>`_).
+* Simplify imports of sub packages.
+  (See `!296 <https://gitlab.com/esa/pyxel/-/merge_requests/296>`_).
 
 Documentation
 ~~~~~~~~~~~~~
