@@ -16,6 +16,8 @@ Core
   (See `!287 <https://gitlab.com/esa/pyxel/-/merge_requests/287>`_).
 * Simplify imports of sub packages.
   (See `!296 <https://gitlab.com/esa/pyxel/-/merge_requests/296>`_).
+* Fix an issue in imports.
+  (See `!297 <https://gitlab.com/esa/pyxel/-/merge_requests/297>`_).
 
 Documentation
 ~~~~~~~~~~~~~
