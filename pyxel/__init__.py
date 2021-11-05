@@ -20,6 +20,7 @@ from .configuration import load, save, Configuration
 from .run import calibration_mode, exposure_mode, observation_mode, run
 from .notebook import (
     display_detector,
+    display_persist,
     display_html,
     display_calibration_inputs,
     display_simulated,
