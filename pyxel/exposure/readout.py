@@ -12,8 +12,8 @@ import typing as t
 
 import numpy as np
 
+from pyxel import load_table
 from pyxel.evaluator import eval_range
-from pyxel.inputs.loader import load_table
 
 
 class Readout:

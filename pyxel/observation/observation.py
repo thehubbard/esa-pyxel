@@ -104,7 +104,7 @@ class Observation:
     # TODO: is self.data really needed?
     def _load_custom_parameters(self) -> None:
         """Load custom parameters from file."""
-        from pyxel.inputs import load_table
+        from pyxel import load_table
 
         if self.file is not None:
             result = load_table(self.file).to_numpy()[

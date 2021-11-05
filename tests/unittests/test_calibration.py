@@ -12,9 +12,9 @@ from pathlib import Path
 import numpy as np
 import pytest
 
+from pyxel import Configuration, load
 from pyxel.calibration import Calibration
 from pyxel.calibration.util import list_to_slice, read_data, read_single_data
-from pyxel.configuration import Configuration, load
 from pyxel.detectors import CCD
 from pyxel.pipelines import DetectionPipeline, Processor
 

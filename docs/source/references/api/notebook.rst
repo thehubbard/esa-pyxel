@@ -4,7 +4,7 @@
 Notebook
 ========
 
-.. currentmodule:: pyxel.notebook
+.. currentmodule:: pyxel
 
 display_detector
 ----------------

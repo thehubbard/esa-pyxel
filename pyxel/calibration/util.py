@@ -16,7 +16,7 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 
-from pyxel.inputs.loader import load_datacube, load_image
+from pyxel import load_datacube, load_image
 
 #  from pyxel.pipelines import Processor
 

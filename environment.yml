@@ -60,15 +60,17 @@ dependencies:
   - pympler
   - pillow
   - scikit-image
+# Code formatting
+  - black>=20
+  - isort>=5
+  - jupyterlab_code_formatter
 # Development
   - flake8
-  - isort>=5
   - mypy
   - pre-commit
   - pytest
   - pytest-httpserver
   - tox
-  - black>=20
   - tryceratops
   - freezegun
 # Pip packages

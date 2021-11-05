@@ -14,8 +14,9 @@ try:
 except ImportError:
     WITH_PYGMO = False
 
+import pyxel
+from pyxel import Configuration
 from pyxel.calibration import Algorithm, Calibration, CalibrationMode
-from pyxel.configuration import Configuration, load
 from pyxel.data_structure import Charge, Image, Pixel, Signal
 from pyxel.detectors import CCD, CCDCharacteristics, CCDGeometry, Environment, Material
 from pyxel.exposure import Exposure
@@ -36,7 +37,7 @@ from pyxel.pipelines import DetectionPipeline, ModelFunction, ModelGroup
     ],
 )
 def test_yaml_load(yaml_file):
-    cfg = load(yaml_file)
+    cfg = pyxel.load(yaml_file)
 
     assert isinstance(cfg, Configuration)
 

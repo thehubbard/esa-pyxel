@@ -11,10 +11,10 @@ from pathlib import Path
 import numpy as np
 import pytest
 
+import pyxel
 from pyxel.calibration import Calibration
 from pyxel.calibration.fitting import ModelFitting
 from pyxel.calibration.util import CalibrationMode
-from pyxel.configuration import Configuration, load
 from pyxel.detectors import CCD
 from pyxel.pipelines import DetectionPipeline, Processor
 from pyxel.pipelines.processor import ResultType
@@ -27,7 +27,7 @@ except ImportError:
     WITH_PYGMO = False
 
 
-def configure(mf: ModelFitting, sim: Configuration) -> None:
+def configure(mf: ModelFitting, sim: pyxel.Configuration) -> None:
     """TBW."""
     assert sim.calibration is not None
 
@@ -53,7 +53,7 @@ def configure(mf: ModelFitting, sim: Configuration) -> None:
 @pytest.mark.parametrize("yaml_file", ["tests/data/calibrate.yaml"])
 def test_configure_params(yaml_file):
     """Test"""
-    cfg = load(yaml_file)
+    cfg = pyxel.load(yaml_file)
     detector = cfg.ccd_detector
     pipeline = cfg.pipeline
     processor = Processor(detector, pipeline)
@@ -83,7 +83,7 @@ def test_configure_params(yaml_file):
 @pytest.mark.parametrize("yaml", ["tests/data/calibrate_fits.yaml"])
 def test_configure_fits_target(yaml):
     """Test"""
-    cfg = load(yaml)
+    cfg = pyxel.load(yaml)
     detector = cfg.ccd_detector
     pipeline = cfg.pipeline
     processor = Processor(detector, pipeline)
@@ -120,7 +120,7 @@ def test_configure_fits_target(yaml):
 )
 def test_boundaries(yaml):
     """Test"""
-    cfg = load(yaml)
+    cfg = pyxel.load(yaml)
     detector = cfg.ccd_detector
     pipeline = cfg.pipeline
     processor = Processor(detector, pipeline)
@@ -166,7 +166,7 @@ def test_boundaries(yaml):
 )
 def test_calculate_fitness(simulated_data, target_data, expected_fitness):
     """Test"""
-    cfg = load("tests/data/calibrate.yaml")
+    cfg = pyxel.load("tests/data/calibrate.yaml")
     detector = cfg.ccd_detector
     pipeline = cfg.pipeline
     processor = Processor(detector, pipeline)
@@ -193,7 +193,7 @@ def test_calculate_fitness(simulated_data, target_data, expected_fitness):
 )
 def test_weighting(yaml, factor, expected_fitness):
     """Test"""
-    cfg = load(yaml)
+    cfg = pyxel.load(yaml)
     detector = cfg.ccd_detector
     pipeline = cfg.pipeline
     processor = Processor(detector, pipeline)
@@ -242,8 +242,8 @@ def custom_fitness_func(simulated, target, weighting=None):
 )
 def test_custom_fitness(yaml, simulated, target, weighting):
     """Test"""
-    cfg = load(yaml)
-    assert isinstance(cfg, Configuration)
+    cfg = pyxel.load(yaml)
+    assert isinstance(cfg, pyxel.Configuration)
 
     detector = cfg.ccd_detector
     assert isinstance(detector, CCD)
@@ -303,7 +303,7 @@ def test_custom_fitness(yaml, simulated, target, weighting):
 )
 def test_fitness(yaml, parameter, expected_fitness):
     """Test"""
-    cfg = load(yaml)
+    cfg = pyxel.load(yaml)
 
     detector = cfg.ccd_detector
     pipeline = cfg.pipeline
@@ -357,7 +357,7 @@ def test_fitness(yaml, parameter, expected_fitness):
 )
 def test_split_and_update(yaml, parameter, expected_array):
     """Test"""
-    cfg = load(yaml)
+    cfg = pyxel.load(yaml)
     detector = cfg.ccd_detector
     pipeline = cfg.pipeline
     processor = Processor(detector, pipeline)
@@ -403,7 +403,7 @@ def test_split_and_update(yaml, parameter, expected_array):
 )
 def test_detector_and_model_update(yaml: str, param_array: np.ndarray):
     """Test"""
-    cfg = load(yaml)
+    cfg = pyxel.load(yaml)
 
     detector = cfg.ccd_detector
     pipeline = cfg.pipeline

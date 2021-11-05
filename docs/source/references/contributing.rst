@@ -74,8 +74,8 @@ Bug reports must:
    <https://docs.gitlab.com/ee/user/markdown.html#gitlab-flavored-markdown-gfm>`_::
 
       ```python
-      from pyxel.io import load
-      cfg = load("config.yml")
+      import pyxel
+      cfg = pyxel.load("config.yml")
       ```
 
 2. Include the full version string of *Pyxel* and its dependencies. You can

@@ -13,7 +13,7 @@ from pathlib import Path
 import numba
 import numpy as np
 
-from pyxel.inputs import load_table
+from pyxel import load_table
 
 if t.TYPE_CHECKING:
     from pyxel.detectors import Detector
