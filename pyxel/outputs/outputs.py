@@ -8,6 +8,7 @@
 #
 """Classes for creating outputs."""
 import logging
+import os
 import re
 import typing as t
 from glob import glob
@@ -210,10 +211,8 @@ class Outputs:
 
         full_filename = filename.resolve()  # type: Path
 
-        import os.path
-
         if os.path.exists(full_filename):
-            raise (FileExistsError)
+            raise FileExistsError(f"File {str(full_filename)} already exists!")
 
         np.save(file=full_filename, arr=data)
         return full_filename
