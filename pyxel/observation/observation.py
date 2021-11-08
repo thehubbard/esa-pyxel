@@ -915,8 +915,13 @@ def compute_final_sequential_dataset(
         else:
             final_dict[short(coordinate)].append(list_of_datasets[n])
 
-    final_datasets = {
-        key: xr.combine_by_coords(value) for key, value in final_dict.items()
-    }
+    final_datasets = {}  # type: t.Dict[str, xr.Dataset]
+    for key, value in final_dict.items():
+        ds = xr.combine_by_coords(value)
+        # see issue #276
+        if not isinstance(ds, xr.Dataset):
+            raise TypeError("Expecting 'Dataset'.")
+
+        final_datasets.update({key: ds})
 
     return final_datasets
