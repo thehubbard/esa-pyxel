@@ -14,9 +14,6 @@ import pandas as pd
 
 from pyxel.util.memory import get_size
 
-# from astropy.units import cds
-# cds.enable()
-
 
 class Particle:
     """Class defining and storing information of all particles with their position, velocity, energy, etc."""
