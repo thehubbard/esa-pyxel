@@ -18,6 +18,8 @@ Core
   (See `!296 <https://gitlab.com/esa/pyxel/-/merge_requests/296>`_).
 * Fix an issue in imports.
   (See `!297 <https://gitlab.com/esa/pyxel/-/merge_requests/297>`_).
+* Re-enable dask for observation mode.
+  (See `!172 <https://gitlab.com/esa/pyxel/-/merge_requests/172>`_).
 
 Documentation
 ~~~~~~~~~~~~~
