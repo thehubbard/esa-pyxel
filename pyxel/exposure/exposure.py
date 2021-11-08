@@ -16,9 +16,8 @@ import numpy as np
 from tqdm.auto import tqdm
 from typing_extensions import Literal
 
+from pyxel.exposure import Readout
 from pyxel.pipelines import ResultType, result_keys
-
-from .readout import Readout
 
 if t.TYPE_CHECKING:
     import xarray as xr

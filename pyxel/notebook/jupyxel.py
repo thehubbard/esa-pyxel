@@ -13,7 +13,7 @@ import holoviews as hv
 import matplotlib.pyplot as plt
 import numpy as np
 
-# # Display methods for detector objects in Jupyter notebook
+# Display methods for detector objects in Jupyter notebook
 from IPython.display import Markdown, display
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
@@ -21,8 +21,6 @@ if t.TYPE_CHECKING:
     from holoviews import Layout
 
     from pyxel import Configuration
-
-    # from pyxel.data_structure import Image, Photon, Pixel, Signal
     from pyxel.detectors import Detector
     from pyxel.pipelines import DetectionPipeline, ModelFunction, Processor
 

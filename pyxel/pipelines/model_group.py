@@ -14,8 +14,8 @@ from pyxel import util
 from pyxel.pipelines import ModelFunction
 
 if t.TYPE_CHECKING:
-    from ..detectors import Detector
-    from ..pipelines import DetectionPipeline
+    from pyxel.detectors import Detector
+    from pyxel.pipelines import DetectionPipeline
 
 
 # TODO: These methods could also be as a `abc.Sequence` with magical methods:

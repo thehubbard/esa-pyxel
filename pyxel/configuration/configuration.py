@@ -39,9 +39,7 @@ from pyxel.detectors import (
 from pyxel.evaluator import evaluate_reference
 from pyxel.exposure import Exposure, Readout
 from pyxel.observation import Observation, ParameterValues
-from pyxel.outputs.calibration_outputs import CalibrationOutputs
-from pyxel.outputs.exposure_outputs import ExposureOutputs
-from pyxel.outputs.observation_outputs import ObservationOutputs
+from pyxel.outputs import CalibrationOutputs, ExposureOutputs, ObservationOutputs
 from pyxel.pipelines import DetectionPipeline, ModelFunction, ModelGroup
 
 

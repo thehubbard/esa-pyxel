@@ -19,16 +19,14 @@ from tqdm.auto import tqdm
 from typing_extensions import Literal
 
 from pyxel.exposure import run_exposure_pipeline
-
-# import dask
 from pyxel.observation.parameter_values import ParameterType, ParameterValues
 from pyxel.pipelines import ResultType
 from pyxel.state import get_obj_att, get_value
 
 if t.TYPE_CHECKING:
-    from ..exposure import Readout
-    from ..outputs import ObservationOutputs
-    from ..pipelines import Processor
+    from pyxel.exposure import Readout
+    from pyxel.outputs import ObservationOutputs
+    from pyxel.pipelines import Processor
 
 
 class ParameterMode(Enum):

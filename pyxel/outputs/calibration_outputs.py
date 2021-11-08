@@ -12,13 +12,13 @@ from pathlib import Path
 
 import dask.delayed as delayed
 import pandas as pd
-import xarray as xr
 from dask.delayed import Delayed
 from typing_extensions import Literal
 
-from .outputs import Outputs
+from pyxel.outputs import Outputs
 
 if t.TYPE_CHECKING:
+    import xarray as xr
 
     class SaveToFile(t.Protocol):
         """TBW."""
@@ -80,7 +80,9 @@ class CalibrationOutputs(Outputs):
 
         return lst
 
-    def save_calibration_outputs(self, dataset: xr.Dataset, logs: pd.DataFrame) -> None:
+    def save_calibration_outputs(
+        self, dataset: "xr.Dataset", logs: pd.DataFrame
+    ) -> None:
         """Save the calibration outputs such as dataset and logs.
 
         Parameters

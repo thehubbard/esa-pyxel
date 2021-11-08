@@ -17,7 +17,6 @@ import h5py as h5
 import numpy as np
 import pandas as pd
 import xarray as xr
-from astropy.io import fits as fits
 from typing_extensions import Literal
 
 from pyxel import __version__ as version
@@ -78,6 +77,8 @@ class Outputs:
 
         full_filename = filename.resolve()  # type: Path
         self._log.info("Save to FITS - filename: '%s'", full_filename)
+
+        from astropy.io import fits  # Late import to speed-up general import time
 
         hdu = fits.PrimaryHDU(data)
         hdu.header["PYXEL_V"] = (str(version), "Pyxel version")
