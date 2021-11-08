@@ -8,11 +8,11 @@
 #
 """Classes for creating outputs."""
 import logging
+import re
 import typing as t
 from glob import glob
 from pathlib import Path
 from time import strftime
-import re
 
 import h5py as h5
 import numpy as np
@@ -30,7 +30,11 @@ if t.TYPE_CHECKING:
         """TBW."""
 
         def __call__(
-            self, data: t.Any, name: str, with_auto_suffix: bool = True, run_number: t.Optional[int] = None
+            self,
+            data: t.Any,
+            name: str,
+            with_auto_suffix: bool = True,
+            run_number: t.Optional[int] = None,
         ) -> Path:
             """TBW."""
             ...
@@ -66,13 +70,20 @@ class Outputs:
         return f"{cls_name}<output_dir={self.output_dir!r}>"
 
     def save_to_fits(
-        self, data: np.ndarray, name: str, with_auto_suffix: bool = True, run_number: t.Optional[int] = None
+        self,
+        data: np.ndarray,
+        name: str,
+        with_auto_suffix: bool = True,
+        run_number: t.Optional[int] = None,
     ) -> Path:
         """Write array to FITS file."""
         name = str(name).replace(".", "_")
 
         if with_auto_suffix:
-            filename = apply_run_number(template_filename=self.output_dir.joinpath(f"{name}_?.fits"), run_number=run_number)
+            filename = apply_run_number(
+                template_filename=self.output_dir.joinpath(f"{name}_?.fits"),
+                run_number=run_number,
+            )
         else:
             filename = self.output_dir / f"{name}.fits"
 
@@ -88,13 +99,20 @@ class Outputs:
         return full_filename
 
     def save_to_hdf(
-        self, data: "Detector", name: str, with_auto_suffix: bool = True, run_number: t.Optional[int] = None
+        self,
+        data: "Detector",
+        name: str,
+        with_auto_suffix: bool = True,
+        run_number: t.Optional[int] = None,
     ) -> Path:
         """Write detector object to HDF5 file."""
         name = str(name).replace(".", "_")
 
         if with_auto_suffix:
-            filename = apply_run_number(template_filename=self.output_dir.joinpath(f"{name}_?.h5"), run_number=run_number)
+            filename = apply_run_number(
+                template_filename=self.output_dir.joinpath(f"{name}_?.h5"),
+                run_number=run_number,
+            )
         else:
             filename = self.output_dir / f"{name}.h5"
 
@@ -124,13 +142,20 @@ class Outputs:
         return filename
 
     def save_to_txt(
-        self, data: np.ndarray, name: str, with_auto_suffix: bool = True, run_number: t.Optional[int] = None
+        self,
+        data: np.ndarray,
+        name: str,
+        with_auto_suffix: bool = True,
+        run_number: t.Optional[int] = None,
     ) -> Path:
         """Write data to txt file."""
         name = str(name).replace(".", "_")
 
         if with_auto_suffix:
-            filename = apply_run_number(template_filename=self.output_dir.joinpath(f"{name}_?.txt"), run_number=run_number)
+            filename = apply_run_number(
+                template_filename=self.output_dir.joinpath(f"{name}_?.txt"),
+                run_number=run_number,
+            )
         else:
             filename = self.output_dir / f"{name}.txt"
 
@@ -140,13 +165,20 @@ class Outputs:
         return full_filename
 
     def save_to_csv(
-        self, data: pd.DataFrame, name: str, with_auto_suffix: bool = True, run_number: t.Optional[int] = None
+        self,
+        data: pd.DataFrame,
+        name: str,
+        with_auto_suffix: bool = True,
+        run_number: t.Optional[int] = None,
     ) -> Path:
         """Write Pandas Dataframe or Numpy array to a CSV file."""
         name = str(name).replace(".", "_")
 
         if with_auto_suffix:
-            filename = apply_run_number(template_filename=self.output_dir.joinpath(f"{name}_?.csv"), run_number=run_number)
+            filename = apply_run_number(
+                template_filename=self.output_dir.joinpath(f"{name}_?.csv"),
+                run_number=run_number,
+            )
         else:
             filename = self.output_dir / f"{name}.csv"
 
@@ -159,21 +191,29 @@ class Outputs:
         return full_filename
 
     def save_to_npy(
-        self, data: np.ndarray, name: str, with_auto_suffix: bool = True, run_number: t.Optional[int] = None
+        self,
+        data: np.ndarray,
+        name: str,
+        with_auto_suffix: bool = True,
+        run_number: t.Optional[int] = None,
     ) -> Path:
         """Write Numpy array to Numpy binary npy file."""
         name = str(name).replace(".", "_")
 
         if with_auto_suffix:
-            filename = apply_run_number(template_filename=self.output_dir.joinpath(f"{name}_?.npy"), run_number=run_number)
+            filename = apply_run_number(
+                template_filename=self.output_dir.joinpath(f"{name}_?.npy"),
+                run_number=run_number,
+            )
         else:
             filename = self.output_dir / f"{name}.npy"
 
         full_filename = filename.resolve()  # type: Path
 
         import os.path
+
         if os.path.exists(full_filename):
-            raise(FileExistsError)
+            raise (FileExistsError)
 
         np.save(file=full_filename, arr=data)
         return full_filename
@@ -183,7 +223,7 @@ class Outputs:
         processor: "Processor",
         prefix: t.Optional[str] = None,
         with_auto_suffix: bool = True,
-        run_number: t.Optional[int] = None
+        run_number: t.Optional[int] = None,
     ) -> t.Sequence[Path]:
         """Save outputs into file(s).
 
@@ -233,7 +273,10 @@ class Outputs:
                 for out_format in format_list:
                     func = save_methods[out_format]  # type: SaveToFile
                     filename = func(
-                        data=data, name=name, with_auto_suffix=with_auto_suffix, run_number=run_number
+                        data=data,
+                        name=name,
+                        with_auto_suffix=with_auto_suffix,
+                        run_number=run_number,
                     )  # type: Path
 
                     filenames.append(filename)
@@ -262,7 +305,9 @@ class Outputs:
 
 # TODO: Create unit tests
 # TODO: Refactor this in 'def apply_run_number(folder, template_filename) -> Path
-def apply_run_number(template_filename: Path, run_number: t.Optional[int] = None) -> Path:
+def apply_run_number(
+    template_filename: Path, run_number: t.Optional[int] = None
+) -> Path:
     """Convert the file name numeric placeholder to a unique number.
 
     Parameters
@@ -277,7 +322,7 @@ def apply_run_number(template_filename: Path, run_number: t.Optional[int] = None
     template_str = str(template_filename)
 
     def get_number(string: str) -> int:
-        search = re.search(r"\d+$", string.split('.')[-2])
+        search = re.search(r"\d+$", string.split(".")[-2])
         if not search:
             return 0
         else:
@@ -286,7 +331,7 @@ def apply_run_number(template_filename: Path, run_number: t.Optional[int] = None
     if "?" in template_str:
         if run_number is not None:
             path_str = template_str.replace("?", "{}")
-            output_str = path_str.format(run_number+1)
+            output_str = path_str.format(run_number + 1)
         else:
             path_str_for_glob = template_str.replace("?", "*")
             dir_list = glob(path_str_for_glob)

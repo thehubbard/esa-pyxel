@@ -11,7 +11,9 @@ import logging
 import typing as t
 from copy import deepcopy
 from enum import Enum
+from functools import partial
 
+import dask.bag as db
 import numpy as np
 import xarray as xr
 from tqdm.auto import tqdm
@@ -21,8 +23,6 @@ from pyxel.exposure import run_exposure_pipeline
 from pyxel.observation.parameter_values import ParameterType, ParameterValues
 from pyxel.pipelines import ResultType
 from pyxel.state import get_obj_att, get_value
-from functools import partial
-import dask.bag as db
 
 if t.TYPE_CHECKING:
     from pyxel.exposure import Readout
@@ -386,7 +386,7 @@ class Observation:
             ]  # type: t.List[t.List[xr.Dataset]]
             logs = []
 
-            for processor_id, (indices, parameter_dict, n) in enumerate(lst):
+            for processor_id, (indices, parameter_dict, _) in enumerate(lst):
                 # log parameters for this pipeline
                 log = log_parameters(
                     processor_id=processor_id, parameter_dict=parameter_dict
@@ -460,7 +460,7 @@ class Observation:
             # overflow to next parameter step counter
             step_counter = -1
 
-            for processor_id, (index, parameter_dict, n) in enumerate(lst):
+            for processor_id, (index, parameter_dict, _) in enumerate(lst):
                 # log parameters for this pipeline
                 # TODO: somehow refactor logger so that default parameters
                 #  from other steps are also logged in sequential mode
@@ -489,7 +489,9 @@ class Observation:
             if not isinstance(final_logs, xr.Dataset):
                 raise TypeError("Expecting 'Dataset'.")
 
-            final_datasets = compute_final_sequential_dataset(list_of_index_and_parameter=lst, list_of_datasets=dataset_list)
+            final_datasets = compute_final_sequential_dataset(
+                list_of_index_and_parameter=lst, list_of_datasets=dataset_list
+            )
 
             final_parameters_list = []
             for p in parameters:
@@ -891,7 +893,7 @@ def _add_product_parameters(
 def compute_final_sequential_dataset(
     list_of_index_and_parameter: list, list_of_datasets: list
 ) -> t.Dict[str, xr.Dataset]:
-    """
+    """Return a dictionary of result datasets where keys are different parameters.
 
     Parameters
     ----------
@@ -903,9 +905,9 @@ def compute_final_sequential_dataset(
     final_datasets: dict
     """
 
-    final_dict = {}
+    final_dict = {}  # type: t.Dict[str, list]
 
-    for index, parameter_dict, n in list_of_index_and_parameter:
+    for _, parameter_dict, n in list_of_index_and_parameter:
         coordinate = str(list(parameter_dict)[0])
         if short(coordinate) not in final_dict.keys():
             final_dict.update({short(coordinate): []})
@@ -916,8 +918,5 @@ def compute_final_sequential_dataset(
     final_datasets = {
         key: xr.combine_by_coords(value) for key, value in final_dict.items()
     }
-
-    if not isinstance(final_datasets, xr.Dataset):
-        raise TypeError("Expecting 'Dataset'.")
 
     return final_datasets
