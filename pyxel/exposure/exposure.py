@@ -165,8 +165,8 @@ def run_exposure_pipeline(
         processor.run_pipeline()
         detector.pipeline_count = i
 
-        # if outputs and detector.read_out:
-        #     outputs.save_to_file(processor)
+        if outputs and detector.read_out:
+            outputs.save_to_file(processor)
 
         for key in keys:
             unstacked_result[key].append(operator.attrgetter(attributes[key])(detector))
