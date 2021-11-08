@@ -20,7 +20,6 @@ from pathlib import Path
 import dask.delayed as delayed
 import numpy as np
 import pandas as pd
-import xarray as xr
 from typing_extensions import Literal
 
 from pyxel.calibration import (
@@ -38,6 +37,7 @@ from pyxel.pipelines import Processor
 from pyxel.pipelines.processor import ResultType
 
 if t.TYPE_CHECKING:
+    import xarray as xr
     from numpy.typing import ArrayLike
 
     from pyxel.exposure import Readout
@@ -547,7 +547,9 @@ class ModelFitting(ProblemSingleObjective):
     #
     #     return df
 
-    def apply_parameters_to_processors(self, parameters: xr.DataArray) -> pd.DataFrame:
+    def apply_parameters_to_processors(
+        self, parameters: "xr.DataArray"
+    ) -> pd.DataFrame:
         """TBW."""
         assert "island" in parameters.dims
         assert "param_id" in parameters.dims

@@ -11,8 +11,6 @@ import typing as t
 from pathlib import Path
 
 import numpy as np
-import pandas as pd
-import xarray as xr
 from dask.delayed import Delayed
 from typing_extensions import Literal
 
@@ -38,9 +36,11 @@ except ImportError:
     WITH_PYGMO = False
 
 if t.TYPE_CHECKING:
-    from pyxel.exposure import Readout
+    import pandas as pd
+    import xarray as xr
 
-    from ..outputs import CalibrationOutputs
+    from pyxel.exposure import Readout
+    from pyxel.outputs import CalibrationOutputs
 
 
 def to_path_list(values: t.Sequence[t.Union[str, Path]]) -> t.List[Path]:
@@ -354,7 +354,7 @@ class Calibration:
         processor: Processor,
         output_dir: Path,
         with_progress_bar: bool = True,
-    ) -> t.Tuple[xr.Dataset, pd.DataFrame, pd.DataFrame]:
+    ) -> t.Tuple["xr.Dataset", "pd.DataFrame", "pd.DataFrame"]:
         """Run calibration pipeline."""
         pg.set_global_rng_seed(seed=self.seed)
         self._log.info("Seed: %d", self.seed)
@@ -457,8 +457,8 @@ class Calibration:
 
     def post_processing(
         self,
-        ds: xr.Dataset,
-        df_processors: pd.DataFrame,
+        ds: "xr.Dataset",
+        df_processors: "pd.DataFrame",
         output: "CalibrationOutputs",
     ) -> t.Sequence[Delayed]:
         """TBW."""
