@@ -26,6 +26,6 @@ from .calibration import (
     optimal_parameters,
 )
 
-import holoviews as hv
+import holoviews as hv  # TODO: Remove this will speed-up the import time. See #321
 
-hv.extension("bokeh")
+hv.extension("bokeh")  # TODO: Remove this will speed-up the import time. See #321

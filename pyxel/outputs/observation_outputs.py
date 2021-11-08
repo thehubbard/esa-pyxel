@@ -15,11 +15,10 @@ from pathlib import Path
 from typing_extensions import Literal
 
 from pyxel.observation import ParameterMode
-
-from .outputs import Outputs
+from pyxel.outputs import Outputs
 
 if t.TYPE_CHECKING:
-    from ..observation import ObservationResult
+    from pyxel.observation import ObservationResult
 
     class SaveToFile(t.Protocol):
         """TBW."""

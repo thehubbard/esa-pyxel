@@ -39,6 +39,8 @@ Others
   (See `!291 <https://gitlab.com/esa/pyxel/-/merge_requests/291>`_).
 * Updated black, isort and blackdoc in '.pre-commit.yaml'.
   (See `!294 <https://gitlab.com/esa/pyxel/-/merge_requests/294>`_).
+* Partially reduce Pyxel start-up time.
+  (See `!302 <https://gitlab.com/esa/pyxel/-/merge_requests/302>`_).
 
 
 version 0.11.1 / 2021-10-29

@@ -11,11 +11,8 @@ import typing as t
 
 import numpy as np
 import pandas as pd
-from astropy.units import cds
 
 from pyxel.data_structure import Particle
-
-cds.enable()
 
 
 class Charge(Particle):

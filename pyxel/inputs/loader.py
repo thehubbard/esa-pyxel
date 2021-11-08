@@ -20,7 +20,6 @@ from pathlib import Path
 import fsspec
 import numpy as np
 import pandas as pd
-from astropy.io import fits
 from PIL import Image
 
 from pyxel.options import global_options
@@ -92,6 +91,8 @@ def load_image(filename: t.Union[str, Path]) -> np.ndarray:
                     _ = file_handler.fileno()
                 except OSError:
                     file_handler.fileno = file_handler.f.fileno
+
+            from astropy.io import fits  # Late import to speed-up general import time
 
             data_2d = fits.getdata(file_handler)  # type: np.ndarray
 

@@ -8,14 +8,8 @@
 """Pyxel Photon class to generate and track photon."""
 
 import numpy as np
-from astropy.units import cds
 
 from pyxel.data_structure import Array
-
-# if TYPE_CHECKING:
-#     from pyxel.detectors.geometry import Geometry
-
-cds.enable()
 
 
 class Photon(Array):

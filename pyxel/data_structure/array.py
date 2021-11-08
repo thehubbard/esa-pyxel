@@ -10,14 +10,11 @@
 import typing as t  # noqa: F401
 
 import numpy as np
-from astropy.units import cds
 
 from pyxel.util.memory import get_size
 
+
 # TODO: Is it possible to move this to `data_structure/__init__.py' ?
-cds.enable()
-
-
 # TODO: Does it make sense to force 'self._array' to be read-only ?
 #       It could be done with:
 #       ... self._array = np.array(value)

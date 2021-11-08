@@ -11,12 +11,12 @@
 import typing as t
 from pathlib import Path
 
-import xarray as xr
 from typing_extensions import Literal
 
-from .outputs import Outputs
+from pyxel.outputs import Outputs
 
 if t.TYPE_CHECKING:
+    import xarray as xr
 
     class SaveToFile(t.Protocol):
         """TBW."""
@@ -55,7 +55,7 @@ class ExposureOutputs(Outputs):
             save_exposure_data
         )  # type: t.Optional[t.Sequence[t.Mapping[str, t.Sequence[str]]]]
 
-    def save_exposure_outputs(self, dataset: xr.Dataset) -> None:
+    def save_exposure_outputs(self, dataset: "xr.Dataset") -> None:
         """Save the observation outputs such as the dataset.
 
         Parameters

@@ -11,15 +11,15 @@ import typing as t
 from enum import Enum
 from pathlib import Path
 
-#  import attr
 import numpy as np
 import pandas as pd
-import xarray as xr
 
 from pyxel import load_datacube, load_image
 
-#  from pyxel.pipelines import Processor
+if t.TYPE_CHECKING:
+    import xarray as xr
 
+#  from pyxel.pipelines import Processor
 __all__ = [
     "CalibrationResult",
     "CalibrationMode",
@@ -43,7 +43,7 @@ __all__ = [
 class CalibrationResult(t.NamedTuple):
     """Result class for calibration class."""
 
-    dataset: xr.Dataset
+    dataset: "xr.Dataset"
     processors: pd.DataFrame
     logs: pd.DataFrame
     filenames: t.Sequence

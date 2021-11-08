@@ -13,17 +13,17 @@ import operator
 import typing as t
 
 import numpy as np
-import xarray as xr
 from tqdm.auto import tqdm
 from typing_extensions import Literal
 
+from pyxel.exposure import Readout
 from pyxel.pipelines import ResultType, result_keys
 
-from .readout import Readout
-
 if t.TYPE_CHECKING:
-    from ..outputs import CalibrationOutputs, ExposureOutputs, ObservationOutputs
-    from ..pipelines import Processor
+    import xarray as xr
+
+    from pyxel.outputs import CalibrationOutputs, ExposureOutputs, ObservationOutputs
+    from pyxel.pipelines import Processor
 
 
 class Exposure:
@@ -53,7 +53,7 @@ class Exposure:
         """TBW."""
         self._result_type = value
 
-    def run_exposure(self, processor: "Processor") -> xr.Dataset:
+    def run_exposure(self, processor: "Processor") -> "xr.Dataset":
         """Run a an observation pipeline.
 
         Parameters
