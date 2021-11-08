@@ -15,6 +15,9 @@ a stack of different Detector objects and pipelines.
 At the end, the user can plot and analyze the data
 in function of the variable parameter.
 
+Different modes
+===============
+
 There are three different modes of defining parameters:
 
 Sequential
@@ -100,3 +103,33 @@ with ``from_file``.
 Can be used for example to read results of calibration running mode
 containing the champion parameter set for each generation, and create one
 output fits image for each generation to see the evolution.
+
+Using parallel computing
+========================
+
+For large amounts of parameters and in the case of slow pipeline,
+it is possible to run observation mode using parallel computing by utilizing library ``dask``.
+Parallel computing can be switched on by setting the ``with_dask`` argument to ``true`` in the configuration file.
+
+.. code-block:: yaml
+
+  observation:
+
+    with_dask: true
+
+    parameters:
+      - key:      pipeline.charge_generation.tars.arguments.particle_number
+        values:   [1, 2, 3]
+        enabled:  true
+
+Pipelines with different parameters are grouped into dask bags (https://docs.dask.org/en/stable/bag.html)
+and results are computed in parallel. Default scheduler for dask bags is ``dask.multiprocessing``.
+When using Jupyter notebooks, we recommend using the ``dask.distributed`` scheduler in combination with threads,
+this way user is also provided with the dask dashboard and useful insights for tracking progress.
+The ``distributed`` scheduler in Jupyter notebooks is set in the following way:
+
+.. code-block:: python
+
+    from distributed import Client
+
+    client = Client(processes=False)
