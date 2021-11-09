@@ -11,10 +11,11 @@ import logging
 import typing as t
 from copy import deepcopy
 from enum import Enum
+from functools import partial
 
+import dask.bag as db
 import numpy as np
 import xarray as xr
-from dask import delayed
 from tqdm.auto import tqdm
 from typing_extensions import Literal
 
@@ -140,6 +141,7 @@ class Observation:
                         sh = values.shape  # type: tuple
                         values_flattened = values.flatten()
 
+                        # TODO: find a way to remove the ignore
                         if all(x == "_" for x in values_flattened):
                             value = data_array[
                                 i : i + len(values_flattened)
@@ -222,72 +224,6 @@ class Observation:
         else:
             raise NotImplementedError
 
-    def _custom_processors_it(
-        self, processor: "Processor"
-    ) -> t.Generator[t.Tuple["Processor", int, t.Dict], None, None]:
-        """Generate processors with different custom parameters.
-
-        Parameters
-        ----------
-        processor: Processor
-
-        Yields
-        ------
-        new_processor: Processor
-        index: int
-        parameter_dict: dict
-        """
-
-        for index, parameter_dict in self._custom_parameters():
-            new_processor = create_new_processor(
-                processor=processor, parameter_dict=parameter_dict
-            )
-            yield new_processor, index, parameter_dict
-
-    def _product_processors_it(
-        self, processor: "Processor"
-    ) -> t.Generator[t.Tuple["Processor", t.Tuple, t.Dict], None, None]:
-        """Generate processors with different product parameters.
-
-        Parameters
-        ----------
-        processor: Processor
-
-        Yields
-        ------
-        new_processor: Processor
-        index: tuple of int
-        parameter_dict: dict
-        """
-
-        for index, parameter_dict in self._product_parameters():
-            new_processor = create_new_processor(
-                processor=processor, parameter_dict=parameter_dict
-            )
-            yield new_processor, index, parameter_dict
-
-    def _sequential_processors_it(
-        self, processor: "Processor"
-    ) -> t.Generator[t.Tuple["Processor", int, t.Dict], None, None]:
-        """Generate processors with different sequential parameters.
-
-        Parameters
-        ----------
-        processor: Processor
-
-        Yields
-        ------
-        new_processor: Processor
-        index: int
-        parameter_dict: dict
-        """
-
-        for index, parameter_dict in self._sequential_parameters():
-            new_processor = create_new_processor(
-                processor=processor, parameter_dict=parameter_dict
-            )
-            yield new_processor, index, parameter_dict
-
     def _processors_it(
         self, processor: "Processor"
     ) -> t.Generator[
@@ -313,33 +249,6 @@ class Observation:
                 processor=processor, parameter_dict=parameter_dict
             )
             yield new_processor, index, parameter_dict
-
-    def _delayed_processors(self, processor: "Processor") -> t.List:
-        """Return a list of Dask delayed processors built from processor generator.
-
-        Parameters
-        ----------
-        processor: Processor
-
-        Returns
-        -------
-        processors: list
-            List of dask delayed processors.
-        """
-
-        processors = []
-        delayed_processor = delayed(processor)
-        parameter_it = self._parameter_it()
-
-        for _index, parameter_dict in parameter_it():
-            delayed_parameter_dict = delayed(parameter_dict)
-            processors.append(
-                delayed(create_new_processor)(
-                    processor=delayed_processor, parameter_dict=delayed_parameter_dict
-                )
-            )
-
-        return processors
 
     def _get_parameter_types(self) -> dict:
         """Check for each step if parameters can be used as dataset coordinates (1D, simple) or not (multi).
@@ -391,17 +300,6 @@ class Observation:
 
         return processors, final_logs
 
-    def number_of_parameters(self):
-        """TBW."""
-        if self.parameter_mode == ParameterMode.Sequential:
-            number = np.sum([len(step) for step in self.enabled_steps])
-        elif self.parameter_mode == ParameterMode.Product:
-            number = np.prod([len(step) for step in self.enabled_steps])
-        elif self.parameter_mode == ParameterMode.Custom:
-            number = len(self.data)
-
-        return number
-
     def _check_steps(self, processor: "Processor") -> None:
         """Validate enabled parameter steps in processor before running the pipelines.
 
@@ -442,7 +340,7 @@ class Observation:
                     "do not use '_' character in 'values' field"
                 )
 
-    def run_parametric(self, processor: "Processor") -> ObservationResult:
+    def run_observation(self, processor: "Processor") -> ObservationResult:
         """Run the observation pipelines.
 
         Parameters
@@ -462,262 +360,323 @@ class Observation:
         x = range(processor.detector.geometry.col)
         times = self.readout.times
 
-        if self.with_dask:
+        if self.parameter_mode == ParameterMode.Product:
 
-            raise NotImplementedError("Parametric with Dask not implemented yet.")
+            apply_pipeline = partial(
+                self._apply_exposure_pipeline_product,
+                x=x,
+                y=y,
+                processor=processor,
+                times=times,
+                types=types,
+            )
+            lst = [
+                (index, parameter_dict, n)
+                for n, (index, parameter_dict) in enumerate(self._parameter_it()())
+            ]
 
-            # delayed_processor_list = self._delayed_processors(processor)
-            # result_list = []
-            #
-            # for proc in delayed_processor_list:
-            #     result_proc = delayed(proc.run_pipeline())
-            #     result_list.append(result_proc)
-            #
-            # out = []
+            if self.with_dask:
+                dataset_list = db.from_sequence(lst).map(apply_pipeline).compute()
+            else:
+                dataset_list = list(map(apply_pipeline, tqdm(lst)))
 
-        else:
+            # prepare lists for to-be-merged datasets
+            parameters = [
+                [] for _ in range(len(self.enabled_steps))
+            ]  # type: t.List[t.List[xr.Dataset]]
+            logs = []
 
-            pbar = tqdm(total=self.number_of_parameters())
-
-            if self.parameter_mode == ParameterMode.Product:
-
-                # prepare lists for to-be-merged datasets
-                dataset_list = []
-                parameters = [
-                    [] for _ in range(len(self.enabled_steps))
-                ]  # type: t.List[t.List[xr.Dataset]]
-                logs = []
-
-                for processor_id, (proc, indices, parameter_dict) in enumerate(
-                    self._product_processors_it(processor)
-                ):
-                    # log parameters for this pipeline
-                    log = log_parameters(
-                        processor_id=processor_id, parameter_dict=parameter_dict
-                    )
-                    logs.append(log)
-
-                    # run the pipeline
-                    _ = run_exposure_pipeline(
-                        processor=proc,
-                        readout=self.readout,
-                        outputs=self.outputs,
-                        progressbar=False,
-                        result_type=self.result_type,
-                    )
-
-                    ds = proc.result_to_dataset(
-                        x=x, y=y, times=times, result_type=self.result_type
-                    )
-
-                    _ = self.outputs.save_to_file(processor=proc)
-
-                    # save parameters with appropriate product mode indices
-                    for i, coordinate in enumerate(parameter_dict):
-                        parameter_ds = parameter_to_dataset(
-                            parameter_dict=parameter_dict,
-                            index=indices[i],
-                            coordinate_name=coordinate,
-                        )
-                        parameters[i].append(parameter_ds)
-
-                    # save data, use simple or multi coordinate+index
-                    ds = _add_product_parameters(
-                        ds=ds,
-                        parameter_dict=parameter_dict,
-                        indices=indices,
-                        types=types,
-                    )
-                    dataset_list.append(ds)
-
-                    pbar.update(1)
-
-                # merging/combining the outputs
-                final_parameters_list = []  # type: t.List[xr.Dataset]
-                for p in parameters:
-                    # See issue #276
-                    new_dataset = xr.combine_by_coords(p)
-                    if not isinstance(new_dataset, xr.Dataset):
-                        raise TypeError("Expecting 'Dataset'.")
-
-                    final_parameters_list.append(new_dataset)
-
-                final_parameters_merged = xr.merge(final_parameters_list)
-
-                # See issue #276
-                final_logs = xr.combine_by_coords(logs)
-                if not isinstance(final_logs, xr.Dataset):
-                    raise TypeError("Expecting 'Dataset'.")
-
-                # See issue #276
-                final_dataset = xr.combine_by_coords(dataset_list)
-                if not isinstance(final_dataset, xr.Dataset):
-                    raise TypeError("Expecting 'Dataset'.")
-
-                result = ObservationResult(
-                    dataset=final_dataset,
-                    parameters=final_parameters_merged,
-                    logs=final_logs,
+            for processor_id, (indices, parameter_dict, _) in enumerate(lst):
+                # log parameters for this pipeline
+                log = log_parameters(
+                    processor_id=processor_id, parameter_dict=parameter_dict
                 )
-                pbar.close()
-                return result
+                logs.append(log)
 
-            elif self.parameter_mode == ParameterMode.Sequential:
-
-                # prepare lists/dictionaries for to-be-merged datasets
-                dataset_dict = {}  # type: dict
-                parameters = [[] for _ in range(len(self.enabled_steps))]
-                logs = []
-
-                # overflow to next parameter step counter
-                step_counter = -1
-
-                for processor_id, (proc, index, parameter_dict) in enumerate(
-                    self._sequential_processors_it(processor)
-                ):
-                    # log parameters for this pipeline
-                    # TODO: somehow refactor logger so that default parameters
-                    #  from other steps are also logged in sequential mode
-                    log = log_parameters(
-                        processor_id=processor_id, parameter_dict=parameter_dict
-                    )
-                    logs.append(log)
-
-                    # Figure out current coordinate
-                    coordinate = str(list(parameter_dict)[0])
-                    # Check for overflow to next parameter
-                    if index == 0:
-                        dataset_dict.update({short(coordinate): []})
-                        step_counter += 1
-
-                    # run the pipeline
-                    _ = run_exposure_pipeline(
-                        processor=proc,
-                        readout=self.readout,
-                        outputs=self.outputs,
-                        progressbar=False,
-                        result_type=self.result_type,
-                    )
-
-                    ds = proc.result_to_dataset(
-                        x=x, y=y, times=times, result_type=self.result_type
-                    )
-
-                    _ = self.outputs.save_to_file(processor=proc)
-
-                    # save sequential parameter with appropriate index
+                # save parameters with appropriate product mode indices
+                for i, coordinate in enumerate(parameter_dict):
                     parameter_ds = parameter_to_dataset(
                         parameter_dict=parameter_dict,
-                        index=index,
+                        index=indices[i],
                         coordinate_name=coordinate,
                     )
-                    parameters[step_counter].append(parameter_ds)
+                    parameters[i].append(parameter_ds)
 
-                    # save data, use simple or multi coordinate+index
-                    ds = _add_sequential_parameters(
-                        ds=ds,
-                        parameter_dict=parameter_dict,
-                        index=index,
-                        coordinate_name=coordinate,
-                        types=types,
-                    )
-                    dataset_dict[short(coordinate)].append(ds)
-
-                    pbar.update(1)
-
-                # merging/combining the outputs
+            # merging/combining the outputs
+            final_parameters_list = []  # type: t.List[xr.Dataset]
+            for p in parameters:
                 # See issue #276
-                final_logs = xr.combine_by_coords(logs)
-                if not isinstance(final_logs, xr.Dataset):
+                new_dataset = xr.combine_by_coords(p)
+                if not isinstance(new_dataset, xr.Dataset):
                     raise TypeError("Expecting 'Dataset'.")
 
-                final_datasets = {}  # type: t.Dict[str, xr.Dataset]
-                for key, value in dataset_dict.items():
-                    # See issue #276
-                    new_dataset = xr.combine_by_coords(value)
-                    if not isinstance(new_dataset, xr.Dataset):
-                        raise TypeError("Expecting 'Dataset'.")
+                final_parameters_list.append(new_dataset)
 
-                    final_datasets[key] = new_dataset
+            final_parameters_merged = xr.merge(final_parameters_list)
 
-                final_parameters_list = []
-                for p in parameters:
-                    # See issue #276
-                    new_dataset = xr.combine_by_coords(p)
-                    if not isinstance(new_dataset, xr.Dataset):
-                        raise TypeError("Expecting 'Dataset'.")
+            # See issue #276
+            final_logs = xr.combine_by_coords(logs)
+            if not isinstance(final_logs, xr.Dataset):
+                raise TypeError("Expecting 'Dataset'.")
 
-                    final_parameters_list.append(new_dataset)
+            # See issue #276
+            final_dataset = xr.combine_by_coords(dataset_list)
+            if not isinstance(final_dataset, xr.Dataset):
+                raise TypeError("Expecting 'Dataset'.")
 
-                final_parameters_merged = xr.merge(final_parameters_list)
+            result = ObservationResult(
+                dataset=final_dataset,
+                parameters=final_parameters_merged,
+                logs=final_logs,
+            )
 
-                result = ObservationResult(
-                    dataset=final_datasets,
-                    parameters=final_parameters_merged,
-                    logs=final_logs,
-                )
-                pbar.close()
-                return result
+            return result
 
-            elif self.parameter_mode == ParameterMode.Custom:
+        elif self.parameter_mode == ParameterMode.Sequential:
 
-                # prepare lists for to-be-merged datasets
-                dataset_list = []
-                logs = []
+            apply_pipeline = partial(
+                self._apply_exposure_pipeline_sequential,
+                x=x,
+                y=y,
+                processor=processor,
+                times=times,
+                types=types,
+            )
 
-                for proc, index, parameter_dict in self._custom_processors_it(
-                    processor
-                ):
-                    # log parameters for this pipeline
-                    log = log_parameters(
-                        processor_id=index, parameter_dict=parameter_dict
-                    )
-                    logs.append(log)
+            lst = [
+                (index, parameter_dict, n)
+                for n, (index, parameter_dict) in enumerate(self._parameter_it()())
+            ]
 
-                    # run the pipeline
-                    _ = run_exposure_pipeline(
-                        processor=proc,
-                        readout=self.readout,
-                        outputs=self.outputs,
-                        progressbar=False,
-                        result_type=self.result_type,
-                    )
-
-                    ds = proc.result_to_dataset(
-                        x=x, y=y, times=times, result_type=self.result_type
-                    )
-
-                    _ = self.outputs.save_to_file(processor=proc)
-
-                    # save data for pipeline index
-                    # ds = _custom_dataset(processor=result_proc, index=index)
-
-                    ds = _add_custom_parameters(ds=ds, index=index)
-
-                    dataset_list.append(ds)
-
-                    pbar.update(1)
-
-                # merging/combining the outputs
-                final_ds = xr.combine_by_coords(dataset_list)
-                final_log = xr.combine_by_coords(logs)
-
-                # See issue #276
-                if not isinstance(final_ds, xr.Dataset):
-                    raise TypeError("Expecting 'Dataset'.")
-                if not isinstance(final_log, xr.Dataset):
-                    raise TypeError("Expecting 'Dataset'.")
-
-                final_parameters = final_log  # parameter dataset same as logs
-
-                result = ObservationResult(
-                    dataset=final_ds, parameters=final_parameters, logs=final_log
-                )
-                pbar.close()
-                return result
-
+            if self.with_dask:
+                dataset_list = db.from_sequence(lst).map(apply_pipeline).compute()
             else:
-                raise ValueError("Parametric mode not specified.")
+                dataset_list = list(map(apply_pipeline, tqdm(lst)))
+
+            # prepare lists/dictionaries for to-be-merged datasets
+            parameters = [[] for _ in range(len(self.enabled_steps))]
+            logs = []
+
+            # overflow to next parameter step counter
+            step_counter = -1
+
+            for processor_id, (index, parameter_dict, _) in enumerate(lst):
+                # log parameters for this pipeline
+                # TODO: somehow refactor logger so that default parameters
+                #  from other steps are also logged in sequential mode
+                log = log_parameters(
+                    processor_id=processor_id, parameter_dict=parameter_dict
+                )
+                logs.append(log)
+
+                # Figure out current coordinate
+                coordinate = str(list(parameter_dict)[0])
+                # Check for overflow to next parameter
+                if index == 0:
+                    step_counter += 1
+
+                # save sequential parameter with appropriate index
+                parameter_ds = parameter_to_dataset(
+                    parameter_dict=parameter_dict,
+                    index=index,
+                    coordinate_name=coordinate,
+                )
+                parameters[step_counter].append(parameter_ds)
+
+            # merging/combining the outputs
+            # See issue #276
+            final_logs = xr.combine_by_coords(logs)
+            if not isinstance(final_logs, xr.Dataset):
+                raise TypeError("Expecting 'Dataset'.")
+
+            final_datasets = compute_final_sequential_dataset(
+                list_of_index_and_parameter=lst, list_of_datasets=dataset_list
+            )
+
+            final_parameters_list = []
+            for p in parameters:
+                # See issue #276
+                new_dataset = xr.combine_by_coords(p)
+                if not isinstance(new_dataset, xr.Dataset):
+                    raise TypeError("Expecting 'Dataset'.")
+
+                final_parameters_list.append(new_dataset)
+
+            final_parameters_merged = xr.merge(final_parameters_list)
+
+            result = ObservationResult(
+                dataset=final_datasets,
+                parameters=final_parameters_merged,
+                logs=final_logs,
+            )
+            return result
+
+        elif self.parameter_mode == ParameterMode.Custom:
+
+            apply_pipeline = partial(
+                self._apply_exposure_pipeline_custom,
+                x=x,
+                y=y,
+                processor=processor,
+                times=times,
+            )
+            lst = [
+                (index, parameter_dict, n)
+                for n, (index, parameter_dict) in enumerate(self._parameter_it()())
+            ]
+
+            if self.with_dask:
+                dataset_list = db.from_sequence(lst).map(apply_pipeline).compute()
+            else:
+                dataset_list = list(map(apply_pipeline, tqdm(lst)))
+
+            # prepare lists for to-be-merged datasets
+            logs = []
+
+            for index, parameter_dict, _ in lst:
+                # log parameters for this pipeline
+                log = log_parameters(processor_id=index, parameter_dict=parameter_dict)
+                logs.append(log)
+
+            # merging/combining the outputs
+            final_ds = xr.combine_by_coords(dataset_list)
+            final_log = xr.combine_by_coords(logs)
+
+            # See issue #276
+            if not isinstance(final_ds, xr.Dataset):
+                raise TypeError("Expecting 'Dataset'.")
+            if not isinstance(final_log, xr.Dataset):
+                raise TypeError("Expecting 'Dataset'.")
+
+            final_parameters = final_log  # parameter dataset same as logs
+
+            result = ObservationResult(
+                dataset=final_ds, parameters=final_parameters, logs=final_log
+            )
+            return result
+
+        else:
+            raise ValueError("Parametric mode not specified.")
+
+    def _apply_exposure_pipeline_product(
+        self,
+        index_and_parameter: t.Tuple[t.Tuple, t.Dict, int],
+        processor: "Processor",
+        x: range,
+        y: range,
+        times: np.ndarray,
+        types: dict,
+    ):
+
+        index, parameter_dict, n = index_and_parameter
+
+        new_processor = create_new_processor(
+            processor=processor, parameter_dict=parameter_dict
+        )
+
+        # run the pipeline
+        _ = run_exposure_pipeline(
+            processor=new_processor,
+            readout=self.readout,
+            progressbar=False,
+            result_type=self.result_type,
+        )
+
+        _ = self.outputs.save_to_file(processor=new_processor, run_number=n)
+
+        ds = new_processor.result_to_dataset(
+            x=x, y=y, times=times, result_type=self.result_type
+        )
+
+        # Can also be done outside dask in a loop
+        ds = _add_product_parameters(
+            ds=ds,
+            parameter_dict=parameter_dict,
+            indices=index,
+            types=types,
+        )
+
+        return ds
+
+    def _apply_exposure_pipeline_custom(
+        self,
+        index_and_parameter: t.Tuple[int, t.Dict, int],
+        processor: "Processor",
+        x: range,
+        y: range,
+        times: np.ndarray,
+    ):
+
+        index, parameter_dict, n = index_and_parameter
+
+        new_processor = create_new_processor(
+            processor=processor, parameter_dict=parameter_dict
+        )
+
+        # run the pipeline
+        _ = run_exposure_pipeline(
+            processor=new_processor,
+            readout=self.readout,
+            progressbar=False,
+            result_type=self.result_type,
+        )
+
+        _ = self.outputs.save_to_file(processor=new_processor, run_number=n)
+
+        ds = new_processor.result_to_dataset(
+            x=x, y=y, times=times, result_type=self.result_type
+        )
+
+        # Can also be done outside dask in a loop
+        ds = _add_custom_parameters(
+            ds=ds,
+            index=index,
+        )
+
+        return ds
+
+    def _apply_exposure_pipeline_sequential(
+        self,
+        index_and_parameter: t.Tuple[int, t.Dict, int],
+        processor: "Processor",
+        x: range,
+        y: range,
+        times: np.ndarray,
+        types: dict,
+    ):
+
+        index, parameter_dict, n = index_and_parameter
+
+        new_processor = create_new_processor(
+            processor=processor, parameter_dict=parameter_dict
+        )
+
+        coordinate = str(list(parameter_dict)[0])
+
+        # run the pipeline
+        _ = run_exposure_pipeline(
+            processor=new_processor,
+            readout=self.readout,
+            progressbar=False,
+            result_type=self.result_type,
+        )
+
+        _ = self.outputs.save_to_file(processor=new_processor, run_number=n)
+
+        ds = new_processor.result_to_dataset(
+            x=x, y=y, times=times, result_type=self.result_type
+        )
+
+        # Can also be done outside dask in a loop
+        ds = _add_sequential_parameters(
+            ds=ds,
+            parameter_dict=parameter_dict,
+            index=index,
+            coordinate_name=coordinate,
+            types=types,
+        )
+
+        return ds
 
     def debug_parameters(self, processor: "Processor") -> list:
         """List the parameters using processor parameters in processor generator.
@@ -929,3 +888,40 @@ def _add_product_parameters(
             raise NotImplementedError
 
     return ds
+
+
+def compute_final_sequential_dataset(
+    list_of_index_and_parameter: list, list_of_datasets: list
+) -> t.Dict[str, xr.Dataset]:
+    """Return a dictionary of result datasets where keys are different parameters.
+
+    Parameters
+    ----------
+    list_of_index_and_parameter: list
+    list_of_datasets: list
+
+    Returns
+    -------
+    final_datasets: dict
+    """
+
+    final_dict = {}  # type: t.Dict[str, list]
+
+    for _, parameter_dict, n in list_of_index_and_parameter:
+        coordinate = str(list(parameter_dict)[0])
+        if short(coordinate) not in final_dict.keys():
+            final_dict.update({short(coordinate): []})
+            final_dict[short(coordinate)].append(list_of_datasets[n])
+        else:
+            final_dict[short(coordinate)].append(list_of_datasets[n])
+
+    final_datasets = {}  # type: t.Dict[str, xr.Dataset]
+    for key, value in final_dict.items():
+        ds = xr.combine_by_coords(value)
+        # see issue #276
+        if not isinstance(ds, xr.Dataset):
+            raise TypeError("Expecting 'Dataset'.")
+
+        final_datasets.update({key: ds})
+
+    return final_datasets
