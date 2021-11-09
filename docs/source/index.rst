@@ -101,6 +101,7 @@ to look for certain things:
 
    tutorials/overview.rst
    tutorials/install.rst
+   tutorials/get_help.rst
    tutorials/running.rst
    tutorials/examples.rst
 

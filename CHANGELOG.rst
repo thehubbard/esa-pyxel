@@ -28,8 +28,8 @@ Documentation
   (See `!289 <https://gitlab.com/esa/pyxel/-/merge_requests/289>`_).
 * Update adding new models documentation with best practices.
   (See `!293 <https://gitlab.com/esa/pyxel/-/merge_requests/293>`_).
-* Split documentation into 'stable' and 'latest'
-  (See `!300 <https://gitlab.com/esa/pyxel/-/merge_requests/300>`_).
+* Add a 'Asking for help' chapter in the documentation.
+  (See `!299 <https://gitlab.com/esa/pyxel/-/merge_requests/299>`_).
 
 Models
 ~~~~~~
