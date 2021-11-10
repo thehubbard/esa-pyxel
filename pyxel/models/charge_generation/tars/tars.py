@@ -24,12 +24,14 @@ from pyxel.models.charge_generation.tars.util import (  # , load_histogram_data
     interpolate_data,
     read_data,
 )
+from pyxel.util import temporary_random_state
 
 # from astropy import units as u
 
 
 # @validators.validate
 # @config.argument(name='', label='', units='', validate=)
+@temporary_random_state
 def run_tars(
     detector: Detector,
     simulation_mode: t.Optional[
@@ -46,7 +48,7 @@ def run_tars(
     # step_size_file: str = None,
     # stopping_file: str = None,
     spectrum_file: t.Optional[str] = None,
-    random_seed: t.Optional[int] = None,
+    seed: t.Optional[int] = None,
 ) -> None:
     """Simulate charge deposition by cosmic rays.
 
@@ -59,11 +61,9 @@ def run_tars(
     :param simulation_mode: simulation mode: ``cosmic_rays``, ``radioactive_decay``
     :param running_mode: mode: ``stopping``, ``stepsize``, ``geant4``, ``plotting``
     :param spectrum_file: path to input spectrum
-    :param random_seed: seed
+    :param seed: seed
     """
     logging.info("")
-    if random_seed:
-        np.random.seed(random_seed)
 
     if simulation_mode is None:
         raise ValueError("TARS: Simulation mode is not defined")

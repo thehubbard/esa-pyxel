@@ -11,6 +11,7 @@ import typing as t
 import numpy as np
 
 from pyxel.detectors import Detector
+from pyxel.util import temporary_random_state
 
 # TODO: random, docstring, private function
 # TODO: normal and poisson versions, maybe as an argument,
@@ -19,13 +20,15 @@ from pyxel.detectors import Detector
 # TODO: Fix this
 # @validators.validate
 # @config.argument(name='seed', label='random seed', units='', validate=checkers.check_type(int))
-def shot_noise(detector: Detector, random_seed: t.Optional[int] = None) -> None:
+@temporary_random_state
+def shot_noise(detector: Detector, seed: t.Optional[int] = None) -> None:
     """Add shot noise to the number of photon per pixel.
 
-    :param detector: Pyxel Detector object
-    :param random_seed: int seed
+    Parameters
+    ----------
+    detector: Detector
+        Pyxel Detecotr object.
+    seed: int, optional
+        Random seed.
     """
-    if random_seed:
-        np.random.seed(random_seed)
-
     detector.photon.array = np.random.poisson(lam=detector.photon.array)

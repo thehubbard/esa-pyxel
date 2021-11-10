@@ -7,22 +7,28 @@
 
 """Simple model to generate charges due to dark current process."""
 import logging
+import typing as t
 
 import numpy as np
 
 from pyxel.detectors import CMOS
+from pyxel.util import temporary_random_state
 
 # TODO: more documentation, refactoring, random
 
 # TODO: Fix this
 # @validators.validate
 # @config.argument(name='detector', label='', units='', validate=checkers.check_type(CMOS))
-def dark_current_rule07(detector: CMOS) -> None:
+@temporary_random_state
+def dark_current_rule07(detector: CMOS, seed: t.Optional[int] = None) -> None:
     """Generate charge from dark current process.
 
-    :param detector: Pyxel Detector object
-    TODO: investigate on the knee of rule07 for higher 1/le*T values
+    Parameters
+    ----------
+    detector: Detector
+    seed: int, optional
     """
+    # TODO: investigate on the knee of rule07 for higher 1/le*T values
     logging.info("")
     geo = detector.geometry
     temperature = detector.environment.temperature

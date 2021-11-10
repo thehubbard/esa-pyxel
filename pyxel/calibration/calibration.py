@@ -124,7 +124,11 @@ class Calibration:
             parameters if parameters else []
         )  # type: t.Sequence[ParameterValues]
 
-        self._seed = np.random.randint(0, 100000) if seed is None else seed  # type: int
+        if seed is None:
+            rng = np.random.default_rng()
+            self._seed = rng.integers(100000)  # type: int
+        else:
+            self.seed = seed
 
         self._num_islands = num_islands  # type: int
         self._num_evolutions = num_evolutions  # type: int

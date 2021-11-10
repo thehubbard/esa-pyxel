@@ -46,15 +46,18 @@ def check_energy(initial_energy: t.Union[int, float]) -> None:
 
 
 def random_direction(
-    v_abs: float = 1.0,
+    v_abs: float = 1.0, seed: t.Optional[int] = None
 ) -> np.ndarray:  # TODO check random angles and direction
     """Generate random direction for a photon.
 
-    :param v_abs:
-    :return:
+    Parameters
+    ----------
+    v_abs: float
+    seed: int
     """
-    alpha = 2 * math.pi * np.random.random()
-    beta = 2.0 * math.pi * np.random.random()
+    rng = np.random.default_rng(seed=seed)
+    alpha = 2 * math.pi * rng.random()
+    beta = 2.0 * math.pi * rng.random()
     v_z = v_abs * math.sin(alpha)
     v_ver = v_abs * math.cos(alpha) * math.cos(beta)
     v_hor = v_abs * math.cos(alpha) * math.sin(beta)

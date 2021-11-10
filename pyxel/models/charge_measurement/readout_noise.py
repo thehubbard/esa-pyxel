@@ -12,6 +12,7 @@ import typing as t
 import numpy as np
 
 from pyxel.detectors import CMOS, Detector
+from pyxel.util import temporary_random_state
 
 # from astropy import units as u
 
@@ -20,20 +21,22 @@ from pyxel.detectors import CMOS, Detector
 # @config.argument(name='', label='', units='', validate=)
 
 
+@temporary_random_state
 def output_node_noise(
-    detector: Detector, std_deviation: float, random_seed: t.Optional[int] = None
+    detector: Detector, std_deviation: float, seed: t.Optional[int] = None
 ) -> None:
-    """Adding noise to signal array of detector output node using normal random distribution.
+    """Add noise to signal array of detector output node using normal random distribution.
 
-    detector Signal unit: Volt
-
-    :param detector: Pyxel Detector object
-    :param std_deviation: standard deviation
-    :param random_seed: seed
+    Parameters
+    ----------
+    detector: Detector
+        Pyxel detector object.
+    std_deviation: float
+        Standard deviation.
+    seed: int, optional
+        Random seed.
     """
     logging.info("")
-    if random_seed:
-        np.random.seed(random_seed)
 
     signal_mean_array = detector.signal.array.astype("float64")
     sigma_array = std_deviation * np.ones(signal_mean_array.shape)
@@ -43,28 +46,27 @@ def output_node_noise(
     detector.signal.array = signal
 
 
+@temporary_random_state
 def output_node_noise_cmos(
     detector: "CMOS",
     readout_noise: float,
     readout_noise_std: float,
-    random_seed: t.Optional[int] = None,
+    seed: t.Optional[int] = None,
 ) -> None:
     """Output node noise model for CMOS detectors where readout is statistically independent for each pixel.
 
     Parameters
     ----------
-    detector
+    detector: Detector
     readout_noise: Mean readout noise for the array in units of electrons.
     readout_noise_std: Readout noise standard deviation in units of electrons.
-    random_seed
+    seed: int, optional
 
     Returns
     -------
     None
     """
     logging.info("")
-    if random_seed:
-        np.random.seed(random_seed)
 
     # sv is charge readout sensitivity
     sv = detector.characteristics.sv

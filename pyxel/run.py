@@ -37,14 +37,16 @@ def exposure_mode(
     exposure: "Exposure",
     detector: Detector,
     pipeline: "DetectionPipeline",
+    random_seed: t.Optional[int] = None,
 ) -> xr.Dataset:
     """Run an 'exposure' pipeline.
 
     Parameters
     ----------
-    exposure
-    detector
-    pipeline
+    random_seed: int, optional
+    exposure: Exposure
+    detector: Detector
+    pipeline: DetectionPipeline
 
     Returns
     -------
@@ -52,6 +54,8 @@ def exposure_mode(
     """
 
     logging.info("Mode: Exposure")
+
+    np.random.seed(seed=random_seed)
 
     exposure_outputs = exposure.outputs  # type: ExposureOutputs
 
@@ -71,21 +75,24 @@ def observation_mode(
     observation: "Observation",
     detector: Detector,
     pipeline: "DetectionPipeline",
+    random_seed: t.Optional[int] = None,
 ) -> "ObservationResult":
     """Run an 'observation' pipeline.
 
     Parameters
     ----------
+    random_seed: int, optional
     observation: Observation
     detector: Detector
-    pipeline: Pipeline
-    with_dask: bool
+    pipeline: DetectionPipeline
 
     Returns
     -------
     result: ObservationResult
     """
     logging.info("Mode: Parametric")
+
+    np.random.seed(seed=random_seed)
 
     observation_outputs = observation.outputs  # type: ObservationOutputs
     detector.set_output_dir(observation_outputs.output_dir)  # TODO: Remove this
@@ -110,11 +117,13 @@ def calibration_mode(
     detector: Detector,
     pipeline: "DetectionPipeline",
     compute_and_save: bool = True,
+    random_seed: t.Optional[int] = None,
 ) -> t.Tuple[xr.Dataset, pd.DataFrame, pd.DataFrame, t.Sequence]:
     """Run a 'calibration' pipeline.
 
     Parameters
     ----------
+    random_seed: int, optional
     calibration: Calibration
     detector: Detector
     pipeline: DetectionPipeline
@@ -125,6 +134,8 @@ def calibration_mode(
     tuple
     """
     logging.info("Mode: Calibration")
+
+    np.random.seed(seed=random_seed)
 
     calibration_outputs = calibration.outputs  # type: CalibrationOutputs
     detector.set_output_dir(calibration_outputs.output_dir)  # TODO: Remove this
@@ -218,8 +229,6 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
     logging.info("Pipeline started.")
 
     start_time = time.time()
-    if random_seed:
-        np.random.seed(random_seed)
 
     configuration = load(
         Path(input_filename).expanduser().resolve()
@@ -242,18 +251,31 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
 
     if isinstance(configuration.exposure, Exposure):
         exposure = configuration.exposure  # type: Exposure
-        exposure_mode(exposure=exposure, detector=detector, pipeline=pipeline)
+        exposure_mode(
+            exposure=exposure,
+            detector=detector,
+            pipeline=pipeline,
+            random_seed=random_seed,
+        )
 
     elif isinstance(configuration.calibration, Calibration):
 
         calibration = configuration.calibration  # type: Calibration
         _ = calibration_mode(
-            calibration=calibration, detector=detector, pipeline=pipeline
+            calibration=calibration,
+            detector=detector,
+            pipeline=pipeline,
+            random_seed=random_seed,
         )
 
     elif isinstance(configuration.observation, Observation):
         observation = configuration.observation  # type: Observation
-        observation_mode(observation=observation, detector=detector, pipeline=pipeline)
+        observation_mode(
+            observation=observation,
+            detector=detector,
+            pipeline=pipeline,
+            random_seed=random_seed,
+        )
 
     else:
         raise NotImplementedError("Please provide a valid simulation mode !")
