@@ -313,7 +313,7 @@ class MyArchipelago:
         else:
             rng = np.random.default_rng(seed=self.seed)  # type: np.random.Generator
             max_value = np.iinfo(np.uint32).max  # type: int
-            seeds = [rng.integers(0, max_value) for _ in range(self.num_islands)]
+            seeds = [int(rng.integers(0, max_value)) for _ in range(self.num_islands)]
 
         # Create the islands and add them to this archipelago
         if self.parallel:

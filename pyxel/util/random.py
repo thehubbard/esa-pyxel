@@ -45,7 +45,8 @@ def temporary_random_state(func: t.Callable) -> t.Callable:
     @wraps(func)
     def inner(*args, seed=None, **kwargs):
         if seed is None:
-            seed = np.random.randint(10000)
-        with change_random_state(seed):
             return func(*args, seed=seed, **kwargs)
+        else:
+            with change_random_state(seed):
+                return func(*args, seed=seed, **kwargs)
     return inner

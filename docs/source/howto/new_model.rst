@@ -154,7 +154,7 @@ avoid resetting the global seed with ``numpy.random.seed()`` inside the model,
 instead wrap the model function with decorator ``temporary_random_state`` from ``pyxel.util``
 and provide an optional argument ``seed``.
 The function ``temporary_random_state`` will use this seed to temporary change the state of the random generator,
-or choose a random seed if none is provided.
+or keep the same state (use the outer scope seed) if no specific seed is provided.
 
 Example:
 

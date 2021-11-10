@@ -128,7 +128,7 @@ class Calibration:
             rng = np.random.default_rng()
             self._seed = rng.integers(100000)  # type: int
         else:
-            self.seed = seed
+            self._seed = seed
 
         self._num_islands = num_islands  # type: int
         self._num_evolutions = num_evolutions  # type: int
