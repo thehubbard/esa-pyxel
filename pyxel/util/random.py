@@ -10,6 +10,7 @@
 
 import typing as t
 from contextlib import contextmanager
+from functools import wraps
 
 import numpy as np
 
@@ -41,13 +42,10 @@ def temporary_random_state(func: t.Callable) -> t.Callable:
     -------
     inner: callable
     """
-
+    @wraps(func)
     def inner(*args, seed=None, **kwargs):
-        if seed is not None:
-            with change_random_state(seed):
-                return func(*args, seed=seed, **kwargs)
-        else:
+        if seed is None:
             seed = np.random.randint(10000)
+        with change_random_state(seed):
             return func(*args, seed=seed, **kwargs)
-
     return inner
