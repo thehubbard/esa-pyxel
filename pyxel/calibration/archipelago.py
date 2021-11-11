@@ -243,7 +243,7 @@ def extract_data_3d(
     return ds
 
 
-# TODO: Rename to PyxelArchipelago
+# TODO: Rename to PyxelArchipelago. See #335
 class MyArchipelago:
     """User-defined Archipelago."""
 
