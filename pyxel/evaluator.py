@@ -97,7 +97,7 @@ def eval_range(values: t.Union[str, t.Sequence]) -> t.Sequence:
     return values_lst
 
 
-# TODO: Use 'numexpr.evaluate' ?
+# TODO: Use 'numexpr.evaluate' ? See #331
 def eval_entry(
     value: t.Union[str, Number, np.ndarray]
 ) -> t.Union[str, Number, np.ndarray]:
