@@ -25,6 +25,7 @@ class ParameterType(Enum):
     Multi = "multi"
 
 
+# TODO: Add unit tests. See #336
 class ParameterValues:
     """Contains keys and values of parameters in a parametric step."""
 
