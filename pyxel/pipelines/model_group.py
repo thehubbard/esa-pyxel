@@ -20,6 +20,7 @@ if t.TYPE_CHECKING:
 
 # TODO: These methods could also be as a `abc.Sequence` with magical methods:
 #       __getitem__, __iter__, __len__, __contains__, ...
+#       See #181
 class ModelGroup:
     """TBW."""
 
