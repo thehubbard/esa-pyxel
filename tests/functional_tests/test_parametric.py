@@ -8,6 +8,7 @@ from pyxel import Configuration
 from pyxel.detectors import CCD
 from pyxel.observation.observation import Observation, ParameterMode
 from pyxel.pipelines import DetectionPipeline, Processor
+from pyxel.exposure import run_exposure_pipeline
 
 try:
     import pygmo as pg
@@ -88,4 +89,4 @@ def test_pipeline_parametric_without_init_photon(mode: ParameterMode, expected):
     for proc, _, _ in processor_generator:
         assert isinstance(proc, Processor)
 
-        proc.run_pipeline()
+        run_exposure_pipeline(processor=proc, readout=observation.readout)

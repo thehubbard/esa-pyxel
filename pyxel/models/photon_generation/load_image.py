@@ -28,16 +28,27 @@ def load_image(
     position: t.Tuple[int, int] = (0, 0),  # TODO Too many arguments
     convert_to_photons: bool = False,
     multiplier: float = 1.0,
+    time_scale: float = 1.0,
 ) -> None:
     r"""Load FITS file as a numpy array and add to the detector as input image.
 
-    :param detector: Pyxel Detector object
-    :param image_file: path to FITS image file
-    :param fit_image_to_det: fitting image to detector shape (Geometry.row, Geometry.col)
-    :param position: indices of starting row and column, used when fitting image to detector
-    :param convert_to_photons: if ``True``, the model converts the values of loaded image array from ADU to
+    Parameters
+    ----------
+    detector: Detector
+    image_file: str
+        Path to image file.
+    fit_image_to_det: bool
+        Fitting image to detector shape (Geometry.row, Geometry.col).
+    position: tuple
+        Indices of starting row and column, used when fitting image to detector.
+    convert_to_photons: bool
+        If ``True``, the model converts the values of loaded image array from ADU to
         photon numbers for each pixel using the Photon Transfer Function:
-        :math:`PTF = QE \cdot \eta \cdot S_{v} \cdot amp \cdot a_{1} \cdot a_{2}`
+        :math:`PTF = QE \cdot \eta \cdot S_{v} \cdot amp \cdot a_{1} \cdot a_{2}`.
+    multiplier: float
+        Multiply photon array level with a custom number.
+    time_scale: float
+        Time scale of the photon flux, default is 1 second. 0.001 would be ms.
     """
     filename = Path(image_file).expanduser().resolve()
 
@@ -64,6 +75,6 @@ def load_image(
             cht.qe * cht.eta * cht.sv * cht.amp * cht.a1 * cht.a2
         )
 
-    photon_array *= multiplier
+    photon_array = photon_array * (detector.time_step / time_scale) * multiplier
 
     detector.photon = Photon(photon_array)
