@@ -116,6 +116,7 @@ class Arguments(t.MutableMapping):
 
 
 # TODO: Improve this class. See issue #132.
+# TODO: Add unit tests #182
 class ModelFunction:
     """Create a wrapper function around a Model function.
 
