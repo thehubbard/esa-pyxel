@@ -14,7 +14,7 @@ from pyxel.pipelines import ModelFunction, ModelGroup
 class DetectionPipeline:
     """TBW."""
 
-    # TODO: develop a ModelGroupList class ? Pass this as a single argument.
+    # TODO: develop a ModelGroupList class ? See #333
     def __init__(
         self,  # TODO: Too many instance attributes
         photon_generation: t.Optional[ModelGroup] = None,
