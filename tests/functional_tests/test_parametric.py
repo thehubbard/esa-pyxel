@@ -6,9 +6,9 @@ import pytest
 import pyxel
 from pyxel import Configuration
 from pyxel.detectors import CCD
+from pyxel.exposure import run_exposure_pipeline
 from pyxel.observation.observation import Observation, ParameterMode
 from pyxel.pipelines import DetectionPipeline, Processor
-from pyxel.exposure import run_exposure_pipeline
 
 try:
     import pygmo as pg

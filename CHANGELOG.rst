@@ -7,6 +7,8 @@ version 1.0 / UNRELEASED-YYYY-MM-DD
 
 Core
 ~~~~
+* Multiply photon flux with detector time step in photon generation models.
+  (See `!305 <https://gitlab.com/esa/pyxel/-/merge_requests/305>`_).
 
 Documentation
 ~~~~~~~~~~~~~
