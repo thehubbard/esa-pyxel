@@ -188,18 +188,6 @@ class ModelFunction:
         """TBW."""
         return self._arguments
 
-    # # TODO: Replace this by __call__ ?
-    # @property
-    # def function(self) -> t.Callable:
-    #     """TBW."""
-    #     func_ref = evaluate_reference(self.func)  # type: t.Callable
-    #     if isinstance(func_ref, type):
-    #         # this is a class type, instantiate it using default arguments.
-    #         func_ref = func_ref()
-    #         # TODO: should check whether or not it's callable.
-    #     func = functools.partial(func_ref, **self.arguments)
-    #     return func
-
     def __call__(self, detector: "Detector") -> T:
         """TBW."""
         # func_ref = evaluate_reference(self.func)  # type: t.Callable

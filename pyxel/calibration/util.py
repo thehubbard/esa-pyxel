@@ -135,7 +135,7 @@ def read_data(filenames: t.Sequence[Path]) -> t.Sequence[np.ndarray]:
     return output
 
 
-# TODO: Create unit tests for this function
+# TODO: Refactor and add more unit tests. See #327
 def list_to_slice(
     input_list: t.Optional[t.Sequence[int]] = None,
 ) -> t.Union[t.Tuple[slice, slice], t.Tuple[slice, slice, slice]]:
@@ -160,7 +160,7 @@ def list_to_slice(
         raise ValueError("Fitting range should have 4 or 6 values")
 
 
-# TODO: Create unit tests for this function
+# TODO: Refactor and add more unit tests. See #327
 def list_to_3d_slice(
     input_list: t.Optional[t.Sequence[int]] = None,
 ) -> t.Tuple[slice, slice, slice]:
