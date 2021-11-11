@@ -302,8 +302,8 @@ class Outputs:
         return filename
 
 
-# TODO: Create unit tests
-# TODO: Refactor this in 'def apply_run_number(folder, template_filename) -> Path
+# TODO: Refactor this in 'def apply_run_number(folder, template_filename) -> Path'.
+#       See #332.
 def apply_run_number(
     template_filename: Path, run_number: t.Optional[int] = None
 ) -> Path:
