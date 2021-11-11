@@ -1,7 +1,7 @@
 # Pyxel additional requirements for generating documentation
 
 doc8
-sphinx
+sphinx==4.2.0
 sphinx-book-theme
 sphinxcontrib-bibtex
 sphinxcontrib-napoleon
