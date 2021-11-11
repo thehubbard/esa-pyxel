@@ -30,18 +30,11 @@ class Photon(Array):
         np.float64,
     )
 
-    def __init__(self, value: np.ndarray):
-        cls_name = self.__class__.__name__  # type: str
+    def __init__(self, geo: "Geometry"):
 
-        if not isinstance(value, np.ndarray):
-            raise TypeError(f"{cls_name} array should be a numpy.ndarray")
+        new_array = np.zeros((geo.row, geo.col), dtype=self.EXP_TYPE)
 
-        if value.dtype not in self.TYPE_LIST:
-            raise TypeError(
-                f"Type of {cls_name} array should be a(n) %s" % self.EXP_TYPE.__name__
-            )
-
-        self._array = value
+        super().__init__(new_array)
 
     # # TODO: This could be done in '__init__'
     # def new_array(self, new_array: np.ndarray) -> None:

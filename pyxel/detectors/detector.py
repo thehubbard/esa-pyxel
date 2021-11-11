@@ -112,8 +112,8 @@ class Detector:
 
     def reset(self, reset_all: bool = True) -> None:
         """TBW."""
-        self._photon = None
         if reset_all:
+            self._photon = Photon(self.geometry)
             self._charge = Charge()
             self._pixel = Pixel(self.geometry)
             self._signal = Signal(self.geometry)
