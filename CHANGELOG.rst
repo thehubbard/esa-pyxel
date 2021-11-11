@@ -19,6 +19,9 @@ Models
 Others
 ~~~~~~
 
+* Remove some TODOs.
+  (See `!288 <https://gitlab.com/esa/pyxel/-/merge_requests/288>`_).
+
 
 version 0.11.2 / 2021-11-09
 ---------------------------
