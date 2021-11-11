@@ -43,7 +43,7 @@ class Detector:
         self._memory = dict()  # type: t.Dict
 
         self.input_image = None  # type: t.Optional[np.ndarray]
-        self._output_dir = None  # type: t.Optional[Path]  # TODO: Is it really needed ?
+        self._output_dir = None  # type: t.Optional[Path]  # TODO: See #330
 
         self._readout_properties = None  # type: t.Optional["ReadoutProperties"]
 
@@ -139,14 +139,12 @@ class Detector:
             if self._image:
                 self.image.array *= 0
 
-    # TODO: Set an `Output` object ?
-    # TODO: Is it really needed ?
+    # TODO: Set an `Output` object ? Is it really needed ? See #330
     def set_output_dir(self, path: t.Union[str, Path]) -> None:
         """Set output directory path."""
         self._output_dir = Path(path)
 
-    # TODO: Get an `Output object ?
-    # TODO: Is it really needed ?
+    # TODO: Set an `Output` object ? Is it really needed ? See #330
     @property
     def output_dir(self) -> Path:
         """Output directory path."""
