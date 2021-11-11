@@ -23,17 +23,7 @@ from pyxel.util.memory import get_size, memory_usage_details
 __all__ = ["Detector"]
 
 
-# TODO: Add methods to save/load a `Detector` instance to the filesystem
-#       Example of methods:
-#           def to_fits(self, filename: Path):      # Save into one FITS file that contains multiple HDUs
-#               ...
-#           @classmethod
-#           def from_fits(self, filename: Path) -> Detector     # Store into one FITS file
-#               ...
-#           def to_hdf5(...) / def from_hdf5(...)
-#           def to_folder(...)  / def from_folder(...)
-#           def to_yaml(...) ? / def from_yaml(...)
-#           def to_asdf(...) ? / def from_asdf(...)
+# TODO: Add methods to save/load a `Detector` instance to the filesystem. See #329
 class Detector:
     """The detector class."""
 
@@ -360,7 +350,7 @@ class Detector:
             self, attributes, print_result=print_result, human_readable=human_readable
         )
 
-    # TODO: Move this to another place
+    # TODO: Move this to another place. See #241
     def to_hdf5(self, filename: t.Union[str, Path]) -> None:
         """Convert the detector to a HDF5 object."""
         with h5.File(filename, "w") as h5file:

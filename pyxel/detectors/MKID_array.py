@@ -104,8 +104,7 @@ class MKID(Detector):
             self, attributes, print_result=print_result, human_readable=human_readable
         )
 
-    # TODO: Move this to another place
-    # TODO: There is a lot of code in common with `Detector.to_hdf5`. Refactor it !
+    # TODO: Move this to another place. See #241
     def to_hdf5(self, filename: t.Union[str, Path]) -> None:
         """Convert the detector to a HDF5 object."""
         with h5.File(filename, "w") as h5file:
