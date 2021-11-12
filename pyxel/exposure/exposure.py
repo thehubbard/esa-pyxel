@@ -57,12 +57,12 @@ class Exposure:
         self._result_type = value
 
     @property
-    def pipeline_seed(self) -> int:
+    def pipeline_seed(self) -> t.Optional[int]:
         """TBW."""
         return self._pipeline_seed
 
     @pipeline_seed.setter
-    def pipeline_seed(self, value: int) -> None:
+    def pipeline_seed(self, value: t.Optional[int]) -> None:
         """TBW."""
         self._pipeline_seed = value
 

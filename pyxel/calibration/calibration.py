@@ -284,7 +284,7 @@ class Calibration:
         self._pygmo_seed = value
 
     @property
-    def pipeline_seed(self) -> int:
+    def pipeline_seed(self) -> t.Optional[int]:
         """TBW."""
         return self._pipeline_seed
 

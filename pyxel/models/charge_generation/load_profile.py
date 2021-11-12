@@ -24,6 +24,7 @@ from pyxel.detectors.geometry import (
 
 # TODO: more documentation
 
+
 @lru_cache(maxsize=128)  # One must add parameter 'maxsize' for Python 3.7
 def _create_charges(
     num_rows: int,

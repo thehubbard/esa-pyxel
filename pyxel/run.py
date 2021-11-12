@@ -14,7 +14,6 @@ from pathlib import Path
 
 import click
 import dask
-import numpy as np
 import pandas as pd
 import xarray as xr
 from matplotlib import pyplot as plt
