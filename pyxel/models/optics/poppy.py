@@ -206,4 +206,4 @@ def optical_psf(
         detector.photon.array, psf[0][0].data, boundary="fill", fill_value=mean
     )
 
-    detector.photon = Photon(array)
+    detector.photon = array

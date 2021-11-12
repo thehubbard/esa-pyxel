@@ -29,4 +29,4 @@ def alignment(detector: Detector) -> None:
         slice(row0, row0 + geo.row), slice(col0, col0 + geo.col)
     ]
 
-    detector.photon = Photon(aligned_optical_image)
+    detector.photon = aligned_optical_image

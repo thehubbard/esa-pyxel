@@ -42,7 +42,7 @@ class MKID(Detector):
     def reset(self) -> None:
         """TBW."""
         super().reset()
-        self._phase = Phase(self.geometry)
+        self._phase = Phase(geo=self.geometry)
 
     def empty(self, empty_all: bool = True) -> None:
         """Empty the data in the detector.
