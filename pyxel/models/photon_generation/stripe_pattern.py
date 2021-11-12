@@ -16,6 +16,8 @@ import skimage.transform as tr
 if t.TYPE_CHECKING:
     from pyxel.detectors import Detector
 
+# TODO: group with illumination, change editing of photon array
+
 
 def square_signal(n: int, lw: int, startwith: int = 0) -> list:
     """Compute a 1D periodic square signal.

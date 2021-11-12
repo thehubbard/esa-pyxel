@@ -12,6 +12,7 @@ import numpy as np
 
 from pyxel.detectors import Detector
 
+# TODO: docstring, private function, what is eta,
 
 # TODO: Fix this
 # @validators.validate
@@ -56,40 +57,40 @@ def simple_conversion(detector: Detector) -> None:
     )
 
 
-# TODO: Fix this
-# @validators.validate
-# @config.argument(name='', label='', units='', validate=)
-def monte_carlo_conversion(detector: Detector) -> None:
-    """Generate charge from incident photon via photoelectric effect, more exact, stochastic (Monte Carlo) model.
-
-    :param detector: Pyxel Detector object
-    """
-    logging.info("")
-
-    # detector.qe <= 1
-    # detector.eta <= 1
-    # if np.random.rand(size) <= detector.qe:
-    #     pass    # 1 e
-    # else:
-    #     pass
-    # if np.random.rand(size) <= detector.eta:
-    #     pass    # 1 e
-    # else:
-    #     pass
-    # TODO: random number for QE
-    # TODO: random number for eta
-    # TODO: energy threshold
-
-
-def random_pos(detector: Detector) -> None:
-    """Generate random position for photoelectric effect inside detector.
-
-    :param detector: Pyxel Detector object
-    """
-    # pos1 = detector.vert_dimension * np.random.random()
-    # pos2 = detector.horz_dimension * np.random.random()
-
-    # size = 0
-    # pos3 = -1 * detector.total_thickness * np.random.rand(size)
-    # return pos3
-    raise NotImplementedError
+# # TODO: Fix this
+# # @validators.validate
+# # @config.argument(name='', label='', units='', validate=)
+# def monte_carlo_conversion(detector: Detector) -> None:
+#     """Generate charge from incident photon via photoelectric effect, more exact, stochastic (Monte Carlo) model.
+#
+#     :param detector: Pyxel Detector object
+#     """
+#     logging.info("")
+#
+#     # detector.qe <= 1
+#     # detector.eta <= 1
+#     # if np.random.rand(size) <= detector.qe:
+#     #     pass    # 1 e
+#     # else:
+#     #     pass
+#     # if np.random.rand(size) <= detector.eta:
+#     #     pass    # 1 e
+#     # else:
+#     #     pass
+#     # TODO: random number for QE
+#     # TODO: random number for eta
+#     # TODO: energy threshold
+#
+#
+# def random_pos(detector: Detector) -> None:
+#     """Generate random position for photoelectric effect inside detector.
+#
+#     :param detector: Pyxel Detector object
+#     """
+#     # pos1 = detector.vert_dimension * np.random.random()
+#     # pos2 = detector.horz_dimension * np.random.random()
+#
+#     # size = 0
+#     # pos3 = -1 * detector.total_thickness * np.random.rand(size)
+#     # return pos3
+#     raise NotImplementedError
