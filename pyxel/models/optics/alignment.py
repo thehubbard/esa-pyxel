@@ -6,7 +6,6 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """Pyxel photon generator models."""
-from pyxel.data_structure import Photon
 from pyxel.detectors import Detector
 
 
@@ -29,4 +28,4 @@ def alignment(detector: Detector) -> None:
         slice(row0, row0 + geo.row), slice(col0, col0 + geo.col)
     ]
 
-    detector.photon = aligned_optical_image
+    detector.photon.array = aligned_optical_image

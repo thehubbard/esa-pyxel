@@ -11,6 +11,7 @@
 import logging
 import operator
 import typing as t
+from copy import copy
 
 import numpy as np
 from tqdm.auto import tqdm
@@ -169,7 +170,9 @@ def run_exposure_pipeline(
             outputs.save_to_file(processor)
 
         for key in keys:
-            unstacked_result[key].append(operator.attrgetter(attributes[key])(detector))
+            unstacked_result[key].append(
+                copy(operator.attrgetter(attributes[key])(detector))
+            )
 
         if progressbar:
             pbar.update(1)

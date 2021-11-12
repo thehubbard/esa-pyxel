@@ -10,7 +10,6 @@ import typing as t
 
 import numpy as np
 
-from pyxel.data_structure import Photon
 from pyxel.detectors import Detector
 
 
