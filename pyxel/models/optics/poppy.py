@@ -62,33 +62,91 @@ except ImportError:
 
 @dataclass
 class CircularAperture:
+    """Parameters for an ideal circular pupil aperture.
+
+    Parameters
+    ----------
+    radius : float
+        Radius of the pupil, in meters.
+    """
+
     radius: float
 
 
 @dataclass
 class ThinLens:
+    """Parameters for an idealized thin lens.
+
+    Parameters
+    ----------
+    nwaves : float
+        The number of waves of defocus, peak to valley.
+    radius : float
+        Pupil radius, in meters, over which the Zernike defocus term should be computed
+        such that rho = 1 at r = `radius`.
+    """
+
     nwaves: float
     radius: float
 
 
 @dataclass
 class SquareAperture:
-    size: int
+    """Parameters for an ideal square pupil aperture.
+
+    Parameters
+    ----------
+    size: float
+        side length of the square, in meters.
+    """
+
+    size: float
 
 
 @dataclass
 class RectangleAperture:
+    """Parameters for an ideal rectangular pupil aperture.
+
+    Parameters
+    ----------
+    width : float
+        width of the rectangle, in meters.
+    height : float
+        height of the rectangle, in meters.
+    """
+
     width: float
     height: float
 
 
 @dataclass
 class HexagonAperture:
+    """Parameters for an ideal hexagonal pupil aperture.
+
+    Parameters
+    ----------
+    side : float
+        side length (and/or radius) of hexagon, in meters.
+    """
+
     side: float
 
 
 @dataclass
 class MultiHexagonalAperture:
+    """Parameters for an hexagonaly segmented aperture.
+
+    Parameters
+    ----------
+    side : float
+        side length (and/or radius) of hexagon, in meters.
+    rings : integer
+        The number of rings of hexagons to include, not counting the central segment
+        (i.e. 2 for a JWST-like aperture, 3 for a Keck-like aperture, and so on)
+    gap: float
+        Gap between adjacent segments, in meters.
+    """
+
     side: float
     rings: int
     gap: float
@@ -96,6 +154,21 @@ class MultiHexagonalAperture:
 
 @dataclass
 class SecondaryObscuration:
+    """Parameters to define the central obscuration of an on-axis telescope.
+
+    The parameters include secondary mirror and supports.
+
+    Parameters
+    ----------
+    secondary_radius : float
+        Radius of the circular secondary obscuration, in meters.
+    n_supports : int
+        Number of secondary mirror supports ("spiders"). These will be
+        spaced equally around a circle.
+    support_width : float
+        Width of each support, in meters.
+    """
+
     secondary_radius: float
     n_supports: int
     support_width: float
@@ -103,6 +176,20 @@ class SecondaryObscuration:
 
 @dataclass
 class ZernikeWFE:
+    """Parameters to define an optical element in terms of its Zernike components.
+
+    Parameters
+    ----------
+    radius : float
+        Pupil radius, in meters, over which the Zernike terms should be
+        computed such that rho = 1 at r = `radius`.
+    coefficients : iterable of floats
+        Specifies the coefficients for the Zernike terms, ordered
+        according to the convention of Noll et al. JOSA 1976. The
+        coefficient is in meters of optical path difference (not waves).
+    aperture_stop : float
+    """
+
     radius: float
     coefficients: t.Sequence[float]
     aperture_stop: float
@@ -110,6 +197,15 @@ class ZernikeWFE:
 
 @dataclass
 class SineWaveWFE:
+    """Parameters to define a single sine wave ripple across the optic.
+
+    Parameters
+    ----------
+    spatialfreq : float
+    amplitude : float
+    rotation : float
+    """
+
     spatialfreq: float
     amplitude: float
     rotation: float
@@ -130,6 +226,18 @@ OpticalParameter = t.Union[
 
 
 def create_optical_parameter(dct: t.Mapping) -> OpticalParameter:
+    """Create a new ``OpticalParameter`` based on a dictionary.
+
+    Parameters
+    ----------
+    dct : dict
+        Dictionary to convert
+
+    Returns
+    -------
+    OpticalParameter
+        New parameters.
+    """
     if dct["item"] == "CircularAperture":
         return CircularAperture(radius=dct["radius"])
 
@@ -179,12 +287,38 @@ def create_optical_parameter(dct: t.Mapping) -> OpticalParameter:
 def create_optical_parameters(
     optical_system: t.Sequence[t.Mapping],
 ) -> t.Sequence[OpticalParameter]:
+    """Create a list of ``OpticalParameters``.
+
+    Parameters
+    ----------
+    optical_system : ``list`` of ``dict``
+        List to convert.
+
+    Returns
+    -------
+    ``list`` of ``OpticalParameter``
+        A new list of parameters.
+    """
     return [create_optical_parameter(dct) for dct in optical_system]
 
 
 def create_optical_item(
-    param: OpticalParameter, wavelength: float
+    param: OpticalParameter,
+    wavelength: float,
 ) -> op.OpticalElement:
+    """Create a new poppy ``OpticalElement``.
+
+    Parameters
+    ----------
+    param : ``OpticalParameter``
+        Pyxel Optical parameters to create a poppy ``OpticalElement``.
+    wavelength : float
+
+    Returns
+    -------
+    ``OpticalElement``
+        A new poppy ``OpticalElement``.
+    """
     if isinstance(param, CircularAperture):
         return op.CircularAperture(radius=param.radius)
 
@@ -292,18 +426,19 @@ def calc_psf(
 
 
 def apply_convolution(data_2d: np.ndarray, kernel_2d: np.ndarray) -> np.ndarray:
-    """Convolve an array
+    """Convolve an array.
 
     Parameters
     ----------
     data_2d : array
         2D Array to be convolved with kernel_2d.
     kernel_2d : array
-        The con
+        The convolution kernel.
+
     Returns
     -------
     array
-
+        A convolved array.
     """
     mean = np.mean(data_2d)
 
