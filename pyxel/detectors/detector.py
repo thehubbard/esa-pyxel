@@ -110,14 +110,13 @@ class Detector:
 
         return self._image
 
-    def reset(self, reset_all: bool = True) -> None:
+    def reset(self) -> None:
         """TBW."""
-        if reset_all:
-            self._photon = Photon(self.geometry)
-            self._charge = Charge()
-            self._pixel = Pixel(self.geometry)
-            self._signal = Signal(self.geometry)
-            self._image = Image(self.geometry)
+        self._photon = Photon(self.geometry)
+        self._charge = Charge()
+        self._pixel = Pixel(self.geometry)
+        self._signal = Signal(self.geometry)
+        self._image = Image(self.geometry)
 
     def empty(self, empty_all: bool = True) -> None:
         """Empty the data in the detector.
