@@ -146,30 +146,26 @@ This way the model effect and the function ``compute_model_effect`` are much eas
 also it simplifies the use of package ``numba`` for speeding up code.
 
 
-Use a separate instance of a random number generator
-----------------------------------------------------
+Using the numpy.random module in models
+---------------------------------------
 
-If a model uses the numpy random number generator,
-instead of using and setting the seed of the global random number generator,
-create and use a separate local instance of a random generator.
-More info at https://numpy.org/doc/stable/reference/random/.
+If a model uses functions from ``numpy.random`` module,
+avoid resetting the global seed with ``numpy.random.seed()`` inside the model,
+instead wrap the model function with decorator ``temporary_random_state`` from ``pyxel.util``
+and provide an optional argument ``seed``.
+The function ``temporary_random_state`` will use this seed to temporary change the state of the random generator,
+or keep the same state (use the outer scope seed) if no specific seed is provided.
 
 Example:
 
 .. code-block:: python
 
-    seed = 42
+    from pyxel.util import temporary_random_state
 
-    # Instead of this (legacy version, global setting)
+    @temporary_random_state
+    def my_model(detector, user_arg, seed = None):
 
-    from numpy import random
-
-    random.seed(seed)
-    vals = random.standard_normal(10)
-
-    # Do this (local setting)
-
-    from numpy.random import default_rng
-
-    rng = default_rng(seed=seed)
-    vals = rng.standard_normal(10)
+        input_array = detector.pixel.array
+        # compute_model_effect uses functions from numpy.random module
+        output_array = compute_model_effect(input_array=input_array, arg=arg)
+        detector.pixel.array = output_array

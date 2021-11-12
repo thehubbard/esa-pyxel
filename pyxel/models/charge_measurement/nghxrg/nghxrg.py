@@ -17,10 +17,12 @@ from scipy import signal
 
 from pyxel.detectors import CMOS, CMOSGeometry
 from pyxel.models.charge_measurement.nghxrg.nghxrg_beta import HXRGNoise
+from pyxel.util import temporary_random_state
 
 
 # @pyxel.validate
 # @pyxel.argument(name='', label='', units='', validate=)
+@temporary_random_state
 def nghxrg(
     detector: CMOS,
     noise: list,
@@ -28,15 +30,21 @@ def nghxrg(
     window_position: t.Optional[t.Sequence[int]] = None,
     window_size: t.Optional[t.Sequence[int]] = None,
     plot_psd: t.Optional[bool] = True,
+    seed: t.Optional[int] = None,
 ) -> None:
-    """TBW.
+    """Generate noise on HXRG detector.
 
-    :param detector: Pyxel Detector object
-    :param noise:
-    :param pca0_file:
-    :param window_position: [x0 (columns), y0 (rows)]
-    :param window_size: [x (columns), y (rows)]
-    :param plot_psd:
+    Parameters
+    ----------
+    detector: Detector
+    noise: list
+    pca0_file: str, optional
+    window_position: t.Sequence, optional
+        [x0 (columns), y0 (rows)].
+    window_size: t.Sequence, optional
+        [x (columns), y (rows)].
+    plot_psd: bool, optional
+    seed: int, optional
     """
     logging.getLogger("nghxrg").setLevel(logging.WARNING)
     logging.info("")

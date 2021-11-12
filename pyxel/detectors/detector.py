@@ -152,7 +152,7 @@ class Detector:
         ndreadout: bool = False,
         times_linear: bool = True,
     ) -> None:
-        """Set sampling."""
+        """Set readout."""
         self._readout_properties = ReadoutProperties(
             num_steps=num_steps,
             start_time=start_time,
@@ -167,7 +167,7 @@ class Detector:
         if self._readout_properties is not None:
             return self._readout_properties.time
         else:
-            raise ValueError("No sampling defined.")
+            raise ValueError("No readout defined.")
 
     @time.setter
     def time(self, value: float) -> None:
@@ -175,7 +175,7 @@ class Detector:
         if self._readout_properties is not None:
             self._readout_properties.time = value
         else:
-            raise ValueError("No sampling defined.")
+            raise ValueError("No readout defined.")
 
     @property
     def start_time(self) -> float:
@@ -183,7 +183,7 @@ class Detector:
         if self._readout_properties is not None:
             return self._readout_properties.start_time
         else:
-            raise ValueError("No sampling defined.")
+            raise ValueError("No readout defined.")
 
     @start_time.setter
     def start_time(self, value: float) -> None:
@@ -191,7 +191,7 @@ class Detector:
         if self._readout_properties is not None:
             self._readout_properties.start_time = value
         else:
-            raise ValueError("No sampling defined.")
+            raise ValueError("No readout defined.")
 
     @property
     def absolute_time(self) -> float:
@@ -199,7 +199,7 @@ class Detector:
         if self._readout_properties is not None:
             return self._readout_properties.absolute_time
         else:
-            raise ValueError("No sampling defined.")
+            raise ValueError("No readout defined.")
 
     @property
     def time_step(self) -> float:
@@ -207,7 +207,7 @@ class Detector:
         if self._readout_properties is not None:
             return self._readout_properties.time_step
         else:
-            raise ValueError("No sampling defined.")
+            raise ValueError("No readout defined.")
 
     @time_step.setter
     def time_step(self, value: float) -> None:
@@ -215,7 +215,7 @@ class Detector:
         if self._readout_properties is not None:
             self._readout_properties.time_step = value
         else:
-            raise ValueError("No sampling defined.")
+            raise ValueError("No readout defined.")
 
     @property
     def times_linear(self) -> bool:
@@ -223,7 +223,7 @@ class Detector:
         if self._readout_properties is not None:
             return self._readout_properties.times_linear
         else:
-            raise ValueError("No sampling defined.")
+            raise ValueError("No readout defined.")
 
     @property
     def num_steps(self) -> int:
@@ -231,7 +231,7 @@ class Detector:
         if self._readout_properties is not None:
             return self._readout_properties.num_steps
         else:
-            raise ValueError("No sampling defined.")
+            raise ValueError("No readout defined.")
 
     @property
     def pipeline_count(self) -> float:
@@ -239,7 +239,7 @@ class Detector:
         if self._readout_properties is not None:
             return self._readout_properties.pipeline_count
         else:
-            raise ValueError("No sampling defined.")
+            raise ValueError("No readout defined.")
 
     @pipeline_count.setter
     def pipeline_count(self, value: int) -> None:
@@ -247,7 +247,7 @@ class Detector:
         if self._readout_properties is not None:
             self._readout_properties.pipeline_count = value
         else:
-            raise ValueError("No sampling defined.")
+            raise ValueError("No readout defined.")
 
     @property
     def read_out(self) -> bool:
@@ -255,7 +255,7 @@ class Detector:
         if self._readout_properties is not None:
             return self._readout_properties.read_out
         else:
-            raise ValueError("No sampling defined.")
+            raise ValueError("No readout defined.")
 
     @read_out.setter
     def read_out(self, value: bool) -> None:
@@ -263,7 +263,7 @@ class Detector:
         if self._readout_properties is not None:
             self._readout_properties.read_out = value
         else:
-            raise ValueError("No sampling defined.")
+            raise ValueError("No readout defined.")
 
     @property
     def is_dynamic(self) -> bool:

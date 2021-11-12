@@ -11,6 +11,8 @@ Core
   (See `!305 <https://gitlab.com/esa/pyxel/-/merge_requests/305>`_).
 * Initialize Photon class in detector reset function instead in models.
   (See `!309 <https://gitlab.com/esa/pyxel/-/merge_requests/309>`_).
+* Resolve "Use a 'with' statement to set a seed with 'numpy.random'.
+  (See `!175 <https://gitlab.com/esa/pyxel/-/merge_requests/175>`_).
 
 Documentation
 ~~~~~~~~~~~~~

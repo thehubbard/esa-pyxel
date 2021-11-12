@@ -9,7 +9,6 @@
 import logging
 import typing as t
 from concurrent.futures.thread import ThreadPoolExecutor
-from random import Random
 from timeit import default_timer as timer
 
 import dask.array as da
@@ -256,7 +255,7 @@ class MyArchipelago:
         pop_size: int,
         bfe: t.Optional[t.Callable] = None,
         topology: t.Optional[t.Callable] = None,
-        seed: t.Optional[int] = None,
+        pygmo_seed: t.Optional[int] = None,
         parallel: bool = True,
         with_bar: bool = False,
     ):
@@ -269,7 +268,7 @@ class MyArchipelago:
         self.pop_size = pop_size
         self.bfe = bfe
         self.topology = topology
-        self.seed = seed
+        self.pygmo_seed = pygmo_seed
         self.parallel = parallel
         self.with_bar = with_bar
 
@@ -309,13 +308,14 @@ class MyArchipelago:
             )
 
         # Create a seed for each island
-        if self.seed is None:
+        if self.pygmo_seed is None:
             seeds = [None] * self.num_islands  # type: t.Sequence[t.Optional[int]]
         else:
-            func_rnd = Random()  # type: Random
-            func_rnd.seed(self.seed)
+            rng = np.random.default_rng(
+                seed=self.pygmo_seed
+            )  # type: np.random.Generator
             max_value = np.iinfo(np.uint32).max  # type: int
-            seeds = [func_rnd.randint(0, max_value) for _ in range(self.num_islands)]
+            seeds = [int(rng.integers(0, max_value)) for _ in range(self.num_islands)]
 
         # Create the islands and add them to this archipelago
         if self.parallel:

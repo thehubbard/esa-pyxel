@@ -13,18 +13,23 @@ from pathlib import Path
 import numpy as np
 
 from pyxel.detectors import Detector, Geometry
+from pyxel.util import temporary_random_state
 
 
 # TODO: Fix this
 # @validators.validate
 # @config.argument(name='', label='', units='', validate=)
+@temporary_random_state
 def fix_pattern_noise(
-    detector: Detector, pixel_non_uniformity: t.Union[str, Path, None] = None
+    detector: Detector,
+    pixel_non_uniformity: t.Union[str, Path, None] = None,
+    seed: t.Optional[int] = None,
 ) -> None:
     """Add fix pattern noise caused by pixel non-uniformity during charge collection.
 
     Parameters
     ----------
+    seed: int, optional
     detector : Detector
         Pyxel Detector object.
     pixel_non_uniformity : str or Path

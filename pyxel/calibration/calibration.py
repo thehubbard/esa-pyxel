@@ -66,7 +66,8 @@ class Calibration:
         fitness_function: t.Optional[ModelFunction] = None,
         algorithm: t.Optional[Algorithm] = None,
         parameters: t.Optional[t.Sequence[ParameterValues]] = None,
-        seed: t.Optional[int] = None,
+        pygmo_seed: t.Optional[int] = None,
+        pipeline_seed: t.Optional[int] = None,
         num_islands: int = 1,
         num_evolutions: int = 1,
         num_best_decisions: t.Optional[int] = None,
@@ -84,8 +85,8 @@ class Calibration:
                 "or 'pip install pyxel-sim[all]'"
             )
 
-        if seed is not None and seed not in range(100001):
-            raise ValueError("'seed' must be between 0 and 100000.")
+        if pygmo_seed is not None and pygmo_seed not in range(100001):
+            raise ValueError("'Pygmo seed' must be between 0 and 100000.")
 
         if num_islands < 1:
             raise ValueError("'num_islands' must superior or equal to 1.")
@@ -124,12 +125,17 @@ class Calibration:
             parameters if parameters else []
         )  # type: t.Sequence[ParameterValues]
 
-        self._seed = np.random.randint(0, 100000) if seed is None else seed  # type: int
+        if pygmo_seed is None:
+            rng = np.random.default_rng()
+            self._pygmo_seed = rng.integers(100000)  # type: int
+        else:
+            self._pygmo_seed = pygmo_seed
 
         self._num_islands = num_islands  # type: int
         self._num_evolutions = num_evolutions  # type: int
         self._num_best_decisions = num_best_decisions  # type: t.Optional[int]
         self._type_islands = Island(type_islands)  # type:Island
+        self._pipeline_seed = pipeline_seed
         self._topology = (
             topology
         )  # type: t.Literal['unconnected', 'ring', 'fully_connected']
@@ -265,17 +271,27 @@ class Calibration:
         self._parameters = value
 
     @property
-    def seed(self) -> int:
+    def pygmo_seed(self) -> int:
         """TBW."""
-        return self._seed
+        return self._pygmo_seed
 
-    @seed.setter
-    def seed(self, value: int) -> None:
+    @pygmo_seed.setter
+    def pygmo_seed(self, value: int) -> None:
         """TBW."""
         if value not in range(100001):
-            raise ValueError("'seed' must be between 0 and 100000.")
+            raise ValueError("Pygmo 'seed' must be between 0 and 100000.")
 
-        self._seed = value
+        self._pygmo_seed = value
+
+    @property
+    def pipeline_seed(self) -> t.Optional[int]:
+        """TBW."""
+        return self._pipeline_seed
+
+    @pipeline_seed.setter
+    def pipeline_seed(self, value: int) -> None:
+        """TBW."""
+        self._pipeline_seed = value
 
     @property
     def num_islands(self) -> int:
@@ -356,8 +372,8 @@ class Calibration:
         with_progress_bar: bool = True,
     ) -> t.Tuple["xr.Dataset", "pd.DataFrame", "pd.DataFrame"]:
         """Run calibration pipeline."""
-        pg.set_global_rng_seed(seed=self.seed)
-        self._log.info("Seed: %d", self.seed)
+        pg.set_global_rng_seed(seed=self.pygmo_seed)
+        self._log.info("Pygmo seed: %d", self.pygmo_seed)
 
         self.output_dir = output_dir
 
@@ -403,7 +419,7 @@ class Calibration:
                 pop_size=self.algorithm.population_size,
                 bfe=user_defined_bfe,
                 topology=topo,
-                seed=self.seed,
+                pygmo_seed=self.pygmo_seed,
                 with_bar=with_progress_bar,
             )
 

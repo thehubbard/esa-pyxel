@@ -14,7 +14,6 @@ from pathlib import Path
 
 import click
 import dask
-import numpy as np
 import pandas as pd
 import xarray as xr
 from matplotlib import pyplot as plt
@@ -42,9 +41,10 @@ def exposure_mode(
 
     Parameters
     ----------
-    exposure
-    detector
-    pipeline
+    random_seed: int, optional
+    exposure: Exposure
+    detector: Detector
+    pipeline: DetectionPipeline
 
     Returns
     -------
@@ -76,10 +76,10 @@ def observation_mode(
 
     Parameters
     ----------
+    random_seed: int, optional
     observation: Observation
     detector: Detector
-    pipeline: Pipeline
-    with_dask: bool
+    pipeline: DetectionPipeline
 
     Returns
     -------
@@ -115,6 +115,7 @@ def calibration_mode(
 
     Parameters
     ----------
+    random_seed: int, optional
     calibration: Calibration
     detector: Detector
     pipeline: DetectionPipeline
@@ -218,8 +219,6 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
     logging.info("Pipeline started.")
 
     start_time = time.time()
-    if random_seed:
-        np.random.seed(random_seed)
 
     configuration = load(
         Path(input_filename).expanduser().resolve()
@@ -242,18 +241,28 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
 
     if isinstance(configuration.exposure, Exposure):
         exposure = configuration.exposure  # type: Exposure
-        exposure_mode(exposure=exposure, detector=detector, pipeline=pipeline)
+        exposure_mode(
+            exposure=exposure,
+            detector=detector,
+            pipeline=pipeline,
+        )
 
     elif isinstance(configuration.calibration, Calibration):
 
         calibration = configuration.calibration  # type: Calibration
         _ = calibration_mode(
-            calibration=calibration, detector=detector, pipeline=pipeline
+            calibration=calibration,
+            detector=detector,
+            pipeline=pipeline,
         )
 
     elif isinstance(configuration.observation, Observation):
         observation = configuration.observation  # type: Observation
-        observation_mode(observation=observation, detector=detector, pipeline=pipeline)
+        observation_mode(
+            observation=observation,
+            detector=detector,
+            pipeline=pipeline,
+        )
 
     else:
         raise NotImplementedError("Please provide a valid simulation mode !")
@@ -309,15 +318,7 @@ def create_new_model(model_name: str):
     show_default=True,
     help="Increase output verbosity (-v/-vv/-vvv)",
 )
-@click.option(
-    "-s",
-    "--seed",
-    default=None,
-    type=int,
-    show_default=True,
-    help="Random seed for the framework.",
-)
-def run_config(config: str, verbosity: int, seed: t.Optional[int]):
+def run_config(config: str, verbosity: int):
     """Run Pyxel with a YAML configuration file."""
     logging_level = [logging.ERROR, logging.WARNING, logging.INFO, logging.DEBUG][
         min(verbosity, 3)
@@ -337,7 +338,7 @@ def run_config(config: str, verbosity: int, seed: t.Optional[int]):
     stream_stdout.setFormatter(logging.Formatter(log_format))
     logging.getLogger().addHandler(stream_stdout)
 
-    run(input_filename=config, random_seed=seed)
+    run(input_filename=config)
 
 
 if __name__ == "__main__":

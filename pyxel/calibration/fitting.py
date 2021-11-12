@@ -70,6 +70,7 @@ class ModelFitting(ProblemSingleObjective):
         self.param_processor_list = []  # type: t.List[Processor]
 
         self.file_path = None  # type: t.Optional[Path]
+        self.pipeline_seed = None  # type: t.Optional[int]
 
         self.fitness_array = None  # type: t.Optional[np.ndarray]
         self.population = None  # type: t.Optional[np.ndarray]
@@ -119,12 +120,13 @@ class ModelFitting(ProblemSingleObjective):
         input_arguments: t.Optional[t.Sequence[ParameterValues]] = None,
         weights: t.Optional[t.Sequence[float]] = None,
         weights_from_file: t.Optional[t.Sequence[Path]] = None,
+        pipeline_seed: t.Optional[int] = None,
     ) -> None:
         """TBW.
 
         Parameters
         ----------
-        sampling
+        pipeline_seed
         calibration_mode
         simulation_output
         fitness_func
@@ -143,6 +145,7 @@ class ModelFitting(ProblemSingleObjective):
         self.fitness_func = fitness_func
         self.pop = population_size
         self.generations = generations
+        self.pipeline_seed = pipeline_seed
 
         # TODO: Remove 'assert'
         # assert isinstance(self.pop, int)
@@ -431,7 +434,11 @@ class ModelFitting(ProblemSingleObjective):
                 logger.setLevel(logging.WARNING)
                 # result_proc = None
                 if self.calibration_mode == CalibrationMode.Pipeline:
-                    _ = run_exposure_pipeline(processor=processor, readout=self.readout)
+                    _ = run_exposure_pipeline(
+                        processor=processor,
+                        readout=self.readout,
+                        pipeline_seed=self.pipeline_seed,
+                    )
                 # elif self.calibration_mode == 'single_model':
                 #     self.fitted_model.function(processor.detector)               # todo: update
                 else:
@@ -514,7 +521,11 @@ class ModelFitting(ProblemSingleObjective):
         """Create a new ``Processor`` with new parameters."""
         new_processor = self.update_processor(parameter=parameter, processor=processor)
 
-        _ = run_exposure_pipeline(processor=new_processor, readout=self.readout)
+        _ = run_exposure_pipeline(
+            processor=new_processor,
+            readout=self.readout,
+            pipeline_seed=self.pipeline_seed,
+        )
 
         return new_processor
 
