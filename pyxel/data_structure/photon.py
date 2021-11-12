@@ -7,9 +7,14 @@
 
 """Pyxel Photon class to generate and track photon."""
 
+import typing as t
+
 import numpy as np
 
 from pyxel.data_structure import Array
+
+if t.TYPE_CHECKING:
+    from pyxel.detectors import Geometry
 
 
 class Photon(Array):
@@ -35,21 +40,3 @@ class Photon(Array):
         new_array = np.zeros((geo.row, geo.col), dtype=self.EXP_TYPE)
 
         super().__init__(new_array)
-
-    # # TODO: This could be done in '__init__'
-    # def new_array(self, new_array: np.ndarray) -> None:
-    #     """TBW.
-    #
-    #     :param new_array:
-    #     """
-    #     cls_name = self.__class__.__name__  # type: str
-    #
-    #     if not isinstance(new_array, np.ndarray):
-    #         raise TypeError(f'{cls_name} array should be a numpy.ndarray')
-    #
-    #     if new_array.dtype not in self.TYPE_LIST:
-    #         raise TypeError(f'Type of {cls_name} array should be a(n) %s' %
-    #                         self.EXP_TYPE.__name__)
-    #
-    #     self._array = new_array
-    #     self.type = new_array.dtype  # TODO: Where is it used ?

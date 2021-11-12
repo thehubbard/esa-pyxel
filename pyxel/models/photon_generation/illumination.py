@@ -55,10 +55,6 @@ def illumination(
         Time scale of the photon flux, default is 1 second. 0.001 would be ms.
     """
     if array_size is None:
-        if not detector.has_photon:
-            geo = detector.geometry
-            detector.photon = Photon(np.zeros((geo.row, geo.col), dtype=float))
-
         num_rows, num_cols = detector.photon.array.shape
         shape = num_rows, num_cols  # type: t.Tuple[int, int]
     else:

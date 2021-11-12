@@ -12,7 +12,6 @@ from pathlib import Path
 import numpy as np
 
 import pyxel
-from pyxel.data_structure import Photon
 from pyxel.detectors import Detector
 
 

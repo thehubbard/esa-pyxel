@@ -13,8 +13,6 @@ import typing as t
 import numpy as np
 import skimage.transform as tr
 
-from pyxel.data_structure import Photon
-
 if t.TYPE_CHECKING:
     from pyxel.detectors import Detector
 

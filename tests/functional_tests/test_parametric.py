@@ -66,16 +66,6 @@ def test_pipeline_parametric_without_init_photon(mode: ParameterMode, expected):
     detector = cfg.ccd_detector
     assert isinstance(detector, CCD)
 
-    assert detector.has_photon is False
-    with pytest.raises(
-        RuntimeError,
-        match=(
-            r"Photon array is not initialized ! "
-            r"Please use a 'Photon Generation' model"
-        ),
-    ):
-        _ = detector.photon
-
     pipeline = cfg.pipeline
     assert isinstance(pipeline, DetectionPipeline)
 
