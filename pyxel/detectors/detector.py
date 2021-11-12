@@ -60,18 +60,10 @@ class Detector:
         raise NotImplementedError
 
     @property
-    def has_photon(self) -> bool:
-        """TBW."""
-        return self._photon is not None
-
-    @property
     def photon(self) -> Photon:
         """TBW."""
         if not self._photon:
-            raise RuntimeError(
-                "Photon array is not initialized ! "
-                "Please use a 'Photon Generation' model"
-            )
+            raise RuntimeError("Photon array is not initialized ! ")
         return self._photon
 
     @photon.setter
