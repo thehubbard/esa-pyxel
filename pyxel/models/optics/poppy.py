@@ -45,10 +45,10 @@ Supported optical elements:
 import logging
 import typing as t
 
-import matplotlib.pyplot as plt
 import numpy as np
 from astropy.convolution import convolve_fft
 from astropy.io import fits
+from typing_extensions import Literal
 
 from pyxel.detectors import Detector
 
@@ -64,9 +64,8 @@ def calc_psf(
     wavelength: float,
     fov_arcsec: float,
     pixelscale: float,
-    optical_system: list,
-    display: bool = False,
-) -> t.Tuple[t.List[fits.hdu.image.PrimaryHDU], t.List["op.Wavefront"]]:
+    optical_system: t.Mapping,
+) -> t.Tuple[t.Sequence[fits.hdu.image.PrimaryHDU], t.Sequence["op.Wavefront"]]:
     """Calculate the point spread function for the given optical system and optionally display the psf.
 
     Parameters
@@ -146,18 +145,27 @@ def calc_psf(
     )
 
     psf: t.Tuple[
-        t.List[fits.hdu.image.PrimaryHDU], t.List[op.Wavefront]
+        t.Sequence[fits.hdu.image.PrimaryHDU], t.Sequence[op.Wavefront]
     ] = osys.calc_psf(
         wavelength=wavelength,
         return_intermediates=True,
-        display_intermediates=display,
         normalize="last",
     )
 
-    if display:
-        plt.show()
-
     return psf
+
+
+def apply_convolution(data_2d: np.ndarray, kernel_2d: np.ndarray) -> np.ndarray:
+    mean = np.mean(data_2d)
+
+    array_2d = convolve_fft(
+        data_2d,
+        kernel=kernel_2d,
+        boundary="fill",
+        fill_value=mean,
+    )
+
+    return array_2d
 
 
 def optical_psf(
@@ -165,7 +173,7 @@ def optical_psf(
     wavelength: float,
     fov_arcsec: float,
     pixelscale: float,
-    optical_system: list,
+    optical_system: t.Mapping,
 ) -> None:
     """Model function for poppy optics model: convolve photon array with psf.
 
@@ -182,16 +190,13 @@ def optical_psf(
         Defines sampling resolution of PSF.
     optical_system:
         List of optical elements before detector with their specific arguments.
-
-    Returns
-    -------
-    None
     """
 
     logging.getLogger("poppy").setLevel(
         logging.WARNING
     )  # TODO: Fix this. See issue #81
 
+    # Get a Point Spread Function
     psf = calc_psf(
         wavelength=wavelength,
         fov_arcsec=fov_arcsec,
@@ -199,10 +204,13 @@ def optical_psf(
         optical_system=optical_system,
     )
 
-    # Convolution
-    mean = np.mean(detector.photon.array)
-    array = convolve_fft(
-        detector.photon.array, psf[0][0].data, boundary="fill", fill_value=mean
-    )
+    # Extract 'first_image'
+    images, wavefronts = psf
+    first_image, *other_images = images
 
-    detector.photon.array = array
+    # Convolution
+    new_array_2d = apply_convolution(
+        data_2d=detector.photon.array, kernel_2d=first_image.data
+    )  # type: np.ndarray
+
+    detector.photon.array = new_array_2d
