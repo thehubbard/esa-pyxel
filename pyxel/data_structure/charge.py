@@ -11,6 +11,7 @@ import typing as t
 
 import numpy as np
 import pandas as pd
+from typing_extensions import Literal
 
 from pyxel.data_structure import Particle
 
@@ -51,7 +52,7 @@ class Charge(Particle):
     @staticmethod
     def create_charges(
         *,
-        particle_type: str,  # TODO: Use Enum
+        particle_type: Literal["e", "h"],
         particles_per_cluster: np.ndarray,
         init_energy: np.ndarray,
         init_ver_position: np.ndarray,
@@ -113,7 +114,6 @@ class Charge(Particle):
         # Check if particle number is integer:
         # check_type(particles_per_cluster)      # TODO
 
-        # TODO: particle_type should be a Enum class ?
         if particle_type == "e":
             charge = [-1] * elements  # * cds.e
         elif particle_type == "h":
@@ -166,7 +166,7 @@ class Charge(Particle):
     def add_charge(
         self,
         *,
-        particle_type: str,  # TODO: Use Enum
+        particle_type: Literal["e", "h"],
         particles_per_cluster: np.ndarray,
         init_energy: np.ndarray,
         init_ver_position: np.ndarray,

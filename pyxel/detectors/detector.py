@@ -23,17 +23,7 @@ from pyxel.util.memory import get_size, memory_usage_details
 __all__ = ["Detector"]
 
 
-# TODO: Add methods to save/load a `Detector` instance to the filesystem
-#       Example of methods:
-#           def to_fits(self, filename: Path):      # Save into one FITS file that contains multiple HDUs
-#               ...
-#           @classmethod
-#           def from_fits(self, filename: Path) -> Detector     # Store into one FITS file
-#               ...
-#           def to_hdf5(...) / def from_hdf5(...)
-#           def to_folder(...)  / def from_folder(...)
-#           def to_yaml(...) ? / def from_yaml(...)
-#           def to_asdf(...) ? / def from_asdf(...)
+# TODO: Add methods to save/load a `Detector` instance to the filesystem. See #329
 class Detector:
     """The detector class."""
 
@@ -53,7 +43,7 @@ class Detector:
         self._memory = dict()  # type: t.Dict
 
         self.input_image = None  # type: t.Optional[np.ndarray]
-        self._output_dir = None  # type: t.Optional[Path]  # TODO: Is it really needed ?
+        self._output_dir = None  # type: t.Optional[Path]  # TODO: See #330
 
         self._readout_properties = None  # type: t.Optional["ReadoutProperties"]
 
@@ -149,14 +139,12 @@ class Detector:
             if self._image:
                 self.image.array *= 0
 
-    # TODO: Set an `Output` object ?
-    # TODO: Is it really needed ?
+    # TODO: Set an `Output` object ? Is it really needed ? See #330
     def set_output_dir(self, path: t.Union[str, Path]) -> None:
         """Set output directory path."""
         self._output_dir = Path(path)
 
-    # TODO: Get an `Output object ?
-    # TODO: Is it really needed ?
+    # TODO: Set an `Output` object ? Is it really needed ? See #330
     @property
     def output_dir(self) -> Path:
         """Output directory path."""
@@ -360,7 +348,7 @@ class Detector:
             self, attributes, print_result=print_result, human_readable=human_readable
         )
 
-    # TODO: Move this to another place
+    # TODO: Move this to another place. See #241
     def to_hdf5(self, filename: t.Union[str, Path]) -> None:
         """Convert the detector to a HDF5 object."""
         with h5.File(filename, "w") as h5file:

@@ -116,6 +116,7 @@ class Arguments(t.MutableMapping):
 
 
 # TODO: Improve this class. See issue #132.
+# TODO: Add unit tests #182
 class ModelFunction:
     """Create a wrapper function around a Model function.
 
@@ -187,18 +188,6 @@ class ModelFunction:
     def arguments(self) -> Arguments:
         """TBW."""
         return self._arguments
-
-    # # TODO: Replace this by __call__ ?
-    # @property
-    # def function(self) -> t.Callable:
-    #     """TBW."""
-    #     func_ref = evaluate_reference(self.func)  # type: t.Callable
-    #     if isinstance(func_ref, type):
-    #         # this is a class type, instantiate it using default arguments.
-    #         func_ref = func_ref()
-    #         # TODO: should check whether or not it's callable.
-    #     func = functools.partial(func_ref, **self.arguments)
-    #     return func
 
     def __call__(self, detector: "Detector") -> T:
         """TBW."""

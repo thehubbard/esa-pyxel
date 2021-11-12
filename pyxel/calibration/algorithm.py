@@ -28,16 +28,13 @@ class AlgorithmType(Enum):
     Nlopt = "nlopt"
 
 
-# TODO: Put classes `Algorithm` and `Calibration` in separated files.
-# TODO: Maybe a new class `Sade` could contains some attributes ?
-# TODO: Maybe a new class `SGA` could contains some attributes ?
-# TODO: Maybe a new class `NLOPT` could contains some attributes ?
+# TODO: Use a class `Sade`, `SGA` and `NLOPT`. See #334
 class Algorithm:
     """TBW."""
 
     def __init__(
         self,
-        # TODO: Rename 'type' into 'algorithm_type'
+        # TODO: Rename 'type' into 'algorithm_type'. See #334
         type: Literal["sade", "sga", "nlopt"] = "sade",
         generations: int = 1,
         population_size: int = 1,
@@ -418,7 +415,7 @@ class Algorithm:
 
     # NLOPT #####
 
-    # TODO: This could be refactored for each if-statement
+    # TODO: This could be refactored for each if-statement. See #334
     def get_algorithm(self) -> t.Union["pg.sade", "pg.sga", "pg.nlopt"]:
         """TBW.
 

@@ -135,7 +135,7 @@ def read_data(filenames: t.Sequence[Path]) -> t.Sequence[np.ndarray]:
     return output
 
 
-# TODO: Create unit tests for this function
+# TODO: Refactor and add more unit tests. See #327
 def list_to_slice(
     input_list: t.Optional[t.Sequence[int]] = None,
 ) -> t.Union[t.Tuple[slice, slice], t.Tuple[slice, slice, slice]]:
@@ -160,7 +160,7 @@ def list_to_slice(
         raise ValueError("Fitting range should have 4 or 6 values")
 
 
-# TODO: Create unit tests for this function
+# TODO: Refactor and add more unit tests. See #327
 def list_to_3d_slice(
     input_list: t.Optional[t.Sequence[int]] = None,
 ) -> t.Tuple[slice, slice, slice]:
@@ -182,6 +182,7 @@ def list_to_3d_slice(
         raise ValueError("Fitting range should have 6 values")
 
 
+# TODO: Refactor and add more unit tests. See #328
 def check_ranges(
     target_fit_range: t.Sequence[int],
     out_fit_range: t.Sequence[int],
@@ -205,7 +206,7 @@ def check_ranges(
                     "Fitting ranges have different lengths in 1st dimension"
                 )
 
-            # TODO: It could be refactor in a more pythonic way
+            # TODO: Refactor and add more unit tests. See #328
             if len(target_fit_range) == 4 and len(out_fit_range) == 4:
                 if (target_fit_range[3] - target_fit_range[2]) != (
                     out_fit_range[3] - out_fit_range[2]
@@ -223,7 +224,7 @@ def check_ranges(
                     )
 
         # for i in [0, 1]:
-        #     # TODO: It could be refactor in a more pythonic way
+        #     # TODO: Refactor and add more unit tests. See #328
         #     if not (0 <= target_fit_range[i] <= rows):
         #         raise ValueError("Value of target fit range is wrong")
 
@@ -240,6 +241,6 @@ def check_ranges(
                 raise ValueError("Target data is not a 3 dimensional array")
 
             for i in [0, 1]:
-                # TODO: It could be refactor in a more pythonic way (this is optional)
+                # TODO: Refactor and add more unit tests. See #328
                 if not (0 <= target_fit_range[i] <= readout_times):
                     raise ValueError("Value of target fit range is wrong")
