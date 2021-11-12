@@ -12,6 +12,9 @@ import numpy as np
 
 from pyxel.detectors import Detector
 
+# TODO: random, docstring, private function
+# TODO: normal and poisson versions, maybe as an argument,
+
 
 # TODO: Fix this
 # @validators.validate

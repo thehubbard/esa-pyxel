@@ -12,6 +12,7 @@ import numpy as np
 
 from pyxel.detectors import CMOS
 
+# TODO: more documentation, refactoring, random
 
 # TODO: Fix this
 # @validators.validate

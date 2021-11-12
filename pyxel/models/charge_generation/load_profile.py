@@ -22,6 +22,7 @@ from pyxel.detectors.geometry import (
     get_vertical_pixel_center_pos,
 )
 
+# TODO: more documentation
 
 @lru_cache(maxsize=128)  # One must add parameter 'maxsize' for Python 3.7
 def _create_charges(
