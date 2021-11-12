@@ -23,11 +23,12 @@ from pyxel.detectors import Detector
 # @config.argument(name='hole_size', label='size of hole', units='', validate=check_type(list))
 def illumination(
     detector: Detector,
-    level: int,
+    level: float,
     option: str = "uniform",
     array_size: t.Optional[t.Tuple[int, int]] = None,
     hole_size: t.Optional[t.Sequence[int]] = None,
     hole_center: t.Optional[t.Sequence[int]] = None,
+    time_scale: float = 1.0,
 ) -> None:
     """Generate photon uniformly over the entire array or hole.
 
@@ -50,11 +51,13 @@ def illumination(
         List of integers defining the sizes of the elliptic or rectangular hole.
     hole_center: list, optional
         List of integers defining the center of the elliptic or rectangular hole.
+    time_scale: float
+        Time scale of the photon flux, default is 1 second. 0.001 would be ms.
     """
     if array_size is None:
         if not detector.has_photon:
             geo = detector.geometry
-            detector.photon = Photon(np.zeros((geo.row, geo.col), dtype=int))
+            detector.photon = Photon(np.zeros((geo.row, geo.col), dtype=float))
 
         num_rows, num_cols = detector.photon.array.shape
         shape = num_rows, num_cols  # type: t.Tuple[int, int]
@@ -62,11 +65,11 @@ def illumination(
         shape = array_size
 
     if option == "uniform":
-        photon_array = np.ones(shape, dtype=int) * level
+        photon_array = np.ones(shape, dtype=float) * level
 
     elif option == "rectangular_hole":
         if hole_size:
-            photon_array = np.zeros(shape, dtype=int)
+            photon_array = np.zeros(shape, dtype=float)
             if hole_center is not None:
                 if not (
                     (0 <= hole_center[0] <= shape[0])
@@ -91,7 +94,7 @@ def illumination(
 
     elif option == "elliptic_hole":
         if hole_size:
-            photon_array = np.zeros(shape, dtype=int)
+            photon_array = np.zeros(shape, dtype=float)
             if hole_center is not None:
                 if not (
                     (0 <= hole_center[0] <= shape[0])
@@ -115,6 +118,8 @@ def illumination(
 
     else:
         raise NotImplementedError
+
+    photon_array = photon_array * (detector.time_step / time_scale)
 
     try:
         detector.photon.array += photon_array

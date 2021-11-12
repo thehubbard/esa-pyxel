@@ -111,6 +111,7 @@ def stripe_pattern(
     level: float = 1.0,
     angle: int = 0,
     startwith: int = 0,
+    time_scale: float = 1.0,
 ) -> None:
     """Stripe pattern model.
 
@@ -126,10 +127,8 @@ def stripe_pattern(
         Angle of the pattern in degrees.
     startwith: int
         1 to start with high level or 0 for 0.
-
-    Returns
-    -------
-    None
+    time_scale: float
+        Time scale of the photon flux, default is 1 second. 0.001 would be ms.
     """
 
     photon_array = pattern(
@@ -139,6 +138,8 @@ def stripe_pattern(
         startwith=startwith,
         angle=angle,
     )
+
+    photon_array = photon_array * (detector.time_step / time_scale)
 
     try:
         detector.photon.array += photon_array
