@@ -39,12 +39,10 @@ class MKID(Detector):
         super().__init__(material=material, environment=environment)
         super().reset()
 
-    def reset(self, reset_all: bool = True) -> None:
+    def reset(self) -> None:
         """TBW."""
-        super().reset(reset_all=reset_all)
-
-        if reset_all:
-            self._phase = Phase(self.geometry)
+        super().reset()
+        self._phase = Phase(geo=self.geometry)
 
     def empty(self, empty_all: bool = True) -> None:
         """Empty the data in the detector.

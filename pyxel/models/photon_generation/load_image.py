@@ -12,7 +12,6 @@ from pathlib import Path
 import numpy as np
 
 import pyxel
-from pyxel.data_structure import Photon
 from pyxel.detectors import Detector
 
 
@@ -77,4 +76,7 @@ def load_image(
 
     photon_array = photon_array * (detector.time_step / time_scale) * multiplier
 
-    detector.photon = Photon(photon_array)
+    try:
+        detector.photon.array += photon_array
+    except ValueError as ex:
+        raise ValueError("Shapes of arrays do not match") from ex

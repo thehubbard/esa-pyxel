@@ -50,7 +50,6 @@ import numpy as np
 from astropy.convolution import convolve_fft
 from astropy.io import fits
 
-from pyxel.data_structure import Photon
 from pyxel.detectors import Detector
 
 try:
@@ -206,4 +205,4 @@ def optical_psf(
         detector.photon.array, psf[0][0].data, boundary="fill", fill_value=mean
     )
 
-    detector.photon = Photon(array)
+    detector.photon.array = array

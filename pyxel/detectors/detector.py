@@ -60,18 +60,10 @@ class Detector:
         raise NotImplementedError
 
     @property
-    def has_photon(self) -> bool:
-        """TBW."""
-        return self._photon is not None
-
-    @property
     def photon(self) -> Photon:
         """TBW."""
         if not self._photon:
-            raise RuntimeError(
-                "Photon array is not initialized ! "
-                "Please use a 'Photon Generation' model"
-            )
+            raise RuntimeError("Photon array is not initialized ! ")
         return self._photon
 
     @photon.setter
@@ -110,14 +102,13 @@ class Detector:
 
         return self._image
 
-    def reset(self, reset_all: bool = True) -> None:
+    def reset(self) -> None:
         """TBW."""
-        self._photon = None
-        if reset_all:
-            self._charge = Charge()
-            self._pixel = Pixel(self.geometry)
-            self._signal = Signal(self.geometry)
-            self._image = Image(self.geometry)
+        self._photon = Photon(geo=self.geometry)
+        self._charge = Charge()
+        self._pixel = Pixel(geo=self.geometry)
+        self._signal = Signal(geo=self.geometry)
+        self._image = Image(geo=self.geometry)
 
     def empty(self, empty_all: bool = True) -> None:
         """Empty the data in the detector.

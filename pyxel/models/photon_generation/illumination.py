@@ -10,7 +10,6 @@ import typing as t
 
 import numpy as np
 
-from pyxel.data_structure import Photon
 from pyxel.detectors import Detector
 
 
@@ -55,10 +54,6 @@ def illumination(
         Time scale of the photon flux, default is 1 second. 0.001 would be ms.
     """
     if array_size is None:
-        if not detector.has_photon:
-            geo = detector.geometry
-            detector.photon = Photon(np.zeros((geo.row, geo.col), dtype=float))
-
         num_rows, num_cols = detector.photon.array.shape
         shape = num_rows, num_cols  # type: t.Tuple[int, int]
     else:
@@ -123,7 +118,5 @@ def illumination(
 
     try:
         detector.photon.array += photon_array
-    except RuntimeError:
-        detector.photon = Photon(photon_array)
     except ValueError as ex:
         raise ValueError("Shapes of arrays do not match") from ex

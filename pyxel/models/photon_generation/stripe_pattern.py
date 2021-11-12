@@ -13,8 +13,6 @@ import typing as t
 import numpy as np
 import skimage.transform as tr
 
-from pyxel.data_structure import Photon
-
 if t.TYPE_CHECKING:
     from pyxel.detectors import Detector
 
@@ -143,6 +141,5 @@ def stripe_pattern(
 
     try:
         detector.photon.array += photon_array
-    except RuntimeError:
-        # Photon not initialized
-        detector.photon = Photon(photon_array)
+    except ValueError as ex:
+        raise ValueError("Shapes of arrays do not match") from ex
