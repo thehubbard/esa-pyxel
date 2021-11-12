@@ -42,6 +42,7 @@ def temporary_random_state(func: t.Callable) -> t.Callable:
     -------
     inner: callable
     """
+
     @wraps(func)
     def inner(*args, seed=None, **kwargs):
         if seed is None:
@@ -49,4 +50,5 @@ def temporary_random_state(func: t.Callable) -> t.Callable:
         else:
             with change_random_state(seed):
                 return func(*args, seed=seed, **kwargs)
+
     return inner

@@ -35,10 +35,12 @@ class Exposure:
         outputs: "ExposureOutputs",
         readout: "Readout",
         result_type: Literal["image", "signal", "pixel", "all"] = "all",
+        pipeline_seed: t.Optional[int] = None,
     ):
         self.outputs = outputs
         self.readout = readout
         self._result_type = ResultType(result_type)
+        self._pipeline_seed = pipeline_seed
 
     def __repr__(self) -> str:
         cls_name = self.__class__.__name__  # type: str
@@ -53,6 +55,16 @@ class Exposure:
     def result_type(self, value: ResultType) -> None:
         """TBW."""
         self._result_type = value
+
+    @property
+    def pipeline_seed(self) -> int:
+        """TBW."""
+        return self._pipeline_seed
+
+    @pipeline_seed.setter
+    def pipeline_seed(self, value: int) -> None:
+        """TBW."""
+        self._pipeline_seed = value
 
     def run_exposure(self, processor: "Processor") -> "xr.Dataset":
         """Run a an observation pipeline.
@@ -81,6 +93,7 @@ class Exposure:
             outputs=self.outputs,
             progressbar=progressbar,
             result_type=self.result_type,
+            pipeline_seed=self.pipeline_seed,
         )
 
         result_dataset = processor.result_to_dataset(
@@ -98,11 +111,14 @@ def run_exposure_pipeline(
     ] = None,
     progressbar: bool = False,
     result_type: ResultType = ResultType.All,
+    pipeline_seed: t.Optional[int] = None,
 ) -> "Processor":
     """Run standalone exposure pipeline.
 
     Parameters
     ----------
+    pipeline_seed: int
+        Random seed for the pipeline.
     result_type: ResultType
     processor: Processor
     readout: Readout
@@ -117,6 +133,8 @@ def run_exposure_pipeline(
     """
     # if isinstance(detector, CCD):
     #    dynamic.non_destructive_readout = False
+
+    np.random.seed(seed=pipeline_seed)
 
     num_steps = readout._num_steps
     ndreadout = readout.non_destructive

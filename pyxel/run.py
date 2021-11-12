@@ -37,7 +37,6 @@ def exposure_mode(
     exposure: "Exposure",
     detector: Detector,
     pipeline: "DetectionPipeline",
-    random_seed: t.Optional[int] = None,
 ) -> xr.Dataset:
     """Run an 'exposure' pipeline.
 
@@ -54,8 +53,6 @@ def exposure_mode(
     """
 
     logging.info("Mode: Exposure")
-
-    np.random.seed(seed=random_seed)
 
     exposure_outputs = exposure.outputs  # type: ExposureOutputs
 
@@ -75,7 +72,6 @@ def observation_mode(
     observation: "Observation",
     detector: Detector,
     pipeline: "DetectionPipeline",
-    random_seed: t.Optional[int] = None,
 ) -> "ObservationResult":
     """Run an 'observation' pipeline.
 
@@ -91,8 +87,6 @@ def observation_mode(
     result: ObservationResult
     """
     logging.info("Mode: Parametric")
-
-    np.random.seed(seed=random_seed)
 
     observation_outputs = observation.outputs  # type: ObservationOutputs
     detector.set_output_dir(observation_outputs.output_dir)  # TODO: Remove this
@@ -117,7 +111,6 @@ def calibration_mode(
     detector: Detector,
     pipeline: "DetectionPipeline",
     compute_and_save: bool = True,
-    random_seed: t.Optional[int] = None,
 ) -> t.Tuple[xr.Dataset, pd.DataFrame, pd.DataFrame, t.Sequence]:
     """Run a 'calibration' pipeline.
 
@@ -134,8 +127,6 @@ def calibration_mode(
     tuple
     """
     logging.info("Mode: Calibration")
-
-    np.random.seed(seed=random_seed)
 
     calibration_outputs = calibration.outputs  # type: CalibrationOutputs
     detector.set_output_dir(calibration_outputs.output_dir)  # TODO: Remove this
@@ -255,7 +246,6 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
             exposure=exposure,
             detector=detector,
             pipeline=pipeline,
-            random_seed=random_seed,
         )
 
     elif isinstance(configuration.calibration, Calibration):
@@ -265,7 +255,6 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
             calibration=calibration,
             detector=detector,
             pipeline=pipeline,
-            random_seed=random_seed,
         )
 
     elif isinstance(configuration.observation, Observation):
@@ -274,7 +263,6 @@ def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
             observation=observation,
             detector=detector,
             pipeline=pipeline,
-            random_seed=random_seed,
         )
 
     else:
@@ -331,15 +319,7 @@ def create_new_model(model_name: str):
     show_default=True,
     help="Increase output verbosity (-v/-vv/-vvv)",
 )
-@click.option(
-    "-s",
-    "--seed",
-    default=None,
-    type=int,
-    show_default=True,
-    help="Random seed for the framework.",
-)
-def run_config(config: str, verbosity: int, seed: t.Optional[int]):
+def run_config(config: str, verbosity: int):
     """Run Pyxel with a YAML configuration file."""
     logging_level = [logging.ERROR, logging.WARNING, logging.INFO, logging.DEBUG][
         min(verbosity, 3)
@@ -359,7 +339,7 @@ def run_config(config: str, verbosity: int, seed: t.Optional[int]):
     stream_stdout.setFormatter(logging.Formatter(log_format))
     logging.getLogger().addHandler(stream_stdout)
 
-    run(input_filename=config, random_seed=seed)
+    run(input_filename=config)
 
 
 if __name__ == "__main__":

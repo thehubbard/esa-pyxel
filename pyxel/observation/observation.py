@@ -59,6 +59,7 @@ class Observation:
         column_range: t.Optional[t.Tuple[int, int]] = None,
         with_dask: bool = False,
         result_type: Literal["image", "signal", "pixel", "all"] = "all",
+        pipeline_seed: t.Optional[int] = None,
     ):
         self.outputs = outputs
         self.readout = readout
@@ -71,6 +72,7 @@ class Observation:
         self.with_dask = with_dask
         self.parameter_types = {}  # type: dict
         self._result_type = ResultType(result_type)
+        self._pipeline_seed = pipeline_seed
 
         if self.parameter_mode == ParameterMode.Custom:
             self._load_custom_parameters()
@@ -88,6 +90,16 @@ class Observation:
     def result_type(self, value: ResultType) -> None:
         """TBW."""
         self._result_type = value
+
+    @property
+    def pipeline_seed(self) -> int:
+        """TBW."""
+        return self._pipeline_seed
+
+    @pipeline_seed.setter
+    def pipeline_seed(self, value: int) -> None:
+        """TBW."""
+        self._pipeline_seed = value
 
     @property
     def enabled_steps(self) -> t.Sequence[ParameterValues]:
@@ -264,7 +276,7 @@ class Observation:
     def run_debug_mode(
         self, processor: "Processor"
     ) -> t.Tuple[t.List["Processor"], xr.Dataset]:
-        """Run obsevration pipelines in debug mode and return list of processors and parameter logs.
+        """Run observation pipelines in debug mode and return list of processors and parameter logs.
 
         Parameters
         ----------
@@ -290,6 +302,7 @@ class Observation:
                 readout=self.readout,
                 outputs=self.outputs,
                 progressbar=False,
+                pipeline_seed=self.pipeline_seed,
             )
             processors.append(processor)
 
@@ -580,6 +593,7 @@ class Observation:
             readout=self.readout,
             progressbar=False,
             result_type=self.result_type,
+            pipeline_seed=self.pipeline_seed,
         )
 
         _ = self.outputs.save_to_file(processor=new_processor, run_number=n)
@@ -619,6 +633,7 @@ class Observation:
             readout=self.readout,
             progressbar=False,
             result_type=self.result_type,
+            pipeline_seed=self.pipeline_seed,
         )
 
         _ = self.outputs.save_to_file(processor=new_processor, run_number=n)
@@ -659,6 +674,7 @@ class Observation:
             readout=self.readout,
             progressbar=False,
             result_type=self.result_type,
+            pipeline_seed=self.pipeline_seed,
         )
 
         _ = self.outputs.save_to_file(processor=new_processor, run_number=n)
