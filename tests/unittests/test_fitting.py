@@ -31,8 +31,8 @@ def configure(mf: ModelFitting, sim: pyxel.Configuration) -> None:
     """TBW."""
     assert sim.calibration is not None
 
-    pg.set_global_rng_seed(sim.calibration.seed)
-    np.random.seed(sim.calibration.seed)
+    pg.set_global_rng_seed(sim.calibration.pygmo_seed)
+    np.random.seed(sim.calibration.pygmo_seed)
 
     mf.configure(
         calibration_mode=sim.calibration.calibration_mode,

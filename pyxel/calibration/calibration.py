@@ -273,7 +273,7 @@ class Calibration:
     @property
     def pygmo_seed(self) -> int:
         """TBW."""
-        return self._seed
+        return self._pygmo_seed
 
     @pygmo_seed.setter
     def pygmo_seed(self, value: int) -> None:
