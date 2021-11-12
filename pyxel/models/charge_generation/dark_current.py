@@ -11,11 +11,22 @@ import logging
 from pyxel.detectors import Detector
 
 def calculate_dark_current(geo, current, exposure_time,gain=1.0) -> np.ndarray:
+    # dark current for every pixel
+    base_current = current * exposure_time / gain
+
+    # This random number generation should change on each call.
+    rng = np.random.default_rng()
+    dark_im_array_2d = rng.poisson(base_current, size=(geo.row, geo.col))
+
+    return dark_im_array_2d
+
+
+def dark_current(detector, dark_rate, gain) -> None:
+
     """
-    Simulate dark current in a CCD, optionally including hot pixels.
-    Parameters
+    Simulate dark current in a CCD
     ----------
-    image : numpy array
+    geo : numpy array
         Image whose shape the cosmic array should match.
     current : float
         Dark current, in electrons/pixel/second, which is the way
@@ -30,19 +41,6 @@ def calculate_dark_current(geo, current, exposure_time,gain=1.0) -> np.ndarray:
         An array the same shape and dtype as the input containing dark counts
         in units of ADU.
     """
-
-    # dark current for every pixel
-    base_current = current * exposure_time / gain
-
-    # This random number generation should change on each call.
-    rng = np.random.default_rng()
-    dark_im_array_2d = rng.poisson(base_current, size=(geo.row, geo.col))
-
-    return dark_im_array_2d
-
-
-def dark_current(detector, dark_rate, gain) -> None:
-    """Adding dark current"""
     logging.info("")
 
     exposure_time = detector.time_step
@@ -66,6 +64,6 @@ def dark_current(detector, dark_rate, gain) -> None:
         init_hor_pix_position=init_hor_pix_position,
         init_z_position=np.zeros(size),
         init_ver_velocity=np.zeros(size),
-        init_hor_velocity=np.zerps(size),
+        init_hor_velocity=np.zeros(size),
         init_z_velocity=np.zeros(size)
     )
