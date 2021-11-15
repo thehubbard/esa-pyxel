@@ -14,7 +14,6 @@ from pyxel.detectors import Detector
 
 
 # TODO: add documentation about size and center, tuples?, change editing of photon array
-
 # TODO: Fix this
 # @validators.validate
 # @config.argument(name='level', label='number of photon', units='', validate=check_type(int))

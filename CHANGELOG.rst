@@ -7,6 +7,8 @@ version 1.0 / UNRELEASED-YYYY-MM-DD
 
 Core
 ~~~~
+* Implement array-like data structures as numpy custom array containers.
+  (See `!325 <https://gitlab.com/esa/pyxel/-/merge_requests/325>`_).
 
 Documentation
 ~~~~~~~~~~~~~
