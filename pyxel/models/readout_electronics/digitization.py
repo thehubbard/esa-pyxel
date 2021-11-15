@@ -12,18 +12,6 @@ import numpy as np
 
 from pyxel.detectors import MKID, Detector
 
-# from astropy import units as u
-
-
-def simple_processing(detector: Detector) -> None:
-    """Create an image array from signal array.
-
-    :param detector: Pyxel Detector object
-    """
-    logging.info("")
-    detector.signal.array *= detector.characteristics.a2
-    detector.image.array = detector.signal.array
-
 
 def basic_processing(detector: Detector) -> None:
     """Create an image array from signal array.
