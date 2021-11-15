@@ -9,6 +9,8 @@ import typing as t
 
 import pytest
 
+from pyxel.detectors import CCD, CCDCharacteristics, CCDGeometry, Environment, Material
+from pyxel.models.optics import optical_psf
 from pyxel.models.optics.poppy import (
     CircularAperture,
     HexagonAperture,
@@ -23,10 +25,29 @@ from pyxel.models.optics.poppy import (
 )
 
 
+@pytest.fixture
+def ccd_3x3() -> CCD:
+    """Create a valid CCD detector."""
+    return CCD(
+        geometry=CCDGeometry(
+            row=3,
+            col=3,
+            total_thickness=40.0,
+            pixel_vert_size=10.0,
+            pixel_horz_size=10.0,
+        ),
+        material=Material(),
+        environment=Environment(),
+        characteristics=CCDCharacteristics(),
+    )
+
+
 @pytest.mark.parametrize(
     "dct, exp_parameter",
     [
-        pytest.param({}, None, marks=pytest.mark.xfail(raises=KeyError), id="Empty"),
+        pytest.param(
+            {}, None, marks=pytest.mark.xfail(raises=KeyError, strict=True), id="Empty"
+        ),
         pytest.param(
             {"item": "CircularAperture", "radius": 3.14},
             CircularAperture(radius=3.14),
@@ -53,20 +74,18 @@ from pyxel.models.optics.poppy import (
             id="HexagonAperture",
         ),
         pytest.param(
-            {"item": "MultiHexagonalAperture", "side": 1.1, "rings": 2.2, "gap": 3.3},
-            MultiHexagonalAperture(side=1.1, rings=2.2, gap=3.3),
+            {"item": "MultiHexagonalAperture", "side": 1.1, "rings": 2, "gap": 3.3},
+            MultiHexagonalAperture(side=1.1, rings=2, gap=3.3),
             id="MultiHexagonalAperture",
         ),
         pytest.param(
             {
                 "item": "SecondaryObscuration",
                 "secondary_radius": 1.1,
-                "n_supports": 2.2,
+                "n_supports": 2,
                 "support_width": 3.3,
             },
-            SecondaryObscuration(
-                secondary_radius=1.1, n_supports=2.2, support_width=3.3
-            ),
+            SecondaryObscuration(secondary_radius=1.1, n_supports=2, support_width=3.3),
             id="SecondaryObscuration",
         ),
         pytest.param(
@@ -92,7 +111,56 @@ from pyxel.models.optics.poppy import (
     ],
 )
 def test_create_optical_parameter(dct: t.Mapping, exp_parameter):
-    """Test function 'create_optical_parameter."""
+    """Test function 'create_optical_parameter'."""
     parameter = create_optical_parameter(dct)
 
     assert parameter == exp_parameter
+
+
+@pytest.mark.parametrize(
+    "wavelength, fov_arcsec, pixelscale, optical_system",
+    [
+        pytest.param(
+            0.6e-6, 5, 0.01, [{"item": "CircularAperture", "radius": 3.0}], id="valid"
+        ),
+        pytest.param(
+            -1,
+            5,
+            0.01,
+            [{"item": "CircularAperture", "radius": 3.0}],
+            marks=pytest.mark.xfail(raises=ValueError, strict=True),
+            id="Negative 'wavelength'",
+        ),
+        pytest.param(
+            0.6e-6,
+            -1,
+            0.01,
+            [{"item": "CircularAperture", "radius": 3.0}],
+            marks=pytest.mark.xfail(raises=ValueError, strict=True),
+            id="Negative 'fov_arcsec'",
+        ),
+        pytest.param(
+            0.6e-6,
+            5,
+            -1,
+            [{"item": "CircularAperture", "radius": 3.0}],
+            marks=pytest.mark.xfail(raises=ValueError, strict=True),
+            id="Negative 'pixelscale'",
+        ),
+    ],
+)
+def test_optical_psf(
+    ccd_3x3: CCD,
+    wavelength: float,
+    fov_arcsec: float,
+    pixelscale: float,
+    optical_system: t.Sequence[t.Mapping],
+):
+    """Test input parameters for function 'optical_psf'."""
+    optical_psf(
+        detector=ccd_3x3,
+        wavelength=wavelength,
+        fov_arcsec=fov_arcsec,
+        pixelscale=pixelscale,
+        optical_system=optical_system,
+    )

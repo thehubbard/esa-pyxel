@@ -467,7 +467,7 @@ def optical_psf(
         Pyxel Detector object.
     wavelength: float
         Wavelength of incoming light in meters.
-    fov_arcsec: float, optional
+    fov_arcsec: float
         Field Of View on detector plane in arcsec.
     pixelscale: float
         Pixel scale on detector plane (arcsec/pixel).
@@ -479,11 +479,20 @@ def optical_psf(
         logging.WARNING
     )  # TODO: Fix this. See issue #81
 
+    # Validation and Conversion stage
+    # These steps will be probably moved into the YAML engine
+    if wavelength < 0.0 or fov_arcsec < 0.0 or pixelscale < 0.0:
+        raise ValueError(
+            "Expecting strictly positive value for 'wavelength', "
+            "'fov_arcsec' and 'pixelscale'."
+        )
+
     # Convert 'optical_system' to 'optical_parameters'
     optical_parameters = [
         create_optical_parameter(dct) for dct in optical_system
     ]  # type: t.Sequence[OpticalParameter]
 
+    # Processing
     # Get a Point Spread Function
     images, wavefronts = calc_psf(
         wavelength=wavelength,
