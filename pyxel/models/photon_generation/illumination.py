@@ -7,13 +7,12 @@
 
 """Pyxel photon generator models."""
 import typing as t
+from typing_extensions import Literal
 
 import numpy as np
 
 from pyxel.detectors import Detector
 
-
-# TODO: add documentation about size and center, tuples?, change editing of photon array
 
 def rectangular_hole(
     shape: t.Tuple[int, int],
@@ -21,14 +20,20 @@ def rectangular_hole(
     hole_size: t.Optional[t.Sequence[int]] = None,
     hole_center: t.Optional[t.Sequence[int]] = None,
 ) -> np.ndarray:
-    """TBW.
+    """Calculate an image of a rectangular hole.
 
     Parameters
     ----------
-    shape
-    hole_size
-    hole_center
-    level
+    shape: tuple
+        Shape of the output array.
+    level: float
+        Flux of photon per pixel.
+    hole_size: list or tuple, optional
+        List or tuple of length 2, integers defining the sizes of the rectangular hole
+        in vertical and horizontal directions.
+    hole_center: list or tuple, optional
+        List or tuple of length 2, two integers (row and column number),
+        defining the coordinates of the center of the rectangular hole.
 
     Returns
     -------
@@ -36,6 +41,10 @@ def rectangular_hole(
     """
     if not hole_size:
         raise ValueError("hole_size argument should be defined for illumination model")
+    if hole_size and not len(hole_size) == 2:
+        raise ValueError("Hole size should be a sequence of length 2!")
+    if hole_center and not len(hole_center) == 2:
+        raise ValueError("Hole size should be a sequence of length 2!")
 
     photon_array = np.zeros(shape, dtype=float)
     if hole_center is not None:
@@ -60,14 +69,20 @@ def elliptic_hole(
     hole_size: t.Optional[t.Sequence[int]] = None,
     hole_center: t.Optional[t.Sequence[int]] = None,
 ) -> np.ndarray:
-    """TBW.
+    """Calculate an image of an elliptic hole.
 
     Parameters
     ----------
-    shape
-    hole_size
-    hole_center
-    level
+    shape: tuple
+        Shape of the output array.
+    level: float
+        Flux of photon per pixel.
+    hole_size: list or tuple, optional
+        List or tuple of length 2, integers defining the sizes of the elliptic hole
+        in vertical and horizontal directions.
+    hole_center: list or tuple, optional
+        List or tuple of length 2, two integers (row and column number),
+        defining the coordinates of the center of the elliptic hole.
 
     Returns
     -------
@@ -75,6 +90,10 @@ def elliptic_hole(
     """
     if not hole_size:
         raise ValueError("hole_size argument should be defined for illumination model")
+    if hole_size and not len(hole_size) == 2:
+        raise ValueError("Hole size should be a sequence of length 2!")
+    if hole_center and not len(hole_center) == 2:
+        raise ValueError("Hole size should be a sequence of length 2!")
 
     photon_array = np.zeros(shape, dtype=float)
     if hole_center is not None:
@@ -86,59 +105,47 @@ def elliptic_hole(
         hole_center = [int(shape[0] / 2), int(shape[1] / 2)]
     y, x = np.ogrid[: shape[0], : shape[1]]
     dist_from_center = np.sqrt(
-        ((x - hole_center[1]) / hole_size[1]) ** 2
-        + ((y - hole_center[0]) / hole_size[0]) ** 2
+        ((x - hole_center[1]) / float(hole_size[1]/2)) ** 2
+        + ((y - hole_center[0]) / float(hole_size[0]/2)) ** 2
     )
     photon_array[dist_from_center < 1] = level
     return photon_array
 
 
-# TODO: Fix this
-# @validators.validate
-# @config.argument(name='level', label='number of photon', units='', validate=check_type(int))
-# @config.argument(name='option', label='type of illumination', units='',
-#                  validate=check_choices(['uniform', 'rectangular_hole', 'elliptic_hole']))
-# @config.argument(name='size', label='size of 2d array', units='', validate=check_type(list))
-# @config.argument(name='hole_size', label='size of hole', units='', validate=check_type(list))
-def illumination(
-    detector: Detector,
+def calculate_illumination(
+    shape: t.Tuple[int, int],
     level: float,
     option: str = "uniform",
-    array_size: t.Optional[t.Tuple[int, int]] = None,
     hole_size: t.Optional[t.Sequence[int]] = None,
     hole_center: t.Optional[t.Sequence[int]] = None,
-    time_scale: float = 1.0,
-) -> None:
-    """Generate photon uniformly over the entire array or hole.
+) -> np.ndarray:
+    """Calculate the array of photons uniformly over the entire array or over a hole.
 
-    detector: Detector
-        Pyxel Detector object.
-    level: int
-        Number of photon per pixel.
+    Parameters
+    ----------
+    shape: tuple
+        Shape of the output array.
+    level: float
+        Flux of photon per pixel.
     option: str{'uniform', 'elliptic_hole', 'rectangular_hole'}
         A string indicating the type of illumination:
-
         - ``uniform``
            Uniformly fill the entire array with photon. (Default)
         - ``elliptic_hole``
            Mask with elliptic hole.
         - ``rectangular_hole``
            Mask with rectangular hole.
-    array_size: list, optional
-        List of integers defining the size of 2d photon array.
-    hole_size: list, optional
-        List of integers defining the sizes of the elliptic or rectangular hole.
-    hole_center: list, optional
-        List of integers defining the center of the elliptic or rectangular hole.
-    time_scale: float
-        Time scale of the photon flux, default is 1 second. 0.001 would be ms.
-    """
-    if array_size is None:
-        num_rows, num_cols = detector.photon.array.shape
-        shape = num_rows, num_cols  # type: t.Tuple[int, int]
-    else:
-        shape = array_size
+    hole_size: list or tuple, optional
+        List or tuple of length 2, integers defining the sizes of the elliptic or rectangular hole
+        in vertical and horizontal directions.
+    hole_center: list or tuple, optional
+        List or tuple of length 2, two integers (row and column number),
+        defining the coordinates of the center of the elliptic or rectangular hole.
 
+    Returns
+    -------
+
+    """
     if option == "uniform":
         photon_array = np.ones(shape, dtype=float) * level
     elif option == "rectangular_hole":
@@ -151,6 +158,50 @@ def illumination(
         )
     else:
         raise NotImplementedError
+
+    return photon_array
+
+
+def illumination(
+    detector: Detector,
+    level: float,
+    option: Literal["uniform", "rectangular_hole", "elliptic_hole"] = "uniform",
+    hole_size: t.Optional[t.Sequence[int]] = None,
+    hole_center: t.Optional[t.Sequence[int]] = None,
+    time_scale: float = 1.0,
+) -> None:
+    """Generate photon uniformly over the entire array or over a hole.
+
+    detector: Detector
+        Pyxel Detector object.
+    level: float
+        Flux of photon per pixel.
+    option: str{'uniform', 'elliptic_hole', 'rectangular_hole'}
+        A string indicating the type of illumination:
+        - ``uniform``
+           Uniformly fill the entire array with photon. (Default)
+        - ``elliptic_hole``
+           Mask with elliptic hole.
+        - ``rectangular_hole``
+           Mask with rectangular hole.
+    hole_size: list or tuple, optional
+        List or tuple of length 2, integers defining the sizes of the elliptic or rectangular hole
+        in vertical and horizontal directions.
+    hole_center: list or tuple, optional
+        List or tuple of length 2, two integers (row and column number),
+        defining the coordinates of the center of the elliptic or rectangular hole.
+    time_scale: float
+        Time scale of the photon flux, default is 1 second. 0.001 would be ms.
+    """
+    shape = (detector.geometry.row, detector.geometry.col)
+
+    photon_array = calculate_illumination(
+        shape=shape,
+        level=level,
+        option=option,
+        hole_size=hole_size,
+        hole_center=hole_center,
+    )
 
     photon_array = photon_array * (detector.time_step / time_scale)
 
