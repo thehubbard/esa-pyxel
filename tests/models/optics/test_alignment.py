@@ -37,16 +37,28 @@ def test_apply_alignment_0x0(target_shape: t.Tuple[int, int]):
         pytest.param((2, 1), np.array([[1], [5]]), id="2x1"),
         pytest.param((1, 4), np.array([[0, 1, 2, 3]]), id="1x4"),
         pytest.param(
-            (2, 5), None, marks=pytest.mark.xfail(raises=ValueError), id="Too big - 2x5"
+            (2, 5),
+            None,
+            marks=pytest.mark.xfail(raises=ValueError, strict=True),
+            id="Too big - 2x5",
         ),
         pytest.param(
-            (3, 4), None, marks=pytest.mark.xfail(raises=ValueError), id="Too big - 3x4"
+            (3, 4),
+            None,
+            marks=pytest.mark.xfail(raises=ValueError, strict=True),
+            id="Too big - 3x4",
         ),
         pytest.param(
-            (2, 0), None, marks=pytest.mark.xfail(raises=ValueError), id="2x0"
+            (2, 0),
+            None,
+            marks=pytest.mark.xfail(raises=ValueError, strict=True),
+            id="2x0",
         ),
         pytest.param(
-            (0, 4), None, marks=pytest.mark.xfail(raises=ValueError), id="0x4"
+            (0, 4),
+            None,
+            marks=pytest.mark.xfail(raises=ValueError, strict=True),
+            id="0x4",
         ),
     ],
 )
