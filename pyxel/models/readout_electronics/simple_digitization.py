@@ -10,11 +10,11 @@
 
 import numpy as np
 
-from pyxel.detectors import MKID
+from pyxel.detectors import Detector
 
 
 # TODO: Fix this
-def simple_digitization(detector: MKID, data_type: str = "uint16") -> None:
+def simple_digitization(detector: Detector, data_type: str = "uint16") -> None:
     """Digitize signal array mimicking readout electronics.
 
     Parameters
@@ -24,15 +24,20 @@ def simple_digitization(detector: MKID, data_type: str = "uint16") -> None:
     data_type : str
         The desired data-type for the array. The data-type must be an signed or
         unsigned integer.
-        Examples: ``numpy.uint16``, ``numpy.uint32``, ``numpy.uint64``,
-        ``numpy.int32``, ``numpy.int64``
+        Valid values: 'uint16', 'uint32', 'uint64', 'uint'
+        Invalid values: 'int16', 'int32', 'int64', 'int', 'float'...
     """
+    # Validation and Conversion stage
+    # These steps will be probably moved into the YAML engine
     try:
         d_type = np.dtype(data_type)  # type: np.dtype
     except TypeError as ex:
         raise TypeError(
             "Can not locate the type defined as `data_type` argument in yaml file."
         ) from ex
+
+    if not issubclass(d_type.type, np.integer):
+        raise ValueError("Expecting a signed/unsigned integer.")
 
     # Gain of the Analog-Digital Converter
     detector.signal.array *= detector.characteristics.a2
