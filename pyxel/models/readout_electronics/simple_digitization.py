@@ -11,6 +11,42 @@
 import numpy as np
 
 from pyxel.detectors import Detector
+from pyxel.models.readout_electronics.util import apply_gain_adc
+
+
+def apply_simple_digitization(
+    signal_2d: np.ndarray,
+    gain_adc: float,
+    min_clipped_value: float,
+    max_clipped_value: float,
+) -> np.ndarray:
+    """Apply simple digitization.
+
+    Parameters
+    ----------
+    signal_2d : array
+        2D signal to process. Unit: Volt
+    gain_adc : float
+        Gain of the analog-digital converter. Unit: adu/V
+    min_clipped_value : float
+        Minimum value to keep. Unit: adu
+    max_clipped_value : float
+        Maximum value to keep. Unit: adu
+    """
+    # Gain of the Analog-Digital Converter
+    image_2d = apply_gain_adc(signal_2d=signal_2d, gain_adc=gain_adc)
+
+    # floor of signal values element-wise (quantization)
+    image_quantized_2d = np.floor(image_2d)
+
+    # convert floats to other datatype (e.g. 16-bit unsigned integers)
+    image_clipped_2d = np.clip(
+        image_quantized_2d,
+        a_min=min_clipped_value,
+        a_max=max_clipped_value,
+    )
+
+    return image_clipped_2d
 
 
 # TODO: Fix this
@@ -39,20 +75,12 @@ def simple_digitization(detector: Detector, data_type: str = "uint16") -> None:
     if not issubclass(d_type.type, np.integer):
         raise ValueError("Expecting a signed/unsigned integer.")
 
-    # Gain of the Analog-Digital Converter
-    detector.signal.array *= detector.characteristics.a2
+    image_2d = apply_simple_digitization(
+        signal_2d=detector.signal.array,
+        gain_adc=detector.characteristics.a2,
+        min_clipped_value=np.iinfo(d_type).min,
+        max_clipped_value=np.iinfo(d_type).max,
+    )
 
-    # floor of signal values element-wise (quantization)
-    detector.signal.array = np.floor(detector.signal.array)
-
-    # convert floats to other datatype (e.g. 16-bit unsigned integers)
-    result = np.asarray(
-        np.clip(
-            detector.signal.array,
-            a_min=np.iinfo(d_type).min,
-            a_max=np.iinfo(d_type).max,
-        )
-    )  # type: np.ndarray
-
-    detector.signal.array = result
-    detector.image.array = np.asarray(detector.signal.array, dtype=d_type)
+    detector.signal.array = image_2d.copy()
+    detector.image.array = np.asarray(image_2d, dtype=d_type)
