@@ -6,6 +6,7 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """Pyxel photon generator models."""
+
 import numpy as np
 
 from pyxel.detectors import Detector
@@ -16,7 +17,7 @@ def apply_alignment(
     target_rows: int,
     target_cols: int,
 ) -> np.ndarray:
-    """
+    """Optical alignment.
 
     Parameters
     ----------
@@ -31,13 +32,15 @@ def apply_alignment(
     """
     rows, cols = data_2d.shape
 
+    if not (0 < target_rows <= rows) or not (0 < target_cols <= cols):
+        raise ValueError
+
     row0 = int((rows - target_rows) / 2)
     col0 = int((cols - target_cols) / 2)
 
-    if row0 < 0 or col0 < 0:
-        raise ValueError
-
-    aligned_data_2d = data_2d[slice(row0, row0 + rows), slice(col0, col0 + cols)]
+    aligned_data_2d = data_2d[
+        slice(row0, row0 + target_rows), slice(col0, col0 + target_cols)
+    ]
 
     return aligned_data_2d
 
