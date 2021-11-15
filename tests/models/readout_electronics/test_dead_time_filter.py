@@ -15,13 +15,23 @@ from pyxel.models.readout_electronics.dead_time import apply_dead_time_filter
 def test_apply_dead_time_filter():
     """Test function 'apply_dead_time_filter."""
     data_2d = np.array(
-        [[0, 1, 2, 3, 4], [5, 6, 7, 8, 9], [10, 11, 12, 13, 14], [15, 16, 17, 18, 19]]
+        [
+            [0, 1, 2, 3, 4],
+            [5, 6, 7, 8, 9],
+            [10, 11, 12, 13, 14],
+            [15, 16, 17, 18, 19],
+        ]
     )
 
     result_2d = apply_dead_time_filter(phase_2d=data_2d, maximum_count=12)
 
     exp_data_2d = np.array(
-        [[0, 1, 2, 3, 4], [5, 6, 7, 8, 9], [10, 11, 12, 12, 12], [12, 12, 12, 12, 12]]
+        [
+            [0, 1, 2, 3, 4],
+            [5, 6, 7, 8, 9],
+            [10, 11, 12, 12, 12],
+            [12, 12, 12, 12, 12],
+        ]
     )
 
-    np.testing.assert_equal(data_2d, exp_data_2d)
+    np.testing.assert_equal(result_2d, exp_data_2d)

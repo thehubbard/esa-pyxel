@@ -25,10 +25,9 @@ def apply_dead_time_filter(phase_2d: np.ndarray, maximum_count: float) -> np.nda
     array
         TBW.
     """
-    # TODO: use np.clip
-    phase_2d[phase_2d >= maximum_count] = maximum_count
+    phase_clipped_2d = np.clip(phase_2d, a_min=None, a_max=maximum_count)
 
-    return phase_2d
+    return phase_clipped_2d
 
 
 # TODO: more documentation (Enrico), basic refactoring
