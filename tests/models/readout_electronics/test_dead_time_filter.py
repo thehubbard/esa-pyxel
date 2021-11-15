@@ -8,8 +8,43 @@
 import numpy as np
 import pytest
 
-from pyxel.models.readout_electronics import dead_time
+from pyxel.data_structure import Phase
+from pyxel.detectors import (
+    CCD,
+    CMOS,
+    MKID,
+    CCDCharacteristics,
+    CCDGeometry,
+    CMOSCharacteristics,
+    CMOSGeometry,
+    Environment,
+    Material,
+    MKIDCharacteristics,
+    MKIDGeometry,
+)
+from pyxel.models.readout_electronics import dead_time_filter
 from pyxel.models.readout_electronics.dead_time import apply_dead_time_filter
+
+
+@pytest.fixture
+def mkid_5x4() -> MKID:
+    """Create a valid CCD detector."""
+    detector = MKID(
+        geometry=MKIDGeometry(
+            row=5,
+            col=4,
+            total_thickness=40.0,
+            pixel_vert_size=10.0,
+            pixel_horz_size=10.0,
+        ),
+        material=Material(),
+        environment=Environment(),
+        characteristics=MKIDCharacteristics(),
+    )
+
+    detector.reset()
+
+    return detector
 
 
 def test_apply_dead_time_filter():
@@ -35,3 +70,65 @@ def test_apply_dead_time_filter():
     )
 
     np.testing.assert_equal(result_2d, exp_data_2d)
+
+
+@pytest.mark.parametrize("dead_time", [1.0, 2])
+def test_dead_time_filter(mkid_5x4: MKID, dead_time: float):
+    """Test function 'dead_time_filter'."""
+    dead_time_filter(detector=mkid_5x4, dead_time=dead_time)
+
+
+@pytest.mark.parametrize(
+    "dead_time, exp_error, exp_msg",
+    [
+        (0.0, ValueError, "'dead_time' must be strictly positive."),
+        (-1, ValueError, "'dead_time' must be strictly positive."),
+    ],
+)
+def test_dead_time_filter_wrong_dead_time(
+    mkid_5x4: MKID,
+    dead_time,
+    exp_error,
+    exp_msg,
+):
+    """Test model 'dead_time_filter' with bad parameters."""
+    with pytest.raises(exp_error, match=exp_msg):
+        dead_time_filter(detector=mkid_5x4, dead_time=dead_time)
+
+
+def test_dead_time_filter_with_ccd():
+    """Test model 'dead_time_filter' with a `CCD` detector."""
+    detector = CCD(
+        geometry=CCDGeometry(
+            row=5,
+            col=4,
+            total_thickness=40.0,
+            pixel_vert_size=10.0,
+            pixel_horz_size=10.0,
+        ),
+        material=Material(),
+        environment=Environment(),
+        characteristics=CCDCharacteristics(),
+    )
+
+    with pytest.raises(TypeError, match="Expecting a `MKID` object for 'detector'"):
+        dead_time_filter(detector=detector, dead_time=1.0)
+
+
+def test_dead_time_filter_with_cmos():
+    """Test model 'dead_time_filter' with a `CMOS` detector."""
+    detector = CMOS(
+        geometry=CMOSGeometry(
+            row=5,
+            col=4,
+            total_thickness=40.0,
+            pixel_vert_size=10.0,
+            pixel_horz_size=10.0,
+        ),
+        material=Material(),
+        environment=Environment(),
+        characteristics=CMOSCharacteristics(),
+    )
+
+    with pytest.raises(TypeError, match="Expecting a `MKID` object for 'detector'"):
+        dead_time_filter(detector=detector, dead_time=1.0)

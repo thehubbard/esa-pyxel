@@ -43,11 +43,12 @@ def dead_time_filter(detector: MKID, dead_time: float) -> None:
     if not isinstance(detector, MKID):
         raise TypeError("Expecting a `MKID` object for 'detector'.")
 
-    if dead_time < 0.0:
+    if dead_time <= 0.0:
         raise ValueError("'dead_time' must be strictly positive.")
 
     phase_2d = apply_dead_time_filter(
-        phase_2d=detector.phase.array, maximum_count=1.0 / dead_time
+        phase_2d=detector.phase.array,
+        maximum_count=1.0 / dead_time,
     )
 
-    detector.phase.assay = phase_2d
+    detector.phase.array = phase_2d
