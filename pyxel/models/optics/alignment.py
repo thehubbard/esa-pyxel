@@ -55,10 +55,10 @@ def alignment(detector: Detector) -> None:
     """
     geo = detector.geometry
 
-    aligned_optical_image = apply_alignment(
+    aligned_optical_image_2d = apply_alignment(
         data_2d=detector.photon.array,
         target_rows=geo.row,
         target_cols=geo.col,
     )
 
-    detector.photon.array = aligned_optical_image
+    detector.photon.array = aligned_optical_image_2d
