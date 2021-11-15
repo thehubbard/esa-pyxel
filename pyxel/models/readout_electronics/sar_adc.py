@@ -13,11 +13,46 @@ import numpy as np
 from pyxel.detectors import Detector
 
 
+def apply_sar_adc(
+    signal_2d: np.ndarray,
+    num_rows: int,
+    num_cols: int,
+    min_volt: float,
+    max_volt: float,
+    adc_bits: int,
+) -> np.ndarray:
+    data_digitized_2d = np.zeros((num_rows, num_cols))
+
+    # First normalize the data to voltage since there is no model for
+    # the conversion photogenerated carrier > volts in the model/charge_measure
+    signal_normalized_2d = signal_2d * max_volt / np.max(signal_2d)
+
+    # Set the reference voltage of the ADC to half the max
+    ref = max_volt / 2.0  # type: float
+
+    # For each bits, compare the value of the ref to the capacitance value
+    for i in np.arange(adc_bits):
+        # digital value associated with this step
+        digital_value = 2 ** (adc_bits - (i + 1))
+
+        # All data that is higher than the ref is equal to the dig. value
+        data_digitized_2d[signal_normalized_2d >= ref] += digital_value
+
+        # Subtract ref value from the data
+        signal_normalized_2d[signal_normalized_2d >= ref] -= ref
+
+        # steps.append(ref)
+        # Divide reference voltage by 2 for next step
+        ref /= 2.0
+
+    return data_digitized_2d
+
+
 # TODO: pure and impure refactoring, documentation, range volt - only max is used
 def sar_adc(
     detector: Detector,
     adc_bits: int = 16,
-    range_volt: t.Tuple[int, int] = (0, 5),
+    range_volt: t.Tuple[float, float] = (0.0, 5.0),
 ) -> None:
     """Digitize signal array using SAR ADC logic.
 
@@ -27,34 +62,18 @@ def sar_adc(
         Pyxel Detector object.
     adc_bits : int
         Number of bits for the ADC.
-    range_volt : int, int
+    range_volt : float, float
         Minimal and maximal volt value.
     """
-    # Extract the data to digitize
-    data = detector.signal.array
-    data_digitized = np.zeros((detector.geometry.row, detector.geometry.col))
+    min_volt, max_volt = range_volt
 
-    # First normalize the data to voltage since there is no model for
-    # the conversion photogenerated carrier > volts in the model/charge_measure
-    data = data * range_volt[1] / np.max(data)
+    image_2d = apply_sar_adc(
+        signal_2d=detector.signal.array,
+        num_rows=detector.geometry.row,
+        num_cols=detector.geometry.col,
+        min_volt=min_volt,
+        max_volt=max_volt,
+        adc_bits=adc_bits,
+    )  # type: np.ndarray
 
-    # steps = list()
-    # Set the reference voltage of the ADC to half the max
-    ref = range_volt[1] / 2.0
-
-    # For each bits, compare the value of the ref to the capacitance value
-    for i in np.arange(0, adc_bits):
-        # digital value associated with this step
-        digital_value = 2 ** (adc_bits - (i + 1))
-
-        # All data that is higher than the ref is equal to the dig. value
-        data_digitized[data >= ref] += digital_value
-
-        # Subtract ref value from the data
-        data[data >= ref] -= ref
-
-        # steps.append(ref)
-        # Divide reference voltage by 2 for next step
-        ref /= 2.0
-
-    detector.image.array = data_digitized
+    detector.image.array = image_2d
