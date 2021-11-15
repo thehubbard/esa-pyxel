@@ -14,6 +14,9 @@ Documentation
 Models
 ~~~~~~
 
+* Move some models from 'readout_electronics' into separated files.
+  (See `!323 <https://gitlab.com/esa/pyxel/-/merge_requests/323>`_).
+
 Others
 ~~~~~~
 
@@ -23,6 +26,7 @@ version 0.11.3 / 2021-11-15
 
 Core
 ~~~~
+
 * Multiply photon flux with detector time step in photon generation models.
   (See `!305 <https://gitlab.com/esa/pyxel/-/merge_requests/305>`_).
 * Initialize Photon class in detector reset function instead in models.
@@ -65,9 +69,6 @@ Documentation
   (See `!293 <https://gitlab.com/esa/pyxel/-/merge_requests/293>`_).
 * Add a 'Asking for help' chapter in the documentation.
   (See `!299 <https://gitlab.com/esa/pyxel/-/merge_requests/299>`_).
-
-Models
-~~~~~~
 
 Others
 ~~~~~~
