@@ -2,8 +2,8 @@ Changelog
 =========
 
 
-version 1.0 / UNRELEASED-YYYY-MM-DD
------------------------------------
+version 0.11.3 / 2021-11-15
+---------------------------
 
 Core
 ~~~~
@@ -13,12 +13,6 @@ Core
   (See `!309 <https://gitlab.com/esa/pyxel/-/merge_requests/309>`_).
 * Resolve "Use a 'with' statement to set a seed with 'numpy.random'.
   (See `!175 <https://gitlab.com/esa/pyxel/-/merge_requests/175>`_).
-
-Documentation
-~~~~~~~~~~~~~
-
-Models
-~~~~~~
 
 Others
 ~~~~~~
