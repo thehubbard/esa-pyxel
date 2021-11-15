@@ -7,7 +7,6 @@
 
 """Simple digitization."""
 
-import logging
 
 import numpy as np
 
@@ -15,20 +14,19 @@ from pyxel.detectors import MKID
 
 
 # TODO: Fix this
-# @validators.validate
-# @config.argument(name='data_type', label='type of output data array', units='ADU',
-#                  validate=checkers.check_choices(['numpy.uint16', 'numpy.uint32', 'numpy.uint64',
-#                                                   'numpy.int32', 'numpy.int64']))
-# TODO: Refactoring, don't change the signal array, more documentation
 def simple_digitization(detector: MKID, data_type: str = "uint16") -> None:
     """Digitize signal array mimicking readout electronics.
 
-    :param detector: Pyxel Detector object
-    :param data_type: numpy integer type: ``numpy.uint16``, ``numpy.uint32``, ``numpy.uint64``,
-                                          ``numpy.int32``, ``numpy.int64``
+    Parameters
+    ----------
+    detector : Detector
+        Pyxel Detector object.
+    data_type : str
+        The desired data-type for the array. The data-type must be an signed or
+        unsigned integer.
+        Examples: ``numpy.uint16``, ``numpy.uint32``, ``numpy.uint64``,
+        ``numpy.int32``, ``numpy.int64``
     """
-    logging.info("")
-
     try:
         d_type = np.dtype(data_type)  # type: np.dtype
     except TypeError as ex:
