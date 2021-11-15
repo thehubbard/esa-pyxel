@@ -305,7 +305,7 @@ def create_optical_parameters(
 def create_optical_item(
     param: OpticalParameter,
     wavelength: float,
-) -> op.OpticalElement:
+) -> "op.OpticalElement":
     """Create a new poppy ``OpticalElement``.
 
     Parameters
@@ -373,7 +373,7 @@ def calc_psf(
     pixelscale: float,
     optical_parameters: t.Sequence[OpticalParameter],
 ) -> t.Tuple[t.Sequence[fits.hdu.image.PrimaryHDU], t.Sequence["op.Wavefront"]]:
-    """Calculate the point spread function for the given optical system and optionally display the psf.
+    """Calculate the point spread function for the given optical system.
 
     Parameters
     ----------
@@ -472,10 +472,9 @@ def optical_psf(
     pixelscale: float
         Pixel scale on detector plane (arcsec/pixel).
         Defines sampling resolution of PSF.
-    optical_system:
+    optical_system: list of dict
         List of optical elements before detector with their specific arguments.
     """
-
     logging.getLogger("poppy").setLevel(
         logging.WARNING
     )  # TODO: Fix this. See issue #81
