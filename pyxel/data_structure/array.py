@@ -40,10 +40,8 @@ class Array:
 
     def __repr__(self) -> str:
         cls_name = self.__class__.__name__
-        shape = self._array.shape
-        dtype = self._array.dtype
 
-        return f"{cls_name}<shape={shape}, dtype={dtype}>"
+        return f"{cls_name}<shape={self.shape}, dtype={self.dtype}>"
 
     def validate_type(self, value: np.ndarray) -> None:
         """Validate a value.
@@ -68,6 +66,26 @@ class Array:
         if value.shape != self._array.shape:
             raise ValueError(f"Expected {cls_name} array is {self._array.shape}.")
 
+    def __array__(self, dtype: t.Optional[np.dtype] = None):
+        if not isinstance(self._array, np.ndarray):
+            raise ValueError("Array not initialized.")
+        return np.asarray(self._array, dtype=dtype)
+
+    @property
+    def shape(self) -> t.Tuple:
+        """Return array shape."""
+        return self._array.shape
+
+    @property
+    def ndim(self) -> int:
+        """Return number of dimensions of the array."""
+        return self._array.ndim
+
+    @property
+    def dtype(self) -> np.dtype:
+        """Return array data type."""
+        return self._array.dtype
+
     @property
     def array(self) -> np.ndarray:
         """Two dimensional numpy array storing the data.
@@ -90,37 +108,6 @@ class Array:
 
         # self.type = value.dtype
         self._array = value
-
-    # TODO: Is it necessary ? Maybe not if you implement method __array__
-    @property
-    def mean(self) -> float:
-        """Return mean of all pixel values."""
-        return float(np.mean(self._array))
-
-    @property
-    def std_deviation(self) -> float:
-        """Return standard deviation of all pixel values."""
-        return float(np.std(self._array))
-
-    @property
-    def max(self) -> float:
-        """Return maximum of all pixel values."""
-        return float(np.max(self._array))
-
-    @property
-    def min(self) -> float:
-        """Return minimum of all pixel values."""
-        return float(np.min(self._array))
-
-    @property
-    def peak_to_peak(self) -> float:
-        """Return peak-to-peak value of all pixel values."""
-        return float(np.ptp(self._array))
-
-    @property
-    def sum(self) -> float:
-        """Return sum of all pixel values."""
-        return float(np.sum(self._array))
 
     @property
     def numbytes(self) -> int:

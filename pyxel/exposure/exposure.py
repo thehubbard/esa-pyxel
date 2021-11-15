@@ -11,7 +11,6 @@
 import logging
 import operator
 import typing as t
-from copy import copy
 
 import numpy as np
 from tqdm.auto import tqdm
@@ -160,11 +159,6 @@ def run_exposure_pipeline(
 
     keys = result_keys(result_type)
 
-    attributes = {
-        "image": "image.array",
-        "pixel": "pixel.array",
-        "signal": "signal.array",
-    }
     unstacked_result = {key: [] for key in keys}  # type: t.Mapping[str, list]
 
     for i, (time, step) in enumerate(
@@ -188,9 +182,7 @@ def run_exposure_pipeline(
             outputs.save_to_file(processor)
 
         for key in keys:
-            unstacked_result[key].append(
-                copy(operator.attrgetter(attributes[key])(detector))
-            )
+            unstacked_result[key].append(np.array(operator.attrgetter(key)(detector)))
 
         if progressbar:
             pbar.update(1)

@@ -12,7 +12,6 @@ from pyxel.detectors import Detector
 
 
 # TODO: docstring, private function, what is eta,
-
 # TODO: Fix this
 # @validators.validate
 # @config.argument(name='', label='', units='', validate=)
