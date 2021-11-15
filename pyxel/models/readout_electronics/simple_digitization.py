@@ -82,5 +82,4 @@ def simple_digitization(detector: Detector, data_type: str = "uint16") -> None:
         max_clipped_value=np.iinfo(d_type).max,
     )
 
-    detector.signal.array = image_2d.copy()
     detector.image.array = np.asarray(image_2d, dtype=d_type)
