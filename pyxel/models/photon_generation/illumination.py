@@ -29,7 +29,7 @@ def rectangular_hole(
     level: float
         Flux of photon per pixel.
     hole_size: list or tuple, optional
-        List or tuple of length 2, integers defining the sizes of the rectangular hole
+        List or tuple of length 2, integers defining the diameters of the rectangular hole
         in vertical and horizontal directions.
     hole_center: list or tuple, optional
         List or tuple of length 2, two integers (row and column number),
@@ -37,7 +37,8 @@ def rectangular_hole(
 
     Returns
     -------
-    photon_array
+    photon_array: np.ndarray
+        Output numpy array.
     """
     if not hole_size:
         raise ValueError("hole_size argument should be defined for illumination model")
@@ -78,7 +79,7 @@ def elliptic_hole(
     level: float
         Flux of photon per pixel.
     hole_size: list or tuple, optional
-        List or tuple of length 2, integers defining the sizes of the elliptic hole
+        List or tuple of length 2, integers defining the diameters of the elliptic hole
         in vertical and horizontal directions.
     hole_center: list or tuple, optional
         List or tuple of length 2, two integers (row and column number),
@@ -86,7 +87,8 @@ def elliptic_hole(
 
     Returns
     -------
-    photon_array
+    photon_array: np.ndarray
+        Output numpy array.
     """
     if not hole_size:
         raise ValueError("hole_size argument should be defined for illumination model")
@@ -136,7 +138,7 @@ def calculate_illumination(
         - ``rectangular_hole``
            Mask with rectangular hole.
     hole_size: list or tuple, optional
-        List or tuple of length 2, integers defining the sizes of the elliptic or rectangular hole
+        List or tuple of length 2, integers defining the diameters of the elliptic or rectangular hole
         in vertical and horizontal directions.
     hole_center: list or tuple, optional
         List or tuple of length 2, two integers (row and column number),
@@ -144,7 +146,8 @@ def calculate_illumination(
 
     Returns
     -------
-
+    photon_array: np.ndarray
+        Output numpy array.
     """
     if option == "uniform":
         photon_array = np.ones(shape, dtype=float) * level
@@ -185,7 +188,7 @@ def illumination(
         - ``rectangular_hole``
            Mask with rectangular hole.
     hole_size: list or tuple, optional
-        List or tuple of length 2, integers defining the sizes of the elliptic or rectangular hole
+        List or tuple of length 2, integers defining the diameters of the elliptic or rectangular hole
         in vertical and horizontal directions.
     hole_center: list or tuple, optional
         List or tuple of length 2, two integers (row and column number),
