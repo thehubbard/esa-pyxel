@@ -20,6 +20,7 @@ def basic_processing(detector: Detector) -> None:
     detector.image.array = detector.signal.array
 
 
+# TODO: Remove this model ?
 def phase_conversion(detector: MKID) -> None:
     """Create an image array from phase array.
 
