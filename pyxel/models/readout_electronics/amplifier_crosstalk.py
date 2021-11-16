@@ -89,21 +89,23 @@ def get_channel_slices(
     return slices
 
 
-def get_matrix(coupling_matrix: t.Union[str, Path, list]) -> np.ndarray:
+def get_matrix(coupling_matrix: t.Union[str, Path, t.Sequence]) -> np.ndarray:
     """Get the coupling matrix either from configuration input or a file.
 
     Parameters
     ----------
-    coupling_matrix
+    coupling_matrix : str, Path or sequence of numbers.
+        Matrix to create.
 
     Returns
     -------
-    ndarray
+    array
+        Matrix.
     """
-    if isinstance(coupling_matrix, list):
-        return np.array(coupling_matrix)
-    else:
+    if isinstance(coupling_matrix, (str, Path)):
         return np.array(load_table(coupling_matrix))
+    else:
+        return np.array(coupling_matrix)
 
 
 @numba.njit
@@ -260,13 +262,9 @@ def ac_crosstalk(
     Parameters
     ----------
     detector: Detector
-    coupling_matrix: ndarray
-    channel_matrix: ndarray
-    readout_directions: ndarray
-
-    Returns
-    -------
-    None
+    coupling_matrix: array
+    channel_matrix: array
+    readout_directions: array
     """
     cpl_matrix = get_matrix(coupling_matrix)  # type: np.ndarray
     ch_matrix = np.array(channel_matrix)  # type: np.ndarray
