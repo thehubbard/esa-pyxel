@@ -17,12 +17,22 @@ from pyxel.detectors import Detector
 
 def load_image_from_file(
     image_file: str,
+    shape: t.Tuple[int, int],
+    position: t.Tuple[int, int] = (0, 0),
+    fit_image_to_det: bool = False,
 ) -> np.ndarray:
-    """Load image from file.
+    """Load image from file and fit to detector shape.
 
     Parameters
     ----------
+    shape: tuple
+        Detector shape.
     image_file: str
+        Path to image file.
+    fit_image_to_det: bool
+        Fitting image to given shape.
+    position: tuple
+        Indices of starting row and column, used when fitting image to detector.
 
     Returns
     -------
@@ -34,6 +44,17 @@ def load_image_from_file(
         raise FileNotFoundError(f"Image file '{filename}' does not exist !")
 
     image = pyxel.load_image(filename)  # type: np.ndarray
+
+    row, col = shape
+
+    # TODO: create tests for this part, see issue #337
+    if fit_image_to_det:
+        position_y, position_x = position
+
+        image = image[
+            slice(position_y, position_y + row),
+            slice(position_x, position_x + col),
+        ]
 
     return image
 
@@ -67,17 +88,15 @@ def load_image(
     time_scale: float
         Time scale of the photon flux, default is 1 second. 0.001 would be ms.
     """
-    image = load_image_from_file(image_file=image_file)
 
-    # TODO: create tests for this part, see issue #337
-    if fit_image_to_det:
-        geo = detector.geometry
-        position_y, position_x = position
+    shape = (detector.geometry.row, detector.geometry.col)
 
-        image = image[
-            slice(position_y, position_y + geo.row),
-            slice(position_x, position_x + geo.col),
-        ]
+    image = load_image_from_file(
+        image_file=image_file,
+        shape=shape,
+        fit_image_to_det=fit_image_to_det,
+        position=position,
+    )
 
     detector.input_image = image
     photon_array = image
