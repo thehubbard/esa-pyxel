@@ -130,6 +130,7 @@ class ModelFunction:
     ... )
 
     Access basic parameters
+
     >>> model_func.name
     'illumination'
     >>> model_func.enabled
@@ -138,6 +139,7 @@ class ModelFunction:
     Arguments({'level': 1, 'option': 'foo'})
 
     Access the arguments with a ``dict`` interface
+
     >>> list(model_func.arguments)
     ['level', 'option']
     >>> model_func.arguments["level"]
@@ -146,6 +148,7 @@ class ModelFunction:
     TypeError: 'Arguments' object does not support item assignment
 
     Access the arguments with an attribute interface
+
     >>> model_func.arguments.level
     1
     """

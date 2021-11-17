@@ -69,18 +69,18 @@ class Charge(Particle):
         particle_type : str
             Type of particle. Valid values: 'e' for an electron or 'h' for a hole.
         particles_per_cluster : array-like
-        init_energy : array-like
-        init_ver_position : array-like
-        init_hor_position : array-like
-        init_z_position : array-like
-        init_ver_velocity : array-like
-        init_hor_velocity : array-like
-        init_z_velocity : array-like
+        init_energy : array
+        init_ver_position : array
+        init_hor_position : array
+        init_z_position : array
+        init_ver_velocity : array
+        init_hor_velocity : array
+        init_z_velocity : array
 
         Returns
         -------
-        dataframe
-            Charge(s) stored in a `DataFrame`.
+        DataFrame
+            Charge(s) stored in a ``DataFrame``.
         """
         if not (
             len(particles_per_cluster)
@@ -182,14 +182,14 @@ class Charge(Particle):
         ----------
         particle_type : str
             Type of particle. Valid values: 'e' for an electron or 'h' for a hole.
-        particles_per_cluster : array-like
-        init_energy : array-like
-        init_ver_position : array-like
-        init_hor_position : array-like
-        init_z_position : array-like
-        init_ver_velocity : array-like
-        init_hor_velocity : array-like
-        init_z_velocity : array-like
+        particles_per_cluster : array
+        init_energy : array
+        init_ver_position : array
+        init_hor_position : array
+        init_z_position : array
+        init_ver_velocity : array
+        init_hor_velocity : array
+        init_z_velocity : array
         """
         # Create charge(s)
         new_charges = Charge.create_charges(

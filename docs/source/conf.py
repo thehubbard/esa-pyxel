@@ -76,6 +76,13 @@ napoleon_type_aliases = {
     "CCD": "~pyxel.detectors.CCD",
     "CMOS": "~pyxel.detectors.CMOS",
     "MKID": "~pyxel.detectors.MKID",
+    # Objects related to a running mode
+    "Exposure": "~pyxel.exposure.Exposure",
+    "Observation": "~pyxel.observation.Observation",
+    "ObservationResult": "~pyxel.observation.ObservationResult",
+    "Calibration": "~pyxel.calibration.Calibration",
+    # Objects related to a pipeline
+    "DetectionPipeline": "~pyxel.pipelines.DetectionPipeline",
 }
 
 autodoc_member_order = "bysource"
