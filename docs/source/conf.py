@@ -70,6 +70,13 @@ napoleon_numpy_docstring = True
 napoleon_use_param = False
 napoleon_use_rtype = False
 napoleon_preprocess_types = True
+napoleon_type_aliases = {
+    # Objects related to a detector
+    "Detector": "~pyxel.detectors.Detector",
+    "CCD": "~pyxel.detectors.CCD",
+    "CMOS": "~pyxel.detectors.CMOS",
+    "MKID": "~pyxel.detectors.MKID",
+}
 
 autodoc_member_order = "bysource"
 

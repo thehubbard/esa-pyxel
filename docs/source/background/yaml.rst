@@ -10,7 +10,8 @@ their input arguments.
 
 After the framework loads and
 validates the YAML file (with .yaml extension),
-then it creates *Detector* and *Detection Pipeline* object(s) based on
+then it creates :py:class:`~pyxel.detectors.Detector` and
+:py:class:`~pyxel.pipelines.DetectionPipeline` object(s) based on
 the YAML file with all the information needed for the framework to run
 the simulation.
 
@@ -34,13 +35,15 @@ or subgroup.
 * **running mode:**
 
     In the beginning of the configuration file, the user should define
-    the running mode. This can be exposure, observation, calibration.
+    the running mode. This can be :ref:`exposure <exposure_mode>`,
+    :ref:`observation <observation_mode>`, :ref:`calibration <calibration_mode>`.
     For details, see :ref:`running_modes`.
 
 * **detector:**
 
-    All arguments of Detector subclasses (Geometry, Characteristics,
-    Environment, Material and Optics) are defined here.
+    All arguments of Detector subclasses (:py:class:`~pyxel.detectors.Geometry`,
+    :py:class:`~pyxel.detectors.Characteristics`, :py:class:`~pyxel.detectors.Environment`,
+    :py:class:`~pyxel.detectors.Material` and :py:class:`~pyxel.detectors.Optics`) are defined here.
     For details, see :ref:`detectors`.
 
 * **pipeline:**

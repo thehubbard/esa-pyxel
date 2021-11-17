@@ -1,4 +1,4 @@
-.. _parametric_mode:
+.. _observation_mode:
 
 ================
 Observation mode

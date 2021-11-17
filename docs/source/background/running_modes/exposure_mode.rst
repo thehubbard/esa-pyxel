@@ -8,8 +8,8 @@ Single readout time
 -------------------
 
 Running Pyxel in Exposure mode can be used to get a single image with
-the detector effects defined in either the configuration file
-or the GUI. If multiple readout times are not specified, the default readout time is 1 second.
+the detector effects defined in either the configuration file.
+If multiple readout times are not specified, the default readout time is 1 second.
 
 .. code-block:: yaml
 
