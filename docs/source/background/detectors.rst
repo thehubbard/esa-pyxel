@@ -4,7 +4,7 @@
 Detectors
 #########
 
-According to the YAML file, one :py:class:`~pyxel.detectors.CCD` or
+According to the ``YAML`` file, one :py:class:`~pyxel.detectors.CCD` or
 :py:class:`~pyxel.detectors.CMOS` :py:class:`~pyxel.detectors.Detector` object is
 instantiated for each thread, inheriting from a general (abstract)
 :py:class:`~pyxel.detectors.Detector` class.

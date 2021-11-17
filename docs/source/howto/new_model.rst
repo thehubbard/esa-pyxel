@@ -91,7 +91,7 @@ It is possible to create a new model from an already prepared template with the 
 
 This will create a new python script ``new_model.py`` with a template model function
 in folder ``pyxel/models/photon_generation``. All you have to do is edit your model function
-and the docstring and then copy the YAML configuration section from the docstring into the desired configuration file.
+and the docstring and then copy the ``YAML`` configuration section from the docstring into the desired configuration file.
 Don't forget to import your model function in the ``__init__.py`` file of the appropriate model group for faster access.
 
 Best Practices

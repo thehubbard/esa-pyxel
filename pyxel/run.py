@@ -321,7 +321,7 @@ def create_new_model(model_name: str):
     help="Increase output verbosity (-v/-vv/-vvv)",
 )
 def run_config(config: str, verbosity: int):
-    """Run Pyxel with a YAML configuration file."""
+    """Run Pyxel with a ``YAML`` configuration file."""
     logging_level = [logging.ERROR, logging.WARNING, logging.INFO, logging.DEBUG][
         min(verbosity, 3)
     ]

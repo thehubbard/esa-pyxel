@@ -8,7 +8,7 @@ The observation mode of Pyxel can automatically change the value of any
 detector or model parameter to simulate an observation or make a sensitivity analysis for any parameter.
 Iterating over different start times of exposures is also possible.
 
-The variable parameter have to be defined in the YAML
+The variable parameter have to be defined in the ``YAML``
 configuration file with ranges or lists. The framework generates and runs
 a stack of different Detector objects and pipelines.
 

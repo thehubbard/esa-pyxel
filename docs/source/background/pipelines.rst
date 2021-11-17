@@ -41,7 +41,7 @@ damage).
 
 Models are Python functions with a :py:class:`~pyxel.detectors.Detector` object
 defined as their input argument. The model function has to be
-added to the YAML configuration file.
+added to the ``YAML`` configuration file.
 Then the function is automatically called by Pyxel inside a loop of its
 model group and the :py:class:`~pyxel.detectors.Detector` object is passed to it.
 The model may modifies this :py:class:`~pyxel.detectors.Detector` object which is

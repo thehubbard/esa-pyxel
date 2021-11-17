@@ -24,7 +24,7 @@ Multiple readout times (time-domain simulation)
 
 The purpose of having multiple readout times is to execute the same pipeline
 on the same detector object several times. In that case, time evolution of images is available as well.
-Readout times have to be specified in the YAML file like shown below.
+Readout times have to be specified in the ``YAML`` file like shown below.
 Users can also set the readout to non-destructive or destructive, set start time or upload times from a file.
 
 The `non-destructive` mode is used to avoid resetting the detector object

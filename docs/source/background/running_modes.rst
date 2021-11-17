@@ -10,7 +10,7 @@ There are three running modes in Pyxel:
 - **Observation mode**: multiple exposure pipelines looping over a range of model or detector parameters (sensitivity analysis),
 - **Calibration mode**: optimize model or detector parameters to fit target data sets using a user-defined fitness function/figure of merit (model fitting, instrument optimization),
 
-Click below for more information on the modes and corresponding YAML configurations.
+Click below for more information on the modes and corresponding ``YAML`` configurations.
 
 .. toctree::
     running_modes/exposure_mode.rst
