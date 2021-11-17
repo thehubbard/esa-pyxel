@@ -7,7 +7,7 @@
 
 """Pyxel photon generator models: photon shot noise."""
 import typing as t
-from typing.extensions import Literal
+from typing_extensions import Literal
 
 import numpy as np
 
@@ -15,7 +15,7 @@ from pyxel.detectors import Detector
 from pyxel.util import temporary_random_state
 
 
-def compute_poisson_noise(array: np.ndarray):
+def compute_poisson_noise(array: np.ndarray) -> np.ndarray:
     """Compute Poisson noise using the input array.
 
     Parameters
@@ -28,10 +28,10 @@ def compute_poisson_noise(array: np.ndarray):
     output np.ndarray
         Output array.
     """
-    output = np.random.poisson(lam=array).astype(np.float64)
+    output = np.random.poisson(lam=array).astype(array.dtype)
     return output
 
-def compute_gaussian_noise(array: np.ndarray):
+def compute_gaussian_noise(array: np.ndarray) -> np.ndarray:
     """Compute Gaussian noise using the input array. Standard deviation is square root of the values.
 
     Parameters
@@ -47,7 +47,7 @@ def compute_gaussian_noise(array: np.ndarray):
     output = np.random.normal(loc=array, scale=np.sqrt(array))
     return output
 
-def compute_noise(array: np.ndarray, type: t.Literal["possion", "normal"] = "poisson"):
+def compute_noise(array: np.ndarray, type: t.Literal["possion", "normal"] = "poisson") -> np.ndarray:
     """Compute shot noise for an input array. It can be either Poisson noise or Gaussian.
 
     Parameters
@@ -64,8 +64,10 @@ def compute_noise(array: np.ndarray, type: t.Literal["possion", "normal"] = "poi
     """
     if type == "poisson":
         output = compute_poisson_noise(array)
+        return output
     elif type == "normal":
         output = compute_gaussian_noise(array)
+        return output
     else:
         raise ValueError("Invalid noise type!")
 
