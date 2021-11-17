@@ -39,33 +39,34 @@ You can run also tutorials and examples without prior installation of Pyxel in a
 Tutorial chapters
 -----------------
 
-0. Introduction
-1. First simulation
-2. Pyxel configuration and classes
-3. Create a model
-4. Observation mode
-5. Calibration mode
-6. Calibration visualisation
-7. Simulating multiple readouts
+0. `Introduction <https://gitlab.com/esa/pyxel-data/-/blob/master/tutorial/00_introduction.ipynb>`_
+1. `First simulation <https://gitlab.com/esa/pyxel-data/-/blob/master/tutorial/01_first_simulation.ipynb>`_
+2. `Pyxel configuration and classes <https://gitlab.com/esa/pyxel-data/-/blob/master/tutorial/02_pyxel_configuration_and_classes.ipynb>`_
+3. `Create a model <https://gitlab.com/esa/pyxel-data/-/blob/master/tutorial/03_create-model.ipynb>`_
+4. `Observation mode <https://gitlab.com/esa/pyxel-data/-/blob/master/tutorial/04_observation_mode.ipynb>`_
+5. `Calibration mode <https://gitlab.com/esa/pyxel-data/-/blob/master/tutorial/05_calibration_mode.ipynb>`_
+6. `Calibration visualisation <https://gitlab.com/esa/pyxel-data/-/blob/master/tutorial/06_calibration_visualization.ipynb>`_
+7. `Simulating multiple readouts <https://gitlab.com/esa/pyxel-data/-/blob/master/tutorial/07_exposure_with_multiple_readouts.ipynb>`_
 
 List of Examples
 ----------------
 
 **Exposure Mode:**
 
-- Basic example
-- Persistence in H2RG (time-domain simulation)
+- `Basic example <https://gitlab.com/esa/pyxel-data/-/blob/master/examples/exposure/exposure.ipynb>`_
+- `Persistence in H2RG (time-domain simulation) <https://gitlab.com/esa/pyxel-data/-/blob/master/examples/exposure/exposure_persistence-H4RG.ipynb>`_
 
 **Observation mode:**
 
-- Basic example (product)
-- Basic example (sequential)
-- Basic example (custom)
+- Basic example (`product <https://gitlab.com/esa/pyxel-data/-/blob/master/examples/observation/product.ipynb>`_)
+- Basic example (`sequential <https://gitlab.com/esa/pyxel-data/-/blob/master/examples/observation/sequential.ipynb>`_)
+- Basic example (`custom <https://gitlab.com/esa/pyxel-data/-/blob/master/examples/observation/custom.ipynb>`_)
 
 **Calibration mode:**
 
-- Basic example
+- `Basic calibration example <https://gitlab.com/esa/pyxel-data/-/blob/master/examples/calibration/calibration.ipynb>`_
 
-**Models**
-- Amplifier crosstalk
-- Inter-pixel capacitance
+**Models:**
+
+- `Amplifier crosstalk <https://gitlab.com/esa/pyxel-data/-/blob/master/examples/models/amplifier%20crosstalk/crosstalk.ipynb>`_
+- `Inter-pixel capacitance <https://gitlab.com/esa/pyxel-data/-/blob/master/examples/models/inter-pixel%20capacitance/ipc.ipynb>`_

@@ -21,7 +21,7 @@ class Image(Array):
     """
     Image class defining and storing information of detector image.
 
-    Accepted array types: np.uint16, np.uint32, np.uint64
+    Accepted array types: ``np.uint16``, ``np.uint32``, ``np.uint64``
     """
 
     EXP_TYPE = np.uint

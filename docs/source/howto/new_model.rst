@@ -14,7 +14,7 @@ Existing models: :ref:`Models <models>`
 Model function
 ==============
 
-A model function is a function that takes in the ``Detector`` object as one of the arguments
+A model function is a function that takes in the :py:class:`~pyxel.detectors.Detector` object as one of the arguments
 and edits the data stored in it. To add it to Pyxel, you have to copy the script containing your function,
 let's say ``my_script.py``, into the corresponding model group folder in Pyxel.
 For example if our function edits the photon array, the script ``my_script.py`` should go into ``pyxel/models/optics``.
@@ -27,6 +27,7 @@ A model function that multiplies the photon array with the input argument would 
 
     def my_model_function(detector: Detector, arg: int = 0):
         """This is my model that will multiply pixel array with the argument.
+
         Parameters
         ----------
         detector
@@ -90,7 +91,7 @@ It is possible to create a new model from an already prepared template with the 
 
 This will create a new python script ``new_model.py`` with a template model function
 in folder ``pyxel/models/photon_generation``. All you have to do is edit your model function
-and the docstring and then copy the YAML configuration section from the docstring into the desired configuration file.
+and the docstring and then copy the ``YAML`` configuration section from the docstring into the desired configuration file.
 Don't forget to import your model function in the ``__init__.py`` file of the appropriate model group for faster access.
 
 Best Practices
@@ -99,9 +100,9 @@ Best Practices
 Write models as pairs of pure and impure functions
 --------------------------------------------------
 
-If a model is changing one of the data structures stored in the ``Detector`` object,
+If a model is changing one of the data structures stored in the :py:class:`~pyxel.detectors.Detector` object,
 when possible it is better to write the model as a pair of an impure function
-that changes the state of the ``Detector`` object and pure function
+that changes the state of the :py:class:`~pyxel.detectors.Detector` object and pure function
 that does the actual calculation without changing the state of input arguments.
 More info on pure and impure functions: https://en.wikipedia.org/wiki/Pure_function,
 https://alvinalexander.com/scala/fp-book/benefits-of-pure-functions/.
@@ -162,8 +163,9 @@ Example:
 
     from pyxel.util import temporary_random_state
 
+
     @temporary_random_state
-    def my_model(detector, user_arg, seed = None):
+    def my_model(detector, user_arg, seed=None):
 
         input_array = detector.pixel.array
         # compute_model_effect uses functions from numpy.random module

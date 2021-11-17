@@ -123,7 +123,7 @@ def calibration_mode(
 
     Returns
     -------
-    tuple
+    tuple of ``Dataset``, ``DataFrame``, ``DataFrame``, ``Sequence``
     """
     logging.info("Mode: Calibration")
 
@@ -207,13 +207,15 @@ def output_directory(configuration: Configuration) -> Path:
     return output_dir
 
 
-def run(input_filename: str, random_seed: t.Optional[int] = None) -> None:
+def run(
+    input_filename: t.Union[str, Path], random_seed: t.Optional[int] = None
+) -> None:
     """Run a configuration file.
 
     Parameters
     ----------
-    input_filename
-    random_seed
+    input_filename : str or ``Path``
+    random_seed : int, optional
     """
     logging.info("Pyxel version %s", version)
     logging.info("Pipeline started.")
@@ -319,7 +321,7 @@ def create_new_model(model_name: str):
     help="Increase output verbosity (-v/-vv/-vvv)",
 )
 def run_config(config: str, verbosity: int):
-    """Run Pyxel with a YAML configuration file."""
+    """Run Pyxel with a ``YAML`` configuration file."""
     logging_level = [logging.ERROR, logging.WARNING, logging.INFO, logging.DEBUG][
         min(verbosity, 3)
     ]

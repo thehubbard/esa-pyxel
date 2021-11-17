@@ -20,7 +20,7 @@ if TYPE_CHECKING:
 class Signal(Array):
     """Signal class defining and storing information of detector signal.
 
-    Accepted array types: np.float16, np.float32, np.float64.
+    Accepted array types: ``np.float16``, ``np.float32``, ``np.float64``.
     """
 
     EXP_TYPE = float

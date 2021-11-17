@@ -20,7 +20,8 @@ if t.TYPE_CHECKING:
 class Photon(Array):
     """Photon class defining and storing information of all photon.
 
-    Accepted array types: np.int32, np.int64, np.uint32, np.uint64, np.float16, np.float32, np.float64
+    Accepted array types: ``np.int32``, ``np.int64``, ``np.uint32``, ``np.uint64``,
+    ``np.float16``, ``np.float32``, ``np.float64``
     """
 
     # TODO: add unit (ph)
@@ -36,7 +37,6 @@ class Photon(Array):
     )
 
     def __init__(self, geo: "Geometry"):
-
         new_array = np.zeros((geo.row, geo.col), dtype=self.EXP_TYPE)
 
         super().__init__(new_array)

@@ -111,7 +111,7 @@ class Array:
 
     @property
     def numbytes(self) -> int:
-        """Recursively calculates object size in bytes using Pympler library.
+        """Recursively calculates object size in bytes using `Pympler` library.
 
         Returns
         -------

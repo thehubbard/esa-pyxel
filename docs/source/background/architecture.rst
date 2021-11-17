@@ -1,8 +1,10 @@
+.. _architecture:
+
 ============
 Architecture
 ============
 
-There are two main structures behind Pyxel's architecture, the **Detector** and the **Pipeline**,
+There are two main structures behind Pyxel's architecture, the :ref:`detectors`  and the :ref:`pipelines`,
 each one represented by a class. See :ref:`apireference` for further information on the two classes.
 As illustrated below, the detector holds information about the detector properties such as geometry, characteristics,
 material and environment. Apart from that, it is also a bucket for storing simulated data,
