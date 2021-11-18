@@ -49,6 +49,7 @@ def run_tars(
     # stopping_file: str = None,
     spectrum_file: t.Optional[str] = None,
     seed: t.Optional[int] = None,
+    progressbar: bool = True,
 ) -> None:
     """Simulate charge deposition by cosmic rays.
 
@@ -100,6 +101,7 @@ def run_tars(
         start_pos_ver=start_pos_ver,
         start_pos_hor=start_pos_hor,
         start_pos_z=start_pos_z,
+        progressbar=progressbar,
     )
 
     # tars.set_simulation_mode(simulation_mode)
@@ -256,6 +258,7 @@ class TARS:
         start_pos_ver: str,
         start_pos_hor: str,
         start_pos_z: str,
+        progressbar: bool = True,
     ):
         self.simulation_mode = simulation_mode
         self.part_type = particle_type
@@ -266,6 +269,7 @@ class TARS:
         self.position_ver = start_pos_ver
         self.position_hor = start_pos_hor
         self.position_z = start_pos_z
+        self._progressbar = progressbar
 
         self.sim_obj = Simulation(detector)
         self.charge_obj = detector.charge
@@ -434,7 +438,12 @@ class TARS:
 
         self._log.info("Save data in folder '%s'", out_path)
 
-        for k in tqdm(range(self.particle_number), desc="TARS", unit=" particle"):
+        for k in tqdm(
+            range(self.particle_number),
+            desc="TARS",
+            unit=" particle",
+            disable=(not self._progressbar),
+        ):
             # for k in range(0, self.particle_number):
             err = None  # type: t.Optional[bool]
             if self.sim_obj.energy_loss_data == "stepsize":  # TODO

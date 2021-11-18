@@ -24,6 +24,8 @@ Models
   (See `!323 <https://gitlab.com/esa/pyxel/-/merge_requests/323>`_).
 * Display model's name when running a pipeline.
   (See `!335 <https://gitlab.com/esa/pyxel/-/merge_requests/335>`_).
+* Add option to enable or disable progress bar in TARS model.
+  (See `!337 <https://gitlab.com/esa/pyxel/-/merge_requests/337>`_).
 
 Others
 ~~~~~~
