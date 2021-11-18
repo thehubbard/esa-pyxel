@@ -26,25 +26,6 @@ cache:
 # Test Stage
 # ###########################
 
-# Run pytest + coverage and create html report (pytest_report.html)
-#anaconda3:
-#  image: continuumio/anaconda3:latest
-#  stage: test
-#  script:
-#    - pwd
-#    - ls
-#    - python -V
-#    - python3 -V
-#    - which python3
-#    - pip install pytest
-#    - pip install -r requirements.txt
-#    - pip install -e ".[all]"
-#    - pip freeze
-#    - export PYTHONPATH=$PWD  # todo ?
-#    - pytest
-#  allow_failure: true
-
-
 # Run pytest for Python 3.7 without anaconda
 python37:
   image: python:3.7
@@ -86,24 +67,6 @@ mypy:
     # If `$FORCE_GITLAB_CI` is set, create a pipeline.
     - if: '$FORCE_GITLAB_CI'
 
-
-# Run pylint (with pytest) and generate HTML report
-# lint:
-#   image: python:3
-#   stage: test
-#   script:
-#     - pip install pytest-pylint pytest-html
-#     - pip install -r requirements.txt
-#     - pip install -e ".[all]"
-#     - pip freeze
-#     - pytest --pylint --color=yes --verbose --pylint-rcfile=pylint.cfg --html=pylint_report.html --self-contained-html -m pylint || true
-#     - ls
-#   artifacts:
-#     paths:
-#       - pylint_report.html
-#   allow_failure: true
-
-
 flake8:
   image: python:3
   stage: test
@@ -137,20 +100,6 @@ doc8:
 # ###########################
 # Build stage
 # ###########################
-
-## create badges
-#badges:
-#  image: python:3
-#  stage: build
-#  script:
-#    - tail -n 1 coverage.out > cov_total.out
-#    - PERCENT=$(awk '{printf "%.2f", ($2-$3)/$2*100}' cov_total.out)
-#    - python badges.py -cov=$PERCENT
-#    - ls
-#  artifacts:
-#    paths:
-#      - coverage.svg
-#  allow_failure: false
 
 # Run pytest + coverage and create html report (pytest_report.html)
 coverage:
@@ -201,94 +150,9 @@ doc:
     - if: $CI_COMMIT_BRANCH == "master"
     - if: '$FORCE_GITLAB_CI'
 
-#website:
-#  image: python:3
-#  stage: build
-#  script:
-#    - wget https://esa.gitlab.io/pyxel-website/pyxel-website.tar.gz
-#    - tar -xzvf pyxel-website.tar.gz
-#    - ls html
-#  artifacts:
-#    paths:
-#       - html
-#  rules:
-#    - if: $CI_COMMIT_BRANCH == "master"
-
-
-## Generate the Sphinx documentation into 'doc/html'
-#doc:
-#  image: python:3.6
-#  stage: build
-#  script:
-#    - pip install -r docs/requirements-docs.txt
-#    - pip install -r requirements.txt
-#    - pip install -e ".[all]"
-#    - pip install doc8
-#    - export PYTHONPATH=$PWD
-#    - doc8 docs/source
-#    - sphinx-build docs/source docs/html -E -a -j 4
-#    - python badges.py -doc="passed"
-#  artifacts:
-#    paths:
-#      - docs/html
-#      - documentation.svg
-#  allow_failure: false
-#  only:
-#    - master
-
-# See https://docs.gitlab.com/ee/user/packages/container_registry/#build-and-push-by-using-gitlab-cicd
-# docker:
-#   stage: build
-#   image: docker
-#   services:
-#     - docker:dind
-#   before_script:
-#     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-#   script:
-#     - docker build -t $DOCKER_TEST_IMAGE .
-#     - docker push $DOCKER_TEST_IMAGE
-#   rules:
-#     - if: $FULL_CI_CD
-# #    - if: $CI_PIPELINE_SOURCE != "schedule"
-#     - if: $CI_COMMIT_BRANCH != "master"
-    
-
-# docker_release:
-#   stage: deploy
-#   image: docker
-#   before_script:
-#     - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
-#   script:
-#     - docker pull $DOCKER_TEST_IMAGE
-#     - docker tag $DOCKER_TEST_IMAGE $DOCKER_RELEASE_IMAGE
-#     - docker push $DOCKER_RELEASE_IMAGE
-#   rules:
-#     - if: $FULL_CI_CD
-# #    - if: $CI_PIPELINE_SOURCE != "schedule"
-#     - if: $CI_COMMIT_BRANCH == "master"
-
-
 # ###########################
 # Deploy Stage
 # ###########################
-
-## Create the pages
-#pages:
-#  image: python:3
-#  stage: deploy
-#  script:
-#    - mkdir public
-#    - mv docs/html public/doc
-#    - mv htmlcov public/coverage
-#    - mv pytest_report.html public
-#    # - mv pylint_report.html public
-#    - mv documentation.svg public
-#    - mv license.json public
-#    - ls public
-#  artifacts:
-#    paths:
-#      - public
-#  allow_failure: false
 
 # Create the pages
 pages:
