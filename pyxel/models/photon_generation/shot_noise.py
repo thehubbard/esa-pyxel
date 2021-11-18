@@ -56,7 +56,7 @@ def compute_noise(array: np.ndarray, type: str = "poisson") -> np.ndarray:
     ----------
     array: np.ndarray
         Input array.
-    type: str
+    type: str, optional
         Choose either 'poisson' or 'normal'. Default is Poisson noise.
 
     Returns
@@ -86,7 +86,7 @@ def shot_noise(
     ----------
     detector: Detector
         Pyxel Detecotr object.
-    type: str
+    type: str, optional
         Choose either 'poisson' or 'normal'. Default is Poisson noise.
     seed: int, optional
         Random seed.
