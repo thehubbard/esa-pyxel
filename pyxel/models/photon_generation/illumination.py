@@ -7,14 +7,14 @@
 
 """Pyxel photon generator models."""
 import typing as t
-from typing_extensions import Literal
 
 import numpy as np
+from typing_extensions import Literal
 
 from pyxel.detectors import Detector
 
 
-def rectangular_hole(
+def rectangular(
     shape: t.Tuple[int, int],
     level: float,
     object_size: t.Optional[t.Sequence[int]] = None,
@@ -41,7 +41,9 @@ def rectangular_hole(
         Output numpy array.
     """
     if not object_size:
-        raise ValueError("object_size argument should be defined for illumination model")
+        raise ValueError(
+            "object_size argument should be defined for illumination model"
+        )
     if object_size and not len(object_size) == 2:
         raise ValueError("Object size should be a sequence of length 2!")
     if object_center and not len(object_center) == 2:
@@ -64,7 +66,7 @@ def rectangular_hole(
     return photon_array
 
 
-def elliptic_hole(
+def elliptic(
     shape: t.Tuple[int, int],
     level: float,
     object_size: t.Optional[t.Sequence[int]] = None,
@@ -91,7 +93,9 @@ def elliptic_hole(
         Output numpy array.
     """
     if not object_size:
-        raise ValueError("object_size argument should be defined for illumination model")
+        raise ValueError(
+            "object_size argument should be defined for illumination model"
+        )
     if object_size and not len(object_size) == 2:
         raise ValueError("Object size should be a sequence of length 2!")
     if object_center and not len(object_center) == 2:
@@ -107,8 +111,8 @@ def elliptic_hole(
         object_center = [int(shape[0] / 2), int(shape[1] / 2)]
     y, x = np.ogrid[: shape[0], : shape[1]]
     dist_from_center = np.sqrt(
-        ((x - object_center[1]) / float(object_size[1]/2)) ** 2
-        + ((y - object_center[0]) / float(object_size[0]/2)) ** 2
+        ((x - object_center[1]) / float(object_size[1] / 2)) ** 2
+        + ((y - object_center[0]) / float(object_size[0] / 2)) ** 2
     )
     photon_array[dist_from_center < 1] = level
     return photon_array
@@ -151,13 +155,19 @@ def calculate_illumination(
     """
     if option == "uniform":
         photon_array = np.ones(shape, dtype=float) * level
-    elif option == "rectangular_hole":
-        photon_array = rectangular_hole(
-            shape=shape, object_size=object_size, object_center=object_center, level=level
+    elif option == "rectangular":
+        photon_array = rectangular(
+            shape=shape,
+            object_size=object_size,
+            object_center=object_center,
+            level=level,
         )
-    elif option == "elliptic_hole":
-        photon_array = elliptic_hole(
-            shape=shape, object_size=object_size, object_center=object_center, level=level
+    elif option == "elliptic":
+        photon_array = elliptic(
+            shape=shape,
+            object_size=object_size,
+            object_center=object_center,
+            level=level,
         )
     else:
         raise NotImplementedError
