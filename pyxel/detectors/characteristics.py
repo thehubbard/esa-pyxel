@@ -92,7 +92,7 @@ class Characteristics:
     @qe.setter
     def qe(self, value: t.Union[float, np.ndarray]) -> None:
         """Set Quantum efficiency."""
-        if not (0.0 <= np.min(value)) and (np.max(value) <= 1.0):
+        if np.min(value) < 0.0 and np.max(value) <= 1.0:
             raise ValueError("'QE' values must be between 0.0 and 1.0.")
 
         self._qe = value

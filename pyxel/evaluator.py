@@ -116,9 +116,7 @@ def eval_entry(
             first_char = value[0]
             last_char = value[-1]
 
-            if first_char == last_char and first_char in ["'", '"']:
-                pass
-            else:
+            if first_char != last_char or first_char not in ["'", '"']:
                 value = '"' + value + '"'
 
         value = literal_eval(value)

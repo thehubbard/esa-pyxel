@@ -53,9 +53,8 @@ class MKID(Detector):
         """
         super().empty(empty_all)
 
-        if empty_all:
-            if self._phase:
-                self.phase.array *= 0
+        if empty_all and self._phase:
+            self.phase.array *= 0
 
     @property
     def geometry(self) -> "MKIDGeometry":

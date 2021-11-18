@@ -72,50 +72,51 @@ class ObservationOutputs(Outputs):
         None
         """
 
+        if self.save_observation_data is None:
+
+            return
         dataset_names = ("dataset", "parameters", "logs")
 
         save_methods = {"nc": self.save_to_netcdf}  # type: t.Dict[str, SaveToFile]
 
-        if self.save_observation_data is not None:
+        for (
+            dct
+        ) in self.save_observation_data:  # type: t.Mapping[str, t.Sequence[str]]
+            first_item, *_ = dct.items()
+            obj, format_list = first_item
 
-            for (
-                dct
-            ) in self.save_observation_data:  # type: t.Mapping[str, t.Sequence[str]]
-                first_item, *_ = dct.items()
-                obj, format_list = first_item
+            if obj not in dataset_names:
+                raise ValueError(
+                    "Please specify a valid result dataset names ('dataset', 'parameters', 'logs')."
+                )
 
-                if obj not in dataset_names:
-                    raise ValueError(
-                        "Please specify a valid result dataset names ('dataset', 'parameters', 'logs')."
-                    )
-
-                if mode == ParameterMode.Sequential and obj == "dataset":
-                    dct = operator.attrgetter(obj)(result)
-                    for key, value in dct.items():
-
-                        if format_list is not None:
-                            for out_format in format_list:
-
-                                if out_format not in save_methods.keys():
-                                    raise ValueError(
-                                        "Format "
-                                        + out_format
-                                        + " not a valid save method!"
-                                    )
-
-                                func = save_methods[out_format]
-                                func(data=value, name=obj + "_" + key)
-
-                else:
-                    ds = operator.attrgetter(obj)(result)
+            if mode == ParameterMode.Sequential and obj == "dataset":
+                dct = operator.attrgetter(obj)(result)
+                for key, value in dct.items():
 
                     if format_list is not None:
                         for out_format in format_list:
 
                             if out_format not in save_methods.keys():
                                 raise ValueError(
-                                    "Format " + out_format + " not a valid save method!"
+                                    "Format "
+                                    + out_format
+                                    + " not a valid save method!"
                                 )
 
                             func = save_methods[out_format]
-                            func(data=ds, name=obj)
+                            func(data=value, name=obj + "_" + key)
+
+            else:
+                ds = operator.attrgetter(obj)(result)
+
+                if format_list is not None:
+                    for out_format in format_list:
+
+                        if out_format not in save_methods.keys():
+                            raise ValueError(
+                                "Format " + out_format + " not a valid save method!"
+                            )
+
+                        func = save_methods[out_format]
+                        func(data=ds, name=obj)

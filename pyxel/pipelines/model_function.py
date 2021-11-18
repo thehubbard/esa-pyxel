@@ -68,9 +68,7 @@ class Arguments(t.MutableMapping):
         if key not in self._arguments:
             raise KeyError(f"No argument named {key} !")
 
-        result = self._arguments[key]
-
-        return result
+        return self._arguments[key]
 
     def __delitem__(self, key):
         del self._arguments[key]
@@ -207,6 +205,4 @@ class ModelFunction:
 
         func = functools.partial(self._func, **self.arguments)
 
-        result = func(detector)  # type: T
-
-        return result
+        return func(detector)
