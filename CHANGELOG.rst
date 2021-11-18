@@ -22,6 +22,8 @@ Models
 
 * Move some models from 'readout_electronics' into separated files.
   (See `!323 <https://gitlab.com/esa/pyxel/-/merge_requests/323>`_).
+* Display model's name when running a pipeline.
+  (See `!335 <https://gitlab.com/esa/pyxel/-/merge_requests/335>`_).
 
 Others
 ~~~~~~
