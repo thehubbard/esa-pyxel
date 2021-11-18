@@ -29,6 +29,14 @@ Example of the configuration file:
 Simple amplification
 ====================
 
+Example of the configuration file:
+
+.. code-block:: yaml
+
+    - name: simple_amplifier
+      func: pyxel.models.readout_electronics.simple_amplifier
+      enabled: true
+
 .. autofunction:: simple_amplifier
 
 DC crosstalk
