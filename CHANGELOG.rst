@@ -30,6 +30,9 @@ Models
 Others
 ~~~~~~
 
+* Use 'deployment' in CI/CD.
+  (See `!336 <https://gitlab.com/esa/pyxel/-/merge_requests/336>`_).
+
 
 version 0.11.3 / 2021-11-15
 ---------------------------
