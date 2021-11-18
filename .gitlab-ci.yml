@@ -136,7 +136,7 @@ licenses-latest:
 
 
 # Generate the Sphinx documentation into 'doc/html'
-doc:
+doc_production:
   image: python:3.8
   stage: build
   script:
@@ -147,8 +147,27 @@ doc:
       - docs/html
       - documentation.svg
   rules:
-    - if: $CI_COMMIT_BRANCH == "master"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH    # The default branch is 'master'
     - if: '$FORCE_GITLAB_CI'
+  environment:
+    name: production
+
+doc_development:
+  image: python:3.8
+  stage: build
+  script:
+    - tox -e docs
+    - python badges.py -doc="passed"
+  artifacts:
+    paths:
+      - docs/html
+      - documentation.svg
+  rules:
+    - if:  $CI_COMMIT_TAG
+    - if: '$FORCE_GITLAB_CI'
+  environment:
+    name: development
+
 
 # ###########################
 # Deploy Stage
