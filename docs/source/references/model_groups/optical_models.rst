@@ -36,4 +36,13 @@ Simple optical alignment
 ========================
 
 .. automodule:: pyxel.models.optics.alignment
+
+Example of the configuration file:
+
+.. code-block:: yaml
+
+    - name: alignment
+      func: pyxel.models.optics.alignment
+      enabled: true
+
 .. autofunction:: alignment

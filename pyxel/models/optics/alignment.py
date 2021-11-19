@@ -6,26 +6,61 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """Pyxel photon generator models."""
+
+import numpy as np
+
 from pyxel.detectors import Detector
 
 
-# @pyxel.validate
-# @pyxel.argument(name='image_file', label='', validate=check_path)
+# TODO: This function should be renamed 'crop_image' and should be moved to a common
+#       util library. See #348
+def apply_alignment(
+    data_2d: np.ndarray,
+    target_rows: int,
+    target_cols: int,
+) -> np.ndarray:
+    """Optical alignment.
+
+    Parameters
+    ----------
+    data_2d : ndarray
+    target_rows : int
+    target_cols : int
+
+    Returns
+    -------
+    array
+        An aligned 2D array.
+    """
+    rows, cols = data_2d.shape
+
+    if not (0 < target_rows <= rows) or not (0 < target_cols <= cols):
+        raise ValueError
+
+    row0 = int((rows - target_rows) / 2)
+    col0 = int((cols - target_cols) / 2)
+
+    aligned_data_2d = data_2d[
+        slice(row0, row0 + target_rows), slice(col0, col0 + target_cols)
+    ]
+
+    return aligned_data_2d
+
+
 def alignment(detector: Detector) -> None:
     """Optical alignment.
 
-    :param detector: Pyxel Detector object
+    Parameters
+    ----------
+    detector: Detector
+        Pyxel Detector object.
     """
     geo = detector.geometry
-    rows, cols = detector.photon.array.shape
-    row0 = int((rows - geo.row) / 2)
-    col0 = int((cols - geo.col) / 2)
 
-    if row0 < 0 or col0 < 0:
-        raise ValueError
+    aligned_optical_image_2d = apply_alignment(
+        data_2d=detector.photon.array,
+        target_rows=geo.row,
+        target_cols=geo.col,
+    )
 
-    aligned_optical_image = detector.photon.array[
-        slice(row0, row0 + geo.row), slice(col0, col0 + geo.col)
-    ]
-
-    detector.photon.array = aligned_optical_image
+    detector.photon.array = aligned_optical_image_2d
