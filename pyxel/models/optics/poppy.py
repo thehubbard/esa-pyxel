@@ -377,19 +377,19 @@ def calc_psf(
 
     Parameters
     ----------
-    wavelength: float
+    wavelength : float
         Wavelength of incoming light in meters.
-    fov_arcsec: float, optional
+    fov_arcsec : float, optional
         Field Of View on detector plane in arcsec.
-    pixelscale: float
+    pixelscale : float
         Pixel scale on detector plane (arcsec/pixel).
         Defines sampling resolution of PSF.
-    optical_parameters:
+    optical_parameters : list of OpticalParameter
         List of optical parameters before detector with their specific arguments.
 
     Returns
     -------
-    psf: Sequence of FITS and sequence of Wavefront
+    Sequence of FITS and sequence of Wavefront
         Tuple of lists containing the psf and intermediate wavefronts.
     """
     if not WITH_POPPY:
@@ -430,14 +430,14 @@ def apply_convolution(data_2d: np.ndarray, kernel_2d: np.ndarray) -> np.ndarray:
 
     Parameters
     ----------
-    data_2d : array
+    data_2d : ndarray
         2D Array to be convolved with kernel_2d.
-    kernel_2d : array
+    kernel_2d : ndarray
         The convolution kernel.
 
     Returns
     -------
-    array
+    ndarray
         A convolved array.
     """
     mean = np.mean(data_2d)
