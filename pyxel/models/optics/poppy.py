@@ -96,7 +96,7 @@ class SquareAperture:
 
     Parameters
     ----------
-    size: float
+    size : float
         side length of the square, in meters.
     """
 
@@ -143,7 +143,7 @@ class MultiHexagonalAperture:
     rings : integer
         The number of rings of hexagons to include, not counting the central segment
         (i.e. 2 for a JWST-like aperture, 3 for a Keck-like aperture, and so on)
-    gap: float
+    gap : float
         Gap between adjacent segments, in meters.
     """
 
@@ -463,16 +463,16 @@ def optical_psf(
 
     Parameters
     ----------
-    detector: Detector
+    detector : Detector
         Pyxel Detector object.
-    wavelength: float
+    wavelength : float
         Wavelength of incoming light in meters.
-    fov_arcsec: float
+    fov_arcsec : float
         Field Of View on detector plane in arcsec.
-    pixelscale: float
+    pixelscale : float
         Pixel scale on detector plane (arcsec/pixel).
         Defines sampling resolution of PSF.
-    optical_system: list of dict
+    optical_system : list of dict
         List of optical elements before detector with their specific arguments.
     """
     logging.getLogger("poppy").setLevel(
