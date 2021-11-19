@@ -10,6 +10,8 @@ import logging
 
 from pyxel.detectors import Detector
 
+# TODO: documentation, private function
+
 
 # @pyxel.validate
 # @pyxel.argument(name='', label='', units='', validate=)

@@ -15,7 +15,8 @@ from pyxel.detectors import CMOS
 from pyxel.util import temporary_random_state
 
 
-# TODO: more documentation, refactoring, random
+# TODO: more documentation, refactoring, random, astropy constants
+
 # TODO: Fix this
 # @validators.validate
 # @config.argument(name='detector', label='', units='', validate=checkers.check_type(CMOS))

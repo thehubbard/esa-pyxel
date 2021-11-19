@@ -5,6 +5,9 @@
 #  this file, may be copied, modified, propagated, or distributed except according to
 #  the terms contained in the file ‘LICENCE.txt’.
 
+# TODO: Create a simple kernel convolution diffusion model
+
+
 """Pyxel charge diffusion and collection model extracted from TARS."""
 # import logging
 # from math import sqrt, log

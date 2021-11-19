@@ -13,6 +13,7 @@ import numpy as np
 
 from pyxel.detectors import CCD
 
+# TODO: fix docstring, put documentation, private function
 
 # TODO: Fix this
 # @validators.validate

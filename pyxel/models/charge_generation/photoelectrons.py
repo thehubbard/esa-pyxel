@@ -10,8 +10,9 @@ import numpy as np
 
 from pyxel.detectors import Detector
 
+# TODO: docstring, private function, what is eta, characteristics
+# TODO: put code from qe_map here and use qe as model parameter
 
-# TODO: docstring, private function, what is eta,
 # TODO: Fix this
 # @validators.validate
 # @config.argument(name='', label='', units='', validate=)
