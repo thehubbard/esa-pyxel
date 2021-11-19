@@ -151,8 +151,6 @@ doc:
       - documentation.svg
   rules:
     - if: '$CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH && $CI_COMMIT_TAG != "" && $FORCE_GITLAB_CI'
-  environment:
-    name: production
 
 doc_production:
   image: python:3.8
@@ -168,7 +166,7 @@ doc_production:
   rules:
     - if: '$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH'
   environment:
-    name: production
+    name: development
 
 doc_development:
   image: python:3.8
@@ -184,7 +182,7 @@ doc_development:
   rules:
     - if: '$CI_COMMIT_TAG'
   environment:
-    name: development
+    name: production
 
 
 # ###########################

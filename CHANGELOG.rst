@@ -34,6 +34,8 @@ Others
   (See `!336 <https://gitlab.com/esa/pyxel/-/merge_requests/336>`_).
 * Fix an issue in CI/CD.
   (See `!340 <https://gitlab.com/esa/pyxel/-/merge_requests/340>`_).
+* Swap the environments name 'production' and 'development'.
+  (See `!342 <https://gitlab.com/esa/pyxel/-/merge_requests/342>`_).
 
 
 version 0.11.3 / 2021-11-15
