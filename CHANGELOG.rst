@@ -16,6 +16,8 @@ Documentation
 
 * Add more internal links in the documentation.
   (See `!333 <https://gitlab.com/esa/pyxel/-/merge_requests/333>`_).
+* Move 'optical_psf' documentation to RST file.
+  (See `!343 <https://gitlab.com/esa/pyxel/-/merge_requests/343>`_).
 
 Models
 ~~~~~~
