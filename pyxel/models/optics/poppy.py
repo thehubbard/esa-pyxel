@@ -5,42 +5,7 @@
 #  this file, may be copied, modified, propagated, or distributed except according to
 #  the terms contained in the file ‘LICENCE.txt’.
 
-"""POPPY (Physical Optics Propagation in Python) model wrapper.
-
-It calculates the optical Point Spread Function of an optical system and applies the convolution.
-
-Documentation:
-https://poppy-optics.readthedocs.io/en/stable/index.html
-
-See details about POPPY Optical Element classes:
-https://poppy-optics.readthedocs.io/en/stable/available_optics.html
-
-Supported optical elements:
-
-- ``CircularAperture``
-- ``SquareAperture``
-- ``RectangularAperture``
-- ``HexagonAperture``
-- ``MultiHexagonalAperture``
-- ``ThinLens``
-- ``SecondaryObscuration``
-- ``ZernikeWFE``
-- ``SineWaveWFE``
-
-.. code-block:: yaml
-
-  # YAML config: arguments of POPPY optical_system
-  optical_system:
-  - item: CircularAperture
-    radius: 1.5
-  - item: ThinLens
-    radius: 1.2
-    nwaves: 1
-  - item: ZernikeWFE
-    radius: 0.8
-    coefficients: [0.1e-6, 3.e-6, -3.e-6, 1.e-6, -7.e-7, 0.4e-6, -2.e-6]
-    aperture_stop: false
-"""
+"""Poppy model."""
 
 import logging
 import typing as t
