@@ -20,12 +20,12 @@ def compute_poisson_noise(array: np.ndarray) -> np.ndarray:
 
     Parameters
     ----------
-    array: np.ndarray
+    array: ndarray
         Input array.
 
     Returns
     -------
-    output np.ndarray
+    output: ndarray
         Output array.
     """
     output = np.random.poisson(lam=array).astype(array.dtype)
@@ -37,12 +37,12 @@ def compute_gaussian_noise(array: np.ndarray) -> np.ndarray:
 
     Parameters
     ----------
-    array: np.ndarray
+    array: ndarray
         Input array.
 
     Returns
     -------
-    output np.ndarray
+    output: ndarray
         Output array.
     """
     output = np.random.normal(loc=array, scale=np.sqrt(array))
@@ -54,14 +54,14 @@ def compute_noise(array: np.ndarray, type: str = "poisson") -> np.ndarray:
 
     Parameters
     ----------
-    array: np.ndarray
+    array: ndarray
         Input array.
     type: str, optional
         Choose either 'poisson' or 'normal'. Default is Poisson noise.
 
     Returns
     -------
-    output np.ndarray
+    output: ndarray
         Output array.
     """
     if type == "poisson":
