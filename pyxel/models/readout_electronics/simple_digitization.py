@@ -9,6 +9,7 @@
 
 
 import numpy as np
+from typing_extensions import Literal
 
 from pyxel.detectors import Detector
 from pyxel.models.readout_electronics.util import apply_gain_adc
@@ -24,7 +25,7 @@ def apply_simple_digitization(
 
     Parameters
     ----------
-    signal_2d : array
+    signal_2d : ndarray
         2D signal to process. Unit: Volt
     gain_adc : float
         Gain of the analog-digital converter. Unit: adu/V
@@ -32,6 +33,10 @@ def apply_simple_digitization(
         Minimum value to keep. Unit: adu
     max_clipped_value : float
         Maximum value to keep. Unit: adu
+
+    Returns
+    -------
+    ndarray
     """
     # Gain of the Analog-Digital Converter
     image_2d = apply_gain_adc(signal_2d=signal_2d, gain_adc=gain_adc)
@@ -49,8 +54,10 @@ def apply_simple_digitization(
     return image_clipped_2d
 
 
-# TODO: Fix this
-def simple_digitization(detector: Detector, data_type: str = "uint16") -> None:
+def simple_digitization(
+    detector: Detector,
+    data_type: Literal["uint16", "uint32", "uint64", "uint"] = "uint16",
+) -> None:
     """Digitize signal array mimicking readout electronics.
 
     Parameters

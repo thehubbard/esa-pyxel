@@ -11,6 +11,8 @@ Readout Electronics models
 Simple digitization
 ===================
 
+Digitize signal array mimicking readout electronics.
+
 Example of the configuration file:
 
 .. code-block:: yaml

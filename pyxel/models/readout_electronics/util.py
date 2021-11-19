@@ -15,14 +15,14 @@ def apply_gain_adc(signal_2d: np.ndarray, gain_adc: float) -> np.ndarray:
 
     Parameters
     ----------
-    signal_2d : array
+    signal_2d : ndarray
         Signal 2D data. Unit: Volt
     gain_adc : float
         Gain of the analog-digital converter. Unit: adu/V
 
     Returns
     -------
-    array
+    ndarray
         A new 2D array. Unit: adu
     """
     return signal_2d * gain_adc
