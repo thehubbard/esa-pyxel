@@ -12,6 +12,8 @@ import numpy as np
 from pyxel.detectors import Detector
 
 
+# TODO: This function should be renamed 'crop_image' and should be moved to a common
+#       util library.
 def apply_alignment(
     data_2d: np.ndarray,
     target_rows: int,
@@ -21,7 +23,7 @@ def apply_alignment(
 
     Parameters
     ----------
-    data_2d : array
+    data_2d : ndarray
     target_rows : int
     target_cols : int
 
