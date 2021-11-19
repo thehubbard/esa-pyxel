@@ -39,6 +39,20 @@ DC crosstalk
 AC crosstalk
 ============
 
+Apply AC crosstalk signal to detector signal.
+
+Example of the configuration file:
+
+.. code-block:: yaml
+
+    - name: ac_crosstalk
+      func: pyxel.models.readout_electronics.ac_crosstalk
+      enabled: true
+      arguments:
+        coupling_matrix: [[1, 0.5, 0, 0], [0.5, 1, 0, 0], [0, 0, 1, 0.5], [0, 0, 0.5, 1]]
+        channel_matrix: [1,2,3,4]
+        readout_directions: [1,2,1,2]
+
 .. autofunction:: ac_crosstalk
 
 SAR ADC
