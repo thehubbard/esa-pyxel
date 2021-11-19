@@ -18,6 +18,7 @@ if t.TYPE_CHECKING:
 
 # TODO: not a real model, just changing characteristics, move code to the conversion model
 
+
 def qe_map(
     detector: "Detector",
     filename: t.Union[str, Path],

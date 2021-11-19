@@ -14,8 +14,8 @@ import numpy as np
 from pyxel.detectors import CMOS
 from pyxel.util import temporary_random_state
 
-
 # TODO: more documentation, refactoring, random, astropy constants
+
 
 # TODO: Fix this
 # @validators.validate

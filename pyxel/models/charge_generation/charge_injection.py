@@ -15,6 +15,7 @@ from pyxel.detectors import CCD
 
 # TODO: fix docstring, put documentation, private function
 
+
 # TODO: Fix this
 # @validators.validate
 # @config.argument(name='detector', label='', units='', validate=checkers.check_type(CCD))
