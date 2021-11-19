@@ -16,6 +16,8 @@ from pyxel import load_image
 if t.TYPE_CHECKING:
     from pyxel.detectors import Detector
 
+# TODO: not a real model, just changing characteristics, move code to the conversion model
+
 
 def qe_map(
     detector: "Detector",

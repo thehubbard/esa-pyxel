@@ -47,6 +47,7 @@ def simple_collection(detector: Detector) -> None:
     ).astype(np.int32)
 
 
+# TODO: useless model
 def empty_charge(detector: Detector) -> None:
     """Each time the charges are collected in the pixel, the charge array is reset using Charge().
 

@@ -15,6 +15,8 @@ import numpy as np
 from pyxel.detectors import Detector, Geometry
 from pyxel.util import temporary_random_state
 
+# TODO: use built-in pyxel functions for loading files, documentation, docstring, saving to file??, private function
+
 
 # TODO: Fix this
 # @validators.validate

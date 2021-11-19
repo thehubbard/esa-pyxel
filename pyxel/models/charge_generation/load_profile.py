@@ -22,7 +22,7 @@ from pyxel.detectors.geometry import (
     get_vertical_pixel_center_pos,
 )
 
-# TODO: more documentation
+# TODO: more documentation, private function
 
 
 @lru_cache(maxsize=128)  # One must add parameter 'maxsize' for Python 3.7
@@ -44,6 +44,7 @@ def _create_charges(
     #                         larger in dimensions than detector imaging area)
     full_path = Path(txt_file).resolve()
     charges_from_file_2d = np.loadtxt(str(full_path), ndmin=2)  # type: np.ndarray
+    # TODO: use pyxel function load_table?
 
     if fit_profile_to_det:
         # Crop 2d charge profile, so it is not larger in dimensions than detector imaging area)

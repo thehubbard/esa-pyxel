@@ -27,6 +27,7 @@ from pyxel.models.charge_generation.tars.util import (  # , load_histogram_data
 from pyxel.util import temporary_random_state
 
 # from astropy import units as u
+# TODO: write basic test to check inputs, private function, documentation
 
 
 # @validators.validate
