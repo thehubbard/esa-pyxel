@@ -13,17 +13,16 @@ from pyxel.detectors import MKID
 
 
 def apply_dead_time_filter(phase_2d: np.ndarray, maximum_count: float) -> np.ndarray:
-    """TBW.
+    """Apply dead time filter.
 
     Parameters
     ----------
-    phase_2d : array
+    phase_2d : ndarray
     maximum_count : float
 
     Returns
     -------
-    array
-        TBW.
+    ndarray
     """
     phase_clipped_2d = np.clip(phase_2d, a_min=None, a_max=maximum_count)
 
@@ -36,8 +35,9 @@ def dead_time_filter(detector: MKID, dead_time: float) -> None:
 
     Parameters
     ----------
-    detector
-    dead_time
+    detector: Detector
+        Pyxel Detector MKID object.
+    dead_time : float
     """
     # Validation phase
     if not isinstance(detector, MKID):
