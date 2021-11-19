@@ -9,26 +9,87 @@
 import typing as t
 
 import numpy as np
+from typing_extensions import Literal
 
 from pyxel.detectors import Detector
 from pyxel.util import temporary_random_state
 
-# TODO: random, docstring, private function
-# TODO: normal and poisson versions, maybe as an argument,
+
+def compute_poisson_noise(array: np.ndarray) -> np.ndarray:
+    """Compute Poisson noise using the input array.
+
+    Parameters
+    ----------
+    array: ndarray
+        Input array.
+
+    Returns
+    -------
+    output: ndarray
+        Output array.
+    """
+    output = np.random.poisson(lam=array).astype(array.dtype)
+    return output
 
 
-# TODO: Fix this
-# @validators.validate
-# @config.argument(name='seed', label='random seed', units='', validate=checkers.check_type(int))
+def compute_gaussian_noise(array: np.ndarray) -> np.ndarray:
+    """Compute Gaussian noise using the input array. Standard deviation is square root of the values.
+
+    Parameters
+    ----------
+    array: ndarray
+        Input array.
+
+    Returns
+    -------
+    output: ndarray
+        Output array.
+    """
+    output = np.random.normal(loc=array, scale=np.sqrt(array))
+    return output
+
+
+def compute_noise(array: np.ndarray, type: str = "poisson") -> np.ndarray:
+    """Compute shot noise for an input array. It can be either Poisson noise or Gaussian.
+
+    Parameters
+    ----------
+    array: ndarray
+        Input array.
+    type: str, optional
+        Choose either 'poisson' or 'normal'. Default is Poisson noise.
+
+    Returns
+    -------
+    output: ndarray
+        Output array.
+    """
+    if type == "poisson":
+        output = compute_poisson_noise(array)
+        return output
+    elif type == "normal":
+        output = compute_gaussian_noise(array)
+        return output
+    else:
+        raise ValueError("Invalid noise type!")
+
+
 @temporary_random_state
-def shot_noise(detector: Detector, seed: t.Optional[int] = None) -> None:
-    """Add shot noise to the number of photon per pixel.
+def shot_noise(
+    detector: Detector,
+    type: Literal["poisson", "normal"] = "poisson",
+    seed: t.Optional[int] = None,
+) -> None:
+    """Add shot noise to the flux of photon per pixel. It can be either Poisson noise or Gaussian.
 
     Parameters
     ----------
     detector: Detector
         Pyxel Detecotr object.
+    type: str, optional
+        Choose either 'poisson' or 'normal'. Default is Poisson noise.
     seed: int, optional
         Random seed.
     """
-    detector.photon.array = np.random.poisson(lam=detector.photon.array)
+    noise_array = compute_noise(array=detector.photon.array, type=type)
+    detector.photon.array = noise_array
