@@ -29,6 +29,10 @@ Example of the configuration file:
 Simple amplification
 ====================
 
+Amplify signal using gain from the output amplifier (in V/V) and
+the signal processor (in V/V).
+
+
 Example of the configuration file:
 
 .. code-block:: yaml

@@ -21,7 +21,7 @@ def apply_amplify(
 
     Parameters
     ----------
-    signal_2d : array
+    signal_2d : ndarray
         2D signal to amplify. Unit: V
     gain_output_amplifier : float
         Gain of output amplifier. Unit: V/V
@@ -30,7 +30,7 @@ def apply_amplify(
 
     Returns
     -------
-    array
+    ndarray
         2D amplified signal. Unit: V
     """
     amplified_signal_2d = signal_2d * gain_output_amplifier * gain_signal_processor
@@ -38,9 +38,8 @@ def apply_amplify(
     return amplified_signal_2d
 
 
-# TODO: refactoring and documentation
 def simple_amplifier(detector: Detector) -> None:
-    """Amplify signal using gain from the output amplifier and signal processor.
+    """Amplify signal using gain from the output amplifier and the signal processor.
 
     Parameters
     ----------
