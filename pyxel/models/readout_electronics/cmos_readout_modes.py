@@ -84,4 +84,4 @@ def non_destructive_readout(
         detector.read_out = True
 
     else:
-        raise TypeError(f"Unknown mode {mode!r}.")
+        raise ValueError(f"Unknown mode {mode!r}.")
