@@ -9,6 +9,7 @@
 import typing as t
 
 import pytest
+from typing_extensions import Literal
 
 from pyxel.detectors import (
     CCD,
@@ -87,7 +88,7 @@ def ccd_10x10() -> CCD:
 def test_illumination(
     ccd_10x10: CCD,
     level: float,
-    option: str,
+    option: Literal["uniform", "rectangular_hole", "elliptic_hole"],
     object_size: t.Optional[t.Sequence[int]],
     object_center: t.Optional[t.Sequence[int]],
     time_scale: float,
