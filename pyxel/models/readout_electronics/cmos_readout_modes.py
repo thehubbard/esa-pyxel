@@ -6,6 +6,8 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """Non-Destructive Readout modes for CMOS-based detectors."""
+import typing as t
+
 from typing_extensions import Literal
 
 from pyxel.detectors import CMOS
@@ -16,7 +18,7 @@ from pyxel.detectors import CMOS
 def non_destructive_readout(
     detector: CMOS,
     mode: Literal["uncorrelated", "CDS", "Fowler-N", "UTR"],
-    fowler_samples: int = 1,
+    fowler_samples: t.Optional[int] = None,
 ) -> None:
     """Non-Destructive Readout modes for CMOS-based detectors.
 
@@ -31,15 +33,31 @@ def non_destructive_readout(
     Raises
     ------
     ValueError
-        If the 'detector' is not properly initialized.
-    NotImplementedError
+        If the 'detector' is not properly initialized or
+        if the parameters 'mode' and/or 'fowler_samples' are incorrect.
+    TypeError
         If 'mode' is not recognized.
     """
+    # Validation
+    if mode == "Fowler-N":
+        if fowler_samples is None:
+            raise ValueError("Missing parameter 'fowler_samples' for mode 'Fowler-N'.")
+
+        if fowler_samples < 1:
+            raise ValueError("Parameter 'fowler_samples' must be > 1.")
+
+    if mode != "Fowler-N" and fowler_samples is not None:
+        raise ValueError(
+            "Parameter 'fowler_samples' can only be used for mode 'Fowler-N'."
+        )
+
     if not detector.non_destructive_readout or not detector.is_dynamic:
-        raise ValueError()
+        raise ValueError(
+            "Detector is must have a non-destructive readout and must be dynamic."
+        )
 
     if not detector.times_linear:
-        raise ValueError()
+        raise ValueError("Detector's time must be linear.")
 
     detector.read_out = False
     if mode == "uncorrelated":
@@ -53,7 +71,11 @@ def non_destructive_readout(
             detector.read_out = True
 
     elif mode == "Fowler-N":
-        nt = fowler_samples
+        if t.TYPE_CHECKING:
+            # This 'assert' is only for Mypy.
+            assert fowler_samples is not None
+
+        nt = fowler_samples  # type: int
         detector.read_out = True
         if nt <= detector.pipeline_count < (detector.num_steps - nt):
             detector.read_out = False
@@ -62,4 +84,4 @@ def non_destructive_readout(
         detector.read_out = True
 
     else:
-        raise NotImplementedError
+        raise TypeError(f"Unknown mode {mode!r}.")
