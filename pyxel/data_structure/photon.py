@@ -12,6 +12,7 @@ import typing as t
 import numpy as np
 
 from pyxel.data_structure import Array
+import warnings
 
 if t.TYPE_CHECKING:
     from pyxel.detectors import Geometry
@@ -40,3 +41,19 @@ class Photon(Array):
         new_array = np.zeros((geo.row, geo.col), dtype=self.EXP_TYPE)
 
         super().__init__(new_array)
+
+    @Array.array.setter
+    def array(self, value: np.ndarray) -> None:
+        """Overwrite the two dimensional numpy array storing the data.
+
+        Only accepts an array with the right type and shape.
+        """
+        self.validate_type(value)
+        self.validate_shape(value)
+
+        if np.any(value<0):
+            value[value<0]=0.
+            warnings.warn("Trying to set negative values in the Photon array! Negative values clipped to 0.")
+
+        # self.type = value.dtype
+        self._array = value

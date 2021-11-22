@@ -37,7 +37,7 @@ def rectangular(
 
     Returns
     -------
-    photon_array: np.ndarray
+    photon_array: ndarray
         Output numpy array.
     """
     if not object_size:
@@ -89,7 +89,7 @@ def elliptic(
 
     Returns
     -------
-    photon_array: np.ndarray
+    photon_array: ndarray
         Output numpy array.
     """
     if not object_size:
@@ -150,7 +150,7 @@ def calculate_illumination(
 
     Returns
     -------
-    photon_array: np.ndarray
+    photon_array: ndarray
         Output numpy array.
     """
     if option == "uniform":
@@ -183,7 +183,7 @@ def illumination(
     object_center: t.Optional[t.Sequence[int]] = None,
     time_scale: float = 1.0,
 ) -> None:
-    """Generate photon uniformly over the entire array or over a object.
+    """Generate photon uniformly over the entire array or over an elliptic or rectangular object.
 
     detector: Detector
         Pyxel Detector object.
