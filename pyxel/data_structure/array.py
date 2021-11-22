@@ -68,7 +68,7 @@ class Array:
 
     def __array__(self, dtype: t.Optional[np.dtype] = None):
         if not isinstance(self._array, np.ndarray):
-            raise ValueError("Array not initialized.")
+            raise TypeError("Array not initialized.")
         return np.asarray(self._array, dtype=dtype)
 
     @property

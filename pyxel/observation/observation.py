@@ -169,7 +169,7 @@ class Observation:
                 yield index, parameter_dict
 
         else:
-            raise ValueError("Custom parameters not loaded from file.")
+            raise TypeError("Custom parameters not loaded from file.")
 
     def _sequential_parameters(self) -> t.Generator[t.Tuple[int, dict], None, None]:
         """Generate sequential mode parameters.

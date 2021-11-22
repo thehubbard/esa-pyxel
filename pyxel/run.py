@@ -203,7 +203,7 @@ def output_directory(configuration: Configuration) -> Path:
     elif isinstance(configuration.observation, Observation):
         output_dir = configuration.observation.outputs.output_dir
     else:
-        raise (ValueError("Outputs not initialized."))
+        raise (TypeError("Outputs not initialized."))
     return output_dir
 
 
