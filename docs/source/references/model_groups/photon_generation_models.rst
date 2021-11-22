@@ -35,7 +35,7 @@ Example of the configuration file for a circular object:
           level: 500
           object_center: [250,250]
           object_size: [15,15]
-          option: "elliptic_hole"
+          option: "elliptic"
 
 .. autofunction:: illumination
 
