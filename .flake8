@@ -3,6 +3,6 @@ exclude =
     tests
     pyxel/_version.py
     pyxel/templates/_TEMPLATE.py
-max_complexity=10
+#max_complexity=10
 max-line-length=120
 ignore=E203, W503, TC003

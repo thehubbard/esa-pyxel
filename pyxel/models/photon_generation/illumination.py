@@ -18,7 +18,7 @@ def rectangular(
     shape: t.Tuple[int, int],
     level: float,
     object_size: t.Optional[t.Sequence[int]] = None,
-    hole_center: t.Optional[t.Sequence[int]] = None,
+    object_center: t.Optional[t.Sequence[int]] = None,
 ) -> np.ndarray:
     """Calculate an image of a rectangular object.
 
