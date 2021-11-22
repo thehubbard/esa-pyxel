@@ -21,6 +21,21 @@ def apply_sar_adc(
     max_volt: float,
     adc_bits: int,
 ) -> np.ndarray:
+    """Apply SAR ADC.
+
+    Parameters
+    ----------
+    signal_2d : ndarray
+    num_rows : int
+    num_cols : int
+    min_volt : float
+    max_volt : float
+    adc_bits : int
+
+    Returns
+    -------
+    ndarray
+    """
     data_digitized_2d = np.zeros((num_rows, num_cols))
 
     # First normalize the data to voltage since there is no model for
@@ -41,20 +56,19 @@ def apply_sar_adc(
         # Subtract ref value from the data
         signal_normalized_2d[signal_normalized_2d >= ref] -= ref
 
-        # steps.append(ref)
         # Divide reference voltage by 2 for next step
         ref /= 2.0
 
     return data_digitized_2d
 
 
-# TODO: pure and impure refactoring, documentation, range volt - only max is used
+# TODO: documentation, range volt - only max is used
 def sar_adc(
     detector: Detector,
     adc_bits: int = 16,
     range_volt: t.Tuple[float, float] = (0.0, 5.0),
 ) -> None:
-    """Digitize signal array using SAR ADC logic.
+    """Digitize signal array using SAR (Successive Approximation Register) ADC logic.
 
     Parameters
     ----------
@@ -68,9 +82,6 @@ def sar_adc(
     # Validation
     if adc_bits <= 0:
         raise ValueError("Expecting a strictly positive value for 'adc_bits'")
-
-    if not isinstance(adc_bits, int):
-        raise TypeError("Expecting a 'int' for 'adc_bits'")
 
     min_volt, max_volt = range_volt
 

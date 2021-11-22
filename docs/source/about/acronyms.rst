@@ -21,4 +21,5 @@ ADC              Analog-Digital Converter
 PSF              Point Spread Function
 ACN              Alternating Column Noise
 RTG              Random Telegraph Noise
+SAR              Successive Approximation Register
 =======          ==========
