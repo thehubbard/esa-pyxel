@@ -31,21 +31,29 @@ except ImportError:
 def arctic_add(
     detector: CCD,
     well_fill_power: float,
-    trap_densities: list,
-    trap_release_timescales: list,
+    trap_densities: t.Sequence[float],
+    trap_release_timescales: t.Sequence[float],
     express: int = 0,
-    # instant_traps: t.Sequence[t.Mapping[str, float]],
 ) -> None:
     """Add trap species.
 
     Parameters
     ----------
     detector : CCD
-    well_fill_power
-    trap_densities
+    well_fill_power : float
+    trap_densities :
     trap_release_timescales
     express
     """
+    # Validation
+    if len(trap_densities) != len(trap_release_timescales):
+        raise ValueError(
+            "Expecting same number of 'trap_densities' and 'trap_release_timescales'"
+        )
+
+    if len(trap_densities) == 0:
+        raise ValueError("Expecting at least one 'trap_density'.")
+
     if not WITH_ARTICPY:
         raise RuntimeError(
             "ArCTIC python wrapper is not installed ! "
