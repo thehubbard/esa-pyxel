@@ -36,7 +36,7 @@ Example of the configuration file:
 .. code-block:: yaml
 
     - name: optical_psf
-      func: pyxel.models.optics.optical_psf
+      func: pyxel.models.charge_transfer.arctic_add
       enabled: true
       arguments:
         well_fill_power: 10.
