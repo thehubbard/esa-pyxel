@@ -10,20 +10,16 @@ import logging
 
 from pyxel.detectors import Detector
 
-# from astropy import units as u
-
 
 # TODO: keep name, private functions, more documentation, tests
-# @pyxel.validate
-# @pyxel.argument(name='', label='', units='', validate=)
 def simple_measurement(detector: Detector) -> None:
     """Create signal array from pixel array.
 
-    detector Signal unit: Volt
-
-    :param detector: Pyxel Detector object
+    Parameters
+    ----------
+    detector
+    gain
     """
-    logging.info("")
     char = detector.characteristics
 
     array = detector.pixel.array * char.sv
