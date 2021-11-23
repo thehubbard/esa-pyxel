@@ -20,6 +20,7 @@ from pyxel.models.charge_measurement.nghxrg.nghxrg_beta import HXRGNoise
 from pyxel.util import temporary_random_state
 
 
+# TODO: pure function, why beta - renaming, documentation, copyright, cite the paper in documentation
 # @pyxel.validate
 # @pyxel.argument(name='', label='', units='', validate=)
 @temporary_random_state

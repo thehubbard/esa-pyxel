@@ -13,6 +13,7 @@ from pyxel.detectors import Detector
 # from astropy import units as u
 
 
+# TODO: keep name, private functions, more documentation, tests
 # @pyxel.validate
 # @pyxel.argument(name='', label='', units='', validate=)
 def simple_measurement(detector: Detector) -> None:
@@ -29,6 +30,7 @@ def simple_measurement(detector: Detector) -> None:
     detector.signal.array = array.astype("float64")
 
 
+# TODO: how is it different? rename or merge both into one model, get rid of gain
 def simple_test(detector: Detector, gain: int) -> None:
     """Create signal array from pixel array.
 

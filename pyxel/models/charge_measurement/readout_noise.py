@@ -21,6 +21,7 @@ from pyxel.util import temporary_random_state
 # @config.argument(name='', label='', units='', validate=)
 
 
+# TODO: use private functions
 @temporary_random_state
 def output_node_noise(
     detector: Detector, std_deviation: float, seed: t.Optional[int] = None

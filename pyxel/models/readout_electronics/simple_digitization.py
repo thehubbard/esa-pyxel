@@ -19,6 +19,7 @@ from pyxel.detectors import MKID
 # @config.argument(name='data_type', label='type of output data array', units='ADU',
 #                  validate=checkers.check_choices(['numpy.uint16', 'numpy.uint32', 'numpy.uint64',
 #                                                   'numpy.int32', 'numpy.int64']))
+# TODO: Refactoring, don't change the signal array, more documentation
 def simple_digitization(detector: MKID, data_type: str = "uint16") -> None:
     """Digitize signal array mimicking readout electronics.
 

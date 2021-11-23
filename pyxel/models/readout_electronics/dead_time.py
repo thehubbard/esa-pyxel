@@ -12,6 +12,7 @@ import logging
 from pyxel.detectors import MKID
 
 
+# TODO: more documentation (Enrico), basic refactoring
 def dead_time_filter(detector: MKID, dead_time: float) -> None:
     """TBW."""
     logging.info("")

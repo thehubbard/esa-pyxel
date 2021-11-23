@@ -19,6 +19,7 @@ if t.TYPE_CHECKING:
     from pyxel.detectors import Detector
 
 
+# TODO: Put more info in documentation
 @numba.njit
 def flip_array(array: np.ndarray, direction: int) -> np.ndarray:
     """Flip the array for read direction as in case 1 or back.

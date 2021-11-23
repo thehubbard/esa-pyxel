@@ -13,6 +13,7 @@ import numpy as np
 from pyxel.detectors import MKID
 
 
+# TODO: why is this model in a single model group? refactoring and documentation
 def pulse_processing(
     detector: MKID,
     wavelength: float,
@@ -68,7 +69,9 @@ def pulse_processing(
         pixel_index_hor=pixel_index_hor,
     ).astype(np.int32)
 
-    detector.phase.array = detector.phase.array * wavelength * 2.5e2 / responsivity
+    detector.phase.array = (
+        detector.phase.array * wavelength * 2.5e2 / responsivity
+    )  # TODO: dont change the unit of an array
     detector.phase.array = detector.phase.array.astype("float64")
 
 

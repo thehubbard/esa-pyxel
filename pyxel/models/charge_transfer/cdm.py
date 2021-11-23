@@ -36,6 +36,8 @@ except ImportError:
 # @pyxel.register(group='charge_transfer', name='cdm', detector='ccd')
 # TODO: What is the type of 'tr_p', 'tr_s', 'nt_p', 'nt_s', 'sigma_p' and 'sigma_s' ?
 #       Is it `t.Union[float, t.Iterable[float]]` ???
+# TODO: renaming parameters, more documentation,
+#  some parameters will become just model parameters instead of detector characteristics
 def cdm(
     detector: CCD,
     parallel_cti: bool,

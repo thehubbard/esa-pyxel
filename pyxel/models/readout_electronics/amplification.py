@@ -13,6 +13,7 @@ from pyxel.detectors import Detector
 # from astropy import units as u
 
 
+# TODO: refactoring and documentation
 # @pyxel.validate
 # @pyxel.argument(name='', label='', units='', validate=)
 def simple_amplifier(detector: Detector) -> None:
