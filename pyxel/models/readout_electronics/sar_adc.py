@@ -13,6 +13,7 @@ import numpy as np
 from pyxel.detectors import Detector
 
 
+# TODO: pure and impure refactoring, documentation, range volt - only max is used
 def sar_adc(detector: Detector, adc_bits: int = 16, range_volt: tuple = (0, 5)) -> None:
     """Digitize signal array using SAR ADC logic.
 

@@ -10,6 +10,7 @@
 from pyxel.detectors import MKID, Detector
 
 
+# TODO: pure functions, documentation, copies!
 def basic_processing(detector: Detector) -> None:
     """Create an image array from signal array.
 

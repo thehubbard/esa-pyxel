@@ -27,6 +27,7 @@ except ImportError:
     WITH_ARTICPY = False
 
 
+# TODO refactoring, more documentation
 def arctic_add(
     detector: CCD,
     well_fill_power: float,

@@ -12,6 +12,7 @@ import logging
 from pyxel.detectors import Detector
 
 
+# TODO: should not change signal, refactoring, documentation
 def simple_processing(detector: Detector) -> None:
     """Create an image array from signal array.
 
