@@ -78,22 +78,19 @@ which returns result numpy array to be able to add to Pyxel detector signal
 - ZeroDivision error fixed
 - Version 2.8
 """
-# Necessary for Python 2.6 and later (JML)
-# Should still work under Python 3.x (JML)
-from __future__ import division, print_function
-
 # warnings.filterwarnings('ignore')
 # # Have not verified this in Python 3.x (JML):
 # _log = logging.getLogger('nghxrg')
 # Have not verified this in Python 3.x (JML):
 import logging
 import typing as t
-from os import path
+from pathlib import Path
 
 import numpy as np
 from astropy.io import fits
 from astropy.stats.funcs import median_absolute_deviation as mad
 from scipy.ndimage.interpolation import zoom
+from typing_extensions import Literal
 
 
 def white_noise(nstep: int) -> np.ndarray:
@@ -131,13 +128,13 @@ class HXRGNoise:
         nfoh: int,
         reverse_scan_direction: bool,
         reference_pixel_border_width: int,
-        wind_mode: str,
+        wind_mode: Literal["FULL", "WINDOW"],
         wind_x_size: int,
         wind_y_size: int,
         wind_x0: int,
         wind_y0: int,
         verbose: bool,
-        pca0_file: t.Optional[str] = None,
+        pca0_file: t.Optional[Path] = None,
     ):
         """Simulate Teledyne HxRG+SIDECAR ASIC system noise.
 
@@ -198,7 +195,6 @@ class HXRGNoise:
         # ======================================================================
         self._log = logging.getLogger("nghxrg")
 
-        wind_mode = wind_mode.upper()
         if wind_mode == "WINDOW":
             n_out = 1
             self.naxis1 = wind_x_size
@@ -256,7 +252,7 @@ class HXRGNoise:
         # ======================================================================
 
         # Configure Subarray (JML)
-        self.wind_mode = wind_mode
+        self.wind_mode = wind_mode  # type: Literal["FULL", "WINDOW"]
         self.det_size_x = det_size_x
         self.det_size_y = det_size_y
         self.wind_x0 = wind_x0
@@ -342,12 +338,14 @@ class HXRGNoise:
             # if pca0_file is None:
             #     self.pca0_file = NGHXRG_HOME + '/nirspec_pca0.fits'
 
-            if path.isfile(pca0_file) is False:
-                print("There was an error finding pca0_file! Check to be")
-                print("sure that the NGHXRG_HOME shell environment")
-                print("variable is set correctly and that the")
-                print("$NGHXRG_HOME/ directory contains the desired PCA0")
-                print("file. The default is nirspec_pca0.fits.")
+            if pca0_file.exists() is False:
+                self._log.error(
+                    "There was an error finding pca0_file! Check to be"
+                    "sure that the NGHXRG_HOME shell environment"
+                    "variable is set correctly and that the"
+                    "$NGHXRG_HOME/ directory contains the desired PCA0"
+                    "file. The default is nirspec_pca0.fits."
+                )
                 raise ValueError()
                 # os.sys.exit()
 
@@ -400,15 +398,17 @@ class HXRGNoise:
                 # os.sys.exit()
             self.pca0 = data[y1:y2, x1:x2]
 
-    def pink_noise(self, mode: str) -> np.ndarray:
-        """TBW.
-
-        Generate a vector of non-periodic pink noise.
+    def pink_noise(self, mode: Literal["pink", "acn"]) -> np.ndarray:
+        """Generate a vector of non-periodic pink noise.
 
         Parameters
         ----------
-            mode - Selected from {'pink',  'acn'}
+        mode : 'pink' or 'acn'
+            Select mode for pink noise.
 
+        Returns
+        -------
+        ndarray
         """
         # Configure depending on mode setting
         if mode == "pink":
