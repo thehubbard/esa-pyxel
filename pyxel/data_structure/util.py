@@ -20,7 +20,7 @@ def check_energy(initial_energy: t.Union[int, float]) -> None:
     :return:
     """
     if not isinstance(initial_energy, (int, float)):
-        raise ValueError("Given particle energy could not be read")
+        raise TypeError("Given particle energy could not be read")
 
 
 # def check_position(

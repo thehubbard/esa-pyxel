@@ -24,3 +24,4 @@ from .ccd_characteristics import CCDCharacteristics
 from .cmos_characteristics import CMOSCharacteristics
 from .mkid_characteristics import MKIDCharacteristics
 from .optics import Optics
+from .readout_properties import ReadoutProperties
