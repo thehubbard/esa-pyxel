@@ -105,6 +105,7 @@ def white_noise(nstep: int) -> np.ndarray:
     return distribution
 
 
+# TODO: Compare with https://github.com/astronomyk/SimCADO/blob/master/simcado/nghxrg.py
 class HXRGNoise:
     """HXRGNoise is a class for making realistic Teledyne HxRG system noise.
 
