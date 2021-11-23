@@ -14,6 +14,7 @@ from pathlib import Path
 import numpy as np
 from matplotlib import pyplot as plt
 from scipy import signal
+from typing_extensions import Literal
 
 from pyxel.detectors import CMOS, CMOSGeometry
 from pyxel.models.charge_measurement.nghxrg.nghxrg_beta import HXRGNoise
@@ -21,15 +22,13 @@ from pyxel.util import temporary_random_state
 
 
 # TODO: pure function, why beta - renaming, documentation, copyright, cite the paper in documentation
-# @pyxel.validate
-# @pyxel.argument(name='', label='', units='', validate=)
 @temporary_random_state
 def nghxrg(
     detector: CMOS,
     noise: list,
     pca0_file: t.Optional[str] = None,
-    window_position: t.Optional[t.Sequence[int]] = None,
-    window_size: t.Optional[t.Sequence[int]] = None,
+    window_position: t.Optional[t.Tuple[int, int]] = None,
+    window_size: t.Optional[t.Tuple[int, int]] = None,
     plot_psd: t.Optional[bool] = True,
     seed: t.Optional[int] = None,
 ) -> None:
@@ -48,17 +47,17 @@ def nghxrg(
     seed: int, optional
     """
     logging.getLogger("nghxrg").setLevel(logging.WARNING)
-    logging.info("")
+
     geo = detector.geometry  # type: CMOSGeometry
     step = 1
     if detector.is_dynamic:
         step = int(detector.time / detector.time_step)
     if window_position is None:
-        window_position = [0, 0]
+        window_position = (0, 0)
     if window_size is None:
-        window_size = [geo.col, geo.row]
-    if window_position == [0, 0] and window_size == [geo.col, geo.row]:
-        window_mode = "FULL"
+        window_size = (geo.col, geo.row)
+    if window_position == (0, 0) and window_size == (geo.col, geo.row):
+        window_mode = "FULL"  # type: Literal["FULL", "WINDOW"]
     else:
         window_mode = "WINDOW"
 
@@ -69,7 +68,7 @@ def nghxrg(
         nfoh=geo.n_frame_overhead,
         reverse_scan_direction=geo.reverse_scan_direction,
         reference_pixel_border_width=geo.reference_pixel_border_width,
-        pca0_file=pca0_file,
+        pca0_file=Path(pca0_file) if pca0_file else None,
         det_size_x=geo.col,
         det_size_y=geo.row,
         wind_mode=window_mode,
@@ -156,7 +155,7 @@ def display_noisepsd(
     noise_name: str,
     path: Path,
     step: int,
-    mode: str = "plot",
+    # mode: Literal["plot"] = "plot",
 ) -> t.Tuple[t.Any, np.ndarray]:
     """Display noise PSD from the generated FITS file.
 
@@ -214,29 +213,29 @@ def display_noisepsd(
     #                                   read_freq,
     #                                   nperseg=nperseg)
 
-    if mode == "plot":
-        fig, ax1 = plt.subplots(1, 1, figsize=(8, 8))
-        fig.canvas.set_window_title("Power Spectral Density")
-        fig.suptitle(
-            noise_name
-            + " Power Spectral Density\n"
-            + "Welch seg. length / Nb pixel output: "
-            + str("{:1.2f}".format(nperseg / pix_p_output))
-        )
-        ax1.plot(f_vect, np.mean(pxx_outputs, axis=0), ".-", ms=3, alpha=0.5, zorder=32)
-        for _, ax in enumerate([ax1]):
-            ax.set_xlim([1, 1e5])
-            ax.set_xscale("log")
-            ax.set_yscale("log")
-            ax.set_xlabel("Frequency [Hz]")
-            ax.set_ylabel("PSD [e-${}^2$/Hz]")
-            ax.grid(True, alpha=0.4)
-
-        filename = path.joinpath(
-            "nghxrg_" + noise_name + "_" + str(step) + ".png"
-        )  # type: Path
-        plt.savefig(filename, dpi=300)
-        plt.close()
+    # if mode == "plot":
+    #     fig, ax1 = plt.subplots(1, 1, figsize=(8, 8))
+    #     fig.canvas.set_window_title("Power Spectral Density")
+    #     fig.suptitle(
+    #         noise_name
+    #         + " Power Spectral Density\n"
+    #         + "Welch seg. length / Nb pixel output: "
+    #         + str("{:1.2f}".format(nperseg / pix_p_output))
+    #     )
+    #     ax1.plot(f_vect, np.mean(pxx_outputs, axis=0), ".-", ms=3, alpha=0.5, zorder=32)
+    #     for _, ax in enumerate([ax1]):
+    #         ax.set_xlim([1, 1e5])
+    #         ax.set_xscale("log")
+    #         ax.set_yscale("log")
+    #         ax.set_xlabel("Frequency [Hz]")
+    #         ax.set_ylabel("PSD [e-${}^2$/Hz]")
+    #         ax.grid(True, alpha=0.4)
+    #
+    #     filename = path.joinpath(
+    #         "nghxrg_" + noise_name + "_" + str(step) + ".png"
+    #     )  # type: Path
+    #     plt.savefig(filename, dpi=300)
+    #     plt.close()
 
     result = np.asarray(np.mean(pxx_outputs, axis=0))  # type: np.ndarray
     return f_vect, result

@@ -370,13 +370,13 @@ class HXRGNoise:
             data = hdu[0].data
             # Make sure the real PCA image is correctly scaled to size of fake data (JML)
             # Depends if we're FULL, STRIPE or WINDOW
-            if wind_mode == "FULL":
+            if wind_mode is Mode.Full:
                 scale1 = self.naxis1 / nx_pca0
                 scale2 = self.naxis2 / ny_pca0
                 zoom_factor = np.max([scale1, scale2])
             # if wind_mode == 'STRIPE':
             #     zoom_factor = self.naxis1 / nx_pca0
-            if wind_mode == "WINDOW":
+            if wind_mode is Mode.Window:
                 # Scale based on det_size_x
                 scale1 = self.det_size_x / nx_pca0
                 scale2 = self.det_size_y / ny_pca0
