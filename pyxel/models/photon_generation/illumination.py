@@ -189,14 +189,14 @@ def illumination(
         Pyxel Detector object.
     level: float
         Flux of photon per pixel.
-    option: str{'uniform', 'elliptic', 'rectangular'}
+    option: str
         A string indicating the type of illumination:
         - ``uniform``
-           Uniformly fill the entire array with photon. (Default)
-        - ``elliptic_hole``
-           Mask with elliptic object.
-        - ``rectangular_hole``
-           Mask with rectangular object.
+        Uniformly fill the entire array with photon. (Default)
+        - ``elliptic``
+        Mask with elliptic object.
+        - ``rectangular``
+        Mask with rectangular object.
     object_size: list or tuple, optional
         List or tuple of length 2, integers defining the diameters of the elliptic or rectangular object
         in vertical and horizontal directions.
