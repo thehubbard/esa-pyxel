@@ -170,12 +170,33 @@ def arctic_remove(
 
     Parameters
     ----------
-    detector
-    well_fill_power
-    instant_traps
-    num_iterations
-    express
+    detector : CCD
+    well_fill_power : float
+    instant_traps : sequence of mapping
+    num_iterations : int
+    express : int
     """
+    # Validation
+    if num_iterations > 0:
+        raise ValueError("Number of iterations must be > 1.")
+
+    # Conversion
+    traps_params = []  # type: t.List[Trap]
+    for item in instant_traps:
+        if "density" not in item:
+            raise KeyError("Missing key 'density' in parameter 'instant_traps'.")
+        if "release_timescale" not in item:
+            raise KeyError(
+                "Missing key 'release_timescale' in parameter 'instant_traps'."
+            )
+
+        trap = Trap(
+            density=float(item["density"]),
+            release_timescale=float(item["release_timescale"]),
+        )
+
+        traps_params.append(trap)
+
     if not WITH_ARTICPY:
         raise RuntimeError(
             "ArCTIC python wrapper is not installed ! "
@@ -183,17 +204,17 @@ def arctic_remove(
         )
 
     ccd = ac.CCD(
-        well_fill_power=well_fill_power, full_well_depth=detector.characteristics.fwc
+        well_fill_power=well_fill_power,
+        full_well_depth=detector.characteristics.fwc,
     )
     roe = ac.ROE()
 
     # Build the traps
     traps = []  # type: t.List[ac.Trap]
-    for trap_info in instant_traps:
-        density = trap_info["density"]  # type: float
-        release_timescale = trap_info["release_timescale"]  # type: float
-
-        trap = ac.Trap(density=density, release_timescale=release_timescale)
+    for trap_info in traps_params:
+        trap = ac.Trap(
+            density=trap_info.density, release_timescale=trap_info.release_timescale
+        )
         traps.append(trap)
 
     # Remove CTI
