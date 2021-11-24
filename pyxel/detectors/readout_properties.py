@@ -16,7 +16,7 @@ class ReadoutProperties:
         self,
         num_steps: int,
         start_time: float = 0.0,
-        end_time: float = 0.0,
+        end_time: float = 1.0,
         ndreadout: bool = False,
         times_linear: bool = True,
     ):
@@ -39,7 +39,7 @@ class ReadoutProperties:
 
         # Changing
         self._time = 0.0  # type: float
-        self._time_step = 0.0  # type: float
+        self._time_step = 1.0  # type: float
         self._read_out = True  # type: bool
         self._pipeline_count = 0  # type: int
 
@@ -51,7 +51,7 @@ class ReadoutProperties:
     @property
     def start_time(self) -> float:
         """TBW."""
-        return self._end_time
+        return self._start_time
 
     @start_time.setter
     def start_time(self, value: float) -> None:

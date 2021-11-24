@@ -44,12 +44,21 @@ def load_image_from_file(
         raise FileNotFoundError(f"Image file '{filename}' does not exist !")
 
     image = pyxel.load_image(filename)  # type: np.ndarray
-
+    im_row, im_col = image.shape
     row, col = shape
 
-    # TODO: create tests for this part, see issue #337
+    if row > im_row or col > im_col:
+        raise ValueError("Image too small to fit to detector shape!.")
+
     if fit_image_to_det:
         position_y, position_x = position
+
+        if position_y < 0 or position_x < 0:
+            raise ValueError("Negative values for position not allowed!.")
+        if position_y > im_row - row:
+            raise ValueError("Cannot slice image outside of bounds!.")
+        if position_x > im_col - col:
+            raise ValueError("Cannot slice image outside of bounds!.")
 
         image = image[
             slice(position_y, position_y + row),
@@ -106,7 +115,6 @@ def load_image(
         photon_array = photon_array / (
             cht.qe * cht.eta * cht.sv * cht.amp * cht.a1 * cht.a2
         )
-
     photon_array = photon_array * (detector.time_step / time_scale) * multiplier
 
     try:
