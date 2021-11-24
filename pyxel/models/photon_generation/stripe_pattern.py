@@ -108,7 +108,7 @@ def stripe_pattern(
     period: int = 10,
     level: float = 1.0,
     angle: int = 0,
-    start_with: int = 0,
+    startwith: int = 0,
     time_scale: float = 1.0,
 ) -> None:
     """Stripe pattern model.
@@ -123,7 +123,7 @@ def stripe_pattern(
         Amplitude of the periodic pattern.
     angle: int
         Angle of the pattern in degrees.
-    start_with: int
+    startwith: int
         1 to start with high level or 0 for 0.
     time_scale: float
         Time scale of the photon flux, default is 1 second. 0.001 would be ms.
@@ -133,7 +133,7 @@ def stripe_pattern(
         detector_shape=(detector.geometry.row, detector.geometry.col),
         period=period,
         level=level,
-        start_with=start_with,
+        start_with=startwith,
         angle=angle,
     )
 
