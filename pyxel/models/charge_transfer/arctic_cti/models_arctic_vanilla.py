@@ -35,15 +35,33 @@ def arctic_add(
     trap_release_timescales: t.Sequence[float],
     express: int = 0,
 ) -> None:
-    """Add trap species.
+    """Add CTI trails to an image by trapping, releasing and moving electrons.
 
     Parameters
     ----------
     detector : CCD
+        Pyxel CCD Detector object.
     well_fill_power : float
-    trap_densities :
-    trap_release_timescales
-    express
+    trap_densities : sequence of float
+        A 1D arrays of all trap species densities for serial clocking.
+    trap_release_timescales : sequence of float
+        A 1D arrays of all trap release timescales for serial clocking.
+    express : int
+        As described in more detail in :cite:p:`2014:massey` section 2.1.5, the effects
+        of each individual pixel-to-pixel transfer can be very similar, so multiple
+        transfers can be computed at once for efficiency.
+        The ``express`` input sets the number of times the transfers are calculated.
+
+            * ``express = 1`` is the fastest and least accurate.
+            * ``express = 2`` means the transfers are re-computed half-way through readout.
+            * ``express = N`` where ``N`` is the total number of pixels.
+
+        Default ``express = 0`` is a convenient input for automatic ``express = N``.
+
+    Notes
+    -----
+    The external library `arcticpy <https://github.com/jkeger/arcticpy>`_ is used to add
+    the CTI trails.
     """
     # Validation
     if len(trap_densities) != len(trap_release_timescales):

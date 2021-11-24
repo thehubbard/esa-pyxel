@@ -25,10 +25,17 @@ This generalized version has been included and used in Pyxel.
 .. autofunction:: cdm
 
 
-Arctic Add
-==========
+Add CTI trails
+==============
 
-Add trap species.
+Add image trails due to charge transfer inefficiency in CCD detectors by modelling the
+trapping, releasing, and moving of charge along pixels.
+
+The primary inputs are the initial image followed by the properties of the CCD,
+readout electronics and trap species for serial clocking.
+
+More information about adding CTI trailing is described
+in section 2.1 in :cite:p:`2010:massey`.
 
 
 Example of the configuration file:
