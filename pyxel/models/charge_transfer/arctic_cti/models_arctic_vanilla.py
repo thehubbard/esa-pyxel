@@ -167,6 +167,56 @@ def arctic_add(
     detector.pixel.array = image_cti_added_2d
 
 
+def compute_arctic_remove(
+    image_2d: np.ndarray,
+    full_well_depth: float,
+    well_fill_power: float,
+    parallel_traps: t.Sequence[Trap],
+    parallel_express: int,
+    num_iterations: int,
+) -> np.ndarray:
+    """Create a new image with removed CTI trails.
+
+    Parameters
+    ----------
+    image_2d : ndarray
+        2D image to process.
+    full_well_depth : float
+    well_fill_power : float
+    parallel_traps : sequence of Traps
+        List of trap to process.
+    parallel_express : int
+    num_iterations : int
+
+    Returns
+    -------
+    ndarray
+        2D array without CTI trails.
+    """
+    ccd = ac.CCD(well_fill_power=well_fill_power, full_well_depth=full_well_depth)
+    roe = ac.ROE()
+
+    # Build the traps
+    traps = []  # type: t.List[ac.Trap]
+    for trap_info in parallel_traps:  # type: Trap
+        trap = ac.Trap(
+            density=trap_info.density, release_timescale=trap_info.release_timescale
+        )
+        traps.append(trap)
+
+    # Remove CTI
+    image_2d_cti_removed = ac.remove_cti(
+        image=image_2d,
+        iterations=num_iterations,
+        parallel_traps=traps,
+        parallel_ccd=ccd,
+        parallel_roe=roe,
+        parallel_express=parallel_express,
+    )
+
+    return image_2d_cti_removed
+
+
 def arctic_remove(
     detector: CCD,
     well_fill_power: float,
@@ -204,7 +254,7 @@ def arctic_remove(
         raise ValueError("Number of iterations must be > 1.")
 
     # Conversion
-    traps_params = []  # type: t.List[Trap]
+    traps = []  # type: t.List[Trap]
     for item in instant_traps:
         if "density" not in item:
             raise KeyError("Missing key 'density' in parameter 'instant_traps'.")
@@ -218,7 +268,7 @@ def arctic_remove(
             release_timescale=float(item["release_timescale"]),
         )
 
-        traps_params.append(trap)
+        traps.append(trap)
 
     if not WITH_ARTICPY:
         raise RuntimeError(
@@ -226,30 +276,13 @@ def arctic_remove(
             "See https://github.com/jkeger/arctic"
         )
 
-    ccd = ac.CCD(
-        well_fill_power=well_fill_power,
+    image_2d_cti_removed = compute_arctic_remove(
+        image_2d=np.asarray(detector.pixel.array, dtype=float),
         full_well_depth=detector.characteristics.fwc,
-    )
-    roe = ac.ROE()
-
-    # Build the traps
-    traps = []  # type: t.List[ac.Trap]
-    for trap_info in traps_params:
-        trap = ac.Trap(
-            density=trap_info.density, release_timescale=trap_info.release_timescale
-        )
-        traps.append(trap)
-
-    # Remove CTI
-    image_2d = np.asarray(detector.pixel.array, dtype=float)  # type: np.ndarray
-
-    image_cti_removed = ac.remove_cti(
-        image=image_2d,
-        iterations=num_iterations,
+        well_fill_power=well_fill_power,
         parallel_traps=traps,
-        parallel_ccd=ccd,
-        parallel_roe=roe,
         parallel_express=express,
+        num_iterations=num_iterations,
     )
 
-    detector.pixel.array = image_cti_removed
+    detector.pixel.array = image_2d_cti_removed
