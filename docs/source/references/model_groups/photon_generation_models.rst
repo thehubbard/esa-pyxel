@@ -3,13 +3,34 @@
 Photon Generation models
 ========================
 
-
 .. currentmodule:: pyxel.models.photon_generation
-.. automodule:: pyxel.models.photon_generation
 
+Photon generation models are used to add photons to :py:class:`~pyxel.data_structure.Photon` array
+inside the :py:class:`~pyxel.detectors.Detector` object. At the beginning the :py:class:`~pyxel.data_structure.Photon`
+array is an array of zeros. Multiple photon generation models can be linked together one after another.
+The values in the :py:class:`~pyxel.data_structure.Photon` array represent photon flux,
+so number of photons per pixel area per second. Time scale of the incoming flux can be changed in the model arguments.
 
-Loading image
--------------
+Loading an image
+----------------
+With this model you can add photons to :py:class:`~pyxel.detectors.Detector` by loading an image from a file.
+Accepted file formats are ``.npy``, ``.fits``, ``.txt``, ``.data``, ``.jpg``, ``.jpeg``, ``.bmp``,
+``.png`` and ``.tiff``. Use arguments ``fit_image_to_det`` to crop the image to detector shape and ``position``
+to set the offset from (0,0) pixel. With ``multiplier`` you can multiply tho photon number by a custom float,
+and ``time_scale`` is to set the time scale of the incoming photons, default is 1 second.
+By setting ``convert_to_photons`` to ``true``, the model converts the values of loaded image array from ADU to
+photon numbers for each pixel using the Photon Transfer Function:
+:math:`PTF = QE \cdot \eta \cdot S_{v} \cdot amp \cdot a_{1} \cdot a_{2}`.
+
+.. code-block:: yaml
+
+    - name: load_image
+      func: pyxel.models.photon_generation.load_image
+      enabled: true
+      arguments:
+        image_file: data/HorseHead.fits
+        fit_image_to_det: true
+        convert_to_photons: true
 
 .. autofunction:: load_image
 

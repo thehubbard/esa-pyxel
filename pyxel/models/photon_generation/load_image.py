@@ -15,16 +15,64 @@ import pyxel
 from pyxel.detectors import Detector
 
 
-# TODO: Fix this
-# @validators.validate
-# @config.argument(name='image_file', label='fits file', validate=check_path)
-# @config.argument(name='fit_image_to_det', label='fitting image to detector', validate=check_type(bool))
-# @config.argument(name='convert_to_photons', label='convert ADU values to photon numbers', validate=check_type(bool))
+def load_image_from_file(
+    image_file: str,
+    shape: t.Tuple[int, int],
+    position: t.Tuple[int, int] = (0, 0),
+    fit_image_to_det: bool = False,
+) -> np.ndarray:
+    """Load image from file and fit to detector shape.
+
+    Parameters
+    ----------
+    shape: tuple
+        Detector shape.
+    image_file: str
+        Path to image file.
+    fit_image_to_det: bool
+        Fitting image to given shape.
+    position: tuple
+        Indices of starting row and column, used when fitting image to detector.
+
+    Returns
+    -------
+    image: np.ndarray
+    """
+    filename = Path(image_file).expanduser().resolve()
+
+    if not Path(filename).exists():
+        raise FileNotFoundError(f"Image file '{filename}' does not exist !")
+
+    image = pyxel.load_image(filename)  # type: np.ndarray
+    im_row, im_col = image.shape
+    row, col = shape
+
+    if row > im_row or col > im_col:
+        raise ValueError("Image too small to fit to detector shape!.")
+
+    if fit_image_to_det:
+        position_y, position_x = position
+
+        if position_y < 0 or position_x < 0:
+            raise ValueError("Negative values for position not allowed!.")
+        if position_y > im_row - row:
+            raise ValueError("Cannot slice image outside of bounds!.")
+        if position_x > im_col - col:
+            raise ValueError("Cannot slice image outside of bounds!.")
+
+        image = image[
+            slice(position_y, position_y + row),
+            slice(position_x, position_x + col),
+        ]
+
+    return image
+
+
 def load_image(
     detector: Detector,
     image_file: str,
     fit_image_to_det: bool = False,
-    position: t.Tuple[int, int] = (0, 0),  # TODO Too many arguments
+    position: t.Tuple[int, int] = (0, 0),
     convert_to_photons: bool = False,
     multiplier: float = 1.0,
     time_scale: float = 1.0,
@@ -49,21 +97,15 @@ def load_image(
     time_scale: float
         Time scale of the photon flux, default is 1 second. 0.001 would be ms.
     """
-    filename = Path(image_file).expanduser().resolve()
 
-    if not Path(filename).exists():
-        raise FileNotFoundError(f"Image file '{filename}' does not exist !")
+    shape = (detector.geometry.row, detector.geometry.col)
 
-    image = pyxel.load_image(filename)  # type: np.ndarray
-
-    if fit_image_to_det:
-        geo = detector.geometry
-        position_y, position_x = position
-
-        image = image[
-            slice(position_y, position_y + geo.row),
-            slice(position_x, position_x + geo.col),
-        ]
+    image = load_image_from_file(
+        image_file=image_file,
+        shape=shape,
+        fit_image_to_det=fit_image_to_det,
+        position=position,
+    )
 
     detector.input_image = image
     photon_array = image
@@ -73,7 +115,6 @@ def load_image(
         photon_array = photon_array / (
             cht.qe * cht.eta * cht.sv * cht.amp * cht.a1 * cht.a2
         )
-
     photon_array = photon_array * (detector.time_step / time_scale) * multiplier
 
     try:

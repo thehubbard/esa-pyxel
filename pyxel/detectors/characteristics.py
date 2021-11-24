@@ -19,12 +19,12 @@ class Characteristics:
 
     def __init__(
         self,
-        qe: float = 0.0,  # unit: NA
-        eta: float = 0.0,  # unit: electron/photon
-        sv: float = 0.0,  # unit: volt/electron
-        amp: float = 0.0,  # unit: V/V
-        a1: float = 0.0,  # unit: V/V
-        a2: int = 0,  # unit: adu/V
+        qe: float = 1.0,  # unit: NA
+        eta: float = 1.0,  # unit: electron/photon
+        sv: float = 1.0,  # unit: volt/electron
+        amp: float = 1.0,  # unit: V/V
+        a1: float = 1.0,  # unit: V/V
+        a2: int = 1,  # unit: adu/V
         fwc: int = 0,  # unit: electron
         vg: float = 0.0,  # unit: cm^2
         dt: float = 0.0,  # unit: s
