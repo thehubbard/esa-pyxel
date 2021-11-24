@@ -13,6 +13,7 @@
 """TBW."""
 
 import typing as t
+from dataclasses import dataclass
 
 import numpy as np
 
@@ -27,7 +28,70 @@ except ImportError:
     WITH_ARTICPY = False
 
 
-# TODO refactoring, more documentation
+@dataclass
+class Trap:
+    """Define a trap."""
+
+    density: float
+    release_timescale: float
+
+
+def compute_arctic_add(
+    image_2d: np.ndarray,
+    full_well_depth: float,
+    well_fill_power: float,
+    parallel_traps: t.Sequence[Trap],
+    parallel_express: int,
+) -> np.ndarray:
+    """Create a new image with CTI trails.
+
+    Parameters
+    ----------
+    image_2d : ndarray
+        2D image to process.
+    full_well_depth : float
+    well_fill_power : float
+    parallel_traps : sequence of Traps
+        List of trap to process.
+    parallel_express : int
+
+    Returns
+    -------
+    ndarray
+        2D array with CTI trails.
+    """
+    ccd = ac.CCD(
+        phases=[
+            ac.CCDPhase(
+                full_well_depth=full_well_depth,
+                well_fill_power=well_fill_power,
+            )
+        ]
+    )
+
+    roe = ac.ROE()
+
+    # Create the trap(s)
+    traps = [
+        ac.TrapInstantCapture(
+            density=trap.density,
+            release_timescale=trap.release_timescale,
+        )
+        for trap in parallel_traps
+    ]  # type: t.Sequence[ac.TrapInstantCapture]
+
+    image_cti_added_2d = ac.add_cti(
+        image=image_2d,
+        parallel_traps=traps,
+        parallel_ccd=ccd,
+        parallel_roe=roe,
+        parallel_express=parallel_express,
+        verbosity=0,
+    )
+
+    return image_cti_added_2d
+
+
 def arctic_add(
     detector: CCD,
     well_fill_power: float,
@@ -72,51 +136,24 @@ def arctic_add(
     if len(trap_densities) == 0:
         raise ValueError("Expecting at least one 'trap_density'.")
 
+    # Conversion - Create a list of `Trap`
+    traps = [
+        Trap(density=density, release_timescale=release_timescale)
+        for density, release_timescale in zip(trap_densities, trap_release_timescales)
+    ]  # type: t.Sequence[Trap]
+
     if not WITH_ARTICPY:
         raise RuntimeError(
             "ArCTIC python wrapper is not installed ! "
             "See https://github.com/jkeger/arctic"
         )
 
-    ccd = ac.CCD(
-        phases=[
-            ac.CCDPhase(
-                full_well_depth=detector.characteristics.fwc,
-                well_fill_power=well_fill_power,
-            )
-        ]
-    )
-
-    roe = ac.ROE()
-
-    traps = []  # type: t.List[ac.TrapInstantCapture]
-    i = 0
-    for trap_density in trap_densities:
-
-        instant_traps = [
-            {"density": trap_density, "release_timescale": trap_release_timescales[i]}
-        ]  # type: t.Sequence[t.Mapping[str, float]]
-
-        # Build the traps
-        for trap_info in instant_traps:
-            density = trap_info["density"]  # type: float
-            release_timescale = trap_info["release_timescale"]  # type: float
-            trap = ac.TrapInstantCapture(
-                density=density, release_timescale=release_timescale
-            )
-            traps.append(trap)
-        # Add CTI
-        i += 1
-
-    image_2d = np.asarray(detector.pixel.array, dtype=float)  # type: np.ndarray
-
-    image_cti_added_2d = ac.add_cti(
-        image=image_2d,
+    image_cti_added_2d = compute_arctic_add(
+        image_2d=np.asarray(detector.pixel.array, dtype=float),
+        full_well_depth=detector.characteristics.fwc,
+        well_fill_power=well_fill_power,
         parallel_traps=traps,
-        parallel_ccd=ccd,
-        parallel_roe=roe,
         parallel_express=express,
-        verbosity=0,
     )
 
     detector.pixel.array = image_cti_added_2d
