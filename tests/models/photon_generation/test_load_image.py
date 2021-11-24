@@ -15,11 +15,10 @@
 #
 #
 import typing as t
-
-import pytest
 from pathlib import Path
+
 import numpy as np
-from pyxel.models.photon_generation import load_image
+import pytest
 
 from pyxel.detectors import (
     CCD,
@@ -29,6 +28,7 @@ from pyxel.detectors import (
     Material,
     ReadoutProperties,
 )
+from pyxel.models.photon_generation import load_image
 
 
 @pytest.fixture
