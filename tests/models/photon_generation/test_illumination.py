@@ -93,7 +93,7 @@ def test_illumination(
     object_center: t.Optional[t.Sequence[int]],
     time_scale: float,
 ):
-    """Test input parameters for function 'optical_psf'."""
+    """Test input parameters for function 'illumination'."""
     illumination(
         detector=ccd_10x10,
         level=level,

@@ -30,8 +30,8 @@ def ccd_10x10() -> CCD:
     )
 
 
-def test_output_node_noise_poisson(ccd_10x10: CCD):
-    """Test model output_node_noise"""
+def test_shot_noise_poisson(ccd_10x10: CCD):
+    """Test for model shot_noise."""
 
     detector = ccd_10x10
 
@@ -64,8 +64,8 @@ def test_output_node_noise_poisson(ccd_10x10: CCD):
     np.testing.assert_array_almost_equal(photon, data_2d)
 
 
-def test_output_node_noise_normal(ccd_10x10: CCD):
-    """Test model output_node_noise"""
+def test_shot_noise_normal(ccd_10x10: CCD):
+    """Test for model shot_noise."""
 
     detector = ccd_10x10
 
