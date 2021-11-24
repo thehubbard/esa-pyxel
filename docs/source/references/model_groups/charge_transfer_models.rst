@@ -1,5 +1,6 @@
 .. _charge_transfer:
 
+============================
 Charge Transfer models (CCD)
 ============================
 
@@ -11,7 +12,7 @@ Charge Transfer models (CCD)
 
 
 Charge Distortion Model (CDM)
------------------------------
+=============================
 
 The Charge Distortion Model (CDM) describes the effects of the radiation
 damage causing charge deferral and image shape distortion. The analytical
@@ -22,3 +23,33 @@ example to investigate the impact of radiation damage on the Euclid mission.
 This generalized version has been included and used in Pyxel.
 
 .. autofunction:: cdm
+
+
+Add CTI trails
+==============
+
+Add image trails due to charge transfer inefficiency in CCD detectors by modelling the
+trapping, releasing, and moving of charge along pixels.
+
+The primary inputs are the initial image followed by the properties of the CCD,
+readout electronics and trap species for serial clocking.
+
+More information about adding CTI trailing is described
+in section 2.1 in :cite:p:`2010:massey`.
+
+
+Example of the configuration file:
+
+.. code-block:: yaml
+
+    - name: optical_psf
+      func: pyxel.models.charge_transfer.arctic_add
+      enabled: true
+      arguments:
+        well_fill_power: 10.
+        trap_densities: [1., 2., 3.]                # Add three traps
+        trap_release_timescales: [10., 20., 30.]
+        express: 0
+
+
+.. autofunction:: arctic_add
