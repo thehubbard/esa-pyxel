@@ -54,11 +54,12 @@ Example of the configuration file:
 
 .. autofunction:: arctic_add
 
+
 Remove CTI trails
 =================
 
-Remove trap species.
-
+Remove CTI trails is done by iteratively modelling the addition of CTI, as described
+in :cite:p:`2010:massey` section 3.2 and Table 1.
 
 Example of the configuration file:
 

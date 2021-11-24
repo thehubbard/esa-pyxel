@@ -30,7 +30,15 @@ except ImportError:
 
 @dataclass
 class Trap:
-    """Define a trap."""
+    """Define a trap.
+
+    Parameters
+    ----------
+    density : float
+        The density of the trap species in a pixel.
+    release_timescale : float
+        The release timescale of the trap.
+    """
 
     density: float
     release_timescale: float
@@ -166,15 +174,30 @@ def arctic_remove(
     num_iterations: int,
     express: int = 0,
 ) -> None:
-    """Remove trap species.
+    """Remove CTI trails from an image by first modelling the addition of CTI.
 
     Parameters
     ----------
     detector : CCD
+        Pyxel CCD Detector object.
     well_fill_power : float
     instant_traps : sequence of mapping
+        A sequence of all trap species for parallel clocking.
     num_iterations : int
+        Number of iterations for the forward modelling.
+        More iterations provide higher accuracy at the cost of longer runtime.
+        In practice, just 1 to 3 iterations are usually sufficient.
     express : int
+        As described in more detail in :cite:p:`2014:massey` section 2.1.5, the effects
+        of each individual pixel-to-pixel transfer can be very similar, so multiple
+        transfers can be computed at once for efficiency.
+        The ``express`` input sets the number of times the transfers are calculated.
+
+            * ``express = 1`` is the fastest and least accurate.
+            * ``express = 2`` means the transfers are re-computed half-way through readout.
+            * ``express = N`` where ``N`` is the total number of pixels.
+
+        Default ``express = 0`` is a convenient input for automatic ``express = N``.
     """
     # Validation
     if num_iterations > 0:
