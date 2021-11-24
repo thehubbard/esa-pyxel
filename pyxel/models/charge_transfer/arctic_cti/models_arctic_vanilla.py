@@ -30,7 +30,15 @@ except ImportError:
 
 @dataclass
 class Trap:
-    """Define a trap."""
+    """Define a trap.
+
+    Parameters
+    ----------
+    density : float
+        The density of the trap species in a pixel.
+    release_timescale : float
+        The release timescale of the trap.
+    """
 
     density: float
     release_timescale: float
@@ -159,6 +167,56 @@ def arctic_add(
     detector.pixel.array = image_cti_added_2d
 
 
+def compute_arctic_remove(
+    image_2d: np.ndarray,
+    full_well_depth: float,
+    well_fill_power: float,
+    parallel_traps: t.Sequence[Trap],
+    parallel_express: int,
+    num_iterations: int,
+) -> np.ndarray:
+    """Create a new image with removed CTI trails.
+
+    Parameters
+    ----------
+    image_2d : ndarray
+        2D image to process.
+    full_well_depth : float
+    well_fill_power : float
+    parallel_traps : sequence of Traps
+        List of trap to process.
+    parallel_express : int
+    num_iterations : int
+
+    Returns
+    -------
+    ndarray
+        2D array without CTI trails.
+    """
+    ccd = ac.CCD(well_fill_power=well_fill_power, full_well_depth=full_well_depth)
+    roe = ac.ROE()
+
+    # Build the traps
+    traps = []  # type: t.List[ac.Trap]
+    for trap_info in parallel_traps:  # type: Trap
+        trap = ac.Trap(
+            density=trap_info.density, release_timescale=trap_info.release_timescale
+        )
+        traps.append(trap)
+
+    # Remove CTI
+    image_2d_cti_removed = ac.remove_cti(
+        image=image_2d,
+        iterations=num_iterations,
+        parallel_traps=traps,
+        parallel_ccd=ccd,
+        parallel_roe=roe,
+        parallel_express=parallel_express,
+    )
+
+    return image_2d_cti_removed
+
+
 def arctic_remove(
     detector: CCD,
     well_fill_power: float,
@@ -166,46 +224,65 @@ def arctic_remove(
     num_iterations: int,
     express: int = 0,
 ) -> None:
-    """Remove trap species.
+    """Remove CTI trails from an image by first modelling the addition of CTI.
 
     Parameters
     ----------
-    detector
-    well_fill_power
-    instant_traps
-    num_iterations
-    express
+    detector : CCD
+        Pyxel CCD Detector object.
+    well_fill_power : float
+    instant_traps : sequence of mapping
+        A sequence of all trap species for parallel clocking.
+    num_iterations : int
+        Number of iterations for the forward modelling.
+        More iterations provide higher accuracy at the cost of longer runtime.
+        In practice, just 1 to 3 iterations are usually sufficient.
+    express : int
+        As described in more detail in :cite:p:`2014:massey` section 2.1.5, the effects
+        of each individual pixel-to-pixel transfer can be very similar, so multiple
+        transfers can be computed at once for efficiency.
+        The ``express`` input sets the number of times the transfers are calculated.
+
+            * ``express = 1`` is the fastest and least accurate.
+            * ``express = 2`` means the transfers are re-computed half-way through readout.
+            * ``express = N`` where ``N`` is the total number of pixels.
+
+        Default ``express = 0`` is a convenient input for automatic ``express = N``.
     """
+    # Validation
+    if num_iterations > 0:
+        raise ValueError("Number of iterations must be > 1.")
+
+    # Conversion
+    traps = []  # type: t.List[Trap]
+    for item in instant_traps:
+        if "density" not in item:
+            raise KeyError("Missing key 'density' in parameter 'instant_traps'.")
+        if "release_timescale" not in item:
+            raise KeyError(
+                "Missing key 'release_timescale' in parameter 'instant_traps'."
+            )
+
+        trap = Trap(
+            density=float(item["density"]),
+            release_timescale=float(item["release_timescale"]),
+        )
+
+        traps.append(trap)
+
     if not WITH_ARTICPY:
         raise RuntimeError(
             "ArCTIC python wrapper is not installed ! "
             "See https://github.com/jkeger/arctic"
         )
 
-    ccd = ac.CCD(
-        well_fill_power=well_fill_power, full_well_depth=detector.characteristics.fwc
-    )
-    roe = ac.ROE()
-
-    # Build the traps
-    traps = []  # type: t.List[ac.Trap]
-    for trap_info in instant_traps:
-        density = trap_info["density"]  # type: float
-        release_timescale = trap_info["release_timescale"]  # type: float
-
-        trap = ac.Trap(density=density, release_timescale=release_timescale)
-        traps.append(trap)
-
-    # Remove CTI
-    image_2d = np.asarray(detector.pixel.array, dtype=float)  # type: np.ndarray
-
-    image_cti_removed = ac.remove_cti(
-        image=image_2d,
-        iterations=num_iterations,
+    image_2d_cti_removed = compute_arctic_remove(
+        image_2d=np.asarray(detector.pixel.array, dtype=float),
+        full_well_depth=detector.characteristics.fwc,
+        well_fill_power=well_fill_power,
         parallel_traps=traps,
-        parallel_ccd=ccd,
-        parallel_roe=roe,
         parallel_express=express,
+        num_iterations=num_iterations,
     )
 
-    detector.pixel.array = image_cti_removed
+    detector.pixel.array = image_2d_cti_removed

@@ -42,7 +42,7 @@ Example of the configuration file:
 
 .. code-block:: yaml
 
-    - name: optical_psf
+    - name: arctic_add
       func: pyxel.models.charge_transfer.arctic_add
       enabled: true
       arguments:
@@ -53,3 +53,29 @@ Example of the configuration file:
 
 
 .. autofunction:: arctic_add
+
+
+Remove CTI trails
+=================
+
+Remove CTI trails is done by iteratively modelling the addition of CTI, as described
+in :cite:p:`2010:massey` section 3.2 and Table 1.
+
+Example of the configuration file:
+
+.. code-block:: yaml
+
+    - name: arctic_remove
+      func: pyxel.models.charge_transfer.arctic_remove
+      enabled: true
+      arguments:
+        well_fill_power: 10.
+        instant_traps:                      # Add two traps
+          - density: 1.0
+            release_timescale: 10.0
+          - density: 2.0
+            release_timescale: 20.0
+        express: 0
+
+
+.. autofunction:: arctic_remove
