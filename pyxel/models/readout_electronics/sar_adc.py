@@ -65,6 +65,13 @@ def sar_adc(
     range_volt : float, float
         Minimal and maximal volt value.
     """
+    # Validation
+    if adc_bits <= 0:
+        raise ValueError("Expecting a strictly positive value for 'adc_bits'")
+
+    if not isinstance(adc_bits, int):
+        raise TypeError("Expecting a 'int' for 'adc_bits'")
+
     min_volt, max_volt = range_volt
 
     image_2d = apply_sar_adc(
