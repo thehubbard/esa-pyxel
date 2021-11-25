@@ -449,10 +449,22 @@ class MyArchipelago:
             all_data_fit_range["target"] = xr.DataArray(
                 self.problem.all_target_data,
                 dims=["id_processor", "readout_time", "y", "x"],
+                coords={
+                    "id_processor": range(len(self.problem.all_target_data)),
+                    "readout_time": range(slice_times.start, slice_times.stop),
+                    "y": range(slice_rows.start, slice_rows.stop),
+                    "x": range(slice_cols.start, slice_cols.stop),
+                },
             )
         else:
             all_data_fit_range["target"] = xr.DataArray(
-                self.problem.all_target_data, dims=["id_processor", "y", "x"]
+                self.problem.all_target_data,
+                dims=["id_processor", "y", "x"],
+                coords={
+                    "id_processor": range(len(self.problem.all_target_data)),
+                    "y": range(slice_rows.start, slice_rows.stop),
+                    "x": range(slice_cols.start, slice_cols.stop),
+                },
             )
 
         ds = xr.merge([champions, all_data_fit_range])  # type: xr.Dataset
