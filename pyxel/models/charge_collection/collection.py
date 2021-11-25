@@ -11,7 +11,6 @@ import logging
 import numba
 import numpy as np
 
-from pyxel.data_structure import Charge
 from pyxel.detectors import Detector
 
 
@@ -45,17 +44,6 @@ def simple_collection(detector: Detector) -> None:
     detector.pixel.array += df_to_array(
         array, charge_per_pixel, pixel_index_ver, pixel_index_hor
     ).astype(np.int32)
-
-
-# TODO: useless model
-def empty_charge(detector: Detector) -> None:
-    """Each time the charges are collected in the pixel, the charge array is reset using Charge().
-
-    This allows to limit memory leaks due to long exposure.
-    There will still be a problem for very large charge array due to very high flux
-    in simulation.
-    """
-    detector._charge = Charge()
 
 
 # TODO: Is it needed not better to first create a copy of 'array' and then work with this copy ??
