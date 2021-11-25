@@ -58,8 +58,6 @@ def test_sar_adc(ccd_10x3: CCD, adc_bits: int, range_volt: t.Tuple[int, int]):
             ValueError,
             "Expecting a strictly positive value for 'adc_bits'",
         ),
-        pytest.param(16.0, (0.0, 5.0), TypeError, "Expecting a 'int' for 'adc_bits'"),
-        pytest.param(16.1, (0.0, 5.0), TypeError, "Expecting a 'int' for 'adc_bits'"),
     ],
 )
 def test_sar_adc_bad_inputs(ccd_10x3: CCD, adc_bits, range_volt, exp_exc, exp_error):
