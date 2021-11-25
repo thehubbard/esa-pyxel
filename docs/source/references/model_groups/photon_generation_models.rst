@@ -64,6 +64,25 @@ Example of the configuration file for a circular object:
 Stripe pattern
 --------------
 
+With this model you can add a two-dimensional square signal - a stripe pattern
+to the :py:class:`~pyxel.data_structure.Photon` array. User can specify amplitude with argument ``level``,
+the ``period`` of the square signal in unit of pixels and the ``angle`` of stripes.
+The ``period`` should be a multiple of 2 and equal or larger than 2.
+Argument ``startwith`` is used to flip zero and non-zero values.
+
+Example of the configuration file:
+
+.. code-block:: yaml
+
+    - name: stripe_pattern
+      func: pyxel.models.photon_generation.stripe_pattern
+      enabled: true
+      arguments:
+        level: 1000
+        period: 10
+        startwith: 0
+        angle: 5
+
 .. autofunction:: stripe_pattern
 
 Shot noise

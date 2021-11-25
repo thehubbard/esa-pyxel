@@ -112,7 +112,7 @@ def test_load_image(
     multiplier: float,
     time_scale: float,
 ):
-    """Test input parameters for function 'optical_psf'."""
+    """Test input parameters for function 'load_image'."""
     load_image(
         detector=ccd_10x10,
         image_file=f"{valid_data2d}/{image_file}",

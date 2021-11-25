@@ -16,10 +16,8 @@ import skimage.transform as tr
 if t.TYPE_CHECKING:
     from pyxel.detectors import Detector
 
-# TODO: group with illumination, change editing of photon array
 
-
-def square_signal(n: int, lw: int, startwith: int = 0) -> list:
+def square_signal(n: int, lw: int, start_with: int = 0) -> list:
     """Compute a 1D periodic square signal.
 
     Parameters
@@ -28,7 +26,7 @@ def square_signal(n: int, lw: int, startwith: int = 0) -> list:
         Length of the signal.
     lw:
         Width of a pulse.
-    startwith
+    start_with
         1 to start with high level or 0 for 0.
 
     Returns
@@ -38,20 +36,20 @@ def square_signal(n: int, lw: int, startwith: int = 0) -> list:
     """
     if lw > n // 2:
         raise ValueError("Line too wide.")
-    start = [startwith] * lw
-    second = [1 - startwith] * lw
+    start = [start_with] * lw
+    second = [1 - start_with] * lw
     pair = start + second
     num = n // len(pair)
     out = pair * num
     return out
 
 
-def pattern(
+def compute_pattern(
     detector_shape: tuple,
     period: int = 2,
     level: float = 1,
     angle: float = 0,
-    startwith: int = 0,
+    start_with: int = 0,
 ) -> np.ndarray:
     """Return an array of a periodic pattern.
 
@@ -65,19 +63,21 @@ def pattern(
         Amplitude of the periodic pattern.
     angle: int
         Angle of the pattern in degrees.
-    startwith: int
+    start_with: int
         1 to start with high level or 0 for 0.
 
     Returns
     -------
-    out: np.ndarray
+    out: ndarray
         Output stripe pattern.
     """
 
     if period < 2:
-        raise ValueError("Cant set a period smaller than 2 pixels.")
+        raise ValueError("Can not set a period smaller than 2 pixels.")
     elif (period % 2) != 0:
         raise ValueError("Period should be a multiple of 2.")
+    if start_with not in [0, 1]:
+        raise ValueError("")
 
     y, x = detector_shape
 
@@ -87,7 +87,7 @@ def pattern(
     sx = slice(n // 2 - y // 2, n // 2 + y // 2)
     sy = slice(m // 2 - x // 2, m // 2 + x // 2)
 
-    signal = square_signal(n=n, lw=period // 2, startwith=startwith)
+    signal = square_signal(n=n, lw=period // 2, start_with=start_with)
     signal = np.array(signal + ([1] * (n - len(signal))))[::-1]
 
     out = np.ones((n, m))
@@ -131,11 +131,11 @@ def stripe_pattern(
         Time scale of the photon flux, default is 1 second. 0.001 would be ms.
     """
 
-    photon_array = pattern(
+    photon_array = compute_pattern(
         detector_shape=(detector.geometry.row, detector.geometry.col),
         period=period,
         level=level,
-        startwith=startwith,
+        start_with=startwith,
         angle=angle,
     )
 
