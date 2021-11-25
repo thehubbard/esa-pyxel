@@ -20,6 +20,7 @@ from tqdm.auto import tqdm
 
 from pyxel.calibration import Algorithm, AlgorithmType, IslandProtocol
 from pyxel.calibration.fitting import ModelFitting
+from pyxel.calibration.util import slice_to_range
 
 try:
     import pygmo as pg
@@ -451,9 +452,9 @@ class MyArchipelago:
                 dims=["id_processor", "readout_time", "y", "x"],
                 coords={
                     "id_processor": range(len(self.problem.all_target_data)),
-                    "readout_time": range(slice_times.start, slice_times.stop),
-                    "y": range(slice_rows.start, slice_rows.stop),
-                    "x": range(slice_cols.start, slice_cols.stop),
+                    "readout_time": slice_to_range(slice_times),
+                    "y": slice_to_range(slice_rows),
+                    "x": slice_to_range(slice_cols),
                 },
             )
         else:
@@ -462,8 +463,8 @@ class MyArchipelago:
                 dims=["id_processor", "y", "x"],
                 coords={
                     "id_processor": range(len(self.problem.all_target_data)),
-                    "y": range(slice_rows.start, slice_rows.stop),
-                    "x": range(slice_cols.start, slice_cols.stop),
+                    "y": slice_to_range(slice_rows),
+                    "x": slice_to_range(slice_cols),
                 },
             )
 

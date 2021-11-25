@@ -182,6 +182,44 @@ def list_to_3d_slice(
         raise ValueError("Fitting range should have 6 values")
 
 
+def slice_to_range(data: slice) -> range:
+    """Convert a slice to a range.
+
+    Examples
+    --------
+    >>> slice_to_range(slice(10))
+    range(10)
+    >>> slice_to_range(slice(10, 20))
+    range(10, 20)
+    >>> slice_to_range(slice(10, 20, 2))
+    ValueError("Cannot use parameter 'step' in the slice object.")
+
+    Raises
+    ------
+    ValueError
+        If the input slice is not correct.
+    """
+    if data.step is not None:
+        raise ValueError("Cannot use parameter 'step' in the slice object.")
+    if data.stop is None:
+        raise ValueError("Missing 'stop' parameter in the slice object")
+
+    if data.start is None:
+        result = range(data.stop)
+
+        if data.stop <= 0:
+            raise ValueError("Parameter 'stop' must be strictly greater than 'start'")
+    else:
+        if data.start < 0:
+            raise ValueError("Parameter 'start' must be strictly positive")
+        if data.start >= data.stop:
+            raise ValueError("Parameter 'stop' must be strictly greater than 'start'")
+
+        result = range(data.start, data.stop)
+
+    return result
+
+
 # TODO: Refactor and add more unit tests. See #328
 def check_ranges(
     target_fit_range: t.Sequence[int],
