@@ -88,7 +88,7 @@ class Arguments(t.MutableMapping):
             return object.__getattribute__(self, "_arguments")
 
         if key not in self._arguments:
-            raise AttributeError(f"No argument named {key} !")
+            raise AttributeError(f"'{self!r}' object has no argument {key!r} !")
 
         return self._arguments[key]
 
@@ -100,7 +100,7 @@ class Arguments(t.MutableMapping):
             return
 
         if key not in self._arguments:
-            raise AttributeError(f"No argument named {key} !")
+            raise AttributeError(f"'{self!r}' object has no argument {key!r} !")
 
         self._arguments[key] = value
 

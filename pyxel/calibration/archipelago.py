@@ -20,6 +20,7 @@ from tqdm.auto import tqdm
 
 from pyxel.calibration import Algorithm, AlgorithmType, IslandProtocol
 from pyxel.calibration.fitting import ModelFitting
+from pyxel.calibration.util import slice_to_range
 
 try:
     import pygmo as pg
@@ -449,10 +450,22 @@ class MyArchipelago:
             all_data_fit_range["target"] = xr.DataArray(
                 self.problem.all_target_data,
                 dims=["id_processor", "readout_time", "y", "x"],
+                coords={
+                    "id_processor": range(len(self.problem.all_target_data)),
+                    "readout_time": slice_to_range(slice_times),
+                    "y": slice_to_range(slice_rows),
+                    "x": slice_to_range(slice_cols),
+                },
             )
         else:
             all_data_fit_range["target"] = xr.DataArray(
-                self.problem.all_target_data, dims=["id_processor", "y", "x"]
+                self.problem.all_target_data,
+                dims=["id_processor", "y", "x"],
+                coords={
+                    "id_processor": range(len(self.problem.all_target_data)),
+                    "y": slice_to_range(slice_rows),
+                    "x": slice_to_range(slice_cols),
+                },
             )
 
         ds = xr.merge([champions, all_data_fit_range])  # type: xr.Dataset
