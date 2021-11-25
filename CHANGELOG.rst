@@ -10,6 +10,8 @@ Core
 
 * Implement array-like data structures as numpy custom array containers.
   (See `!325 <https://gitlab.com/esa/pyxel/-/merge_requests/325>`_).
+* Fix an issue with calibration.
+  (See `!353 <https://gitlab.com/esa/pyxel/-/merge_requests/353>`_).
 
 Documentation
 ~~~~~~~~~~~~~
