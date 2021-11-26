@@ -41,22 +41,5 @@ def charge_blocks(
     # all pixels has zero charge by default
     detector_charge = np.zeros((geo.row, geo.col))
     detector_charge[slice(block_start, block_end), :] = charge_level
-    charge_number = detector_charge.flatten()
-    where_non_zero = np.where(charge_number > 0.0)
-    charge_number = charge_number[where_non_zero]
-    size = charge_number.size
 
-    init_ver_pix_position = geo.vertical_pixel_center_pos_list()[where_non_zero]
-    init_hor_pix_position = geo.horizontal_pixel_center_pos_list()[where_non_zero]
-
-    detector.charge.add_charge(
-        particle_type="e",
-        particles_per_cluster=charge_number,
-        init_energy=np.zeros(size),
-        init_ver_position=init_ver_pix_position,
-        init_hor_position=init_hor_pix_position,
-        init_z_position=np.zeros(size),
-        init_ver_velocity=np.zeros(size),
-        init_hor_velocity=np.zeros(size),
-        init_z_velocity=np.zeros(size),
-    )
+    detector.charge.add_charge_array(detector_charge)

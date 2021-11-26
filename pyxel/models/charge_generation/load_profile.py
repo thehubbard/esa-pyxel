@@ -59,37 +59,12 @@ def _create_charges(
         slice(profile_position_x, profile_position_x + profile_cols),
     ] = charges_from_file_2d
 
-    charge_numbers = detector_charge_2d.flatten()  # type: np.ndarray
-    where_non_zero = np.where(charge_numbers > 0.0)
-    charge_numbers = charge_numbers[where_non_zero]
-    size = charge_numbers.size  # type: int
-
-    vertical_pixel_center_pos_1d = get_vertical_pixel_center_pos(
-        num_rows=num_rows,
+    return Charge.convert_array_to_df(
+        array=detector_charge_2d,
         num_cols=num_cols,
-        pixel_vertical_size=pixel_vertical_size,
-    )
-
-    horizontal_pixel_center_pos_1d = get_horizontal_pixel_center_pos(
         num_rows=num_rows,
-        num_cols=num_cols,
         pixel_horizontal_size=pixel_horizontal_size,
-    )
-
-    init_ver_pix_position_1d = vertical_pixel_center_pos_1d[where_non_zero]
-    init_hor_pix_position_1d = horizontal_pixel_center_pos_1d[where_non_zero]
-
-    # Create new charges
-    return Charge.create_charges(
-        particle_type="e",
-        particles_per_cluster=charge_numbers,
-        init_energy=np.zeros(size),
-        init_ver_position=init_ver_pix_position_1d,
-        init_hor_position=init_hor_pix_position_1d,
-        init_z_position=np.zeros(size),
-        init_ver_velocity=np.zeros(size),
-        init_hor_velocity=np.zeros(size),
-        init_z_velocity=np.zeros(size),
+        pixel_vertical_size=pixel_vertical_size,
     )
 
 
