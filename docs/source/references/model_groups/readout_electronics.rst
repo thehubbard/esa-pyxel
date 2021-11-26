@@ -5,7 +5,8 @@ Readout Electronics models
 ==========================
 
 .. currentmodule:: pyxel.models.readout_electronics
-.. automodule:: pyxel.models.readout_electronics
+
+Readout electronics models are used to add TBW.
 
 
 Simple digitization
