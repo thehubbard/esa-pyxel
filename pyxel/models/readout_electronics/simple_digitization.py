@@ -80,7 +80,7 @@ def simple_digitization(
         ) from ex
 
     if not issubclass(d_type.type, np.integer):
-        raise ValueError("Expecting a signed/unsigned integer.")
+        raise TypeError("Expecting a signed/unsigned integer.")
 
     image_2d = apply_simple_digitization(
         signal_2d=detector.signal.array,
