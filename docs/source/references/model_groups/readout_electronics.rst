@@ -5,11 +5,24 @@ Readout Electronics models
 ==========================
 
 .. currentmodule:: pyxel.models.readout_electronics
-.. automodule:: pyxel.models.readout_electronics
+
+Readout electronics models are used to add TBW.
 
 
 Simple digitization
 ===================
+
+Digitize signal array mimicking readout electronics.
+
+Example of the configuration file:
+
+.. code-block:: yaml
+
+    - name: simple_digitization
+      func: pyxel.models.readout_electronics.simple_digitization
+      enabled: true
+      arguments:
+        data_type: uint16   # This is optional
 
 .. autofunction:: simple_digitization
 

@@ -7,28 +7,71 @@
 
 """Simple digitization."""
 
-import logging
 
 import numpy as np
+from typing_extensions import Literal
 
-from pyxel.detectors import MKID
+from pyxel.detectors import Detector
+from pyxel.models.readout_electronics.util import apply_gain_adc
 
 
-# TODO: Fix this
-# @validators.validate
-# @config.argument(name='data_type', label='type of output data array', units='ADU',
-#                  validate=checkers.check_choices(['numpy.uint16', 'numpy.uint32', 'numpy.uint64',
-#                                                   'numpy.int32', 'numpy.int64']))
-# TODO: Refactoring, don't change the signal array, more documentation
-def simple_digitization(detector: MKID, data_type: str = "uint16") -> None:
+def apply_simple_digitization(
+    signal_2d: np.ndarray,
+    gain_adc: float,
+    min_clipped_value: float,
+    max_clipped_value: float,
+) -> np.ndarray:
+    """Apply simple digitization.
+
+    Parameters
+    ----------
+    signal_2d : ndarray
+        2D signal to process. Unit: Volt
+    gain_adc : float
+        Gain of the analog-digital converter. Unit: adu/V
+    min_clipped_value : float
+        Minimum value to keep. Unit: adu
+    max_clipped_value : float
+        Maximum value to keep. Unit: adu
+
+    Returns
+    -------
+    ndarray
+    """
+    # Gain of the Analog-Digital Converter
+    image_2d = apply_gain_adc(signal_2d=signal_2d, gain_adc=gain_adc)
+
+    # floor of signal values element-wise (quantization)
+    image_quantized_2d = np.floor(image_2d)
+
+    # convert floats to other datatype (e.g. 16-bit unsigned integers)
+    image_clipped_2d = np.clip(
+        image_quantized_2d,
+        a_min=min_clipped_value,
+        a_max=max_clipped_value,
+    )
+
+    return image_clipped_2d
+
+
+def simple_digitization(
+    detector: Detector,
+    data_type: Literal["uint16", "uint32", "uint64", "uint"] = "uint16",
+) -> None:
     """Digitize signal array mimicking readout electronics.
 
-    :param detector: Pyxel Detector object
-    :param data_type: numpy integer type: ``numpy.uint16``, ``numpy.uint32``, ``numpy.uint64``,
-                                          ``numpy.int32``, ``numpy.int64``
+    Parameters
+    ----------
+    detector : Detector
+        Pyxel Detector object.
+    data_type : str
+        The desired data-type for the array. The data-type must be an signed or
+        unsigned integer.
+        Valid values: 'uint16', 'uint32', 'uint64', 'uint'
+        Invalid values: 'int16', 'int32', 'int64', 'int', 'float'...
     """
-    logging.info("")
-
+    # Validation and Conversion stage
+    # These steps will be probably moved into the YAML engine
     try:
         d_type = np.dtype(data_type)  # type: np.dtype
     except TypeError as ex:
@@ -36,20 +79,14 @@ def simple_digitization(detector: MKID, data_type: str = "uint16") -> None:
             "Can not locate the type defined as `data_type` argument in yaml file."
         ) from ex
 
-    # Gain of the Analog-Digital Converter
-    detector.signal.array *= detector.characteristics.a2
+    if not issubclass(d_type.type, np.integer):
+        raise TypeError("Expecting a signed/unsigned integer.")
 
-    # floor of signal values element-wise (quantization)
-    detector.signal.array = np.floor(detector.signal.array)
+    image_2d = apply_simple_digitization(
+        signal_2d=detector.signal.array,
+        gain_adc=detector.characteristics.a2,
+        min_clipped_value=np.iinfo(d_type).min,
+        max_clipped_value=np.iinfo(d_type).max,
+    )
 
-    # convert floats to other datatype (e.g. 16-bit unsigned integers)
-    result = np.asarray(
-        np.clip(
-            detector.signal.array,
-            a_min=np.iinfo(d_type).min,
-            a_max=np.iinfo(d_type).max,
-        )
-    )  # type: np.ndarray
-
-    detector.signal.array = result
-    detector.image.array = np.asarray(detector.signal.array, dtype=d_type)
+    detector.image.array = np.asarray(image_2d, dtype=d_type)
