@@ -2,6 +2,27 @@ Changelog
 =========
 
 
+version 1.0 / UNRELEASED-YYYY-MM-DD
+-----------------------------------
+
+Core
+~~~~
+
+* Fix an issue with calibration.
+  (See `!353 <https://gitlab.com/esa/pyxel/-/merge_requests/353>`_).
+
+Documentation
+~~~~~~~~~~~~~
+
+
+Models
+~~~~~~
+
+
+Others
+~~~~~~
+
+
 version 0.11.4 / 2021-11-23
 ---------------------------
 
@@ -10,8 +31,6 @@ Core
 
 * Implement array-like data structures as numpy custom array containers.
   (See `!325 <https://gitlab.com/esa/pyxel/-/merge_requests/325>`_).
-* Fix an issue with calibration.
-  (See `!353 <https://gitlab.com/esa/pyxel/-/merge_requests/353>`_).
 
 Documentation
 ~~~~~~~~~~~~~
