@@ -170,15 +170,14 @@ def crosstalk_signal_dc(
 
     Parameters
     ----------
-    array: array
-    coupling_matrix: array
-    channel_matrix: array
-    readout_directions: array
+    array: ndarray
+    coupling_matrix: ndarray
+    channel_matrix: ndarray
+    readout_directions: ndarray
 
     Returns
     -------
-    array
-        TBW.
+    ndarray
     """
     amp_number = channel_matrix.size  # number of amplifiers
 
@@ -219,9 +218,9 @@ def dc_crosstalk(
     Parameters
     ----------
     detector: Detector
-    coupling_matrix: array
-    channel_matrix: array
-    readout_directions: array
+    coupling_matrix: ndarray
+    channel_matrix: ndarray
+    readout_directions: ndarray
 
     Raises
     ------
