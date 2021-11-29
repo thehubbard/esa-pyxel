@@ -78,10 +78,6 @@ which returns result numpy array to be able to add to Pyxel detector signal
 - ZeroDivision error fixed
 - Version 2.8
 """
-# warnings.filterwarnings('ignore')
-# # Have not verified this in Python 3.x (JML):
-# _log = logging.getLogger('nghxrg')
-# Have not verified this in Python 3.x (JML):
 import logging
 import typing as t
 from pathlib import Path
@@ -106,6 +102,7 @@ def white_noise(nstep: int) -> np.ndarray:
 
 
 # TODO: Compare with https://github.com/astronomyk/SimCADO/blob/master/simcado/nghxrg.py
+#       Later, we should use class 'simcado.nghxrg.HXRGNoise' instead of this class.
 class HXRGNoise:
     """HXRGNoise is a class for making realistic Teledyne HxRG system noise.
 
@@ -371,13 +368,13 @@ class HXRGNoise:
             data = hdu[0].data
             # Make sure the real PCA image is correctly scaled to size of fake data (JML)
             # Depends if we're FULL, STRIPE or WINDOW
-            if wind_mode is Mode.Full:
+            if wind_mode == "FULL":
                 scale1 = self.naxis1 / nx_pca0
                 scale2 = self.naxis2 / ny_pca0
                 zoom_factor = np.max([scale1, scale2])
             # if wind_mode == 'STRIPE':
             #     zoom_factor = self.naxis1 / nx_pca0
-            if wind_mode is Mode.Window:
+            if wind_mode == "WINDOW":
                 # Scale based on det_size_x
                 scale1 = self.det_size_x / nx_pca0
                 scale2 = self.det_size_y / ny_pca0

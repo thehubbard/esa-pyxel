@@ -12,8 +12,6 @@ import typing as t
 from pathlib import Path
 
 import numpy as np
-from matplotlib import pyplot as plt
-from scipy import signal
 from typing_extensions import Literal
 
 from pyxel.detectors import CMOS, CMOSGeometry
@@ -29,8 +27,7 @@ def nghxrg(
     pca0_file: t.Optional[str] = None,
     window_position: t.Optional[t.Tuple[int, int]] = None,
     window_size: t.Optional[t.Tuple[int, int]] = None,
-    plot_psd: t.Optional[bool] = True,
-    seed: t.Optional[int] = None,
+    # plot_psd: t.Optional[bool] = True,
 ) -> None:
     """Generate noise on HXRG detector.
 
@@ -43,8 +40,6 @@ def nghxrg(
         [x0 (columns), y0 (rows)].
     window_size: t.Sequence, optional
         [x (columns), y (rows)].
-    plot_psd: bool, optional
-    seed: int, optional
     """
     logging.getLogger("nghxrg").setLevel(logging.WARNING)
 
@@ -122,15 +117,15 @@ def nghxrg(
         try:
             result = ng.format_result(result)
             if result.any():
-                if plot_psd:
-                    display_noisepsd(
-                        result,
-                        noise_name=noise_name,
-                        nb_output=geo.n_output,
-                        dimensions=(geo.col, geo.row),
-                        path=detector.output_dir,
-                        step=step,
-                    )
+                # if plot_psd:
+                #     display_noisepsd(
+                #         result,
+                #         noise_name=noise_name,
+                #         nb_output=geo.n_output,
+                #         dimensions=(geo.col, geo.row),
+                #         path=detector.output_dir,
+                #         step=step,
+                #     )
                 if window_mode == "FULL":
                     detector.pixel.array += result
                 elif window_mode == "WINDOW":
@@ -148,94 +143,94 @@ def nghxrg(
 
 
 # TODO: This generates plot. It should be in class `Output`
-def display_noisepsd(
-    array: np.ndarray,
-    nb_output: int,
-    dimensions: t.Tuple[int, int],
-    noise_name: str,
-    path: Path,
-    step: int,
-    # mode: Literal["plot"] = "plot",
-) -> t.Tuple[t.Any, np.ndarray]:
-    """Display noise PSD from the generated FITS file.
-
-    For power spectra, need to be careful of readout directions.
-
-    For the periodogram, using Welch's method to smooth the PSD
-    > Divide data in N segment of length nperseg which overlaps at nperseg/2
-    (noverlap argument)
-    nperseg high means less averaging for the PSD but more points.
-    """
-    # Conversion gain
-    conversion_gain = 1
-    data_corr = array * conversion_gain
-
-    if nb_output <= 1:
-        raise ValueError("Parameter 'nb_output' must be >= 1.")
-
-    # Should be in the simulated data header
-    dimension = dimensions[0]  # type: int
-    pix_p_output = dimension ** 2 / nb_output  # Number of pixels per output
-    nbcols_p_channel = dimension / nb_output  # Number of columns per channel
-    nperseg = int(pix_p_output / 10.0)  # Length of segments for Welch's method
-    read_freq = 100000  # Frame rate [Hz]
-
-    # Initializing table of nb_outputs periodogram +1 for dimensions
-    pxx_outputs = np.zeros((nb_output, int(nperseg / 2) + 1))
-
-    # For each output
-    for i in np.arange(nb_output):
-        # If i odd, flatten data since its the good reading direction
-        if i % 2 == 0:
-            start_x_idx = int(i * nbcols_p_channel)
-            end_x_idx = int((i + 1) * nbcols_p_channel)
-
-            output_data = data_corr[:, start_x_idx:end_x_idx].flatten()
-        # Else, flip it left/right and then flatten it
-        else:
-            start_x_idx = int(i * nbcols_p_channel)
-            end_x_idx = int((i + 1) * nbcols_p_channel)
-
-            output_data = np.fliplr(data_corr[:, start_x_idx:end_x_idx])
-            output_data.flatten()
-        # output data without flipping
-        # output_data = data_corr[:,int(i*(nbcols_p_channel)):
-        #                         int((i+1)*(nbcols_p_channel))].flatten()
-
-        # print(output_data, read_freq, nperseg)
-        # Add periodogram to the previously initialized array
-        f_vect, pxx_outputs[i] = signal.welch(output_data, read_freq, nperseg=nperseg)
-
-    # For the detector
-    # detector_data = data_corr.flatten()
-    # Add periodogram to the previously initialized array
-    # test, Pxx_detector = signal.welch(detector_data,
-    #                                   read_freq,
-    #                                   nperseg=nperseg)
-
-    # if mode == "plot":
-    #     fig, ax1 = plt.subplots(1, 1, figsize=(8, 8))
-    #     fig.canvas.set_window_title("Power Spectral Density")
-    #     fig.suptitle(
-    #         noise_name
-    #         + " Power Spectral Density\n"
-    #         + "Welch seg. length / Nb pixel output: "
-    #         + str("{:1.2f}".format(nperseg / pix_p_output))
-    #     )
-    #     ax1.plot(f_vect, np.mean(pxx_outputs, axis=0), ".-", ms=3, alpha=0.5, zorder=32)
-    #     for _, ax in enumerate([ax1]):
-    #         ax.set_xlim([1, 1e5])
-    #         ax.set_xscale("log")
-    #         ax.set_yscale("log")
-    #         ax.set_xlabel("Frequency [Hz]")
-    #         ax.set_ylabel("PSD [e-${}^2$/Hz]")
-    #         ax.grid(True, alpha=0.4)
-    #
-    #     filename = path.joinpath(
-    #         "nghxrg_" + noise_name + "_" + str(step) + ".png"
-    #     )  # type: Path
-    #     plt.savefig(filename, dpi=300)
-    #     plt.close()
-
-    result = np.asarray(np.mean(pxx_outputs, axis=0))  # type: np.ndarray
-    return f_vect, result
+# def display_noisepsd(
+#     array: np.ndarray,
+#     nb_output: int,
+#     dimensions: t.Tuple[int, int],
+#     noise_name: str,
+#     path: Path,
+#     step: int,
+#     # mode: Literal["plot"] = "plot",
+# ) -> t.Tuple[t.Any, np.ndarray]:
+#     """Display noise PSD from the generated FITS file.
+#
+#     For power spectra, need to be careful of readout directions.
+#
+#     For the periodogram, using Welch's method to smooth the PSD
+#     > Divide data in N segment of length nperseg which overlaps at nperseg/2
+#     (noverlap argument)
+#     nperseg high means less averaging for the PSD but more points.
+#     """
+#     # Conversion gain
+#     conversion_gain = 1
+#     data_corr = array * conversion_gain
+#
+#     if nb_output <= 1:
+#         raise ValueError("Parameter 'nb_output' must be >= 1.")
+#
+#     # Should be in the simulated data header
+#     dimension = dimensions[0]  # type: int
+#     pix_p_output = dimension ** 2 / nb_output  # Number of pixels per output
+#     nbcols_p_channel = dimension / nb_output  # Number of columns per channel
+#     nperseg = int(pix_p_output / 10.0)  # Length of segments for Welch's method
+#     read_freq = 100000  # Frame rate [Hz]
+#
+#     # Initializing table of nb_outputs periodogram +1 for dimensions
+#     pxx_outputs = np.zeros((nb_output, int(nperseg / 2) + 1))
+#
+#     # For each output
+#     for i in np.arange(nb_output):
+#         # If i odd, flatten data since its the good reading direction
+#         if i % 2 == 0:
+#             start_x_idx = int(i * nbcols_p_channel)
+#             end_x_idx = int((i + 1) * nbcols_p_channel)
+#
+#             output_data = data_corr[:, start_x_idx:end_x_idx].flatten()
+#         # Else, flip it left/right and then flatten it
+#         else:
+#             start_x_idx = int(i * nbcols_p_channel)
+#             end_x_idx = int((i + 1) * nbcols_p_channel)
+#
+#             output_data = np.fliplr(data_corr[:, start_x_idx:end_x_idx])
+#             output_data.flatten()
+#         # output data without flipping
+#         # output_data = data_corr[:,int(i*(nbcols_p_channel)):
+#         #                         int((i+1)*(nbcols_p_channel))].flatten()
+#
+#         # print(output_data, read_freq, nperseg)
+#         # Add periodogram to the previously initialized array
+#         f_vect, pxx_outputs[i] = signal.welch(output_data, read_freq, nperseg=nperseg)
+#
+#     # For the detector
+#     # detector_data = data_corr.flatten()
+#     # Add periodogram to the previously initialized array
+#     # test, Pxx_detector = signal.welch(detector_data,
+#     #                                   read_freq,
+#     #                                   nperseg=nperseg)
+#
+#     # if mode == "plot":
+#     #     fig, ax1 = plt.subplots(1, 1, figsize=(8, 8))
+#     #     fig.canvas.set_window_title("Power Spectral Density")
+#     #     fig.suptitle(
+#     #         noise_name
+#     #         + " Power Spectral Density\n"
+#     #         + "Welch seg. length / Nb pixel output: "
+#     #         + str("{:1.2f}".format(nperseg / pix_p_output))
+#     #     )
+#     #     ax1.plot(f_vect, np.mean(pxx_outputs, axis=0), ".-", ms=3, alpha=0.5, zorder=32)
+#     #     for _, ax in enumerate([ax1]):
+#     #         ax.set_xlim([1, 1e5])
+#     #         ax.set_xscale("log")
+#     #         ax.set_yscale("log")
+#     #         ax.set_xlabel("Frequency [Hz]")
+#     #         ax.set_ylabel("PSD [e-${}^2$/Hz]")
+#     #         ax.grid(True, alpha=0.4)
+#     #
+#     #     filename = path.joinpath(
+#     #         "nghxrg_" + noise_name + "_" + str(step) + ".png"
+#     #     )  # type: Path
+#     #     plt.savefig(filename, dpi=300)
+#     #     plt.close()
+#
+#     result = np.asarray(np.mean(pxx_outputs, axis=0))  # type: np.ndarray
+#     return f_vect, result
