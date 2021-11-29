@@ -11,5 +11,11 @@ from pyxel.detectors import Detector
 
 
 def simple_collection(detector: Detector) -> None:
-    """Associate charge with the closest pixel."""
+    """Associate charge with the closest pixel.
+
+    Parameters
+    ----------
+    detector: Detector
+        Pyxel Detector object.
+    """
     detector.pixel.array += detector.charge.array
