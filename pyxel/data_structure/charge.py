@@ -15,11 +15,12 @@ from typing_extensions import Literal
 import numba
 
 from pyxel.data_structure import Particle
-from pyxel.detectors import Geometry
 from pyxel.detectors.geometry import (
     get_horizontal_pixel_center_pos,
     get_vertical_pixel_center_pos,
 )
+if t.TYPE_CHECKING:
+    from pyxel.detectors import Geometry
 
 
 @numba.jit(nopython=True)
@@ -73,7 +74,7 @@ class Charge:
         self.EMPTY_FRAME = pd.DataFrame(
             columns=self.columns, dtype=float
         )  # type: pd.DataFrame
-        self._frame = None  # type: t.Optional[pd.DataFrame]
+        self._frame = self.EMPTY_FRAME.copy()  # type: pd.DataFrame
 
     @staticmethod
     def create_charges(
@@ -173,9 +174,9 @@ class Charge:
         """TBW."""
         array = np.zeros((self._geo.row, self._geo.col))
 
-        charge_per_pixel = self.frame.get_values(quantity="number")
-        charge_pos_ver = self.frame.get_values(quantity="position_ver")
-        charge_pos_hor = self.frame.get_values(quantity="position_hor")
+        charge_per_pixel = self.get_values(quantity="number")
+        charge_pos_ver = self.get_values(quantity="position_ver")
+        charge_pos_hor = self.get_values(quantity="position_hor")
 
         pixel_index_ver = np.floor_divide(
             charge_pos_ver, self._geo.pixel_vert_size
@@ -199,9 +200,10 @@ class Charge:
         pixel_horizontal_size: float,
     ) -> pd.DataFrame:
         """TBW."""
-        where_non_zero = np.where(array > 0.0)
-        charge_numbers = array[where_non_zero]
-        size = charge_numbers.size  # type: int
+        charge_number = array.flatten()
+        where_non_zero = np.where(charge_number > 0.0)
+        charge_number = charge_number[where_non_zero]
+        size = charge_number.size  # type: int
 
         vertical_pixel_center_pos_1d = get_vertical_pixel_center_pos(
             num_rows=num_rows,
@@ -221,7 +223,7 @@ class Charge:
         # Create new charges
         return Charge.create_charges(
             particle_type="e",
-            particles_per_cluster=charge_numbers,
+            particles_per_cluster=charge_number,
             init_energy=np.zeros(size),
             init_ver_position=init_ver_pix_position_1d,
             init_hor_position=init_hor_pix_position_1d,
@@ -243,8 +245,8 @@ class Charge:
             expected_columns = ", ".join(map(repr, self.columns))  # type: str
             raise ValueError(f"Expected columns: {expected_columns}")
 
-        if self.frame is None:
-            if np.all(self.array == 0):
+        if self._frame.empty:
+            if not np.all(self.array == 0):
                 df = Charge.convert_array_to_df(
                     array=self.array,
                     num_cols=self._geo.col,
@@ -256,7 +258,7 @@ class Charge:
             else:
                 new_frame = new_charges  # type: pd.DataFrame
         else:
-            new_frame = self.frame.append(new_charges, ignore_index=True)
+            new_frame = self._frame.append(new_charges, ignore_index=True)
 
         self._frame = new_frame
         self.nextid = self.nextid + len(new_charges)
@@ -307,7 +309,7 @@ class Charge:
 
     def add_charge_array(self, array: np.ndarray) -> None:
         """TBW."""
-        if self.frame is None:
+        if self._frame.empty:
             self._array += array
 
         else:
@@ -322,7 +324,7 @@ class Charge:
 
     @property
     def array(self) -> np.ndarray:
-        if self.frame:
+        if not self._frame.empty:
             self._array = self.convert_df_to_array()
         return self._array
 
@@ -339,9 +341,63 @@ class Charge:
 
     def empty(self) -> None:
         self.nextid = 0
-        if self.frame:
+        if not self._frame.empty:
             self._frame = self.EMPTY_FRAME.copy()
         self._array *= 0
+
+    def get_values(self, quantity: str, id_list: t.Optional[list] = None) -> np.ndarray:
+        """Get quantity values of particles defined with id_list. By default it returns values of all particles.
+
+        Parameters
+        ----------
+        quantity : str
+            Name of the quantity: ``number``, ``energy``, ``position_ver``, ``velocity_hor``, etc.
+        id_list : Sequence of int
+            List of particle ids: ``[0, 12, 321]``
+
+        Returns
+        -------
+        array
+        """
+        if id_list:
+            df = self._frame.query("index in %s" % id_list)  # type: pd.DataFrame
+        else:
+            df = self._frame
+
+        array = df[quantity].values  # type: np.ndarray
+
+        return array
+
+    def set_values(
+        self, quantity: str, new_value_list: list, id_list: t.Optional[list] = None
+    ) -> None:
+        """Update quantity values of particles defined with id_list. By default it updates all.
+
+        Parameters
+        ----------
+        quantity : str
+            Name of the quantity: ``number``, ``energy``, ``position_ver``, ``velocity_hor``, etc.
+        new_value_list : Sequence of int
+            List of values ``[1.12, 2.23, 3.65]``
+        id_list : Sequence of int
+            List of particle ids: ``[0, 12, 321]``
+        """
+        new_df = pd.DataFrame({quantity: new_value_list}, index=id_list)
+        self._frame.update(new_df)
+
+    def remove(self, id_list: t.Optional[list] = None) -> None:
+        """Remove particles defined with id_list. By default it removes all particles from DataFrame.
+
+        Parameters
+        ----------
+        id_list : Sequence of int
+            List of particle ids: ``[0, 12, 321]``
+        """
+        if id_list:
+            # TODO: Check carefully if 'inplace' is needed. This could break lot of things.
+            self._frame.query("index not in %s" % id_list, inplace=True)
+        else:
+            self._frame = self.EMPTY_FRAME.copy()
 
 
 # class Charge(Particle):
