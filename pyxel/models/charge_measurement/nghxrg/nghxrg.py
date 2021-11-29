@@ -158,19 +158,19 @@ def display_noisepsd(
     step: int,
     mode: str = "plot",
 ) -> t.Tuple[t.Any, np.ndarray]:
-    """Display noise PSD from the generated FITS file."""
-    # Conversion gain
-    conversion_gain = 1
-    data_corr = array * conversion_gain
+    """Display noise PSD from the generated FITS file.
 
-    """
-    For power spectra, need to be careful of readout directions
+    For power spectra, need to be careful of readout directions.
 
     For the periodogram, using Welch's method to smooth the PSD
     > Divide data in N segment of length nperseg which overlaps at nperseg/2
     (noverlap argument)
-    nperseg high means less averaging for the PSD but more points
+    nperseg high means less averaging for the PSD but more points.
     """
+    # Conversion gain
+    conversion_gain = 1
+    data_corr = array * conversion_gain
+
     if nb_output <= 1:
         raise ValueError("Parameter 'nb_output' must be >= 1.")
 
