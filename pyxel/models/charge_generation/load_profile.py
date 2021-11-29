@@ -17,8 +17,6 @@ import numpy as np
 from pyxel.detectors import Detector, Geometry
 from pyxel.inputs import load_image
 
-# TODO: more documentation, private function
-
 
 @lru_cache(maxsize=128)  # One must add parameter 'maxsize' for Python 3.7
 def load_charge_from_file(
@@ -29,7 +27,21 @@ def load_charge_from_file(
     profile_position_x: int,
     fit_profile_to_det: bool = False,
 ) -> np.ndarray:
-    """Create charges from a charge profile file."""
+    """Create charges from a charge profile file.
+
+    Parameters
+    ----------
+    num_rows: int
+    num_cols: int
+    txt_file: str or Path
+    profile_position_y: int
+    profile_position_x: x
+    fit_profile_to_det: bool
+
+    Returns
+    -------
+    ndarray
+    """
     # All pixels has zero charge by default
     detector_charge_2d = np.zeros((num_rows, num_cols))
 
@@ -73,8 +85,6 @@ def charge_profile(
     time_scale: float
         Time scale of the input charge, default is 1 second. 0.001 would be ms.
     """
-    logging.info("")
-
     if profile_position is None:
         profile_position_y = 0  # type: int
         profile_position_x = 0  # type: int
