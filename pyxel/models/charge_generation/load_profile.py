@@ -17,10 +17,6 @@ import pandas as pd
 
 from pyxel.data_structure import Charge
 from pyxel.detectors import Detector, Geometry
-from pyxel.detectors.geometry import (
-    get_horizontal_pixel_center_pos,
-    get_vertical_pixel_center_pos,
-)
 
 # TODO: more documentation, private function
 

@@ -36,7 +36,7 @@ def simple_conversion(detector: Detector) -> None:
     detector_charge[slice(0, photon_rows), slice(0, photon_cols)] = (
         ph.array * ch.qe * ch.eta
     )
-    detector.charge.add_charge_array(np.asarray(detector_charge, dtype=int))
+    detector.charge.add_charge_array(detector_charge.astype(int))
 
 
 # # TODO: Fix this

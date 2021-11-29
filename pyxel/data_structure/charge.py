@@ -9,16 +9,16 @@
 
 import typing as t
 
+import numba
 import numpy as np
 import pandas as pd
 from typing_extensions import Literal
-import numba
 
-from pyxel.data_structure import Particle
 from pyxel.detectors.geometry import (
     get_horizontal_pixel_center_pos,
     get_vertical_pixel_center_pos,
 )
+
 if t.TYPE_CHECKING:
     from pyxel.detectors import Geometry
 
@@ -174,9 +174,9 @@ class Charge:
         """TBW."""
         array = np.zeros((self._geo.row, self._geo.col))
 
-        charge_per_pixel = self.get_values(quantity="number")
-        charge_pos_ver = self.get_values(quantity="position_ver")
-        charge_pos_hor = self.get_values(quantity="position_hor")
+        charge_per_pixel = self.get_frame_values(quantity="number")
+        charge_pos_ver = self.get_frame_values(quantity="position_ver")
+        charge_pos_hor = self.get_frame_values(quantity="position_hor")
 
         pixel_index_ver = np.floor_divide(
             charge_pos_ver, self._geo.pixel_vert_size
@@ -256,7 +256,7 @@ class Charge:
                 )
                 new_frame = df.append(new_charges, ignore_index=True)
             else:
-                new_frame = new_charges  # type: pd.DataFrame
+                new_frame = new_charges
         else:
             new_frame = self._frame.append(new_charges, ignore_index=True)
 
@@ -324,6 +324,7 @@ class Charge:
 
     @property
     def array(self) -> np.ndarray:
+        """Get charge in a numpy array."""
         if not self._frame.empty:
             self._array = self.convert_df_to_array()
         return self._array
@@ -335,17 +336,21 @@ class Charge:
 
     @property
     def frame(self) -> pd.DataFrame:
+        """Get charge in a pandas dataframe."""
         if not isinstance(self._frame, pd.DataFrame):
             raise TypeError("Charge data frame not initialized.")
         return self._frame
 
     def empty(self) -> None:
+        """Empty the data stored in Charge class."""
         self.nextid = 0
         if not self._frame.empty:
             self._frame = self.EMPTY_FRAME.copy()
         self._array *= 0
 
-    def get_values(self, quantity: str, id_list: t.Optional[list] = None) -> np.ndarray:
+    def get_frame_values(
+        self, quantity: str, id_list: t.Optional[list] = None
+    ) -> np.ndarray:
         """Get quantity values of particles defined with id_list. By default it returns values of all particles.
 
         Parameters
@@ -368,7 +373,7 @@ class Charge:
 
         return array
 
-    def set_values(
+    def set_frame_values(
         self, quantity: str, new_value_list: list, id_list: t.Optional[list] = None
     ) -> None:
         """Update quantity values of particles defined with id_list. By default it updates all.
@@ -385,7 +390,7 @@ class Charge:
         new_df = pd.DataFrame({quantity: new_value_list}, index=id_list)
         self._frame.update(new_df)
 
-    def remove(self, id_list: t.Optional[list] = None) -> None:
+    def remove_from_frame(self, id_list: t.Optional[list] = None) -> None:
         """Remove particles defined with id_list. By default it removes all particles from DataFrame.
 
         Parameters
