@@ -18,7 +18,9 @@ from pyxel.detectors import Geometry
 
 @pytest.fixture
 def geo() -> Geometry:
-    return Geometry(row=10, col=10, total_thickness=10., pixel_horz_size=1., pixel_vert_size=1.)
+    return Geometry(
+        row=10, col=10, total_thickness=10.0, pixel_horz_size=1.0, pixel_vert_size=1.0
+    )
 
 
 def test_empty_charge(geo: Geometry):

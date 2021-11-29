@@ -30,7 +30,19 @@ def df_to_array(
     pixel_index_ver: list,
     pixel_index_hor: list,
 ) -> np.ndarray:
-    """TBW."""
+    """Assign charge in dataframe to nearest pixel.
+
+    Parameters
+    ----------
+    array: ndarray
+    charge_per_pixel: list
+    pixel_index_ver: list
+    pixel_index_hor:list
+
+    Returns
+    -------
+    ndarray
+    """
     for i, charge_value in enumerate(charge_per_pixel):
         array[pixel_index_ver[i], pixel_index_hor[i]] += charge_value
     return array
@@ -171,7 +183,10 @@ class Charge:
         return pd.DataFrame(new_charges)
 
     def convert_df_to_array(self):
-        """TBW."""
+        """Convert charge dataframe to an array.
+
+        Charge in the detector volume is collected and assigned to the nearest pixel.
+        """
         array = np.zeros((self._geo.row, self._geo.col))
 
         charge_per_pixel = self.get_frame_values(quantity="number")
@@ -199,7 +214,20 @@ class Charge:
         pixel_vertical_size: float,
         pixel_horizontal_size: float,
     ) -> pd.DataFrame:
-        """TBW."""
+        """Convert charge array to a dataframe placing charge packets in pixels to the center and on top of pixels.
+
+        Parameters
+        ----------
+        array: ndarray
+        num_rows: int
+        num_cols: int
+        pixel_vertical_size: float
+        pixel_horizontal_size: float
+
+        Returns
+        -------
+        DataFrame
+        """
         charge_number = array.flatten()
         where_non_zero = np.where(charge_number > 0.0)
         charge_number = charge_number[where_non_zero]
@@ -234,7 +262,7 @@ class Charge:
         )
 
     def add_charge_dataframe(self, new_charges: pd.DataFrame) -> None:
-        """Add new charge(s) or group of charge(s) inside the detector.
+        """Add new charge(s) or group of charge(s) to the charge dataframe.
 
         Parameters
         ----------
@@ -308,7 +336,12 @@ class Charge:
         self.add_charge_dataframe(new_charges=new_charges)
 
     def add_charge_array(self, array: np.ndarray) -> None:
-        """TBW."""
+        """Add charge to the charge array. Add to charge dataframe if not empty instead.
+
+        Parameters
+        ----------
+        array: ndarray
+        """
         if self._frame.empty:
             self._array += array
 
@@ -342,7 +375,7 @@ class Charge:
         return self._frame
 
     def empty(self) -> None:
-        """Empty the data stored in Charge class."""
+        """Empty all data stored in Charge class."""
         self.nextid = 0
         if not self._frame.empty:
             self._frame = self.EMPTY_FRAME.copy()
@@ -403,195 +436,3 @@ class Charge:
             self._frame.query("index not in %s" % id_list, inplace=True)
         else:
             self._frame = self.EMPTY_FRAME.copy()
-
-
-# class Charge(Particle):
-#     """Charged particle class defining and storing information of all electrons and holes.
-#
-#     Properties stored are: charge, position, velocity, energy.
-#     """
-#
-#     def __init__(self):
-#         # TODO: The following line is not really needed
-#         super().__init__()
-#         self.nextid = 0  # type: int
-#
-#         self.columns = (
-#             "charge",
-#             "number",
-#             "init_energy",
-#             "energy",
-#             "init_pos_ver",
-#             "init_pos_hor",
-#             "init_pos_z",
-#             "position_ver",
-#             "position_hor",
-#             "position_z",
-#             "velocity_ver",
-#             "velocity_hor",
-#             "velocity_z",
-#         )  # type: t.Tuple[str, ...]
-#
-#         self.EMPTY_FRAME = pd.DataFrame(
-#             columns=self.columns, dtype=float
-#         )  # type: pd.DataFrame
-#
-#         self.frame = self.EMPTY_FRAME.copy()  # type: pd.DataFrame
-#
-#     @staticmethod
-#     def create_charges(
-#         *,
-#         particle_type: Literal["e", "h"],
-#         particles_per_cluster: np.ndarray,
-#         init_energy: np.ndarray,
-#         init_ver_position: np.ndarray,
-#         init_hor_position: np.ndarray,
-#         init_z_position: np.ndarray,
-#         init_ver_velocity: np.ndarray,
-#         init_hor_velocity: np.ndarray,
-#         init_z_velocity: np.ndarray,
-#     ) -> pd.DataFrame:
-#         """Create new charge(s) or group of charge(s) as a `DataFrame`.
-#
-#         Parameters
-#         ----------
-#         particle_type : str
-#             Type of particle. Valid values: 'e' for an electron or 'h' for a hole.
-#         particles_per_cluster : array-like
-#         init_energy : array
-#         init_ver_position : array
-#         init_hor_position : array
-#         init_z_position : array
-#         init_ver_velocity : array
-#         init_hor_velocity : array
-#         init_z_velocity : array
-#
-#         Returns
-#         -------
-#         DataFrame
-#             Charge(s) stored in a ``DataFrame``.
-#         """
-#         if not (
-#             len(particles_per_cluster)
-#             == len(init_energy)
-#             == len(init_ver_position)
-#             == len(init_hor_position)
-#             == len(init_z_position)
-#             == len(init_ver_velocity)
-#             == len(init_hor_velocity)
-#             == len(init_z_velocity)
-#         ):
-#             raise ValueError("List arguments have different lengths.")
-#
-#         if not (
-#             particles_per_cluster.ndim
-#             == init_energy.ndim
-#             == init_ver_position.ndim
-#             == init_hor_position.ndim
-#             == init_z_position.ndim
-#             == init_ver_velocity.ndim
-#             == init_hor_velocity.ndim
-#             == init_z_velocity.ndim
-#             == 1
-#         ):
-#             raise ValueError("List arguments must have only one dimension.")
-#
-#         elements = len(init_energy)
-#
-#         # check_position(self.detector, init_ver_position, init_hor_position, init_z_position)      # TODO
-#         # check_energy(init_energy)             # TODO
-#         # Check if particle number is integer:
-#         # check_type(particles_per_cluster)      # TODO
-#
-#         if particle_type == "e":
-#             charge = [-1] * elements  # * cds.e
-#         elif particle_type == "h":
-#             charge = [+1] * elements  # * cds.e
-#         else:
-#             raise ValueError("Given charged particle type can not be simulated")
-#
-#         # if all(init_ver_velocity) == 0 and all(init_hor_velocity) == 0 and all(init_z_velocity) == 0:
-#         #     random_direction(1.0)
-#
-#         # Create new charges as a `dict`
-#         new_charges = {
-#             "charge": charge,
-#             "number": particles_per_cluster,
-#             "init_energy": init_energy,
-#             "energy": init_energy,
-#             "init_pos_ver": init_ver_position,
-#             "init_pos_hor": init_hor_position,
-#             "init_pos_z": init_z_position,
-#             "position_ver": init_ver_position,
-#             "position_hor": init_hor_position,
-#             "position_z": init_z_position,
-#             "velocity_ver": init_ver_velocity,
-#             "velocity_hor": init_hor_velocity,
-#             "velocity_z": init_z_velocity,
-#         }  # type: t.Mapping[str, t.Union[t.Sequence, np.ndarray]]
-#
-#         return pd.DataFrame(new_charges)
-#
-#     def add_charge_dataframe(self, new_charges: pd.DataFrame) -> None:
-#         """Add new charge(s) or group of charge(s) inside the detector.
-#
-#         Parameters
-#         ----------
-#         new_charges : DataFrame
-#             Charges as a `DataFrame`
-#         """
-#         if set(new_charges.columns) != set(self.columns):
-#             expected_columns = ", ".join(map(repr, self.columns))  # type: str
-#             raise ValueError(f"Expected columns: {expected_columns}")
-#
-#         if self.frame.empty:
-#             new_frame = new_charges  # type: pd.DataFrame
-#         else:
-#             new_frame = self.frame.append(new_charges, ignore_index=True)
-#
-#         self.frame = new_frame
-#         self.nextid = self.nextid + len(new_charges)
-#
-#     def add_charge(
-#         self,
-#         *,
-#         particle_type: Literal["e", "h"],
-#         particles_per_cluster: np.ndarray,
-#         init_energy: np.ndarray,
-#         init_ver_position: np.ndarray,
-#         init_hor_position: np.ndarray,
-#         init_z_position: np.ndarray,
-#         init_ver_velocity: np.ndarray,
-#         init_hor_velocity: np.ndarray,
-#         init_z_velocity: np.ndarray,
-#     ) -> None:
-#         """Add new charge(s) or group of charge(s) inside the detector.
-#
-#         Parameters
-#         ----------
-#         particle_type : str
-#             Type of particle. Valid values: 'e' for an electron or 'h' for a hole.
-#         particles_per_cluster : array
-#         init_energy : array
-#         init_ver_position : array
-#         init_hor_position : array
-#         init_z_position : array
-#         init_ver_velocity : array
-#         init_hor_velocity : array
-#         init_z_velocity : array
-#         """
-#         # Create charge(s)
-#         new_charges = Charge.create_charges(
-#             particle_type=particle_type,
-#             particles_per_cluster=particles_per_cluster,
-#             init_energy=init_energy,
-#             init_ver_position=init_ver_position,
-#             init_hor_position=init_hor_position,
-#             init_z_position=init_z_position,
-#             init_ver_velocity=init_ver_velocity,
-#             init_hor_velocity=init_hor_velocity,
-#             init_z_velocity=init_z_velocity,
-#         )  # type: pd.DataFrame
-#
-#         # Add charge(s)
-#         self.add_charge_dataframe(new_charges=new_charges)

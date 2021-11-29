@@ -14,6 +14,7 @@ from pyxel.detectors import MKID
 
 
 # TODO: why is this model in a single model group? refactoring and documentation
+# TODO: Why is the model converting to charge and then immediately back to array?
 def pulse_processing(
     detector: MKID,
     wavelength: float,
