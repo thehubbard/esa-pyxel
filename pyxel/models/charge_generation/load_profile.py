@@ -9,8 +9,8 @@
 
 import logging
 import typing as t
-from pathlib import Path
 from functools import lru_cache
+from pathlib import Path
 
 import numpy as np
 

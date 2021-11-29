@@ -126,9 +126,7 @@ def test_charge_profile_10x1(ccd_10x1: CCD, profile_10x1_txt_filename: Path) -> 
     )
 
     # Check modified charges in 'detector'
-    exp_charges = np.array(
-        [[100], [100], [100], [100], [100], [0], [0], [0], [0], [0]]
-    )
+    exp_charges = np.array([[100], [100], [100], [100], [100], [0], [0], [0], [0], [0]])
     charges = detector.charge.array
 
     np.testing.assert_array_almost_equal(charges, exp_charges)
