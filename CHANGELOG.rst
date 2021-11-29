@@ -10,6 +10,8 @@ Core
 
 * Fix an issue with calibration.
   (See `!353 <https://gitlab.com/esa/pyxel/-/merge_requests/353>`_).
+* Use an array in 'Charge' besides a dataframe.
+  (See `!351 <https://gitlab.com/esa/pyxel/-/merge_requests/351>`_).
 
 Documentation
 ~~~~~~~~~~~~~

@@ -43,7 +43,7 @@ def ccd_10x1() -> CCD:
 @pytest.fixture
 def profile_10x1() -> np.ndarray:
     """Create a profile of 10x1."""
-    data_1d = np.array([100.0, 100.0, 100.0, 100.0, 100.0, 0.0, 0.0, 0.0, 0.0, 0.0])
+    data_1d = np.array([100, 100, 100, 100, 100, 0, 0, 0, 0, 0])
 
     return data_1d
 
@@ -78,22 +78,22 @@ def ccd_10x3() -> CCD:
 def profile_10x3() -> np.ndarray:
     """Create a profile of 10x3."""
     data_2d = np.zeros(shape=(10, 3))
-    data_2d[:5, 0] = 100.0
-    data_2d[:5, 1] = 200.0
-    data_2d[:5, 2] = 300.0
+    data_2d[:5, 0] = 100
+    data_2d[:5, 1] = 200
+    data_2d[:5, 2] = 300
 
     data_2d = np.array(
         [
-            [100.0, 200.0, 300.0],
-            [100.0, 200.0, 300.0],
-            [100.0, 200.0, 300.0],
-            [100.0, 200.0, 300.0],
-            [100.0, 200.0, 300.0],
-            [0.0, 0.0, 0.0],
-            [0.0, 0.0, 0.0],
-            [0.0, 0.0, 0.0],
-            [0.0, 0.0, 0.0],
-            [0.0, 0.0, 0.0],
+            [100, 200, 300],
+            [100, 200, 300],
+            [100, 200, 300],
+            [100, 200, 300],
+            [100, 200, 300],
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0],
         ]
     )
 
@@ -126,26 +126,10 @@ def test_charge_profile_10x1(ccd_10x1: CCD, profile_10x1_txt_filename: Path) -> 
     )
 
     # Check modified charges in 'detector'
-    exp_charges = pd.DataFrame(
-        {
-            "charge": [-1, -1, -1, -1, -1],
-            "number": [100.0, 100, 100, 100, 100],
-            "init_energy": [0.0, 0.0, 0.0, 0.0, 0.0],
-            "energy": [0.0, 0.0, 0.0, 0.0, 0.0],
-            "init_pos_ver": [5.0, 15.0, 25.0, 35.0, 45.0],
-            "init_pos_hor": [5.0, 5.0, 5.0, 5.0, 5.0],
-            "init_pos_z": [0.0, 0.0, 0.0, 0.0, 0.0],
-            "position_ver": [5.0, 15.0, 25.0, 35.0, 45.0],
-            "position_hor": [5.0, 5.0, 5.0, 5.0, 5.0],
-            "position_z": [0.0, 0.0, 0.0, 0.0, 0.0],
-            "velocity_ver": [0.0, 0.0, 0.0, 0.0, 0.0],
-            "velocity_hor": [0.0, 0.0, 0.0, 0.0, 0.0],
-            "velocity_z": [0.0, 0.0, 0.0, 0.0, 0.0],
-        }
-    )
-    charges = detector.charge.frame
+    exp_charges = np.array([[100], [100], [100], [100], [100], [0], [0], [0], [0], [0]])
+    charges = detector.charge.array
 
-    pd.testing.assert_frame_equal(charges, exp_charges)
+    np.testing.assert_array_almost_equal(charges, exp_charges)
 
 
 def test_charge_profile_10x3(ccd_10x3: CCD, profile_10x3_txt_filename: Path) -> None:
@@ -165,55 +149,20 @@ def test_charge_profile_10x3(ccd_10x3: CCD, profile_10x3_txt_filename: Path) -> 
     )
 
     # Check modified charges in 'detector'
-    exp_charges = pd.DataFrame(
-        {
-            "charge": [-1, -1, -1] * 5,
-            "number": [100.0, 200, 300] * 5,
-            "init_energy": [0.0, 0.0, 0.0] * 5,
-            "energy": [0.0, 0.0, 0.0] * 5,
-            "init_pos_ver": [
-                5.0,
-                5.0,
-                5.0,
-                15.0,
-                15.0,
-                15.0,
-                25.0,
-                25.0,
-                25.0,
-                35.0,
-                35.0,
-                35.0,
-                45.0,
-                45.0,
-                45.0,
-            ],
-            "init_pos_hor": [5.0, 15.0, 25.0] * 5,
-            "init_pos_z": [0.0, 0.0, 0.0] * 5,
-            "position_ver": [
-                5.0,
-                5.0,
-                5.0,
-                15.0,
-                15.0,
-                15.0,
-                25.0,
-                25.0,
-                25.0,
-                35.0,
-                35.0,
-                35.0,
-                45.0,
-                45.0,
-                45.0,
-            ],
-            "position_hor": [5.0, 15.0, 25.0] * 5,
-            "position_z": [0.0, 0.0, 0.0] * 5,
-            "velocity_ver": [0.0, 0.0, 0.0] * 5,
-            "velocity_hor": [0.0, 0.0, 0.0] * 5,
-            "velocity_z": [0.0, 0.0, 0.0] * 5,
-        }
+    exp_charges = np.array(
+        [
+            [100, 200, 300],
+            [100, 200, 300],
+            [100, 200, 300],
+            [100, 200, 300],
+            [100, 200, 300],
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0],
+            [0, 0, 0],
+        ]
     )
-    charges = detector.charge.frame
+    charges = detector.charge.array
 
-    pd.testing.assert_frame_equal(charges, exp_charges)
+    np.testing.assert_array_almost_equal(charges, exp_charges)

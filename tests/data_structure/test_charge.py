@@ -13,11 +13,19 @@ import pandas as pd
 import pytest
 
 from pyxel.data_structure import Charge
+from pyxel.detectors import Geometry
 
 
-def test_empty_charge():
+@pytest.fixture
+def geo() -> Geometry:
+    return Geometry(
+        row=10, col=10, total_thickness=10.0, pixel_horz_size=1.0, pixel_vert_size=1.0
+    )
+
+
+def test_empty_charge(geo: Geometry):
     """Test an empty `Charge` object."""
-    charge = Charge()
+    charge = Charge(geo=geo)
 
     assert charge.nextid == 0
 
@@ -45,9 +53,9 @@ def test_empty_charge():
     )
 
 
-def test_add_one_charge():
+def test_add_one_charge(geo: Geometry):
     """Test with one charge."""
-    charge = Charge()
+    charge = Charge(geo=geo)
 
     charge.add_charge(
         particle_type="e",
@@ -83,9 +91,9 @@ def test_add_one_charge():
     pd.testing.assert_frame_equal(charge.frame, exp_df_charges)
 
 
-def test_add_one_hole():
+def test_add_one_hole(geo: Geometry):
     """Test with one hole."""
-    charge = Charge()
+    charge = Charge(geo=geo)
 
     charge.add_charge(
         particle_type="h",
@@ -172,9 +180,9 @@ class ChargeInfo:
         ),
     ],
 )
-def test_invalid_add_charge(param_name: str, new_value, exp_error):
+def test_invalid_add_charge(param_name: str, geo: Geometry, new_value, exp_error):
     """Test method `Charge.add_charge` with invalid parameters."""
-    charge = Charge()
+    charge = Charge(geo=geo)
 
     # Create valid parameters
     params = ChargeInfo(
@@ -221,9 +229,9 @@ def test_invalid_add_charge(param_name: str, new_value, exp_error):
 
 
 @pytest.mark.parametrize("particle_type", ["E", "H", "electron", "hole"])
-def test_invalid_particle_type(particle_type: str):
+def test_invalid_particle_type(geo: Geometry, particle_type: str):
     """Test method `Charge.add_charge` with invalid 'particle_type."""
-    charge = Charge()
+    charge = Charge(geo=geo)
 
     with pytest.raises(
         ValueError, match="Given charged particle type can not be simulated"
@@ -241,9 +249,9 @@ def test_invalid_particle_type(particle_type: str):
         )
 
 
-def test_add_two_charges():
+def test_add_two_charges(geo: Geometry):
     """Test when adding one charges in one time."""
-    charge = Charge()
+    charge = Charge(geo=geo)
 
     charge.add_charge(
         particle_type="e",
@@ -279,9 +287,9 @@ def test_add_two_charges():
     pd.testing.assert_frame_equal(charge.frame, exp_df_charges)
 
 
-def test_add_two_charges_one_hole():
+def test_add_two_charges_one_hole(geo: Geometry):
     """Test when adding two charges and then one hole."""
-    charge = Charge()
+    charge = Charge(geo=geo)
 
     # Add 2 charges
     charge.add_charge(
@@ -331,9 +339,9 @@ def test_add_two_charges_one_hole():
     pd.testing.assert_frame_equal(charge.frame, exp_df_charges)
 
 
-def test_invalid_add_charge_dataframe():
+def test_invalid_add_charge_dataframe(geo: Geometry):
     """Test method `Charge.add_charge_dataframe` with an invalid input."""
-    charge = Charge()
+    charge = Charge(geo=geo)
 
     df = pd.DataFrame(
         {

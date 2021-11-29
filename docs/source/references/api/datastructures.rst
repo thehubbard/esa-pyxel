@@ -50,15 +50,6 @@ Image
     :show-inheritance:
     :exclude-members:
 
-Particle
---------
-.. autoclass:: Particle
-    :members:
-    :inherited-members:
-    :undoc-members:
-    :show-inheritance:
-    :exclude-members:
-
 Charge
 ------
 .. autoclass:: Charge

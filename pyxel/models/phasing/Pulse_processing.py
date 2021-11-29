@@ -14,6 +14,7 @@ from pyxel.detectors import MKID
 
 
 # TODO: why is this model in a single model group? refactoring and documentation
+# TODO: Why is the model converting to charge and then immediately back to array?
 def pulse_processing(
     detector: MKID,
     wavelength: float,
@@ -53,9 +54,9 @@ def pulse_processing(
 
     array = np.zeros((geo.row, geo.col))
 
-    charge_per_pixel = detector.charge.get_values(quantity="number")
-    charge_pos_ver = detector.charge.get_values(quantity="position_ver")
-    charge_pos_hor = detector.charge.get_values(quantity="position_hor")
+    charge_per_pixel = detector.charge.get_frame_values(quantity="number")
+    charge_pos_ver = detector.charge.get_frame_values(quantity="position_ver")
+    charge_pos_hor = detector.charge.get_frame_values(quantity="position_hor")
 
     pixel_index_ver = np.floor_divide(charge_pos_ver, geo.pixel_vert_size).astype(int)
     pixel_index_hor = np.floor_divide(charge_pos_hor, geo.pixel_horz_size).astype(int)
