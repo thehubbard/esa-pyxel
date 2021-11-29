@@ -9,29 +9,23 @@
 
 import logging
 import typing as t
-from functools import lru_cache
 from pathlib import Path
 
 import numpy as np
-import pandas as pd
 
-from pyxel.data_structure import Charge
 from pyxel.detectors import Detector, Geometry
 
 # TODO: more documentation, private function
 
 
-@lru_cache(maxsize=128)  # One must add parameter 'maxsize' for Python 3.7
-def _create_charges(
+def load_charge_from_file(
     num_rows: int,
     num_cols: int,
-    pixel_vertical_size: float,
-    pixel_horizontal_size: float,
     txt_file: str,
     profile_position_y: int,
     profile_position_x: int,
     fit_profile_to_det: bool = False,
-) -> pd.DataFrame:
+) -> np.ndarray:
     """Create charges from a charge profile file."""
     # All pixels has zero charge by default
     detector_charge_2d = np.zeros((num_rows, num_cols))
@@ -55,18 +49,9 @@ def _create_charges(
         slice(profile_position_x, profile_position_x + profile_cols),
     ] = charges_from_file_2d
 
-    return Charge.convert_array_to_df(
-        array=detector_charge_2d,
-        num_cols=num_cols,
-        num_rows=num_rows,
-        pixel_horizontal_size=pixel_horizontal_size,
-        pixel_vertical_size=pixel_vertical_size,
-    )
+    return detector_charge_2d
 
 
-# TODO: Fix this
-# @validators.validate
-# @config.argument(name='txt_file', label='file path', units='', validate=checkers.check_path)
 def charge_profile(
     detector: Detector,
     txt_file: t.Union[str, Path],
@@ -94,17 +79,15 @@ def charge_profile(
 
     geo = detector.geometry  # type: Geometry
 
-    # Create charges as `DataFrame`
-    charges = _create_charges(
+    # Load charge profile as numpy array.
+    charges = load_charge_from_file(
         num_rows=geo.row,
         num_cols=geo.col,
-        pixel_vertical_size=geo.pixel_vert_size,
-        pixel_horizontal_size=geo.pixel_horz_size,
         txt_file=txt_file,
         profile_position_y=profile_position_y,
         profile_position_x=profile_position_x,
         fit_profile_to_det=fit_profile_to_det,
-    )  # type: pd.DataFrame
+    )  # type: np.ndarray
 
     # Add charges in 'detector'
-    detector.charge.add_charge_dataframe(charges)
+    detector.charge.add_charge_array(charges)
