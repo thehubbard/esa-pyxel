@@ -10,6 +10,7 @@
 import logging
 import typing as t
 from pathlib import Path
+from functools import lru_cache
 
 import numpy as np
 
@@ -19,6 +20,7 @@ from pyxel.inputs import load_image
 # TODO: more documentation, private function
 
 
+@lru_cache(maxsize=128)  # One must add parameter 'maxsize' for Python 3.7
 def load_charge_from_file(
     num_rows: int,
     num_cols: int,
