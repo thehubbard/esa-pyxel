@@ -6,23 +6,52 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """Readout electronics model."""
-import logging
+
+import numpy as np
 
 from pyxel.detectors import Detector
 
-# from astropy import units as u
 
+def apply_amplify(
+    signal_2d: np.ndarray,
+    gain_output_amplifier: float,
+    gain_signal_processor: float,
+) -> np.ndarray:
+    """Apply gain from the output amplifier and signal processor.
 
-# TODO: refactoring and documentation
-# @pyxel.validate
-# @pyxel.argument(name='', label='', units='', validate=)
-def simple_amplifier(detector: Detector) -> None:
-    """Amplify signal.
+    Parameters
+    ----------
+    signal_2d : ndarray
+        2D signal to amplify. Unit: V
+    gain_output_amplifier : float
+        Gain of output amplifier. Unit: V/V
+    gain_signal_processor
+        Gain of the signal processor. Unit: V/V
 
-    amp - Gain of output amplifier, a1 - Gain of the signal processor
-
-    :param detector: Pyxel Detector object
+    Returns
+    -------
+    ndarray
+        2D amplified signal. Unit: V
     """
-    logging.info("")
+    amplified_signal_2d = signal_2d * gain_output_amplifier * gain_signal_processor
+
+    return amplified_signal_2d
+
+
+def simple_amplifier(detector: Detector) -> None:
+    """Amplify signal using gain from the output amplifier and the signal processor.
+
+    Parameters
+    ----------
+    detector: Detector
+        Pyxel Detector object.
+    """
     char = detector.characteristics
-    detector.signal.array *= char.amp * char.a1
+
+    amplified_signal_2d = apply_amplify(
+        signal_2d=detector.signal.array,
+        gain_output_amplifier=char.amp,
+        gain_signal_processor=char.a1,
+    )  # type: np.ndarray
+
+    detector.signal.array = amplified_signal_2d
