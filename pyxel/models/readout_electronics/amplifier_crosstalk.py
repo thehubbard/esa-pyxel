@@ -177,7 +177,7 @@ def crosstalk_signal_dc(
 
     Returns
     -------
-    array: ndarray
+    ndarray
     """
     amp_number = channel_matrix.size  # number of amplifiers
 
@@ -209,9 +209,9 @@ def crosstalk_signal_dc(
 
 def dc_crosstalk(
     detector: "Detector",
-    coupling_matrix: t.Union[str, Path, list],
-    channel_matrix: list,
-    readout_directions: list,
+    coupling_matrix: t.Union[str, Path, t.Sequence],
+    channel_matrix: t.Sequence,
+    readout_directions: t.Sequence,
 ) -> None:
     """Apply DC crosstalk signal to detector signal.
 
@@ -222,13 +222,25 @@ def dc_crosstalk(
     channel_matrix: ndarray
     readout_directions: ndarray
 
-    Returns
-    -------
-    None
+    Raises
+    ------
+    ValueError
+        If at least one parameter 'coupling_matrix', 'channel_matrix' or
+        'readout_directions' does not have the right shape.
     """
-    cpl_matrix = get_matrix(coupling_matrix)  # type: np.ndarray
+    # Validation and conversion
+    cpl_matrix_2d = get_matrix(coupling_matrix)  # type: np.ndarray
     ch_matrix = np.array(channel_matrix)  # type: np.ndarray
     directions = np.array(readout_directions)  # type: np.ndarray
+
+    if cpl_matrix_2d.ndim != 2:
+        raise ValueError("Expecting 2D 'coupling_matrix'.")
+
+    if cpl_matrix_2d.shape != (ch_matrix.size, ch_matrix.size):
+        raise ValueError(
+            f"Expecting a matrix of {ch_matrix.size}x{ch_matrix.size} "
+            f"elements for 'coupling_matrix'"
+        )
 
     if detector.geometry.row % ch_matrix.shape[0] != 0:
         raise ValueError(
@@ -237,19 +249,23 @@ def dc_crosstalk(
     if len(ch_matrix.shape) > 1:
         if detector.geometry.col % ch_matrix.shape[1] != 0:
             raise ValueError(
-                "Can't split detector array vertically for a given number of amplifiers."
+                "Can't split detector array vertically "
+                "for a given number of amplifiers."
             )
     if ch_matrix.size != directions.size:
         raise ValueError(
             "Channel matrix and readout directions arrays not the same size."
         )
 
-    _ = crosstalk_signal_dc(
-        array=detector.signal.array,
-        coupling_matrix=cpl_matrix,
+    # Processing
+    signal_2d = crosstalk_signal_dc(
+        array=detector.signal.array.copy(),
+        coupling_matrix=cpl_matrix_2d,
         channel_matrix=ch_matrix,
         readout_directions=directions,
     )
+
+    detector.signal.array = signal_2d
 
 
 def ac_crosstalk(
