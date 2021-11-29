@@ -14,6 +14,7 @@ from pathlib import Path
 import numpy as np
 
 from pyxel.detectors import Detector, Geometry
+from pyxel.inputs import load_image
 
 # TODO: more documentation, private function
 
@@ -21,7 +22,7 @@ from pyxel.detectors import Detector, Geometry
 def load_charge_from_file(
     num_rows: int,
     num_cols: int,
-    txt_file: str,
+    txt_file: t.Union[str, Path],
     profile_position_y: int,
     profile_position_x: int,
     fit_profile_to_det: bool = False,
@@ -32,9 +33,7 @@ def load_charge_from_file(
 
     # Load 2d charge profile (which can be smaller or
     #                         larger in dimensions than detector imaging area)
-    full_path = Path(txt_file).resolve()
-    charges_from_file_2d = np.loadtxt(str(full_path), ndmin=2)  # type: np.ndarray
-    # TODO: use pyxel function load_table?
+    charges_from_file_2d = load_image(txt_file)
 
     if fit_profile_to_det:
         # Crop 2d charge profile, so it is not larger in dimensions than detector imaging area)
@@ -49,7 +48,7 @@ def load_charge_from_file(
         slice(profile_position_x, profile_position_x + profile_cols),
     ] = charges_from_file_2d
 
-    return detector_charge_2d
+    return detector_charge_2d.astype(np.int64)
 
 
 def charge_profile(

@@ -51,7 +51,7 @@ def df_to_array(
 class Charge:
     """TBW."""
 
-    EXP_TYPE = int
+    EXP_TYPE = np.int64
     TYPE_LIST = (
         np.int32,
         np.int64,
