@@ -33,6 +33,8 @@ noise:
 
 @dataclass
 class KTCBiasNoise:
+    """KTCBiasNoise parameters."""
+
     ktc_noise: float
     bias_offset: float
     bias_amp: float
@@ -40,27 +42,37 @@ class KTCBiasNoise:
 
 @dataclass
 class WhiteReadNoise:
+    """WhiteReadNoise parameters."""
+
     rd_noise: float
     ref_pixel_noise_ratio: float
 
 
 @dataclass
 class CorrPinkNoise:
+    """CorrPinkNoise parameters."""
+
     c_pink: float
 
 
 @dataclass
 class UncorrPinkNoise:
+    """UncorrPinkNoise parameters."""
+
     u_pink: float
 
 
 @dataclass
 class AcnNoise:
+    """AcnNoise parameters."""
+
     acn: float
 
 
 @dataclass
 class PCAZeroNoise:
+    """PCAZeroNoise parameters."""
+
     pca0_amp: float
 
 
@@ -166,7 +178,7 @@ def compute_nghxrg(
             data = ng.add_pca_zero_noise(pca0_amp=item.pca0_amp)
 
         else:
-            raise ValueError(f"Unknown item: {item!r} !")
+            raise TypeError(f"Unknown item: {item!r} !")
 
         data_2d = ng.format_result(data)  # type: np.ndarray
         if data_2d.any():

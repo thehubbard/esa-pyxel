@@ -1,5 +1,6 @@
 .. _charge_measurement:
 
+=========================
 Charge Measurement models
 =========================
 
@@ -8,22 +9,22 @@ Charge Measurement models
 
 
 Simple charge measurement
--------------------------
+=========================
 
 .. autofunction:: simple_measurement
 
 Output node noise
------------------
+=================
 
 .. autofunction:: output_node_noise
 
 Output node noise CMOS
-----------------------
+======================
 
 .. autofunction:: output_node_noise_cmos
 
 HxRG noise generator
---------------------
+====================
 
 A near-infrared CMOS noise generator (ngHxRG) developed for the
 James Webb Space Telescope (JWST) Near Infrared Spectrograph (NIRSpec)
@@ -37,6 +38,34 @@ stationary and non-stationary noise components.
 The model can simulate noise for HxRG detectors of
 Teledyne Imaging Sensors with and without the SIDECAR ASIC IR array
 controller.
+
+Example of the configuration file:
+
+.. code-block:: yaml
+
+    - name: illumination
+      func: pyxel.models.charge_measurement.nghxrg
+      enabled: true
+      arguments:
+        noise:
+          - ktc_bias_noise:
+              ktc_noise: 1
+              bias_offset: 2
+              bias_amp: 2
+          - white_read_noise:
+              rd_noise: 1
+              ref_pixel_noise_ratio: 2
+          - corr_pink_noise:
+              c_pink: 1.
+          - uncorr_pink_noise:
+              u_pink: 1.
+          - acn_noise:
+              acn: 1.
+          - pca_zero_noise:
+              pca0_amp: 1.
+        window_position: [0, 0]   # Optional
+        window_size: [100, 100]   # Optional
+        option: "elliptic"
 
 .. autofunction:: pyxel.models.charge_measurement.nghxrg
 
