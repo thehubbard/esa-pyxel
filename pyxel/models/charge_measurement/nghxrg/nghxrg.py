@@ -11,8 +11,10 @@ import logging
 import typing as t
 from dataclasses import dataclass
 from pathlib import Path
+from tempfile import TemporaryDirectory
 
 import numpy as np
+from astropy.io import fits
 from typing_extensions import Literal
 
 from pyxel.detectors import CMOS, CMOSGeometry
@@ -90,6 +92,7 @@ NoiseType = t.Union[
 # TODO: Use function `simcado.nghxrg.HXRGNoise` instead of
 #       `pyxel.models.charge_measurement.nghxrg.nghxrg.HXRGNoise`
 def compute_nghxrg(
+    pixel_2d: np.ndarray,
     noise: t.Sequence[NoiseType],
     detector_shape: t.Tuple[int, int],
     window_pos: t.Tuple[int, int],
@@ -100,12 +103,12 @@ def compute_nghxrg(
     num_frames_overhead: int,
     reverse_scan_direction: bool,
     reference_pixel_border_width: int,
-    pca0_filename: t.Optional[Path],
 ) -> np.ndarray:
     """Compute NGHXRG.
 
     Parameters
     ----------
+    pixel_2d : ndarray
     noise : sequence of NoiseType
     detector_shape : int, int
     window_pos : int, int
@@ -116,7 +119,7 @@ def compute_nghxrg(
     num_frames_overhead : int
     reverse_scan_direction : bool
     reference_pixel_border_width : int
-    pca0_filename : Path, Optional.
+    pca0_filename : Path
 
     Returns
     -------
@@ -131,66 +134,73 @@ def compute_nghxrg(
     else:
         window_mode = "WINDOW"
 
-    ng = HXRGNoise(
-        n_out=num_outputs,
-        time_step=time_step,
-        nroh=num_rows_overhead,
-        nfoh=num_frames_overhead,
-        reverse_scan_direction=reverse_scan_direction,
-        reference_pixel_border_width=reference_pixel_border_width,
-        pca0_file=pca0_filename,
-        det_size_x=det_size_x,
-        det_size_y=det_size_y,
-        wind_mode=window_mode,
-        wind_x_size=window_x_size,
-        wind_y_size=window_y_size,
-        wind_x0=window_x_start,
-        wind_y0=window_y_start,
-        verbose=True,
-    )  # type: HXRGNoise
+    with TemporaryDirectory() as folder:
+        # Create a temporary FITS file
+        # This file will be used by HXRGNoise and will be automatically removed
+        filename = Path(folder) / "image.fits"  # type: Path
+        hdu = fits.PrimaryHDU(pixel_2d)
+        hdu.writeto(filename)
 
-    final_data_2d = np.zeros(shape=window_size)
+        ng = HXRGNoise(
+            n_out=num_outputs,
+            time_step=time_step,
+            nroh=num_rows_overhead,
+            nfoh=num_frames_overhead,
+            reverse_scan_direction=reverse_scan_direction,
+            reference_pixel_border_width=reference_pixel_border_width,
+            pca0_file=filename,
+            det_size_x=det_size_x,
+            det_size_y=det_size_y,
+            wind_mode=window_mode,
+            wind_x_size=window_x_size,
+            wind_y_size=window_y_size,
+            wind_x0=window_x_start,
+            wind_y0=window_y_start,
+            verbose=True,
+        )  # type: HXRGNoise
 
-    for item in noise:  # type: NoiseType
-        if isinstance(item, KTCBiasNoise):
-            data = ng.add_ktc_bias_noise(
-                ktc_noise=item.ktc_noise,
-                bias_offset=item.bias_offset,
-                bias_amp=item.bias_amp,
-            )  # type: np.ndarray
+        final_data_2d = np.zeros(shape=window_size)
 
-        elif isinstance(item, WhiteReadNoise):
-            data = ng.add_white_read_noise(
-                rd_noise=item.rd_noise,
-                reference_pixel_noise_ratio=item.ref_pixel_noise_ratio,
-            )
+        for item in noise:  # type: NoiseType
+            if isinstance(item, KTCBiasNoise):
+                data = ng.add_ktc_bias_noise(
+                    ktc_noise=item.ktc_noise,
+                    bias_offset=item.bias_offset,
+                    bias_amp=item.bias_amp,
+                )  # type: np.ndarray
 
-        elif isinstance(item, CorrPinkNoise):
-            data = ng.add_corr_pink_noise(c_pink=item.c_pink)
+            elif isinstance(item, WhiteReadNoise):
+                data = ng.add_white_read_noise(
+                    rd_noise=item.rd_noise,
+                    reference_pixel_noise_ratio=item.ref_pixel_noise_ratio,
+                )
 
-        elif isinstance(item, UncorrPinkNoise):
-            data = ng.add_uncorr_pink_noise(u_pink=item.u_pink)
+            elif isinstance(item, CorrPinkNoise):
+                data = ng.add_corr_pink_noise(c_pink=item.c_pink)
 
-        elif isinstance(item, AcnNoise):
-            data = ng.add_acn_noise(acn=item.acn)
+            elif isinstance(item, UncorrPinkNoise):
+                data = ng.add_uncorr_pink_noise(u_pink=item.u_pink)
 
-        elif isinstance(item, PCAZeroNoise):
-            data = ng.add_pca_zero_noise(pca0_amp=item.pca0_amp)
+            elif isinstance(item, AcnNoise):
+                data = ng.add_acn_noise(acn=item.acn)
 
-        else:
-            raise TypeError(f"Unknown item: {item!r} !")
+            elif isinstance(item, PCAZeroNoise):
+                data = ng.add_pca_zero_noise(pca0_amp=item.pca0_amp)
 
-        data_2d = ng.format_result(data)  # type: np.ndarray
-        if data_2d.any():
-            if window_mode == "FULL":
-                final_data_2d += data_2d
-            elif window_mode == "WINDOW":
-                window_y_end = window_y_start + window_y_size  # type: int
-                window_x_end = window_x_start + window_x_size  # type: int
+            else:
+                raise TypeError(f"Unknown item: {item!r} !")
 
-                final_data_2d[
-                    window_y_start:window_y_end, window_x_start:window_x_end
-                ] += data_2d
+            data_2d = ng.format_result(data)  # type: np.ndarray
+            if data_2d.any():
+                if window_mode == "FULL":
+                    final_data_2d += data_2d
+                elif window_mode == "WINDOW":
+                    window_y_end = window_y_start + window_y_size  # type: int
+                    window_x_end = window_x_start + window_x_size  # type: int
+
+                    final_data_2d[
+                        window_y_start:window_y_end, window_x_start:window_x_end
+                    ] += data_2d
 
     return final_data_2d
 
@@ -284,6 +294,7 @@ def nghxrg(
 
     # Compute new pixels
     result_2d = compute_nghxrg(
+        pixel_2d=detector.pixel.array,
         noise=params,
         detector_shape=(geo.row, geo.col),
         window_pos=window_position,
@@ -294,7 +305,6 @@ def nghxrg(
         num_frames_overhead=geo.n_frame_overhead,
         reverse_scan_direction=geo.reverse_scan_direction,
         reference_pixel_border_width=geo.reference_pixel_border_width,
-        pca0_filename=Path(pca0_file) if pca0_file else None,
     )  # type: np.ndarray
 
     # Add the pixels
