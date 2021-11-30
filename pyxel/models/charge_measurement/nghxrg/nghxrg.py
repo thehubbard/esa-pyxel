@@ -9,6 +9,7 @@
 
 import logging
 import typing as t
+from dataclasses import dataclass
 from pathlib import Path
 
 import numpy as np
@@ -18,16 +19,190 @@ from pyxel.detectors import CMOS, CMOSGeometry
 from pyxel.models.charge_measurement.nghxrg.nghxrg_beta import HXRGNoise
 from pyxel.util import temporary_random_state
 
+"""
+noise:
+  - ktc_bias_noise:
+      ktc_noise: 1
+      bias_offset: 2
+      bias_amp: 2
+  - white_read_noise:
+      rd_noise: 1
+      ref_pixel_noise_ratio: 2
+"""
 
-# TODO: pure function, why beta - renaming, documentation, copyright, cite the paper in documentation
+
+@dataclass
+class KTCBiasNoise:
+    ktc_noise: float
+    bias_offset: float
+    bias_amp: float
+
+
+@dataclass
+class WhiteReadNoise:
+    rd_noise: float
+    ref_pixel_noise_ratio: float
+
+
+@dataclass
+class CorrPinkNoise:
+    c_pink: float
+
+
+@dataclass
+class UncorrPinkNoise:
+    u_pink: float
+
+
+@dataclass
+class AcnNoise:
+    acn: float
+
+
+@dataclass
+class PCAZeroNoise:
+    pca0_amp: float
+
+
+# Create an alias
+NoiseType = t.Union[
+    KTCBiasNoise,
+    WhiteReadNoise,
+    CorrPinkNoise,
+    UncorrPinkNoise,
+    AcnNoise,
+    PCAZeroNoise,
+]
+
+
+# TODO: Use function `simcado.nghxrg.HXRGNoise` instead of
+#       `pyxel.models.charge_measurement.nghxrg.nghxrg.HXRGNoise`
+def compute_nghxrg(
+    noise: t.Sequence[NoiseType],
+    detector_shape: t.Tuple[int, int],
+    window_pos: t.Tuple[int, int],
+    window_size: t.Tuple[int, int],
+    num_outputs: int,
+    time_step: int,
+    num_rows_overhead: int,
+    num_frames_overhead: int,
+    reverse_scan_direction: bool,
+    reference_pixel_border_width: int,
+    pca0_filename: t.Optional[Path],
+) -> np.ndarray:
+    """Compute NGHXRG.
+
+    Parameters
+    ----------
+    noise : sequence of NoiseType
+    detector_shape : int, int
+    window_pos : int, int
+    window_size : int, int
+    num_outputs : int
+    time_step : int
+    num_rows_overhead : int
+    num_frames_overhead : int
+    reverse_scan_direction : bool
+    reference_pixel_border_width : int
+    pca0_filename : Path, Optional.
+
+    Returns
+    -------
+    ndarray
+    """
+    det_size_y, det_size_x = detector_shape
+    window_y_start, window_x_start = window_pos
+    window_y_size, window_x_size = window_size
+
+    if window_pos == (0, 0) and window_size == detector_shape:
+        window_mode = "FULL"  # type: Literal["FULL", "WINDOW"]
+    else:
+        window_mode = "WINDOW"
+
+    ng = HXRGNoise(
+        n_out=num_outputs,
+        time_step=time_step,
+        nroh=num_rows_overhead,
+        nfoh=num_frames_overhead,
+        reverse_scan_direction=reverse_scan_direction,
+        reference_pixel_border_width=reference_pixel_border_width,
+        pca0_file=pca0_filename,
+        det_size_x=det_size_x,
+        det_size_y=det_size_y,
+        wind_mode=window_mode,
+        wind_x_size=window_x_size,
+        wind_y_size=window_y_size,
+        wind_x0=window_x_start,
+        wind_y0=window_y_start,
+        verbose=True,
+    )  # type: HXRGNoise
+
+    final_data_2d = np.zeros(shape=window_size)
+
+    for item in noise:  # type: NoiseType
+        if isinstance(item, KTCBiasNoise):
+            data = ng.add_ktc_bias_noise(
+                ktc_noise=item.ktc_noise,
+                bias_offset=item.bias_offset,
+                bias_amp=item.bias_amp,
+            )  # type: np.ndarray
+
+        elif isinstance(item, WhiteReadNoise):
+            data = ng.add_white_read_noise(
+                rd_noise=item.rd_noise,
+                reference_pixel_noise_ratio=item.ref_pixel_noise_ratio,
+            )
+
+        elif isinstance(item, CorrPinkNoise):
+            data = ng.add_corr_pink_noise(c_pink=item.c_pink)
+
+        elif isinstance(item, UncorrPinkNoise):
+            data = ng.add_uncorr_pink_noise(u_pink=item.u_pink)
+
+        elif isinstance(item, AcnNoise):
+            data = ng.add_acn_noise(acn=item.acn)
+
+        elif isinstance(item, PCAZeroNoise):
+            data = ng.add_pca_zero_noise(pca0_amp=item.pca0_amp)
+
+        else:
+            raise ValueError(f"Unknown item: {item!r} !")
+
+        data_2d = ng.format_result(data)  # type: np.ndarray
+        if data_2d.any():
+            if window_mode == "FULL":
+                final_data_2d += data_2d
+            elif window_mode == "WINDOW":
+                window_y_end = window_y_start + window_y_size  # type: int
+                window_x_end = window_x_start + window_x_size  # type: int
+
+                final_data_2d[
+                    window_y_start:window_y_end, window_x_start:window_x_end
+                ] += data_2d
+
+    return final_data_2d
+
+
+# TODO: why beta - renaming, documentation, copyright, cite the paper in documentation
 @temporary_random_state
 def nghxrg(
     detector: CMOS,
-    noise: list,
+    noise: t.Sequence[
+        t.Mapping[
+            Literal[
+                "ktc_bias_noise",
+                "white_read_noise",
+                "corr_pink_noise",
+                "uncorr_pink_noise",
+                "acn_noise",
+                "pca_zero_noise",
+            ],
+            t.Mapping[str, float],
+        ]
+    ],
     pca0_file: t.Optional[str] = None,
     window_position: t.Optional[t.Tuple[int, int]] = None,
     window_size: t.Optional[t.Tuple[int, int]] = None,
-    # plot_psd: t.Optional[bool] = True,
 ) -> None:
     """Generate noise on HXRG detector.
 
@@ -41,105 +216,77 @@ def nghxrg(
     window_size: t.Sequence, optional
         [x (columns), y (rows)].
     """
+    # Converter
+    params = []  # type: t.List[NoiseType]
+    for item in noise:
+        if "ktc_bias_noise" in item:
+            sub_item = item["ktc_bias_noise"]  # type: t.Mapping[str, float]
+            param = KTCBiasNoise(
+                ktc_noise=sub_item["ktc_noise"],
+                bias_offset=sub_item["bias_offset"],
+                bias_amp=sub_item["bias_amp"],
+            )  # type: NoiseType
+
+        elif "white_read_noise" in item:
+            sub_item = item["white_read_noise"]
+            param = WhiteReadNoise(
+                rd_noise=sub_item["rd_noise"],
+                ref_pixel_noise_ratio=sub_item["ref_pixel_noise_ratio"],
+            )
+
+        elif "corr_pink_noise" in item:
+            sub_item = item["corr_pink_noise"]
+            param = CorrPinkNoise(c_pink=sub_item["c_pink"])
+
+        elif "uncorr_pink_noise" in item:
+            sub_item = item["uncorr_pink_noise"]
+            param = UncorrPinkNoise(u_pink=sub_item["u_pink"])
+
+        elif "acn_noise" in item:
+            sub_item = item["acn_noise"]
+            param = AcnNoise(acn=sub_item["acn"])
+
+        elif "pca_zero_noise" in item:
+            sub_item = item["pca_zero_noise"]
+            param = PCAZeroNoise(pca0_amp=sub_item["pca0_amp"])
+
+        else:
+            raise KeyError(f"Unknown key: item = {item!r}")
+
+        params.append(param)
+
     logging.getLogger("nghxrg").setLevel(logging.WARNING)
 
+    # Prepare the parameters
     geo = detector.geometry  # type: CMOSGeometry
-    step = 1
-    if detector.is_dynamic:
-        step = int(detector.time / detector.time_step)
+
     if window_position is None:
         window_position = (0, 0)
     if window_size is None:
-        window_size = (geo.col, geo.row)
-    if window_position == (0, 0) and window_size == (geo.col, geo.row):
-        window_mode = "FULL"  # type: Literal["FULL", "WINDOW"]
-    else:
-        window_mode = "WINDOW"
+        window_size = (geo.row, geo.col)
 
-    ng = HXRGNoise(
-        n_out=geo.n_output,
-        time_step=step,
-        nroh=geo.n_row_overhead,
-        nfoh=geo.n_frame_overhead,
+    if detector.is_dynamic:
+        time_step = int(detector.time / detector.time_step)  # type: int
+    else:
+        time_step = 1
+
+    # Compute new pixels
+    result_2d = compute_nghxrg(
+        noise=params,
+        detector_shape=(geo.row, geo.col),
+        window_pos=window_position,
+        window_size=window_size,
+        num_outputs=geo.n_output,
+        time_step=time_step,
+        num_rows_overhead=geo.n_row_overhead,
+        num_frames_overhead=geo.n_frame_overhead,
         reverse_scan_direction=geo.reverse_scan_direction,
         reference_pixel_border_width=geo.reference_pixel_border_width,
-        pca0_file=Path(pca0_file) if pca0_file else None,
-        det_size_x=geo.col,
-        det_size_y=geo.row,
-        wind_mode=window_mode,
-        wind_x_size=window_size[0],
-        wind_y_size=window_size[1],
-        wind_x0=window_position[0],
-        wind_y0=window_position[1],
-        verbose=True,
-    )  # type: HXRGNoise
+        pca0_filename=Path(pca0_file) if pca0_file else None,
+    )  # type: np.ndarray
 
-    for item in noise:
-        result = None  # type: t.Optional[np.ndarray]
-        if "ktc_bias_noise" in item:
-            # NOTE: there is no kTc or Bias noise added for first/single frame
-            noise_name = "ktc_bias_noise"
-            if item["ktc_bias_noise"]:
-                result = ng.add_ktc_bias_noise(
-                    ktc_noise=item["ktc_noise"],
-                    bias_offset=item["bias_offset"],
-                    bias_amp=item["bias_amp"],
-                )
-        elif "white_read_noise" in item:
-            noise_name = "white_read_noise"
-            if item["white_read_noise"]:
-                result = ng.add_white_read_noise(
-                    rd_noise=item["rd_noise"],
-                    reference_pixel_noise_ratio=item["ref_pixel_noise_ratio"],
-                )
-        elif "corr_pink_noise" in item:
-            noise_name = "corr_pink_noise"
-            if item["corr_pink_noise"]:
-                result = ng.add_corr_pink_noise(c_pink=item["c_pink"])
-        elif "uncorr_pink_noise" in item:
-            noise_name = "uncorr_pink_noise"
-            if item["uncorr_pink_noise"]:
-                result = ng.add_uncorr_pink_noise(u_pink=item["u_pink"])
-        elif "acn_noise" in item:
-            noise_name = "acn_noise"
-            if item["acn_noise"]:
-                result = ng.add_acn_noise(acn=item["acn"])
-        elif "pca_zero_noise" in item:
-            noise_name = "pca_zero_noise"
-            if item["pca_zero_noise"]:
-                result = ng.add_pca_zero_noise(pca0_amp=item["pca0_amp"])
-        else:
-            noise_name = ""
-
-        if result is None:
-            raise NotImplementedError
-
-        try:
-            result = ng.format_result(result)
-            if result.any():
-                # if plot_psd:
-                #     display_noisepsd(
-                #         result,
-                #         noise_name=noise_name,
-                #         nb_output=geo.n_output,
-                #         dimensions=(geo.col, geo.row),
-                #         path=detector.output_dir,
-                #         step=step,
-                #     )
-                if window_mode == "FULL":
-                    detector.pixel.array += result
-                elif window_mode == "WINDOW":
-                    start_y_idx = window_position[1]
-                    end_y_idx = window_position[1] + window_size[1]
-
-                    start_x_idx = window_position[0]
-                    end_x_idx = window_position[0] + window_size[0]
-
-                    detector.pixel.array[
-                        start_y_idx:end_y_idx, start_x_idx:end_x_idx
-                    ] += result
-        except TypeError:
-            pass
+    # Add the pixels
+    detector.pixel.array += result_2d
 
 
 # TODO: This generates plot. It should be in class `Output`
