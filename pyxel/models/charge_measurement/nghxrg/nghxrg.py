@@ -21,17 +21,6 @@ from pyxel.detectors import CMOS, CMOSGeometry
 from pyxel.models.charge_measurement.nghxrg.nghxrg_beta import HXRGNoise
 from pyxel.util import temporary_random_state
 
-"""
-noise:
-  - ktc_bias_noise:
-      ktc_noise: 1
-      bias_offset: 2
-      bias_amp: 2
-  - white_read_noise:
-      rd_noise: 1
-      ref_pixel_noise_ratio: 2
-"""
-
 
 @dataclass
 class KTCBiasNoise:
