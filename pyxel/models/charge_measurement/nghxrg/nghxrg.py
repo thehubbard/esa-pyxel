@@ -127,8 +127,8 @@ def compute_nghxrg(
         # Create a temporary FITS file
         # This file will be used by HXRGNoise and will be automatically removed
         filename = Path(folder) / "image.fits"  # type: Path
-        data_2d = np.asarray(pixel_2d, dtype=float).transpose()  # type: np.ndarray
-        hdu = fits.PrimaryHDU(data_2d)
+        data_hxrg_2d = np.asarray(pixel_2d, dtype=float).transpose()  # type: np.ndarray
+        hdu = fits.PrimaryHDU(data_hxrg_2d)
         hdu.writeto(filename)
 
         ng = HXRGNoise(
