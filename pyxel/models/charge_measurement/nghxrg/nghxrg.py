@@ -19,6 +19,7 @@ from typing_extensions import Literal
 
 from pyxel.detectors import CMOS, CMOSGeometry
 from pyxel.models.charge_measurement.nghxrg.nghxrg_beta import HXRGNoise
+from pyxel.util import temporary_random_state
 
 
 @dataclass
@@ -126,7 +127,8 @@ def compute_nghxrg(
         # Create a temporary FITS file
         # This file will be used by HXRGNoise and will be automatically removed
         filename = Path(folder) / "image.fits"  # type: Path
-        hdu = fits.PrimaryHDU(np.asarray(pixel_2d, dtype=float))
+        data_2d = np.asarray(pixel_2d, dtype=float).transpose()  # type: np.ndarray
+        hdu = fits.PrimaryHDU(data_2d)
         hdu.writeto(filename)
 
         ng = HXRGNoise(
@@ -193,7 +195,8 @@ def compute_nghxrg(
     return final_data_2d
 
 
-# TODO: why beta - renaming, documentation, copyright, cite the paper in documentation
+# TODO: copyright
+@temporary_random_state
 def nghxrg(
     detector: CMOS,
     noise: t.Sequence[
@@ -211,6 +214,7 @@ def nghxrg(
     ],
     window_position: t.Optional[t.Tuple[int, int]] = None,
     window_size: t.Optional[t.Tuple[int, int]] = None,
+    seed: t.Optional[int] = None,  # This parameter is used by '@temporary_random_state'
 ) -> None:
     """Generate fourier noise power spectrum on HXRG detector.
 
@@ -224,6 +228,7 @@ def nghxrg(
         [x0 (columns), y0 (rows)].
     window_size: t.Sequence, optional
         [x (columns), y (rows)].
+    seed: int, optional
     """
     # Converter
     params = []  # type: t.List[NoiseType]
