@@ -56,13 +56,45 @@ def ipc_kernel(
     return kernel
 
 
+def compute_ipc_convolution(
+    input: np.ndarray,
+    coupling: float,
+    diagonal_coupling: float,
+    anisotropic_coupling: float,
+) -> np.ndarray:
+    """Compute convolution of the array with IPC kernel.
+
+    Parameters
+    ----------
+    input: ndarray
+    coupling: float
+    diagonal_coupling: float
+    anisotropic_coupling: float
+
+    Returns
+    -------
+    array: ndarray
+    """
+    kernel = ipc_kernel(
+        coupling=coupling,
+        diagonal_coupling=diagonal_coupling,
+        anisotropic_coupling=anisotropic_coupling,
+    )
+
+    # Convolution, extension on the edges with the mean value
+    mean = np.mean(input)
+    array = convolve_fft(input, kernel, boundary="fill", fill_value=mean)
+
+    return array
+
+
 def simple_ipc(
     detector: "CMOS",
     coupling: float,
     diagonal_coupling: float = 0.0,
     anisotropic_coupling: float = 0.0,
 ) -> None:
-    """Convolve detector.pixel array with the IPC kernel.
+    """Convolve pixel array with the IPC kernel.
 
     Parameters
     ----------
@@ -75,15 +107,14 @@ def simple_ipc(
     -------
     None
     """
+    if not isinstance(detector, CMOS):
+        raise TypeError("Expecting a CMOS object for detector.")
 
-    kernel = ipc_kernel(
+    array = compute_ipc_convolution(
+        input=detector.pixel.array,
         coupling=coupling,
         diagonal_coupling=diagonal_coupling,
         anisotropic_coupling=anisotropic_coupling,
     )
-
-    # Convolution, extension on the edges with the mean value
-    mean = np.mean(detector.photon.array)
-    array = convolve_fft(detector.pixel.array, kernel, boundary="fill", fill_value=mean)
 
     detector.pixel.array = array
