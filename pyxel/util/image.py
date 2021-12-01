@@ -64,15 +64,25 @@ def fit_into_array(
     align: t.Optional[
         t.Literal["center", "top_left", "top_right", "bottom_left", "bottom_right"]
     ] = None,
+    allow_smaller_array: bool = True
 ) -> np.ndarray:
-    """TBW.
+    """Fit input array into an output array of specified output shape.
+
+    Input array can be either larger or smaller than output array. In the first case the input array will be cropped.
+    The relative position between the arrays in the coordinate system is specified with argument relative_position.
+    It is a tuple with coordinates (Y,X).
+    User can use this argument to specify the position of input array values in the output array.
+    If arrays are to be aligned in the center or one of the corners,
+    it is also possible with argument align and passing a location keyword.
+    User can turn on that smaller arrays than output shape are not allowed by setting allow_smaller_array to False.
 
     Parameters
     ----------
-    align: Literal
     array: ndarray
     output_shape: tuple
     relative_position: tuple
+    align: Literal, optional
+    allow_smaller_array: bool
 
     Returns
     -------
@@ -82,6 +92,10 @@ def fit_into_array(
     array_y, array_x = array.shape
     output = np.zeros(output_shape)
     output_x, output_y = output_shape
+
+    if not allow_smaller_array:
+        if array_y < output_y or array_x < output_y:
+            raise ValueError("Input array too small to fit into the desired shape!.")
 
     if align:
         relative_position = _set_relative_position(
