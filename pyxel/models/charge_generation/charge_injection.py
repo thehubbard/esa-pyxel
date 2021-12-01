@@ -67,7 +67,9 @@ def charge_blocks(
         Ending row for the injected charge.
     """
     if not isinstance(detector, CCD):
-        raise TypeError("Detector not CCD.")
+        raise TypeError("Expecting a CCD object for detector.")
+    if charge_level < 0:
+        raise ValueError("Charge level value should not be a negative number.")
 
     shape = (detector.geometry.row, detector.geometry.col)
 
@@ -83,4 +85,4 @@ def charge_blocks(
         block_end=block_end,
     )
 
-    detector.charge.add_charge_array(charge)
+    detector.charge.add_charge_array(charge.astype(np.int64))
