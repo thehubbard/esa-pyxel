@@ -215,7 +215,9 @@ def nghxrg(
     window_position: t.Optional[t.Tuple[int, int]] = None,
     window_size: t.Optional[t.Tuple[int, int]] = None,
 ) -> None:
-    """Generate noise on HXRG detector.
+    """Generate fourier noise power spectrum on HXRG detector.
+
+    For more information see :cite:p:`2015:rauscher`.
 
     Parameters
     ----------

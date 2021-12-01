@@ -28,6 +28,7 @@ HxRG noise generator
 
 A near-infrared CMOS noise generator (ngHxRG) developed for the
 James Webb Space Telescope (JWST) Near Infrared Spectrograph (NIRSpec)
+described in :cite:p:`2015:rauscher`
 has been also added to the framework. It simulates many important noise
 components including white read noise, residual bias drifts, pink 1/f
 noise, alternating column noise and picture frame noise.
