@@ -29,7 +29,7 @@ def apply_dead_time_filter(phase_2d: np.ndarray, maximum_count: float) -> np.nda
     return phase_clipped_2d
 
 
-# TODO: more documentation (Enrico), basic refactoring
+# TODO: more documentation (Enrico). See #324.
 def dead_time_filter(detector: MKID, dead_time: float) -> None:
     """Dead time filter.
 
