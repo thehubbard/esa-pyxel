@@ -37,12 +37,13 @@ def dead_time_filter(detector: MKID, dead_time: float) -> None:
 
     Parameters
     ----------
-    detector: Detector
+    detector: MKID
         Pyxel Detector MKID object.
     dead_time : float
     """
     # Validation phase
     if not isinstance(detector, MKID):
+        # Later, this will be checked in when YAML configuration file is parsed
         raise TypeError("Expecting a `MKID` object for 'detector'.")
 
     if dead_time <= 0.0:
