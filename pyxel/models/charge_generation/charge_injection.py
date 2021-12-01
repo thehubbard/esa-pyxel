@@ -13,33 +13,74 @@ import numpy as np
 
 from pyxel.detectors import CCD
 
-# TODO: fix docstring, put documentation, private function
+
+def compute_charge_blocks(
+    output_shape: t.Tuple[int, int],
+    charge_level: int,
+    block_start: int = 0,
+    block_end: t.Optional[int] = None,
+) -> np.ndarray:
+    """Compute a block of charges to be injected in the detector.
+
+    Parameters
+    ----------
+    output_shape: tuple
+        Output shape of the array.
+    charge_level: int
+        Value of charges.
+    block_start: int
+        Starting row of the injected charge.
+    block_end: int
+        Ending row for the injected charge.
+
+    Returns
+    -------
+    charge: ndarray
+    """
+    if block_end is None:
+        block_end = output_shape[0]  # number of rows
+
+    # all pixels has zero charge by default
+    charge = np.zeros((output_shape[0], output_shape[1]))
+    charge[slice(block_start, block_end), :] = charge_level
+
+    return charge
 
 
-# TODO: Fix this
-# @validators.validate
-# @config.argument(name='detector', label='', units='', validate=checkers.check_type(CCD))
 def charge_blocks(
     detector: CCD,
     charge_level: int,
     block_start: int = 0,
     block_end: t.Optional[int] = None,
 ) -> None:
-    """TBW.
+    """Inject a block of charge into the CCD detector.
 
-    :param detector:
-    :param charge_level:
-    :param block_start:
-    :param block_end:
-    :return:
+    Parameters
+    ----------
+    detector: Detector
+        Pyxel Detector object.
+    charge_level: int
+        Value of charges.
+    block_start: int
+        Starting row of the injected charge.
+    block_end: int
+        Ending row for the injected charge.
     """
-    logging.info("")
-    geo = detector.geometry
-    if block_end is None:
-        block_end = geo.row
+    if not isinstance(detector, CCD):
+        raise TypeError("Detector not CCD.")
 
-    # all pixels has zero charge by default
-    detector_charge = np.zeros((geo.row, geo.col))
-    detector_charge[slice(block_start, block_end), :] = charge_level
+    shape = (detector.geometry.row, detector.geometry.col)
 
-    detector.charge.add_charge_array(detector_charge)
+    if not 0 <= block_start <= shape[0]:
+        raise ValueError("Block start not in range of the detector shape.")
+    if not 0 <= block_end <= shape[0]:
+        raise ValueError("Block end not in range of the detector shape.")
+
+    charge = compute_charge_blocks(
+        output_shape=shape,
+        charge_level=charge_level,
+        block_start=block_start,
+        block_end=block_end,
+    )
+
+    detector.charge.add_charge_array(charge)
