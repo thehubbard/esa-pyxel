@@ -78,22 +78,15 @@ which returns result numpy array to be able to add to Pyxel detector signal
 - ZeroDivision error fixed
 - Version 2.8
 """
-# Necessary for Python 2.6 and later (JML)
-# Should still work under Python 3.x (JML)
-from __future__ import division, print_function
-
-# warnings.filterwarnings('ignore')
-# # Have not verified this in Python 3.x (JML):
-# _log = logging.getLogger('nghxrg')
-# Have not verified this in Python 3.x (JML):
 import logging
 import typing as t
-from os import path
+from pathlib import Path
 
 import numpy as np
 from astropy.io import fits
 from astropy.stats.funcs import median_absolute_deviation as mad
 from scipy.ndimage.interpolation import zoom
+from typing_extensions import Literal
 
 
 def white_noise(nstep: int) -> np.ndarray:
@@ -108,6 +101,8 @@ def white_noise(nstep: int) -> np.ndarray:
     return distribution
 
 
+# TODO: Compare with https://github.com/astronomyk/SimCADO/blob/master/simcado/nghxrg.py
+#       Later, we should use class 'simcado.nghxrg.HXRGNoise' instead of this class.
 class HXRGNoise:
     """HXRGNoise is a class for making realistic Teledyne HxRG system noise.
 
@@ -131,13 +126,13 @@ class HXRGNoise:
         nfoh: int,
         reverse_scan_direction: bool,
         reference_pixel_border_width: int,
-        wind_mode: str,
+        wind_mode: Literal["FULL", "WINDOW"],
         wind_x_size: int,
         wind_y_size: int,
         wind_x0: int,
         wind_y0: int,
         verbose: bool,
-        pca0_file: t.Optional[str] = None,
+        pca0_file: t.Optional[Path] = None,
     ):
         """Simulate Teledyne HxRG+SIDECAR ASIC system noise.
 
@@ -198,7 +193,6 @@ class HXRGNoise:
         # ======================================================================
         self._log = logging.getLogger("nghxrg")
 
-        wind_mode = wind_mode.upper()
         if wind_mode == "WINDOW":
             n_out = 1
             self.naxis1 = wind_x_size
@@ -256,7 +250,7 @@ class HXRGNoise:
         # ======================================================================
 
         # Configure Subarray (JML)
-        self.wind_mode = wind_mode
+        self.wind_mode = wind_mode  # type: Literal["FULL", "WINDOW"]
         self.det_size_x = det_size_x
         self.det_size_y = det_size_y
         self.wind_x0 = wind_x0
@@ -342,12 +336,14 @@ class HXRGNoise:
             # if pca0_file is None:
             #     self.pca0_file = NGHXRG_HOME + '/nirspec_pca0.fits'
 
-            if path.isfile(pca0_file) is False:
-                print("There was an error finding pca0_file! Check to be")
-                print("sure that the NGHXRG_HOME shell environment")
-                print("variable is set correctly and that the")
-                print("$NGHXRG_HOME/ directory contains the desired PCA0")
-                print("file. The default is nirspec_pca0.fits.")
+            if pca0_file.exists() is False:
+                self._log.error(
+                    "There was an error finding pca0_file! Check to be"
+                    "sure that the NGHXRG_HOME shell environment"
+                    "variable is set correctly and that the"
+                    "$NGHXRG_HOME/ directory contains the desired PCA0"
+                    "file. The default is nirspec_pca0.fits."
+                )
                 raise ValueError()
                 # os.sys.exit()
 
@@ -400,21 +396,17 @@ class HXRGNoise:
                 # os.sys.exit()
             self.pca0 = data[y1:y2, x1:x2]
 
-    # TODO: Remove this method, use only 'self._log.info'
-    def message(self, message_text: str) -> None:
-        """Print a message to the terminal."""
-        if self.verbose is True:
-            self._log.info("NG: " + message_text)
-
-    def pink_noise(self, mode: str) -> np.ndarray:
-        """TBW.
-
-        Generate a vector of non-periodic pink noise.
+    def pink_noise(self, mode: Literal["pink", "acn"]) -> np.ndarray:
+        """Generate a vector of non-periodic pink noise.
 
         Parameters
         ----------
-            mode - Selected from {'pink',  'acn'}
+        mode : 'pink' or 'acn'
+            Select mode for pink noise.
 
+        Returns
+        -------
+        ndarray
         """
         # Configure depending on mode setting
         if mode == "pink":
@@ -573,7 +565,7 @@ class HXRGNoise:
         if (
             self.time_step > 1
         ):  # NOTE: there is no kTc or Bias noise added for first/single frame
-            self.message("Generating ktc_bias_noise")
+            self._log.debug("Generating ktc_bias_noise")
             # If there are no reference pixel,
             # we know that we are dealing with a subarray. In this case,  we do not
             # inject any bias pattern for now.
@@ -618,7 +610,7 @@ class HXRGNoise:
         result = np.zeros((self.naxis3, self.naxis2, self.naxis1), dtype=np.float32)
 
         if rd_noise > 0:
-            self.message("Generating rd_noise")
+            self._log.debug("Generating rd_noise")
             w = self.ref_all
             r = reference_pixel_noise_ratio  # Easier to work with
             for z in np.arange(self.naxis3):
@@ -675,7 +667,7 @@ class HXRGNoise:
         result = np.zeros((self.naxis3, self.naxis2, self.naxis1), dtype=np.float32)
 
         if c_pink > 0:
-            self.message("Adding c_pink noise")
+            self._log.debug("Adding c_pink noise")
             tt = c_pink * self.pink_noise("pink")  # tt is a temp. variable
             tt = np.reshape(
                 tt, (self.time_step, self.naxis2 + self.nfoh, self.xsize + self.nroh)
@@ -709,7 +701,7 @@ class HXRGNoise:
         result = np.zeros((self.naxis3, self.naxis2, self.naxis1), dtype=np.float32)
 
         if u_pink > 0:
-            self.message("Adding u_pink noise")
+            self._log.debug("Adding u_pink noise")
             for op in np.arange(self.n_out):
                 wind_x0 = op * self.xsize
                 x1 = wind_x0 + self.xsize
@@ -733,7 +725,7 @@ class HXRGNoise:
         result = np.zeros((self.naxis3, self.naxis2, self.naxis1), dtype=np.float32)
 
         if acn > 0:
-            self.message("Adding acn noise")
+            self._log.debug("Adding acn noise")
             for op in np.arange(self.n_out):
                 # Generate new pink noise for each even and odd vector.
                 # We give these the abstract names 'a' and 'b' so that we
@@ -785,7 +777,7 @@ class HXRGNoise:
         result = np.zeros((self.naxis3, self.naxis2, self.naxis1), dtype=np.float32)
 
         if pca0_amp > 0:
-            self.message('Adding PCA-zero "picture frame" noise')
+            self._log.debug('Adding PCA-zero "picture frame" noise')
             gamma = self.pink_noise(mode="pink")
             zoom_factor = self.naxis2 * self.time_step / np.size(gamma)
             gamma = zoom(gamma, zoom_factor, order=1, mode="mirror")
@@ -807,7 +799,7 @@ class HXRGNoise:
         :return:
         """
         if self.naxis3 == 1:
-            self.message("Reformatting cube into image")
+            self._log.debug("Reformatting cube into image")
             result = result[0, :, :]
 
         # If the data cube has more than one frame,  convert to unsigned
@@ -823,7 +815,7 @@ class HXRGNoise:
             # result = result.astype('uint16')
             result = result.astype("float64")
 
-        self.message("Exiting make_noise()")
+        self._log.debug("Exiting make_noise()")
 
         return result
 
@@ -845,5 +837,5 @@ class HXRGNoise:
 
         # Write the result to a FITS file
         if o_file is not None:
-            self.message("Writing FITS file")
+            self._log.debug("Writing FITS file")
             hdu.writeto(o_file, clobber="True")
