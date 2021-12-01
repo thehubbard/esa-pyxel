@@ -19,7 +19,6 @@ from typing_extensions import Literal
 
 from pyxel.detectors import CMOS, CMOSGeometry
 from pyxel.models.charge_measurement.nghxrg.nghxrg_beta import HXRGNoise
-from pyxel.util import temporary_random_state
 
 
 @dataclass
@@ -127,7 +126,7 @@ def compute_nghxrg(
         # Create a temporary FITS file
         # This file will be used by HXRGNoise and will be automatically removed
         filename = Path(folder) / "image.fits"  # type: Path
-        hdu = fits.PrimaryHDU(pixel_2d)
+        hdu = fits.PrimaryHDU(np.asarray(pixel_2d, dtype=float))
         hdu.writeto(filename)
 
         ng = HXRGNoise(
@@ -195,7 +194,6 @@ def compute_nghxrg(
 
 
 # TODO: why beta - renaming, documentation, copyright, cite the paper in documentation
-@temporary_random_state
 def nghxrg(
     detector: CMOS,
     noise: t.Sequence[
@@ -297,7 +295,7 @@ def nghxrg(
     )  # type: np.ndarray
 
     # Add the pixels
-    detector.pixel.array += result_2d
+    detector.pixel.array = detector.pixel.array + result_2d
 
 
 # TODO: This generates plot. It should be in class `Output`
