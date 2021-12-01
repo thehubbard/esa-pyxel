@@ -15,9 +15,19 @@
 #
 """Tests for charge injection models."""
 
-import pytest
 import numpy as np
-from pyxel.detectors import CCD, CCDCharacteristics, CCDGeometry, Environment, Material, CMOS, CMOSCharacteristics, CMOSGeometry
+import pytest
+
+from pyxel.detectors import (
+    CCD,
+    CMOS,
+    CCDCharacteristics,
+    CCDGeometry,
+    CMOSCharacteristics,
+    CMOSGeometry,
+    Environment,
+    Material,
+)
 from pyxel.models.charge_generation import charge_blocks
 
 
@@ -42,20 +52,25 @@ def test_charge_blocks_valid(ccd_10x10: CCD):
     """Test model 'charge_blocks' with valid inputs."""
 
     detector = ccd_10x10
-    output = np.array([[1., 1., 1., 1., 1., 1., 1., 1., 1., 1.],
-       [1., 1., 1., 1., 1., 1., 1., 1., 1., 1.],
-       [1., 1., 1., 1., 1., 1., 1., 1., 1., 1.],
-       [1., 1., 1., 1., 1., 1., 1., 1., 1., 1.],
-       [1., 1., 1., 1., 1., 1., 1., 1., 1., 1.],
-       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
-       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
-       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
-       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0.],
-       [0., 0., 0., 0., 0., 0., 0., 0., 0., 0.]])
+    output = np.array(
+        [
+            [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+            [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+            [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+            [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+            [1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+        ]
+    )
 
     charge_blocks(detector=detector, charge_level=1, block_start=0, block_end=5)
 
     np.testing.assert_array_almost_equal(output, detector.charge.array)
+
 
 @pytest.mark.parametrize(
     "charge_level, block_start, block_end, exp_exc, exp_error",
@@ -83,10 +98,22 @@ def test_charge_blocks_valid(ccd_10x10: CCD):
         ),
     ],
 )
-def test_charge_blocks_inputs(ccd_10x10: CCD, charge_level: int, block_start: int, block_end: int, exp_exc, exp_error):
+def test_charge_blocks_inputs(
+    ccd_10x10: CCD,
+    charge_level: int,
+    block_start: int,
+    block_end: int,
+    exp_exc,
+    exp_error,
+):
     """Test model 'charge_blocks' with bad inputs."""
     with pytest.raises(exp_exc, match=exp_error):
-        charge_blocks(detector=ccd_10x10, charge_level=charge_level, block_start=block_start, block_end=block_end)
+        charge_blocks(
+            detector=ccd_10x10,
+            charge_level=charge_level,
+            block_start=block_start,
+            block_end=block_end,
+        )
 
 
 def test_charge_blocks_with_cmos():

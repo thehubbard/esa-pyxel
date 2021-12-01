@@ -6,7 +6,6 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """Pyxel charge injection functions for CCDs."""
-import logging
 import typing as t
 
 import numpy as np
@@ -75,7 +74,7 @@ def charge_blocks(
 
     if not 0 <= block_start <= shape[0]:
         raise ValueError("Block start not in range of the detector shape.")
-    if not 0 <= block_end <= shape[0]:
+    if block_end and not 0 <= block_end <= shape[0]:
         raise ValueError("Block end not in range of the detector shape.")
 
     charge = compute_charge_blocks(
