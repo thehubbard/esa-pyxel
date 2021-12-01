@@ -33,6 +33,8 @@ def apply_dead_time_filter(phase_2d: np.ndarray, maximum_count: float) -> np.nda
 def dead_time_filter(detector: MKID, dead_time: float) -> None:
     """Dead time filter.
 
+    This model is described in :cite:p:`2020:prodhomme` in section 3.3.1.
+
     Parameters
     ----------
     detector: Detector

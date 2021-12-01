@@ -84,6 +84,10 @@ Example of the configuration file:
 Dead time filter
 ================
 
+This model applies only for the :py:class:`~pyxel.detectors.MKID` detector.
+
+More information in :cite:p:`2020:prodhomme` section 3.3.1.
+
 Example of the configuration file:
 
 .. code-block:: yaml
