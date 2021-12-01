@@ -7,16 +7,51 @@
 
 """TBW."""
 
-import logging
+import numpy as np
 
 from pyxel.detectors import MKID
 
 
-# TODO: more documentation (Enrico), basic refactoring
+def apply_dead_time_filter(phase_2d: np.ndarray, maximum_count: float) -> np.ndarray:
+    """Apply dead time filter.
+
+    Parameters
+    ----------
+    phase_2d : ndarray
+    maximum_count : float
+
+    Returns
+    -------
+    ndarray
+    """
+    phase_clipped_2d = np.clip(phase_2d, a_min=None, a_max=maximum_count)
+
+    return phase_clipped_2d
+
+
+# TODO: more documentation (Enrico). See #324.
 def dead_time_filter(detector: MKID, dead_time: float) -> None:
-    """TBW."""
-    logging.info("")
+    """Dead time filter.
 
-    maximum_count = 1.0 / dead_time
+    This model is described in :cite:p:`2020:prodhomme` in section 3.3.1.
 
-    detector.phase.array[detector.phase.array >= maximum_count] = maximum_count
+    Parameters
+    ----------
+    detector: MKID
+        Pyxel Detector MKID object.
+    dead_time : float
+    """
+    # Validation phase
+    if not isinstance(detector, MKID):
+        # Later, this will be checked in when YAML configuration file is parsed
+        raise TypeError("Expecting a `MKID` object for 'detector'.")
+
+    if dead_time <= 0.0:
+        raise ValueError("'dead_time' must be strictly positive.")
+
+    phase_2d = apply_dead_time_filter(
+        phase_2d=detector.phase.array,
+        maximum_count=1.0 / dead_time,
+    )
+
+    detector.phase.array = phase_2d

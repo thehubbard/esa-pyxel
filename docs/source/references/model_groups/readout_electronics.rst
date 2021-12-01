@@ -81,6 +81,27 @@ Example of the configuration file:
 
 .. autofunction:: ac_crosstalk
 
+Dead time filter
+================
+
+This model applies only for the :py:class:`~pyxel.detectors.MKID` detector.
+
+More information in :cite:p:`2020:prodhomme` section 3.3.1.
+
+Example of the configuration file:
+
+.. code-block:: yaml
+
+    - name: dead_time_filter
+      func: pyxel.models.readout_electronics.dead_time_filter
+      enabled: true
+      arguments:
+        dead_time: 1.0
+
+.. note:: This model is specific for the MKID detector.
+
+.. autofunction:: dead_time_filter
+
 SAR ADC
 =======
 
