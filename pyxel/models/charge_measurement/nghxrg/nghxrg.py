@@ -211,7 +211,6 @@ def nghxrg(
             t.Mapping[str, float],
         ]
     ],
-    pca0_file: t.Optional[str] = None,
     window_position: t.Optional[t.Tuple[int, int]] = None,
     window_size: t.Optional[t.Tuple[int, int]] = None,
 ) -> None:
@@ -223,7 +222,6 @@ def nghxrg(
     ----------
     detector: Detector
     noise: list
-    pca0_file: str, optional
     window_position: t.Sequence, optional
         [x0 (columns), y0 (rows)].
     window_size: t.Sequence, optional
