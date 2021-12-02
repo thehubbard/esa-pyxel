@@ -9,6 +9,7 @@
 import typing as t
 
 import numpy as np
+from typing_extensions import Literal
 
 import pyxel
 from pyxel.detectors import Detector
@@ -20,7 +21,7 @@ def load_image_from_file(
     shape: t.Tuple[int, int],
     position: t.Tuple[int, int] = (0, 0),
     align: t.Optional[
-        t.Literal["center", "top_left", "top_right", "bottom_left", "bottom_right"]
+        Literal["center", "top_left", "top_right", "bottom_left", "bottom_right"]
     ] = None,
 ) -> np.ndarray:
     """Load image from file and fit to detector shape.
@@ -55,7 +56,7 @@ def load_image(
     image_file: str,
     position: t.Tuple[int, int] = (0, 0),
     align: t.Optional[
-        t.Literal["center", "top_left", "top_right", "bottom_left", "bottom_right"]
+        Literal["center", "top_left", "top_right", "bottom_left", "bottom_right"]
     ] = None,
     convert_to_photons: bool = False,
     multiplier: float = 1.0,

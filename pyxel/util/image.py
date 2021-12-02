@@ -11,6 +11,7 @@ import typing as t
 from enum import Enum
 
 import numpy as np
+from typing_extensions import Literal
 
 
 class Alignment(Enum):
@@ -63,7 +64,7 @@ def fit_into_array(
     output_shape: t.Tuple[int, int],
     relative_position: t.Tuple[int, int] = (0, 0),
     align: t.Optional[
-        t.Literal["center", "top_left", "top_right", "bottom_left", "bottom_right"]
+        Literal["center", "top_left", "top_right", "bottom_left", "bottom_right"]
     ] = None,
     allow_smaller_array: bool = True,
 ) -> np.ndarray:
