@@ -8,8 +8,9 @@
 #
 """TBW."""
 import typing as t
-import numpy as np
 from enum import Enum
+
+import numpy as np
 
 
 class Alignment(Enum):
@@ -64,7 +65,7 @@ def fit_into_array(
     align: t.Optional[
         t.Literal["center", "top_left", "top_right", "bottom_left", "bottom_right"]
     ] = None,
-    allow_smaller_array: bool = True
+    allow_smaller_array: bool = True,
 ) -> np.ndarray:
     """Fit input array into an output array of specified output shape.
 
