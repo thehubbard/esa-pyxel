@@ -67,47 +67,19 @@ def ccd_10x10() -> CCD:
 
 
 @pytest.mark.parametrize(
-    "image_file, fit_image_to_det, position, convert_to_photons, multiplier, time_scale",
+    "image_file, position, align, convert_to_photons, multiplier, time_scale",
     [
-        pytest.param("img.npy", True, (0, 0), True, 1.0, 1.0, id="valid"),
-        pytest.param(
-            "img_invalid.npy",
-            True,
-            (0, 0),
-            True,
-            1.0,
-            1.0,
-            id="img_too_small",
-            marks=pytest.mark.xfail(raises=ValueError, strict=True),
-        ),
-        pytest.param(
-            "img.npy",
-            True,
-            (15, 15),
-            True,
-            1.0,
-            1.0,
-            id="out_of_bounds",
-            marks=pytest.mark.xfail(raises=ValueError, strict=True),
-        ),
-        pytest.param(
-            "img.npy",
-            True,
-            (15, 15),
-            True,
-            1.0,
-            1.0,
-            id="negative_position",
-            marks=pytest.mark.xfail(raises=ValueError, strict=True),
-        ),
+        pytest.param("img.npy", (0, 0), None, True, 1.0, 1.0, id="valid"),
     ],
 )
 def test_load_image(
     ccd_10x10: CCD,
     valid_data2d: str,
     image_file: str,
-    fit_image_to_det: bool,
     position: t.Tuple[int, int],
+    align: t.Optional[
+        t.Literal["center", "top_left", "top_right", "bottom_left", "bottom_right"]
+    ],
     convert_to_photons: bool,
     multiplier: float,
     time_scale: float,
@@ -116,8 +88,8 @@ def test_load_image(
     load_image(
         detector=ccd_10x10,
         image_file=f"{valid_data2d}/{image_file}",
-        fit_image_to_det=fit_image_to_det,
         position=position,
+        align=align,
         convert_to_photons=convert_to_photons,
         multiplier=multiplier,
         time_scale=time_scale,
