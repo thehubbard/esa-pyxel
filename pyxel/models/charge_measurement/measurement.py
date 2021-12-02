@@ -7,23 +7,57 @@
 
 """Charge readout model."""
 import logging
+import typing as t
+
+import numpy as np
 
 from pyxel.detectors import Detector
 
 
-# TODO: keep name, private functions, more documentation, tests
-def simple_measurement(detector: Detector) -> None:
-    """Create signal array from pixel array.
+def apply_gain(pixel_2d: np.ndarray, gain: float) -> np.ndarray:
+    """Apply a gain (in V/e-) to a pixel array (in V).
 
     Parameters
     ----------
-    detector
-    gain
-    """
-    char = detector.characteristics
+    pixel_2d : ndarray
+        2D array of pixels. Unit: Volt
+    gain : float
+        Gain to apply. Unit: V/e-
 
-    array = detector.pixel.array * char.sv
-    detector.signal.array = array.astype("float64")
+    Returns
+    -------
+    ndarray
+        2D array of signals. Unit: e-
+    """
+    new_data_2d = pixel_2d * gain
+
+    return new_data_2d
+
+
+# TODO: more documentation, tests
+def simple_measurement(detector: Detector, gain: t.Optional[float] = None) -> None:
+    """Convert the pixel array into signal array.
+
+    Notes
+    -----
+    If no gain is provided, then its value will be the sensitivity of charge readout
+    provided in the ``Detector`` object.
+
+    Parameters
+    ----------
+    detector : Detector
+        Pyxel Detector object.
+    gain : float, optional.
+        Gain to apply. By default, this is the sensitivity of charge readout.
+    """
+    if gain is None:
+        char = detector.characteristics
+        gain = char.sv
+
+    # Compute
+    signal_2d = apply_gain(pixel_2d=detector.pixel.array, gain=gain)
+
+    detector.signal.array = signal_2d.astype("float64")
 
 
 # TODO: how is it different? rename or merge both into one model, get rid of gain
