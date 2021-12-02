@@ -15,19 +15,19 @@ from pyxel.detectors import Detector
 
 
 def apply_gain(pixel_2d: np.ndarray, gain: float) -> np.ndarray:
-    """Apply a gain (in V/e-) to a pixel array (in V).
+    """Apply a gain (in V/e-) to a pixel array (in e-).
 
     Parameters
     ----------
     pixel_2d : ndarray
-        2D array of pixels. Unit: Volt
+        2D array of pixels. Unit: e-
     gain : float
         Gain to apply. Unit: V/e-
 
     Returns
     -------
     ndarray
-        2D array of signals. Unit: e-
+        2D array of signals. Unit: V
     """
     new_data_2d = pixel_2d * gain
 
@@ -47,7 +47,7 @@ def simple_measurement(detector: Detector, gain: t.Optional[float] = None) -> No
     detector : Detector
         Pyxel Detector object.
     gain : float, optional.
-        Gain to apply. By default, this is the sensitivity of charge readout.
+        Gain to apply. By default, this is the sensitivity of charge readout. Unit: V/e-
     """
     if gain is None:
         char = detector.characteristics
