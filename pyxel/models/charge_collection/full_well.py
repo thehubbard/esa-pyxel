@@ -6,21 +6,49 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """Pyxel full well models."""
-import logging
+import typing as t
+
+import numpy as np
 
 from pyxel.detectors import Detector
 
-# TODO: documentation, private function
+
+def apply_simple_full_well_capacity(array: np.ndarray, fwc: int) -> np.ndarray:
+    """Apply full well capacity to an array.
+
+    Parameters
+    ----------
+    array: ndarray
+    fwc: int
+
+    Returns
+    -------
+    output: ndarray
+    """
+    array[array > fwc] = fwc
+    return array
 
 
-# @pyxel.validate
-# @pyxel.argument(name='', label='', units='', validate=)
-def simple_full_well(detector: Detector) -> None:
-    """Limiting the amount of charge in pixel due to full well capacity."""
-    logging.info("")
-    fwc = detector.characteristics.fwc
+def simple_full_well(detector: Detector, fwc: t.Optional[int] = None) -> None:
+    """Limit the amount of charge in pixel due to full well capacity.
+
+    Uses full well capacity in the characteristics of the detector object if not overridden by the function argument.
+
+    Parameters
+    ----------
+    detector: Detector
+    fwc: int
+    """
     if fwc is None:
-        raise ValueError("Full Well Capacity is not defined")
-    charge_array = detector.pixel.array
-    charge_array[charge_array > fwc] = fwc
+        fwc_input = detector.characteristics.fwc
+    else:
+        fwc_input = fwc
+
+    if fwc_input < 0:
+        raise ValueError("Full well capacity should be a positive number.")
+
+    charge_array = apply_simple_full_well_capacity(
+        array=detector.pixel.array, fwc=fwc_input
+    )
+
     detector.pixel.array = charge_array

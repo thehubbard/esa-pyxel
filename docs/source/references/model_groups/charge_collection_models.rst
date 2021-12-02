@@ -34,6 +34,20 @@ Example of YAML configuration model:
 
 Simple full well
 ----------------
+This model can be used to limit the amount of charge in :py:class:`~pyxel.data_structure.Pixel` array
+due to full well capacity. Values will be clipped to the value of the full well capacity.
+The model uses full well capacity value specified in :py:class:`~pyxel.detectors.Characteristics` of the
+:py:class:`~pyxel.detectors.Detector`, unless providing an argument ``fwc`` directly as the model argument.
+
+Example of the configuration file:
+
+.. code-block:: yaml
+
+    - name: simple_full_well
+      func: pyxel.models.charge_collection.simple_full_well
+      enabled: true
+      arguments:
+          fwc: 1000  # optional
 
 .. autofunction:: simple_full_well
 
