@@ -12,9 +12,7 @@ import typing as t
 
 import numpy as np
 from astropy.convolution import convolve_fft
-
-if t.TYPE_CHECKING:
-    from pyxel.detectors import CMOS
+from pyxel.detectors import CMOS
 
 
 def ipc_kernel(
@@ -38,7 +36,7 @@ def ipc_kernel(
     if not anisotropic_coupling < coupling:
         raise ValueError("Requirement anisotropic_coupling <= coupling is not met.")
     if not 0 <= coupling + diagonal_coupling <= 0.25:
-        raise ValueError("Requirement coupling + diagonal_coupling << 1 is not met.")
+        raise ValueError("Requirement coupling plus diagonal_coupling << 1 is not met.")
 
     kernel = np.array(
         [
