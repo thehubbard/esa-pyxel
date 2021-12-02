@@ -12,6 +12,28 @@ Simple photoconversion
 
 .. autofunction:: simple_conversion
 
+Charge injection
+----------------
+
+With this model you can inject arbitrary charge block into rows of a :py:class:`~pyxel.detectors.CCD` detector.
+Charge will be injected uniformly from row number `block_start` to row number `block_end`.
+
+Example of YAML configuration model:
+
+.. code-block:: yaml
+
+    - name: charge_blocks
+      func: pyxel.models.charge_generation.charge_blocks
+      enabled: true
+      arguments:
+        charge_level: 100
+        block_start: 10
+        block_end: 50
+
+.. note:: This model is specific for the CCD detector.
+
+.. autofunction:: charge_blocks
+
 Custom quantum efficiency map
 -----------------------------
 
