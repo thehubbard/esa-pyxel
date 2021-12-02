@@ -19,6 +19,7 @@ from pathlib import Path
 
 import numpy as np
 import pytest
+from typing_extensions import Literal
 
 from pyxel.detectors import (
     CCD,

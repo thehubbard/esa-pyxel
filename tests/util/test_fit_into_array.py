@@ -10,6 +10,7 @@ import typing as t
 
 import numpy as np
 import pytest
+from typing_extensions import Literal
 
 from pyxel.util import fit_into_array
 
