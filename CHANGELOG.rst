@@ -12,6 +12,8 @@ Core
   (See `!353 <https://gitlab.com/esa/pyxel/-/merge_requests/353>`_).
 * Use an array in 'Charge' besides a dataframe.
   (See `!351 <https://gitlab.com/esa/pyxel/-/merge_requests/351>`_).
+* Move some general processing function into a common folder.
+  (See `!359 <https://gitlab.com/esa/pyxel/-/merge_requests/359>`_).
 
 Documentation
 ~~~~~~~~~~~~~
