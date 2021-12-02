@@ -6,7 +6,7 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """Charge readout model."""
-import logging
+
 import typing as t
 
 import numpy as np
