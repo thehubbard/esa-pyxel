@@ -6,9 +6,11 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 #
 #
+import typing as t
+
 import numpy as np
 import pytest
-import typing as t
+
 from pyxel.util import fit_into_array
 
 
