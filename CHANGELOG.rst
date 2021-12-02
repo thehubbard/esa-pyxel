@@ -20,6 +20,8 @@ Documentation
 Models
 ~~~~~~
 
+* Model 'nghxrg' is not working on Windows.
+  (See `!361 <https://gitlab.com/esa/pyxel/-/merge_requests/361>`_).
 
 Others
 ~~~~~~
