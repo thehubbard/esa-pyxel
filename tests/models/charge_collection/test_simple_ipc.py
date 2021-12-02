@@ -326,7 +326,7 @@ def test_simple_ipc_valid(cmos_10x10: CMOS):
             0.1,
             0.01,
             ValueError,
-            "Requirement coupling plus diagonal_coupling << 1 is not met.",
+            r"Requirement coupling \+ diagonal_coupling << 1 is not met.",
         ),
     ],
 )
