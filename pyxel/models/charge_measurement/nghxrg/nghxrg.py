@@ -10,7 +10,6 @@
 import logging
 import typing as t
 from dataclasses import dataclass
-from pathlib import Path
 
 import numpy as np
 from typing_extensions import Literal
@@ -106,7 +105,6 @@ def compute_nghxrg(
     num_frames_overhead : int
     reverse_scan_direction : bool
     reference_pixel_border_width : int
-    pca0_filename : Path
 
     Returns
     -------
