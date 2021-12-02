@@ -15,8 +15,11 @@ Loading an image
 ----------------
 With this model you can add photons to :py:class:`~pyxel.detectors.Detector` by loading an image from a file.
 Accepted file formats are ``.npy``, ``.fits``, ``.txt``, ``.data``, ``.jpg``, ``.jpeg``, ``.bmp``,
-``.png`` and ``.tiff``. Use arguments ``fit_image_to_det`` to crop the image to detector shape and ``position``
-to set the offset from (0,0) pixel. With ``multiplier`` you can multiply tho photon number by a custom float,
+``.png`` and ``.tiff``. Use argument ``position`` to set the offset from (0,0) pixel
+and set where the input image is placed onto detector. You can set preset positions with argument ``align``.
+Values outside of detector shape will be cropped.
+Read more about placement in the documentation of function :py:func:`~pyxel.util.fit_into_array`.
+With ``multiplier`` you can multiply the photon number by a custom float,
 and ``time_scale`` is to set the time scale of the incoming photons, default is 1 second.
 By setting ``convert_to_photons`` to ``true``, the model converts the values of loaded image array from ADU to
 photon numbers for each pixel using the Photon Transfer Function:
@@ -29,7 +32,7 @@ photon numbers for each pixel using the Photon Transfer Function:
       enabled: true
       arguments:
         image_file: data/HorseHead.fits
-        fit_image_to_det: true
+        position: (0,0)
         convert_to_photons: true
 
 .. autofunction:: load_image
