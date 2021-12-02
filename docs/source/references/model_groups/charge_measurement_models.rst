@@ -11,6 +11,19 @@ Charge Measurement models
 Simple charge measurement
 =========================
 
+Convert the pixels array to the signal array.
+
+Example of the configuration file:
+
+.. code-block:: yaml
+
+    - name: simple_measurement
+      func: pyxel.models.charge_measurement.simple_measurement
+      enabled: true
+      arguments:
+        noise:
+          - gain: 1.    # Optional
+
 .. autofunction:: simple_measurement
 
 Output node noise

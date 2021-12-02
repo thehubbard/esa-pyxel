@@ -7,27 +7,56 @@
 
 """Charge readout model."""
 import logging
+import typing as t
+
+import numpy as np
 
 from pyxel.detectors import Detector
 
-# from astropy import units as u
 
+def apply_gain(pixel_2d: np.ndarray, gain: float) -> np.ndarray:
+    """Apply a gain (in V/e-) to a pixel array (in e-).
 
-# TODO: keep name, private functions, more documentation, tests
-# @pyxel.validate
-# @pyxel.argument(name='', label='', units='', validate=)
-def simple_measurement(detector: Detector) -> None:
-    """Create signal array from pixel array.
+    Parameters
+    ----------
+    pixel_2d : ndarray
+        2D array of pixels. Unit: e-
+    gain : float
+        Gain to apply. Unit: V/e-
 
-    detector Signal unit: Volt
-
-    :param detector: Pyxel Detector object
+    Returns
+    -------
+    ndarray
+        2D array of signals. Unit: V
     """
-    logging.info("")
-    char = detector.characteristics
+    new_data_2d = pixel_2d * gain
 
-    array = detector.pixel.array * char.sv
-    detector.signal.array = array.astype("float64")
+    return new_data_2d
+
+
+def simple_measurement(detector: Detector, gain: t.Optional[float] = None) -> None:
+    """Convert the pixel array into signal array.
+
+    Notes
+    -----
+    If no gain is provided, then its value will be the sensitivity of charge readout
+    provided in the ``Detector`` object.
+
+    Parameters
+    ----------
+    detector : Detector
+        Pyxel Detector object.
+    gain : float, optional.
+        Gain to apply. By default, this is the sensitivity of charge readout. Unit: V/e-
+    """
+    if gain is None:
+        char = detector.characteristics
+        gain = char.sv
+
+    # Compute
+    signal_2d = apply_gain(pixel_2d=detector.pixel.array, gain=gain)
+
+    detector.signal.array = signal_2d.astype("float64")
 
 
 # TODO: how is it different? rename or merge both into one model, get rid of gain
