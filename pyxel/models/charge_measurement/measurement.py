@@ -6,7 +6,7 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """Charge readout model."""
-import logging
+
 import typing as t
 
 import numpy as np
@@ -57,18 +57,3 @@ def simple_measurement(detector: Detector, gain: t.Optional[float] = None) -> No
     signal_2d = apply_gain(pixel_2d=detector.pixel.array, gain=gain)
 
     detector.signal.array = signal_2d.astype("float64")
-
-
-# TODO: how is it different? rename or merge both into one model, get rid of gain
-def simple_test(detector: Detector, gain: int) -> None:
-    """Create signal array from pixel array.
-
-    detector Signal unit: Volt
-
-    :param detector: Pyxel Detector object
-    """
-    logging.info("")
-    char = detector.characteristics
-
-    array = detector.pixel.array * char.sv * gain
-    detector.signal.array = array.astype("float64")
