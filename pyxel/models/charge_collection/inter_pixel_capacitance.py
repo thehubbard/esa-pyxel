@@ -8,10 +8,9 @@
 #
 """Simple Inter Pixel Capacitance model: https://iopscience.iop.org/article/10.1088/1538-3873/128/967/095001/pdf."""
 
-import typing as t
-
 import numpy as np
 from astropy.convolution import convolve_fft
+
 from pyxel.detectors import CMOS
 
 

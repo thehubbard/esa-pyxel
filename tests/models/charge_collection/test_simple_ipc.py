@@ -8,8 +8,8 @@
 #
 """Tests for simple inter-pixel capacitance model."""
 
-import pytest
 import numpy as np
+import pytest
 
 from pyxel.detectors import (
     CCD,
