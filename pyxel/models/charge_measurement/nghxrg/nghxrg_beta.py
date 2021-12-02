@@ -80,7 +80,6 @@ which returns result numpy array to be able to add to Pyxel detector signal
 """
 import logging
 import typing as t
-from pathlib import Path
 
 import numpy as np
 from astropy.io import fits
@@ -132,7 +131,7 @@ class HXRGNoise:
         wind_x0: int,
         wind_y0: int,
         verbose: bool,
-        pca0_file: t.Optional[Path] = None,
+        pca0: np.ndarray,
     ):
         """Simulate Teledyne HxRG+SIDECAR ASIC system noise.
 
@@ -148,7 +147,6 @@ class HXRGNoise:
                           one.
             nroh        - New row overhead in pixel. This allows for a short
                           wait at the end of a row before starting the next one.
-            pca0_file   - Name of a FITS file that contains PCA-zero
             verbose     - Enable this to provide status reporting
             wind_mode   - 'FULL' or 'WINDOW' (JML)
             wind_x0/wind_y0       - Pixel positions of subarray mode (JML)
@@ -164,23 +162,6 @@ class HXRGNoise:
                                      setting =False corresponds to
                                      what HxRG detectors default to
                                      upon power up.
-
-        :param det_size_x:
-        :param det_size_y:
-        :param time_step:
-        :param n_out:
-        :param nroh:
-        :param nfoh:
-        :param pca0_file:
-        :param reverse_scan_direction:
-        :param reference_pixel_border_width:
-        :param wind_mode:
-        :param wind_x_size:
-        :param wind_y_size:
-        :param wind_x0:
-        :param wind_y0:
-        :param verbose:
-
         """
         # ======================================================================
         #
@@ -330,71 +311,73 @@ class HXRGNoise:
         self.p_filter1 = np.insert(self.p_filter1, 0, 0.0)
         self.p_filter2 = np.insert(self.p_filter2, 0, 0.0)
 
-        if pca0_file is not None:
-            # Initialize PCA-zero file and make sure that it exists and is a file
-            # self.pca0_file = os.getenv('NGHXRG_HOME')+'/nirspec_pca0.fits' if \
-            # if pca0_file is None:
-            #     self.pca0_file = NGHXRG_HOME + '/nirspec_pca0.fits'
+        # if pca0_file is not None:
+        #     # Initialize PCA-zero file and make sure that it exists and is a file
+        #     # self.pca0_file = os.getenv('NGHXRG_HOME')+'/nirspec_pca0.fits' if \
+        #     # if pca0_file is None:
+        #     #     self.pca0_file = NGHXRG_HOME + '/nirspec_pca0.fits'
+        #
+        #     if pca0_file.exists() is False:
+        #         self._log.error(
+        #             "There was an error finding pca0_file! Check to be"
+        #             "sure that the NGHXRG_HOME shell environment"
+        #             "variable is set correctly and that the"
+        #             "$NGHXRG_HOME/ directory contains the desired PCA0"
+        #             "file. The default is nirspec_pca0.fits."
+        #         )
+        #         raise ValueError()
+        #         # os.sys.exit()
 
-            if pca0_file.exists() is False:
-                self._log.error(
-                    "There was an error finding pca0_file! Check to be"
-                    "sure that the NGHXRG_HOME shell environment"
-                    "variable is set correctly and that the"
-                    "$NGHXRG_HOME/ directory contains the desired PCA0"
-                    "file. The default is nirspec_pca0.fits."
-                )
-                raise ValueError()
-                # os.sys.exit()
+        # Initialize pca0. This includes scaling to the correct size,
+        # zero offsetting,  and renormalization. We use robust statistics
+        # because pca0 is real data
+        # hdu = fits.open(pca0_file)
+        # nx_pca0 = hdu[0].header["naxis1"]
+        # ny_pca0 = hdu[0].header["naxis2"]
 
-            # Initialize pca0. This includes scaling to the correct size,
-            # zero offsetting,  and renormalization. We use robust statistics
-            # because pca0 is real data
-            hdu = fits.open(pca0_file)
-            nx_pca0 = hdu[0].header["naxis1"]
-            ny_pca0 = hdu[0].header["naxis2"]
+        zoom_factor = 0
+        # Do this slightly differently,  taking into account the
+        # different types of readout modes (JML)
+        # if (nx_pca0 != self.naxis1 or naxis2 != self.naxis2):
+        #    zoom_factor = self.naxis1 / nx_pca0
+        #    self.pca0 = zoom(hdu[0].data,  zoom_factor,  order=1,  mode='wrap')
+        # else:
+        #    self.pca0 = hdu[0].data
+        # self.pca0 -= np.median(self.pca0) # Zero offset
+        # self.pca0 /= (1.4826*mad(self.pca0)) # Renormalize
 
-            zoom_factor = 0
-            # Do this slightly differently,  taking into account the
-            # different types of readout modes (JML)
-            # if (nx_pca0 != self.naxis1 or naxis2 != self.naxis2):
-            #    zoom_factor = self.naxis1 / nx_pca0
-            #    self.pca0 = zoom(hdu[0].data,  zoom_factor,  order=1,  mode='wrap')
-            # else:
-            #    self.pca0 = hdu[0].data
-            # self.pca0 -= np.median(self.pca0) # Zero offset
-            # self.pca0 /= (1.4826*mad(self.pca0)) # Renormalize
+        data = pca0
+        nx_pca0, ny_pca0 = pca0.shape
 
-            data = hdu[0].data
-            # Make sure the real PCA image is correctly scaled to size of fake data (JML)
-            # Depends if we're FULL, STRIPE or WINDOW
-            if wind_mode == "FULL":
-                scale1 = self.naxis1 / nx_pca0
-                scale2 = self.naxis2 / ny_pca0
-                zoom_factor = np.max([scale1, scale2])
-            # if wind_mode == 'STRIPE':
-            #     zoom_factor = self.naxis1 / nx_pca0
-            if wind_mode == "WINDOW":
-                # Scale based on det_size_x
-                scale1 = self.det_size_x / nx_pca0
-                scale2 = self.det_size_y / ny_pca0
-                zoom_factor = np.max([scale1, scale2])
+        # Make sure the real PCA image is correctly scaled to size of fake data (JML)
+        # Depends if we're FULL, STRIPE or WINDOW
+        if wind_mode == "FULL":
+            scale1 = self.naxis1 / nx_pca0
+            scale2 = self.naxis2 / ny_pca0
+            zoom_factor = np.max([scale1, scale2])
+        # if wind_mode == 'STRIPE':
+        #     zoom_factor = self.naxis1 / nx_pca0
+        if wind_mode == "WINDOW":
+            # Scale based on det_size_x
+            scale1 = self.det_size_x / nx_pca0
+            scale2 = self.det_size_y / ny_pca0
+            zoom_factor = np.max([scale1, scale2])
 
-            # Resize PCA0 data
-            if zoom_factor != 1:
-                data = zoom(data, zoom_factor, order=1, mode="wrap")
+        # Resize PCA0 data
+        if zoom_factor != 1:
+            data = zoom(data, zoom_factor, order=1, mode="wrap")
 
-            data -= np.median(data)  # Zero offset
-            data /= 1.4826 * mad(data)  # Renormalize
+        data -= np.median(data)  # Zero offset
+        data /= 1.4826 * mad(data)  # Renormalize
 
-            # Make sure x2 and y2 are valid
-            if x2 > data.shape[0] or y2 > data.shape[1]:
-                raise ValueError()
-                # _log.warning('Specified window size does not fit within detector array!')
-                # _log.warning('X indices: [%s, %s]; Y indices: [%s, %s]; XY Size: [%s,  %s]' %
-                #              (x1, x2, y1, y2, data.shape[0], data.shape[1]))
-                # os.sys.exit()
-            self.pca0 = data[y1:y2, x1:x2]
+        # Make sure x2 and y2 are valid
+        if x2 > data.shape[0] or y2 > data.shape[1]:
+            raise ValueError()
+            # _log.warning('Specified window size does not fit within detector array!')
+            # _log.warning('X indices: [%s, %s]; Y indices: [%s, %s]; XY Size: [%s,  %s]' %
+            #              (x1, x2, y1, y2, data.shape[0], data.shape[1]))
+            # os.sys.exit()
+        self.pca0 = data[y1:y2, x1:x2]
 
     def pink_noise(self, mode: Literal["pink", "acn"]) -> np.ndarray:
         """Generate a vector of non-periodic pink noise.

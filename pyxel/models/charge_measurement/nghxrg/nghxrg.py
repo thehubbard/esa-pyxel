@@ -10,11 +10,8 @@
 import logging
 import typing as t
 from dataclasses import dataclass
-from pathlib import Path
-from tempfile import TemporaryDirectory
 
 import numpy as np
-from astropy.io import fits
 from typing_extensions import Literal
 
 from pyxel.detectors import CMOS, CMOSGeometry
@@ -108,7 +105,6 @@ def compute_nghxrg(
     num_frames_overhead : int
     reverse_scan_direction : bool
     reference_pixel_border_width : int
-    pca0_filename : Path
 
     Returns
     -------
@@ -123,74 +119,68 @@ def compute_nghxrg(
     else:
         window_mode = "WINDOW"
 
-    with TemporaryDirectory() as folder:
-        # Create a temporary FITS file
-        # This file will be used by HXRGNoise and will be automatically removed
-        filename = Path(folder) / "image.fits"  # type: Path
-        data_hxrg_2d = np.asarray(pixel_2d, dtype=float).transpose()  # type: np.ndarray
-        hdu = fits.PrimaryHDU(data_hxrg_2d)
-        hdu.writeto(filename)
+    data_hxrg_2d = np.asarray(pixel_2d, dtype=float)  # type: np.ndarray
 
-        ng = HXRGNoise(
-            n_out=num_outputs,
-            time_step=time_step,
-            nroh=num_rows_overhead,
-            nfoh=num_frames_overhead,
-            reverse_scan_direction=reverse_scan_direction,
-            reference_pixel_border_width=reference_pixel_border_width,
-            pca0_file=filename,
-            det_size_x=det_size_x,
-            det_size_y=det_size_y,
-            wind_mode=window_mode,
-            wind_x_size=window_x_size,
-            wind_y_size=window_y_size,
-            wind_x0=window_x_start,
-            wind_y0=window_y_start,
-            verbose=True,
-        )  # type: HXRGNoise
+    ng = HXRGNoise(
+        n_out=num_outputs,
+        time_step=time_step,
+        nroh=num_rows_overhead,
+        nfoh=num_frames_overhead,
+        reverse_scan_direction=reverse_scan_direction,
+        reference_pixel_border_width=reference_pixel_border_width,
+        pca0=data_hxrg_2d,
+        det_size_x=det_size_x,
+        det_size_y=det_size_y,
+        wind_mode=window_mode,
+        wind_x_size=window_x_size,
+        wind_y_size=window_y_size,
+        wind_x0=window_x_start,
+        wind_y0=window_y_start,
+        verbose=True,
+    )  # type: HXRGNoise
 
-        final_data_2d = np.zeros(shape=window_size)
+    final_data_2d = np.zeros(shape=window_size)
 
-        for item in noise:  # type: NoiseType
-            if isinstance(item, KTCBiasNoise):
-                data = ng.add_ktc_bias_noise(
-                    ktc_noise=item.ktc_noise,
-                    bias_offset=item.bias_offset,
-                    bias_amp=item.bias_amp,
-                )  # type: np.ndarray
+    for item in noise:  # type: NoiseType
+        if isinstance(item, KTCBiasNoise):
+            data = ng.add_ktc_bias_noise(
+                ktc_noise=item.ktc_noise,
+                bias_offset=item.bias_offset,
+                bias_amp=item.bias_amp,
+            )  # type: np.ndarray
 
-            elif isinstance(item, WhiteReadNoise):
-                data = ng.add_white_read_noise(
-                    rd_noise=item.rd_noise,
-                    reference_pixel_noise_ratio=item.ref_pixel_noise_ratio,
-                )
+        elif isinstance(item, WhiteReadNoise):
+            data = ng.add_white_read_noise(
+                rd_noise=item.rd_noise,
+                reference_pixel_noise_ratio=item.ref_pixel_noise_ratio,
+            )
 
-            elif isinstance(item, CorrPinkNoise):
-                data = ng.add_corr_pink_noise(c_pink=item.c_pink)
+        elif isinstance(item, CorrPinkNoise):
+            data = ng.add_corr_pink_noise(c_pink=item.c_pink)
 
-            elif isinstance(item, UncorrPinkNoise):
-                data = ng.add_uncorr_pink_noise(u_pink=item.u_pink)
+        elif isinstance(item, UncorrPinkNoise):
+            data = ng.add_uncorr_pink_noise(u_pink=item.u_pink)
 
-            elif isinstance(item, AcnNoise):
-                data = ng.add_acn_noise(acn=item.acn)
+        elif isinstance(item, AcnNoise):
+            data = ng.add_acn_noise(acn=item.acn)
 
-            elif isinstance(item, PCAZeroNoise):
-                data = ng.add_pca_zero_noise(pca0_amp=item.pca0_amp)
+        elif isinstance(item, PCAZeroNoise):
+            data = ng.add_pca_zero_noise(pca0_amp=item.pca0_amp)
 
-            else:
-                raise TypeError(f"Unknown item: {item!r} !")
+        else:
+            raise TypeError(f"Unknown item: {item!r} !")
 
-            data_2d = ng.format_result(data)  # type: np.ndarray
-            if data_2d.any():
-                if window_mode == "FULL":
-                    final_data_2d += data_2d
-                elif window_mode == "WINDOW":
-                    window_y_end = window_y_start + window_y_size  # type: int
-                    window_x_end = window_x_start + window_x_size  # type: int
+        data_2d = ng.format_result(data)  # type: np.ndarray
+        if data_2d.any():
+            if window_mode == "FULL":
+                final_data_2d += data_2d
+            elif window_mode == "WINDOW":
+                window_y_end = window_y_start + window_y_size  # type: int
+                window_x_end = window_x_start + window_x_size  # type: int
 
-                    final_data_2d[
-                        window_y_start:window_y_end, window_x_start:window_x_end
-                    ] += data_2d
+                final_data_2d[
+                    window_y_start:window_y_end, window_x_start:window_x_end
+                ] += data_2d
 
     return final_data_2d
 
