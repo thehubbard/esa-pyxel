@@ -7,22 +7,23 @@
 
 """Linearity models."""
 import typing as t
+
 import numpy as np
 
 from pyxel.detectors import Detector
 
 
 def compute_poly_linearity(
-    array_2d: np.ndarray, coefficients: t.List[float],
+    array_2d: np.ndarray, coefficients: t.Sequence[float],
 ) -> np.ndarray:
-    """
-    Add non-linearity to an array of values following a polynomial function
+    """Add non-linearity to an array of values following a polynomial function.
+
     Parameters
     ----------
-    array_2d: np.ndarray
-        Input array
-    coefficients: list
-        coefficient of the polynomial function
+    array_2d: ndarray
+        Input array.
+    coefficients: list of float
+        Coefficients of the polynomial function.
 
     Returns
     -------
@@ -37,9 +38,10 @@ def compute_poly_linearity(
 
 
 def output_node_linearity_poly(
-    detector: Detector, coefficients: t.List[float],
+    detector: Detector, coefficients: t.Sequence[float],
 ) -> None:
-    """Add non-linearity to signal array to simulate the non-linearity of the output node circuit.
+    """.Add non-linearity to signal array to simulate the non-linearity of the output node circuit.
+
     The non-linearity is simulated by a polynomial function. The user specifies the polynomial coefficients.
 
     detector Signal unit: Volt
@@ -47,13 +49,9 @@ def output_node_linearity_poly(
     Parameters
     ----------
     detector: Detector
-        Pyxel Detector object
-    coefficients: list
-        coefficient of the polynomial function
-
-    Returns
-    -------
-    None
+        Pyxel Detector object.
+    coefficients: list of float
+        Coefficient of the polynomial function.
     """
 
     signal_mean_array = detector.signal.array.astype("float64")
