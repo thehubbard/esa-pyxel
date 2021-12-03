@@ -89,8 +89,9 @@ def dark_current_rule07(detector: CMOS, seed: t.Optional[int] = None) -> None:
     cut_off = detector.characteristics.cutoff
 
     dc = compute_mct_dark_rule07(pitch, temperature, cut_off)
+    ne = dc * detector.time_step
 
     # The number of charge generated with Poisson distribution using rule07 empiric law for lambda
-    charge_number = np.random.poisson(dc, size=(geo.row, geo.col))
+    charge_number = np.random.poisson(ne, size=(geo.row, geo.col))
 
     detector.charge.add_charge_array(charge_number)
