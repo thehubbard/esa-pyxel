@@ -89,6 +89,9 @@ def dark_current_rule07(detector: CMOS, seed: t.Optional[int] = None) -> None:
     seed: int, optional
     """
     # TODO: investigate on the knee of rule07 for higher 1/le*T values
+    if not isinstance(detector, CMOS):
+        raise TypeError("Expecting a CMOS object for detector.")
+
     geo = detector.geometry
 
     pitch = geo.pixel_vert_size  # assumes a square pitch
