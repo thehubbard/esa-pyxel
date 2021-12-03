@@ -7,7 +7,6 @@
 
 """Simple model to load charge profiles."""
 
-import logging
 import typing as t
 from functools import lru_cache
 from pathlib import Path
@@ -16,60 +15,53 @@ import numpy as np
 
 from pyxel.detectors import Detector, Geometry
 from pyxel.inputs import load_image
+from pyxel.util import fit_into_array
+from typing_extensions import Literal
 
 
 @lru_cache(maxsize=128)  # One must add parameter 'maxsize' for Python 3.7
 def load_charge_from_file(
-    num_rows: int,
-    num_cols: int,
+    shape: t.Tuple[int, int],
     filename: t.Union[str, Path],
-    profile_position_y: int,
-    profile_position_x: int,
-    fit_profile_to_det: bool = False,
+    position: t.Tuple[int, int] = (0, 0),
+    align: t.Optional[
+        Literal["center", "top_left", "top_right", "bottom_left", "bottom_right"]
+    ] = None,
 ) -> np.ndarray:
     """Create charges from a charge profile file.
 
     Parameters
     ----------
-    num_rows: int
-    num_cols: int
+    shape: tuple
     filename: str or Path
-    profile_position_y: int
-    profile_position_x: x
-    fit_profile_to_det: bool
+    position: tuple
+        Indices of starting row and column, used when fitting charge to detector.
+    align: Literal
+        Keyword to align the charge to detector. Can be any from:
+        ("center", "top_left", "top_right", "bottom_left", "bottom_right")
 
     Returns
     -------
     ndarray
     """
-    # All pixels has zero charge by default
-    detector_charge_2d = np.zeros((num_rows, num_cols))
-
     # Load 2d charge profile (which can be smaller or
     #                         larger in dimensions than detector imaging area)
     charges_from_file_2d = load_image(filename)
 
-    if fit_profile_to_det:
-        # Crop 2d charge profile, so it is not larger in dimensions than detector imaging area)
-        charges_from_file_2d = charges_from_file_2d[
-            slice(0, num_rows), slice(0, num_cols)
-        ]
+    cropped_and_aligned_charge = fit_into_array(
+        array=charges_from_file_2d, output_shape=shape, relative_position=position, align=align
+    )  # type: np.ndarray
 
-    profile_rows, profile_cols = charges_from_file_2d.shape
-
-    detector_charge_2d[
-        slice(profile_position_y, profile_position_y + profile_rows),
-        slice(profile_position_x, profile_position_x + profile_cols),
-    ] = charges_from_file_2d
-
-    return detector_charge_2d
+    return cropped_and_aligned_charge
 
 
 def charge_profile(
     detector: Detector,
     filename: t.Union[str, Path],
-    fit_profile_to_det: bool = False,
-    profile_position: t.Tuple[int, int] = (0, 0),
+    position: t.Tuple[int, int] = (0, 0),
+    align: t.Optional[
+        Literal["center", "top_left", "top_right", "bottom_left", "bottom_right"]
+    ] = None,
     time_scale: float = 1.0,
 ) -> None:
     """Load charge profile from txt file for detector, mostly for but not limited to CCDs.
@@ -80,23 +72,22 @@ def charge_profile(
         Pyxel Detector object.
     filename : str or Path
         File path.
-    fit_profile_to_det : bool
-    profile_position : list
+    position: tuple
+        Indices of starting row and column, used when fitting charge to detector.
+    align: Literal
+        Keyword to align the charge to detector. Can be any from:
+        ("center", "top_left", "top_right", "bottom_left", "bottom_right")
     time_scale: float
         Time scale of the input charge, default is 1 second. 0.001 would be ms.
     """
-    profile_position_y, profile_position_x = profile_position
-
     geo = detector.geometry  # type: Geometry
 
     # Load charge profile as numpy array.
     charges = load_charge_from_file(
-        num_rows=geo.row,
-        num_cols=geo.col,
+        shape=(geo.row, geo.col),
         filename=filename,
-        profile_position_y=profile_position_y,
-        profile_position_x=profile_position_x,
-        fit_profile_to_det=fit_profile_to_det,
+        position=position,
+        align=align,
     )  # type: np.ndarray
 
     charges *= detector.time_step / time_scale
