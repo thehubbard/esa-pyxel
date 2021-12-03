@@ -51,12 +51,15 @@ def df_to_array(
 class Charge:
     """TBW."""
 
-    EXP_TYPE = np.int64
+    EXP_TYPE = float
     TYPE_LIST = (
-        np.int32,
-        np.int64,
-        np.uint32,
-        np.uint64,
+        # np.int32,
+        # np.int64,
+        # np.uint32,
+        # np.uint64,
+        np.float16,
+        np.float32,
+        np.float64,
     )
 
     def __init__(self, geo: "Geometry"):
@@ -204,7 +207,7 @@ class Charge:
         # incremented, we can't do the whole operation on each iteration
         return df_to_array(
             array, charge_per_pixel, pixel_index_ver, pixel_index_hor
-        ).astype(np.int32)
+        )
 
     @staticmethod
     def convert_array_to_df(

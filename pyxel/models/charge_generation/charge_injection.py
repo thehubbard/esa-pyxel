@@ -15,7 +15,7 @@ from pyxel.detectors import CCD
 
 def compute_charge_blocks(
     output_shape: t.Tuple[int, int],
-    charge_level: int,
+    charge_level: float,
     block_start: int = 0,
     block_end: t.Optional[int] = None,
 ) -> np.ndarray:
@@ -48,7 +48,7 @@ def compute_charge_blocks(
 
 def charge_blocks(
     detector: CCD,
-    charge_level: int,
+    charge_level: float,
     block_start: int = 0,
     block_end: t.Optional[int] = None,
 ) -> None:
@@ -84,4 +84,4 @@ def charge_blocks(
         block_end=block_end,
     )
 
-    detector.charge.add_charge_array(charge.astype(np.int64))
+    detector.charge.add_charge_array(charge)
