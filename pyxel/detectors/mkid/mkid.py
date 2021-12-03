@@ -138,17 +138,34 @@ class MKID(Detector):
                 dataset = detector_grp.create_dataset(name, shape=np.shape(array))
                 dataset[:] = array
 
+    # TODO: Refactor this
     def to_dict(self) -> dict:
         """Get the attributes of this instance as a `dict`."""
         dct = {
             "type": "mkid",
-            "geometry": self.geometry.to_dict(),
-            "environment": self.environment.to_dict(),
-            "characteristics": self.characteristics.to_dict(),
+            "properties": {
+                "geometry": self.geometry.to_dict(),
+                "environment": self.environment.to_dict(),
+                "characteristics": self.characteristics.to_dict(),
+            },
+            "data": {
+                "photon": None if self._photon is None else self._photon.array.copy(),
+                "pixel": None if self._pixel is None else self._pixel.array.copy(),
+                "signal": None if self._signal is None else self._signal.array.copy(),
+                "image": None if self._image is None else self._image.array.copy(),
+                "phase": None if self._phase is None else self._phase.array.copy(),
+                "charge": None
+                if self._charge
+                else {
+                    "array": self._charge.array.copy(),
+                    "frame": self._charge.frame.copy(),
+                },
+            },
         }
 
         return dct
 
+    # TODO: Refactor this
     @classmethod
     def from_dict(cls, dct: dict):
         """Create a new instance of `CCD` from a `dict`."""
@@ -156,12 +173,32 @@ class MKID(Detector):
         if dct["type"] != "mkid":
             raise ValueError
 
-        geometry = MKIDGeometry.from_dict(dct["geometry"])
-        environment = Environment.from_dict(dct["environment"])
-        characteristics = MKIDCharacteristics.from_dict(dct["characteristics"])
+        properties = dct["properties"]
+        geometry = MKIDGeometry.from_dict(properties["geometry"])
+        environment = Environment.from_dict(properties["environment"])
+        characteristics = MKIDCharacteristics.from_dict(properties["characteristics"])
 
-        return cls(
+        detector = cls(
             geometry=geometry,
             environment=environment,
             characteristics=characteristics,
         )
+
+        data = dct["data"]
+
+        if "photon" in data:
+            detector.photon.array = data["photon"]
+        if "pixel" in data:
+            detector.pixel.array = data["pixel"]
+        if "signal" in data:
+            detector.signal.array = data["signal"]
+        if "image" in data:
+            detector.image.array = data["image"]
+        if "phase" in data and data["phase"] is not None:
+            detector.phase.array = data["phase"]
+        if "charge" in data and data["charge"] is not None:
+            charge_dct = data["charge"]
+            detector.charge._array = charge_dct["array"]
+            detector.charge._frame = charge_dct["frame"]
+
+        return detector

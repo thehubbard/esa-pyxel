@@ -49,17 +49,33 @@ class CMOS(Detector):
         """TBW."""
         return self._characteristics
 
+    # TODO: Refactor this
     def to_dict(self) -> dict:
         """Get the attributes of this instance as a `dict`."""
         dct = {
             "type": "cmos",
-            "geometry": self.geometry.to_dict(),
-            "environment": self.environment.to_dict(),
-            "characteristics": self.characteristics.to_dict(),
+            "properties": {
+                "geometry": self.geometry.to_dict(),
+                "environment": self.environment.to_dict(),
+                "characteristics": self.characteristics.to_dict(),
+            },
+            "data": {
+                "photon": None if self._photon is None else self._photon.array.copy(),
+                "pixel": None if self._pixel is None else self._pixel.array.copy(),
+                "signal": None if self._signal is None else self._signal.array.copy(),
+                "image": None if self._image is None else self._image.array.copy(),
+                "charge": None
+                if self._charge
+                else {
+                    "array": self._charge.array.copy(),
+                    "frame": self._charge.frame.copy(),
+                },
+            },
         }
 
         return dct
 
+    # TODO: Refactor this
     @classmethod
     def from_dict(cls, dct: dict):
         """Create a new instance of `CCD` from a `dict`."""
@@ -67,12 +83,30 @@ class CMOS(Detector):
         if dct["type"] != "cmos":
             raise ValueError
 
-        geometry = CMOSGeometry.from_dict(dct["geometry"])
-        environment = Environment.from_dict(dct["environment"])
-        characteristics = CMOSCharacteristics.from_dict(dct["characteristics"])
+        properties = dct["properties"]
+        geometry = CMOSGeometry.from_dict(properties["geometry"])
+        environment = Environment.from_dict(properties["environment"])
+        characteristics = CMOSCharacteristics.from_dict(properties["characteristics"])
 
-        return cls(
+        detector = cls(
             geometry=geometry,
             environment=environment,
             characteristics=characteristics,
         )
+
+        data = dct["data"]
+
+        if "photon" in data:
+            detector.photon.array = data["photon"]
+        if "pixel" in data:
+            detector.pixel.array = data["pixel"]
+        if "signal" in data:
+            detector.signal.array = data["signal"]
+        if "image" in data:
+            detector.image.array = data["image"]
+        if "charge" in data and data["charge"] is not None:
+            charge_dct = data["charge"]
+            detector.charge._array = charge_dct["array"]
+            detector.charge._frame = charge_dct["frame"]
+
+        return detector

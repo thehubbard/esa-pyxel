@@ -7,6 +7,7 @@
 
 from copy import deepcopy
 
+import numpy as np
 import pytest
 
 from pyxel.detectors import (
@@ -148,6 +149,12 @@ def test_is_equal(valid_ccd: CCD, other_obj, is_equal):
         assert valid_ccd != other_obj
 
 
+def comparison(dct, other_dct):
+    assert set(dct) == set(other_dct) == {"type", "data", "properties"}
+    assert dct["properties"] == other_dct["properties"]
+    np.testing.assert_equal(dct["data"], other_dct["data"])
+
+
 @pytest.mark.parametrize("klass", [CCD, Detector])
 @pytest.mark.parametrize(
     "obj, exp_dict",
@@ -194,50 +201,52 @@ def test_is_equal(valid_ccd: CCD, other_obj, is_equal):
             ),
             {
                 "type": "ccd",
-                "geometry": {
-                    "row": 100,
-                    "col": 120,
-                    "total_thickness": 123.1,
-                    "pixel_horz_size": 12.4,
-                    "pixel_vert_size": 34.5,
+                "properties": {
+                    "geometry": {
+                        "row": 100,
+                        "col": 120,
+                        "total_thickness": 123.1,
+                        "pixel_horz_size": 12.4,
+                        "pixel_vert_size": 34.5,
+                    },
+                    "material": {
+                        "trapped_charge": None,
+                        "n_acceptor": 1.0,
+                        "n_donor": 2.0,
+                        "material": "hxrg",
+                        "material_density": 3.0,
+                        "ionization_energy": 4.0,
+                        "band_gap": 5.0,
+                        "e_effective_mass": 1e-12,
+                    },
+                    "environment": {
+                        "temperature": 100.1,
+                        "total_ionising_dose": 200.2,
+                        "total_non_ionising_dose": 300.3,
+                    },
+                    "characteristics": {
+                        "qe": 0.1,
+                        "eta": 0.2,
+                        "sv": 3.3,
+                        "amp": 4.4,
+                        "a1": 5,
+                        "a2": 6,
+                        "fwc": 7,
+                        "vg": 0.8,
+                        "dt": 9.9,
+                        "fwc_serial": 10,
+                        "svg": 0.11,
+                        "t": 0.12,
+                        "st": 0.13,
+                    },
                 },
-                "material": {
-                    "trapped_charge": None,
-                    "n_acceptor": 1.0,
-                    "n_donor": 2.0,
-                    "material": "hxrg",
-                    "material_density": 3.0,
-                    "ionization_energy": 4.0,
-                    "band_gap": 5.0,
-                    "e_effective_mass": 1e-12,
+                "data": {
+                    "photon": np.zeros(shape=(100, 120)),
+                    "pixel": np.zeros(shape=(100, 120)),
+                    "signal": np.zeros(shape=(100, 120)),
+                    "image": np.zeros(shape=(100, 120)),
+                    "charge": None,
                 },
-                "environment": {
-                    "temperature": 100.1,
-                    "total_ionising_dose": 200.2,
-                    "total_non_ionising_dose": 300.3,
-                },
-                "characteristics": {
-                    "qe": 0.1,
-                    "eta": 0.2,
-                    "sv": 3.3,
-                    "amp": 4.4,
-                    "a1": 5,
-                    "a2": 6,
-                    "fwc": 7,
-                    "vg": 0.8,
-                    "dt": 9.9,
-                    "fwc_serial": 10,
-                    "svg": 0.11,
-                    "t": 0.12,
-                    "st": 0.13,
-                },
-                "arrays": {
-                    "photon": None,
-                    "pixel": None,
-                    "signal": None,
-                    "image": None,
-                },
-                "particles": {"charge": None},
             },
         )
     ],
@@ -248,16 +257,16 @@ def test_to_and_from_dict(klass, obj, exp_dict):
 
     # Convert from `CCD` to a `dict`
     dct = obj.to_dict()
-    assert dct == exp_dict
+    comparison(dct, exp_dict)
 
     # Copy 'exp_dict'
     copied_dct = deepcopy(exp_dict)  # create a new dict
     assert copied_dct is not exp_dict
-    assert copied_dct == exp_dict
+    comparison(copied_dct, exp_dict)
 
     # Convert from `dict` to `CCD`
     other_obj = klass.from_dict(copied_dct)
     assert type(other_obj) == CCD
     assert obj == other_obj
     assert obj is not other_obj
-    assert copied_dct == exp_dict
+    comparison(copied_dct, exp_dict)
