@@ -64,7 +64,7 @@ def test_fit_into_array_bad_inputs(
     output_shape: t.Tuple[int, int],
     relative_position: t.Tuple[int, int],
     align: t.Optional[
-        t.Literal["center", "top_left", "top_right", "bottom_left", "bottom_right"]
+        Literal["center", "top_left", "top_right", "bottom_left", "bottom_right"]
     ],
     allow_smaller_array: bool,
     exp_exc,

@@ -79,7 +79,7 @@ def test_load_image(
     image_file: str,
     position: t.Tuple[int, int],
     align: t.Optional[
-        t.Literal["center", "top_left", "top_right", "bottom_left", "bottom_right"]
+        Literal["center", "top_left", "top_right", "bottom_left", "bottom_right"]
     ],
     convert_to_photons: bool,
     multiplier: float,
