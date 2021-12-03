@@ -66,16 +66,23 @@ Monitor CCDs is ongoing via Pyxel.
 
 Dark current rule07
 -------------------
-With this model you can add dark current following the Rule07 paper by W.E. Tennant Journal of Electronic Materials volume 37, pages1406–1410 (2008)
-This model is only valid for MCT hybridised array (MCT + CMOS). The only model argument is detector, however it takes the detector temperature, cut-off wavelength, pixel size (assuming it is square), and time step. Please make sure the detector environment, geometry and characteristics are properly set in the yaml configuration file.
+With this model you can add dark current to :py:class:`~pyxel.data_structure.Charge` following the
+model described in :cite:p:`Tennant2008MBEHT`.
+This model is only valid for MCT hybridised array (MCT + CMOS).
+The model does not have extra arguments, however it takes some values from :py:class:`~pyxel.detectors.Detector` object,
+to be precise: ``temperature``, ``cut-off wavelength``, ``pixel size`` (assuming it is square),
+and ``time step`` since last read-out.
+Please make sure the detector :py:class:`~pyxel.detectors.Environment`, :py:class:`~pyxel.detectors.Geometry` and
+:py:class:`~pyxel.detectors.Characteristics` are properly set in the ``YAML`` configuration file.
 
-Example of the configuration file for a circular object:
+Example of the configuration file:
 
 .. code-block:: yaml
 
     - name: dark_current
       func: pyxel.models.charge_generation.dark_current_rule07
       enabled: true
-      
+
+.. note:: This model is specific for the MCT and CMOS detector.
 
 .. autofunction:: pyxel.models.charge_generation.dark_current_rule07    
