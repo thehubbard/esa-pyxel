@@ -11,3 +11,4 @@
 from .measurement import simple_measurement
 from .readout_noise import output_node_noise, output_node_noise_cmos
 from .nghxrg.nghxrg import nghxrg
+from .linearity import output_node_linearity_poly
