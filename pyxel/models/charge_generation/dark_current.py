@@ -6,11 +6,12 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """Simple models to generate charge due to dark current process."""
+import typing as t
+
 import numpy as np
 
 from pyxel.detectors import CMOS
 from pyxel.util import temporary_random_state
-import typing as t
 
 
 def lambda_e(lambda_cutoff: float) -> float:
@@ -30,18 +31,16 @@ def lambda_e(lambda_cutoff: float) -> float:
     pwr = 0.544071282
     if lambda_cutoff < lambda_threshold:
         le = lambda_cutoff / (
-                1
-                - ((lambda_scale / lambda_cutoff) - (lambda_scale / lambda_threshold))
-                ** pwr
+            1
+            - ((lambda_scale / lambda_cutoff) - (lambda_scale / lambda_threshold))
+            ** pwr
         )
     else:
         le = lambda_cutoff
     return le
 
 
-def compute_mct_dark_rule07(
-    pitch: float, temperature: float, cut_off: float
-) -> float:
+def compute_mct_dark_rule07(pitch: float, temperature: float, cut_off: float) -> float:
     """Compute dark current.
 
     Parameters
@@ -64,7 +63,9 @@ def compute_mct_dark_rule07(
 
     j0 = 8367  # obtained through fit of experimental data, see paper
 
-    e_c = 1.24 / lambda_e(cut_off)  # [eV] the optical gap extracted from the mid response cutoff
+    e_c = 1.24 / lambda_e(
+        cut_off
+    )  # [eV] the optical gap extracted from the mid response cutoff
 
     rule07 = j0 * np.exp(-c * q * e_c / (k * temperature))  # A/cm3
 
