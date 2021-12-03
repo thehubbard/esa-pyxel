@@ -32,7 +32,7 @@ photon numbers for each pixel using the Photon Transfer Function:
       enabled: true
       arguments:
         image_file: data/HorseHead.fits
-        position: (0,0)
+        position: [0,0]
         convert_to_photons: true
 
 .. autofunction:: load_image
