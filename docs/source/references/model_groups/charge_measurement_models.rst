@@ -103,3 +103,20 @@ Signal Transfer models (CMOS)
     :members:
     :undoc-members:
     :imported-members:
+
+Simple illumination
+-------------------
+With this model you can add non-linearity to :py:class:`~pyxel.data_structure.Signal` array to simulate the non-linearity of the output node circuit. The non-linearity is simulated by a polynomial function. The user specifies the polynomial coefficients with the argument ``coefficients`` a list of n floats e.g. [a,b,c] S = a + bx+ cx2 (x is signal).
+
+Example of the configuration file where a 10% non-linearity is introduced as a function of the signal square:
+
+.. code-block:: yaml
+
+    - name: linearity
+      func: pyxel.models.charge_measurement.output_node_linearity_poly
+      enabled: true
+      arguments:
+          arguments:
+        coefficients: [0, 1, 0.9]  # e- [a,b,c] S = a + bx+ cx2 (x is signal)
+
+.. autofunction:: pyxel.models.charge_measurement.output_node_linearity_poly
