@@ -16,6 +16,80 @@ from pyxel.util import fit_into_array
 
 
 @pytest.mark.parametrize(
+    "output_shape, relative_position, align, allow_smaller_array",
+    [
+        pytest.param(
+            (5, 5),
+            (0, 0),
+            None,
+            True,
+        ),
+        pytest.param(
+            (5, 5),
+            (-5, -5),
+            None,
+            True,
+        ),
+        pytest.param(
+            (5, 5),
+            (2, 2),
+            None,
+            True,
+        ),
+        pytest.param(
+            (15, 15),
+            (0, 0),
+            "center",
+            True,
+        ),
+        pytest.param(
+            (15, 15),
+            (0, 0),
+            "bottom_left",
+            True,
+        ),
+        pytest.param(
+            (15, 15),
+            (0, 0),
+            "bottom_right",
+            True,
+        ),
+        pytest.param(
+            (15, 15),
+            (0, 0),
+            "top_right",
+            True,
+        ),
+        pytest.param(
+            (15, 15),
+            (0, 0),
+            "top_left",
+            True,
+        ),
+    ],
+)
+def test_fit_into_array(
+    output_shape: t.Tuple[int, int],
+    relative_position: t.Tuple[int, int],
+    align: t.Optional[
+        Literal["center", "top_left", "top_right", "bottom_left", "bottom_right"]
+    ],
+    allow_smaller_array: bool,
+):
+    """Test function 'fit_into_array' with some valid inputs."""
+
+    array = np.ones((10, 10))
+
+    fit_into_array(
+        array=array,
+        output_shape=output_shape,
+        relative_position=relative_position,
+        align=align,
+        allow_smaller_array=allow_smaller_array,
+    )
+
+
+@pytest.mark.parametrize(
     "output_shape, relative_position, align, allow_smaller_array, exp_exc, exp_error",
     [
         pytest.param(
