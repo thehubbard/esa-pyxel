@@ -94,7 +94,6 @@ pipeline:
       enabled: true
       arguments:
         image_file: 'tests/data/calibrate-data.fits'
-        fit_image_to_det: true
         position: [0, 0]
         convert_to_photons: true
     -

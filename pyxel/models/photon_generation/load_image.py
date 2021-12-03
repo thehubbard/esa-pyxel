@@ -7,19 +7,22 @@
 
 """Pyxel photon generator models."""
 import typing as t
-from pathlib import Path
 
 import numpy as np
+from typing_extensions import Literal
 
 import pyxel
 from pyxel.detectors import Detector
+from pyxel.util import fit_into_array
 
 
 def load_image_from_file(
-    image_file: str,
+    filename: str,
     shape: t.Tuple[int, int],
     position: t.Tuple[int, int] = (0, 0),
-    fit_image_to_det: bool = False,
+    align: t.Optional[
+        Literal["center", "top_left", "top_right", "bottom_left", "bottom_right"]
+    ] = None,
 ) -> np.ndarray:
     """Load image from file and fit to detector shape.
 
@@ -27,52 +30,34 @@ def load_image_from_file(
     ----------
     shape: tuple
         Detector shape.
-    image_file: str
+    filename: str
         Path to image file.
-    fit_image_to_det: bool
-        Fitting image to given shape.
     position: tuple
         Indices of starting row and column, used when fitting image to detector.
+    align: Literal
+        Keyword to align the image to detector. Can be any from:
+        ("center", "top_left", "top_right", "bottom_left", "bottom_right")
 
     Returns
     -------
-    image: np.ndarray
+    image: ndarray
     """
-    filename = Path(image_file).expanduser().resolve()
-
-    if not Path(filename).exists():
-        raise FileNotFoundError(f"Image file '{filename}' does not exist !")
-
     image = pyxel.load_image(filename)  # type: np.ndarray
-    im_row, im_col = image.shape
-    row, col = shape
 
-    if row > im_row or col > im_col:
-        raise ValueError("Image too small to fit to detector shape!.")
+    cropped_and_aligned_image = fit_into_array(
+        array=image, output_shape=shape, relative_position=position, align=align
+    )  # type: np.ndarray
 
-    if fit_image_to_det:
-        position_y, position_x = position
-
-        if position_y < 0 or position_x < 0:
-            raise ValueError("Negative values for position not allowed!.")
-        if position_y > im_row - row:
-            raise ValueError("Cannot slice image outside of bounds!.")
-        if position_x > im_col - col:
-            raise ValueError("Cannot slice image outside of bounds!.")
-
-        image = image[
-            slice(position_y, position_y + row),
-            slice(position_x, position_x + col),
-        ]
-
-    return image
+    return cropped_and_aligned_image
 
 
 def load_image(
     detector: Detector,
     image_file: str,
-    fit_image_to_det: bool = False,
     position: t.Tuple[int, int] = (0, 0),
+    align: t.Optional[
+        Literal["center", "top_left", "top_right", "bottom_left", "bottom_right"]
+    ] = None,
     convert_to_photons: bool = False,
     multiplier: float = 1.0,
     time_scale: float = 1.0,
@@ -84,10 +69,11 @@ def load_image(
     detector: Detector
     image_file: str
         Path to image file.
-    fit_image_to_det: bool
-        Fitting image to detector shape (Geometry.row, Geometry.col).
     position: tuple
         Indices of starting row and column, used when fitting image to detector.
+    align: Literal
+        Keyword to align the image to detector. Can be any from:
+        ("center", "top_left", "top_right", "bottom_left", "bottom_right")
     convert_to_photons: bool
         If ``True``, the model converts the values of loaded image array from ADU to
         photon numbers for each pixel using the Photon Transfer Function:
@@ -101,9 +87,9 @@ def load_image(
     shape = (detector.geometry.row, detector.geometry.col)
 
     image = load_image_from_file(
-        image_file=image_file,
+        filename=image_file,
         shape=shape,
-        fit_image_to_det=fit_image_to_det,
+        align=align,
         position=position,
     )
 

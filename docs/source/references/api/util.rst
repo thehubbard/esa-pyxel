@@ -31,3 +31,10 @@ Timing
 time_pipeline
 -------------
 .. autofunction:: time_pipeline
+
+Image utilities
+===============
+
+fit_into_array
+--------------
+.. autofunction:: fit_into_array
