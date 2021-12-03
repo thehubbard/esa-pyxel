@@ -14,7 +14,8 @@ from pyxel.detectors import Detector
 
 
 def compute_poly_linearity(
-    array_2d: np.ndarray, coefficients: t.Sequence[float],
+    array_2d: np.ndarray,
+    coefficients: t.Sequence[float],
 ) -> np.ndarray:
     """Add non-linearity to an array of values following a polynomial function.
 
@@ -38,7 +39,8 @@ def compute_poly_linearity(
 
 
 def output_node_linearity_poly(
-    detector: Detector, coefficients: t.Sequence[float],
+    detector: Detector,
+    coefficients: t.Sequence[float],
 ) -> None:
     """.Add non-linearity to signal array to simulate the non-linearity of the output node circuit.
 
@@ -53,8 +55,17 @@ def output_node_linearity_poly(
     coefficients: list of float
         Coefficient of the polynomial function.
     """
+    if len(coefficients) == 0:
+        raise ValueError("Length of coefficient list should be more than 0.")
 
     signal_mean_array = detector.signal.array.astype("float64")
-    signal_non_linear = compute_poly_linearity(array_2d=signal_mean_array, coefficients=coefficients)
+    signal_non_linear = compute_poly_linearity(
+        array_2d=signal_mean_array, coefficients=coefficients
+    )
+
+    if np.any(signal_non_linear < 0):
+        raise ValueError(
+            "Signal array contains negative values after applying non-linearity model!"
+        )
 
     detector.signal.array = signal_non_linear
