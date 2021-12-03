@@ -22,6 +22,8 @@ Models
 
 * Model 'nghxrg' is not working on Windows.
   (See `!361 <https://gitlab.com/esa/pyxel/-/merge_requests/361>`_).
+* Remove alignment model.
+  (See `!364 <https://gitlab.com/esa/pyxel/-/merge_requests/364>`_).
 
 Others
 ~~~~~~

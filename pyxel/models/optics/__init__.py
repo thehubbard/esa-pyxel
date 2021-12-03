@@ -8,5 +8,4 @@
 """TBW."""
 
 # flake8: noqa
-from .alignment import alignment
 from .poppy import optical_psf
