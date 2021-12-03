@@ -6,18 +6,24 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """Simple models to generate charge due to dark current process."""
-import logging
-
 import numpy as np
 
 from pyxel.detectors import CMOS
 from pyxel.util import temporary_random_state
 import typing as t
 
+
 def lambda_e(lambda_cutoff: float) -> float:
     """Compute lambda_e.
 
-    :param lambda_cutoff: (int) Cut-off wavelength of the detector
+    Parameters
+    ----------
+    lambda_cutoff: int
+        Cut-off wavelength of the detector.
+
+    Returns
+    -------
+    le: float
     """
     lambda_scale = 0.200847413  # um
     lambda_threshold = 4.635136423  # um
@@ -34,9 +40,9 @@ def lambda_e(lambda_cutoff: float) -> float:
 
 
 def compute_mct_dark_rule07(
-        pitch: float, temperature: float, cut_off: float
+    pitch: float, temperature: float, cut_off: float
 ) -> float:
-    """
+    """Compute dark current.
 
     Parameters
     ----------
@@ -50,17 +56,17 @@ def compute_mct_dark_rule07(
     Returns
     -------
     dark_current: float
-        in e-/pixel/s
+        In e-/pixel/s.
     """
-    C = 1.16  # activation energy factor
-    Q = 1.602e-19  # Charge of one electron, unit= A.s
-    K = 1.3806504e-23  # Constant of Boltzmann, unit = m2.kg/s2/K
+    c = 1.16  # activation energy factor
+    q = 1.602e-19  # Charge of one electron, unit= A.s
+    k = 1.3806504e-23  # Constant of Boltzmann, unit = m2.kg/s2/K
 
     j0 = 8367  # obtained through fit of experimental data, see paper
 
     e_c = 1.24 / lambda_e(cut_off)  # [eV] the optical gap extracted from the mid response cutoff
 
-    rule07 = j0 * np.exp(-C * Q * e_c / (K * temperature))  # A/cm3
+    rule07 = j0 * np.exp(-c * q * e_c / (k * temperature))  # A/cm3
 
     amp_to_eps = 6.242e18  # e-/s
     um2_to_cm2 = 1.0e-8
@@ -72,8 +78,9 @@ def compute_mct_dark_rule07(
 
 @temporary_random_state
 def dark_current_rule07(detector: CMOS, seed: t.Optional[int] = None) -> None:
-    """Generate charge from dark current process based on Rule07 paper by W.E. Tennant
-    Journal of Electronic Materials volume 37, pages1406–1410 (2008)
+    """Generate charge from dark current process.
+
+    Based on Rule07 paper by W.E. Tennant Journal of Electronic Materials volume 37, pages1406–1410 (2008).
 
     Parameters
     ----------
@@ -81,7 +88,6 @@ def dark_current_rule07(detector: CMOS, seed: t.Optional[int] = None) -> None:
     seed: int, optional
     """
     # TODO: investigate on the knee of rule07 for higher 1/le*T values
-    logging.info("")
     geo = detector.geometry
 
     pitch = geo.pixel_vert_size  # assumes a square pitch
