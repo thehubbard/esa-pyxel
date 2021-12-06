@@ -89,7 +89,7 @@ def array_1d_row() -> np.ndarray:
         ),
         pytest.param(
             (5, 5),
-            None,
+            (0, 0),
             "center",
             True,
             np.array(
@@ -104,7 +104,7 @@ def array_1d_row() -> np.ndarray:
         ),
         pytest.param(
             (5, 5),
-            None,
+            (0, 0),
             "top_left",
             True,
             np.array(
@@ -119,7 +119,7 @@ def array_1d_row() -> np.ndarray:
         ),
         pytest.param(
             (5, 5),
-            None,
+            (0, 0),
             "bottom_left",
             True,
             np.array(
@@ -134,7 +134,7 @@ def array_1d_row() -> np.ndarray:
         ),
         pytest.param(
             (5, 5),
-            None,
+            (0, 0),
             "bottom_right",
             True,
             np.array(
@@ -149,7 +149,7 @@ def array_1d_row() -> np.ndarray:
         ),
         pytest.param(
             (5, 5),
-            None,
+            (0, 0),
             "top_right",
             True,
             np.array(
@@ -199,7 +199,7 @@ def test_fit_into_array_2d(
         ),
         pytest.param(
             (5, 3),
-            None,
+            (0, 0),
             None,
             True,
             np.array(
@@ -229,7 +229,7 @@ def test_fit_into_array_2d(
         ),
     ],
 )
-def test_fit_into_array_1d(
+def test_fit_into_array_1d_col(
     array_1d_col,
     output_shape: t.Tuple[int, int],
     relative_position: t.Tuple[int, int],
@@ -279,7 +279,7 @@ def test_fit_into_array_1d(
         ),
         pytest.param(
             (3, 5),
-            None,
+            (0, 0),
             None,
             True,
             np.array(
