@@ -102,6 +102,6 @@ def dark_current_rule07(detector: CMOS, seed: t.Optional[int] = None) -> None:
     ne = dc * detector.time_step
 
     # The number of charge generated with Poisson distribution using rule07 empiric law for lambda
-    charge_number = np.random.poisson(ne, size=(geo.row, geo.col))
+    charge_number = np.random.poisson(ne, size=(geo.row, geo.col)).astype(float)
 
     detector.charge.add_charge_array(charge_number)
