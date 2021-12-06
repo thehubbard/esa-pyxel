@@ -93,7 +93,7 @@ def fit_into_array(
 
     array_y, array_x = array.shape
     output = np.zeros(output_shape)
-    output_x, output_y = output_shape
+    output_y, output_x = output_shape
 
     if not allow_smaller_array:
         if array_y < output_y or array_x < output_y:
