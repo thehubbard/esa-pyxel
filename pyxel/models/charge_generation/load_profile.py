@@ -50,7 +50,7 @@ def load_charge_from_file(
         slice(profile_position_x, profile_position_x + profile_cols),
     ] = charges_from_file_2d
 
-    return detector_charge_2d.astype(np.int64)
+    return detector_charge_2d
 
 
 def charge_profile(
