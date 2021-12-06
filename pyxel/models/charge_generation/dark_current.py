@@ -5,6 +5,7 @@
 #   this file, may be copied, modified, propagated, or distributed except according to
 #   the terms contained in the file ‘LICENCE.txt’.
 
+"""Simple models to generate charge due to dark current process."""
 
 import numpy as np
 
@@ -22,6 +23,7 @@ def calculate_dark_current(
 ) -> np.ndarray:
     """Simulate dark current in a CCD.
 
+    Parameters
     ----------
     num_rows : int
         Number of rows for the generated image.
@@ -34,6 +36,7 @@ def calculate_dark_current(
         Length of the simulated exposure, in seconds.
     gain : float, optional
         Gain of the camera, in units of electrons/ADU.
+
     Returns
     -------
     ndarray
