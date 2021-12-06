@@ -1,5 +1,6 @@
 .. _charge_generation:
 
+========================
 Charge Generation models
 ========================
 
@@ -8,12 +9,12 @@ Charge Generation models
 
 
 Simple photoconversion
-----------------------
+======================
 
 .. autofunction:: simple_conversion
 
 Charge injection
-----------------
+================
 
 With this model you can inject arbitrary charge block into rows of a :py:class:`~pyxel.detectors.CCD` detector.
 Charge will be injected uniformly from row number `block_start` to row number `block_end`.
@@ -35,13 +36,13 @@ Example of YAML configuration model:
 .. autofunction:: charge_blocks
 
 Custom quantum efficiency map
------------------------------
+=============================
 
 .. autofunction:: qe_map
 
 
 TARS cosmic ray model
----------------------
+=====================
 
 A cosmic ray event simulator was the first model added to Pyxel.
 Initially it was a simple, semi-analytical model in Fortran using the stopping
@@ -60,12 +61,13 @@ Monitor CCDs is ongoing via Pyxel.
 
 ..
     CCD charge injection
-    --------------------
+    ====================
 
     .. autofunction:: pyxel.models.charge_generation.charge_injection.charge_injection
 
 Dark current rule07
--------------------
+===================
+
 With this model you can add dark current to :py:class:`~pyxel.data_structure.Charge` following the
 model described in :cite:p:`Tennant2008MBEHT`.
 This model is only valid for MCT hybridised array (MCT + CMOS).
@@ -86,3 +88,24 @@ Example of the configuration file:
 .. note:: This model is specific for the MCT and CMOS detector.
 
 .. autofunction:: pyxel.models.charge_generation.dark_current_rule07    
+
+
+Dark current
+============
+
+With this model you can add dark current to a :py:class:`~pyxel.detectors.CCD` object.
+
+Example of the configuration file:
+
+.. code-block:: yaml
+
+    - name: dark_current
+      func: pyxel.models.charge_generation.dark_current
+      enabled: true
+      arguments:
+        dark_rate: 10.0
+        gain: 1.0           # Optional
+
+.. note:: This model is specific for the CCD detector.
+
+.. autofunction:: pyxel.models.charge_generation.dark_current

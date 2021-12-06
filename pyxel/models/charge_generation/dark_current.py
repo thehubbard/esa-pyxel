@@ -1,107 +1,86 @@
-#  Copyright (c) European Space Agency, 2017, 2018, 2019, 2020.
-#
-#  This file is subject to the terms and conditions defined in file 'LICENCE.txt', which
-#  is part of this Pyxel package. No part of the package, including
-#  this file, may be copied, modified, propagated, or distributed except according to
-#  the terms contained in the file ‘LICENCE.txt’.
+#   Copyright (c) European Space Agency, 2017, 2018, 2019, 2020, 2021.
+#  #
+#   This file is subject to the terms and conditions defined in file 'LICENCE.txt', which
+#   is part of this Pyxel package. No part of the package, including
+#   this file, may be copied, modified, propagated, or distributed except according to
+#   the terms contained in the file ‘LICENCE.txt’.
 
 """Simple models to generate charge due to dark current process."""
+
 import typing as t
 
 import numpy as np
 
-from pyxel.detectors import CMOS
+from pyxel.detectors import CCD
 from pyxel.util import temporary_random_state
 
 
-def lambda_e(lambda_cutoff: float) -> float:
-    """Compute lambda_e.
+def calculate_dark_current(
+    num_rows: int,
+    num_cols: int,
+    current: float,
+    exposure_time: float,
+    gain: float = 1.0,
+) -> np.ndarray:
+    """Simulate dark current in a CCD.
 
     Parameters
     ----------
-    lambda_cutoff: int
-        Cut-off wavelength of the detector.
+    num_rows : int
+        Number of rows for the generated image.
+    num_cols : int
+        Number of columns for the generated image.
+    current : float
+        Dark current, in electrons/pixel/second, which is the way
+        manufacturers typically report it.
+    exposure_time : float
+        Length of the simulated exposure, in seconds.
+    gain : float, optional
+        Gain of the camera, in units of electrons/ADU.
 
     Returns
     -------
-    le: float
+    ndarray
+        An array the same shape and dtype as the input containing dark counts
+        in units of ADU.
     """
-    lambda_scale = 0.200847413  # um
-    lambda_threshold = 4.635136423  # um
-    pwr = 0.544071282
-    if lambda_cutoff < lambda_threshold:
-        le = lambda_cutoff / (
-            1
-            - ((lambda_scale / lambda_cutoff) - (lambda_scale / lambda_threshold))
-            ** pwr
-        )
-    else:
-        le = lambda_cutoff
-    return le
+    # dark current for every pixel
+    base_current = current * exposure_time / gain
 
-
-def compute_mct_dark_rule07(pitch: float, temperature: float, cut_off: float) -> float:
-    """Compute dark current.
-
-    Parameters
-    ----------
-    pitch: float
-        the x and y dimension of the pixel in micrometer
-    temperature: float
-        the devices temperature
-    cut_off: float
-        the detector wavelength cut-off in micrometer
-
-    Returns
-    -------
-    dark_current: float
-        In e-/pixel/s.
-    """
-    c = 1.16  # activation energy factor
-    q = 1.602e-19  # Charge of one electron, unit= A.s
-    k = 1.3806504e-23  # Constant of Boltzmann, unit = m2.kg/s2/K
-
-    j0 = 8367  # obtained through fit of experimental data, see paper
-
-    e_c = 1.24 / lambda_e(
-        cut_off
-    )  # [eV] the optical gap extracted from the mid response cutoff
-
-    rule07 = j0 * np.exp(-c * q * e_c / (k * temperature))  # A/cm3
-
-    amp_to_eps = 6.242e18  # e-/s
-    um2_to_cm2 = 1.0e-8
-    factor = amp_to_eps * pitch * pitch * um2_to_cm2  # to convert Amp/cm2 in e/pixel/s
-    dc = rule07 * factor
-
-    return dc
+    # This random number generation should change on each call.
+    dark_im_array_2d = np.random.poisson(base_current, size=(num_rows, num_cols))
+    return dark_im_array_2d
 
 
 @temporary_random_state
-def dark_current_rule07(detector: CMOS, seed: t.Optional[int] = None) -> None:
-    """Generate charge from dark current process.
-
-    Based on Rule07 paper by W.E. Tennant Journal of Electronic Materials volume 37, pages1406–1410 (2008).
+def dark_current(
+    detector: CCD, dark_rate: float, gain: float = 1.0, seed: t.Optional[int] = None
+) -> None:
+    """Simulate dark current in a CCD.
 
     Parameters
     ----------
-    detector: Detector
+    detector : Detector
+        CCD detector object.
+    dark_rate : float
+        Dark current, in electrons/pixel/second, which is the way
+        manufacturers typically report it.
+    gain : float, optional. Default: 1.0
+        Gain of the camera, in units of electrons/ADU.
     seed: int, optional
     """
-    # TODO: investigate on the knee of rule07 for higher 1/le*T values
-    if not isinstance(detector, CMOS):
-        raise TypeError("Expecting a CMOS object for detector.")
+    if not isinstance(detector, CCD):
+        raise TypeError("Expecting a CCD object for detector.")
 
+    exposure_time = detector.time_step
     geo = detector.geometry
 
-    pitch = geo.pixel_vert_size  # assumes a square pitch
-    temperature = detector.environment.temperature
-    cut_off = detector.characteristics.cutoff
+    dark_current_array = calculate_dark_current(
+        num_rows=geo.row,
+        num_cols=geo.col,
+        current=dark_rate,
+        exposure_time=exposure_time,
+        gain=gain,
+    )  # type: np.ndarray
 
-    dc = compute_mct_dark_rule07(pitch, temperature, cut_off)
-    ne = dc * detector.time_step
-
-    # The number of charge generated with Poisson distribution using rule07 empiric law for lambda
-    charge_number = np.random.poisson(ne, size=(geo.row, geo.col))
-
-    detector.charge.add_charge_array(charge_number)
+    detector.charge.add_charge_array(dark_current_array)
