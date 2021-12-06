@@ -8,21 +8,21 @@
 
 import numpy as np
 import logging
-from pyxel.detectors import Detector
+from pyxel.detectors import CCD
+from pyxel.util import temporary_random_state
 
-def calculate_dark_current(geo, current, exposure_time,gain=1.0) -> np.ndarray:
+
+@temporary_random_state
+def calculate_dark_current(geo, current, exposure_time, gain=1.0) -> np.ndarray:
     # dark current for every pixel
     base_current = current * exposure_time / gain
 
     # This random number generation should change on each call.
-    rng = np.random.default_rng()
-    dark_im_array_2d = rng.poisson(base_current, size=(geo.row, geo.col))
-
+    dark_im_array_2d = np.random.poisson(base_current, size=(geo.row, geo.col))
     return dark_im_array_2d
 
 
-def dark_current(detector, dark_rate, gain) -> None:
-
+def dark_current(detector: CCD, dark_rate, gain) -> None:
     """
     Simulate dark current in a CCD
     ----------
@@ -41,6 +41,8 @@ def dark_current(detector, dark_rate, gain) -> None:
         An array the same shape and dtype as the input containing dark counts
         in units of ADU.
     """
+    if not isinstance(detector, CCD):
+        raise TypeError("Expecting a CCD object for detector.")
     logging.info("")
 
     exposure_time = detector.time_step
@@ -48,22 +50,4 @@ def dark_current(detector, dark_rate, gain) -> None:
 
     dark_current_array = calculate_dark_current(geo, dark_rate, exposure_time, gain)
 
-    dark_current_value = dark_current_array.flatten()
-    where_non_zero = np.where(dark_current_value > 0)
-    dark_current_value = dark_current_value[where_non_zero]
-    size = dark_current_value.size
-
-    init_hor_pix_position = geo.horizontal_pixel_center_pos_list()[where_non_zero]
-    init_ver_pix_position = geo.vertical_pixel_center_pos_list()[where_non_zero]
-
-    detector.charge.add_charge(
-        particle_type="e",
-        particles_per_cluster=dark_current_value,
-        init_energy=np.zeros(size),
-        init_ver_pix_position=init_ver_pix_position,
-        init_hor_pix_position=init_hor_pix_position,
-        init_z_position=np.zeros(size),
-        init_ver_velocity=np.zeros(size),
-        init_hor_velocity=np.zeros(size),
-        init_z_velocity=np.zeros(size)
-    )
+    detector.charge.add_charge_array(dark_current_array)
