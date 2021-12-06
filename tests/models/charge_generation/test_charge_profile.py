@@ -19,6 +19,7 @@ from pyxel.detectors import (
     Detector,
     Environment,
     Material,
+    ReadoutProperties,
 )
 from pyxel.models.charge_generation import charge_profile
 
@@ -26,7 +27,7 @@ from pyxel.models.charge_generation import charge_profile
 @pytest.fixture
 def ccd_10x1() -> CCD:
     """Create a valid CCD detector."""
-    return CCD(
+    detector = CCD(
         geometry=CCDGeometry(
             row=10,
             col=1,
@@ -38,6 +39,8 @@ def ccd_10x1() -> CCD:
         environment=Environment(),
         characteristics=CCDCharacteristics(),
     )
+    detector._readout_properties = ReadoutProperties(num_steps=1)
+    return detector
 
 
 @pytest.fixture
@@ -60,7 +63,7 @@ def profile_10x1_txt_filename(profile_10x1: np.ndarray, tmp_path: Path) -> Path:
 @pytest.fixture
 def ccd_10x3() -> CCD:
     """Create a valid CCD detector."""
-    return CCD(
+    detector = CCD(
         geometry=CCDGeometry(
             row=10,
             col=3,
@@ -72,6 +75,8 @@ def ccd_10x3() -> CCD:
         environment=Environment(),
         characteristics=CCDCharacteristics(),
     )
+    detector._readout_properties = ReadoutProperties(num_steps=1)
+    return detector
 
 
 @pytest.fixture
