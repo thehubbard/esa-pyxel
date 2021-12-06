@@ -126,8 +126,7 @@ def test_charge_profile_10x1(ccd_10x1: CCD, profile_10x1_txt_filename: Path) -> 
     # Run model
     charge_profile(
         detector=detector,
-        txt_file=profile_10x1_txt_filename,
-        fit_profile_to_det=True,
+        filename=profile_10x1_txt_filename,
     )
 
     # Check modified charges in 'detector'
@@ -149,8 +148,7 @@ def test_charge_profile_10x3(ccd_10x3: CCD, profile_10x3_txt_filename: Path) -> 
     # Run model
     charge_profile(
         detector=detector,
-        txt_file=profile_10x3_txt_filename,
-        fit_profile_to_det=True,
+        filename=profile_10x3_txt_filename,
     )
 
     # Check modified charges in 'detector'
