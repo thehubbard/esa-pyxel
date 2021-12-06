@@ -6,8 +6,6 @@
 #   the terms contained in the file ‘LICENCE.txt’.
 
 
-import logging
-
 import numpy as np
 
 from pyxel.detectors import CCD
@@ -65,7 +63,6 @@ def dark_current(detector: CCD, dark_rate: float, gain: float = 1.0) -> None:
     """
     if not isinstance(detector, CCD):
         raise TypeError("Expecting a CCD object for detector.")
-    logging.info("")
 
     exposure_time = detector.time_step
     geo = detector.geometry
