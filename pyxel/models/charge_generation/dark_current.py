@@ -7,13 +7,14 @@
 
 """Simple models to generate charge due to dark current process."""
 
+import typing as t
+
 import numpy as np
 
 from pyxel.detectors import CCD
 from pyxel.util import temporary_random_state
 
 
-@temporary_random_state
 def calculate_dark_current(
     num_rows: int,
     num_cols: int,
@@ -51,7 +52,10 @@ def calculate_dark_current(
     return dark_im_array_2d
 
 
-def dark_current(detector: CCD, dark_rate: float, gain: float = 1.0) -> None:
+@temporary_random_state
+def dark_current(
+    detector: CCD, dark_rate: float, gain: float = 1.0, seed: t.Optional[int] = None
+) -> None:
     """Simulate dark current in a CCD.
 
     Parameters
@@ -63,6 +67,7 @@ def dark_current(detector: CCD, dark_rate: float, gain: float = 1.0) -> None:
         manufacturers typically report it.
     gain : float, optional. Default: 1.0
         Gain of the camera, in units of electrons/ADU.
+    seed: int, optional
     """
     if not isinstance(detector, CCD):
         raise TypeError("Expecting a CCD object for detector.")
