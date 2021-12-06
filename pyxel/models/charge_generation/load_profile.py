@@ -93,7 +93,7 @@ def charge_profile(
         fit_profile_to_det=fit_profile_to_det,
     )  # type: np.ndarray
 
-    charges *= (detector.time_step / time_scale)
+    charges *= detector.time_step / time_scale
 
     # Add charges in 'detector'
     detector.charge.add_charge_array(charges)

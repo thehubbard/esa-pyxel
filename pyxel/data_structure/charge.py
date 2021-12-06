@@ -205,9 +205,7 @@ class Charge:
 
         # Changing = to += since charge dataframe is reset, the pixel array need to be
         # incremented, we can't do the whole operation on each iteration
-        return df_to_array(
-            array, charge_per_pixel, pixel_index_ver, pixel_index_hor
-        )
+        return df_to_array(array, charge_per_pixel, pixel_index_ver, pixel_index_hor)
 
     @staticmethod
     def convert_array_to_df(
