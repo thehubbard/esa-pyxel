@@ -14,17 +14,30 @@ import numpy as np
 from pyxel.detectors import CMOS, Detector
 from pyxel.util import temporary_random_state
 
-# from astropy import units as u
+
+def create_noise(signal_2d: np.ndarray, std_deviation: float) -> np.ndarray:
+    """Create noise to signal array using normal random distribution.
+
+    Parameters
+    ----------
+    signal_2d : ndarray
+    std_deviation : float
+
+    Returns
+    -------
+    ndarray
+    """
+    sigma_2d = std_deviation * np.ones_like(signal_2d)
+    noise_2d = np.random.normal(loc=signal_2d, scale=sigma_2d)
+
+    return noise_2d
 
 
-# @validators.validate
-# @config.argument(name='', label='', units='', validate=)
-
-
-# TODO: use private functions
 @temporary_random_state
 def output_node_noise(
-    detector: Detector, std_deviation: float, seed: t.Optional[int] = None
+    detector: Detector,
+    std_deviation: float,
+    seed: t.Optional[int] = None,
 ) -> None:
     """Add noise to signal array of detector output node using normal random distribution.
 
@@ -33,18 +46,24 @@ def output_node_noise(
     detector: Detector
         Pyxel detector object.
     std_deviation: float
-        Standard deviation.
+        Standard deviation. Unit: V
     seed: int, optional
         Random seed.
+
+    Raises
+    ------
+    ValueError
+        Raised if 'std_deviation' is negative
     """
-    logging.info("")
+    if std_deviation < 0.0:
+        raise ValueError("'std_deviation' must be positive.")
 
-    signal_mean_array = detector.signal.array.astype("float64")
-    sigma_array = std_deviation * np.ones(signal_mean_array.shape)
+    noise_2d = create_noise(
+        signal_2d=np.asarray(detector.signal.array, dtype=np.float64),
+        std_deviation=std_deviation,
+    )  # type: np.ndarray
 
-    signal = np.random.normal(loc=signal_mean_array, scale=sigma_array)
-
-    detector.signal.array = signal
+    detector.signal.array = noise_2d
 
 
 @temporary_random_state

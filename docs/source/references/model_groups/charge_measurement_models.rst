@@ -29,6 +29,16 @@ Example of the configuration file:
 Output node noise
 =================
 
+Add noise to signal array of detector output node using normal random distribution.
+
+.. code-block:: yaml
+
+    - name: output_noise
+      func: pyxel.models.charge_measurement.output_node_noise
+      enabled: true
+      arguments:
+        std_deviation: 1.0
+
 .. autofunction:: output_node_noise
 
 Output node noise CMOS
