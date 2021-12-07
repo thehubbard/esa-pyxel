@@ -13,6 +13,30 @@ Simple photoconversion
 
 .. autofunction:: simple_conversion
 
+Load charge
+================
+
+With this model you can add charge to :py:class:`~pyxel.detectors.Detector` by loading charge values from a file.
+Accepted file formats are ``.npy``, ``.fits``, ``.txt``, ``.data``, ``.jpg``, ``.jpeg``, ``.bmp``,
+``.png`` and ``.tiff``. Use argument ``position`` to set the offset from (0,0) pixel
+and set where the input charge is placed onto detector. You can set preset positions with argument ``align``.
+Values outside of detector shape will be cropped.
+Read more about placement in the documentation of function :py:func:`~pyxel.util.fit_into_array`.
+Use argument ``time_scale`` to set the time scale of the input charge, default is 1 second.
+
+Basic example of YAML configuration model:
+
+.. code-block:: yaml
+
+    - name: load_charge
+      func: pyxel.models.photon_generation.load_charge
+      enabled: true
+      arguments:
+        charge_file: data/charge.npy
+        position: [0,0]
+
+.. autofunction:: load_charge
+
 Charge injection
 ================
 
@@ -59,11 +83,6 @@ Monitor CCDs is ongoing via Pyxel.
 
 .. autofunction:: pyxel.models.charge_generation.run_tars
 
-..
-    CCD charge injection
-    ====================
-
-    .. autofunction:: pyxel.models.charge_generation.charge_injection.charge_injection
 
 Dark current rule07
 ===================
