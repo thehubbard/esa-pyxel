@@ -50,7 +50,7 @@ def load_charge_from_file(
         slice(profile_position_x, profile_position_x + profile_cols),
     ] = charges_from_file_2d
 
-    return detector_charge_2d.astype(np.int64)
+    return detector_charge_2d
 
 
 def charge_profile(
@@ -58,6 +58,7 @@ def charge_profile(
     txt_file: t.Union[str, Path],
     fit_profile_to_det: bool = False,
     profile_position: t.Optional[t.Tuple[int, int]] = None,
+    time_scale: float = 1.0,
 ) -> None:
     """Load charge profile from txt file for detector, mostly for but not limited to CCDs.
 
@@ -69,6 +70,8 @@ def charge_profile(
         File path.
     fit_profile_to_det : bool
     profile_position : list
+    time_scale: float
+        Time scale of the input charge, default is 1 second. 0.001 would be ms.
     """
     logging.info("")
 
@@ -89,6 +92,8 @@ def charge_profile(
         profile_position_x=profile_position_x,
         fit_profile_to_det=fit_profile_to_det,
     )  # type: np.ndarray
+
+    charges *= detector.time_step / time_scale
 
     # Add charges in 'detector'
     detector.charge.add_charge_array(charges)

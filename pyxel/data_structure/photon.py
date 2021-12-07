@@ -28,13 +28,9 @@ class Photon(Array):
     # TODO: add unit (ph)
     EXP_TYPE = float
     TYPE_LIST = (
-        # np.int32,
-        # np.int64,
-        # np.uint32,
-        # np.uint64,
-        np.float16,
-        np.float32,
-        np.float64,
+        np.dtype(np.float16),
+        np.dtype(np.float32),
+        np.dtype(np.float64),
     )
 
     def __init__(self, geo: "Geometry"):

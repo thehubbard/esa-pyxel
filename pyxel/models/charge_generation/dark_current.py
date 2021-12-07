@@ -81,6 +81,8 @@ def dark_current(
         current=dark_rate,
         exposure_time=exposure_time,
         gain=gain,
+    ).astype(
+        float
     )  # type: np.ndarray
 
     detector.charge.add_charge_array(dark_current_array)

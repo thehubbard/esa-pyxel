@@ -24,8 +24,15 @@ class Image(Array):
     Accepted array types: ``np.uint16``, ``np.uint32``, ``np.uint64``
     """
 
-    EXP_TYPE = np.uint
-    TYPE_LIST = (np.uint16, np.uint32, np.uint64, np.float16, np.float32, np.float64)
+    EXP_TYPE = np.dtype(np.uint64)
+    TYPE_LIST = (
+        np.dtype(np.uint16),
+        np.dtype(np.uint32),
+        np.dtype(np.uint64),
+        np.dtype(np.float16),
+        np.dtype(np.float32),
+        np.dtype(np.float64),
+    )
 
     def __init__(self, geo: "Geometry"):
         new_array = np.zeros((geo.row, geo.col), dtype=self.EXP_TYPE)

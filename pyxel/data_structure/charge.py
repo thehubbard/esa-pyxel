@@ -51,12 +51,11 @@ def df_to_array(
 class Charge:
     """TBW."""
 
-    EXP_TYPE = np.int64
+    EXP_TYPE = float
     TYPE_LIST = (
-        np.int32,
-        np.int64,
-        np.uint32,
-        np.uint64,
+        np.dtype(np.float16),
+        np.dtype(np.float32),
+        np.dtype(np.float64),
     )
 
     def __init__(self, geo: "Geometry"):
@@ -202,9 +201,7 @@ class Charge:
 
         # Changing = to += since charge dataframe is reset, the pixel array need to be
         # incremented, we can't do the whole operation on each iteration
-        return df_to_array(
-            array, charge_per_pixel, pixel_index_ver, pixel_index_hor
-        ).astype(np.int32)
+        return df_to_array(array, charge_per_pixel, pixel_index_ver, pixel_index_hor)
 
     @staticmethod
     def convert_array_to_df(
@@ -342,6 +339,9 @@ class Charge:
         ----------
         array: ndarray
         """
+        self.validate_type(array)
+        self.validate_shape(array)
+
         if self._frame.empty:
             self._array += array
 
@@ -380,6 +380,29 @@ class Charge:
         if not self._frame.empty:
             self._frame = self.EMPTY_FRAME.copy()
         self._array *= 0
+
+    def validate_type(self, value: np.ndarray) -> None:
+        """Validate a value.
+
+        Parameters
+        ----------
+        value
+        """
+        cls_name = self.__class__.__name__  # type: str
+
+        if not isinstance(value, np.ndarray):
+            raise TypeError(f"{cls_name} array should be a numpy.ndarray")
+
+        if value.dtype not in self.TYPE_LIST:
+            exp_type_name = str(self.EXP_TYPE)  # type: str
+            raise TypeError(f"Expected type of {cls_name} array is {exp_type_name}.")
+
+    def validate_shape(self, value: np.ndarray) -> None:
+        """TBW."""
+        cls_name = self.__class__.__name__  # type: str
+
+        if value.shape != self._array.shape:
+            raise ValueError(f"Expected {cls_name} array is {self._array.shape}.")
 
     def get_frame_values(
         self, quantity: str, id_list: t.Optional[list] = None

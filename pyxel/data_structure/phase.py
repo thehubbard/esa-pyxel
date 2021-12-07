@@ -24,7 +24,7 @@ class Phase(Array):
     """
 
     EXP_TYPE = float
-    TYPE_LIST = (np.float16, np.float32, np.float64)
+    TYPE_LIST = (np.dtype(np.float16), np.dtype(np.float32), np.dtype(np.float64))
 
     def __init__(self, geo: "Geometry"):
         new_array = np.zeros((geo.row, geo.col), dtype=self.EXP_TYPE)

@@ -140,7 +140,7 @@ def simple_persistence(
                 detector.pixel.array * trap_density - trapped_charges
             )
             # Remove the trapped charges from the pixel
-            detector.pixel.array -= trapped_charges.astype(np.int32)
+            detector.pixel.array -= trapped_charges
             # Replace old trapped charges map in the detector's memory
             detector._memory["persistence"][entry] = trapped_charges
 
@@ -228,7 +228,7 @@ def current_persistence(
 
         # Remove the trapped charges from the pixel
         # detector.pixel.array -= trapped_charges.astype(np.int32)
-        detector.pixel.array -= diff.astype(np.int32)
+        detector.pixel.array -= diff
 
         # Replace old trapped charges map in the detector's memory
         detector._memory["persistence"][entry] = trapped_charges

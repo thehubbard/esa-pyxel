@@ -14,6 +14,8 @@ Core
   (See `!351 <https://gitlab.com/esa/pyxel/-/merge_requests/351>`_).
 * Move some general processing function into a common folder.
   (See `!359 <https://gitlab.com/esa/pyxel/-/merge_requests/359>`_).
+* Use detector.time_step in charge_generation models and allow floats in Charge arrays.
+  (See `!365 <https://gitlab.com/esa/pyxel/-/merge_requests/365>`_).
 
 Documentation
 ~~~~~~~~~~~~~
