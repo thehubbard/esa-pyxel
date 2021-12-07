@@ -10,7 +10,7 @@
 # flake8: noqa
 from .charge_injection import charge_blocks
 from .dark_current_rule07 import dark_current_rule07
-from .load_profile import charge_profile
+from .load_charge import load_charge
 from .photoelectrons import simple_conversion
 from .tars.tars import run_tars
 from .qe_map import qe_map

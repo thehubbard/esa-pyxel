@@ -6,12 +6,16 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 #
 #
-"""TBW."""
+"""Utility functions for images."""
 import typing as t
 from enum import Enum
+from functools import lru_cache
+from pathlib import Path
 
 import numpy as np
 from typing_extensions import Literal
+
+from pyxel.inputs import load_image
 
 
 class Alignment(Enum):
@@ -143,3 +147,44 @@ def fit_into_array(
     ] = cropped_array
 
     return output
+
+
+@lru_cache(maxsize=128)  # One must add parameter 'maxsize' for Python 3.7
+def load_cropped_and_aligned_image(
+    shape: t.Tuple[int, int],
+    filename: t.Union[str, Path],
+    position_x: int = 0,
+    position_y: int = 0,
+    align: t.Optional[
+        Literal["center", "top_left", "top_right", "bottom_left", "bottom_right"]
+    ] = None,
+) -> np.ndarray:
+    """Load image from file and fit to detector shape.
+
+    Parameters
+    ----------
+    shape: tuple
+        Detector shape.
+    filename: str
+        Path to image file.
+    position_x: tuple
+        Index of starting column, used when fitting image to detector.
+    position_y: tuple
+        Index of starting row, used when fitting image to detector.
+    align: Literal
+        Keyword to align the image to detector. Can be any from:
+        ("center", "top_left", "top_right", "bottom_left", "bottom_right")
+
+    Returns
+    -------
+    cropped_and_aligned_image: ndarray
+    """
+    # Load 2d image (which can be smaller or
+    #                         larger in dimensions than detector imaging area)
+    image = load_image(filename)
+
+    cropped_and_aligned_image = fit_into_array(
+        array=image, output_shape=shape, relative_position=(position_y, position_x), align=align
+    )  # type: np.ndarray
+
+    return cropped_and_aligned_image
