@@ -109,9 +109,9 @@ def output_node_noise_cmos(
     detector: CMOS
         Pyxel CMOS object.
     readout_noise: float
-        Mean readout noise for the array in units of electrons. Unit: V
+        Mean readout noise for the array in units of electrons. Unit: electron
     readout_noise_std: float
-        Readout noise standard deviation in units of electrons. Unit: V
+        Readout noise standard deviation in units of electrons. Unit: electron
     seed: int, optional
         Random seed.
 
