@@ -56,7 +56,7 @@ class Array:
             raise TypeError(f"{cls_name} array should be a numpy.ndarray")
 
         if value.dtype not in self.TYPE_LIST:
-            exp_type_name = self.EXP_TYPE.__name__  # type: str
+            exp_type_name = str(self.EXP_TYPE)  # type: str
             raise TypeError(f"Expected type of {cls_name} array is {exp_type_name}.")
 
     def validate_shape(self, value: np.ndarray) -> None:
