@@ -20,7 +20,7 @@ from pyxel.util.examples import download_examples
 from pyxel.util.timing import time_pipeline
 from pyxel.util.add_model import create_model
 from pyxel.util.random import temporary_random_state
-from pyxel.util.image import fit_into_array
+from pyxel.util.image import fit_into_array, load_cropped_and_aligned_image
 
 __all__ = [
     "convert_to_int",

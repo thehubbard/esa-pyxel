@@ -8,47 +8,10 @@
 """Pyxel photon generator models."""
 import typing as t
 
-import numpy as np
 from typing_extensions import Literal
 
-import pyxel
 from pyxel.detectors import Detector
-from pyxel.util import fit_into_array
-
-
-def load_image_from_file(
-    filename: str,
-    shape: t.Tuple[int, int],
-    position: t.Tuple[int, int] = (0, 0),
-    align: t.Optional[
-        Literal["center", "top_left", "top_right", "bottom_left", "bottom_right"]
-    ] = None,
-) -> np.ndarray:
-    """Load image from file and fit to detector shape.
-
-    Parameters
-    ----------
-    shape: tuple
-        Detector shape.
-    filename: str
-        Path to image file.
-    position: tuple
-        Indices of starting row and column, used when fitting image to detector.
-    align: Literal
-        Keyword to align the image to detector. Can be any from:
-        ("center", "top_left", "top_right", "bottom_left", "bottom_right")
-
-    Returns
-    -------
-    image: ndarray
-    """
-    image = pyxel.load_image(filename)  # type: np.ndarray
-
-    cropped_and_aligned_image = fit_into_array(
-        array=image, output_shape=shape, relative_position=position, align=align
-    )  # type: np.ndarray
-
-    return cropped_and_aligned_image
+from pyxel.util import load_cropped_and_aligned_image
 
 
 def load_image(
@@ -86,7 +49,7 @@ def load_image(
 
     shape = (detector.geometry.row, detector.geometry.col)
 
-    image = load_image_from_file(
+    image = load_cropped_and_aligned_image(
         filename=image_file,
         shape=shape,
         align=align,
