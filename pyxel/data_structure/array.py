@@ -22,8 +22,8 @@ from pyxel.util.memory import get_size
 class Array:
     """Array class."""
 
-    EXP_TYPE = type(None)  # type: t.Type
-    TYPE_LIST = ()  # type: t.Tuple[t.Type, ...]
+    EXP_TYPE = type(None)  # type: t.Union[t.Type, np.dtype]
+    TYPE_LIST = ()  # type: t.Tuple[np.dtype, ...]
 
     # TODO: Add units ?
     def __init__(self, value: np.ndarray):
