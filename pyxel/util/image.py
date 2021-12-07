@@ -153,7 +153,8 @@ def fit_into_array(
 def load_cropped_and_aligned_image(
     shape: t.Tuple[int, int],
     filename: t.Union[str, Path],
-    position: t.Tuple[int, int] = (0, 0),
+    position_x: int = 0,
+    position_y: int = 0,
     align: t.Optional[
         Literal["center", "top_left", "top_right", "bottom_left", "bottom_right"]
     ] = None,
@@ -166,8 +167,10 @@ def load_cropped_and_aligned_image(
         Detector shape.
     filename: str
         Path to image file.
-    position: tuple
-        Indices of starting row and column, used when fitting image to detector.
+    position_x: tuple
+        Index of starting column, used when fitting image to detector.
+    position_y: tuple
+        Index of starting row, used when fitting image to detector.
     align: Literal
         Keyword to align the image to detector. Can be any from:
         ("center", "top_left", "top_right", "bottom_left", "bottom_right")
@@ -181,7 +184,7 @@ def load_cropped_and_aligned_image(
     image = load_image(filename)
 
     cropped_and_aligned_image = fit_into_array(
-        array=image, output_shape=shape, relative_position=position, align=align
+        array=image, output_shape=shape, relative_position=(position_y, position_x), align=align
     )  # type: np.ndarray
 
     return cropped_and_aligned_image

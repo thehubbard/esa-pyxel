@@ -43,12 +43,14 @@ def load_charge(
         Time scale of the input charge, default is 1 second. 0.001 would be ms.
     """
     geo = detector.geometry  # type: Geometry
+    position_y, position_x = position
 
     # Load charge profile as numpy array.
     charges = load_cropped_and_aligned_image(
         shape=(geo.row, geo.col),
         filename=filename,
-        position=position,
+        position_x=position_x,
+        position_y=position_y,
         align=align,
     )  # type: np.ndarray
 
