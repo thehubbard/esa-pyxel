@@ -48,12 +48,14 @@ def load_image(
     """
 
     shape = (detector.geometry.row, detector.geometry.col)
+    position_y, position_x = position
 
     image = load_cropped_and_aligned_image(
         filename=image_file,
         shape=shape,
         align=align,
-        position=position,
+        position_x=position_x,
+        position_y=position_y,
     )
 
     detector.input_image = image
