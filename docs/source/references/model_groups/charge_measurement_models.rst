@@ -29,11 +29,6 @@ Example of the configuration file:
 Output node noise
 =================
 
-.. autofunction:: output_node_noise
-
-Output node noise CMOS
-======================
-
 Add noise to signal array of detector output node using normal random distribution.
 
 .. code-block:: yaml
@@ -43,6 +38,11 @@ Add noise to signal array of detector output node using normal random distributi
       enabled: true
       arguments:
         std_deviation: 1.0
+
+.. autofunction:: output_node_noise
+
+Output node noise CMOS
+======================
 
 .. autofunction:: output_node_noise_cmos
 
