@@ -20,7 +20,7 @@ from pyxel.detectors import (
     Material,
     ReadoutProperties,
 )
-from pyxel.models.charge_generation import charge_profile
+from pyxel.models.charge_generation import load_charge
 
 
 @pytest.fixture
@@ -123,7 +123,7 @@ def test_charge_profile_10x1(ccd_10x1: CCD, profile_10x1_txt_filename: Path) -> 
     assert detector.charge.frame.empty
 
     # Run model
-    charge_profile(
+    load_charge(
         detector=detector,
         filename=profile_10x1_txt_filename,
     )
@@ -145,7 +145,7 @@ def test_charge_profile_10x3(ccd_10x3: CCD, profile_10x3_txt_filename: Path) -> 
     assert detector.charge.frame.empty
 
     # Run model
-    charge_profile(
+    load_charge(
         detector=detector,
         filename=profile_10x3_txt_filename,
     )

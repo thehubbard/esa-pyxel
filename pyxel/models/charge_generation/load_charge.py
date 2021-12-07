@@ -17,7 +17,7 @@ from pyxel.detectors import Detector, Geometry
 from pyxel.util import load_cropped_and_aligned_image
 
 
-def charge_profile(
+def load_charge(
     detector: Detector,
     filename: t.Union[str, Path],
     position: t.Tuple[int, int] = (0, 0),
@@ -26,7 +26,7 @@ def charge_profile(
     ] = None,
     time_scale: float = 1.0,
 ) -> None:
-    """Load charge profile from txt file for detector, mostly for but not limited to CCDs.
+    """Load charge from txt file for detector, mostly for but not limited to CCDs.
 
     Parameters
     ----------
