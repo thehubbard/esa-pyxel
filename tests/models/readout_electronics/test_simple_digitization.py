@@ -40,10 +40,10 @@ def test_simple_digitization(ccd_3x3: CCD, data_type: str):
         ("float", TypeError, "Expecting a signed/unsigned integer"),
         ("float32", TypeError, "Expecting a signed/unsigned integer"),
         ("float64", TypeError, "Expecting a signed/unsigned integer"),
-        ("uint8", TypeError, "Expected type of Image array is uint32"),
-        ("int32", TypeError, "Expected type of Image array is uint32"),
-        ("int64", TypeError, "Expected type of Image array is uint32"),
-        ("int", TypeError, "Expected type of Image array is uint32"),
+        ("uint8", TypeError, "Expected type of Image array is uint64"),
+        ("int32", TypeError, "Expected type of Image array is uint64"),
+        ("int64", TypeError, "Expected type of Image array is uint64"),
+        ("int", TypeError, "Expected type of Image array is uint64"),
     ],
 )
 def test_simple_digitization_wrong_data_type(
