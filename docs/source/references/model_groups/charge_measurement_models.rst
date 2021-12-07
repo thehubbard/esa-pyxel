@@ -44,6 +44,17 @@ Add noise to signal array of detector output node using normal random distributi
 Output node noise CMOS
 ======================
 
+Output node noise model for CMOS detectors where readout is statistically independent for each pixel.
+
+.. code-block:: yaml
+
+    - name: output_noise
+      func: pyxel.models.charge_measurement.output_node_noise
+      enabled: true
+      arguments:
+        readout_noise: 1.0
+        readout_noise_std: 2.0
+
 .. autofunction:: output_node_noise_cmos
 
 Non-linearity
