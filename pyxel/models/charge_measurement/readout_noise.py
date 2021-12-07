@@ -6,7 +6,6 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """Readout noise model."""
-import logging
 import typing as t
 
 import numpy as np
@@ -98,7 +97,7 @@ def output_node_noise(
 
 @temporary_random_state
 def output_node_noise_cmos(
-    detector: "CMOS",
+    detector: CMOS,
     readout_noise: float,
     readout_noise_std: float,
     seed: t.Optional[int] = None,
@@ -115,7 +114,17 @@ def output_node_noise_cmos(
         Readout noise standard deviation in units of electrons.
     seed: int, optional
         Random seed.
+
+    Raises
+    ------
+    TypeError
+        Raised if the 'detector' is not a CMOS object.
+    ValueError
+        Raised if 'readout_noise_std' is negative.
     """
+    if not isinstance(detector, CMOS):
+        raise TypeError("Expecting a 'CMOS' detector object.")
+
     if readout_noise_std < 0.0:
         raise ValueError("'readout_noise_std' must be positive.")
 

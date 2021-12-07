@@ -18,7 +18,7 @@ from pyxel.detectors import (
     Environment,
     Material,
 )
-from pyxel.models.charge_measurement import output_node_noise
+from pyxel.models.charge_measurement import output_node_noise, output_node_noise_cmos
 
 
 @pytest.fixture
@@ -89,3 +89,30 @@ def test_output_node_noise_bad_std(ccd_5x10: CCD, cmos_5x10: CMOS, detector_type
 
     with pytest.raises(ValueError, match="'std_deviation' must be positive."):
         output_node_noise(detector=detector, std_deviation=-1.0)
+
+
+def test_output_node_noise_cmos(cmos_5x10: CMOS):
+    """Test model 'output_node_noise_cmos' with valid inputs."""
+    detector = cmos_5x10
+
+    output_node_noise_cmos(detector=detector, readout_noise=1.0, readout_noise_std=2.0)
+
+
+def test_output_node_noise_with_ccd(ccd_5x10: CCD):
+    """Test model 'output_node_noise_ccd' with a 'CCD'."""
+    detector = ccd_5x10
+
+    with pytest.raises(TypeError, match="Expecting a 'CMOS' detector object."):
+        output_node_noise_cmos(
+            detector=detector, readout_noise=1.0, readout_noise_std=2.0
+        )
+
+
+def test_output_node_noise_invalid_noise(cmos_5x10: CMOS):
+    """Test model 'output_node_noise_ccd' with a 'CCD'."""
+    detector = cmos_5x10
+
+    with pytest.raises(ValueError, match="'readout_noise_std' must be positive."):
+        output_node_noise_cmos(
+            detector=detector, readout_noise=1.0, readout_noise_std=-1.0
+        )
