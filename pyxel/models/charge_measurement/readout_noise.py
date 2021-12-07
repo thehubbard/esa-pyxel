@@ -33,6 +33,36 @@ def create_noise(signal_2d: np.ndarray, std_deviation: float) -> np.ndarray:
     return noise_2d
 
 
+def create_noise_cmos(
+    signal_2d: np.ndarray,
+    readout_noise: float,
+    readout_noise_std: float,
+    charge_readout_sensitivity: float,
+) -> np.ndarray:
+    """Create noise to signal array for CMOS detectors.
+
+    Parameters
+    ----------
+    signal_2d : ndarray
+    readout_noise : float
+    readout_noise_std : float
+    charge_readout_sensitivity : float
+
+    Returns
+    -------
+    ndarray
+    """
+    sigma_2d = np.random.normal(
+        loc=readout_noise * charge_readout_sensitivity,
+        scale=readout_noise_std * charge_readout_sensitivity,
+        size=signal_2d.shape,
+    )
+
+    noise_2d = np.random.normal(loc=signal_2d, scale=sigma_2d)
+
+    return noise_2d
+
+
 @temporary_random_state
 def output_node_noise(
     detector: Detector,
@@ -77,27 +107,23 @@ def output_node_noise_cmos(
 
     Parameters
     ----------
-    detector: Detector
-    readout_noise: Mean readout noise for the array in units of electrons.
-    readout_noise_std: Readout noise standard deviation in units of electrons.
+    detector: CMOS
+        Pyxel CMOS object.
+    readout_noise: float
+        Mean readout noise for the array in units of electrons.
+    readout_noise_std: float
+        Readout noise standard deviation in units of electrons.
     seed: int, optional
-
-    Returns
-    -------
-    None
+        Random seed.
     """
-    logging.info("")
+    if readout_noise_std < 0.0:
+        raise ValueError("'readout_noise_std' must be positive.")
 
-    # sv is charge readout sensitivity
-    sv = detector.characteristics.sv
+    noise_2d = create_noise_cmos(
+        signal_2d=np.asarray(detector.signal.array, dtype=np.float64),
+        readout_noise=readout_noise,
+        readout_noise_std=readout_noise_std,
+        charge_readout_sensitivity=detector.characteristics.sv,
+    )  # type: np.ndarray
 
-    signal_mean_array = detector.signal.array.astype("float64")
-    sigma_array = np.random.normal(
-        loc=readout_noise * sv,
-        scale=readout_noise_std * sv,
-        size=signal_mean_array.shape,
-    )
-
-    signal = np.random.normal(loc=signal_mean_array, scale=sigma_array)
-
-    detector.signal.array = signal
+    detector.signal.array = noise_2d
