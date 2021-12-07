@@ -6,7 +6,6 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """Readout noise model."""
-import logging
 import typing as t
 
 import numpy as np
@@ -28,6 +27,36 @@ def create_noise(signal_2d: np.ndarray, std_deviation: float) -> np.ndarray:
     ndarray
     """
     sigma_2d = std_deviation * np.ones_like(signal_2d)
+    noise_2d = np.random.normal(loc=signal_2d, scale=sigma_2d)
+
+    return noise_2d
+
+
+def create_noise_cmos(
+    signal_2d: np.ndarray,
+    readout_noise: float,
+    readout_noise_std: float,
+    charge_readout_sensitivity: float,
+) -> np.ndarray:
+    """Create noise to signal array for CMOS detectors.
+
+    Parameters
+    ----------
+    signal_2d : ndarray
+    readout_noise : float
+    readout_noise_std : float
+    charge_readout_sensitivity : float
+
+    Returns
+    -------
+    ndarray
+    """
+    sigma_2d = np.random.normal(
+        loc=readout_noise * charge_readout_sensitivity,
+        scale=readout_noise_std * charge_readout_sensitivity,
+        size=signal_2d.shape,
+    )
+
     noise_2d = np.random.normal(loc=signal_2d, scale=sigma_2d)
 
     return noise_2d
@@ -68,7 +97,7 @@ def output_node_noise(
 
 @temporary_random_state
 def output_node_noise_cmos(
-    detector: "CMOS",
+    detector: CMOS,
     readout_noise: float,
     readout_noise_std: float,
     seed: t.Optional[int] = None,
@@ -77,27 +106,33 @@ def output_node_noise_cmos(
 
     Parameters
     ----------
-    detector: Detector
-    readout_noise: Mean readout noise for the array in units of electrons.
-    readout_noise_std: Readout noise standard deviation in units of electrons.
+    detector: CMOS
+        Pyxel CMOS object.
+    readout_noise: float
+        Mean readout noise for the array in units of electrons. Unit: electron
+    readout_noise_std: float
+        Readout noise standard deviation in units of electrons. Unit: electron
     seed: int, optional
+        Random seed.
 
-    Returns
-    -------
-    None
+    Raises
+    ------
+    TypeError
+        Raised if the 'detector' is not a CMOS object.
+    ValueError
+        Raised if 'readout_noise_std' is negative.
     """
-    logging.info("")
+    if not isinstance(detector, CMOS):
+        raise TypeError("Expecting a 'CMOS' detector object.")
 
-    # sv is charge readout sensitivity
-    sv = detector.characteristics.sv
+    if readout_noise_std < 0.0:
+        raise ValueError("'readout_noise_std' must be positive.")
 
-    signal_mean_array = detector.signal.array.astype("float64")
-    sigma_array = np.random.normal(
-        loc=readout_noise * sv,
-        scale=readout_noise_std * sv,
-        size=signal_mean_array.shape,
-    )
+    noise_2d = create_noise_cmos(
+        signal_2d=np.asarray(detector.signal.array, dtype=np.float64),
+        readout_noise=readout_noise,
+        readout_noise_std=readout_noise_std,
+        charge_readout_sensitivity=detector.characteristics.sv,
+    )  # type: np.ndarray
 
-    signal = np.random.normal(loc=signal_mean_array, scale=sigma_array)
-
-    detector.signal.array = signal
+    detector.signal.array = noise_2d
