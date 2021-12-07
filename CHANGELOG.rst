@@ -2,8 +2,8 @@ Changelog
 =========
 
 
-version 1.0 / UNRELEASED-YYYY-MM-DD
------------------------------------
+version 0.11.5 / 2021-12-07
+---------------------------
 
 Core
 ~~~~
@@ -17,10 +17,6 @@ Core
 * Use detector.time_step in charge_generation models and allow floats in Charge arrays.
   (See `!365 <https://gitlab.com/esa/pyxel/-/merge_requests/365>`_).
 
-Documentation
-~~~~~~~~~~~~~
-
-
 Models
 ~~~~~~
 
@@ -28,9 +24,6 @@ Models
   (See `!361 <https://gitlab.com/esa/pyxel/-/merge_requests/361>`_).
 * Remove alignment model.
   (See `!364 <https://gitlab.com/esa/pyxel/-/merge_requests/364>`_).
-
-Others
-~~~~~~
 
 
 version 0.11.4 / 2021-11-23
