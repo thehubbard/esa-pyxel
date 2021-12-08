@@ -1,5 +1,6 @@
 .. _charge_collection:
 
+========================
 Charge Collection models
 ========================
 
@@ -12,7 +13,7 @@ A charge collection model is necessary to first convert from charge data stored 
 :py:class:`~pyxel.data_structure.Charge` class. Multiple models are available to add detector effects after.
 
 Simple collection
------------------
+=================
 
 Simple collection model is the simplest model of charge collection and
 necessary to fill up :py:class:`~pyxel.data_structure.Pixel` array when no other collection model is used.
@@ -33,7 +34,7 @@ Example of YAML configuration model:
 .. autofunction:: simple_collection
 
 Simple full well
-----------------
+================
 This model can be used to limit the amount of charge in :py:class:`~pyxel.data_structure.Pixel` array
 due to full well capacity. Values will be clipped to the value of the full well capacity.
 The model uses full well capacity value specified in :py:class:`~pyxel.detectors.Characteristics` of the
@@ -52,13 +53,13 @@ Example of the configuration file:
 .. autofunction:: simple_full_well
 
 Fix pattern noise
------------------
+=================
 
 .. autofunction:: fix_pattern_noise
    :noindex:
 
 Inter-pixel capacitance
------------------------
+=======================
 This model can be used to apply inter-pixel capacitance to :py:class:`~pyxel.data_structure.Pixel` array.
 When there is IPC, the signal read out on any pixel is affected by the signal in neighboring pixels.
 The IPC affects the point spread function (PSF) of the optical system, modiying the shape of the objects.
@@ -96,8 +97,27 @@ Example of the configuration file:
 
 .. autofunction:: simple_ipc
 
-Persistence
------------
+Simple Persistence
+==================
+
+Simple trapping / detrapping charges.
+
+.. code-block:: yaml
+
+    - name: simple_persistence
+      func: pyxel.models.charge_collection.simple_persistence
+      enabled: true
+      arguments:
+          trap_timeconstants: [1., 10.]      # Two traps
+          trap_densities: [0.307, 0.175]
+
+.. note:: This model is specific for the CMOS detector.
 
 .. autofunction:: simple_persistence
+
+
+Current Persistence
+===================
+
+
 .. autofunction:: current_persistence
