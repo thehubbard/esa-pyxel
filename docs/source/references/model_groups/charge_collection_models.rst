@@ -55,8 +55,19 @@ Example of the configuration file:
 Fix pattern noise
 =================
 
+Add fix pattern noise caused by pixel non-uniformity during charge collection.
+
+.. code-block:: yaml
+
+    - name: fix_pattern_noise
+      func: pyxel.models.charge_collection.fix_pattern_noise
+      enabled: true
+      arguments:
+          pixel_non_uniformity: filename.fits  # optional
+
+
 .. autofunction:: fix_pattern_noise
-   :noindex:
+
 
 Inter-pixel capacitance
 =======================
