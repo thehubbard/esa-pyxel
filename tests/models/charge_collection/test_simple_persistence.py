@@ -21,7 +21,7 @@ from pyxel.models.charge_collection import simple_persistence
 
 
 @pytest.fixture
-def cmos_no_persistence_5x10() -> CMOS:
+def cmos_5x10() -> CMOS:
     """Create a valid CCD detector."""
     detector = CMOS(
         geometry=CMOSGeometry(
@@ -39,23 +39,65 @@ def cmos_no_persistence_5x10() -> CMOS:
     return detector
 
 
-@pytest.mark.parametrize(
-    "trap_timeconstants, trap_densities",
-    [
-        ((1.0,), (1.0,)),
-    ],
-)
-def test_simple_persistence(
-    cmos_no_persistence_5x10: CMOS,
-    trap_timeconstants: t.List[float],
-    trap_densities: t.List[float],
-):
+def test_simple_persistence(cmos_5x10: CMOS):
     """Test model 'simple_persistence'."""
-    detector = cmos_no_persistence_5x10
+    detector = cmos_5x10
+
+    # No persistence
     assert "persistence" not in detector._memory
 
     simple_persistence(
         detector=detector,
-        trap_timeconstants=trap_timeconstants,
-        trap_densities=trap_densities,
+        trap_timeconstants=[1.0, 3.0],
+        trap_densities=[2.0, 4.0],
     )
+
+    assert "persistence" in detector._memory
+    assert len(detector._memory["persistence"]) == 2
+
+    # With persistence
+    simple_persistence(
+        detector=detector,
+        trap_timeconstants=[1.0],
+        trap_densities=[2.0],
+    )
+
+    assert "persistence" in detector._memory
+    assert len(detector._memory["persistence"]) == 2
+
+
+@pytest.mark.parametrize(
+    "trap_timeconstants, trap_densities, exp_error, exp_msg",
+    [
+        pytest.param(
+            [],
+            [],
+            ValueError,
+            "Expecting at least one 'trap_timeconstants' and 'trap_densities'",
+            id="no elements",
+        ),
+        pytest.param(
+            [1.0],
+            [2.0, 3.0],
+            ValueError,
+            "Expecting same number of elements for parameters",
+            id="not same number of elements",
+        ),
+    ],
+)
+def test_simple_persistence_bad_inputs(
+    cmos_5x10: CMOS,
+    trap_timeconstants,
+    trap_densities,
+    exp_error,
+    exp_msg,
+):
+    """Test model 'simple_persistence' with bad inputs."""
+    detector = cmos_5x10
+
+    with pytest.raises(exp_error, match=exp_msg):
+        simple_persistence(
+            detector=detector,
+            trap_timeconstants=trap_timeconstants,
+            trap_densities=trap_densities,
+        )

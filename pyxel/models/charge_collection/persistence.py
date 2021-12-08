@@ -218,12 +218,21 @@ def add_persistence(
 
 def simple_persistence(
     detector: CMOS,
-    trap_timeconstants: t.List[float],
-    trap_densities: t.List[float],
+    trap_timeconstants: t.Sequence[float],
+    trap_densities: t.Sequence[float],
 ) -> None:
     """Trapping/detrapping charges."""
     # Validation
-    assert len(trap_timeconstants) == len(trap_densities)
+    if not len(trap_timeconstants) == len(trap_densities):
+        raise ValueError(
+            "Expecting same number of elements for parameters 'trap_timeconstants' "
+            "and 'trap_densities'"
+        )
+
+    if len(trap_timeconstants) == 0:
+        raise ValueError(
+            "Expecting at least one 'trap_timeconstants' and 'trap_densities'"
+        )
 
     # Conversion
     traps = [
@@ -242,16 +251,6 @@ def simple_persistence(
 
         detector._memory["persistence"] = persistence
 
-        # detector._memory["persistence"] = {}
-        #
-        # for trap_density, trap_timeconstant in zip(trap_densities, trap_timeconstants):
-        #     entry = f'trappedCharges_{trap_density}-{trap_timeconstant}'
-        #     # entry = "".join(
-        #     #     ["trappedCharges_", str(trap_density), "-", str(trap_timeconstant)]
-        #     # )
-        #
-        #     detector._memory["persistence"][entry] = np.zeros((detector.geometry.row, detector.geometry.col))
-
     else:
         new_pixel_2d, new_persistence = add_persistence(
             traps=traps,
@@ -263,25 +262,6 @@ def simple_persistence(
 
         # Replace old trapped charges map in the detector's memory
         detector._memory["persistence"].update(new_persistence)
-
-        # for trap_density, trap_timeconstant in zip(trap_densities, trap_timeconstants):
-        #     # entry = "".join(
-        #     #     ["trappedCharges_", str(trap_density), "-", str(trap_timeconstant)]
-        #     # )
-        #     entry = f"trappedCharges_{trap_density}-{trap_timeconstant}"
-        #     trapped_charges = detector._memory["persistence"][entry]  # type: np.ndarray
-        #
-        #     # Trap density is a scalar for now, in the future we could feed maps?
-        #     # the delta t is fixed to 0.5 s, need to find a way to avoid problem of divergence
-        #     trapped_charges = trapped_charges + (0.5 / trap_timeconstant) * (
-        #         detector.pixel.array * trap_density - trapped_charges
-        #     )
-        #
-        #     # Remove the trapped charges from the pixel
-        #     detector.pixel.array -= trapped_charges
-        #
-        #     # Replace old trapped charges map in the detector's memory
-        #     detector._memory["persistence"][entry] = trapped_charges
 
 
 def current_persistence(
