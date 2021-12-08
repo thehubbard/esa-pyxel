@@ -6,21 +6,57 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """Fix pattern noise model."""
-import logging
+
 import typing as t
 from pathlib import Path
 
 import numpy as np
 
 from pyxel.detectors import Detector, Geometry
+from pyxel.inputs import load_image
 from pyxel.util import temporary_random_state
 
 # TODO: use built-in pyxel functions for loading files, documentation, docstring, saving to file??, private function
 
 
-# TODO: Fix this
-# @validators.validate
-# @config.argument(name='', label='', units='', validate=)
+def create_fix_pattern_noise(num_rows: int, num_cols: int) -> np.ndarray:
+    """Create a fix pattern noise.
+
+    Parameters
+    ----------
+    num_rows : int
+    num_cols : int
+
+    Returns
+    -------
+    ndarray
+        A 2D array with the noise. Unit: electron
+    """
+    pnu_2d = np.random.normal(loc=1.0, scale=0.03, size=(num_rows, num_cols))
+
+    return pnu_2d
+
+
+def load_fix_pattern_noise(num_rows: int, num_cols: int, filename: Path) -> np.ndarray:
+    """Load a fix pattern noise from a filename.
+
+    Parameters
+    ----------
+    num_rows : int
+    num_cols : int
+    filename : str or Path
+        Path used to load a fix pattern noise.
+
+    Returns
+    -------
+    ndarray
+        A 2D array. Unit: electron
+    """
+    pnu_2d = load_image(filename)  # type: np.ndarray
+
+    return pnu_2d.reshape((num_rows, num_cols))
+
+
 @temporary_random_state
 def fix_pattern_noise(
     detector: Detector,
@@ -31,40 +67,32 @@ def fix_pattern_noise(
 
     Parameters
     ----------
-    seed: int, optional
     detector : Detector
         Pyxel Detector object.
     pixel_non_uniformity : str or Path
         path to an ascii file with and array.
+    seed: int, optional
+
+    Raises
+    ------
+    FileNotFoundError
+        If filename 'pixel_non_uniformity' is provided but does not exist.
     """
+    # Validation
+    if pixel_non_uniformity and not Path(pixel_non_uniformity).exists():
+        raise FileNotFoundError(
+            f"Cannot find filename 'pixel_non_uniformity': '{pixel_non_uniformity}"
+        )
+
     geo = detector.geometry  # type: Geometry
 
-    if pixel_non_uniformity is not None:
-        if ".npy" in str(pixel_non_uniformity):
-            pnu = np.load(pixel_non_uniformity)
-        else:
-            pnu = np.loadtxt(pixel_non_uniformity)
+    if pixel_non_uniformity:
+        pnu_2d = load_fix_pattern_noise(
+            num_rows=geo.row,
+            num_cols=geo.col,
+            filename=Path(pixel_non_uniformity),
+        )  # type: np.ndarray
     else:
-        filename = Path("data/pixel_non_uniformity.npy").resolve()
+        pnu_2d = create_fix_pattern_noise(num_rows=geo.row, num_cols=geo.col)
 
-        if filename.exists():
-            logging.warning(
-                "'pixel_non_uniformity' file is not defined, "
-                "using array from file: %s",
-                filename,
-            )
-            pnu = np.load(filename)
-        else:
-            logging.warning(
-                "'pixel_non_uniformity' file is not defined, "
-                "generated random array to file: %s",
-                filename,
-            )
-
-            # pnu = 0.99 + np.random.random((geo.row, geo.col)) * 0.02
-            pnu = np.random.normal(loc=1.0, scale=0.03, size=(geo.row, geo.col))
-            np.save(filename, pnu)
-
-    pnu = pnu.reshape((geo.row, geo.col))
-
-    detector.pixel.array = detector.pixel.array.astype(np.float64) * pnu  # TODO: dtype!
+    detector.pixel.array *= pnu_2d
