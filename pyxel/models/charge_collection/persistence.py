@@ -131,7 +131,7 @@ class Trap:
 
 
 def get_trapped_charge_name(param1: float, param2: float) -> str:
-    """Create a name for the trapped charges based on 'param1' and 'param2'
+    """Create a name for the trapped charges based on 'param1' and 'param2'.
 
     Parameters
     ----------
