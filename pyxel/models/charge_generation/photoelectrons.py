@@ -6,36 +6,50 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """Simple model to convert photon into photo-electrons inside detector."""
+from pathlib import Path
+
 import numpy as np
+from typing_extensions import Literal
 
 from pyxel.detectors import Detector
+import typing as t
+from pyxel.util import load_cropped_and_aligned_image
 
-# TODO: docstring, private function, what is eta, characteristics
-# TODO: put code from qe_map here and use qe as model parameter
+
+def apply_qe(array: np.ndarray, qe: t.Union[float, np.ndarray]) -> np.ndarray:
+    """TBW.
+
+    Parameters
+    ----------
+    array
+    qe
+
+    Returns
+    -------
+
+    """
+    return array * qe
 
 
-# TODO: Fix this
-# @validators.validate
-# @config.argument(name='', label='', units='', validate=)
-def simple_conversion(detector: Detector, qe: float) -> None:
-    """Generate charge from incident photon via photoelectric effect, simple statistical model.
+def simple_conversion(detector: Detector, qe: t.Optional[float] = None) -> None:
+    """Generate charge from incident photon via photoelectric effect, simple model.
 
     Parameters
     ----------
     detector : Detector
         Pyxel Detector object.
+    qe: float, optional
+        Quantum efficiency.
     """
-    geo = detector.geometry
-    ch = detector.characteristics
-    ph = detector.photon
+    if qe is None:
+        final_qe = detector.characteristics.qe
+    else:
+        final_qe = qe
 
-    detector_charge = np.zeros(
-        (geo.row, geo.col)
-    )  # all pixels has zero charge by default
-    photon_rows, photon_cols = ph.array.shape
-    detector_charge[slice(0, photon_rows), slice(0, photon_cols)] = (
-        ph.array * ch.qe * ch.eta
-    )
+    if not 0 <= qe <= 1:
+        raise ValueError("Quantum efficiency not between 0 and 1.")
+
+    detector_charge = apply_qe(array=detector.photon.array, qe=final_qe)
     detector.charge.add_charge_array(detector_charge)
 
 
@@ -45,25 +59,38 @@ def conversion_with_qe_map(
     position: t.Tuple[int, int] = (0, 0),
     align: t.Optional[
         Literal["center", "top_left", "top_right", "bottom_left", "bottom_right"]
-    ] = None,) -> None:
-    """Generate charge from incident photon via photoelectric effect, simple statistical model.
+    ] = None,
+) -> None:
+    """Generate charge from incident photon via photoelectric effect, simple model with custom QE map.
 
     Parameters
     ----------
     detector : Detector
         Pyxel Detector object.
+    filename : str or Path
+        File path.
+    position: tuple
+        Indices of starting row and column, used when fitting QE map to detector.
+    align: Literal
+        Keyword to align the QE map to detector. Can be any from:
+        ("center", "top_left", "top_right", "bottom_left", "bottom_right")
     """
     geo = detector.geometry
-    ch = detector.characteristics
-    ph = detector.photon
+    position_y, position_x = position
 
-    detector_charge = np.zeros(
-        (geo.row, geo.col)
-    )  # all pixels has zero charge by default
-    photon_rows, photon_cols = ph.array.shape
-    detector_charge[slice(0, photon_rows), slice(0, photon_cols)] = (
-        ph.array * ch.qe * ch.eta
-    )
+    # Load charge profile as numpy array.
+    qe = load_cropped_and_aligned_image(
+        shape=(geo.row, geo.col),
+        filename=filename,
+        position_x=position_x,
+        position_y=position_y,
+        align=align,
+    )  # type: np.ndarray
+
+    if not np.all((0 <= qe) & (qe <= 1)):
+        raise ValueError("Quantum efficiency values not between 0 and 1.")
+
+    detector_charge = apply_qe(array=detector.photon.array, qe=qe)
     detector.charge.add_charge_array(detector_charge)
 
 
