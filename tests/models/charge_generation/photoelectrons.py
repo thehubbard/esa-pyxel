@@ -6,22 +6,18 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 #
 #
+import typing as t
 from pathlib import Path
 
 import numpy as np
 import pytest
-import typing as t
 
-from pyxel.detectors import (
-    CCD,
-    CCDCharacteristics,
-    CCDGeometry,
-    Environment,
-    Material,
+from pyxel.detectors import CCD, CCDCharacteristics, CCDGeometry, Environment, Material
+from pyxel.models.charge_generation import (
+    conversion_with_qe_map,
+    load_charge,
+    simple_conversion,
 )
-from pyxel.models.charge_generation import load_charge
-
-from pyxel.models.charge_generation import simple_conversion, conversion_with_qe_map
 
 
 @pytest.fixture
@@ -47,15 +43,18 @@ def valid_qe_map_path(
     tmp_path: Path,
 ) -> str:
     """Create valid 2D file on a temporary folder."""
-    data_2d = np.array(
-        [
-            [1.0, 1.0, 1.0, 1.0, 1.0],
-            [1.0, 1.0, 1.0, 1.0, 1.0],
-            [1.0, 1.0, 1.0, 1.0, 1.0],
-            [1.0, 1.0, 1.0, 1.0, 1.0],
-            [1.0, 1.0, 1.0, 1.0, 1.0],
-        ]
-    )*0.5
+    data_2d = (
+        np.array(
+            [
+                [1.0, 1.0, 1.0, 1.0, 1.0],
+                [1.0, 1.0, 1.0, 1.0, 1.0],
+                [1.0, 1.0, 1.0, 1.0, 1.0],
+                [1.0, 1.0, 1.0, 1.0, 1.0],
+                [1.0, 1.0, 1.0, 1.0, 1.0],
+            ]
+        )
+        * 0.5
+    )
 
     final_path = f"{tmp_path}/qe.npy"
     np.save(final_path, arr=data_2d)
@@ -99,7 +98,7 @@ def test_simple_conversion_valid(ccd_5x5: CCD, qe: float):
 
     array = np.ones((5, 5))
     detector.photon.array = array
-    target = array*0.5
+    target = array * 0.5
 
     simple_conversion(detector=detector, qe=qe)
 
@@ -112,7 +111,12 @@ def test_simple_conversion_valid(ccd_5x5: CCD, qe: float):
         pytest.param(1.5, ValueError, "Quantum efficiency not between 0 and 1."),
     ],
 )
-def test_simple_conversion_valid(ccd_5x5: CCD, qe: float, exp_exc, exp_error,):
+def test_simple_conversion_valid(
+    ccd_5x5: CCD,
+    qe: float,
+    exp_exc,
+    exp_error,
+):
 
     with pytest.raises(exp_exc, match=exp_error):
         simple_conversion(detector=ccd_5x5, qe=qe)
@@ -124,14 +128,18 @@ def test_conversion_with_qe_valid(ccd_5x5: CCD, valid_qe_map_path: t.Union[str, 
 
     array = np.ones((5, 5))
     detector.photon.array = array
-    target = array*0.5
+    target = array * 0.5
 
     conversion_with_qe_map(detector=detector, filename=valid_qe_map_path)
 
     np.testing.assert_array_almost_equal(detector.charge.array, target)
 
 
-def test_simple_conversion_invalid(ccd_5x5: CCD, invalid_qe_map_path: t.Union[str, Path]):
+def test_simple_conversion_invalid(
+    ccd_5x5: CCD, invalid_qe_map_path: t.Union[str, Path]
+):
 
-    with pytest.raises(ValueError, match="Quantum efficiency values not between 0 and 1."):
+    with pytest.raises(
+        ValueError, match="Quantum efficiency values not between 0 and 1."
+    ):
         conversion_with_qe_map(detector=ccd_5x5, filename=invalid_qe_map_path)
