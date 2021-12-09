@@ -16,6 +16,8 @@ Models
 
 Others
 ~~~~~~
+* Include netcdf4 in dependencies.
+  (See `!374 <https://gitlab.com/esa/pyxel/-/merge_requests/374>`_).
 
 
 version 0.11.5 / 2021-12-07
