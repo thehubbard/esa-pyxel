@@ -182,7 +182,7 @@ def add_persistence(
     ----------
     traps : sequence of Trap
     data_2d : ndarray
-        A 2d array. Unit: ???
+        A 2d array. Unit: electron
     persistence : Mapping
         Trapped charges to add.
 
