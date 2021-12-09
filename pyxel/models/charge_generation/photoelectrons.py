@@ -6,27 +6,28 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """Simple model to convert photon into photo-electrons inside detector."""
+import typing as t
 from pathlib import Path
 
 import numpy as np
 from typing_extensions import Literal
 
 from pyxel.detectors import Detector
-import typing as t
 from pyxel.util import load_cropped_and_aligned_image
 
 
 def apply_qe(array: np.ndarray, qe: t.Union[float, np.ndarray]) -> np.ndarray:
-    """TBW.
+    """Apply quantum efficiency to an array.
 
     Parameters
     ----------
-    array
-    qe
+    array: np.ndarray
+    qe: ndarray or float
+        Quantum efficiency.
 
     Returns
     -------
-
+    ndarray
     """
     return array * qe
 
@@ -46,7 +47,7 @@ def simple_conversion(detector: Detector, qe: t.Optional[float] = None) -> None:
     else:
         final_qe = qe
 
-    if not 0 <= qe <= 1:
+    if not 0 <= final_qe <= 1:
         raise ValueError("Quantum efficiency not between 0 and 1.")
 
     detector_charge = apply_qe(array=detector.photon.array, qe=final_qe)
