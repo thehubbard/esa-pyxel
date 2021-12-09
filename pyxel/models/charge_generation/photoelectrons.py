@@ -17,7 +17,35 @@ from pyxel.detectors import Detector
 # TODO: Fix this
 # @validators.validate
 # @config.argument(name='', label='', units='', validate=)
-def simple_conversion(detector: Detector) -> None:
+def simple_conversion(detector: Detector, qe: float) -> None:
+    """Generate charge from incident photon via photoelectric effect, simple statistical model.
+
+    Parameters
+    ----------
+    detector : Detector
+        Pyxel Detector object.
+    """
+    geo = detector.geometry
+    ch = detector.characteristics
+    ph = detector.photon
+
+    detector_charge = np.zeros(
+        (geo.row, geo.col)
+    )  # all pixels has zero charge by default
+    photon_rows, photon_cols = ph.array.shape
+    detector_charge[slice(0, photon_rows), slice(0, photon_cols)] = (
+        ph.array * ch.qe * ch.eta
+    )
+    detector.charge.add_charge_array(detector_charge)
+
+
+def conversion_with_qe_map(
+    detector: Detector,
+    filename: t.Union[str, Path],
+    position: t.Tuple[int, int] = (0, 0),
+    align: t.Optional[
+        Literal["center", "top_left", "top_right", "bottom_left", "bottom_right"]
+    ] = None,) -> None:
     """Generate charge from incident photon via photoelectric effect, simple statistical model.
 
     Parameters
