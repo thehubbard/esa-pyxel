@@ -52,6 +52,7 @@ dependencies:
   - pyyaml
   - xlrd
   - openpyxl
+  - netcdf4
 # Others
   - click
   - tqdm
