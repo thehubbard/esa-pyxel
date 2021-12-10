@@ -97,11 +97,6 @@ Example of YAML configuration model:
 
 .. autofunction:: charge_blocks
 
-Custom quantum efficiency map
-=============================
-
-.. autofunction:: qe_map
-
 
 TARS cosmic ray model
 =====================
