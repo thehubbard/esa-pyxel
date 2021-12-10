@@ -19,8 +19,7 @@ def calculate_dark_current(
     num_rows: int,
     num_cols: int,
     current: float,
-    exposure_time: float,
-    gain: float = 1.0,
+    exposure_time: float
 ) -> np.ndarray:
     """Simulate dark current in a CCD.
 
@@ -31,37 +30,34 @@ def calculate_dark_current(
     num_cols : int
         Number of columns for the generated image.
     current : float
-        Dark current, in electrons/pixel/second, which is the way
-        manufacturers typically report it.
+        Dark current, in electrons/pixel/second
     exposure_time : float
         Length of the simulated exposure, in seconds.
-    gain : float, optional
-        Gain of the camera, in units of electrons/ADU.
 
     Returns
     -------
     ndarray
         An array the same shape and dtype as the input containing dark counts
-        in units of ADU.
+        in units of charge (e-).
     """
     # dark current for every pixel
-    base_current = current * exposure_time / gain
+    mean_dark_charge = current * exposure_time
 
     # This random number generation should change on each call.
-    dark_im_array_2d = np.random.poisson(base_current, size=(num_rows, num_cols))
+    dark_im_array_2d = np.random.poisson(mean_dark_charge, size=(num_rows, num_cols))
     return dark_im_array_2d
 
 
 @temporary_random_state
 def dark_current(
-    detector: CCD, dark_rate: float, gain: float = 1.0, seed: t.Optional[int] = None
+    detector: CCD, dark_rate: float, seed: t.Optional[int] = None
 ) -> None:
-    """Simulate dark current in a CCD.
+    """Simulate dark current in a detector.
 
     Parameters
     ----------
     detector : Detector
-        CCD detector object.
+        Any detector object.
     dark_rate : float
         Dark current, in electrons/pixel/second, which is the way
         manufacturers typically report it.
@@ -69,8 +65,6 @@ def dark_current(
         Gain of the camera, in units of electrons/ADU.
     seed: int, optional
     """
-    if not isinstance(detector, CCD):
-        raise TypeError("Expecting a CCD object for detector.")
 
     exposure_time = detector.time_step
     geo = detector.geometry
@@ -80,7 +74,6 @@ def dark_current(
         num_cols=geo.col,
         current=dark_rate,
         exposure_time=exposure_time,
-        gain=gain,
     ).astype(
         float
     )  # type: np.ndarray
