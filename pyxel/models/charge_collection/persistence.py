@@ -105,6 +105,8 @@ https://sphinx-rtd-theme.readthedocs.io/en/latest/index.html
 """
 
 import logging
+import typing as t
+from dataclasses import dataclass
 
 import numpy as np
 from astropy.io import fits
@@ -112,39 +114,154 @@ from astropy.io import fits
 from pyxel.detectors import CMOS
 
 
-# @validators.validate
-# @config.argument(name='', label='', units='', validate=)
+@dataclass
+class Trap:
+    """Define a simple ``Trap``.
+
+    Parameters
+    ----------
+    density : float
+        Unit: N/A
+    time_constant : float
+        Unit: s
+    """
+
+    density: float
+    time_constant: float
+
+
+def get_trapped_charge_name(param1: float, param2: float) -> str:
+    """Create a name for the trapped charges based on 'param1' and 'param2'.
+
+    Parameters
+    ----------
+    param1 : float
+    param2 : float
+
+    Returns
+    -------
+    str
+        New name for the trapped charges.
+    """
+    return f"trappedCharges_{param1}-{param2}"
+
+
+def create_persistence(
+    traps: t.Sequence[Trap], num_rows: int, num_cols: int
+) -> t.Mapping[str, np.ndarray]:
+    """Create new empty trapped charges.
+
+    Parameters
+    ----------
+    traps : sequence of Trap
+    num_rows : int
+    num_cols : int
+
+    Returns
+    -------
+    Mapping
+        New trapped charges.
+    """
+    persistence = {}  # type: t.Dict[str, np.ndarray]
+
+    for trap in traps:  # type: Trap
+        entry = get_trapped_charge_name(param1=trap.density, param2=trap.time_constant)
+        persistence[entry] = np.zeros((num_rows, num_cols))
+
+    return persistence
+
+
+def add_persistence(
+    traps: t.Sequence[Trap],
+    data_2d: np.ndarray,
+    persistence: t.Mapping[str, np.ndarray],
+) -> t.Tuple[np.ndarray, t.Mapping[str, np.ndarray]]:
+    """Add simple persistence.
+
+    Parameters
+    ----------
+    traps : sequence of Trap
+    data_2d : ndarray
+        A 2d array. Unit: electron
+    persistence : Mapping
+        Trapped charges to add.
+
+    Returns
+    -------
+    ndarray, Mapping
+        A tuple with a new 2D array and new trapped charges.
+    """
+    new_persistence = {}  # t.Mapping[str, np.ndarray]
+    new_data_2d = data_2d  # type: np.ndarray
+
+    for trap in traps:  # type: Trap
+        previous_data_2d = new_data_2d  # type: np.ndarray
+
+        # Get trapped charges
+        entry = get_trapped_charge_name(param1=trap.density, param2=trap.time_constant)
+        trapped_charges = persistence[entry]  # type: np.ndarray
+
+        # Trap density is a scalar for now, in the future we could feed maps?
+        # the delta t is fixed to 0.5 s, need to find a way to avoid problem of divergence
+        new_trapped_charges = trapped_charges + (0.5 / trap.time_constant) * (
+            previous_data_2d * trap.density - trapped_charges
+        )
+
+        # Remove the trapped charges from the pixel
+        new_data_2d = previous_data_2d - new_trapped_charges
+
+        # Use new trapped charges
+        new_persistence[entry] = new_trapped_charges
+
+    return new_data_2d, new_persistence
+
+
 def simple_persistence(
-    detector: CMOS, trap_timeconstants: list, trap_densities: list
+    detector: CMOS,
+    trap_timeconstants: t.Sequence[float],
+    trap_densities: t.Sequence[float],
 ) -> None:
     """Trapping/detrapping charges."""
-    logging.info("Persistence")
-    if "persistence" not in detector._memory.keys():
-        detector._memory["persistence"] = dict()
-        for trap_density, trap_timeconstant in zip(trap_densities, trap_timeconstants):
-            entry = "".join(
-                ["trappedCharges_", str(trap_density), "-", str(trap_timeconstant)]
-            )
-            detector._memory["persistence"].update(
-                {entry: np.zeros((detector.geometry.row, detector.geometry.col))}
-            )
-    else:
-        for trap_density, trap_timeconstant in zip(trap_densities, trap_timeconstants):
-            entry = "".join(
-                ["trappedCharges_", str(trap_density), "-", str(trap_timeconstant)]
-            )
-            trapped_charges = detector._memory["persistence"][entry]
-            # Trap density is a scalar for now, in the future we could feed maps?
-            # the delta t is fixed to 0.5 s, need to find a way to avoid problem of divergence
-            trapped_charges = trapped_charges + (0.5 / trap_timeconstant) * (
-                detector.pixel.array * trap_density - trapped_charges
-            )
-            # Remove the trapped charges from the pixel
-            detector.pixel.array -= trapped_charges
-            # Replace old trapped charges map in the detector's memory
-            detector._memory["persistence"][entry] = trapped_charges
+    # Validation
+    if not len(trap_timeconstants) == len(trap_densities):
+        raise ValueError(
+            "Expecting same number of elements for parameters 'trap_timeconstants' "
+            "and 'trap_densities'"
+        )
 
-    return None
+    if len(trap_timeconstants) == 0:
+        raise ValueError(
+            "Expecting at least one 'trap_timeconstants' and 'trap_densities'"
+        )
+
+    # Conversion
+    traps = [
+        Trap(density=density, time_constant=time_constant)
+        for density, time_constant in zip(trap_densities, trap_timeconstants)
+    ]  # type: t.Sequence[Trap]
+
+    geometry = detector.geometry
+
+    if "persistence" not in detector._memory:
+        persistence = create_persistence(
+            traps=traps,
+            num_rows=geometry.row,
+            num_cols=geometry.col,
+        )  # type: t.Mapping[str, np.ndarray]
+
+        detector._memory["persistence"] = persistence
+
+    else:
+        new_pixel_2d, new_persistence = add_persistence(
+            traps=traps,
+            data_2d=detector.pixel.array,
+            persistence=detector._memory["persistence"],
+        )
+
+        detector.pixel.array = new_pixel_2d
+
+        # Replace old trapped charges map in the detector's memory
+        detector._memory["persistence"].update(new_persistence)
 
 
 def current_persistence(
