@@ -30,6 +30,10 @@ def convert_to_phase(
     """
     if not wavelength > 0:
         raise ValueError("Only positive values accepted for wavelength.")
+    if not scaling_factor > 0:
+        raise ValueError("Only positive values accepted for scaling_factor.")
+    if not responsivity > 0:
+        raise ValueError("Only positive values accepted for responsivity.")
 
     output = array * wavelength * scaling_factor / responsivity
     return output.astype("float64")
