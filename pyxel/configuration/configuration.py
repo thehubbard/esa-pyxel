@@ -14,11 +14,11 @@
 """Configuration loader."""
 
 import typing as t
+from dataclasses import dataclass, field
 from functools import partial
 from pathlib import Path
 from shutil import copy2
 
-import attr
 import yaml
 
 from pyxel import __version__ as version
@@ -43,17 +43,53 @@ from pyxel.outputs import CalibrationOutputs, ExposureOutputs, ObservationOutput
 from pyxel.pipelines import DetectionPipeline, ModelFunction, ModelGroup
 
 
-@attr.s
+@dataclass
 class Configuration:
     """Configuration class."""
 
-    pipeline: DetectionPipeline = attr.ib(init=False)
-    exposure: t.Optional[Exposure] = attr.ib(default=None)
-    observation: t.Optional[Observation] = attr.ib(default=None)
-    calibration: t.Optional[Calibration] = attr.ib(default=None)
-    ccd_detector: t.Optional[CCD] = attr.ib(default=None)
-    cmos_detector: t.Optional[CMOS] = attr.ib(default=None)
-    mkid_detector: t.Optional[MKID] = attr.ib(default=None)
+    pipeline: DetectionPipeline = field(init=False)
+
+    # Running modes
+    exposure: t.Optional[Exposure] = None
+    observation: t.Optional[Observation] = None
+    calibration: t.Optional[Calibration] = None
+
+    # Detectors
+    ccd_detector: t.Optional[CCD] = None
+    cmos_detector: t.Optional[CMOS] = None
+    mkid_detector: t.Optional[MKID] = None
+
+    def __post_init__(self):
+        # Sanity checks
+        running_modes = [self.exposure, self.observation, self.calibration]
+        num_running_modes = sum([el is not None for el in running_modes])
+
+        if num_running_modes != 1:
+            raise ValueError(
+                "Expecting only one running mode: "
+                "'exposure', 'observation' or 'calibration'."
+            )
+
+        detectors = [self.ccd_detector, self.cmos_detector, self.mkid_detector]
+        num_detectors = sum([el is not None for el in detectors])
+
+        if num_detectors != 1:
+            raise ValueError(
+                "Expecting only one detector: "
+                "'ccd_detector', 'cmos_detector' or 'mkid_detector'."
+            )
+
+    @property
+    def detector(self) -> t.Union[CCD, CMOS, MKID]:
+        """Get current detector."""
+        if self.ccd_detector is not None:
+            return self.ccd_detector
+        elif self.cmos_detector is not None:
+            return self.cmos_detector
+        elif self.mkid_detector is not None:
+            return self.mkid_detector
+        else:
+            raise NotImplementedError
 
 
 def load(yaml_file: t.Union[str, Path]) -> Configuration:
