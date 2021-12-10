@@ -62,7 +62,7 @@ class Configuration:
     def __post_init__(self):
         # Sanity checks
         running_modes = [self.exposure, self.observation, self.calibration]
-        num_running_modes = sum([el is not None for el in running_modes])
+        num_running_modes = sum([el is not None for el in running_modes])  # type: int
 
         if num_running_modes != 1:
             raise ValueError(
@@ -75,8 +75,7 @@ class Configuration:
 
         if num_detectors != 1:
             raise ValueError(
-                "Expecting only one detector: "
-                "'ccd_detector', 'cmos_detector' or 'mkid_detector'."
+                "Expecting only one detector: 'ccd_detector', 'cmos_detector' or 'mkid_detector'."
             )
 
     @property
@@ -551,6 +550,27 @@ def build_configuration(dct: dict) -> Configuration:
     Configuration
     """
     pipeline = to_pipeline(dct["pipeline"])  # type: DetectionPipeline
+
+    # Sanity checks
+    keys_running_mode = [
+        "exposure",
+        "observation",
+        "calibration",
+    ]  # type: t.Sequence[str]
+    num_running_modes = sum([key in dct for key in keys_running_mode])  # type: int
+    if num_running_modes != 1:
+        keys = ", ".join(map(repr, keys_running_mode))
+        raise ValueError(f"Expecting only one running mode: {keys}")
+
+    keys_detectors = [
+        "ccd_detector",
+        "cmos_detector",
+        "mkid_detector",
+    ]  # type: t.Sequence[str]
+    num_detector = sum([key in dct for key in keys_detectors])  # type: int
+    if num_detector != 1:
+        keys = ", ".join(map(repr, keys_detectors))
+        raise ValueError(f"Expecting only one detector: {keys}")
 
     running_mode = {}  # type: t.Dict[str, t.Union[Exposure, Observation, Calibration]]
     if "exposure" in dct:
