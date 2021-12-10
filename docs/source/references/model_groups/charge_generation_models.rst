@@ -11,10 +11,48 @@ Charge Generation models
 Simple photoconversion
 ======================
 
+With this model you can create and add charge to :py:class:`~pyxel.detectors.Detector` via photoelectric effect
+by converting photons in charge. User can provide an optional quantum efficiency (``qe``) parameter.
+If not provided, quantum efficiency from detector :py:class:`~pyxel.detectors.Characteristics` is used.
+
+Basic example of YAML configuration model:
+
+.. code-block:: yaml
+
+    - name: simple_conversion
+      func: pyxel.models.charge_generation.simple_conversion
+      enabled: true
+      arguments:
+        qe: 0.8  # optional
+
 .. autofunction:: simple_conversion
 
+Conversion with custom QE map
+=============================
+
+With this model you can create and add charge to :py:class:`~pyxel.detectors.Detector` via photoelectric effect
+by converting photons in charge.
+Beside that, user can input a custom quantum efficiency map by providing a ``filename`` of the QE map.
+Accepted file formats for QE map are ``.npy``, ``.fits``, ``.txt``, ``.data``, ``.jpg``, ``.jpeg``, ``.bmp``,
+``.png`` and ``.tiff``. Use argument ``position`` to set the offset from (0,0) pixel
+and set where the input QE map is placed onto detector. You can set preset positions with argument ``align``.
+Values outside of detector shape will be cropped.
+Read more about placement in the documentation of function :py:func:`~pyxel.util.fit_into_array`.
+
+Basic example of YAML configuration model:
+
+.. code-block:: yaml
+
+    - name: conversion_with_qe_map
+      func: pyxel.models.charge_generation.conversion_with_qe_map
+      enabled: true
+      arguments:
+        filename: data/qe_map.npy
+
+.. autofunction:: conversion_with_qe_map
+
 Load charge
-================
+===========
 
 With this model you can add charge to :py:class:`~pyxel.detectors.Detector` by loading charge values from a file.
 Accepted file formats are ``.npy``, ``.fits``, ``.txt``, ``.data``, ``.jpg``, ``.jpeg``, ``.bmp``,

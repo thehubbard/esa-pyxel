@@ -11,7 +11,7 @@
 from .charge_injection import charge_blocks
 from .dark_current_rule07 import dark_current_rule07
 from .load_charge import load_charge
-from .photoelectrons import simple_conversion
+from .photoelectrons import simple_conversion, conversion_with_qe_map
 from .tars.tars import run_tars
 from .qe_map import qe_map
 from .dark_current import dark_current

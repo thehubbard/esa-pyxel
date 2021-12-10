@@ -184,7 +184,10 @@ def load_cropped_and_aligned_image(
     image = load_image(filename)
 
     cropped_and_aligned_image = fit_into_array(
-        array=image, output_shape=shape, relative_position=(position_y, position_x), align=align
+        array=image,
+        output_shape=shape,
+        relative_position=(position_y, position_x),
+        align=align,
     )  # type: np.ndarray
 
     return cropped_and_aligned_image
