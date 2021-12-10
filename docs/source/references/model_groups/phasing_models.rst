@@ -1,0 +1,28 @@
+.. _phasing:
+
+==============
+Phasing models
+==============
+
+.. currentmodule:: pyxel.models.phasing
+
+Pulse processing
+================
+
+TBW: description, reference, units etc.
+
+Example of YAML configuration model:
+
+.. code-block:: yaml
+
+    - name: pulse_processing
+      func: pyxel.models.charge_generation.pulse_processing
+      enabled: true
+      arguments:
+        wavelength:
+        responsivity:
+        scaling_factor: 2.5e2
+
+.. note:: This model is specific for the MKID detector.
+
+.. autofunction:: pulse_processing
