@@ -14,11 +14,11 @@
 """Configuration loader."""
 
 import typing as t
+from dataclasses import dataclass
 from functools import partial
 from pathlib import Path
 from shutil import copy2
 
-import attr
 import yaml
 
 from pyxel import __version__ as version
@@ -43,17 +43,52 @@ from pyxel.outputs import CalibrationOutputs, ExposureOutputs, ObservationOutput
 from pyxel.pipelines import DetectionPipeline, ModelFunction, ModelGroup
 
 
-@attr.s
+@dataclass
 class Configuration:
     """Configuration class."""
 
-    pipeline: DetectionPipeline = attr.ib(init=False)
-    exposure: t.Optional[Exposure] = attr.ib(default=None)
-    observation: t.Optional[Observation] = attr.ib(default=None)
-    calibration: t.Optional[Calibration] = attr.ib(default=None)
-    ccd_detector: t.Optional[CCD] = attr.ib(default=None)
-    cmos_detector: t.Optional[CMOS] = attr.ib(default=None)
-    mkid_detector: t.Optional[MKID] = attr.ib(default=None)
+    pipeline: DetectionPipeline
+
+    # Running modes
+    exposure: t.Optional[Exposure] = None
+    observation: t.Optional[Observation] = None
+    calibration: t.Optional[Calibration] = None
+
+    # Detectors
+    ccd_detector: t.Optional[CCD] = None
+    cmos_detector: t.Optional[CMOS] = None
+    mkid_detector: t.Optional[MKID] = None
+
+    def __post_init__(self):
+        # Sanity checks
+        running_modes = [self.exposure, self.observation, self.calibration]
+        num_running_modes = sum([el is not None for el in running_modes])  # type: int
+
+        if num_running_modes != 1:
+            raise ValueError(
+                "Expecting only one running mode: "
+                "'exposure', 'observation' or 'calibration'."
+            )
+
+        detectors = [self.ccd_detector, self.cmos_detector, self.mkid_detector]
+        num_detectors = sum([el is not None for el in detectors])
+
+        if num_detectors != 1:
+            raise ValueError(
+                "Expecting only one detector: 'ccd_detector', 'cmos_detector' or 'mkid_detector'."
+            )
+
+    @property
+    def detector(self) -> t.Union[CCD, CMOS, MKID]:
+        """Get current detector."""
+        if self.ccd_detector is not None:
+            return self.ccd_detector
+        elif self.cmos_detector is not None:
+            return self.cmos_detector
+        elif self.mkid_detector is not None:
+            return self.mkid_detector
+        else:
+            raise NotImplementedError
 
 
 def load(yaml_file: t.Union[str, Path]) -> Configuration:
@@ -71,7 +106,9 @@ def load(yaml_file: t.Union[str, Path]) -> Configuration:
     if not filename.exists():
         raise FileNotFoundError(f"Cannot find configuration file '{filename}'.")
     with filename.open("r") as file_obj:
-        return build_configuration(load_yaml(file_obj))
+        dct = load_yaml(file_obj)
+
+    return build_configuration(dct)
 
 
 def load_yaml(stream: t.Union[str, t.IO]) -> t.Any:
@@ -512,28 +549,54 @@ def build_configuration(dct: dict) -> Configuration:
     -------
     Configuration
     """
+    pipeline = to_pipeline(dct["pipeline"])  # type: DetectionPipeline
 
-    configuration = Configuration()  # type: Configuration
+    # Sanity checks
+    keys_running_mode = [
+        "exposure",
+        "observation",
+        "calibration",
+    ]  # type: t.Sequence[str]
+    num_running_modes = sum([key in dct for key in keys_running_mode])  # type: int
+    if num_running_modes != 1:
+        keys = ", ".join(map(repr, keys_running_mode))
+        raise ValueError(f"Expecting only one running mode: {keys}")
 
-    configuration.pipeline = to_pipeline(dct["pipeline"])
+    keys_detectors = [
+        "ccd_detector",
+        "cmos_detector",
+        "mkid_detector",
+    ]  # type: t.Sequence[str]
+    num_detector = sum([key in dct for key in keys_detectors])  # type: int
+    if num_detector != 1:
+        keys = ", ".join(map(repr, keys_detectors))
+        raise ValueError(f"Expecting only one detector: {keys}")
 
+    running_mode = {}  # type: t.Dict[str, t.Union[Exposure, Observation, Calibration]]
     if "exposure" in dct:
-        configuration.exposure = to_exposure(dct["exposure"])
+        running_mode["exposure"] = to_exposure(dct["exposure"])
     elif "observation" in dct:
-        configuration.observation = to_observation(dct["observation"])
+        running_mode["observation"] = to_observation(dct["observation"])
     elif "calibration" in dct:
-        configuration.calibration = to_calibration(dct["calibration"])
+        running_mode["calibration"] = to_calibration(dct["calibration"])
     else:
         raise ValueError("No mode configuration provided.")
 
+    detector = {}  # type: t.Dict[str, t.Union[CCD, CMOS, MKID]]
     if "ccd_detector" in dct:
-        configuration.ccd_detector = to_ccd(dct["ccd_detector"])
+        detector["ccd_detector"] = to_ccd(dct["ccd_detector"])
     elif "cmos_detector" in dct:
-        configuration.cmos_detector = to_cmos(dct["cmos_detector"])
+        detector["cmos_detector"] = to_cmos(dct["cmos_detector"])
     elif "mkid_detector" in dct:
-        configuration.mkid_detector = to_mkid_array(dct["mkid_detector"])
+        detector["mkid_detector"] = to_mkid_array(dct["mkid_detector"])
     else:
         raise ValueError("No detector configuration provided.")
+
+    configuration = Configuration(
+        pipeline=pipeline,
+        **running_mode,  # type: ignore
+        **detector,  # type: ignore
+    )  # type: Configuration
 
     return configuration
 

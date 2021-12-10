@@ -51,7 +51,7 @@ An example of running Pyxel as a library:
 
     configuration = pyxel.load("configuration.yaml")
     exposure = configuration.exposure
-    detector = configuration.ccd_detector
+    detector = configuration.detector
     pipeline = configuration.pipeline
 
     pyxel.exposure_mode(exposure, detector, pipeline)

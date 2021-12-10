@@ -8,6 +8,10 @@ version 1.0 / UNRELEASED-YYYY-MM-DD
 Core
 ~~~~
 
+* Add new attribute 'Config.detector'.
+  (See `!378 <https://gitlab.com/esa/pyxel/-/merge_requests/378>`_).
+
+
 Documentation
 ~~~~~~~~~~~~~
 
@@ -16,6 +20,7 @@ Models
 
 Others
 ~~~~~~
+
 * Include netcdf4 in dependencies.
   (See `!374 <https://gitlab.com/esa/pyxel/-/merge_requests/374>`_).
 
