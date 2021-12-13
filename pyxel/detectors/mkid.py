@@ -37,7 +37,7 @@ class MKID(Detector):
         self._phase = None  # type: t.Optional[Phase]
 
         super().__init__(material=material, environment=environment)
-        super().reset()
+        self.reset()
 
     def reset(self) -> None:
         """TBW."""
