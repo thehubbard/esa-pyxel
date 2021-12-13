@@ -83,7 +83,6 @@ def main(
 
     # Download artifact
     url_download = f"{addr}/jobs/{job_id}/artifacts"
-    print(f"{url_download=}")
 
     r = requests.get(url_download, headers=headers)
     r.raise_for_status()
