@@ -126,6 +126,7 @@ def show_versions():
         "xarray",
         "xlrd",
         "openpyxl",
+        "netcdf4",
         # Install / build
         "setuptools",
         "pip",
