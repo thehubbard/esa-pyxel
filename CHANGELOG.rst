@@ -15,6 +15,9 @@ Core
 Documentation
 ~~~~~~~~~~~~~
 
+* Split documentation into 'stable' and 'latest''.
+  (See `!380 <https://gitlab.com/esa/pyxel/-/merge_requests/380>`_).
+
 Models
 ~~~~~~
 
