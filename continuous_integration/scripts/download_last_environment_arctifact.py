@@ -33,25 +33,25 @@ import requests
     required=False,
     help="A token to authenticate",
 )
-@click.option(
-    "--ci_job_token",
-    envvar="CI_JOB_TOKEN",
-    required=False,
-    help="A token to authenticate",
-)
+# @click.option(
+#     "--ci_job_token",
+#     envvar="CI_JOB_TOKEN",
+#     required=False,
+#     help="A token to authenticate",
+# )
 def main(
     environment: str,
     ci_api_v4_url: str,
     ci_project_id: int,
     private_token: t.Optional[str],
-    ci_job_token: t.Optional[str],
+    # ci_job_token: t.Optional[str],
 ):
     # Create token
     headers = {}
 
-    if ci_job_token:
-        headers["CI-JOB-TOKEN"] = ci_job_token
-    elif private_token:
+    # if ci_job_token:
+    #     headers["TOKEN"] = ci_job_token
+    if private_token:
         headers["PRIVATE-TOKEN"] = private_token
     else:
         raise NotImplementedError
@@ -59,7 +59,8 @@ def main(
     # Get main http address
     addr = f"{ci_api_v4_url}/projects/{ci_project_id}"
 
-    # Get environment id
+    # Get list of environments
+    # GET /projects/:id/environments
     url_env_id = f"{addr}/environments?name={environment}"
 
     r = requests.get(url_env_id, headers=headers)
@@ -69,6 +70,7 @@ def main(
     environment_id = rsp[0]["id"]  # type: int
 
     # Get a specific environment
+    # GET /projects/:id/environments/:environment_id
     url_env = f"{addr}/environments/{environment_id}"
 
     r = requests.get(url_env, headers=headers)
@@ -78,6 +80,13 @@ def main(
     deployable_dct = rsp["last_deployment"]["deployable"]  # type: t.Mapping
     job_id = deployable_dct["id"]  # type: int
     arctifact_filename = deployable_dct["artifacts_file"]["filename"]  # type: str
+
+    # Download artifact
+    url_download = f"{addr}/jobs/{job_id}/artifacts"
+    print(f"{url_download=}")
+
+    r = requests.get(url_download, headers=headers)
+    r.raise_for_status()
 
     # Save arctifact
     with open(arctifact_filename, "wb") as fh:
