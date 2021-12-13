@@ -20,7 +20,7 @@ def basic_processing(detector: Detector) -> None:
     detector.image.array = detector.signal.array
 
 
-def phase_conversion(detector: MKID) -> None:
+def simple_phase_conversion(detector: MKID) -> None:
     """Create an image array from phase array.
 
     Parameters
