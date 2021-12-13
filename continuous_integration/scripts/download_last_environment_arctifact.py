@@ -12,7 +12,7 @@ import requests
 
 
 @click.command()
-@click.option("--environment", type=str)
+@click.option("--environment", default="production", type=str, show_default=True)
 @click.option(
     "--ci_api_v4_url",
     envvar="CI_API_V4_URL",
