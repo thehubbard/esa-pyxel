@@ -20,11 +20,15 @@ def basic_processing(detector: Detector) -> None:
     detector.image.array = detector.signal.array
 
 
-# TODO: Remove this model ?
 def phase_conversion(detector: MKID) -> None:
     """Create an image array from phase array.
 
-    :param detector: Pyxel Detector object
+    Parameters
+    ----------
+    detector: MKID
+        Pyxel MKID detector object.
     """
+    if not isinstance(detector, MKID):
+        raise TypeError("Expecting a MKID object for the detector.")
 
     detector.image.array = detector.phase.array
