@@ -17,6 +17,9 @@ Models
 Others
 ~~~~~~
 
+* Add netcdf4 to function show_versions.
+  (See `!383 <https://gitlab.com/esa/pyxel/-/merge_requests/383>`_).
+
 
 version 0.11.6 / 2021-12-13
 ---------------------------
