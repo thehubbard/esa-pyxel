@@ -13,7 +13,10 @@ from pyxel.detectors import MKID
 
 
 def convert_to_phase(
-    array: np.ndarray, wavelength: float, responsivity: float, scaling_factor: float = 2.5e2,
+    array: np.ndarray,
+    wavelength: float,
+    responsivity: float,
+    scaling_factor: float = 2.5e2,
 ) -> np.ndarray:
     """Convert an array of charge into phase.
 

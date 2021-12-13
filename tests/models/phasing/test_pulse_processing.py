@@ -20,11 +20,11 @@ from pyxel.detectors import (
     CCD,
     MKID,
     CCDCharacteristics,
-    MKIDGeometry,
-    MKIDCharacteristics,
     CCDGeometry,
     Environment,
     Material,
+    MKIDCharacteristics,
+    MKIDGeometry,
 )
 from pyxel.models.phasing import pulse_processing
 
@@ -51,47 +51,66 @@ def mkid_5x5() -> MKID:
     "wavelength, responsivity, scaling_factor",
     [
         pytest.param(
-            1.,
-            1.,
-            1.,
+            1.0,
+            1.0,
+            1.0,
         ),
     ],
 )
-def test_pulse_processing_valid(mkid_5x5: MKID, wavelength: float, responsivity: float, scaling_factor: float):
+def test_pulse_processing_valid(
+    mkid_5x5: MKID, wavelength: float, responsivity: float, scaling_factor: float
+):
     """Test model 'pulse_processing' with valid inputs."""
-    pulse_processing(detector=mkid_5x5, wavelength=wavelength, responsivity=responsivity, scaling_factor=scaling_factor)
+    pulse_processing(
+        detector=mkid_5x5,
+        wavelength=wavelength,
+        responsivity=responsivity,
+        scaling_factor=scaling_factor,
+    )
 
 
 @pytest.mark.parametrize(
     "wavelength, responsivity, scaling_factor, exp_exc, exp_error",
     [
         pytest.param(
-            -1.,
-            1.,
-            1.,
+            -1.0,
+            1.0,
+            1.0,
             ValueError,
             "Only positive values accepted for wavelength.",
         ),
         pytest.param(
-            1.,
-            1.,
-            -1.,
+            1.0,
+            1.0,
+            -1.0,
             ValueError,
             "Only positive values accepted for scaling_factor.",
         ),
         pytest.param(
-            1.,
-            -1.,
-            1.,
+            1.0,
+            -1.0,
+            1.0,
             ValueError,
             "Only positive values accepted for responsivity.",
         ),
     ],
 )
-def test_pulse_processing_invalid(mkid_5x5: MKID, wavelength: float, responsivity: float, scaling_factor: float, exp_exc, exp_error):
+def test_pulse_processing_invalid(
+    mkid_5x5: MKID,
+    wavelength: float,
+    responsivity: float,
+    scaling_factor: float,
+    exp_exc,
+    exp_error,
+):
     """Test model 'pulse_processing' with valid inputs."""
     with pytest.raises(exp_exc, match=exp_error):
-        pulse_processing(detector=mkid_5x5, wavelength=wavelength, responsivity=responsivity, scaling_factor=scaling_factor)
+        pulse_processing(
+            detector=mkid_5x5,
+            wavelength=wavelength,
+            responsivity=responsivity,
+            scaling_factor=scaling_factor,
+        )
 
 
 def test_pulse_processing_with_ccd():
@@ -110,4 +129,6 @@ def test_pulse_processing_with_ccd():
     )
 
     with pytest.raises(TypeError, match="Expecting a MKID object for the detector."):
-        pulse_processing(detector=detector, wavelength=1., responsivity=1., scaling_factor=1.)
+        pulse_processing(
+            detector=detector, wavelength=1.0, responsivity=1.0, scaling_factor=1.0
+        )

@@ -7,4 +7,5 @@
 
 """TBW."""
 
+# flake8: noqa
 from .pulse_processing import pulse_processing
