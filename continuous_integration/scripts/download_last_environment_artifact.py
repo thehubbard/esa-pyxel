@@ -5,6 +5,7 @@
 #  this file, may be copied, modified, propagated, or distributed except according to
 #  the terms contained in the file ‘LICENCE.txt’.
 
+import sys
 import typing as t
 
 import click
@@ -33,24 +34,15 @@ import requests
     required=False,
     help="A token to authenticate",
 )
-# @click.option(
-#     "--ci_job_token",
-#     envvar="CI_JOB_TOKEN",
-#     required=False,
-#     help="A token to authenticate",
-# )
 def main(
     environment: str,
     ci_api_v4_url: str,
     ci_project_id: int,
     private_token: t.Optional[str],
-    # ci_job_token: t.Optional[str],
 ):
     # Create token
     headers = {}
 
-    # if ci_job_token:
-    #     headers["TOKEN"] = ci_job_token
     if private_token:
         headers["PRIVATE-TOKEN"] = private_token
     else:
@@ -92,6 +84,7 @@ def main(
         fh.write(r.content)
 
     print(f"File {artifact_filename!r} is successfully downloaded !")
+    sys.exit()
 
 
 if __name__ == "__main__":
