@@ -16,7 +16,7 @@ Example of YAML configuration model:
 .. code-block:: yaml
 
     - name: pulse_processing
-      func: pyxel.models.charge_generation.pulse_processing
+      func: pyxel.models.phasing.pulse_processing
       enabled: true
       arguments:
         wavelength:
