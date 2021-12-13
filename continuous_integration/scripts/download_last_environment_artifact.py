@@ -79,7 +79,7 @@ def main(
     rsp = r.json()
     deployable_dct = rsp["last_deployment"]["deployable"]  # type: t.Mapping
     job_id = deployable_dct["id"]  # type: int
-    arctifact_filename = deployable_dct["artifacts_file"]["filename"]  # type: str
+    artifact_filename = deployable_dct["artifacts_file"]["filename"]  # type: str
 
     # Download artifact
     url_download = f"{addr}/jobs/{job_id}/artifacts"
@@ -87,9 +87,11 @@ def main(
     r = requests.get(url_download, headers=headers)
     r.raise_for_status()
 
-    # Save arctifact
-    with open(arctifact_filename, "wb") as fh:
+    # Save artifact
+    with open(artifact_filename, "wb") as fh:
         fh.write(r.content)
+
+    print(f"File {artifact_filename!r} is successfully downloaded !")
 
 
 if __name__ == "__main__":
