@@ -9,7 +9,6 @@
 
 # flake8: noqa
 from .amplification import simple_amplifier
-from .cmos_readout_modes import non_destructive_readout
 from .simple_digitization import simple_digitization
 from .sar_adc import sar_adc
 from .amplifier_crosstalk import dc_crosstalk, ac_crosstalk
