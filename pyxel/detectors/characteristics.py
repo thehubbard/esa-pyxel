@@ -26,7 +26,6 @@ class Characteristics:
         a1: float = 1.0,  # unit: V/V
         a2: float = 1,  # unit: adu/V
         fwc: int = 0,  # unit: electron
-        vg: float = 0.0,  # unit: cm^2
         dt: float = 0.0,  # unit: s
     ):
         """Create an instance of `Characteristics`.
@@ -47,8 +46,6 @@ class Characteristics:
             Gain of the Analog-Digital Converter. Unit: ADU/V
         fwc: int
             Full well capacity. Unit: e-
-        vg: float
-            Half pixel volume charge can occupy. Unit: cm^2
         dt: float
             Pixel dwell time. Unit: s
         """
@@ -73,9 +70,6 @@ class Characteristics:
         if fwc not in range(10000001):
             raise ValueError("'fwc' must be between 0 and 1e+7.")
 
-        if not (0.0 <= vg <= 1.0):
-            raise ValueError("'vg' must be between 0.0 and 1.0.")
-
         if not (0.0 <= dt <= 10.0):
             raise ValueError("'dt' must be between 0.0 and 10.0.")
 
@@ -86,7 +80,6 @@ class Characteristics:
         self._a1 = a1
         self._a2 = a2
         self._fwc = fwc
-        self._vg = vg
         self._dt = dt
 
         self._numbytes = 0
@@ -180,17 +173,6 @@ class Characteristics:
             raise ValueError("'fwc' must be between 0 and 1e+7.")
 
         self._fwc = value
-
-    @property
-    def vg(self) -> float:
-        """Get Half pixel volume charge can occupy."""
-        return self._vg
-
-    @vg.setter
-    def vg(self, value: float) -> None:
-        """Set Half pixel volume charge can occupy."""
-        if not (0.0 <= value <= 1.0):
-            raise ValueError("'vg' must be between 0.0 and 1.0.")
 
     @property
     def dt(self) -> float:
