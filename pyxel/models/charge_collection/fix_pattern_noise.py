@@ -13,55 +13,17 @@ from pathlib import Path
 import numpy as np
 
 from pyxel.detectors import Detector, Geometry
-from pyxel.inputs import load_image
-from pyxel.util import temporary_random_state
-
-# TODO: use built-in pyxel functions for loading files, documentation, docstring, saving to file??, private function
+from typing_extensions import Literal
+from pyxel.util import load_cropped_and_aligned_image
 
 
-def create_fix_pattern_noise(num_rows: int, num_cols: int) -> np.ndarray:
-    """Create a fix pattern noise.
-
-    Parameters
-    ----------
-    num_rows : int
-    num_cols : int
-
-    Returns
-    -------
-    ndarray
-        A 2D array with the noise. Unit: electron
-    """
-    pnu_2d = np.random.normal(loc=1.0, scale=0.03, size=(num_rows, num_cols))
-
-    return pnu_2d
-
-
-def load_fix_pattern_noise(num_rows: int, num_cols: int, filename: Path) -> np.ndarray:
-    """Load a fix pattern noise from a filename.
-
-    Parameters
-    ----------
-    num_rows : int
-    num_cols : int
-    filename : str or Path
-        Path used to load a fix pattern noise.
-
-    Returns
-    -------
-    ndarray
-        A 2D array. Unit: electron
-    """
-    pnu_2d = load_image(filename)  # type: np.ndarray
-
-    return pnu_2d.reshape((num_rows, num_cols))
-
-
-@temporary_random_state
 def fix_pattern_noise(
     detector: Detector,
-    pixel_non_uniformity: t.Union[str, Path, None] = None,
-    seed: t.Optional[int] = None,
+    filename: t.Union[str, Path],
+    position: t.Tuple[int, int] = (0, 0),
+    align: t.Optional[
+        Literal["center", "top_left", "top_right", "bottom_left", "bottom_right"]
+    ] = None,
 ) -> None:
     """Add fix pattern noise caused by pixel non-uniformity during charge collection.
 
@@ -69,30 +31,24 @@ def fix_pattern_noise(
     ----------
     detector : Detector
         Pyxel Detector object.
-    pixel_non_uniformity : str or Path
-        path to an ascii file with and array.
-    seed: int, optional
-
-    Raises
-    ------
-    FileNotFoundError
-        If filename 'pixel_non_uniformity' is provided but does not exist.
+    filename : str or Path
+        Path to a file with an array or an image.
+    position: tuple
+        Indices of starting row and column, used when fitting noise to detector.
+    align: Literal
+        Keyword to align the noise to detector. Can be any from:
+        ("center", "top_left", "top_right", "bottom_left", "bottom_right")
     """
-    # Validation
-    if pixel_non_uniformity and not Path(pixel_non_uniformity).exists():
-        raise FileNotFoundError(
-            f"Cannot find filename 'pixel_non_uniformity': '{pixel_non_uniformity}"
-        )
-
     geo = detector.geometry  # type: Geometry
+    position_y, position_x = position
 
-    if pixel_non_uniformity:
-        pnu_2d = load_fix_pattern_noise(
-            num_rows=geo.row,
-            num_cols=geo.col,
-            filename=Path(pixel_non_uniformity),
-        )  # type: np.ndarray
-    else:
-        pnu_2d = create_fix_pattern_noise(num_rows=geo.row, num_cols=geo.col)
+    # Load charge profile as numpy array.
+    pnu_2d = load_cropped_and_aligned_image(
+        shape=(geo.row, geo.col),
+        filename=filename,
+        position_x=position_x,
+        position_y=position_y,
+        align=align,
+    )  # type: np.ndarray
 
     detector.pixel.array *= pnu_2d
