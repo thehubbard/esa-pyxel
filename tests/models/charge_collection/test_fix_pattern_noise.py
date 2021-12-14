@@ -1,27 +1,20 @@
-#  Copyright (c) European Space Agency, 2017, 2018, 2019, 2020, 2021.
-#
-#  This file is subject to the terms and conditions defined in file 'LICENCE.txt', which
-#  is part of this Pyxel package. No part of the package, including
-#  this file, may be copied, modified, propagated, or distributed except according to
-#  the terms contained in the file ‘LICENCE.txt’.
-
+import typing as t
 from pathlib import Path
 
 import numpy as np
 import pytest
-from astropy.io import fits
 
 from pyxel.detectors import CCD, CCDCharacteristics, CCDGeometry, Environment, Material
 from pyxel.models.charge_collection import fix_pattern_noise
 
 
 @pytest.fixture
-def ccd_5x10() -> CCD:
+def ccd_5x5() -> CCD:
     """Create a valid CCD detector."""
-    return CCD(
+    detector = CCD(
         geometry=CCDGeometry(
             row=5,
-            col=10,
+            col=5,
             total_thickness=40.0,
             pixel_vert_size=10.0,
             pixel_horz_size=10.0,
@@ -30,60 +23,43 @@ def ccd_5x10() -> CCD:
         environment=Environment(),
         characteristics=CCDCharacteristics(),
     )
+    return detector
 
 
 @pytest.fixture
-def non_uniformity_2d() -> np.ndarray:
-    data_2d = np.full(shape=(5, 10), fill_value=1.0)
-
-    return data_2d
-
-
-@pytest.fixture
-def non_uniformity_fits(non_uniformity_2d: np.ndarray, tmp_path: Path) -> Path:
-    filename = tmp_path / "non_uniformity.fits"
-
-    fits.writeto(filename, data=non_uniformity_2d)
-
-    return filename
-
-
-@pytest.fixture
-def non_uniformity_1d_npy(non_uniformity_2d: np.ndarray, tmp_path: Path) -> Path:
-    filename = tmp_path / "non_uniformity.npy"
-
-    data_1d = non_uniformity_2d.flatten()
-    np.save(filename, arr=data_1d)
-
-    return filename
-
-
-def test_fix_pattern_noise_default(ccd_5x10: CCD):
-    """Test model 'fix_pattern_noise' without a filename."""
-    detector = ccd_5x10
-
-    fix_pattern_noise(detector)
-
-
-def test_fix_pattern_noise_with_2d_fits(ccd_5x10: CCD, non_uniformity_fits: Path):
-    """Test model 'fix_pattern_noise' without a filename."""
-    detector = ccd_5x10
-
-    fix_pattern_noise(detector=detector, pixel_non_uniformity=str(non_uniformity_fits))
-
-
-def test_fix_pattern_noise_with_1d_npy(ccd_5x10: CCD, non_uniformity_1d_npy: Path):
-    """Test model 'fix_pattern_noise' without a filename."""
-    detector = ccd_5x10
-
-    fix_pattern_noise(
-        detector=detector, pixel_non_uniformity=str(non_uniformity_1d_npy)
+def valid_noise_path(
+    tmp_path: Path,
+) -> str:
+    """Create valid 2D file on a temporary folder."""
+    data_2d = (
+        np.array(
+            [
+                [1.0, 1.0, 1.0, 1.0, 1.0],
+                [1.0, 1.0, 1.0, 1.0, 1.0],
+                [1.0, 1.0, 1.0, 1.0, 1.0],
+                [1.0, 1.0, 1.0, 1.0, 1.0],
+                [1.0, 1.0, 1.0, 1.0, 1.0],
+            ]
+        )
+        * 0.5
     )
 
+    final_path = f"{tmp_path}/noise.npy"
+    np.save(final_path, arr=data_2d)
 
-def test_fix_pattern_noise_filename_not_found(ccd_5x10: CCD):
-    """Test model 'fix_pattern_noise' with a filename not found."""
-    detector = ccd_5x10
+    return final_path
 
-    with pytest.raises(FileNotFoundError, match="Cannot find filename"):
-        fix_pattern_noise(detector=detector, pixel_non_uniformity="missing_file.fits")
+
+def test_fix_pattern_noise_valid(ccd_5x5: CCD, valid_noise_path: t.Union[str, Path]):
+    """Test function fix_pattern_noise with valid inputs."""
+
+    detector = ccd_5x5
+
+    array = np.ones((5, 5))
+    detector.pixel.array = array
+    target = array * 0.5
+
+    fix_pattern_noise(detector=detector, filename=valid_noise_path)
+
+    np.testing.assert_array_almost_equal(detector.pixel.array, target)
+
