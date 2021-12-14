@@ -66,9 +66,7 @@ class MKIDCharacteristics(Characteristics):
         if not (0.0 <= preampref <= 4.0):
             raise ValueError("'preampref' must be between 0.0 and 4.0.")
 
-        super().__init__(
-            qe=qe, eta=eta, sv=sv, amp=amp, a1=a1, a2=a2, fwc=fwc, dt=dt
-        )
+        super().__init__(qe=qe, eta=eta, sv=sv, amp=amp, a1=a1, a2=a2, fwc=fwc, dt=dt)
         self._cutoff = cutoff
         self._vbiaspower = vbiaspower
         self._dsub = dsub
