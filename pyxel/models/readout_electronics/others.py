@@ -7,9 +7,10 @@
 
 """Readout electronics model."""
 
+import typing as t
+
 from pyxel.detectors import MKID, Detector
 from pyxel.models.readout_electronics.util import apply_gain_adc
-import typing as t
 
 
 def simple_processing(detector: Detector, gain_adc: t.Optional[float] = None) -> None:

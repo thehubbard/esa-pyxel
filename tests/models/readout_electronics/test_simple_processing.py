@@ -32,20 +32,15 @@ def ccd_3x3() -> CCD:
 
 @pytest.mark.parametrize(
     "gain_adc",
-    [
-        None,
-        2.
-    ],
+    [None, 2.0],
 )
-def test_simple_processing_valid(
-    ccd_3x3: CCD, gain_adc: float
-):
+def test_simple_processing_valid(ccd_3x3: CCD, gain_adc: float):
     """Test model 'simple_processing' with valid inputs."""
     detector = ccd_3x3
-    detector.characteristics.a2 = 2.
+    detector.characteristics.a2 = 2.0
     detector.signal.array = np.ones((3, 3), dtype=float)
     start = detector.signal.array
-    end = start * 2.
+    end = start * 2.0
 
     simple_processing(detector=detector, gain_adc=gain_adc)
 
