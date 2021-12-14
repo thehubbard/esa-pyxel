@@ -24,7 +24,7 @@ class Characteristics:
         sv: float = 1.0,  # unit: volt/electron
         amp: float = 1.0,  # unit: V/V
         a1: float = 1.0,  # unit: V/V
-        a2: int = 1,  # unit: adu/V
+        a2: float = 1,  # unit: adu/V
         fwc: int = 0,  # unit: electron
         vg: float = 0.0,  # unit: cm^2
         dt: float = 0.0,  # unit: s
@@ -156,12 +156,12 @@ class Characteristics:
         self._a1 = value
 
     @property
-    def a2(self) -> int:
+    def a2(self) -> float:
         """Get Gain of the Analog-Digital Converter."""
         return self._a2
 
     @a2.setter
-    def a2(self, value: int) -> None:
+    def a2(self, value: float) -> None:
         """Set Gain of the Analog-Digital Converter."""
         if value not in range(65537):
             raise ValueError("'a2' must be between 0 and 65536.")

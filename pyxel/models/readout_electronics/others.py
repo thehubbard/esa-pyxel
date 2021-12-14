@@ -7,17 +7,31 @@
 
 """Readout electronics model."""
 
+import typing as t
+
 from pyxel.detectors import MKID, Detector
+from pyxel.models.readout_electronics.util import apply_gain_adc
 
 
-# TODO: pure functions, documentation, copies!
-def basic_processing(detector: Detector) -> None:
-    """Create an image array from signal array.
+def simple_processing(detector: Detector, gain_adc: t.Optional[float] = None) -> None:
+    """Create a new image array (in adu) by applying the gain from the ADC (in adu/V) from the signal array.
 
-    :param detector: Pyxel Detector object
+    Parameters
+    ----------
+    detector: Detector
+        Pyxel Detector object.
+    gain_adc: float
+        Gain in units of ADU/V.
     """
 
-    detector.image.array = detector.signal.array
+    if gain_adc is None:
+        final_gain = detector.characteristics.a2
+    else:
+        final_gain = gain_adc
+
+    # Apply gain from analog-to-digital converter
+    new_image_2d = apply_gain_adc(signal_2d=detector.signal.array, gain_adc=final_gain)
+    detector.image.array = new_image_2d
 
 
 def simple_phase_conversion(detector: MKID) -> None:

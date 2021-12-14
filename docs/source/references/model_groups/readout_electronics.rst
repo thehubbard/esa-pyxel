@@ -137,3 +137,23 @@ Example of the configuration file:
 .. note:: This model is specific for the MKID detector.
 
 .. autofunction:: simple_phase_conversion
+
+Simple processing
+=================
+
+With this model you can convert :py:class:`~pyxel.data_structure.Signal`
+array into :py:class:`~pyxel.data_structure.Image`.
+User can specify optional argument ``gain_adc``. If not, the parameter from detector
+:py:class:`~pyxel.detectors.Characteristics` is used.
+
+Example of the configuration file:
+
+.. code-block:: yaml
+
+    - name: simple_processing
+      func: pyxel.models.readout_electronics.simple_processing
+      enabled: true
+      arguments:
+        gain_adc: 1.  # optional
+
+.. autofunction:: simple_processing
