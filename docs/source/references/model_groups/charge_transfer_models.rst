@@ -8,19 +8,46 @@ Charge Transfer models (CCD)
     This model group is only for CCD detectors!
 
 .. currentmodule:: pyxel.models.charge_transfer
-.. automodule:: pyxel.models.charge_transfer
 
 
 Charge Distortion Model (CDM)
 =============================
 
-The Charge Distortion Model (CDM) describes the effects of the radiation
+The Charge Distortion Model - CDM :cite:p:`2013:short` describes the effects of the radiation
 damage causing charge deferral and image shape distortion. The analytical
 model is physically realistic, yet fast enough. It was developed specifically
 for the Gaia CCD operating mode, implemented in Fortran and Python. However,
 a generalized version has already been applied in a broader context, for
 example to investigate the impact of radiation damage on the Euclid mission.
 This generalized version has been included and used in Pyxel.
+
+Use this model to add radiation induced CTI effects to :py:class:`~pyxel.data_structure.Pixel` array of the
+to :py:class:`~pyxel.detectors.CCD` detector. Argument ``direction`` should be set as either ``"parallel"``
+for parallel direction CTI or ``"serial"`` for serial register CTI.
+User should also set arguments ``trap_release_times``, ``trap_densities`` and ``sigma``
+as lists for an arbitrary number of trap species. See below for descriptions.
+Other arguments include ``max_electron_volume``, ``transfer_period``,
+``charge injection`` for parallel mode and ``full_well_capacity`` to override the one set in
+detector :py:class:`~pyxel.detectors.Characteristics`.
+
+Example of the configuration file.
+
+.. code-block:: yaml
+
+    - name: simple_persistence
+      func: pyxel.models.charge_collection.simple_persistence
+      enabled: true
+      arguments:
+        direction: "parallel"
+        trap_release_times: [0.1, 1.]
+        trap_densities: [0.307, 0.175]
+        sigma: [1.e-15, 1.e-15]
+        max_electron_volume: 1.e-10,
+        transfer_period: float = 1.e-4,
+        charge_injection: true  # only used for parallel mode
+        full_well_capacity: 1000.  # optional (otherwise one from detector characteristics is used)
+
+.. note:: This model is specific for the CCD detector.
 
 .. autofunction:: cdm
 

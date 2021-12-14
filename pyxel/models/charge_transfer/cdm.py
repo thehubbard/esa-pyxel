@@ -46,7 +46,7 @@ from pyxel.detectors import CCD
 
 
 class CDMdirection(Enum):
-    """Parameter mode class."""
+    """CDM direction class."""
 
     Parallel = "parallel"
     Serial = "serial"
@@ -56,12 +56,12 @@ def cdm(
     detector: CCD,
     direction: Literal["parallel", "serial"],
     beta: float,
-    tr: typing.Sequence[float],
-    nt: typing.Sequence[float],
+    trap_release_times: typing.Sequence[float],
+    trap_densities: typing.Sequence[float],
     sigma: typing.Sequence[float],
-    fwc: typing.Optional[float] = None,
-    vg: float = 0.0,
-    t: float = 0.0,
+    full_well_capacity: typing.Optional[float] = None,
+    max_electron_volume: float = 0.0,
+    transfer_period: float = 0.0,
     charge_injection: bool = False,
 ) -> None:
     r"""Charge Distortion Model (CDM) model wrapper.
@@ -71,29 +71,29 @@ def cdm(
     detector: CCD
         Pyxel CCD detector object.
     direction: literal
-        Set "parallel" for CTI in parallel direction or "serial" for CTI in serial register.
+        Set ``"parallel"`` for CTI in parallel direction or ``"serial"`` for CTI in serial register.
     beta: float
         Electron cloud expansion coefficient :math:`\beta`.
-    tr: sequence of float
+    trap_release_times: sequence of float
         Trap release time constants :math:`\tau_r`. Unit: :math:`s`.
-    nt: sequence of float
+    trap_densities: sequence of float
         Absolute trap densities :math:`n_t`. Unit: :math:`cm^{-3}`.
     sigma: sequence of float
         Trap capture cross section :math:`\sigma`. Unit: :math:`cm^2`.
-    fwc: float
+    full_well_capacity: float
         Full well capacity :math:`FWC`. Unit: :math:`e^-`.
-    vg: float
+    max_electron_volume: float
         Maximum geometrical volume :math:`V_g` that electrons can occupy within a pixel. Unit: :math:`cm^3`.
-    t: float
+    transfer_period: float
         Transfer period :math:`t` (TDI period). Unit: :math:`s`.
     charge_injection: bool
-        Enable charge injection (only used in "parallel" mode).
+        Enable charge injection (only used in ``"parallel"`` mode).
     """
 
-    if fwc is None:
+    if full_well_capacity is None:
         fwc_final = detector.characteristics.fwc
     else:
-        fwc_final = fwc
+        fwc_final = full_well_capacity
 
     direction = CDMdirection(direction)
 
@@ -101,40 +101,40 @@ def cdm(
         # Later, this will be checked in when YAML configuration file is parsed
         raise TypeError("Expecting a `CCD` object for 'detector'.")
 
-    if not (0.0 <= vg <= 1.0):
-        raise ValueError("'vg' must be between 0.0 and 1.0.")
+    if not (0.0 <= max_electron_volume <= 1.0):
+        raise ValueError("'max_electron_volume' must be between 0.0 and 1.0.")
     if not (0.0 <= beta <= 1.0):
         raise ValueError("'beta' must be between 0.0 and 1.0.")
-    if fwc not in range(10_000_001):
-        raise ValueError("'fwc_serial' must be between 0 and 1e+7.")
-    if not (0.0 <= t <= 10.0):
-        raise ValueError("'t' must be between 0.0 and 10.0.")
+    if full_well_capacity not in range(10_000_001):
+        raise ValueError("'full_well_capcity' must be between 0 and 1e+7.")
+    if not (0.0 <= transfer_period <= 10.0):
+        raise ValueError("'transfer_period' must be between 0.0 and 10.0.")
 
     if direction == CDMdirection.Parallel:
         detector.pixel.array = run_cdm_parallel(
             array=detector.pixel.array,
-            vg=vg,
-            t=t,
+            vg=max_electron_volume,
+            t=transfer_period,
             fwc=fwc_final,
             vth=detector.e_thermal_velocity,
             charge_injection=charge_injection,
             chg_inj_parallel_transfers=detector.geometry.row,
             beta=beta,
-            tr=np.array(tr),
-            nt=np.array(nt),
+            tr=np.array(trap_release_times),
+            nt=np.array(trap_densities),
             sigma=np.array(sigma),
         )
 
     elif direction == CDMdirection.Serial:
         detector.pixel.array = run_cdm_serial(
             array=detector.pixel.array,
-            vg=vg,
-            t=t,
+            vg=max_electron_volume,
+            t=transfer_period,
             fwc=fwc_final,
             vth=detector.e_thermal_velocity,
             beta=beta,
-            tr=np.array(tr),
-            nt=np.array(nt),
+            tr=np.array(trap_release_times),
+            nt=np.array(trap_densities),
             sigma=np.array(sigma),
         )
 
