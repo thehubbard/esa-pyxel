@@ -36,11 +36,11 @@ st: constant TDI period (serial)
 """
 
 import typing
-from typing_extensions import Literal
+from enum import Enum
 
 import numba
 import numpy as np
-from enum import Enum
+from typing_extensions import Literal
 
 from pyxel.detectors import CCD
 
@@ -95,7 +95,7 @@ def cdm(
     else:
         fwc_final = full_well_capacity
 
-    direction = CDMdirection(direction)
+    mode = CDMdirection(direction)
 
     if not isinstance(detector, CCD):
         # Later, this will be checked in when YAML configuration file is parsed
@@ -106,11 +106,11 @@ def cdm(
     if not (0.0 <= beta <= 1.0):
         raise ValueError("'beta' must be between 0.0 and 1.0.")
     if full_well_capacity not in range(10_000_001):
-        raise ValueError("'full_well_capcity' must be between 0 and 1e+7.")
+        raise ValueError("'full_well_capacity' must be between 0 and 1e+7.")
     if not (0.0 <= transfer_period <= 10.0):
         raise ValueError("'transfer_period' must be between 0.0 and 10.0.")
 
-    if direction == CDMdirection.Parallel:
+    if mode == CDMdirection.Parallel:
         detector.pixel.array = run_cdm_parallel(
             array=detector.pixel.array,
             vg=max_electron_volume,
@@ -125,7 +125,7 @@ def cdm(
             sigma=np.array(sigma),
         )
 
-    elif direction == CDMdirection.Serial:
+    elif mode == CDMdirection.Serial:
         detector.pixel.array = run_cdm_serial(
             array=detector.pixel.array,
             vg=max_electron_volume,
@@ -153,7 +153,7 @@ def run_cdm_parallel(
     charge_injection: bool = False,
     chg_inj_parallel_transfers: int = 0,
 ) -> np.ndarray:
-    """Run CDM in parallel direction.
+    r"""Run CDM in parallel direction.
 
     Parameters
     ----------
@@ -235,7 +235,7 @@ def run_cdm_serial(
     nt: np.ndarray,
     sigma: np.ndarray,
 ) -> np.ndarray:
-    """Run CDM in serial direction.
+    r"""Run CDM in serial direction.
 
     Parameters
     ----------

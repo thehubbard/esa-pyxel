@@ -34,8 +34,8 @@ Example of the configuration file.
 
 .. code-block:: yaml
 
-    - name: simple_persistence
-      func: pyxel.models.charge_collection.simple_persistence
+    - name: cdm
+      func: pyxel.models.charge_transfer.cdm
       enabled: true
       arguments:
         direction: "parallel"

@@ -25,7 +25,7 @@ class Characteristics:
         amp: float = 1.0,  # unit: V/V
         a1: float = 1.0,  # unit: V/V
         a2: float = 1,  # unit: adu/V
-        fwc: int = 0,  # unit: electron
+        fwc: float = 0,  # unit: electron
         dt: float = 0.0,  # unit: s
     ):
         """Create an instance of `Characteristics`.
@@ -162,12 +162,12 @@ class Characteristics:
         self._a2 = value
 
     @property
-    def fwc(self) -> int:
+    def fwc(self) -> float:
         """Get Full well capacity."""
         return self._fwc
 
     @fwc.setter
-    def fwc(self, value: int) -> None:
+    def fwc(self, value: float) -> None:
         """Set Full well capacity."""
         if value not in range(10000001):
             raise ValueError("'fwc' must be between 0 and 1e+7.")
