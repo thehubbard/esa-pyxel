@@ -153,8 +153,6 @@ html_title = "Pyxel documentation " + tag
 #
 html_theme_options = {
     "repository_url": "https://gitlab.com/esa/pyxel",
-    "repository_branch": "master",
-    "path_to_docs": "doc",
     # Add buttons
     "use_edit_page_button": True,
     "use_repository_button": True,
@@ -166,6 +164,15 @@ html_theme_options = {
     "extra_footer": f"""<p>Last updated on {now_dt:%Y-%m-%d}.</p>""",
     "toc_title": "Contents",  # Control the right sidebar items
 }
+
+# This is used to generate the link 'suggest edit'
+html_context = {
+    "github_url": "https://gitlab.com",
+    "github_user": "esa",
+    "github_repo": "pyxel",
+}
+html_theme_options["path_to_docs"] = "../../-/edit/master/docs/source"
+
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
