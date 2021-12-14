@@ -20,7 +20,7 @@ class MKIDCharacteristics(Characteristics):
         sv: float = 0.0,
         amp: float = 0.0,
         a1: float = 0.0,
-        a2: int = 0,
+        a2: int = 1.,
         fwc: int = 0,
         vg: float = 0.0,
         dt: float = 0.0,
