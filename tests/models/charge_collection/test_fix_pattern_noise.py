@@ -62,4 +62,3 @@ def test_fix_pattern_noise_valid(ccd_5x5: CCD, valid_noise_path: t.Union[str, Pa
     fix_pattern_noise(detector=detector, filename=valid_noise_path)
 
     np.testing.assert_array_almost_equal(detector.pixel.array, target)
-

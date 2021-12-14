@@ -11,9 +11,9 @@ import typing as t
 from pathlib import Path
 
 import numpy as np
+from typing_extensions import Literal
 
 from pyxel.detectors import Detector, Geometry
-from typing_extensions import Literal
 from pyxel.util import load_cropped_and_aligned_image
 
 
