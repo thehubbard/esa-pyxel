@@ -15,10 +15,10 @@ import requests
 @click.command()
 @click.option("--environment", default="production", type=str, show_default=True)
 @click.option(
-    "--ci_api_v4_url",
-    envvar="CI_API_V4_URL",
+    "--ci_server_host",
+    envvar="CI_SERVER_HOST",
     type=str,
-    help="The GitLab API v4 root URL.",
+    help="Server host",
     show_default=True,
 )
 @click.option(
@@ -34,22 +34,33 @@ import requests
     required=False,
     help="A token to authenticate",
 )
+@click.option(
+    "--ci_job_token",
+    envvar="CI_JOB_TOKEN",
+    required=False,
+    help="Job token",
+)
 def main(
     environment: str,
-    ci_api_v4_url: str,
+    ci_server_host: str,
     ci_project_id: int,
     private_token: t.Optional[str],
+    ci_job_token: t.Optional[str],
 ):
-    # Create token
+    # https://gitlab-ci-token:[MASKED]@gitlab.esa.int/sci-fv/pyxel-mirror.git
     headers = {}
 
     if private_token:
         headers["PRIVATE-TOKEN"] = private_token
+        server_host = f"https://{ci_server_host}"  # type: str
+    elif ci_job_token:
+        server_host = f"https://gitlab-ci-token:{ci_job_token}@{ci_server_host}"
+
     else:
-        raise ValueError("Missing 'private_token'.")
+        raise NotImplementedError
 
     # Get main http address
-    addr = f"{ci_api_v4_url}/projects/{ci_project_id}"
+    addr = f"{server_host}/api/v4/projects/{ci_project_id}"
 
     # Get list of environments
     # GET /projects/:id/environments
