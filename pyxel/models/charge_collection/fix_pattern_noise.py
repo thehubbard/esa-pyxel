@@ -6,65 +6,49 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """Fix pattern noise model."""
-import logging
+
 import typing as t
 from pathlib import Path
 
 import numpy as np
+from typing_extensions import Literal
 
 from pyxel.detectors import Detector, Geometry
-from pyxel.util import temporary_random_state
-
-# TODO: use built-in pyxel functions for loading files, documentation, docstring, saving to file??, private function
+from pyxel.util import load_cropped_and_aligned_image
 
 
-# TODO: Fix this
-# @validators.validate
-# @config.argument(name='', label='', units='', validate=)
-@temporary_random_state
 def fix_pattern_noise(
     detector: Detector,
-    pixel_non_uniformity: t.Union[str, Path, None] = None,
-    seed: t.Optional[int] = None,
+    filename: t.Union[str, Path],
+    position: t.Tuple[int, int] = (0, 0),
+    align: t.Optional[
+        Literal["center", "top_left", "top_right", "bottom_left", "bottom_right"]
+    ] = None,
 ) -> None:
     """Add fix pattern noise caused by pixel non-uniformity during charge collection.
 
     Parameters
     ----------
-    seed: int, optional
     detector : Detector
         Pyxel Detector object.
-    pixel_non_uniformity : str or Path
-        path to an ascii file with and array.
+    filename : str or Path
+        Path to a file with an array or an image.
+    position: tuple
+        Indices of starting row and column, used when fitting noise to detector.
+    align: Literal
+        Keyword to align the noise to detector. Can be any from:
+        ("center", "top_left", "top_right", "bottom_left", "bottom_right")
     """
     geo = detector.geometry  # type: Geometry
+    position_y, position_x = position
 
-    if pixel_non_uniformity is not None:
-        if ".npy" in str(pixel_non_uniformity):
-            pnu = np.load(pixel_non_uniformity)
-        else:
-            pnu = np.loadtxt(pixel_non_uniformity)
-    else:
-        filename = Path("data/pixel_non_uniformity.npy").resolve()
+    # Load charge profile as numpy array.
+    pnu_2d = load_cropped_and_aligned_image(
+        shape=(geo.row, geo.col),
+        filename=filename,
+        position_x=position_x,
+        position_y=position_y,
+        align=align,
+    )  # type: np.ndarray
 
-        if filename.exists():
-            logging.warning(
-                "'pixel_non_uniformity' file is not defined, "
-                "using array from file: %s",
-                filename,
-            )
-            pnu = np.load(filename)
-        else:
-            logging.warning(
-                "'pixel_non_uniformity' file is not defined, "
-                "generated random array to file: %s",
-                filename,
-            )
-
-            # pnu = 0.99 + np.random.random((geo.row, geo.col)) * 0.02
-            pnu = np.random.normal(loc=1.0, scale=0.03, size=(geo.row, geo.col))
-            np.save(filename, pnu)
-
-    pnu = pnu.reshape((geo.row, geo.col))
-
-    detector.pixel.array = detector.pixel.array.astype(np.float64) * pnu  # TODO: dtype!
+    detector.pixel.array *= pnu_2d
