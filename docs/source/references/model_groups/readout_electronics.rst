@@ -119,3 +119,21 @@ Example of the configuration file:
         range_volt: [0.0, 5.0]
 
 .. autofunction:: sar_adc
+
+Simple phase conversion
+=======================
+
+With this model you can convert :py:class:`~pyxel.data_structure.Phase`
+array into :py:class:`~pyxel.data_structure.Image`.
+
+Example of the configuration file:
+
+.. code-block:: yaml
+
+    - name: simple_phase_conversion
+      func: pyxel.models.readout_electronics.simple_phase_conversion
+      enabled: true
+
+.. note:: This model is specific for the MKID detector.
+
+.. autofunction:: simple_phase_conversion
