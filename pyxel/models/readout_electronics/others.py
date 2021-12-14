@@ -12,7 +12,7 @@ from pyxel.models.readout_electronics.util import apply_gain_adc
 import typing as t
 
 
-def simple_processing(detector: Detector, gain_adc: t.Optional[float]) -> None:
+def simple_processing(detector: Detector, gain_adc: t.Optional[float] = None) -> None:
     """Create a new image array (in adu) by applying the gain from the ADC (in adu/V) from the signal array.
 
     Parameters
