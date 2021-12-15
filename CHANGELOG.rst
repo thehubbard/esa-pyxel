@@ -13,6 +13,8 @@ Documentation
 
 * Fix broken links in the documentation.
   (See `!388 <https://gitlab.com/esa/pyxel/-/merge_requests/388>`_).
+* Fix links for 'suggest_edit' button in the documentation.
+  (See `!389 <https://gitlab.com/esa/pyxel/-/merge_requests/389>`_).
 
 Models
 ~~~~~~

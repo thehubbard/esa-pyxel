@@ -145,7 +145,7 @@ todo_include_todos = False
 # a list of builtin themes.
 #
 html_theme = "sphinx_book_theme"
-html_title = "Pyxel documentation " + tag
+html_title = f"version {version}"
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -153,8 +153,6 @@ html_title = "Pyxel documentation " + tag
 #
 html_theme_options = {
     "repository_url": "https://gitlab.com/esa/pyxel",
-    "repository_branch": "master",
-    "path_to_docs": "doc",
     # Add buttons
     "use_edit_page_button": True,
     "use_repository_button": True,
@@ -166,6 +164,15 @@ html_theme_options = {
     "extra_footer": f"""<p>Last updated on {now_dt:%Y-%m-%d}.</p>""",
     "toc_title": "Contents",  # Control the right sidebar items
 }
+
+# This is used to generate the link 'suggest edit'
+html_context = {
+    "github_url": "https://gitlab.com",
+    "github_user": "esa",
+    "github_repo": "pyxel",
+}
+html_theme_options["path_to_docs"] = "../../-/edit/master/docs/source"
+
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
