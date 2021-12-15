@@ -46,7 +46,7 @@ def main(
     if private_token:
         headers["PRIVATE-TOKEN"] = private_token
     else:
-        raise NotImplementedError
+        raise ValueError("Missing 'private_token'.")
 
     # Get main http address
     addr = f"{ci_api_v4_url}/projects/{ci_project_id}"

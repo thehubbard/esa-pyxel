@@ -214,11 +214,11 @@ pages:
 
     # Download last stable documentation from environment 'production'
     # only if folder 'stable' and file 'artifacts.zip' do not exist
-    - test -d stable || test -f artifacts.zip || python continuous_integration/scripts/download_last_environment_artifact.py
+    - test -d stable || test -f artifacts.zip || python continuous_integration/scripts/download_last_environment_artifact.py || echo "Failed to download artifacts"
 
     # Unzip 'artifacts.zip' into folder 'stable'
     # only if folder 'stable' does not exist and file 'artifacts.zip' exists.
-    - test -d stable || (test -f artifacts.zip && unzip artifacts.zip)
+    - test -d stable || (test -f artifacts.zip && unzip artifacts.zip) || echo "Folder 'stable' is already existing or no artifacts"
 
     # Move folder 'stable' to 'public/doc/stable'
     # only if folder 'stable' exists
