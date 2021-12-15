@@ -423,10 +423,10 @@ def test_detector_and_model_update(yaml: str, param_array: np.ndarray):
 
     attributes = [
         mf.processor.detector.characteristics.amp,
-        mf.processor.pipeline.charge_transfer.models[0].arguments["tr_p"],
-        mf.processor.pipeline.charge_transfer.models[0].arguments["nt_p"],
-        mf.processor.pipeline.charge_transfer.models[0].arguments["sigma_p"],
-        mf.processor.pipeline.charge_transfer.models[0].arguments["beta_p"],
+        mf.processor.pipeline.charge_transfer.models[0].arguments["trap_release_times"],
+        mf.processor.pipeline.charge_transfer.models[0].arguments["trap_densities"],
+        mf.processor.pipeline.charge_transfer.models[0].arguments["sigma"],
+        mf.processor.pipeline.charge_transfer.models[0].arguments["beta"],
         mf.processor.pipeline.charge_measurement.models[1].arguments["std_deviation"],
         mf.processor.detector.environment.temperature,
     ]
