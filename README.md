@@ -1,12 +1,11 @@
 Pyxel detector simulation framework
 ===================================
 
-[![pipeline status](https://gitlab.com/esa/pyxel/badges/master/pipeline.svg)](https://gitlab.esa.int/sci-fv/pyxel-mirror/pipelines)
+[![pipeline status](https://gitlab.com/esa/pyxel/badges/master/pipeline.svg)](https://gitlab.com/esa/pyxel/-/pipelines)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](https://gitlab.com/esa/pyxel/blob/master/LICENSE)
 [![docs](https://esa.gitlab.io/pyxel/documentation.svg)](https://esa.gitlab.io/pyxel/doc)
 [![gitter](https://badges.gitter.im/pyxel-framework/community.svg)](https://gitter.im/pyxel-framework/community)
 [![Google Group](https://img.shields.io/badge/Google%20Group-Pyxel%20Detector%20Framework-blue.svg)](https://groups.google.com/g/pyxel-detector-framework)
-[![coverage](https://gitlab.com/esa/pyxel/badges/master/coverage.svg)](http://sci-fv.io.esa.int/pyxel-mirror/coverage/)
 [![doi](https://zenodo.org/badge/DOI/10.1117/12.2314047.svg)](https://doi.org/10.1117/12.2314047)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![PyPI version](https://badge.fury.io/py/pyxel-sim.svg)](https://badge.fury.io/py/pyxel-sim)
@@ -23,7 +22,7 @@ made by CCD or CMOS-based detectors.
 *Pyxel* is tested on Python 3.7+.
 
 If you'd like to contribute to *Pyxel* you're most welcome.
-Please read [the little guide](https://esa.gitlab.io/pyxel/doc/contributing.html) to get you started.
+Please read [the little guide](https://esa.gitlab.io/pyxel/doc/stable/contributing.html) to get you started.
 
 ## Documentation
 
@@ -32,7 +31,7 @@ Learn more about *Pyxel* in its offical [blog](https://esa.gitlab.io/pyxel) and 
 
 ## Installation
 
-[Installation instructions](https://esa.gitlab.io/pyxel/doc/tutorials/install.html) can be found in the tutorials.
+[Installation instructions](https://esa.gitlab.io/pyxel/doc/stable/tutorials/install.html) can be found in the tutorials.
 
 ## Examples
 
@@ -56,7 +55,7 @@ Further, the *Pyxel* [mailing list](https://rssd-mgw.estec.esa.int:81/mailman/li
 All contributions, bug reports, bug fixes, documentation improvements, enhancements and ideas are welcome.
 
 A detailed overview on how to contribute to *Pyxel* can be found in the
-**[contributing guide](https://esa.gitlab.io/pyxel/doc/contributing.html)**.
+**[contributing guide](https://esa.gitlab.io/pyxel/doc/stable/contributing.html)**.
 There is also an [overview](.gitlab/CONTRIBUTING.md) on GitLab.
 
 If you are simply looking to start working with the *Pyxel* codebase, navigate to the
@@ -70,9 +69,9 @@ Feel free to ask questions on the [mailing list](https://rssd-mgw.estec.esa.int:
 
 ## Changelog
 
-The [detailed changelog](https://esa.gitlab.io/pyxel/doc/references/changelog.html) is available on the website.
+The [detailed changelog](https://esa.gitlab.io/pyxel/doc/stable/references/changelog.html) is available on the website.
 
 
 ## License
 
-*Pyxel* is released under [MIT license](https://esa.gitlab.io/pyxel/doc/license.html).
+*Pyxel* is released under [MIT license](https://esa.gitlab.io/pyxel/doc/stable/license.html).

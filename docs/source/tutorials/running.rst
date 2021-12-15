@@ -54,7 +54,7 @@ An example of running Pyxel as a library:
     detector = configuration.detector
     pipeline = configuration.pipeline
 
-    pyxel.exposure_mode(exposure, detector, pipeline)
+    pyxel.exposure_mode(exposure=exposure, detector=detector, pipeline=pipeline)
 
 Running Pyxel from a Docker container
 =====================================

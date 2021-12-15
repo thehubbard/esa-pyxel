@@ -11,6 +11,9 @@ Core
 Documentation
 ~~~~~~~~~~~~~
 
+* Fix broken links in the documentation.
+  (See `!388 <https://gitlab.com/esa/pyxel/-/merge_requests/388>`_).
+
 Models
 ~~~~~~
 

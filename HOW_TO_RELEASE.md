@@ -48,11 +48,11 @@ upstream	https://gitlab.com/esa/pyxel.git (push)
 
    a. Click the button 'new_tag'
 
-   b. In the field 'Tag name', enter `v{X.Y}`
+   b. In the field 'Tag name', enter `{X.Y}`
 
    c. In the field 'Create from', choose `master` (this is the default value)
 
-   d. In the field 'Message', enter `v{X.Y}`
+   d. In the field 'Message', enter `{X.Y}`
 
    e. In the field 'Release notes', enter the content of `CHANGELOG.rst` only for this release.
 
