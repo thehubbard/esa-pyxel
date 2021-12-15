@@ -34,3 +34,13 @@ CMOS
     :undoc-members:
     :show-inheritance:
     :exclude-members:
+
+MKID
+----
+
+.. autoclass:: MKID
+    :members:
+    :inherited-members:
+    :undoc-members:
+    :show-inheritance:
+    :exclude-members:

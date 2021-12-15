@@ -13,6 +13,8 @@ Documentation
 
 Models
 ~~~~~~
+* Refactoring of CDM model.
+  (See `!375 <https://gitlab.com/esa/pyxel/-/merge_requests/375>`_).
 
 Others
 ~~~~~~

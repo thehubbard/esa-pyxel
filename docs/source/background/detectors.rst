@@ -25,6 +25,15 @@ and the generated signals we are interested in at the end of the simulation.
 
 .. _data_structure:
 
+CCD
+===
+
+CMOS
+====
+
+MKID
+====
+
 Data Structure
 ==============
 

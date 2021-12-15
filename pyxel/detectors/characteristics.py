@@ -67,8 +67,8 @@ class Characteristics:
         if a2 not in range(65537):
             raise ValueError("'a2' must be between 0 and 65536.")
 
-        if fwc not in range(10000001):
-            raise ValueError("'fwc' must be between 0 and 1e+7.")
+        if not (0.0 <= fwc <= 1.0e7):
+            raise ValueError("'fwc' must be between 0 and 1e7.")
 
         if not (0.0 <= dt <= 10.0):
             raise ValueError("'dt' must be between 0.0 and 10.0.")
