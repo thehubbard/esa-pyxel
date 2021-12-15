@@ -105,7 +105,7 @@ def cdm(
         raise ValueError("'max_electron_volume' must be between 0.0 and 1.0.")
     if not (0.0 <= beta <= 1.0):
         raise ValueError("'beta' must be between 0.0 and 1.0.")
-    if not (0.0 <= full_well_capacity <= 1.0e7):
+    if not (0.0 <= fwc_final <= 1.0e7):
         raise ValueError("'full_well_capacity' must be between 0 and 1e7.")
     if not (0.0 <= transfer_period <= 10.0):
         raise ValueError("'transfer_period' must be between 0.0 and 10.0.")

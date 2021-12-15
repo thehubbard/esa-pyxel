@@ -28,19 +28,19 @@ calibration:
       values: _
       logarithmic: false
       boundaries: [1., 10.]
-    - key:  pipeline.charge_transfer.cdm.arguments.tr_p
+    - key:  pipeline.charge_transfer.cdm.arguments.trap_release_times
       values: [_, _, _, _]
       logarithmic: true
       boundaries: [1.e-3, 2.]
-    - key:  pipeline.charge_transfer.cdm.arguments.nt_p
+    - key:  pipeline.charge_transfer.cdm.arguments.trap_densities
       values: [_, _, _, _]
       logarithmic: false
       boundaries: [1.e-2, 1.e+1]
-    - key:  pipeline.charge_transfer.cdm.arguments.sigma_p
+    - key:  pipeline.charge_transfer.cdm.arguments.sigma
       values: [_, _, _, _]
       logarithmic: true
       boundaries: [1.e-20,  1.e-15]
-    - key:  pipeline.charge_transfer.cdm.arguments.beta_p
+    - key:  pipeline.charge_transfer.cdm.arguments.beta
       values: _
       logarithmic: false
       boundaries: [0., 1.]
