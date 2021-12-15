@@ -84,3 +84,25 @@ CMOSGeoemtry
     :undoc-members:
     :show-inheritance:
     :exclude-members:
+
+MKID specific
+-------------
+MKID specific classes.
+
+MKIDCharacteristics
+===================
+.. autoclass:: MKIDCharacteristics
+    :members:
+    :inherited-members:
+    :undoc-members:
+    :show-inheritance:
+    :exclude-members:
+
+MKIDGeometry
+============
+.. autoclass:: MKIDGeometry
+    :members:
+    :inherited-members:
+    :undoc-members:
+    :show-inheritance:
+    :exclude-members:

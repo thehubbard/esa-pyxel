@@ -32,6 +32,15 @@ Pixel
     :show-inheritance:
     :exclude-members:
 
+Phase
+-----
+.. autoclass:: Phase
+    :members:
+    :inherited-members:
+    :undoc-members:
+    :show-inheritance:
+    :exclude-members:
+
 Signal
 ------
 .. autoclass:: Signal
