@@ -78,11 +78,6 @@ ccd_detector:
     a1: 100                 # V/V
     a2: 65536               # DN/V
     fwc: 1000000               # e
-    fwc_serial: 1000000        # e
-    vg: 1.6200e-10          # cm2
-    svg: 1.6200e-10         # cm2
-    t: 9.4722e-04           # s
-    st: 9.4722e-04          # s
 
 pipeline:
 
@@ -127,17 +122,14 @@ pipeline:
       func: pyxel.models.charge_transfer.cdm
       enabled: true
       arguments:
-        parallel_cti: true
-        serial_cti: false
+        direction: "parallel"
+        trap_release_times: [0.01]
+        trap_densities: [1.]
+        sigma: [1.]
+        beta: 0.3
+        max_electron_volume: 1.6200e-10
+        transfer_period: 9.4722e-04
         charge_injection: false
-        beta_p: 0.1
-        beta_s: 0.3
-        tr_p: [0.01]
-        tr_s: [0.01]
-        nt_p: [1.]
-        nt_s: [1.]
-        sigma_p: [1.]
-        sigma_s: [1.]
 
   # charge -> signal
   charge_measurement:
