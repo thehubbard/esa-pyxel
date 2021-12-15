@@ -218,7 +218,7 @@ pages:
 
     # Unzip 'artifacts.zip' into folder 'stable'
     # only if folder 'stable' does not exist and file 'artifacts.zip' exists.
-    - test -d stable || (test -f artifacts.zip && unzip artifacts.zip)
+    - test -d stable || (test -f artifacts.zip && unzip artifacts.zip) || echo "Folder 'stable' is already existing or no artifacts"
 
     # Move folder 'stable' to 'public/doc/stable'
     # only if folder 'stable' exists
