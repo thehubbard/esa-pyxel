@@ -13,6 +13,7 @@ Documentation
 
 Models
 ~~~~~~
+
 * Refactoring of CDM model.
   (See `!375 <https://gitlab.com/esa/pyxel/-/merge_requests/375>`_).
 
@@ -21,6 +22,8 @@ Others
 
 * Add netcdf4 to function show_versions.
   (See `!383 <https://gitlab.com/esa/pyxel/-/merge_requests/383>`_).
+* Fix issue with script 'download_last_environment_artifact.py'.
+  (See `!386 <https://gitlab.com/esa/pyxel/-/merge_requests/386>`_).
 
 
 version 0.11.6 / 2021-12-13
