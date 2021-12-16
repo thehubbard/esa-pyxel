@@ -14,7 +14,7 @@ import h5py as h5
 import numpy as np
 
 from pyxel import __version__
-from pyxel.data_structure import Charge, Image, Photon, Pixel, Signal
+from pyxel.data_structure import Charge, Image, Persistence, Photon, Pixel, Signal
 from pyxel.detectors import Environment
 from pyxel.detectors.readout_properties import ReadoutProperties
 from pyxel.util.memory import get_size, memory_usage_details
@@ -39,6 +39,7 @@ class Detector:
 
         # This will be the memory of the detector where trapped charges will be saved
         self._memory = dict()  # type: t.Dict
+        self._persistence = None  # type: t.Optional[Persistence]
 
         self.input_image = None  # type: t.Optional[np.ndarray]
         self._output_dir = None  # type: t.Optional[Path]  # TODO: See #330
@@ -283,6 +284,40 @@ class Detector:
             return self._readout_properties.non_destructive
         else:
             raise ValueError("No sampling defined.")
+
+    def has_persistence(self) -> bool:
+        """TBW."""
+        if not self._persistence:
+            return False
+        else:
+            return True
+
+    @property
+    def persistence(self) -> Persistence:
+        """TBW."""
+        if self.has_persistence():
+            return self._persistence
+        else:
+            raise RuntimeError("'persistence' not initialized.")
+
+    @persistence.setter
+    def persistence(self, value: Persistence) -> None:
+        """TBW."""
+        if not isinstance(value, Persistence):
+            raise TypeError("Expecting Persistence type to set detector persistence.")
+        self._persistence = value
+
+    @property
+    def numbytes(self) -> int:
+        """Recursively calculates object size in bytes using Pympler library.
+
+        Returns
+        -------
+        int
+            Size of the object in bytes.
+        """
+        self._numbytes = get_size(self)
+        return self._numbytes
 
     @property
     def numbytes(self) -> int:

@@ -107,15 +107,19 @@ https://sphinx-rtd-theme.readthedocs.io/en/latest/index.html
 import logging
 import typing as t
 from dataclasses import dataclass
+from pathlib import Path
 
+import numba
 import numpy as np
 from astropy.io import fits
 
+from pyxel.data_structure import Persistence
 from pyxel.detectors import CMOS
+from pyxel.inputs import load_image
 
 
 @dataclass
-class Trap:
+class SimpleTrap:
     """Define a simple ``Trap``.
 
     Parameters
@@ -147,7 +151,7 @@ def get_trapped_charge_name(param1: float, param2: float) -> str:
 
 
 def create_persistence(
-    traps: t.Sequence[Trap], num_rows: int, num_cols: int
+    traps: t.Sequence[SimpleTrap], num_rows: int, num_cols: int
 ) -> t.Mapping[str, np.ndarray]:
     """Create new empty trapped charges.
 
@@ -164,7 +168,7 @@ def create_persistence(
     """
     persistence = {}  # type: t.Dict[str, np.ndarray]
 
-    for trap in traps:  # type: Trap
+    for trap in traps:  # type: SimpleTrap
         entry = get_trapped_charge_name(param1=trap.density, param2=trap.time_constant)
         persistence[entry] = np.zeros((num_rows, num_cols))
 
@@ -172,7 +176,7 @@ def create_persistence(
 
 
 def add_persistence(
-    traps: t.Sequence[Trap],
+    traps: t.Sequence[SimpleTrap],
     data_2d: np.ndarray,
     persistence: t.Mapping[str, np.ndarray],
 ) -> t.Tuple[np.ndarray, t.Mapping[str, np.ndarray]]:
@@ -194,7 +198,7 @@ def add_persistence(
     new_persistence = {}  # t.Mapping[str, np.ndarray]
     new_data_2d = data_2d  # type: np.ndarray
 
-    for trap in traps:  # type: Trap
+    for trap in traps:  # type: SimpleTrap
         previous_data_2d = new_data_2d  # type: np.ndarray
 
         # Get trapped charges
@@ -236,9 +240,9 @@ def simple_persistence(
 
     # Conversion
     traps = [
-        Trap(density=density, time_constant=time_constant)
+        SimpleTrap(density=density, time_constant=time_constant)
         for density, time_constant in zip(trap_densities, trap_timeconstants)
-    ]  # type: t.Sequence[Trap]
+    ]  # type: t.Sequence[SimpleTrap]
 
     geometry = detector.geometry
 
@@ -305,7 +309,6 @@ def current_persistence(
 
     # For each trap population
     for trap_proportion, trap_timeconstant in zip(trap_proportions, trap_timeconstants):
-
         # Get the correct persistence traps entry
         entry = "".join(
             ["trappedCharges_", str(trap_proportion), "-", str(trap_timeconstant)]
@@ -351,3 +354,93 @@ def current_persistence(
         detector._memory["persistence"][entry] = trapped_charges
 
     return None
+
+
+def optimized_persistence(
+    detector: CMOS,
+    trap_time_constants: list,
+    trap_densities: t.Union[Path, str],
+    trap_max: t.Union[Path, str],
+    trap_proportions: list,
+) -> None:
+    """Trapping/detrapping charges."""
+    # If the file for trap density is correct open it and use it
+    # otherwise I need to define a default trap density map
+
+    # Extract trap density / full well
+    trap_densities_2d = load_image(trap_densities)[
+        : detector.geometry.row, : detector.geometry.col
+    ]  # type: np.ndarray
+    trap_densities_2d[np.where(trap_densities_2d < 0)] = 0
+
+    # Extract the max amount of trap by long soak
+    trap_max_2d = load_image(trap_max)[: detector.geometry.row, : detector.geometry.col]
+    trap_max_2d[np.where(trap_max_2d < 0)] = 0
+
+    if not detector.has_persistence():
+        detector.persistence = Persistence(
+            trap_time_constants=trap_time_constants,
+            trap_proportions=trap_proportions,
+            geometry=detector.pixel.shape,
+        )
+
+    new_pixel_array, new_all_trapped_charge = compute_persistence(
+        pixel_array=detector.pixel.array,
+        all_trapped_charge=detector.persistence.trapped_charge_array,
+        trap_proportions=np.array(trap_proportions),
+        trap_time_constants=np.array(trap_time_constants),
+        trap_densities_2d=trap_densities_2d,
+        trap_max_2d=trap_max_2d,
+        delta_t=detector.time_step,
+    )
+
+    detector.pixel.array = new_pixel_array
+    detector.persistence.trapped_charge_array = new_all_trapped_charge
+
+
+@numba.njit
+def compute_persistence(
+    pixel_array: np.ndarray,
+    all_trapped_charge: np.ndarray,
+    trap_proportions: np.ndarray,
+    trap_time_constants: np.ndarray,
+    trap_densities_2d: np.ndarray,
+    trap_max_2d: np.ndarray,
+    delta_t: float,
+):
+    for i in range(all_trapped_charge.shape[0]):
+        # Select the trapped charges array
+        trapped_charge = all_trapped_charge[i]
+
+        # Computer trapped charge for this increment of time
+        # Time factor is the integration time divided by the time constant (1, 10, 100, 1000, 10000)
+        time_factor = delta_t / trap_time_constants[i]
+
+        # Amount of charges trapped per unit of full well
+        max_charges = trap_densities_2d * trap_proportions[i]
+
+        # Maximum of amount of charges trapped
+        fw_trap = trap_max_2d * trap_proportions[i]
+
+        diff = time_factor * (
+            max_charges * pixel_array * np.exp(-time_factor) - trapped_charge
+        )
+        # Compute trapped charges
+        trapped_charge = trapped_charge + time_factor * (
+            max_charges * pixel_array * np.exp(-time_factor) - trapped_charge
+        )
+
+        # When the amount of trapped charges is superior to the maximum of available traps, set to max
+        trapped_charge[np.where(trapped_charge > fw_trap)] = max_charges[
+            np.where(trapped_charge > fw_trap)
+        ]
+        # Can't have a negative amount of charges trapped
+        trapped_charge[np.where(trapped_charge < 0)] = 0
+
+        # Remove the trapped charges from the pixel
+        # detector.pixel.array -= trapped_charges.astype(np.int32)
+        pixel_array -= diff
+
+        all_trapped_charge[i] = trapped_charge
+
+    return pixel_array, all_trapped_charge
