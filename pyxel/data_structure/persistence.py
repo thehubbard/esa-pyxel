@@ -16,16 +16,16 @@ import numpy as np
 class Trap:
 
     time_constant: float
-    charge: np.ndarray
     proportion: float
+    charge: np.ndarray
 
 
 class Persistence:
     def __init__(
         self,
-        trap_time_constants: list,
-        trap_proportions: list,
-        geometry: t.Tuple,
+        trap_time_constants: t.Sequence[float],
+        trap_proportions: t.Sequence[float],
+        geometry: t.Tuple[int, ...],
     ):
         traps = []
         for time_constant, trap_proportion in sorted(

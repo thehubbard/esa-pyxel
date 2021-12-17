@@ -72,7 +72,7 @@ class Array:
         return np.asarray(self._array, dtype=dtype)
 
     @property
-    def shape(self) -> t.Tuple:
+    def shape(self) -> t.Tuple[int, ...]:
         """Return array shape."""
         return self._array.shape
 

@@ -115,7 +115,12 @@ from astropy.io import fits
 
 from pyxel.data_structure import Persistence
 from pyxel.detectors import CMOS
-from pyxel.inputs import load_image
+from pyxel.util import load_cropped_and_aligned_image
+from typing_extensions import Literal
+from numba.extending import overload
+from numba import types
+from numba.core import errors
+from numba.np.numpy_support import type_can_asarray, is_nonelike
 
 
 @dataclass
@@ -358,23 +363,63 @@ def current_persistence(
 
 def optimized_persistence(
     detector: CMOS,
-    trap_time_constants: list,
-    trap_densities: t.Union[Path, str],
-    trap_max: t.Union[Path, str],
-    trap_proportions: list,
+    trap_time_constants: t.Sequence[float],
+    trap_proportions: t.Sequence[float],
+    trap_densities_filename: t.Union[Path, str],
+    trap_max_filename: t.Union[Path, str],
+    trap_densities_position: t.Tuple[int, int] = (0, 0),
+    trap_densities_align: t.Optional[
+        Literal["center", "top_left", "top_right", "bottom_left", "bottom_right"]
+    ] = None,
+    trap_max_position: t.Tuple[int, int] = (0, 0),
+    trap_max_align: t.Optional[
+        Literal["center", "top_left", "top_right", "bottom_left", "bottom_right"]
+    ] = None,
 ) -> None:
-    """Trapping/detrapping charges."""
+    """
+
+    Parameters
+    ----------
+    detector
+    trap_time_constants
+    trap_proportions
+    trap_densities_filename
+    trap_max_filename
+    trap_densities_position
+    trap_densities_align
+    trap_max_position
+    trap_max_align
+
+    Returns
+    -------
+
+    """
     # If the file for trap density is correct open it and use it
     # otherwise I need to define a default trap density map
+    shape = detector.pixel.shape
+    densities_position_y, densities_position_x = trap_densities_position
+    max_position_y, max_position_x = trap_max_position
 
     # Extract trap density / full well
-    trap_densities_2d = load_image(trap_densities)[
-        : detector.geometry.row, : detector.geometry.col
-    ]  # type: np.ndarray
-    trap_densities_2d[np.where(trap_densities_2d < 0)] = 0
-
+    trap_densities_2d = load_cropped_and_aligned_image(
+        shape=shape,
+        filename=trap_densities_filename,
+        position_x=densities_position_x,
+        position_y=densities_position_y,
+        align=trap_densities_align,
+        allow_smaller_array=False,
+    )
     # Extract the max amount of trap by long soak
-    trap_max_2d = load_image(trap_max)[: detector.geometry.row, : detector.geometry.col]
+    trap_max_2d = load_cropped_and_aligned_image(
+        shape=shape,
+        filename=trap_max_filename,
+        position_x=max_position_x,
+        position_y=max_position_y,
+        align=trap_max_align,
+        allow_smaller_array=False,
+    )
+
+    trap_densities_2d[np.where(trap_densities_2d < 0)] = 0
     trap_max_2d[np.where(trap_max_2d < 0)] = 0
 
     if not detector.has_persistence():
@@ -398,7 +443,7 @@ def optimized_persistence(
     detector.persistence.trapped_charge_array = new_all_trapped_charge
 
 
-@numba.njit
+@numba.njit(fastmath=True)
 def compute_persistence(
     pixel_array: np.ndarray,
     all_trapped_charge: np.ndarray,
@@ -407,7 +452,23 @@ def compute_persistence(
     trap_densities_2d: np.ndarray,
     trap_max_2d: np.ndarray,
     delta_t: float,
-):
+) -> t.Tuple[np.ndarray, np.ndarray]:
+    """
+
+    Parameters
+    ----------
+    pixel_array
+    all_trapped_charge
+    trap_proportions
+    trap_time_constants
+    trap_densities_2d
+    trap_max_2d
+    delta_t
+
+    Returns
+    -------
+
+    """
     for i in range(all_trapped_charge.shape[0]):
         # Select the trapped charges array
         trapped_charge = all_trapped_charge[i]
@@ -431,11 +492,8 @@ def compute_persistence(
         )
 
         # When the amount of trapped charges is superior to the maximum of available traps, set to max
-        trapped_charge[np.where(trapped_charge > fw_trap)] = max_charges[
-            np.where(trapped_charge > fw_trap)
-        ]
         # Can't have a negative amount of charges trapped
-        trapped_charge[np.where(trapped_charge < 0)] = 0
+        trapped_charge = clip_between_zero_and_max(array=trapped_charge, max_2d=fw_trap)
 
         # Remove the trapped charges from the pixel
         # detector.pixel.array -= trapped_charges.astype(np.int32)
@@ -444,3 +502,26 @@ def compute_persistence(
         all_trapped_charge[i] = trapped_charge
 
     return pixel_array, all_trapped_charge
+
+
+@numba.njit(fastmath=True)
+def clip_between_zero_and_max(array: np.ndarray, max_2d: np.ndarray) -> np.ndarray:
+    """Clip input array between 0 and array of maximum values.
+
+    Parameters
+    ----------
+    array: ndarray
+    max_2d: ndarray
+
+    Returns
+    -------
+    ndarray
+    """
+    n, m = array.shape
+    for i in range(n):
+        for j in range(m):
+            if array[i, j] > max_2d[i, j]:
+                array[i, j] = max_2d[i, j]
+            if array[i, j] < 0:
+                array[i, j] = 0
+    return array

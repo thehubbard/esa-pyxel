@@ -287,15 +287,15 @@ class Detector:
 
     def has_persistence(self) -> bool:
         """TBW."""
-        if not self._persistence:
-            return False
-        else:
+        if self._persistence is not None:
             return True
+        else:
+            return False
 
     @property
     def persistence(self) -> Persistence:
         """TBW."""
-        if self.has_persistence():
+        if self._persistence is not None:
             return self._persistence
         else:
             raise RuntimeError("'persistence' not initialized.")
