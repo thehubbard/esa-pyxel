@@ -86,7 +86,7 @@ Dead time filter
 
 This model applies only for the :py:class:`~pyxel.detectors.MKID` detector.
 
-More information on the underlying physics can be found in :cite:p:`PhysRevB.104.L180506`; or, more in general, on the website :cite:p:`Mazin`.
+The underlying physics of this model is described in :cite:p:`PhysRevB.104.L180506`; more information can be found on the website :cite:p:`Mazin`.
 
 Example of the configuration file:
 
