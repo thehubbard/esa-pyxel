@@ -84,7 +84,7 @@ Example of the configuration file:
 Dead time filter
 ================
 
-This model applies only for the :py:class:`~pyxel.detectors.MKID` detector.
+This model only applies to the :py:class:`~pyxel.detectors.MKID` detector.
 
 The underlying physics of this model is described in :cite:p:`PhysRevB.104.L180506`; more information can be found on the website :cite:p:`Mazin`.
 
