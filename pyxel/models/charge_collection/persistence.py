@@ -469,27 +469,23 @@ def compute_persistence(
     -------
 
     """
-    for i in range(all_trapped_charge.shape[0]):
-        # Select the trapped charges array
-        trapped_charge = all_trapped_charge[i]
+    for i, trapped_charge in enumerate(all_trapped_charge):
 
         # Computer trapped charge for this increment of time
         # Time factor is the integration time divided by the time constant (1, 10, 100, 1000, 10000)
         time_factor = delta_t / trap_time_constants[i]
 
         # Amount of charges trapped per unit of full well
-        max_charges = trap_densities_2d * trap_proportions[i]
+        densities = trap_densities_2d * trap_proportions[i]
 
         # Maximum of amount of charges trapped
         fw_trap = trap_max_2d * trap_proportions[i]
 
-        diff = time_factor * (
-            max_charges * pixel_array * np.exp(-time_factor) - trapped_charge
-        )
         # Compute trapped charges
-        trapped_charge = trapped_charge + time_factor * (
-            max_charges * pixel_array * np.exp(-time_factor) - trapped_charge
+        diff = time_factor * (
+            densities * pixel_array * np.exp(-time_factor) - trapped_charge
         )
+        trapped_charge += diff
 
         # When the amount of trapped charges is superior to the maximum of available traps, set to max
         # Can't have a negative amount of charges trapped
