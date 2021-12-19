@@ -86,7 +86,7 @@ Dead time filter
 
 This model applies only for the :py:class:`~pyxel.detectors.MKID` detector.
 
-More information in :cite:p:`2020:prodhomme` section 3.3.1.
+More information on the underlying physics can be found in :cite:p:`PhysRevB.104.L180506`; or, more in general, on the website :cite:p:`Mazin`.
 
 Example of the configuration file:
 
@@ -98,7 +98,7 @@ Example of the configuration file:
       arguments:
         dead_time: 1.0
 
-.. note:: This model is specific for the MKID detector.
+.. note:: This model is specific to the MKID detector.
 
 .. autofunction:: dead_time_filter
 
