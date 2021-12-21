@@ -39,16 +39,47 @@ def exposure_mode(
 ) -> xr.Dataset:
     """Run an 'exposure' pipeline.
 
+    For more information, see :ref:`exposure_mode`.
+
     Parameters
     ----------
-    random_seed: int, optional
     exposure: Exposure
     detector: Detector
     pipeline: DetectionPipeline
 
     Returns
     -------
-    None
+    Dataset
+        An multi-dimensional array database from `xarray <https://xarray.pydata.org>`_.
+
+    Examples
+    --------
+
+    Load a configuration file
+
+    >>> import pyxel
+    >>> config = pyxel.load("configuration.yaml")
+    >>> config
+    Configuration(...)
+
+    Run an exposure pipeline
+
+    >>> dataset = pyxel.exposure_mode(
+    ...     exposure=config.exposure,
+    ...     detector=config.detector,
+    ...     pipeline=config.pipeline,
+    ... )
+    >>> dataset
+    <xarray.Dataset>
+    Dimensions:       (readout_time: 1, y: 450, x: 450)
+    Coordinates:
+      * readout_time  (readout_time) int64 1
+      * y             (y) int64 0 1 2 3 4 5 6 7 ... 442 443 444 445 446 447 448 449
+      * x             (x) int64 0 1 2 3 4 5 6 7 ... 442 443 444 445 446 447 448 449
+    Data variables:
+        image         (readout_time, y, x) uint16 9475 9089 8912 ... 9226 9584 10079
+        signal        (readout_time, y, x) float64 3.159 3.03 2.971 ... 3.195 3.36
+        pixel         (readout_time, y, x) float64 1.053e+03 1.01e+03 ... 1.12e+03
     """
 
     logging.info("Mode: Exposure")
@@ -76,7 +107,6 @@ def observation_mode(
 
     Parameters
     ----------
-    random_seed: int, optional
     observation: Observation
     detector: Detector
     pipeline: DetectionPipeline
@@ -115,7 +145,6 @@ def calibration_mode(
 
     Parameters
     ----------
-    random_seed: int, optional
     calibration: Calibration
     detector: Detector
     pipeline: DetectionPipeline
