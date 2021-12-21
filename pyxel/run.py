@@ -166,6 +166,8 @@ def calibration_mode(
 ) -> t.Tuple[xr.Dataset, pd.DataFrame, pd.DataFrame, t.Sequence]:
     """Run a 'calibration' pipeline.
 
+    For more information, see :ref:`calibration_mode`.
+
     Parameters
     ----------
     calibration: Calibration
@@ -175,7 +177,74 @@ def calibration_mode(
 
     Returns
     -------
-    tuple of ``Dataset``, ``DataFrame``, ``DataFrame``, ``Sequence``
+    tuple of Dataset, DataFrame, DataFrame, Sequence
+
+    Examples
+    --------
+
+    Load a configuration file
+
+    >>> import pyxel
+    >>> config = pyxel.load("configuration.yaml")
+    >>> config
+    Configuration(...)
+
+    Run a calibration pipeline
+
+    >>> ds, processors, logs, filenames = pyxel.calibration_mode(
+    ...     exposure=config.exposure,
+    ...     detector=config.detector,
+    ...     pipeline=config.pipeline,
+    ... )
+
+    >>> ds
+    <xarray.Dataset>
+    Dimensions:              (island: 2, evolution: 2, param_id: 4, id_processor: 1, readout_time: 1, y: 100, x: 100)
+    Coordinates:
+      * island               (island) int64 0 1
+      * evolution            (evolution) int64 0 1
+      * id_processor         (id_processor) int64 0
+      * readout_time         (readout_time) int64 1
+      * y                    (y) int64 0 1 2 3 4 5 6 7 8 ... 92 93 94 95 96 97 98 99
+      * x                    (x) int64 0 1 2 3 4 5 6 7 8 ... 92 93 94 95 96 97 98 99
+      * param_id             (param_id) int64 0 1 2 3
+    Data variables:
+        champion_fitness     (evolution, island) float64 4.759e+06 ... 4.533e+06
+        champion_decision    (evolution, island, param_id) float64 0.08016 ... 7....
+        champion_parameters  (evolution, island, param_id) float64 0.08016 ... 7....
+        simulated_image      (island, id_processor, readout_time, y, x) uint16 48...
+        simulated_signal     (island, id_processor, readout_time, y, x) float64 4...
+        simulated_pixel      (island, id_processor, readout_time, y, x) float64 6...
+        target               (id_processor, y, x) >f8 4.834e+03 ... 4.865e+03
+    Attributes:
+        num_islands:      2
+        population_size:  20
+        num_evolutions:   2
+        generations:      5
+        topology:         unconnected
+        result_type:      ResultType.Image
+
+    >>> processors
+           island  id_processor                                          processor
+    0       0             0  Delayed('apply_parameters-c5da1649-766f-4ecb-a...
+    1       1             0  Delayed('apply_parameters-c16f998f-f52f-4beb-b...
+
+    >>> logs
+        num_generations  ...  global_num_generations
+    0                 1  ...                       1
+    1                 2  ...                       2
+    2                 3  ...                       3
+    3                 4  ...                       4
+    4                 5  ...                       5
+    ..              ...  ...                     ...
+    15                1  ...                       6
+    16                2  ...                       7
+    17                3  ...                       8
+    18                4  ...                       9
+    19                5  ...                      10
+
+    >>> filenames
+    []
     """
     logging.info("Mode: Calibration")
 

@@ -84,8 +84,12 @@ napoleon_type_aliases = {
     "Calibration": "~pyxel.calibration.Calibration",
     # Objects related to a pipeline
     "DetectionPipeline": "~pyxel.pipelines.DetectionPipeline",
+    # General terms,
+    "Sequence": ":term:`sequence`",
     # XArray
     "Dataset": "~xarray.Dataset",
+    # Pandas
+    "DataFrame": "~pandas.DataFrame",
 }
 
 autodoc_member_order = "bysource"
