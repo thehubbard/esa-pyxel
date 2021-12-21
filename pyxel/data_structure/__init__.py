@@ -15,4 +15,4 @@ from .signal import Signal
 from .charge import Charge
 from .image import Image
 from .phase import Phase
-from .persistence import Persistence
+from .persistence import Persistence, SimplePersistence
