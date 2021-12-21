@@ -86,6 +86,7 @@ napoleon_type_aliases = {
     "DetectionPipeline": "~pyxel.pipelines.DetectionPipeline",
     # General terms,
     "Sequence": ":term:`sequence`",
+    "Path": ":py:class:`Path <pathlib.Path>`",
     # XArray
     "Dataset": "~xarray.Dataset",
     # Pandas

@@ -331,12 +331,19 @@ def output_directory(configuration: Configuration) -> Path:
 def run(
     input_filename: t.Union[str, Path], random_seed: t.Optional[int] = None
 ) -> None:
-    """Run a configuration file.
+    """Run a YAML configuration file.
+
+    For more information, see :ref:`running_modes`.
 
     Parameters
     ----------
-    input_filename : str or ``Path``
+    input_filename : str or Path
     random_seed : int, optional
+
+    Examples
+    --------
+    >>> import pyxel
+    >>> pyxel.run("configuration.yaml")
     """
     logging.info("Pyxel version %s", version)
     logging.info("Pipeline started.")
