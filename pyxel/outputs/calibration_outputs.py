@@ -87,12 +87,8 @@ class CalibrationOutputs(Outputs):
 
         Parameters
         ----------
-        dataset: xr.Dataset
-        logs: pd.DataFrame
-
-        Returns
-        -------
-        None
+        dataset: Dataset
+        logs: DataFrame
         """
 
         save_methods = {"nc": self.save_to_netcdf}  # type: t.Dict[str, SaveToFile]

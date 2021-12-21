@@ -91,6 +91,11 @@ napoleon_type_aliases = {
     "Dataset": "~xarray.Dataset",
     # Pandas
     "DataFrame": "~pandas.DataFrame",
+    # Numpy
+    "ndarray": "~numpy.ndarray",
+    # Holoviews
+    "hv.Points": "~holoviews.element.Points",
+    "hv.Layout": "~holoviews.core.Layout",
 }
 
 autodoc_member_order = "bysource"
@@ -233,6 +238,7 @@ intersphinx_mapping = {
     # "cftime": ("https://unidata.github.io/cftime", None),
     # "rasterio": ("https://rasterio.readthedocs.io/en/latest", None),
     "xarray": ("https://xarray.pydata.org/en/stable/", None),
+    "holoviews": ("https://holoviews.org/", None),
 }
 
 

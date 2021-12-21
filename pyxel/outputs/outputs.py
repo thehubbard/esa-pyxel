@@ -235,7 +235,7 @@ class Outputs:
 
         Returns
         -------
-        list of ``Path``
+        list of Path
             TBW.
         """
         save_methods = {
@@ -289,12 +289,12 @@ class Outputs:
 
         Parameters
         ----------
-        data: xr.Dataset
+        data: Dataset
         name: str
 
         Returns
         -------
-        filename: path
+        filename: Path
         """
         name = str(name).replace(".", "_")
         filename = self.output_dir.joinpath(name + ".nc")
