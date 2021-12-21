@@ -53,6 +53,7 @@ extensions = [
     "sphinxcontrib.bibtex",
     "sphinx_panels",
     "sphinx_inline_tabs",  # Add inline tabs
+    "sphinx.ext.intersphinx",  # Link to other project's documentation
 ]
 
 extlinks = {
@@ -83,6 +84,8 @@ napoleon_type_aliases = {
     "Calibration": "~pyxel.calibration.Calibration",
     # Objects related to a pipeline
     "DetectionPipeline": "~pyxel.pipelines.DetectionPipeline",
+    # XArray
+    "Dataset": "~xarray.Dataset",
 }
 
 autodoc_member_order = "bysource"
@@ -130,7 +133,7 @@ language = None
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This patterns also effect to html_static_path and html_extra_path
-exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "**.ipynb_checkpoints"]
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "**.ipynb_checkpointƒs"]
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = "sphinx"
@@ -209,6 +212,23 @@ ogp_custom_meta_tags = [
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = metadata["name"] + "doc"
+
+
+# https://xarray.pydata.org/en/stable/objects.inv
+# Example configuration for intersphinx: refer to the Python standard library.
+intersphinx_mapping = {
+    "python": ("https://docs.python.org/3/", None),
+    "pandas": ("https://pandas.pydata.org/pandas-docs/stable", None),
+    # "iris": ("https://scitools-iris.readthedocs.io/en/latest", None),
+    "numpy": ("https://numpy.org/doc/stable", None),
+    # "scipy": ("https://docs.scipy.org/doc/scipy", None),
+    # "numba": ("https://numba.pydata.org/numba-doc/latest", None),
+    # "matplotlib": ("https://matplotlib.org/stable/", None),
+    "dask": ("https://docs.dask.org/en/latest", None),
+    # "cftime": ("https://unidata.github.io/cftime", None),
+    # "rasterio": ("https://rasterio.readthedocs.io/en/latest", None),
+    "xarray": ("https://xarray.pydata.org/en/stable/", None),
+}
 
 
 # -- Options for LaTeX output ---------------------------------------------
