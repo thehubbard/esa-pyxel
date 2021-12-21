@@ -105,6 +105,8 @@ def observation_mode(
 ) -> "ObservationResult":
     """Run an 'observation' pipeline.
 
+    For more information, see :ref:`observation_mode`.
+
     Parameters
     ----------
     observation: Observation
@@ -113,9 +115,30 @@ def observation_mode(
 
     Returns
     -------
-    result: ObservationResult
+    ObservationResult
+        Result.
+
+    Examples
+    --------
+
+    Load a configuration file
+
+    >>> import pyxel
+    >>> config = pyxel.load("configuration.yaml")
+    >>> config
+    Configuration(...)
+
+    Run an observation pipeline
+
+    >>> result = pyxel.observation_mode(
+    ...     exposure=config.exposure,
+    ...     detector=config.detector,
+    ...     pipeline=config.pipeline,
+    ... )
+    >>> result
+    ObservationResult(...)
     """
-    logging.info("Mode: Parametric")
+    logging.info("Mode: Observation")
 
     observation_outputs = observation.outputs  # type: ObservationOutputs
     detector.set_output_dir(observation_outputs.output_dir)  # TODO: Remove this
