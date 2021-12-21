@@ -54,7 +54,6 @@ def exposure_mode(
 
     Examples
     --------
-
     Load a configuration file
 
     >>> import pyxel
@@ -120,7 +119,6 @@ def observation_mode(
 
     Examples
     --------
-
     Load a configuration file
 
     >>> import pyxel
@@ -181,7 +179,6 @@ def calibration_mode(
 
     Examples
     --------
-
     Load a configuration file
 
     >>> import pyxel

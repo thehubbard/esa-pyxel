@@ -87,7 +87,7 @@ def fit_into_array(
     array: ndarray
     output_shape: tuple
     relative_position: tuple
-    align: Literal, optional
+    align: {'center', 'top_left', 'top_right', 'bottom_left', 'bottom_right'}, default: None
     allow_smaller_array: bool
 
     Returns
