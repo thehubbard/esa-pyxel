@@ -23,10 +23,6 @@ def download_examples(foldername: str = "pyxel-examples", force: bool = False) -
     ----------
     foldername: str
     force: bool
-
-    Returns
-    -------
-    None
     """
 
     if isdir(foldername) and not force:

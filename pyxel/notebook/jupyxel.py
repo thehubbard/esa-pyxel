@@ -34,12 +34,8 @@ def display_config(configuration: "Configuration", only: str = "all") -> None:
 
     Parameters
     ----------
-    cfg: dict
+    cfg: Configuration
     only: str
-
-    Returns
-    -------
-    None
     """
     cfg = configuration.__dict__  # type: dict
     for key in cfg:
@@ -67,10 +63,6 @@ def display_dict(cfg: dict) -> None:
     Parameters
     ----------
     cfg: dict
-
-    Returns
-    -------
-    None
     """
     for key in cfg:
         display(Markdown(f"#### <font color=#0088FF> {key} </font>"))
@@ -88,10 +80,6 @@ def display_model(configuration: "Configuration", model_name: str) -> None:
     ----------
     pipeline_container: Processor or dict
     model_name: str
-
-    Returns
-    -------
-    None
     """
 
     pipeline = configuration.pipeline  # type: DetectionPipeline
@@ -112,10 +100,6 @@ def change_modelparam(
     model_name: str
     argument:str
     changed_value
-
-    Returns
-    -------
-    None
     """
     display(Markdown(f"## <font color=blue> {model_name} </font>"))
     model = processor.pipeline.get_model(name=model_name)  # type: ModelFunction
@@ -131,10 +115,6 @@ def set_modelstate(processor: "Processor", model_name: str, state: bool = True) 
     processor: Processor
     model_name: str
     state: bool
-
-    Returns
-    -------
-    None
     """
     display(Markdown(f"## <font color=blue> {model_name} </font>"))
     model = processor.pipeline.get_model(name=model_name)  # type: ModelFunction
@@ -146,7 +126,7 @@ def set_modelstate(processor: "Processor", model_name: str, state: bool = True) 
 # These method are used to display the detector object (all of the array Photon, pixel, signal and image)
 
 
-def display_detector(detector: "Detector") -> t.Union["Layout"]:
+def display_detector(detector: "Detector") -> "Layout":
     """Display detector interactively.
 
     Parameters
@@ -156,7 +136,7 @@ def display_detector(detector: "Detector") -> t.Union["Layout"]:
 
     Returns
     -------
-    out
+    hv.Layout
         A Holoviews object.
     """
 
@@ -220,10 +200,6 @@ def display_array(data: np.ndarray, axes: t.List[plt.axes], **kwargs: str) -> No
         A 2D np.array.
     axes: list
         A list of two axes in a figure.
-
-    Returns
-    -------
-    None
     """
     mini = np.nanpercentile(data, 1)
     maxi = np.nanpercentile(data, 99)
@@ -284,10 +260,6 @@ def display_persist(persist_dict: dict, vmin: int = 1, vmax: int = 99) -> None:
     Parameters
     ----------
     persist_dict: dict
-
-    Returns
-    -------
-    None
     """
     trapped_charges = [trapmap for trapmap in persist_dict.values()]
 

@@ -60,11 +60,7 @@ class ExposureOutputs(Outputs):
 
         Parameters
         ----------
-        dataset: xr.Dataset
-
-        Returns
-        -------
-        None
+        dataset: Dataset
         """
 
         save_methods = {"nc": self.save_to_netcdf}  # type: t.Dict[str, SaveToFile]

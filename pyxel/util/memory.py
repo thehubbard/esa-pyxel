@@ -71,7 +71,7 @@ def memory_usage_details(
 
     Raises
     ------
-    Value Error
+    ValueError
         When no attributes provided.
     AttributeError
         Attribute does not exist in the object.

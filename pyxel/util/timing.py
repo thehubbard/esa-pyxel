@@ -52,12 +52,12 @@ def time_pipeline(detector: "Detector", pipeline: "DetectionPipeline") -> pd.Dat
 
     Parameters
     ----------
-    detector
-    pipeline
+    detector : Detector
+    pipeline : DetectionPipeline
 
     Returns
     -------
-    df: pd.DataFrame
+    df: DataFrame
     """
 
     times = []

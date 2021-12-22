@@ -146,7 +146,7 @@ def display_simulated(ds: xr.Dataset) -> hv.Layout:
 
     Parameters
     ----------
-    ds: xr.Dataset
+    ds: Dataset
         Result dataset.
 
     Returns
@@ -313,7 +313,7 @@ def display_evolution(ds: xr.Dataset) -> hv.Layout:
 
     Parameters
     ----------
-    ds: xr.Dataset
+    ds: Dataset
         Result dataset.
 
     Returns
@@ -349,12 +349,12 @@ def optimal_parameters(ds: xr.Dataset) -> pd.DataFrame:
 
     Parameters
     ----------
-    ds: xr.Dataset
+    ds: Dataset
         Result dataset.
 
     Returns
     -------
-    best: pd.DataFrame
+    best: DataFrame
         Best champion parameters
     """
 
@@ -378,9 +378,9 @@ def champion_heatmap(
 
     Parameters
     ----------
-    ds: xr.Dataset
+    ds: Dataset
         Result dataset.
-    num_bins
+    num_bins: int
         Number of bins, default is 100.
     logx: bool
         Logarithmic x axis.

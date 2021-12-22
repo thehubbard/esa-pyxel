@@ -70,11 +70,11 @@ class Exposure:
 
         Parameters
         ----------
-        processor
+        processor : Processor
 
         Returns
         -------
-        result_dataset: xarrray.Dataset
+        Dataset
         """
         if self.readout._num_steps == 1:
             progressbar = False

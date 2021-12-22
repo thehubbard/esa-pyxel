@@ -285,7 +285,7 @@ class Observation:
         Returns
         -------
         processors: list
-        final_logs: xr.Dataset
+        final_logs: Dataset
         """
         processors = []
         logs = []  # type: t.List[xr.Dataset]
@@ -779,7 +779,7 @@ def log_parameters(processor_id: int, parameter_dict: dict) -> xr.Dataset:
 
     Returns
     -------
-    out: xr.Dataset
+    out: Dataset
     """
     out = xr.Dataset()
     for key, value in parameter_dict.items():
@@ -803,7 +803,7 @@ def parameter_to_dataset(
 
     Returns
     -------
-    parameter_ds: xr.Dataset
+    parameter_ds: Dataset
     """
 
     parameter_ds = xr.Dataset()
@@ -820,12 +820,12 @@ def _add_custom_parameters(ds: xr.Dataset, index: int) -> xr.Dataset:
 
     Parameters
     ----------
-    ds: xarray.Dataset
-    index: ind
+    ds: Dataset
+    index: int
 
     Returns
     -------
-    ds: xr.Dataset
+    ds: Dataset
     """
 
     ds = ds.assign_coords({"id": index})
@@ -845,7 +845,7 @@ def _add_sequential_parameters(
 
     Parameters
     ----------
-    ds: xr.Dataset
+    ds: Dataset
     parameter_dict: dict
     index: int
     coordinate_name: str
@@ -853,7 +853,7 @@ def _add_sequential_parameters(
 
     Returns
     -------
-    ds: xr.Dataset
+    ds: Dataset
     """
 
     #  assigning the right coordinates based on type
@@ -877,14 +877,14 @@ def _add_product_parameters(
 
     Parameters
     ----------
-    ds: xr.Dataset
+    ds: Dataset
     parameter_dict: dict
     indices: tuple
     types: dict
 
     Returns
     -------
-    ds: xr.Dataset
+    ds: Dataset
     """
 
     for i, coordinate in enumerate(parameter_dict):

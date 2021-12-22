@@ -15,6 +15,8 @@ Documentation
   (See `!388 <https://gitlab.com/esa/pyxel/-/merge_requests/388>`_).
 * Fix links for 'suggest_edit' button in the documentation.
   (See `!389 <https://gitlab.com/esa/pyxel/-/merge_requests/389>`_).
+* Add better documentation for running modes..
+  (See `!390 <https://gitlab.com/esa/pyxel/-/merge_requests/390>`_).
 
 Models
 ~~~~~~

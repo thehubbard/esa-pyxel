@@ -53,6 +53,7 @@ extensions = [
     "sphinxcontrib.bibtex",
     "sphinx_panels",
     "sphinx_inline_tabs",  # Add inline tabs
+    "sphinx.ext.intersphinx",  # Link to other project's documentation
 ]
 
 extlinks = {
@@ -83,6 +84,18 @@ napoleon_type_aliases = {
     "Calibration": "~pyxel.calibration.Calibration",
     # Objects related to a pipeline
     "DetectionPipeline": "~pyxel.pipelines.DetectionPipeline",
+    # General terms,
+    "Sequence": ":term:`sequence`",
+    "Path": ":py:class:`Path <pathlib.Path>`",
+    # XArray
+    "Dataset": "~xarray.Dataset",
+    # Pandas
+    "DataFrame": "~pandas.DataFrame",
+    # Numpy
+    "ndarray": "~numpy.ndarray",
+    # Holoviews
+    "hv.Points": "~holoviews.element.Points",
+    "hv.Layout": "~holoviews.core.Layout",
 }
 
 autodoc_member_order = "bysource"
@@ -209,6 +222,24 @@ ogp_custom_meta_tags = [
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = metadata["name"] + "doc"
+
+
+# https://xarray.pydata.org/en/stable/objects.inv
+# Example configuration for intersphinx: refer to the Python standard library.
+intersphinx_mapping = {
+    "python": ("https://docs.python.org/3/", None),
+    "pandas": ("https://pandas.pydata.org/pandas-docs/stable", None),
+    # "iris": ("https://scitools-iris.readthedocs.io/en/latest", None),
+    "numpy": ("https://numpy.org/doc/stable", None),
+    # "scipy": ("https://docs.scipy.org/doc/scipy", None),
+    # "numba": ("https://numba.pydata.org/numba-doc/latest", None),
+    # "matplotlib": ("https://matplotlib.org/stable/", None),
+    "dask": ("https://docs.dask.org/en/latest", None),
+    # "cftime": ("https://unidata.github.io/cftime", None),
+    # "rasterio": ("https://rasterio.readthedocs.io/en/latest", None),
+    "xarray": ("https://xarray.pydata.org/en/stable/", None),
+    "holoviews": ("https://holoviews.org/", None),
+}
 
 
 # -- Options for LaTeX output ---------------------------------------------
