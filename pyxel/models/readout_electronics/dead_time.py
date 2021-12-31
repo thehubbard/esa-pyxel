@@ -44,11 +44,23 @@ def dead_time_filter(detector: MKID, dead_time: float) -> None:
     # Validation phase
     if not isinstance(detector, MKID):
         # Later, this will be checked in when YAML configuration file is parsed
-        raise TypeError("Expecting a `MKID` object for 'detector'.")
+        raise TypeError("Expecting an `MKID` object for 'detector'.")
 
     if dead_time <= 0.0:
         raise ValueError("'dead_time' must be strictly positive.")
 
+    char = detector.characteristics
+
+    k_B: float = 8.617333262145 * 1.e-5  # [eV K^-1]
+
+    Delta = 1.76 * k_B * char.T_c
+    N_qp = 2. * char.V * char.N_0 * np.sqrt(2. * np.pi * k_B * char.T_op * Delta) * np.exp(- Delta / (k_B * char.T_op))
+    R = char.tau_0 * char.N_0 * (k_B * char.T_c) ** 3 / (2. * Delta ** 2)
+    
+    tau_qp = char.V / (R * N_qp)
+    tau_apparent_sat = 1. / (2. / (tau_qp * (1. + (char.tau_esc / char.tau_pb))) + (1. / char.tau_sat))
+    dead_time = tau_apparent_sat
+    
     phase_2d = apply_dead_time_filter(
         phase_2d=detector.phase.array,
         maximum_count=1.0 / dead_time,
