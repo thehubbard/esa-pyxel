@@ -41,13 +41,19 @@ def dead_time_filter(detector: MKID, dead_time: float) -> None:
         Pyxel Detector MKID object.
     dead_time : float
 
-    Delta : superconducting gap energy
-    N_qp : number of quasiparticles in a superconducting volume V
-    R : recombination constant
+    Delta : float
+        Superconducting gap energy
+    N_qp : float
+        Number of quasi-particles
+    R : float
+        Recombination constant
 
-    tau_qp : intrinsic quasiparticle lifetime
-    tau_apparent : apparent quasiparticle lifetime, without the saturation lifetime
-    tau_apparent_sat : apparent quasiparticle lifetime, including the saturation lifetime
+    tau_qp : float
+        Intrinsic quasi-particle lifetime
+    tau_apparent : float
+        Apparent quasi-particle lifetime, without saturation lifetime
+    tau_apparent_sat : float
+        Apparent quasi-particle lifetime, including saturation lifetime
     """
     # Validation phase
     if not isinstance(detector, MKID):
