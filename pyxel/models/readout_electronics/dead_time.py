@@ -58,6 +58,7 @@ def dead_time_filter(detector: MKID, dead_time: float) -> None:
     R = char.tau_0 * char.N_0 * (k_B * char.T_c) ** 3 / (2. * Delta ** 2)
     
     tau_qp = char.V / (R * N_qp)
+    # tau_apparent = 1. / (2. / (tau_qp * (1. + (char.tau_esc / char.tau_pb))))
     tau_apparent_sat = 1. / (2. / (tau_qp * (1. + (char.tau_esc / char.tau_pb))) + (1. / char.tau_sat))
     dead_time = tau_apparent_sat
     
