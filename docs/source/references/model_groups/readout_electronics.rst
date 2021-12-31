@@ -86,6 +86,8 @@ Dead time filter
 
 This model only applies to the :py:class:`~pyxel.detectors.MKID` detector.
 
+There is a maximum limit to the achievable count rate, which is inversely proportional to the minimum distance in time between distinguishable pulse profiles: the so-called “dead time”, which is fundamentally determined by the recombination time of quasi-particles re-forming Cooper pairs.
+
 The underlying physics of this model is described in :cite:p:`PhysRevB.104.L180506`; more information can be found on the website :cite:p:`Mazin`.
 
 Example of the configuration file:
