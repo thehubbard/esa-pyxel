@@ -30,6 +30,16 @@ class MKIDCharacteristics(Characteristics):
         vreset: float = 0.25,  # unit: V
         biasgate: float = 2.3,  # unit: V
         preampref: float = 1.7,  # unit: V
+        tau_0: float = 4.4 * 1.e-7,  # [s] (material-dependent)
+        N_0: float = 1.72 * 1.e10,  # [um^-3 eV^-1] (material-dependent)
+        T_c: float = 1.26,  # [K] (material-dependent)
+        V: float = 30.,  # [um^3]
+        T_op: float = 0.3,  # [K]
+        tau_pb: float = 2.8 * 1.e-10,  # [s]
+        tau_esc: float = 1.4 * 1.e-10,  # [s]
+        tau_sat: float = 1.e-3,  # [s]
+        
+        # For the characteristics of aluminium, see "Strong Reduction of Quasiparticle Fluctuations in a Superconductor due to Decoupling of the Quasiparticle Number and Lifetime", De Rooij et al. (2021).
     ):
         """Create an instance of `MKIDCharacteristics`.
 

@@ -53,6 +53,8 @@ def dead_time_filter(detector: MKID, dead_time: float) -> None:
 
     k_B: float = 8.617333262145 * 1.e-5  # [eV K^-1]
 
+    # Cf. "Strong Reduction of Quasiparticle Fluctuations in a Superconductor due to Decoupling of the Quasiparticle Number and Lifetime", De Rooij et al. (2021).
+
     Delta = 1.76 * k_B * char.T_c
     N_qp = 2. * char.V * char.N_0 * np.sqrt(2. * np.pi * k_B * char.T_op * Delta) * np.exp(- Delta / (k_B * char.T_op))
     R = char.tau_0 * char.N_0 * (k_B * char.T_c) ** 3 / (2. * Delta ** 2)
