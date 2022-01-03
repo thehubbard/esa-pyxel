@@ -10,7 +10,43 @@ from pyxel.detectors import Characteristics
 
 
 class MKIDCharacteristics(Characteristics):
-    """Characteristical attributes of a MKID-based detector."""
+    """Characteristical attributes of a MKID-based detector.
+
+    Parameters
+    ----------
+    cutoff : float
+        Cutoff wavelength. Unit: um
+    vbiaspower : float
+        VBIASPOWER. Unit: V
+    dsub : float
+        DSUB. Unit: V
+    vreset : float
+        VRESET. Unit: V
+    biasgate : float
+        BIASGATE. Unit: V
+    preampref : float
+        PREAMPREF. Unit: V
+    tau_0 : float
+        Material dependent characteristic time for the electron-phonon coupling. Unit: s
+    n_0 : float
+        Material dependent single spin density of states at
+        the Fermi-level. Unit: um^-3 eV^-1
+    t_c : float
+        Material dependent critical temperature. Unit: K
+    v : float
+        Superconducting volume. Unit: um^3
+    t_op : float
+        Temperature. Unit: K
+    tau_pb : float
+        Phonon pair-breaking time. Unit: s
+    tau_esc : float
+        Phonon escape time. Unit: s
+    tau_sat : float
+        Saturation time. Unit: s
+    Notes
+    -----
+    For the characteristics of aluminium, see :cite:p:`PhysRevB.104.L180506`.
+    """
 
     def __init__(
         self,
@@ -20,44 +56,26 @@ class MKIDCharacteristics(Characteristics):
         sv: float = 0.0,
         amp: float = 0.0,
         a1: float = 0.0,
-        a2: float = 1.0,
-        fwc: float = 0,
+        a2: int = 0,
+        fwc: int = 0,
         dt: float = 0.0,
-        # Parameters specific `MKIDCharacteristics`
+        # Parameters specific `CMOSCharacteristics`
         cutoff: float = 2.5,  # unit: um
         vbiaspower: float = 3.35,  # unit: V
         dsub: float = 0.5,  # unit: V
         vreset: float = 0.25,  # unit: V
         biasgate: float = 2.3,  # unit: V
         preampref: float = 1.7,  # unit: V
-        tau_0: float = 4.4 * 1.e-7,  # [s] (material-dependent)
-        N_0: float = 1.72 * 1.e10,  # [um^-3 eV^-1] (material-dependent)
-        T_c: float = 1.26,  # [K] (material-dependent)
-        V: float = 30.,  # [um^3]
-        T_op: float = 0.3,  # [K]
-        tau_pb: float = 2.8 * 1.e-10,  # [s]
-        tau_esc: float = 1.4 * 1.e-10,  # [s]
-        tau_sat: float = 1.e-3,  # [s]
-        
-        # For the characteristics of aluminium, see "Strong Reduction of Quasiparticle Fluctuations in a Superconductor due to Decoupling of the Quasiparticle Number and Lifetime", De Rooij et al. (2021).
+        # Parameters specific `MKIDCharacteristics`
+        tau_0: float = 4.4 * 1.0e-7,  # [s] (material-dependent)
+        n_0: float = 1.72 * 1.0e10,  # [um^-3 eV^-1] (material-dependent)
+        t_c: float = 1.26,  # [K] (material-dependent)
+        v: float = 30.0,  # [um^3]
+        t_op: float = 0.3,  # [K]
+        tau_pb: float = 2.8 * 1.0e-10,  # [s]
+        tau_esc: float = 1.4 * 1.0e-10,  # [s]
+        tau_sat: float = 1.0e-3,  # [s]
     ):
-        """Create an instance of `MKIDCharacteristics`.
-
-        Parameters
-        ----------
-        cutoff: float
-            Cutoff wavelength. Unit: um
-        vbiaspower: float
-            VBIASPOWER. Unit: V
-        dsub: float
-            DSUB. Unit: V
-        vreset: float
-            VRESET. Unit: V
-        biasgate: float
-            BIASGATE. Unit: V
-        preampref: float
-            PREAMPREF. Unit: V
-        """
         if not (1.7 <= cutoff <= 15.0):
             raise ValueError("'cutoff' must be between 1.7 and 15.0.")
 
@@ -83,6 +101,16 @@ class MKIDCharacteristics(Characteristics):
         self._vreset = vreset
         self._biasgate = biasgate
         self._preampref = preampref
+
+        # TODO: validated the following values
+        self._tau_0 = tau_0
+        self._n_0 = n_0
+        self._t_c = t_c
+        self._v = v
+        self._t_op = t_op
+        self._tau_pb = tau_pb
+        self._tau_esc = tau_esc
+        self._tau_sat = tau_sat
 
     @property
     def cutoff(self) -> float:
@@ -161,3 +189,91 @@ class MKIDCharacteristics(Characteristics):
             raise ValueError("'preampref' must be between 0.0 and 4.0.")
 
         self._preampref = value
+
+    @property
+    def tau_0(self) -> float:
+        """Get characteristic time for the electron-phonon coupling."""
+        return self._tau_0
+
+    @tau_0.setter
+    def tau_0(self, value) -> None:
+        """Set characteristic time for the electron-phonon coupling."""
+        # TODO: check if 'value' is valid
+        self._tau_0 = value
+
+    @property
+    def n_0(self) -> float:
+        """Get single spin density of states at the Fermi-level."""
+        return self._n_0
+
+    @n_0.setter
+    def n_0(self, value) -> None:
+        """Set single spin density of states at the Fermi-level."""
+        # TODO: check if 'value' is valid
+        self._n_0 = value
+
+    @property
+    def t_c(self) -> float:
+        """Get critical temperature."""
+        return self._t_c
+
+    @t_c.setter
+    def t_c(self, value) -> None:
+        """Set critical temperature."""
+        # TODO: check if 'value' is valid
+        self._t_c = value
+
+    @property
+    def v(self) -> float:
+        """Get superconducting volume."""
+        return self._v
+
+    @v.setter
+    def v(self, value) -> None:
+        """Set superconducting volume."""
+        # TODO: check if 'value' is valid
+        self._v = value
+
+    @property
+    def t_op(self) -> float:
+        """Get temperature."""
+        return self._t_op
+
+    @t_op.setter
+    def t_op(self, value) -> None:
+        """Set temperature."""
+        # TODO: check if 'value' is valid
+        self._t_op = value
+
+    @property
+    def tau_pb(self) -> float:
+        """Get phonon pair-breaking time."""
+        return self._tau_pb
+
+    @tau_pb.setter
+    def tau_pb(self, value) -> None:
+        """Set phonon pair-breaking time."""
+        # TODO: check if 'value' is valid
+        self._tau_pb = value
+
+    @property
+    def tau_esc(self) -> float:
+        """Get phonon escape time."""
+        return self._tau_esc
+
+    @tau_esc.setter
+    def tau_esc(self, value) -> None:
+        """Set phonon escape time."""
+        # TODO: check if 'value' is valid
+        self._tau_esc = value
+
+    @property
+    def tau_sat(self) -> float:
+        """Get saturation time."""
+        return self._tau_sat
+
+    @tau_sat.setter
+    def tau_sat(self, value) -> None:
+        """Set saturation time."""
+        # TODO: check if 'value' is valid
+        self._tau_sat = value

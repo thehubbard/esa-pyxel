@@ -7,6 +7,8 @@
 
 """TBW."""
 
+import astropy.constants as const
+import astropy.units as u
 import numpy as np
 
 from pyxel.detectors import MKID
@@ -33,7 +35,8 @@ def apply_dead_time_filter(phase_2d: np.ndarray, maximum_count: float) -> np.nda
 def dead_time_filter(detector: MKID, dead_time: float) -> None:
     """Dead time filter.
 
-    The underlying physics of this model is described in :cite:p:`PhysRevB.104.L180506`; more information can be found on the website :cite:p:`Mazin`.
+    The underlying physics of this model is described in :cite:p:`PhysRevB.104.L180506`;
+    more information can be found on the website :cite:p:`Mazin`.
 
     Parameters
     ----------
@@ -65,17 +68,34 @@ def dead_time_filter(detector: MKID, dead_time: float) -> None:
 
     char = detector.characteristics
 
-    k_B: float = 8.617333262145 * 1.e-5  # Boltzmann's constant [eV K^-1]
+    # Boltzmann's constant [eV K^-1]
+    boltzmann_cst: float = const.k_B.to(u.eV / u.K).value
 
-    Delta = 1.76 * k_B * char.T_c
-    N_qp = 2. * char.V * char.N_0 * np.sqrt(2. * np.pi * k_B * char.T_op * Delta) * np.exp(- Delta / (k_B * char.T_op))
-    R = char.tau_0 * char.N_0 * (k_B * char.T_c) ** 3 / (2. * Delta ** 2)
-    
-    tau_qp = char.V / (R * N_qp)
+    # Compute superconducting gap energy
+    delta = 1.76 * boltzmann_cst * char.t_c
+
+    # Compute number of quasiparticles in a superconducting volume V
+    # TODO: check that T << (delta / boltzmann_cst)
+    n_qp = (
+        2.0
+        * char.v
+        * char.n_0
+        * np.sqrt(2.0 * np.pi * boltzmann_cst * char.t_op * delta)
+        * np.exp(-delta / (boltzmann_cst * char.t_op))
+    )
+
+    recombination_cst = (
+        char.tau_0 * char.n_0 * (boltzmann_cst * char.t_c) ** 3 / (2.0 * delta ** 2)
+    )
+
+    # Compute intrinsic quasiparticle lifetime with respect to recombination
+    tau_qp = char.v / (recombination_cst * n_qp)
     # tau_apparent = 1. / (2. / (tau_qp * (1. + (char.tau_esc / char.tau_pb))))
-    tau_apparent_sat = 1. / (2. / (tau_qp * (1. + (char.tau_esc / char.tau_pb))) + (1. / char.tau_sat))
+    tau_apparent_sat = 1.0 / (
+        2.0 / (tau_qp * (1.0 + (char.tau_esc / char.tau_pb))) + (1.0 / char.tau_sat)
+    )
     dead_time = tau_apparent_sat
-    
+
     phase_2d = apply_dead_time_filter(
         phase_2d=detector.phase.array,
         maximum_count=1.0 / dead_time,
