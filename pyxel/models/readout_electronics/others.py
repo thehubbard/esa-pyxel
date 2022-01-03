@@ -41,8 +41,14 @@ def simple_phase_conversion(detector: MKID) -> None:
     ----------
     detector: MKID
         Pyxel MKID detector object.
+
+
+    PC : float
+        Phase conversion factor
     """
     if not isinstance(detector, MKID):
         raise TypeError("Expecting a MKID object for the detector.")
 
-    detector.image.array = detector.phase.array
+    PC = 1.
+
+    detector.image.array = PC * detector.phase.array

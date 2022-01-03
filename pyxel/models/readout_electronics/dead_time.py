@@ -38,7 +38,7 @@ def dead_time_filter(detector: MKID, dead_time: float) -> None:
     Parameters
     ----------
     detector: MKID
-        Pyxel Detector MKID object.
+        Pyxel Detector MKID object
     dead_time : float
 
     Delta : float

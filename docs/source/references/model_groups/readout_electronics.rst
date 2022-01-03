@@ -126,7 +126,7 @@ Simple phase conversion
 =======================
 
 With this model you can convert :py:class:`~pyxel.data_structure.Phase`
-array into :py:class:`~pyxel.data_structure.Image`.
+array into :py:class:`~pyxel.data_structure.Image`, given a hard-coded multiplicative conversion factor.
 
 Example of the configuration file:
 
@@ -136,7 +136,7 @@ Example of the configuration file:
       func: pyxel.models.readout_electronics.simple_phase_conversion
       enabled: true
 
-.. note:: This model is specific for the MKID detector.
+.. note:: This model is specific to the MKID detector.
 
 .. autofunction:: simple_phase_conversion
 
