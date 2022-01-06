@@ -6,8 +6,12 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 #
 #
-import pytest
+import typing as t
+
 import numpy as np
+import pytest
+from typing_extensions import Literal
+
 from pyxel.detectors import (
     CCD,
     CMOS,
@@ -19,8 +23,6 @@ from pyxel.detectors import (
     Material,
 )
 from pyxel.models.charge_transfer import cdm
-import typing as t
-from typing_extensions import Literal
 
 
 @pytest.fixture

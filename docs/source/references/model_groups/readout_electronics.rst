@@ -84,9 +84,11 @@ Example of the configuration file:
 Dead time filter
 ================
 
-This model applies only for the :py:class:`~pyxel.detectors.MKID` detector.
+This model only applies to the :py:class:`~pyxel.detectors.MKID` detector.
 
-More information in :cite:p:`2020:prodhomme` section 3.3.1.
+There is a maximum limit to the achievable count rate, which is inversely proportional to the minimum distance in time between distinguishable pulse profiles: the so-called “dead time”, which is fundamentally determined by the recombination time of quasi-particles re-forming Cooper pairs :cite:p:`2020:prodhomme`.
+
+The underlying physics of this model is described in :cite:p:`PhysRevB.104.L180506`; more information can be found on the website :cite:p:`Mazin`.
 
 Example of the configuration file:
 
@@ -98,7 +100,7 @@ Example of the configuration file:
       arguments:
         dead_time: 1.0
 
-.. note:: This model is specific for the MKID detector.
+.. note:: This model is specific to the MKID detector.
 
 .. autofunction:: dead_time_filter
 
@@ -124,7 +126,7 @@ Simple phase conversion
 =======================
 
 With this model you can convert :py:class:`~pyxel.data_structure.Phase`
-array into :py:class:`~pyxel.data_structure.Image`.
+array into :py:class:`~pyxel.data_structure.Image`, given a hard-coded multiplicative conversion factor.
 
 Example of the configuration file:
 
@@ -134,7 +136,7 @@ Example of the configuration file:
       func: pyxel.models.readout_electronics.simple_phase_conversion
       enabled: true
 
-.. note:: This model is specific for the MKID detector.
+.. note:: This model is specific to the MKID detector.
 
 .. autofunction:: simple_phase_conversion
 

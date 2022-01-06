@@ -111,7 +111,7 @@ def test_dead_time_filter_with_ccd():
         characteristics=CCDCharacteristics(),
     )
 
-    with pytest.raises(TypeError, match="Expecting a `MKID` object for 'detector'"):
+    with pytest.raises(TypeError, match=r"Expecting an `MKID` object for 'detector'"):
         dead_time_filter(detector=detector, dead_time=1.0)
 
 
@@ -130,5 +130,5 @@ def test_dead_time_filter_with_cmos():
         characteristics=CMOSCharacteristics(),
     )
 
-    with pytest.raises(TypeError, match="Expecting a `MKID` object for 'detector'"):
+    with pytest.raises(TypeError, match=r"Expecting an `MKID` object for 'detector'"):
         dead_time_filter(detector=detector, dead_time=1.0)

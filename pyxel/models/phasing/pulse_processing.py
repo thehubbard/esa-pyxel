@@ -59,7 +59,9 @@ def pulse_processing(
     responsivity: float
         Responsivity of the pixel.
     scaling_factor: float
-        TBW.
+        Scaling factor taking into account the missing pieces of superconducting physics,
+        as well as the resonator quality factor, the bias power,
+        the quasi-particle losses, etc.
     """
     if not isinstance(detector, MKID):
         raise TypeError("Expecting a MKID object for the detector.")

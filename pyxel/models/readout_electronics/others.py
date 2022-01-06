@@ -34,15 +34,17 @@ def simple_processing(detector: Detector, gain_adc: t.Optional[float] = None) ->
     detector.image.array = new_image_2d
 
 
-def simple_phase_conversion(detector: MKID) -> None:
+def simple_phase_conversion(detector: MKID, phase_conversion: float = 1.0) -> None:
     """Create an image array from phase array.
 
     Parameters
     ----------
     detector: MKID
         Pyxel MKID detector object.
+    phase_conversion : float
+        Phase conversion factor
     """
     if not isinstance(detector, MKID):
         raise TypeError("Expecting a MKID object for the detector.")
 
-    detector.image.array = detector.phase.array
+    detector.image.array = phase_conversion * detector.phase.array
