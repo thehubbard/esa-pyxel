@@ -75,25 +75,7 @@ def test_apply_dead_time_filter():
 @pytest.mark.parametrize("dead_time", [1.0, 2])
 def test_dead_time_filter(mkid_5x4: MKID, dead_time: float):
     """Test function 'dead_time_filter'."""
-    dead_time_filter(detector=mkid_5x4, dead_time=dead_time)
-
-
-@pytest.mark.parametrize(
-    "dead_time, exp_error, exp_msg",
-    [
-        (0.0, ValueError, "'dead_time' must be strictly positive."),
-        (-1, ValueError, "'dead_time' must be strictly positive."),
-    ],
-)
-def test_dead_time_filter_wrong_dead_time(
-    mkid_5x4: MKID,
-    dead_time,
-    exp_error,
-    exp_msg,
-):
-    """Test model 'dead_time_filter' with bad parameters."""
-    with pytest.raises(exp_error, match=exp_msg):
-        dead_time_filter(detector=mkid_5x4, dead_time=dead_time)
+    dead_time_filter(detector=mkid_5x4)
 
 
 def test_dead_time_filter_with_ccd():
@@ -112,7 +94,7 @@ def test_dead_time_filter_with_ccd():
     )
 
     with pytest.raises(TypeError, match=r"Expecting an `MKID` object for 'detector'"):
-        dead_time_filter(detector=detector, dead_time=1.0)
+        dead_time_filter(detector=detector)
 
 
 def test_dead_time_filter_with_cmos():
@@ -131,4 +113,4 @@ def test_dead_time_filter_with_cmos():
     )
 
     with pytest.raises(TypeError, match=r"Expecting an `MKID` object for 'detector'"):
-        dead_time_filter(detector=detector, dead_time=1.0)
+        dead_time_filter(detector=detector)
