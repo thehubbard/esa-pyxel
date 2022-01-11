@@ -98,7 +98,14 @@ Example of the configuration file:
       func: pyxel.models.readout_electronics.dead_time_filter
       enabled: true
       arguments:
-        dead_time: 1.0
+        tau_0: 4.4e-7
+        n_0: 1.72e10
+        t_c: 1.26
+        v: 30.0
+        t_op: 0.3
+        tau_pb: 2.8e-10
+        tau_esc: 1.4e-10
+        tau_sat: 1.0e-3
 
 .. note:: This model is specific to the MKID detector.
 
