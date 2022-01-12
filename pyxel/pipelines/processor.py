@@ -147,11 +147,7 @@ class Processor:
             if isinstance(value, list):
                 new_value_lst = []  # type: t.List[t.Union[str, Number, np.ndarray]]
                 for val in value:  # type: t.Union[str, Number, np.ndarray]
-                    if val:
-                        new_val = eval_entry(val)
-                    else:
-                        new_val = val
-
+                    new_val = eval_entry(val) if val else val
                     new_value_lst.append(new_val)
 
                 new_value = (
@@ -251,9 +247,7 @@ class Processor:
 
             lst.append(da)
 
-        final_dataset = xr.merge(lst)
-
-        return final_dataset
+        return xr.merge(lst)
 
     @property
     def numbytes(self) -> int:

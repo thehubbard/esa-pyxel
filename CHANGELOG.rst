@@ -17,6 +17,9 @@ Models
 Others
 ~~~~~~
 
+* Small simplification. From `Albern S. <https://gitlab.com/abnsy>`.
+  (See `!395 <https://gitlab.com/esa/pyxel/-/merge_requests/395>`_).
+
 
 version 0.11.7 / 2021-01-07
 ---------------------------

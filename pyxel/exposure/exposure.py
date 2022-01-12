@@ -76,11 +76,7 @@ class Exposure:
         -------
         Dataset
         """
-        if self.readout._num_steps == 1:
-            progressbar = False
-        else:
-            progressbar = True
-
+        progressbar = self.readout._num_steps != 1
         y = range(processor.detector.geometry.row)
         x = range(processor.detector.geometry.col)
         times = self.readout.times
@@ -95,11 +91,9 @@ class Exposure:
             pipeline_seed=self.pipeline_seed,
         )
 
-        result_dataset = processor.result_to_dataset(
+        return processor.result_to_dataset(
             x=x, y=y, times=times, result_type=self.result_type
         )
-
-        return result_dataset
 
 
 def run_exposure_pipeline(
