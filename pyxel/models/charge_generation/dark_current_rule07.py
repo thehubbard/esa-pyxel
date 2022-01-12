@@ -96,7 +96,7 @@ def dark_current_rule07(detector: CMOS, seed: t.Optional[int] = None) -> None:
 
     pitch = geo.pixel_vert_size  # assumes a square pitch
     temperature = detector.environment.temperature
-    cut_off = detector.characteristics.cutoff
+    cut_off = detector.characteristics.cutoff_wavelength
 
     dc = compute_mct_dark_rule07(pitch, temperature, cut_off)
     ne = dc * detector.time_step
