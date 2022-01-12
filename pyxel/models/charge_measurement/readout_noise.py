@@ -132,7 +132,7 @@ def output_node_noise_cmos(
         signal_2d=np.asarray(detector.signal.array, dtype=np.float64),
         readout_noise=readout_noise,
         readout_noise_std=readout_noise_std,
-        charge_readout_sensitivity=detector.characteristics.sv,
+        charge_readout_sensitivity=detector.characteristics.charge_to_volt_conversion,
     )  # type: np.ndarray
 
     detector.signal.array = noise_2d

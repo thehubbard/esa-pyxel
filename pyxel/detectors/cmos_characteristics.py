@@ -15,14 +15,11 @@ class CMOSCharacteristics(Characteristics):
     def __init__(
         self,
         # Parameters for `Characteristics`
-        qe: float = 0.0,
-        eta: float = 0.0,
-        sv: float = 0.0,
-        amp: float = 0.0,
-        a1: float = 0.0,
-        a2: float = 1.0,
-        fwc: float = 0,
-        dt: float = 0.0,
+        quantum_efficiency: float = 0.0,
+        charge_to_volt_conversion: float = 0.0,
+        pre_amplification: float = 0.0,
+        analog_to_digital_gain: float = 1.0,
+        full_well_capacity: float = 0,
         # Parameters specific `CMOSCharacteristics`
         cutoff: float = 2.5,  # unit: um
         vbiaspower: float = 3.35,  # unit: V
@@ -66,7 +63,13 @@ class CMOSCharacteristics(Characteristics):
         if not (0.0 <= preampref <= 4.0):
             raise ValueError("'preampref' must be between 0.0 and 4.0.")
 
-        super().__init__(qe=qe, eta=eta, sv=sv, amp=amp, a1=a1, a2=a2, fwc=fwc, dt=dt)
+        super().__init__(
+            quantum_efficiency=quantum_efficiency,
+            charge_to_volt_conversion=charge_to_volt_conversion,
+            pre_amplification=pre_amplification,
+            analog_to_digital_gain=analog_to_digital_gain,
+            full_well_capacity=full_well_capacity,
+        )
         self._cutoff = cutoff
         self._vbiaspower = vbiaspower
         self._dsub = dsub

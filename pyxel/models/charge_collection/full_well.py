@@ -40,7 +40,7 @@ def simple_full_well(detector: Detector, fwc: t.Optional[int] = None) -> None:
     fwc: int
     """
     if fwc is None:
-        fwc_input = detector.characteristics.fwc
+        fwc_input = detector.characteristics.full_well_capacity
     else:
         fwc_input = fwc
 

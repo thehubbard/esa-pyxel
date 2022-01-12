@@ -37,7 +37,7 @@ def ccd_3x3() -> CCD:
 def test_simple_processing_valid(ccd_3x3: CCD, gain_adc: float):
     """Test model 'simple_processing' with valid inputs."""
     detector = ccd_3x3
-    detector.characteristics.a2 = 2.0
+    detector.characteristics.analog_to_digital_gain = 2.0
     detector.signal.array = np.ones((3, 3), dtype=float)
     start = detector.signal.array
     end = start * 2.0

@@ -91,7 +91,7 @@ def cdm(
     """
 
     if full_well_capacity is None:
-        fwc_final = detector.characteristics.fwc
+        fwc_final = detector.characteristics.full_well_capacity
     else:
         fwc_final = full_well_capacity
 
