@@ -71,13 +71,11 @@ ccd_detector:
     temperature: 100
 
   characteristics:
-    qe: 0.5                 # -
-    eta: 0.5                # e/photon
-    sv: 1.0e-6              # V/e
-    amp: 1.                 # V/V
-    a1: 100                 # V/V
-    a2: 65536               # DN/V
-    fwc: 1000000               # e
+    quantum_efficiency: 0.5                 # -
+    charge_to_volt_conversion: 1.0e-6              # V/e
+    pre_amplification: 100                 # V/V
+    adc_gain: 65536               # DN/V
+    full_well_capacity: 1000000               # e
 
 pipeline:
 
