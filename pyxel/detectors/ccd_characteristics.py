@@ -9,25 +9,27 @@
 from pyxel.detectors import Characteristics
 
 
-# TODO: 'svg' should be the full volume and not the half
 class CCDCharacteristics(Characteristics):
     """Characteristical attributes of a CCD detector."""
 
-    def __init__(
-        self,
-        # Parameters for `Characteristics`
-        qe: float = 1.0,  # unit: NA
-        eta: float = 1.0,  # unit: electron/photon
-        sv: float = 1.0,  # unit: volt/electron
-        amp: float = 1.0,  # unit: V/V
-        a1: float = 1.0,  # unit: V/V
-        a2: int = 1,  # unit: adu/V
-        fwc: int = 0,  # unit: electron
-        dt: float = 0.0,  # unit: s
-    ):
-        """Create an instance of `CCDCharacteristics`."""
-        super().__init__(qe=qe, eta=eta, sv=sv, amp=amp, a1=a1, a2=a2, fwc=fwc, dt=dt)
-
-    def __repr__(self) -> str:
-        cls_name = self.__class__.__name__  # type: str
-        return f"{cls_name}"
+    # def __init__(
+    #     self,
+    #     # Parameters for `Characteristics`
+    #     quantum_efficiency: float = 1.0,  # unit: NA
+    #     charge_to_volt_conversion: float = 1.0,  # unit: volt/electron
+    #     pre_amplification: float = 1.0,  # unit: V/V
+    #     adc_gain: int = 1,  # unit: adu/V
+    #     full_well_capacity: int = 0,  # unit: electron
+    # ):
+    #     """Create an instance of `CCDCharacteristics`."""
+    #     super().__init__(
+    #         quantum_efficiency=quantum_efficiency,
+    #         charge_to_volt_conversion=charge_to_volt_conversion,
+    #         pre_amplification=pre_amplification,
+    #         adc_gain=adc_gain,
+    #         full_well_capacity=full_well_capacity,
+    #     )
+    #
+    # def __repr__(self) -> str:
+    #     cls_name = self.__class__.__name__  # type: str
+    #     return f"{cls_name}"

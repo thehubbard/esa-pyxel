@@ -32,13 +32,11 @@ ccd_detector:
     temperature: 300        # K
 
   characteristics:
-    qe:   1.                # -
-    eta:  1.                # e/photon
-    sv:   3.e-6             # V/e
-    amp:  10.               # V/V
-    a1:   100.              # V/V
-    a2:   3000              # DN/V
-    fwc:  2000              # e
+    quantum_efficiency: 1.                 # -
+    charge_to_volt_conversion: 3.0e-6              # V/e
+    pre_amplification: 100                 # V/V
+    adc_gain: 3000               # DN/V
+    full_well_capacity: 2000               # e
 
 pipeline:
 #  # -> photon

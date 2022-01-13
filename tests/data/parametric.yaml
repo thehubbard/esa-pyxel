@@ -57,13 +57,11 @@ ccd_detector:
     total_non_ionising_dose: 8.0e+11     # total non-ionising dose (NIEL)
 
   characteristics:
-    qe: 0.5               # -
-    eta: 1                # e/photon
-    sv: 1.0e-6            # V/e
-    amp: 0.8             # V/V
-    a1: 100               # V/V
-    a2: 65536             # DN/V
-    fwc: 20000            # e
+    quantum_efficiency: 0.5                 # -
+    charge_to_volt_conversion: 1.0e-6              # V/e
+    pre_amplification: 100                 # V/V
+    adc_gain: 65536               # DN/V
+    full_well_capacity: 20000               # e
 
 pipeline:
 

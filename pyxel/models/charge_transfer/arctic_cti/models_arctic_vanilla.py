@@ -158,7 +158,7 @@ def arctic_add(
 
     image_cti_added_2d = compute_arctic_add(
         image_2d=np.asarray(detector.pixel.array, dtype=float),
-        full_well_depth=detector.characteristics.fwc,
+        full_well_depth=detector.characteristics.full_well_capacity,
         well_fill_power=well_fill_power,
         parallel_traps=traps,
         parallel_express=express,
@@ -278,7 +278,7 @@ def arctic_remove(
 
     image_2d_cti_removed = compute_arctic_remove(
         image_2d=np.asarray(detector.pixel.array, dtype=float),
-        full_well_depth=detector.characteristics.fwc,
+        full_well_depth=detector.characteristics.full_well_capacity,
         well_fill_power=well_fill_power,
         parallel_traps=traps,
         parallel_express=express,

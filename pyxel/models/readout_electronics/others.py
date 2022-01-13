@@ -25,7 +25,7 @@ def simple_processing(detector: Detector, gain_adc: t.Optional[float] = None) ->
     """
 
     if gain_adc is None:
-        final_gain = detector.characteristics.a2
+        final_gain = detector.characteristics.adc_gain
     else:
         final_gain = gain_adc
 

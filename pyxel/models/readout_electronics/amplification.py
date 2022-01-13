@@ -14,8 +14,7 @@ from pyxel.detectors import Detector
 
 def apply_amplify(
     signal_2d: np.ndarray,
-    gain_output_amplifier: float,
-    gain_signal_processor: float,
+    amplifier_gain: float,
 ) -> np.ndarray:
     """Apply gain from the output amplifier and signal processor.
 
@@ -23,17 +22,15 @@ def apply_amplify(
     ----------
     signal_2d : ndarray
         2D signal to amplify. Unit: V
-    gain_output_amplifier : float
-        Gain of output amplifier. Unit: V/V
-    gain_signal_processor
-        Gain of the signal processor. Unit: V/V
+    amplifier_gain : float
+        Gain of amplifier. Unit: V/V
 
     Returns
     -------
     ndarray
         2D amplified signal. Unit: V
     """
-    amplified_signal_2d = signal_2d * gain_output_amplifier * gain_signal_processor
+    amplified_signal_2d = signal_2d * amplifier_gain
 
     return amplified_signal_2d
 
@@ -50,8 +47,7 @@ def simple_amplifier(detector: Detector) -> None:
 
     amplified_signal_2d = apply_amplify(
         signal_2d=detector.signal.array,
-        gain_output_amplifier=char.amp,
-        gain_signal_processor=char.a1,
+        amplifier_gain=char.pre_amplification,
     )  # type: np.ndarray
 
     detector.signal.array = amplified_signal_2d

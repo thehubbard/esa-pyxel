@@ -51,7 +51,7 @@ def simple_measurement(detector: Detector, gain: t.Optional[float] = None) -> No
     """
     if gain is None:
         char = detector.characteristics
-        gain = char.sv
+        gain = char.charge_to_volt_conversion
 
     # Compute
     signal_2d = apply_gain(pixel_2d=detector.pixel.array, gain=gain)

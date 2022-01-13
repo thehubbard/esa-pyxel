@@ -121,6 +121,11 @@ Example of the configuration file:
         window_position: [0, 0]   # Optional
         window_size: [100, 100]   # Optional
         option: "elliptic"
+        n_output: 1
+        n_row_overhead: 0
+        n_frame_overhead: 0
+        reverse_scan_direction: False
+        reference_pixel_border_width: 4
 
 .. autofunction:: pyxel.models.charge_measurement.nghxrg
 

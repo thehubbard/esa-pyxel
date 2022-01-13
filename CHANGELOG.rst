@@ -7,6 +7,8 @@ version 1.0 / UNRELEASED-YYYY-MM-DD
 
 Core
 ~~~~
+* Rename detector properties using whole words.
+  (See `!292 <https://gitlab.com/esa/pyxel/-/merge_requests/292>`_).
 
 Documentation
 ~~~~~~~~~~~~~

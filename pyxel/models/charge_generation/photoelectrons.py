@@ -32,20 +32,22 @@ def apply_qe(array: np.ndarray, qe: t.Union[float, np.ndarray]) -> np.ndarray:
     return array * qe
 
 
-def simple_conversion(detector: Detector, qe: t.Optional[float] = None) -> None:
+def simple_conversion(
+    detector: Detector, quantum_efficiency: t.Optional[float] = None
+) -> None:
     """Generate charge from incident photon via photoelectric effect, simple model.
 
     Parameters
     ----------
     detector : Detector
         Pyxel Detector object.
-    qe: float, optional
+    quantum_efficiency: float, optional
         Quantum efficiency.
     """
-    if qe is None:
-        final_qe = detector.characteristics.qe
+    if quantum_efficiency is None:
+        final_qe = detector.characteristics.quantum_efficiency
     else:
-        final_qe = qe
+        final_qe = quantum_efficiency
 
     if not 0 <= final_qe <= 1:
         raise ValueError("Quantum efficiency not between 0 and 1.")

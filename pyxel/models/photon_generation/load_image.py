@@ -40,7 +40,7 @@ def load_image(
     convert_to_photons: bool
         If ``True``, the model converts the values of loaded image array from ADU to
         photon numbers for each pixel using the Photon Transfer Function:
-        :math:`PTF = QE \cdot \eta \cdot S_{v} \cdot amp \cdot a_{1} \cdot a_{2}`.
+        :math:`PTF = QE \cdot charge_to_voltage_conversion \cdot pre_amplification \cdot analog_to_digital_gain`.
     multiplier: float
         Multiply photon array level with a custom number.
     time_scale: float
@@ -64,7 +64,10 @@ def load_image(
     if convert_to_photons:
         cht = detector.characteristics
         photon_array = photon_array / (
-            cht.qe * cht.eta * cht.sv * cht.amp * cht.a1 * cht.a2
+            cht.quantum_efficiency
+            * cht.charge_to_volt_conversion
+            * cht.pre_amplification
+            * cht.adc_gain
         )
     photon_array = photon_array * (detector.time_step / time_scale) * multiplier
 

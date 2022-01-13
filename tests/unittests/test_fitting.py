@@ -297,7 +297,7 @@ def test_custom_fitness(yaml, simulated, target, weighting):
                     100.0,
                 ]
             ),
-            1695462.214625847,
+            88454.49014776475,
         )
     ],
 )
@@ -422,7 +422,7 @@ def test_detector_and_model_update(yaml: str, param_array: np.ndarray):
     assert mf.processor.pipeline.charge_measurement is not None
 
     attributes = [
-        mf.processor.detector.characteristics.amp,
+        mf.processor.detector.characteristics.pre_amplification,
         mf.processor.pipeline.charge_transfer.models[0].arguments["trap_release_times"],
         mf.processor.pipeline.charge_transfer.models[0].arguments["trap_densities"],
         mf.processor.pipeline.charge_transfer.models[0].arguments["sigma"],

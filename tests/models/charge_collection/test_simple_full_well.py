@@ -57,7 +57,7 @@ def test_full_well(
     """Test model 'simple_full_well' with valid inputs."""
 
     detector = ccd_10x10
-    detector.characteristics.fwc = 10
+    detector.characteristics.full_well_capacity = 10
     detector.pixel.array = np.ones((detector.geometry.row, detector.geometry.col)) * 50
 
     simple_full_well(detector=ccd_10x10, fwc=fwc)

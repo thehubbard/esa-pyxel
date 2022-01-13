@@ -94,13 +94,13 @@ def invalid_qe_map_path(
 def test_simple_conversion_valid(ccd_5x5: CCD, qe: float):
 
     detector = ccd_5x5
-    detector.characteristics.qe = 0.5
+    detector.characteristics.quantum_efficiency = 0.5
 
     array = np.ones((5, 5))
     detector.photon.array = array
     target = array * 0.5
 
-    simple_conversion(detector=detector, qe=qe)
+    simple_conversion(detector=detector, quantum_efficiency=qe)
 
     np.testing.assert_array_almost_equal(detector.charge.array, target)
 
@@ -119,7 +119,7 @@ def test_simple_conversion_valid(
 ):
 
     with pytest.raises(exp_exc, match=exp_error):
-        simple_conversion(detector=ccd_5x5, qe=qe)
+        simple_conversion(detector=ccd_5x5, quantum_efficiency=qe)
 
 
 def test_conversion_with_qe_valid(ccd_5x5: CCD, valid_qe_map_path: t.Union[str, Path]):

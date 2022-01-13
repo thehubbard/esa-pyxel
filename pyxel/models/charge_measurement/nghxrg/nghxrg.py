@@ -204,6 +204,11 @@ def nghxrg(
     ],
     window_position: t.Optional[t.Tuple[int, int]] = None,
     window_size: t.Optional[t.Tuple[int, int]] = None,
+    n_output: int = 1,
+    n_row_overhead: int = 0,
+    n_frame_overhead: int = 0,
+    reverse_scan_direction: bool = False,
+    reference_pixel_border_width: int = 4,
     seed: t.Optional[int] = None,  # This parameter is used by '@temporary_random_state'
 ) -> None:
     """Generate fourier noise power spectrum on HXRG detector.
@@ -219,7 +224,33 @@ def nghxrg(
     window_size: t.Sequence, optional
         [x (columns), y (rows)].
     seed: int, optional
+    n_output: int
+        Number of detector outputs.
+    n_row_overhead: int
+        New row overhead in pixel.
+        This allows for a short wait at the end of a row before starting the next row.
+    n_frame_overhead: int
+        New frame overhead in rows.
+        This allows for a short wait at the end of a frame before starting the next frame.
+    reverse_scan_direction: bool
+        Set this True to reverse the fast scanner readout directions.
+        This capability was added to support Teledyne’s programmable fast scan readout directions.
+        The default setting (False) corresponds to what HxRG detectors default to upon power up.
+    reference_pixel_border_width: int
+        Width of reference pixel border around image area.
     """
+    if n_output not in range(33):
+        raise ValueError("'n_output' must be between 0 and 32.")
+
+    if n_row_overhead not in range(101):
+        raise ValueError("'n_row_overhead' must be between 0 and 100.")
+
+    if n_frame_overhead not in range(101):
+        raise ValueError("'n_frame_overhead' must be between 0 and 100.")
+
+    if reference_pixel_border_width not in range(33):
+        raise ValueError("'reference_pixel_border_width' must be between 0 and 32.")
+
     # Converter
     params = []  # type: t.List[NoiseType]
     for item in noise:
@@ -281,12 +312,12 @@ def nghxrg(
         detector_shape=(geo.row, geo.col),
         window_pos=window_position,
         window_size=window_size,
-        num_outputs=geo.n_output,
+        num_outputs=n_output,
         time_step=time_step,
-        num_rows_overhead=geo.n_row_overhead,
-        num_frames_overhead=geo.n_frame_overhead,
-        reverse_scan_direction=geo.reverse_scan_direction,
-        reference_pixel_border_width=geo.reference_pixel_border_width,
+        num_rows_overhead=n_row_overhead,
+        num_frames_overhead=n_frame_overhead,
+        reverse_scan_direction=reverse_scan_direction,
+        reference_pixel_border_width=reference_pixel_border_width,
     )  # type: np.ndarray
 
     # Add the pixels
