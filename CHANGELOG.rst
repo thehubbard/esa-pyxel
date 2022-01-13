@@ -21,6 +21,8 @@ Others
   (See `!395 <https://gitlab.com/esa/pyxel/-/merge_requests/395>`_).
 * Updated ESA Copyright to 2022.
   (See `!396 <https://gitlab.com/esa/pyxel/-/merge_requests/396>`_).
+* Fix issue with licenses.
+  (See `!397 <https://gitlab.com/esa/pyxel/-/merge_requests/397>`_).
 
 
 version 0.11.7 / 2021-01-07
