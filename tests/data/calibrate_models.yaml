@@ -24,7 +24,7 @@ calibration:
     variant: 2
 
   parameters:
-    - key:  detector.characteristics.amp
+    - key:  detector.characteristics.pre_amplification
       values: _
       logarithmic: false
       boundaries: [1., 10.]
