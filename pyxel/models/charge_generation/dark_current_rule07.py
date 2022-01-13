@@ -78,7 +78,11 @@ def compute_mct_dark_rule07(pitch: float, temperature: float, cut_off: float) ->
 
 
 @temporary_random_state
-def dark_current_rule07(detector: CMOS, seed: t.Optional[int] = None) -> None:
+def dark_current_rule07(
+    detector: CMOS,
+    cutoff_wavelength: float = 2.5,  # unit: um
+    seed: t.Optional[int] = None,
+) -> None:
     """Generate charge from dark current process.
 
     Based on Rule07 paper by W.E. Tennant Journal of Electronic Materials volume 37, pages1406–1410 (2008).
@@ -86,19 +90,24 @@ def dark_current_rule07(detector: CMOS, seed: t.Optional[int] = None) -> None:
     Parameters
     ----------
     detector: Detector
+    cutoff_wavelength: float
+        Cutoff wavelength. Unit: um
     seed: int, optional
     """
     # TODO: investigate on the knee of rule07 for higher 1/le*T values
     if not isinstance(detector, CMOS):
         raise TypeError("Expecting a CMOS object for detector.")
+    if not (1.7 <= cutoff_wavelength <= 15.0):
+        raise ValueError("'cutoff' must be between 1.7 and 15.0.")
 
     geo = detector.geometry
 
     pitch = geo.pixel_vert_size  # assumes a square pitch
     temperature = detector.environment.temperature
-    cut_off = detector.characteristics.cutoff_wavelength
 
-    dc = compute_mct_dark_rule07(pitch, temperature, cut_off)
+    dc = compute_mct_dark_rule07(
+        pitch=pitch, temperature=temperature, cut_off=cutoff_wavelength
+    )
     ne = dc * detector.time_step
 
     # The number of charge generated with Poisson distribution using rule07 empiric law for lambda

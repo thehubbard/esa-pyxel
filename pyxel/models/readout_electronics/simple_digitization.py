@@ -84,7 +84,7 @@ def simple_digitization(
 
     image_2d = apply_simple_digitization(
         signal_2d=detector.signal.array,
-        gain_adc=detector.characteristics.analog_to_digital_gain,
+        gain_adc=detector.characteristics.adc_gain,
         min_clipped_value=np.iinfo(d_type).min,
         max_clipped_value=np.iinfo(d_type).max,
     )

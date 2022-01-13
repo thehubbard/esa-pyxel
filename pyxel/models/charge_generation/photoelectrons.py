@@ -32,7 +32,9 @@ def apply_qe(array: np.ndarray, qe: t.Union[float, np.ndarray]) -> np.ndarray:
     return array * qe
 
 
-def simple_conversion(detector: Detector, quantum_efficiency: t.Optional[float] = None) -> None:
+def simple_conversion(
+    detector: Detector, quantum_efficiency: t.Optional[float] = None
+) -> None:
     """Generate charge from incident photon via photoelectric effect, simple model.
 
     Parameters

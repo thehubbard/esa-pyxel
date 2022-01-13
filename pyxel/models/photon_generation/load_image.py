@@ -67,7 +67,7 @@ def load_image(
             cht.quantum_efficiency
             * cht.charge_to_volt_conversion
             * cht.pre_amplification
-            * cht.analog_to_digital_gain
+            * cht.adc_gain
         )
     photon_array = photon_array * (detector.time_step / time_scale) * multiplier
 

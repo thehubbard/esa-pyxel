@@ -13,7 +13,6 @@ import numpy as np
 from pyxel.util.memory import get_size
 
 
-# TODO: 'vg' should be the full volume and not the half
 class Characteristics:
     """Characteristical attributes of the detector."""
 
@@ -22,7 +21,7 @@ class Characteristics:
         quantum_efficiency: float = 1.0,  # unit: NA
         charge_to_volt_conversion: float = 1.0,  # unit: volt/electron
         pre_amplification: float = 1.0,  # unit: V/V
-        analog_to_digital_gain: float = 1,  # unit: adu/V
+        adc_gain: float = 1,  # unit: adu/V
         full_well_capacity: float = 0,  # unit: electron
     ):
         """Create an instance of `Characteristics`.
@@ -35,9 +34,9 @@ class Characteristics:
             Sensitivity of charge readout. Unit: V/e-
         pre_amplification: float
             Gain of pre-amplifier. Unit: V/V
-        analog_to_digital_gain: int
+        adc_gain: float
             Gain of the Analog-Digital Converter. Unit: ADU/V
-        full_well_capacity: int
+        full_well_capacity: float
             Full well capacity. Unit: e-
         """
         if not (0.0 <= quantum_efficiency <= 1.0):
@@ -49,7 +48,7 @@ class Characteristics:
         if not (0.0 <= pre_amplification <= 100.0):
             raise ValueError("'amp' must be between 0.0 and 100.0.")
 
-        if analog_to_digital_gain not in range(65537):
+        if adc_gain not in range(65537):
             raise ValueError("'a2' must be between 0 and 65536.")
 
         if not (0.0 <= full_well_capacity <= 1.0e7):
@@ -60,7 +59,7 @@ class Characteristics:
         )  # type: t.Union[float, np.ndarray]
         self._charge_to_volt_conversion = charge_to_volt_conversion
         self._pre_amplification = pre_amplification
-        self._analog_to_digital_gain = analog_to_digital_gain
+        self._adc_gain = adc_gain
         self._full_well_capacity = full_well_capacity
 
         self._numbytes = 0
@@ -104,17 +103,17 @@ class Characteristics:
         self._pre_amplification = value
 
     @property
-    def analog_to_digital_gain(self) -> float:
+    def adc_gain(self) -> float:
         """Get Gain of the Analog-Digital Converter."""
-        return self._analog_to_digital_gain
+        return self._adc_gain
 
-    @analog_to_digital_gain.setter
-    def analog_to_digital_gain(self, value: float) -> None:
+    @adc_gain.setter
+    def adc_gain(self, value: float) -> None:
         """Set Gain of the Analog-Digital Converter."""
         if value not in range(65537):
             raise ValueError("'a2' must be between 0 and 65536.")
 
-        self._analog_to_digital_gain = value
+        self._adc_gain = value
 
     @property
     def full_well_capacity(self) -> float:
