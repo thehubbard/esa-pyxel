@@ -297,7 +297,7 @@ def test_custom_fitness(yaml, simulated, target, weighting):
                     100.0,
                 ]
             ),
-            1695462.214625847,
+            88431.18016117146,
         )
     ],
 )

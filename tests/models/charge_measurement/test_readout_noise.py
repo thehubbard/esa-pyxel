@@ -95,7 +95,7 @@ def test_output_node_noise_cmos(cmos_5x10: CMOS):
     """Test model 'output_node_noise_cmos' with valid inputs."""
     detector = cmos_5x10
 
-    output_node_noise_cmos(detector=detector, readout_noise=1.0, readout_noise_std=2.0)
+    output_node_noise_cmos(detector=detector, readout_noise=1.0, readout_noise_std=0.1)
 
 
 def test_output_node_noise_with_ccd(ccd_5x10: CCD):

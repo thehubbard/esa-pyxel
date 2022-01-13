@@ -18,9 +18,9 @@ class Characteristics:
 
     def __init__(
         self,
-        quantum_efficiency: float = 1.0,  # unit: NA
-        charge_to_volt_conversion: float = 1.0,  # unit: volt/electron
-        pre_amplification: float = 1.0,  # unit: V/V
+        quantum_efficiency: float = 1,  # unit: NA
+        charge_to_volt_conversion: float = 1.0e-6,  # unit: volt/electron
+        pre_amplification: float = 1,  # unit: V/V
         adc_gain: float = 1,  # unit: adu/V
         full_well_capacity: float = 0,  # unit: electron
     ):
