@@ -65,7 +65,7 @@ class CMOS(Detector):
                 "signal": None if self._signal is None else self._signal.array.copy(),
                 "image": None if self._image is None else self._image.array.copy(),
                 "charge": None
-                if self._charge
+                if self._charge is None
                 else {
                     "array": self._charge.array.copy(),
                     "frame": self._charge.frame.copy(),

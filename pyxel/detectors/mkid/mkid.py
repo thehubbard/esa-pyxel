@@ -155,7 +155,7 @@ class MKID(Detector):
                 "image": None if self._image is None else self._image.array.copy(),
                 "phase": None if self._phase is None else self._phase.array.copy(),
                 "charge": None
-                if self._charge
+                if self._charge is None
                 else {
                     "array": self._charge.array.copy(),
                     "frame": self._charge.frame.copy(),
