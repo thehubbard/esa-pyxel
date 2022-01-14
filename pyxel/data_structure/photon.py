@@ -61,5 +61,4 @@ class Photon(Array):
                 "Trying to set negative values in the Photon array! Negative values clipped to 0."
             )
 
-        # self.type = value.dtype
         self._array = value

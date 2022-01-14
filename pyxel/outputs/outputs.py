@@ -388,30 +388,3 @@ def create_output_directory(output_folder: t.Union[str, Path]) -> Path:
 
         else:
             return output_dir
-
-
-# # TODO: Refactor this function
-# def update_fits_header(
-#     header: dict, key: t.Union[str, list, tuple], value: t.Any
-# ) -> None:
-#     """TBW.
-#
-#     Parameters
-#     ----------
-#     header
-#     key
-#     value
-#     """
-#     if isinstance(value, (str, int, float)):
-#         result = value  # type: t.Union[str, int, float]
-#     else:
-#         result = repr(value)
-#
-#     if isinstance(result, str):
-#         result = result[0:24]
-#
-#     if isinstance(key, (list, tuple)):
-#         key = "/".join(key)
-#
-#     key = key.replace(".", "/")[0:36]
-#     header[key] = value

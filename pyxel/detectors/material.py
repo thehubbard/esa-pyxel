@@ -222,19 +222,3 @@ class Material:
         """
         self._numbytes = get_size(self)
         return self._numbytes
-
-    # TODO create func for compound materials
-    # def set_material(self, material):
-    #     """Set material properties.
-    #
-    #     :param material:
-    #     """
-    #     # TODO put these constants to a data file
-    #     if material == 'silicon' or 'Si' or 'si':
-    #         self.material_density = 2.328                 # (g/cm3)
-    #         self.ionization_energy = 3.6                  # (eV)
-    #         self.band_gap = 1.12                          # (eV)
-    #         self.e_effective_mass = 0.5 * M_ELECTRON      # (kg)
-    #
-    #     else:
-    #         raise NotImplementedError('Given material has not implemented yet')

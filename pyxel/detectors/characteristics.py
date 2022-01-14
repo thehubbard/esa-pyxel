@@ -6,8 +6,6 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """TBW."""
-import typing as t
-
 import numpy as np
 
 from pyxel.util.memory import get_size
@@ -54,23 +52,21 @@ class Characteristics:
         if not (0.0 <= full_well_capacity <= 1.0e7):
             raise ValueError("'fwc' must be between 0 and 1e7.")
 
-        self._quantum_efficiency = (
-            quantum_efficiency
-        )  # type: t.Union[float, np.ndarray]
-        self._charge_to_volt_conversion = charge_to_volt_conversion
-        self._pre_amplification = pre_amplification
-        self._adc_gain = adc_gain
-        self._full_well_capacity = full_well_capacity
+        self._quantum_efficiency = quantum_efficiency  # type: float
+        self._charge_to_volt_conversion = charge_to_volt_conversion  # type: float
+        self._pre_amplification = pre_amplification  # type: float
+        self._adc_gain = adc_gain  # type: float
+        self._full_well_capacity = full_well_capacity  # type: float
 
         self._numbytes = 0
 
     @property
-    def quantum_efficiency(self) -> t.Union[float, np.ndarray]:
+    def quantum_efficiency(self) -> float:
         """Get Quantum efficiency."""
         return self._quantum_efficiency
 
     @quantum_efficiency.setter
-    def quantum_efficiency(self, value: t.Union[float, np.ndarray]) -> None:
+    def quantum_efficiency(self, value: float) -> None:
         """Set Quantum efficiency."""
         if np.min(value) < 0.0 and np.max(value) <= 1.0:
             raise ValueError("'QE' values must be between 0.0 and 1.0.")

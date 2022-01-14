@@ -23,28 +23,6 @@ def check_energy(initial_energy: t.Union[int, float]) -> None:
         raise TypeError("Given particle energy could not be read")
 
 
-# def check_position(
-#     detector: "Detector", initial_position: t.Tuple[float, float, float]
-# ) -> None:
-#     """Check position of the particle if it is a numpy array and inside the detector.
-#
-#     :param detector:
-#     :param initial_position:
-#     :return:
-#     """
-#     if not isinstance(initial_position, np.ndarray):
-#         raise ValueError("Position of particle is not a numpy array (int or float)")
-#
-#     if not (0.0 <= initial_position[0] <= detector.geometry.vert_dimension):
-#         raise ValueError("Vertical position of particle is outside the detector")
-#
-#     if not (0.0 <= initial_position[1] <= detector.geometry.horz_dimension):
-#         raise ValueError("Horizontal position of particle is outside the detector")
-#
-#     if not (-1 * detector.geometry.total_thickness <= initial_position[2] <= 0.0):
-#         raise ValueError("Z position of particle is outside the detector")
-
-
 def random_direction(
     v_abs: float = 1.0, seed: t.Optional[int] = None
 ) -> np.ndarray:  # TODO check random angles and direction

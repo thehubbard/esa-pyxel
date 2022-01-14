@@ -439,38 +439,6 @@ class Calibration:
         self._log.info("Calibration ended.")
         return ds, df_processors, df_all_logs
 
-    # TODO: This function must be improved
-    # TODO: Speed-up this function
-    # def old_post_processing(
-    #     self,
-    #     calib_results: t.Sequence[CalibrationResult],
-    #     output: "CalibrationOutputs",
-    # ) -> None:
-    #     """TBW."""
-    #     for one_calib_result in tqdm(calib_results):  # type: CalibrationResult
-    #
-    #         # TODO: Create a new method in output called '.save_processor(processor)'
-    #         output.calibration_outputs(processor_list=one_calib_result.processors)
-    #
-    #         for idx, (processor, target_data) in enumerate(
-    #             zip(one_calib_result.processors, self.fitting.all_target_data)
-    #         ):
-    #             simulated_data = self.fitting.get_simulated_data(
-    #                 processor
-    #             )  # type: np.ndarray
-    #             output.fitting_plot(
-    #                 target_data=target_data, simulated_data=simulated_data, data_i=idx
-    #             )
-    #
-    #         output.fitting_plot_close(
-    #             result_type=self.result_type, island=one_calib_result.island
-    #         )
-    #
-    #     first_calib_result = calib_results[0]  # type: CalibrationResult
-    #     output.calibration_plots(
-    #         results=first_calib_result.results, fitness=first_calib_result.fitness
-    #     )
-
     def post_processing(
         self,
         ds: "xr.Dataset",
