@@ -10,4 +10,18 @@ from pyxel.detectors import CMOSCharacteristics
 
 
 class MKIDCharacteristics(CMOSCharacteristics):
-    """Characteristic attributes of a MKID-based detector."""
+    """Characteristic attributes of a MKID-based detector.
+
+    Parameters
+    ----------
+    quantum_efficiency: float
+        Quantum efficiency.
+    charge_to_volt_conversion: float
+        Sensitivity of charge readout. Unit: V/e-
+    pre_amplification: float
+        Gain of pre-amplifier. Unit: V/V
+    adc_gain: float
+        Gain of the Analog-Digital Converter. Unit: ADU/V
+    full_well_capacity: float
+        Full well capacity. Unit: e-
+    """

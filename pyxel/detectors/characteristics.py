@@ -12,7 +12,7 @@ from pyxel.util.memory import get_size
 
 
 class Characteristics:
-    """Characteristical attributes of the detector.
+    """Characteristic attributes of the detector.
 
     Parameters
     ----------

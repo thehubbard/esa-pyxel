@@ -10,4 +10,17 @@ from pyxel.detectors import Characteristics
 
 
 class CCDCharacteristics(Characteristics):
-    """Characteristic attributes of a CCD detector."""
+    """Characteristic attributes of a CCD detector.
+
+    Parameters
+    ----------
+    quantum_efficiency: float
+        Quantum efficiency.
+    charge_to_volt_conversion: float
+        Sensitivity of charge readout. Unit: V/e-
+    pre_amplification: float
+        Gain of pre-amplifier. Unit: V/V
+    adc_gain: float
+        Gain of the Analog-Digital Converter. Unit: ADU/V
+    full_well_capacity: float
+        Full well capacity. Unit: e-"""

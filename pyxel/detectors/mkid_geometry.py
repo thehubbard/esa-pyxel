@@ -14,6 +14,16 @@ class MKIDGeometry(Geometry):
 
     Parameters
     ----------
+    row: int
+        Number of pixel rows.
+    col: int
+        Number of pixel columns.
+    total_thickness: float
+        Thickness of detector. Unit: um
+    pixel_vert_size: float
+        Vertical dimension of pixel. Unit: um
+    pixel_horz_size: float
+        Horizontal dimension of pixel. Unit: um
     n_output: int
         Number of detector outputs.
     n_row_overhead: int
