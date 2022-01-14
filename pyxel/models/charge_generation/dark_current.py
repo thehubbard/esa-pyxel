@@ -11,15 +11,12 @@ import typing as t
 
 import numpy as np
 
-from pyxel.detectors import CCD
+from pyxel.detectors import Detector
 from pyxel.util import temporary_random_state
 
 
 def calculate_dark_current(
-    num_rows: int,
-    num_cols: int,
-    current: float,
-    exposure_time: float
+    num_rows: int, num_cols: int, current: float, exposure_time: float
 ) -> np.ndarray:
     """Simulate dark current in a CCD.
 
@@ -36,7 +33,7 @@ def calculate_dark_current(
 
     Returns
     -------
-    ndarray
+    dark_im_array_2d: ndarray
         An array the same shape and dtype as the input containing dark counts
         in units of charge (e-).
     """
@@ -49,9 +46,7 @@ def calculate_dark_current(
 
 
 @temporary_random_state
-def dark_current(
-    detector: CCD, dark_rate: float, seed: t.Optional[int] = None
-) -> None:
+def dark_current(detector: Detector, dark_rate: float, seed: t.Optional[int] = None) -> None:
     """Simulate dark current in a detector.
 
     Parameters
@@ -61,8 +56,6 @@ def dark_current(
     dark_rate : float
         Dark current, in electrons/pixel/second, which is the way
         manufacturers typically report it.
-    gain : float, optional. Default: 1.0
-        Gain of the camera, in units of electrons/ADU.
     seed: int, optional
     """
 

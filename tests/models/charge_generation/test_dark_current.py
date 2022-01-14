@@ -44,23 +44,4 @@ def ccd_10x10() -> CCD:
 
 def test_dark_current_valid(ccd_10x10: CCD):
     """Test model 'dark_current' with valid inputs."""
-    dark_current(detector=ccd_10x10, dark_rate=1.0, gain=1.0)
-
-
-def test_dark_current_with_cmos():
-    """Test model 'dark_current' with a `CMOS` detector."""
-    detector = CMOS(
-        geometry=CMOSGeometry(
-            row=10,
-            col=10,
-            total_thickness=40.0,
-            pixel_vert_size=10.0,
-            pixel_horz_size=10.0,
-        ),
-        material=Material(),
-        environment=Environment(),
-        characteristics=CMOSCharacteristics(),
-    )
-
-    with pytest.raises(TypeError, match="Expecting a CCD object for detector."):
-        dark_current(detector=detector, dark_rate=1.0)
+    dark_current(detector=ccd_10x10, dark_rate=1.0)
