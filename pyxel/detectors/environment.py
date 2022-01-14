@@ -11,19 +11,15 @@ from pyxel.util.memory import get_size
 
 
 class Environment:
-    """Environmental attributes of the detector."""
+    """Environmental attributes of the detector.
 
-    def __init__(
-        self,
-        temperature: float = 273.15,
-    ):
-        """Create a new instance of `Environment`.
+    Parameters
+    ----------
+    temperature: float
+        Temperature of the detector. Unit: K
+    """
 
-        Parameters
-        ----------
-        temperature: float
-            Temperature of the detector. Unit: K
-        """
+    def __init__(self, temperature: float = 273.15):
         if not (0.0 <= temperature <= 1000.0):
             raise ValueError("'temperature' must be between 0.0 and 1000.0.")
 
@@ -33,7 +29,7 @@ class Environment:
 
     def __repr__(self) -> str:
         cls_name = self.__class__.__name__  # type: str
-        return f"{cls_name}(temperature={self._temperature!r}, "
+        return f"{cls_name}(temperature={self._temperature!r})"
 
     @property
     def temperature(self) -> float:

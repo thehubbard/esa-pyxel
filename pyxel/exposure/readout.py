@@ -17,7 +17,15 @@ from pyxel.evaluator import eval_range
 
 
 class Readout:
-    """TBW."""
+    """TBW.
+
+    Parameters
+    ----------
+    times
+    times_from_file
+    start_time
+    non_destructive
+    """
 
     def __init__(
         self,
@@ -26,15 +34,6 @@ class Readout:
         start_time: float = 0.0,
         non_destructive: bool = False,
     ):
-        """Create an instance of Readout class.
-
-        Parameters
-        ----------
-        times
-        times_from_file
-        start_time
-        non_destructive
-        """
         self._time_domain_simulation = True
 
         if times is not None and times_from_file is not None:
