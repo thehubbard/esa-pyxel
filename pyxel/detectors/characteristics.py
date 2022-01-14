@@ -12,7 +12,21 @@ from pyxel.util.memory import get_size
 
 
 class Characteristics:
-    """Characteristical attributes of the detector."""
+    """Characteristical attributes of the detector.
+
+    Parameters
+    ----------
+    quantum_efficiency: float
+        Quantum efficiency.
+    charge_to_volt_conversion: float
+        Sensitivity of charge readout. Unit: V/e-
+    pre_amplification: float
+        Gain of pre-amplifier. Unit: V/V
+    adc_gain: float
+        Gain of the Analog-Digital Converter. Unit: ADU/V
+    full_well_capacity: float
+        Full well capacity. Unit: e-
+    """
 
     def __init__(
         self,
@@ -22,21 +36,6 @@ class Characteristics:
         adc_gain: float = 1,  # unit: adu/V
         full_well_capacity: float = 0,  # unit: electron
     ):
-        """Create an instance of `Characteristics`.
-
-        Parameters
-        ----------
-        quantum_efficiency: float
-            Quantum efficiency.
-        charge_to_volt_conversion: float
-            Sensitivity of charge readout. Unit: V/e-
-        pre_amplification: float
-            Gain of pre-amplifier. Unit: V/V
-        adc_gain: float
-            Gain of the Analog-Digital Converter. Unit: ADU/V
-        full_well_capacity: float
-            Full well capacity. Unit: e-
-        """
         if not (0.0 <= quantum_efficiency <= 1.0):
             raise ValueError("'qe' must be between 0.0 and 1.0.")
 

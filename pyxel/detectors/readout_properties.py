@@ -10,7 +10,16 @@
 
 
 class ReadoutProperties:
-    """Sampling detector properties."""
+    """Sampling detector properties.
+
+    Parameters
+    ----------
+    num_steps
+    start_time
+    end_time
+    ndreadout
+    times_linear
+    """
 
     def __init__(
         self,
@@ -20,16 +29,6 @@ class ReadoutProperties:
         ndreadout: bool = False,
         times_linear: bool = True,
     ):
-        """Create an instance of ReadoutProperties.
-
-        Parameters
-        ----------
-        num_steps
-        start_time
-        end_time
-        ndreadout
-        times_linear
-        """
         # Fixed at beginning
         self._num_steps = num_steps  # type: int
         self._start_time = start_time  # type: float

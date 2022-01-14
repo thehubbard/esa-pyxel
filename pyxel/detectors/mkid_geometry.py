@@ -10,7 +10,24 @@ from pyxel.detectors import Geometry
 
 
 class MKIDGeometry(Geometry):
-    """Geometrical attributes of a MKID-based detector."""
+    """Geometrical attributes of a MKID-based detector.
+
+    Parameters
+    ----------
+    n_output: int
+        Number of detector outputs.
+    n_row_overhead: int
+        New row overhead in pixel.
+        This allows for a short wait at the end of a row before starting the next row.
+    n_frame_overhead: int
+        New frame overhead in rows.
+        This allows for a short wait at the end of a frame before starting the next frame.
+    reverse_scan_direction: bool
+        Set this True to reverse the fast scanner readout directions.
+        This capability was added to support Teledyne’s programmable fast scan readout directions.
+        The default setting (False) corresponds to what HxRG detectors default to upon power up.
+    reference_pixel_border_width: int
+        Width of reference pixel border around image area."""
 
     def __init__(
         self,
@@ -27,25 +44,6 @@ class MKIDGeometry(Geometry):
         reverse_scan_direction: bool = False,
         reference_pixel_border_width: int = 4,
     ):
-        """Create a new instance of `MKIDGeometry`.
-
-        Parameters
-        ----------
-        n_output: int
-            Number of detector outputs.
-        n_row_overhead: int
-            New row overhead in pixel.
-            This allows for a short wait at the end of a row before starting the next row.
-        n_frame_overhead: int
-            New frame overhead in rows.
-            This allows for a short wait at the end of a frame before starting the next frame.
-        reverse_scan_direction: bool
-            Set this True to reverse the fast scanner readout directions.
-            This capability was added to support Teledyne’s programmable fast scan readout directions.
-            The default setting (False) corresponds to what HxRG detectors default to upon power up.
-        reference_pixel_border_width: int
-            Width of reference pixel border around image area.
-        """
         if n_output not in range(33):
             raise ValueError("'n_output' must be between 0 and 32.")
 
