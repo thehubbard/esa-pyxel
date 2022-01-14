@@ -5,15 +5,6 @@ Detector properties
 ===================
 .. currentmodule:: pyxel.detectors
 
-Material
---------
-.. autoclass:: Material
-    :members:
-    :inherited-members:
-    :undoc-members:
-    :show-inheritance:
-    :exclude-members:
-
 Environment
 -----------
 .. autoclass:: Environment
