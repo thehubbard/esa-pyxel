@@ -19,10 +19,7 @@ class Environment:
         Temperature of the detector. Unit: K
     """
 
-    def __init__(
-        self,
-        temperature: float = 273.15
-    ):
+    def __init__(self, temperature: float = 273.15):
         if not (0.0 <= temperature <= 1000.0):
             raise ValueError("'temperature' must be between 0.0 and 1000.0.")
 
