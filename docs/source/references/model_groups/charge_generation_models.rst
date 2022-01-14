@@ -147,7 +147,7 @@ Example of the configuration file:
 Dark current
 ============
 
-With this model you can add dark current to a :py:class:`~pyxel.detectors.CCD` object.
+With this model you can add dark current to a :py:class:`~pyxel.detectors.Detector` object.
 
 Example of the configuration file:
 
@@ -158,8 +158,5 @@ Example of the configuration file:
       enabled: true
       arguments:
         dark_rate: 10.0
-        gain: 1.0           # Optional
-
-.. note:: This model is specific for the CCD detector.
 
 .. autofunction:: pyxel.models.charge_generation.dark_current
