@@ -65,31 +65,6 @@ class DetectionPipeline:
             if models_grp:
                 yield from models_grp
 
-    # def run(self, detector, abort_before: t.Optional[str]=None) -> None:
-    #     """TBW."""
-    #     self._is_running = True
-    #     for model_func in iter(self):
-    #         if model_func.name == abort_before:
-    #             break
-    #
-    #         model_func(detector)
-    #
-    #     self._is_running = False
-
-    # def __getstate__(self):
-    #     """TBW."""
-    #     return {
-    #         'photon_generation': self.photon_generation,
-    #         'optics': self.optics,
-    #         'charge_generation': self.charge_generation,
-    #         'charge_collection': self.charge_collection,
-    #         'charge_transfer': self.charge_transfer,
-    #         'charge_measurement': self.charge_measurement,
-    #         'signal_transfer': self.signal_transfer,
-    #         'readout_electronics': self.readout_electronics,
-    #         '_model_groups': self.model_group_names,              # TODO
-    #     }
-
     @property
     def model_group_names(self) -> t.Tuple[str, ...]:
         """TBW."""

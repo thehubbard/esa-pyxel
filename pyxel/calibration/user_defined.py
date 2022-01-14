@@ -189,7 +189,3 @@ class DaskIsland:
     def get_name(self) -> str:
         """Return Island's name."""
         return "Dask Island"
-
-    # def get_extra_info(self) -> str:
-    #     """Return extra information for this Island."""
-    #     pass

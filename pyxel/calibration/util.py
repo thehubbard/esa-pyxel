@@ -30,16 +30,6 @@ __all__ = [
 ]
 
 
-# @attr.s(frozen=True, auto_attribs=True, slots=True)
-# class CalibrationResult:
-#     """TBW."""
-#
-#     processors: t.Sequence[Processor]
-#     fitness: float
-#     island: int
-#     results: t.Mapping[str, t.Union[int, float]]
-
-
 class CalibrationResult(t.NamedTuple):
     """Result class for calibration class."""
 
