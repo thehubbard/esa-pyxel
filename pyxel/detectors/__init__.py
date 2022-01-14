@@ -19,3 +19,8 @@ from .characteristics import Characteristics
 from pyxel.detectors.cmos import CMOSGeometry, CMOS, CMOSCharacteristics
 from .optics import Optics
 from .readout_properties import ReadoutProperties
+
+# Moved here to avoid circular imports
+from .ccd import CCD
+from .cmos import CMOS
+from .mkid import MKID
