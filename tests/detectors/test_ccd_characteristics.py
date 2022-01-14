@@ -13,44 +13,26 @@ from pyxel.detectors import CCDCharacteristics, Characteristics
 
 
 @pytest.mark.parametrize(
-    "qe, eta, sv, amp, a1, a2, fwc, vg, dt, fwc_serial, svg, t, st",
+    "quantum_efficiency, charge_to_volt_conversion, pre_amplification, adc_gain, full_well_capacity",
     [
-        (0, 0, 0, 0, 0, 0, 0, 0.0, 0, 0, 0.0, 0.0, 0),
-        (
-            1.0,
-            1.0,
-            100.0,
-            100.0,
-            100.0,
-            65536,
-            10_000_000,
-            1.0,
-            10.0,
-            10_000_000,
-            1.0,
-            10.0,
-            10.0,
-        ),
+        (0, 0, 0, 0, 0),
+        (1.0, 1.0, 100.0, 65536, 10_000_000),
     ],
 )
 def test_create_valid_ccdcharacteristics(
-    qe, eta, sv, amp, a1, a2, fwc, vg, dt, fwc_serial, svg, t, st
+    quantum_efficiency,
+    charge_to_volt_conversion,
+    pre_amplification,
+    adc_gain,
+    full_well_capacity,
 ):
     """Test when creating a valid `CCDCharacteristics` object."""
     _ = CCDCharacteristics(
-        qe=qe,
-        eta=eta,
-        sv=sv,
-        amp=amp,
-        a1=a1,
-        a2=a2,
-        fwc=fwc,
-        vg=vg,
-        dt=dt,
-        fwc_serial=fwc_serial,
-        svg=svg,
-        t=t,
-        st=st,
+        quantum_efficiency=quantum_efficiency,
+        charge_to_volt_conversion=charge_to_volt_conversion,
+        pre_amplification=pre_amplification,
+        adc_gain=adc_gain,
+        full_well_capacity=full_well_capacity,
     )
 
 
@@ -59,29 +41,26 @@ def test_create_valid_ccdcharacteristics(
     [
         pytest.param(None, False, id="None"),
         pytest.param(CCDCharacteristics(), False, id="Empty 'CCDCharacteristics'"),
-        pytest.param(CCDCharacteristics(qe=0.1), False, id="Only one parameter"),
+        pytest.param(
+            CCDCharacteristics(quantum_efficiency=0.1), False, id="Only one parameter"
+        ),
         pytest.param(
             Characteristics(
-                qe=0.1, eta=0.2, sv=3.3, amp=4.4, a1=5, a2=6, fwc=7, vg=0.8, dt=9.9
+                quantum_efficiency=0.1,
+                charge_to_volt_conversion=0.2,
+                pre_amplification=4.4,
+                adc_gain=6,
             ),
             False,
             id="Wrong type",
         ),
         pytest.param(
             CCDCharacteristics(
-                qe=0.1,
-                eta=0.2,
-                sv=3.3,
-                amp=4.4,
-                a1=5,
-                a2=6,
-                fwc=7,
-                vg=0.8,
-                dt=9.9,
-                fwc_serial=10,
-                svg=0.11,
-                t=0.12,
-                st=0.13,
+                quantum_efficiency=0.1,
+                charge_to_volt_conversion=0.2,
+                pre_amplification=4.4,
+                adc_gain=6,
+                full_well_capacity=10,
             ),
             True,
             id="Same parameters, same class",
@@ -91,19 +70,11 @@ def test_create_valid_ccdcharacteristics(
 def test_is_equal(other_obj, is_equal):
     """Test equality statement for `CCDCharacteristics`."""
     obj = CCDCharacteristics(
-        qe=0.1,
-        eta=0.2,
-        sv=3.3,
-        amp=4.4,
-        a1=5,
-        a2=6,
-        fwc=7,
-        vg=0.8,
-        dt=9.9,
-        fwc_serial=10,
-        svg=0.11,
-        t=0.12,
-        st=0.13,
+        quantum_efficiency=0.1,
+        charge_to_volt_conversion=0.2,
+        pre_amplification=4.4,
+        adc_gain=6,
+        full_well_capacity=10,
     )
 
     if is_equal:
@@ -117,34 +88,18 @@ def test_is_equal(other_obj, is_equal):
     [
         (
             CCDCharacteristics(
-                qe=0.1,
-                eta=0.2,
-                sv=3.3,
-                amp=4.4,
-                a1=5,
-                a2=6,
-                fwc=7,
-                vg=0.8,
-                dt=9.9,
-                fwc_serial=10,
-                svg=0.11,
-                t=0.12,
-                st=0.13,
+                quantum_efficiency=0.1,
+                charge_to_volt_conversion=0.2,
+                pre_amplification=4.4,
+                adc_gain=6,
+                full_well_capacity=10,
             ),
             {
-                "qe": 0.1,
-                "eta": 0.2,
-                "sv": 3.3,
-                "amp": 4.4,
-                "a1": 5,
-                "a2": 6,
-                "fwc": 7,
-                "vg": 0.8,
-                "dt": 9.9,
-                "fwc_serial": 10,
-                "svg": 0.11,
-                "t": 0.12,
-                "st": 0.13,
+                "quantum_efficiency": 0.1,
+                "charge_to_volt_conversion": 0.2,
+                "pre_amplification": 4.4,
+                "adc_gain": 6,
+                "full_well_capacity": 10,
             },
         )
     ],
