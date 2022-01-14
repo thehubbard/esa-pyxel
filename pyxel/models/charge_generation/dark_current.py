@@ -46,7 +46,9 @@ def calculate_dark_current(
 
 
 @temporary_random_state
-def dark_current(detector: Detector, dark_rate: float, seed: t.Optional[int] = None) -> None:
+def dark_current(
+    detector: Detector, dark_rate: float, seed: t.Optional[int] = None
+) -> None:
     """Simulate dark current in a detector.
 
     Parameters

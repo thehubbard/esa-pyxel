@@ -38,6 +38,7 @@ st: constant TDI period (serial)
 import typing
 from enum import Enum
 
+import astropy.constants as const
 import numba
 import numpy as np
 from typing_extensions import Literal
@@ -63,6 +64,7 @@ def cdm(
     max_electron_volume: float = 0.0,
     transfer_period: float = 0.0,
     charge_injection: bool = False,
+    electron_effective_mass: float = 0.5,
 ) -> None:
     r"""Charge Distortion Model (CDM) model wrapper.
 
@@ -88,7 +90,11 @@ def cdm(
         Transfer period :math:`t` (TDI period). Unit: :math:`s`.
     charge_injection: bool
         Enable charge injection (only used in ``"parallel"`` mode).
+    electron_effective_mass: float
+        Electron effective mass in the semiconductor lattice. Unit: 1 electron mass
     """
+
+    e_effective_mass = electron_effective_mass * const.m_e.value
 
     if full_well_capacity is None:
         fwc_final = detector.characteristics.full_well_capacity
@@ -116,13 +122,17 @@ def cdm(
     if len(trap_release_times) == 0:
         raise ValueError("Expecting inputs for at least one trap species.")
 
+    e_thermal_velocity = np.sqrt(
+        3 * const.k_B.value * detector.environment.temperature / e_effective_mass
+    )
+
     if mode == CDMdirection.Parallel:
         detector.pixel.array = run_cdm_parallel(
             array=detector.pixel.array,
             vg=max_electron_volume,
             t=transfer_period,
             fwc=fwc_final,
-            vth=detector.e_thermal_velocity,
+            vth=e_thermal_velocity,
             charge_injection=charge_injection,
             chg_inj_parallel_transfers=detector.geometry.row,
             beta=beta,
@@ -137,7 +147,7 @@ def cdm(
             vg=max_electron_volume,
             t=transfer_period,
             fwc=fwc_final,
-            vth=detector.e_thermal_velocity,
+            vth=e_thermal_velocity,
             beta=beta,
             tr=np.array(trap_release_times),
             nt=np.array(trap_densities),

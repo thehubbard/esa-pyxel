@@ -18,7 +18,6 @@ from pyxel.detectors import (
     CMOSCharacteristics,
     CMOSGeometry,
     Environment,
-    Material,
     MKIDCharacteristics,
     MKIDGeometry,
 )
@@ -37,7 +36,6 @@ def mkid_5x4() -> MKID:
             pixel_vert_size=10.0,
             pixel_horz_size=10.0,
         ),
-        material=Material(),
         environment=Environment(),
         characteristics=MKIDCharacteristics(),
     )
@@ -88,7 +86,6 @@ def test_dead_time_filter_with_ccd():
             pixel_vert_size=10.0,
             pixel_horz_size=10.0,
         ),
-        material=Material(),
         environment=Environment(),
         characteristics=CCDCharacteristics(),
     )
@@ -107,7 +104,6 @@ def test_dead_time_filter_with_cmos():
             pixel_vert_size=10.0,
             pixel_horz_size=10.0,
         ),
-        material=Material(),
         environment=Environment(),
         characteristics=CMOSCharacteristics(),
     )

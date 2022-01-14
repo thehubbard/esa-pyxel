@@ -36,7 +36,6 @@ def test_memory_usage(CCD_empty):
         "_pixel",
         "_signal",
         "_image",
-        "material",
         "environment",
         "_geometry",
         "_characteristics",
@@ -50,7 +49,6 @@ def test_memory_usage(CCD_empty):
         "environment": 512,
         "geometry": 664,
         "image": 432,
-        "material": 1400,
         "pixel": 432,
         "signal": 432,
     }

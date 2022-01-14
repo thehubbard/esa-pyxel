@@ -8,13 +8,7 @@
 import numpy as np
 import pytest
 
-from pyxel.detectors import (
-    CMOS,
-    CMOSCharacteristics,
-    CMOSGeometry,
-    Environment,
-    Material,
-)
+from pyxel.detectors import CMOS, CMOSCharacteristics, CMOSGeometry, Environment
 from pyxel.models.charge_measurement import nghxrg
 
 
@@ -29,7 +23,6 @@ def cmos_10x10() -> CMOS:
             pixel_vert_size=10.0,
             pixel_horz_size=10.0,
         ),
-        material=Material(),
         environment=Environment(),
         characteristics=CMOSCharacteristics(),
     )
@@ -52,7 +45,6 @@ def cmos_10x15() -> CMOS:
             pixel_vert_size=10.0,
             pixel_horz_size=10.0,
         ),
-        material=Material(),
         environment=Environment(),
         characteristics=CMOSCharacteristics(),
     )

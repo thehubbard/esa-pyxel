@@ -19,7 +19,7 @@ from pyxel.detectors import Detector
 from pyxel.util.memory import memory_usage_details
 
 if t.TYPE_CHECKING:
-    from pyxel.detectors import Environment, Material, MKIDCharacteristics, MKIDGeometry
+    from pyxel.detectors import Environment, MKIDCharacteristics, MKIDGeometry
 
 
 class MKID(Detector):
@@ -28,7 +28,6 @@ class MKID(Detector):
     def __init__(
         self,
         geometry: "MKIDGeometry",
-        material: "Material",
         environment: "Environment",
         characteristics: "MKIDCharacteristics",
     ):
@@ -36,7 +35,7 @@ class MKID(Detector):
         self._characteristics = characteristics  # type: MKIDCharacteristics
         self._phase = None  # type: t.Optional[Phase]
 
-        super().__init__(material=material, environment=environment)
+        super().__init__(environment=environment)
         self.reset()
 
     def reset(self) -> None:

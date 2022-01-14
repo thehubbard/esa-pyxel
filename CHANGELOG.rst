@@ -9,6 +9,8 @@ Core
 ~~~~
 * Rename detector properties using whole words.
   (See `!292 <https://gitlab.com/esa/pyxel/-/merge_requests/292>`_).
+* Review classes Material and Environment.
+  (See `!393 <https://gitlab.com/esa/pyxel/-/merge_requests/393>`_).
 
 Documentation
 ~~~~~~~~~~~~~

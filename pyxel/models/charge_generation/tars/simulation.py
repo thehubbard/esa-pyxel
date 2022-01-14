@@ -73,6 +73,7 @@ class Simulation:
             1.0  # fix, all the other data/parameters should be adjusted to this
         )
         self.energy_cut = 1.0e-5  # MeV
+        self.ionization_energy = 3.6
 
         self.e_num_lst_per_step = []  # type: t.List[int]
         self.e_energy_lst = []  # type: t.List[float]
@@ -109,17 +110,21 @@ class Simulation:
         pos_z: str,
         alpha: str,
         beta: str,
+        ionization_energy: float = 3.6,
     ) -> None:
         """TBW.
 
-        :param sim_mode:
-        :param part_type:
-        :param init_energy:
-        :param pos_ver:
-        :param pos_hor:
-        :param pos_z:
-        :param alpha:
-        :param beta:
+        Parameters
+        ----------
+        sim_mode
+        part_type
+        init_energy
+        pos_ver
+        pos_hor
+        pos_z
+        alpha
+        beta
+        ionization_energy
         """
         self.simulation_mode = sim_mode
         self.particle_type = part_type
@@ -129,6 +134,7 @@ class Simulation:
         self.position_z = pos_z
         self.angle_alpha = alpha
         self.angle_beta = beta
+        self.ionization_energy = ionization_energy
 
     def find_smaller_neighbor(self, column: str, value: float) -> float:
         """TBW.
@@ -242,8 +248,7 @@ class Simulation:
         secondary_per_event = 0
         tertiary_per_event = 0
         geo = self.detector.geometry
-        mat = self.detector.material
-        ioniz_energy = mat.ionization_energy  # eV
+        ioniz_energy = self.ionization_energy  # eV
 
         assert self.simulation_mode is not None
         assert self.particle_type is not None

@@ -19,7 +19,6 @@ from pyxel.detectors import (
     CMOSCharacteristics,
     CMOSGeometry,
     Environment,
-    Material,
 )
 from pyxel.models.charge_collection import simple_ipc
 
@@ -35,7 +34,6 @@ def cmos_10x10() -> CMOS:
             pixel_vert_size=10.0,
             pixel_horz_size=10.0,
         ),
-        material=Material(),
         environment=Environment(),
         characteristics=CMOSCharacteristics(),
     )
@@ -358,7 +356,6 @@ def test_charge_blocks_with_ccd():
             pixel_vert_size=10.0,
             pixel_horz_size=10.0,
         ),
-        material=Material(),
         environment=Environment(),
         characteristics=CCDCharacteristics(),
     )

@@ -16,7 +16,6 @@ from pyxel.detectors import (
     CMOSCharacteristics,
     CMOSGeometry,
     Environment,
-    Material,
 )
 from pyxel.models.charge_measurement import output_node_noise, output_node_noise_cmos
 
@@ -32,7 +31,6 @@ def ccd_5x10() -> CCD:
             pixel_vert_size=10.0,
             pixel_horz_size=10.0,
         ),
-        material=Material(),
         environment=Environment(),
         characteristics=CCDCharacteristics(),
     )
@@ -49,7 +47,6 @@ def cmos_5x10() -> CMOS:
             pixel_vert_size=10.0,
             pixel_horz_size=10.0,
         ),
-        material=Material(),
         environment=Environment(),
         characteristics=CMOSCharacteristics(),
     )

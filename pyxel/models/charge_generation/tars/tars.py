@@ -50,23 +50,38 @@ def run_tars(
     # stopping_file: str = None,
     spectrum_file: t.Optional[str] = None,
     seed: t.Optional[int] = None,
+    ionization_energy: float = 3.6,
     progressbar: bool = True,
 ) -> None:
-    """Simulate charge deposition by cosmic rays.
+    """TARS model.
 
-    :param detector: Pyxel detector object
-    :param particle_type: type of particle: ``proton``, ``alpha``, ``ion``
-    :param initial_energy: Kinetic energy of particle
-    :param particle_number: Number of particles
-    :param incident_angles: incident angles: ``(α, β)``
-    :param starting_position: starting position: ``(x, y, z)``
-    :param simulation_mode: simulation mode: ``cosmic_rays``, ``radioactive_decay``
-    :param running_mode: mode: ``stopping``, ``stepsize``, ``geant4``, ``plotting``
-    :param spectrum_file: path to input spectrum
-    :param seed: seed
+    Parameters
+    ----------
+    detector: Detector
+        Pyxel Detector object.
+    simulation_mode: literal
+        Simulation mode: ``cosmic_rays``, ``radioactive_decay``.
+    running_mode: literal
+        Mode: ``stopping``, ``stepsize``, ``geant4``, ``plotting``.
+    particle_type:
+        Type of particle: ``proton``, ``alpha``, ``ion``.
+    initial_energy: int or float or literal
+        Kinetic energy of particle, set `random` for random.
+    particle_number: int
+        Number of particles.
+    incident_angles: tuple of str
+        Incident angles: ``(α, β)``.
+    starting_position: tuple of str
+        Starting position: ``(x, y, z)``.
+    spectrum_file: str
+        Path to input spectrum
+    seed: int, optional
+        Random seed.
+    ionization_energy: float
+        Mean ionization energy of the semiconductor lattice.
+    progressbar: bool
+        Progressbar.
     """
-    logging.info("")
-
     if simulation_mode is None:
         raise ValueError("TARS: Simulation mode is not defined")
     if running_mode is None:
@@ -102,6 +117,7 @@ def run_tars(
         start_pos_ver=start_pos_ver,
         start_pos_hor=start_pos_hor,
         start_pos_z=start_pos_z,
+        ionization_energy=ionization_energy,
         progressbar=progressbar,
     )
 
@@ -259,6 +275,7 @@ class TARS:
         start_pos_ver: str,
         start_pos_hor: str,
         start_pos_z: str,
+        ionization_energy: float = 3.6,
         progressbar: bool = True,
     ):
         self.simulation_mode = simulation_mode
@@ -270,6 +287,7 @@ class TARS:
         self.position_ver = start_pos_ver
         self.position_hor = start_pos_hor
         self.position_z = start_pos_z
+        self.ionization_energy = ionization_energy
         self._progressbar = progressbar
 
         self.sim_obj = Simulation(detector)
@@ -431,6 +449,7 @@ class TARS:
             pos_z=self.position_z,
             alpha=self.angle_alpha,
             beta=self.angle_beta,
+            ionization_energy=self.ionization_energy,
         )
 
         # Get output folder and create it (if needed)

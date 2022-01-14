@@ -9,7 +9,6 @@
 
 # flake8: noqa
 # Warning: Import order matters
-from .material import Material
 from .environment import Environment
 from .detector import Detector
 from .ccd import CCD

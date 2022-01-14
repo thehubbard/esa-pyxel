@@ -18,9 +18,9 @@ from pyxel.detectors import Environment
         # (1, None, None, 1.0, None, None),
         # (None, 2, None, None, 2.0, None),
         # (None, None, 3, None, None, 3.0),
-        ([1, 2, 3], [1.0, 2.0, 3.0]),
-        ([4.0, 5.0, 6.0], [4.0, 5.0, 6.0]),
-        ([7, 0, 0], [7.0, 0.0, 0.0]),
+        ([1], [1.0]),
+        ([4.0], [4.0]),
+        ([7], [7.0]),
     ],
 )
 def test_init(list_in, list_out):
@@ -29,14 +29,10 @@ def test_init(list_in, list_out):
     # Create the object
     obj = Environment(
         temperature=list_in[0],
-        total_ionising_dose=list_in[1],
-        total_non_ionising_dose=list_in[2],
     )
 
     # Test getters
     assert obj.temperature == list_out[0]
-    assert obj.total_ionising_dose == list_out[1]
-    assert obj.total_non_ionising_dose == list_out[2]
 
 
 # @pytest.mark.parametrize("temperature, total_inonising_dose, total_non_ionising_dose, exp_exception, exp_msg", [

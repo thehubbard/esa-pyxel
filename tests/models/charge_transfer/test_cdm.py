@@ -20,7 +20,6 @@ from pyxel.detectors import (
     CMOSCharacteristics,
     CMOSGeometry,
     Environment,
-    Material,
 )
 from pyxel.models.charge_transfer import cdm
 
@@ -36,7 +35,6 @@ def ccd_5x5() -> CCD:
             pixel_vert_size=10.0,
             pixel_horz_size=10.0,
         ),
-        material=Material(),
         environment=Environment(),
         characteristics=CCDCharacteristics(),
     )
@@ -192,7 +190,6 @@ def test_cdm_with_cmos():
             pixel_vert_size=10.0,
             pixel_horz_size=10.0,
         ),
-        material=Material(),
         environment=Environment(),
         characteristics=CMOSCharacteristics(),
     )
@@ -259,8 +256,8 @@ def test_cdm_parallel(
             [0.0, 0.0, 0.0, 0.0, 0.0],
             [0.0, 0.0, 0.0, 0.0, 0.0],
             [0.0, 0.0, 0.0, 0.0, 0.0],
-            [949.71894199, 949.71894199, 949.71894199, 949.71894199, 949.71894199],
-            [983.92354079, 983.92354079, 983.92354079, 983.92354079, 983.92354079],
+            [949.71893729, 949.71893729, 949.71893729, 949.71893729, 949.71893729],
+            [983.92354165, 983.92354165, 983.92354165, 983.92354165, 983.92354165],
         ]
     )
     detector = ccd_5x5

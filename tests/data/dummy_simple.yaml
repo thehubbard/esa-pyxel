@@ -25,9 +25,6 @@ ccd_detector:
     pixel_vert_size: 10.    # um
     pixel_horz_size: 10.    # um
 
-  material:
-    material: 'silicon'
-
   environment:
     temperature: 300        # K
 

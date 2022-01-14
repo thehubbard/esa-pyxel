@@ -9,17 +9,12 @@
 
 import pytest
 
-from pyxel.detectors import CCD, CCDCharacteristics, CCDGeometry, Environment, Material
+from pyxel.detectors import CCD, CCDCharacteristics, CCDGeometry, Environment
 
 
 @pytest.fixture
 def environment() -> Environment:
     return Environment()
-
-
-@pytest.fixture
-def material() -> Material:
-    return Material()
 
 
 @pytest.fixture
@@ -33,10 +28,9 @@ def ccd_characteristics() -> CCDCharacteristics:
 
 
 @pytest.fixture
-def CCD_empty(ccd_geometry, material, environment, ccd_characteristics) -> CCD:
+def CCD_empty(ccd_geometry, environment, ccd_characteristics) -> CCD:
     detector = CCD(
         geometry=ccd_geometry,
-        material=material,
         environment=environment,
         characteristics=ccd_characteristics,
     )

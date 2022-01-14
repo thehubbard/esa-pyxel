@@ -8,7 +8,6 @@
 """Detector class."""
 import collections
 import typing as t
-from math import sqrt
 from pathlib import Path
 
 import h5py as h5
@@ -16,7 +15,7 @@ import numpy as np
 
 from pyxel import __version__
 from pyxel.data_structure import Charge, Image, Photon, Pixel, Signal
-from pyxel.detectors import Environment, Material
+from pyxel.detectors import Environment
 from pyxel.detectors.readout_properties import ReadoutProperties
 from pyxel.util.memory import get_size, memory_usage_details
 
@@ -27,8 +26,7 @@ __all__ = ["Detector"]
 class Detector:
     """The detector class."""
 
-    def __init__(self, material: Material, environment: Environment):
-        self.material = material  # type: Material
+    def __init__(self, environment: Environment):
         self.environment = environment  # type: Environment
 
         self.header = collections.OrderedDict()  # type: t.Dict[str, object]
@@ -285,20 +283,6 @@ class Detector:
             return self._readout_properties.non_destructive
         else:
             raise ValueError("No sampling defined.")
-
-    @property
-    def e_thermal_velocity(self) -> float:
-        """TBW.
-
-        :return:
-        """
-        k_boltzmann = 1.38064852e-23  # J/K
-        return sqrt(
-            3
-            * k_boltzmann
-            * self.environment.temperature
-            / self.material.e_effective_mass
-        )
 
     @property
     def numbytes(self) -> int:

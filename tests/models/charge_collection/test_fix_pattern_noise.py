@@ -4,7 +4,7 @@ from pathlib import Path
 import numpy as np
 import pytest
 
-from pyxel.detectors import CCD, CCDCharacteristics, CCDGeometry, Environment, Material
+from pyxel.detectors import CCD, CCDCharacteristics, CCDGeometry, Environment
 from pyxel.models.charge_collection import fix_pattern_noise
 
 
@@ -19,7 +19,6 @@ def ccd_5x5() -> CCD:
             pixel_vert_size=10.0,
             pixel_horz_size=10.0,
         ),
-        material=Material(),
         environment=Environment(),
         characteristics=CCDCharacteristics(),
     )
