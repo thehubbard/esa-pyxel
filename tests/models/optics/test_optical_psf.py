@@ -9,7 +9,7 @@ import typing as t
 
 import pytest
 
-from pyxel.detectors import CCD, CCDCharacteristics, CCDGeometry, Environment, Material
+from pyxel.detectors import CCD, CCDCharacteristics, CCDGeometry, Environment
 from pyxel.models.optics import optical_psf
 from pyxel.models.optics.poppy import (
     CircularAperture,
@@ -36,7 +36,6 @@ def ccd_3x3() -> CCD:
             pixel_vert_size=10.0,
             pixel_horz_size=10.0,
         ),
-        material=Material(),
         environment=Environment(),
         characteristics=CCDCharacteristics(),
     )

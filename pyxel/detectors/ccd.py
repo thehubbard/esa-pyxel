@@ -11,7 +11,7 @@ import typing as t
 from pyxel.detectors import Detector
 
 if t.TYPE_CHECKING:
-    from pyxel.detectors import CCDCharacteristics, CCDGeometry, Environment, Material
+    from pyxel.detectors import CCDCharacteristics, CCDGeometry, Environment
 
 
 class CCD(Detector):
@@ -20,14 +20,13 @@ class CCD(Detector):
     def __init__(
         self,
         geometry: "CCDGeometry",
-        material: "Material",
         environment: "Environment",
         characteristics: "CCDCharacteristics",
     ):
         self._geometry = geometry  # type: CCDGeometry
         self._characteristics = characteristics  # type: CCDCharacteristics
 
-        super().__init__(material=material, environment=environment)
+        super().__init__(environment=environment)
         super().reset()
 
     @property

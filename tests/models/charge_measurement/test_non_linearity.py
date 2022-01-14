@@ -11,7 +11,7 @@ import typing as t
 import numpy as np
 import pytest
 
-from pyxel.detectors import CCD, CCDCharacteristics, CCDGeometry, Environment, Material
+from pyxel.detectors import CCD, CCDCharacteristics, CCDGeometry, Environment
 from pyxel.models.charge_measurement import output_node_linearity_poly
 
 
@@ -26,7 +26,6 @@ def ccd_5x5() -> CCD:
             pixel_vert_size=10.0,
             pixel_horz_size=10.0,
         ),
-        material=Material(),
         environment=Environment(),
         characteristics=CCDCharacteristics(),
     )

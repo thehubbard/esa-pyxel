@@ -22,7 +22,6 @@ from pyxel.detectors import (
     CCDCharacteristics,
     CCDGeometry,
     Environment,
-    Material,
     ReadoutProperties,
 )
 from pyxel.models.photon_generation import stripe_pattern
@@ -39,7 +38,6 @@ def ccd_20x20() -> CCD:
             pixel_vert_size=10.0,
             pixel_horz_size=10.0,
         ),
-        material=Material(),
         environment=Environment(),
         characteristics=CCDCharacteristics(),
     )

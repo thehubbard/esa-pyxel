@@ -17,7 +17,6 @@ from pyxel.detectors import (
     CCDGeometry,
     Detector,
     Environment,
-    Material,
     ReadoutProperties,
 )
 from pyxel.models.charge_generation import load_charge
@@ -34,7 +33,6 @@ def ccd_10x1() -> CCD:
             pixel_vert_size=10.0,
             pixel_horz_size=10.0,
         ),
-        material=Material(),
         environment=Environment(),
         characteristics=CCDCharacteristics(),
     )
@@ -70,7 +68,6 @@ def ccd_10x3() -> CCD:
             pixel_vert_size=10.0,
             pixel_horz_size=10.0,
         ),
-        material=Material(),
         environment=Environment(),
         characteristics=CCDCharacteristics(),
     )

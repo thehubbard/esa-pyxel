@@ -11,7 +11,7 @@ import typing as t
 from pyxel.detectors import Detector
 
 if t.TYPE_CHECKING:
-    from pyxel.detectors import CMOSCharacteristics, CMOSGeometry, Environment, Material
+    from pyxel.detectors import CMOSCharacteristics, CMOSGeometry, Environment
 
 
 class CMOS(Detector):
@@ -20,14 +20,13 @@ class CMOS(Detector):
     def __init__(
         self,
         geometry: "CMOSGeometry",
-        material: "Material",
         environment: "Environment",
         characteristics: "CMOSCharacteristics",
     ):
         self._geometry = geometry  # type: CMOSGeometry
         self._characteristics = characteristics  # type: CMOSCharacteristics
 
-        super().__init__(material=material, environment=environment)
+        super().__init__(environment=environment)
         super().reset()
 
     @property

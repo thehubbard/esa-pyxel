@@ -35,9 +35,6 @@ ccd_detector:
     pixel_vert_size: 10.    # um
     pixel_horz_size: 10.    # um
 
-  material:
-    material: 'silicon'
-
   environment:
     temperature: 300        # K
 
@@ -114,9 +111,6 @@ ccd_detector:
     total_thickness: 40.    # um
     pixel_vert_size: 10.    # um
     pixel_horz_size: 10.    # um
-
-  material:
-    material: 'silicon'
 
   environment:
     temperature: 300        # K
@@ -207,9 +201,6 @@ ccd_detector:
     pixel_vert_size: 10.    # um
     pixel_horz_size: 10.    # um
 
-  material:
-    material: 'silicon'
-
   environment:
     temperature: 300        # K
 
@@ -241,9 +232,6 @@ cmos_detector:
     n_frame_overhead: 0
     reverse_scan_direction: False
     reference_pixel_border_width: 4
-    
-  material:
-    material: 'mercadtel'
 
   environment:
     temperature: 300

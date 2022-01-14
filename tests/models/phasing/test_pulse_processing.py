@@ -22,7 +22,6 @@ from pyxel.detectors import (
     CCDCharacteristics,
     CCDGeometry,
     Environment,
-    Material,
     MKIDCharacteristics,
     MKIDGeometry,
 )
@@ -40,7 +39,6 @@ def mkid_5x5() -> MKID:
             pixel_vert_size=10.0,
             pixel_horz_size=10.0,
         ),
-        material=Material(),
         environment=Environment(),
         characteristics=MKIDCharacteristics(),
     )
@@ -123,7 +121,6 @@ def test_pulse_processing_with_ccd():
             pixel_vert_size=10.0,
             pixel_horz_size=10.0,
         ),
-        material=Material(),
         environment=Environment(),
         characteristics=CCDCharacteristics(),
     )

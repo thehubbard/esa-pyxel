@@ -18,7 +18,6 @@ from pyxel.detectors import (
     CMOSCharacteristics,
     CMOSGeometry,
     Environment,
-    Material,
     ReadoutProperties,
 )
 from pyxel.models.charge_generation import dark_current_rule07
@@ -35,7 +34,6 @@ def cmos_10x10() -> CMOS:
             pixel_vert_size=10.0,
             pixel_horz_size=10.0,
         ),
-        material=Material(),
         environment=Environment(),
         characteristics=CMOSCharacteristics(),
     )
@@ -60,7 +58,6 @@ def test_dark_current_rule07_with_ccd():
             pixel_vert_size=10.0,
             pixel_horz_size=10.0,
         ),
-        material=Material(),
         environment=Environment(),
         characteristics=CCDCharacteristics(),
     )

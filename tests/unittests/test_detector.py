@@ -21,27 +21,26 @@ from pyxel.detectors import (
     CMOSGeometry,
     Detector,
     Environment,
-    Material,
 )
 
 # from pyxel.data_structure.photon import Photon
 
 
 @pytest.mark.parametrize(
-    "cls, geometry, environment, characteristics, material",
+    "cls, geometry, environment, characteristics",
     [
         # (Geometry(), Environment(), Characteristics(), Material()),
         # (Geometry(), Environment(), CCDCharacteristics(), Material()),
         # (Geometry(), Environment(), CMOSCharacteristics(), Material()),
-        (CCD, CCDGeometry(), Environment(), Characteristics(), Material()),
-        (CCD, CCDGeometry(), Environment(), CCDCharacteristics(), Material()),
-        (CCD, CCDGeometry(), Environment(), CMOSCharacteristics(), Material()),
-        (CMOS, CMOSGeometry(), Environment(), Characteristics(), Material()),
-        (CMOS, CMOSGeometry(), Environment(), CCDCharacteristics(), Material()),
-        (CMOS, CMOSGeometry(), Environment(), CMOSCharacteristics(), Material()),
+        (CCD, CCDGeometry(), Environment(), Characteristics()),
+        (CCD, CCDGeometry(), Environment(), CCDCharacteristics()),
+        (CCD, CCDGeometry(), Environment(), CMOSCharacteristics()),
+        (CMOS, CMOSGeometry(), Environment(), Characteristics()),
+        (CMOS, CMOSGeometry(), Environment(), CCDCharacteristics()),
+        (CMOS, CMOSGeometry(), Environment(), CMOSCharacteristics()),
     ],
 )
-def test_init(cls, geometry, environment, characteristics, material):
+def test_init(cls, geometry, environment, characteristics):
     """Test Detector.__init__ with valid entries."""
 
     # Create a `Detector`
@@ -49,14 +48,12 @@ def test_init(cls, geometry, environment, characteristics, material):
         geometry=geometry,
         environment=environment,
         characteristics=characteristics,
-        material=material,
     )
 
     # Test getters
     assert obj.geometry is geometry
     assert obj.environment is environment
     assert obj.characteristics is characteristics
-    assert obj.material is material
 
     assert obj.photon is not None
     assert obj.charge is not None
@@ -94,7 +91,7 @@ def test_init(cls, geometry, environment, characteristics, material):
 
 
 @pytest.mark.parametrize(
-    "obj", [CCD(CCDGeometry(), Material(), Environment(), CCDCharacteristics())]
+    "obj", [CCD(CCDGeometry(), Environment(), CCDCharacteristics())]
 )
 def test_copy(obj):
     """Test Detector.copy."""
