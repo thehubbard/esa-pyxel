@@ -25,6 +25,8 @@ Others
   (See `!396 <https://gitlab.com/esa/pyxel/-/merge_requests/396>`_).
 * Fix issue with licenses.
   (See `!397 <https://gitlab.com/esa/pyxel/-/merge_requests/397>`_).
+* Remove dead code.
+  (See `!398 <https://gitlab.com/esa/pyxel/-/merge_requests/398>`_).
 
 
 version 0.11.7 / 2021-01-07
