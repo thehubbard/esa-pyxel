@@ -38,9 +38,9 @@ st: constant TDI period (serial)
 import typing
 from enum import Enum
 
+import astropy.constants as const
 import numba
 import numpy as np
-from astropy.units import k_B, m_e
 from typing_extensions import Literal
 
 from pyxel.detectors import CCD
@@ -94,7 +94,7 @@ def cdm(
         Electron effective mass in the semiconductor lattice. Unit: 1 electron mass
     """
 
-    e_effective_mass = electron_effective_mass * m_e.value
+    e_effective_mass = electron_effective_mass * const.m_e.value
 
     if full_well_capacity is None:
         fwc_final = detector.characteristics.full_well_capacity
@@ -123,7 +123,7 @@ def cdm(
         raise ValueError("Expecting inputs for at least one trap species.")
 
     e_thermal_velocity = np.sqrt(
-        3 * k_B * detector.environment.temperature / e_effective_mass
+        3 * const.k_B.value * detector.environment.temperature / e_effective_mass
     )
 
     if mode == CDMdirection.Parallel:
