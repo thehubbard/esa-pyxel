@@ -6,8 +6,6 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """TBW."""
-import typing as t
-
 import numpy as np
 
 from pyxel.util.memory import get_size
@@ -54,7 +52,7 @@ class Characteristics:
         if not (0.0 <= full_well_capacity <= 1.0e7):
             raise ValueError("'fwc' must be between 0 and 1e7.")
 
-        self._quantum_efficiency = quantum_efficiency  #  type: float
+        self._quantum_efficiency = quantum_efficiency  # type: float
         self._charge_to_volt_conversion = charge_to_volt_conversion  # type: float
         self._pre_amplification = pre_amplification  # type: float
         self._adc_gain = adc_gain  # type: float
