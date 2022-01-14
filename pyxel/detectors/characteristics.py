@@ -67,6 +67,16 @@ class Characteristics:
 
         self._numbytes = 0
 
+    def __eq__(self, other) -> bool:
+        return (
+            type(self) == type(other)
+            and self.quantum_efficiency == other.quantum_efficiency
+            and self.charge_to_volt_conversion == other.charge_to_volt_conversion
+            and self.pre_amplification == other.pre_amplification
+            and self.adc_gain == other.adc_gain
+            and self.full_well_capacity == other.full_well_capacity
+        )
+
     @property
     def quantum_efficiency(self) -> float:
         """Get Quantum efficiency."""
