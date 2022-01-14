@@ -29,8 +29,6 @@ def test_init(list_in, list_out):
     # Create the object
     obj = Environment(
         temperature=list_in[0],
-        total_ionising_dose=list_in[1],
-        total_non_ionising_dose=list_in[2],
     )
 
     # Test getters

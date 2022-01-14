@@ -48,8 +48,6 @@ ccd_detector:
 
   environment:
     temperature: 300                    # Kelvin, detector temperature
-    total_ionising_dose: 8.0e+11         # total ionising dose (IEL)
-    total_non_ionising_dose: 8.0e+11     # total non-ionising dose (NIEL)
 
   characteristics:
     quantum_efficiency: 0.5                 # -

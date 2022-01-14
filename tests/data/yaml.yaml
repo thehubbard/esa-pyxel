@@ -52,8 +52,6 @@ ccd_detector:
 
   environment:
     temperature: 0                    # K
-    total_ionising_dose: 0              #
-    total_non_ionising_dose: 8.0e+11     #
 
   characteristics:
     quantum_efficiency: 0.5                 # -
