@@ -23,4 +23,5 @@ class CCDGeometry(Geometry):
     pixel_vert_size: float
         Vertical dimension of pixel. Unit: um
     pixel_horz_size: float
-        Horizontal dimension of pixel. Unit: um"""
+        Horizontal dimension of pixel. Unit: um
+    """

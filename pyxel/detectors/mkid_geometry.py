@@ -37,7 +37,8 @@ class MKIDGeometry(Geometry):
         This capability was added to support Teledyne’s programmable fast scan readout directions.
         The default setting (False) corresponds to what HxRG detectors default to upon power up.
     reference_pixel_border_width: int
-        Width of reference pixel border around image area."""
+        Width of reference pixel border around image area.
+    """
 
     def __init__(
         self,

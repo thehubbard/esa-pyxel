@@ -24,7 +24,8 @@ class Readout:
     times
     times_from_file
     start_time
-    non_destructive"""
+    non_destructive
+    """
 
     def __init__(
         self,

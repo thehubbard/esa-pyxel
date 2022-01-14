@@ -23,4 +23,5 @@ class CMOSCharacteristics(Characteristics):
     adc_gain: float
         Gain of the Analog-Digital Converter. Unit: ADU/V
     full_well_capacity: float
-        Full well capacity. Unit: e-"""
+        Full well capacity. Unit: e-
+    """
