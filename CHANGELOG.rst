@@ -6,15 +6,8 @@ version 1.0.0-rc.2 / UNRELEASED-YYYY-MM-DD
 
 Core
 ~~~~
-
-Documentation
-~~~~~~~~~~~~~
-
-Models
-~~~~~~
-
-Others
-~~~~~~
+* Fix Characteristics validation checks.
+  (See `!402 <https://gitlab.com/esa/pyxel/-/merge_requests/402>`_).
 
 
 version 1.0.0-rc.1 / 2022-01-18
