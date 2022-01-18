@@ -37,19 +37,19 @@ class Characteristics:
         full_well_capacity: float = 0,  # unit: electron
     ):
         if not (0.0 <= quantum_efficiency <= 1.0):
-            raise ValueError("'qe' must be between 0.0 and 1.0.")
+            raise ValueError("'quantum_efficiency' must be between 0.0 and 1.0.")
 
         if not (0.0 <= charge_to_volt_conversion <= 100.0):
-            raise ValueError("'sv' must be between 0.0 and 100.0.")
+            raise ValueError("'charge_to_volt_conversion' must be between 0.0 and 100.0.")
 
-        if not (0.0 <= pre_amplification <= 100.0):
-            raise ValueError("'amp' must be between 0.0 and 100.0.")
+        if not (0.0 <= pre_amplification <= 10000.0):
+            raise ValueError("'pre_amplification' must be between 0.0 and 10000.0.")
 
         if adc_gain not in range(65537):
-            raise ValueError("'a2' must be between 0 and 65536.")
+            raise ValueError("'adc_gain' must be between 0 and 65536.")
 
         if not (0.0 <= full_well_capacity <= 1.0e7):
-            raise ValueError("'fwc' must be between 0 and 1e7.")
+            raise ValueError("'full_well_capacity' must be between 0 and 1e7.")
 
         self._quantum_efficiency = quantum_efficiency  # type: float
         self._charge_to_volt_conversion = charge_to_volt_conversion  # type: float
@@ -68,45 +68,45 @@ class Characteristics:
     def quantum_efficiency(self, value: float) -> None:
         """Set Quantum efficiency."""
         if np.min(value) < 0.0 and np.max(value) <= 1.0:
-            raise ValueError("'QE' values must be between 0.0 and 1.0.")
+            raise ValueError("'quantum_efficiency' values must be between 0.0 and 1.0.")
 
         self._quantum_efficiency = value
 
     @property
     def charge_to_volt_conversion(self) -> float:
-        """Get Sensitivity of charge readout."""
+        """Get charge to volt conversion parameter."""
         return self._charge_to_volt_conversion
 
     @charge_to_volt_conversion.setter
     def charge_to_volt_conversion(self, value: float) -> None:
-        """Set Sensitivity of charge readout."""
+        """Set charge to volt conversion parameter."""
         if not (0.0 <= value <= 100.0):
-            raise ValueError("'sv' must be between 0.0 and 100.0.")
+            raise ValueError("'charge_to_volt_conversion' must be between 0.0 and 100.0.")
         self._charge_to_volt_conversion = value
 
     @property
     def pre_amplification(self) -> float:
-        """Get Gain of output amplifier."""
+        """Get voltage pre-amplification gain."""
         return self._pre_amplification
 
     @pre_amplification.setter
     def pre_amplification(self, value: float) -> None:
-        """Set Gain of output amplifier."""
-        if not (0.0 <= value <= 100.0):
-            raise ValueError("'amp' must be between 0.0 and 100.0.")
+        """Set voltage pre-amplification gain.."""
+        if not (0.0 <= value <= 10000.0):
+            raise ValueError("'pre_amplification' must be between 0.0 and 10000.0.")
 
         self._pre_amplification = value
 
     @property
     def adc_gain(self) -> float:
-        """Get Gain of the Analog-Digital Converter."""
+        """Get gain of the Analog-Digital Converter."""
         return self._adc_gain
 
     @adc_gain.setter
     def adc_gain(self, value: float) -> None:
-        """Set Gain of the Analog-Digital Converter."""
+        """Set gain of the Analog-Digital Converter."""
         if value not in range(65537):
-            raise ValueError("'a2' must be between 0 and 65536.")
+            raise ValueError("'adc_gain' must be between 0 and 65536.")
 
         self._adc_gain = value
 
@@ -119,7 +119,7 @@ class Characteristics:
     def full_well_capacity(self, value: float) -> None:
         """Set Full well capacity."""
         if value not in range(10000001):
-            raise ValueError("'fwc' must be between 0 and 1e+7.")
+            raise ValueError("'full_well_capacity' must be between 0 and 1e+7.")
 
         self._full_well_capacity = value
 
