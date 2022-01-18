@@ -2,8 +2,8 @@ Changelog
 =========
 
 
-version 1.0 / UNRELEASED-YYYY-MM-DD
------------------------------------
+version 1.0.0-rc.1 / 2022-01-18
+-------------------------------
 
 Core
 ~~~~
@@ -19,9 +19,6 @@ Documentation
 * Add more documentation for CCDCharacteristics, CMOSCharacteristics, ....
   (See `!399 <https://gitlab.com/esa/pyxel/-/merge_requests/399>`_).
 
-Models
-~~~~~~
-
 Others
 ~~~~~~
 
@@ -35,7 +32,7 @@ Others
   (See `!398 <https://gitlab.com/esa/pyxel/-/merge_requests/398>`_).
 
 
-version 0.11.7 / 2021-01-07
+version 0.11.7 / 2022-01-07
 ---------------------------
 
 Documentation
