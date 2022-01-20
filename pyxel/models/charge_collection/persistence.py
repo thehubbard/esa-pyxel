@@ -122,6 +122,15 @@ def simple_persistence(
     trap_densities: t.Sequence[float],
     trap_capacities: t.Optional[t.Sequence[float]] = None,
 ) -> None:
+    """TBW.
+
+    Parameters
+    ----------
+    detector
+    trap_time_constants
+    trap_densities
+    trap_capacities
+    """
 
     if not len(trap_time_constants) == len(trap_densities):
         raise ValueError(
@@ -161,14 +170,14 @@ def simple_persistence(
 
 @numba.njit(fastmath=True)
 def compute_simple_persistence(
-        pixel_array: np.ndarray,
-        all_trapped_charge: np.ndarray,
-        trap_densities: np.ndarray,
-        trap_time_constants: np.ndarray,
-        delta_t: float,
-        trap_capacities: t.Optional[np.ndarray] = None,
+    pixel_array: np.ndarray,
+    all_trapped_charge: np.ndarray,
+    trap_densities: np.ndarray,
+    trap_time_constants: np.ndarray,
+    delta_t: float,
+    trap_capacities: t.Optional[np.ndarray] = None,
 ) -> t.Tuple[np.ndarray, np.ndarray]:
-    """
+    """TBW.
 
     Parameters
     ----------
@@ -181,7 +190,7 @@ def compute_simple_persistence(
 
     Returns
     -------
-
+    tuple of ndarray
     """
     for i, trapped_charge in enumerate(all_trapped_charge):
         # Computer trapped charge for this increment of time
@@ -198,8 +207,9 @@ def compute_simple_persistence(
         else:
             fwc = trap_capacities[i] * np.ones(trapped_charge.shape)
 
-        trapped_charge_clipped = clip_trapped_charge(trapped_charge=trapped_charge,
-                                                     trap_capacities=fwc)
+        trapped_charge_clipped = clip_trapped_charge(
+            trapped_charge=trapped_charge, trap_capacities=fwc
+        )
 
         pixel_array -= diff
 
@@ -264,7 +274,9 @@ def persistence(
 
     trap_densities_2d[np.where(trap_densities_2d < 0)] = 0
     trap_capacities_2d[np.where(trap_capacities_2d < 0)] = 0
-    trap_densities_2d = np.nan_to_num(trap_densities_2d, nan=0.0, posinf=0.0, neginf=0.0)
+    trap_densities_2d = np.nan_to_num(
+        trap_densities_2d, nan=0.0, posinf=0.0, neginf=0.0
+    )
 
     if not detector.has_persistence():
         detector.persistence = Persistence(
@@ -326,15 +338,15 @@ def compute_persistence(
         fw_trap = trap_capacities_2d * trap_proportions[i]
 
         # Compute trapped charges
-        diff = time_factor * (
-            densities * pixel_array - trapped_charge
-        )
+        diff = time_factor * (densities * pixel_array - trapped_charge)
 
         trapped_charge += diff
 
         # When the amount of trapped charges is superior to the maximum of available traps, set to max
         # Can't have a negative amount of charges trapped
-        trapped_charge_clipped = clip_trapped_charge(trapped_charge=trapped_charge, trap_capacities=fw_trap)
+        trapped_charge_clipped = clip_trapped_charge(
+            trapped_charge=trapped_charge, trap_capacities=fw_trap
+        )
 
         # Remove the trapped charges from the pixel
         # detector.pixel.array -= trapped_charges.astype(np.int32)
@@ -347,8 +359,7 @@ def compute_persistence(
 
 @numba.njit(fastmath=True)
 def clip_trapped_charge(
-    trapped_charge: np.ndarray,
-    trap_capacities: t.Optional[np.ndarray] = None
+    trapped_charge: np.ndarray, trap_capacities: t.Optional[np.ndarray] = None
 ) -> np.ndarray:
     """Clip input array between arrays of minimum and maximum values.
 

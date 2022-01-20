@@ -89,7 +89,7 @@ class SimplePersistence:
         self,
         trap_time_constants: t.Sequence[float],
         trap_densities: t.Sequence[float],
-        geometry: t.Tuple[int, ...]
+        geometry: t.Tuple[int, ...],
     ):
         traps = []
         for time_constant, trap_density in sorted(
