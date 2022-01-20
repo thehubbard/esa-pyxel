@@ -40,7 +40,9 @@ class Characteristics:
             raise ValueError("'quantum_efficiency' must be between 0.0 and 1.0.")
 
         if not (0.0 <= charge_to_volt_conversion <= 100.0):
-            raise ValueError("'charge_to_volt_conversion' must be between 0.0 and 100.0.")
+            raise ValueError(
+                "'charge_to_volt_conversion' must be between 0.0 and 100.0."
+            )
 
         if not (0.0 <= pre_amplification <= 10000.0):
             raise ValueError("'pre_amplification' must be between 0.0 and 10000.0.")
@@ -81,7 +83,9 @@ class Characteristics:
     def charge_to_volt_conversion(self, value: float) -> None:
         """Set charge to volt conversion parameter."""
         if not (0.0 <= value <= 100.0):
-            raise ValueError("'charge_to_volt_conversion' must be between 0.0 and 100.0.")
+            raise ValueError(
+                "'charge_to_volt_conversion' must be between 0.0 and 100.0."
+            )
         self._charge_to_volt_conversion = value
 
     @property

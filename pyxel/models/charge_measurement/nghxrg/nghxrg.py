@@ -119,7 +119,7 @@ def compute_nghxrg(
     else:
         window_mode = "WINDOW"
 
-    data_hxrg_2d = np.asarray(pixel_2d, dtype=float)  # type: np.ndarray
+    data_hxrg_2d = np.asarray(pixel_2d.copy(), dtype=float)  # type: np.ndarray
 
     ng = HXRGNoise(
         n_out=num_outputs,
@@ -321,7 +321,7 @@ def nghxrg(
     )  # type: np.ndarray
 
     # Add the pixels
-    detector.pixel.array = detector.pixel.array + result_2d
+    detector.pixel.array += result_2d
 
 
 # TODO: This generates plot. It should be in class `Output`

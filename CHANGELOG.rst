@@ -12,6 +12,8 @@ Documentation
 
 Models
 ~~~~~~
+* Nghxrg model replacing pixel array instead of adding.
+  (See `!404 <https://gitlab.com/esa/pyxel/-/merge_requests/404>`_).
 
 Others
 ~~~~~~

@@ -39,6 +39,8 @@ Add noise to signal array of detector output node using normal random distributi
       arguments:
         std_deviation: 1.0
 
+.. note:: This model is specific to the CCD detector.
+
 .. autofunction:: output_node_noise
 
 Output node noise CMOS
@@ -54,6 +56,8 @@ Output node noise model for CMOS detectors where readout is statistically indepe
       arguments:
         readout_noise: 1.0
         readout_noise_std: 2.0
+
+.. note:: This model is specific to the CMOS detector.
 
 .. autofunction:: output_node_noise_cmos
 
@@ -80,14 +84,16 @@ Example of the configuration file where a 10% non-linearity is introduced as a f
 HxRG noise generator
 ====================
 
-A near-infrared CMOS noise generator (ngHxRG) developed for the
+With this model you can add noise to :py:class:`~pyxel.data_structure.Pixel` array,
+before converting to :py:class:`~pyxel.data_structure.Signal` array in the charge measurement part of the pipeline.
+
+It is a near-infrared CMOS noise generator (ngHxRG) developed for the
 James Webb Space Telescope (JWST) Near Infrared Spectrograph (NIRSpec)
-described in :cite:p:`2015:rauscher`
-has been also added to the framework. It simulates many important noise
+described in :cite:p:`2015:rauscher`. It simulates many important noise
 components including white read noise, residual bias drifts, pink 1/f
 noise, alternating column noise and picture frame noise.
 
-This model implemented in Python, reproduces most of the Fourier noise
+The model reproduces most of the Fourier noise
 power spectrum seen in real data, and includes uncorrelated, correlated,
 stationary and non-stationary noise components.
 The model can simulate noise for HxRG detectors of
@@ -98,7 +104,7 @@ Example of the configuration file:
 
 .. code-block:: yaml
 
-    - name: illumination
+    - name: nghxrg
       func: pyxel.models.charge_measurement.nghxrg
       enabled: true
       arguments:
@@ -120,7 +126,6 @@ Example of the configuration file:
               pca0_amp: 1.
         window_position: [0, 0]   # Optional
         window_size: [100, 100]   # Optional
-        option: "elliptic"
         n_output: 1
         n_row_overhead: 0
         n_frame_overhead: 0
