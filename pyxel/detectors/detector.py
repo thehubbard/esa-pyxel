@@ -331,18 +331,6 @@ class Detector:
         self._numbytes = get_size(self)
         return self._numbytes
 
-    @property
-    def numbytes(self) -> int:
-        """Recursively calculates object size in bytes using Pympler library.
-
-        Returns
-        -------
-        int
-            Size of the object in bytes.
-        """
-        self._numbytes = get_size(self)
-        return self._numbytes
-
     def memory_usage(
         self, print_result: bool = True, human_readable: bool = True
     ) -> dict:
