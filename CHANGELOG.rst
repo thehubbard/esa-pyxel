@@ -16,6 +16,8 @@ Models
 ~~~~~~
 * Nghxrg model replacing pixel array instead of adding.
   (See `!404 <https://gitlab.com/esa/pyxel/-/merge_requests/404>`_).
+* Optimize persistence model.
+  (See `!285 <https://gitlab.com/esa/pyxel/-/merge_requests/285>`_).
 
 Others
 ~~~~~~
