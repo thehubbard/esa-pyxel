@@ -134,13 +134,13 @@ def simple_persistence(
 
     if not len(trap_time_constants) == len(trap_densities):
         raise ValueError(
-            "Expecting same number of elements for parameters 'trap_timeconstants'"
+            "Expecting same number of elements for parameters 'trap_time_constants'"
             "and 'trap_densities'"
         )
 
     if len(trap_time_constants) == 0:
         raise ValueError(
-            "Expecting at least one 'trap_timeconstants' and 'trap_densities'"
+            "Expecting at least one 'trap_time_constants' and 'trap_densities'"
         )
 
     if not detector.has_persistence():

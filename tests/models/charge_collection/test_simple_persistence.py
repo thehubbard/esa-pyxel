@@ -10,7 +10,13 @@ import typing as t
 import numpy as np
 import pytest
 
-from pyxel.detectors import CMOS, CMOSCharacteristics, CMOSGeometry, Environment
+from pyxel.detectors import (
+    CMOS,
+    CMOSCharacteristics,
+    CMOSGeometry,
+    Environment,
+    ReadoutProperties,
+)
 from pyxel.models.charge_collection import simple_persistence
 
 
@@ -28,6 +34,7 @@ def cmos_5x10() -> CMOS:
         environment=Environment(),
         characteristics=CMOSCharacteristics(),
     )
+    detector._readout_properties = ReadoutProperties(num_steps=1)
 
     return detector
 
@@ -41,37 +48,37 @@ def test_simple_persistence(cmos_5x10: CMOS):
 
     simple_persistence(
         detector=detector,
-        trap_timeconstants=[1.0, 3.0],
-        trap_densities=[2.0, 4.0],
+        trap_time_constants=[1.0, 3.0],
+        trap_densities=[0.1, 0.1],
     )
 
-    assert "persistence" in detector._memory
-    assert len(detector._memory["persistence"]) == 2
+    assert detector.has_persistence()
+    assert len(detector.persistence.trap_list) == 2
 
     # With persistence
     simple_persistence(
         detector=detector,
-        trap_timeconstants=[1.0],
-        trap_densities=[2.0],
+        trap_time_constants=[1.0],
+        trap_densities=[0.1],
     )
 
-    assert "persistence" in detector._memory
-    assert len(detector._memory["persistence"]) == 2
+    assert detector.has_persistence()
+    assert len(detector.persistence.trap_list) == 2
 
 
 @pytest.mark.parametrize(
-    "trap_timeconstants, trap_densities, exp_error, exp_msg",
+    "trap_time_constants, trap_densities, exp_error, exp_msg",
     [
         pytest.param(
             [],
             [],
             ValueError,
-            "Expecting at least one 'trap_timeconstants' and 'trap_densities'",
+            "Expecting at least one 'trap_time_constants' and 'trap_densities'",
             id="no elements",
         ),
         pytest.param(
             [1.0],
-            [2.0, 3.0],
+            [0.1, 0.1],
             ValueError,
             "Expecting same number of elements for parameters",
             id="not same number of elements",
@@ -80,7 +87,7 @@ def test_simple_persistence(cmos_5x10: CMOS):
 )
 def test_simple_persistence_bad_inputs(
     cmos_5x10: CMOS,
-    trap_timeconstants,
+    trap_time_constants,
     trap_densities,
     exp_error,
     exp_msg,
@@ -91,6 +98,6 @@ def test_simple_persistence_bad_inputs(
     with pytest.raises(exp_error, match=exp_msg):
         simple_persistence(
             detector=detector,
-            trap_timeconstants=trap_timeconstants,
+            trap_time_constants=trap_time_constants,
             trap_densities=trap_densities,
         )
