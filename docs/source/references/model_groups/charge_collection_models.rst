@@ -15,6 +15,8 @@ A charge collection model is necessary to first convert from charge data stored 
 Simple collection
 =================
 
+:guilabel:`Charge` 🠆 :guilabel:`Pixel`
+
 Simple collection model is the simplest model of charge collection and
 necessary to fill up :py:class:`~pyxel.data_structure.Pixel` array when no other collection model is used.
 If charge inside :py:class:`~pyxel.data_structure.Charge` class is stored in an ``numpy`` array,
@@ -35,6 +37,9 @@ Example of YAML configuration model:
 
 Simple full well
 ================
+
+:guilabel:`Pixel` 🠆 :guilabel:`Pixel`
+
 This model can be used to limit the amount of charge in :py:class:`~pyxel.data_structure.Pixel` array
 due to full well capacity. Values will be clipped to the value of the full well capacity.
 The model uses full well capacity value specified in :py:class:`~pyxel.detectors.Characteristics` of the
@@ -54,6 +59,8 @@ Example of the configuration file:
 
 Fixed pattern noise
 ===================
+
+:guilabel:`Pixel` 🠆 :guilabel:`Pixel`
 
 With this model you can multiply :py:class:`~pyxel.data_structure.Pixel` array with
 fixed pattern noise caused by pixel non-uniformity during charge collection.
@@ -79,6 +86,9 @@ Basic example of the configuration file:
 
 Inter-pixel capacitance
 =======================
+
+:guilabel:`Pixel` 🠆 :guilabel:`Pixel`
+
 This model can be used to apply inter-pixel capacitance to :py:class:`~pyxel.data_structure.Pixel` array.
 When there is IPC, the signal read out on any pixel is affected by the signal in neighboring pixels.
 The IPC affects the point spread function (PSF) of the optical system, modiying the shape of the objects.
@@ -119,6 +129,8 @@ Example of the configuration file:
 Simple Persistence
 ==================
 
+:guilabel:`Pixel` 🠆 :guilabel:`Pixel`
+
 Simple trapping / detrapping charges.
 
 .. code-block:: yaml
@@ -138,5 +150,6 @@ Simple trapping / detrapping charges.
 Current Persistence
 ===================
 
+:guilabel:`Pixel` 🠆 :guilabel:`Pixel`
 
 .. autofunction:: current_persistence

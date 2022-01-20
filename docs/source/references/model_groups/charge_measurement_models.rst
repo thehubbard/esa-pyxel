@@ -11,6 +11,8 @@ Charge Measurement models
 Simple charge measurement
 =========================
 
+:guilabel:`Pixel` 🠆 :guilabel:`Signal`
+
 Convert the pixels array to the signal array.
 
 Example of the configuration file:
@@ -29,6 +31,8 @@ Example of the configuration file:
 Output node noise
 =================
 
+:guilabel:`Signal` 🠆 :guilabel:`Signal`
+
 Add noise to signal array of detector output node using normal random distribution.
 
 .. code-block:: yaml
@@ -45,6 +49,8 @@ Add noise to signal array of detector output node using normal random distributi
 
 Output node noise CMOS
 ======================
+
+:guilabel:`Signal` 🠆 :guilabel:`Signal`
 
 Output node noise model for CMOS detectors where readout is statistically independent for each pixel.
 
@@ -63,6 +69,9 @@ Output node noise model for CMOS detectors where readout is statistically indepe
 
 Non-linearity
 =============
+
+:guilabel:`Signal` 🠆 :guilabel:`Signal`
+
 With this model you can add non-linearity to :py:class:`~pyxel.data_structure.Signal` array
 to simulate the non-linearity of the output node circuit.
 The non-linearity is simulated by a polynomial function.
@@ -83,6 +92,8 @@ Example of the configuration file where a 10% non-linearity is introduced as a f
 
 HxRG noise generator
 ====================
+
+:guilabel:`Pixel` 🠆 :guilabel:`Pixel`
 
 With this model you can add noise to :py:class:`~pyxel.data_structure.Pixel` array,
 before converting to :py:class:`~pyxel.data_structure.Signal` array in the charge measurement part of the pipeline.

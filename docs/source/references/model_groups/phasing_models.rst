@@ -9,6 +9,8 @@ Phasing models
 Pulse processing
 ================
 
+:guilabel:`Charge` 🠆 :guilabel:`Phase`
+
 TBW: description, reference, units etc.
 
 Example of YAML configuration model:

@@ -9,6 +9,8 @@ Core
 
 Documentation
 ~~~~~~~~~~~~~
+* Put labels to model API to know which data structures are models changing.
+  (See `!405 <https://gitlab.com/esa/pyxel/-/merge_requests/405>`_).
 
 Models
 ~~~~~~

@@ -13,6 +13,8 @@ Charge Transfer models (CCD)
 Charge Distortion Model (CDM)
 =============================
 
+:guilabel:`Pixel` 🠆 :guilabel:`Pixel`
+
 The Charge Distortion Model - CDM :cite:p:`2013:short` describes the effects of the radiation
 damage causing charge deferral and image shape distortion. The analytical
 model is physically realistic, yet fast enough. It was developed specifically
@@ -56,6 +58,8 @@ Example of the configuration file.
 Add CTI trails
 ==============
 
+:guilabel:`Pixel` 🠆 :guilabel:`Pixel`
+
 Add image trails due to charge transfer inefficiency in CCD detectors by modelling the
 trapping, releasing, and moving of charge along pixels.
 
@@ -85,6 +89,8 @@ Example of the configuration file:
 
 Remove CTI trails
 =================
+
+:guilabel:`Pixel` 🠆 :guilabel:`Pixel`
 
 Remove CTI trails is done by iteratively modelling the addition of CTI, as described
 in :cite:p:`2010:massey` section 3.2 and Table 1.
