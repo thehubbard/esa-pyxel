@@ -6,6 +6,7 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 #
 #
+"""Persistence classes."""
 import typing as t
 from dataclasses import dataclass
 
@@ -14,6 +15,7 @@ import numpy as np
 
 @dataclass
 class Trap:
+    """Trap dataclass."""
 
     time_constant: float
     proportion: float
@@ -21,6 +23,8 @@ class Trap:
 
 
 class Persistence:
+    """Persistence class."""
+
     def __init__(
         self,
         trap_time_constants: t.Sequence[float],
@@ -49,16 +53,19 @@ class Persistence:
 
     @property
     def trap_list(self) -> t.Sequence[Trap]:
+        """List of traps."""
         return self._trap_list
 
     @property
     def trapped_charge_array(self) -> np.ndarray:
+        """Return an array of trapped charge."""
         # for i, trap in enumerate(self.trap_list):
         #     out[i] = trap.charge
         return self._trapped_charge_array
 
     @trapped_charge_array.setter
     def trapped_charge_array(self, charge_3d: np.ndarray) -> None:
+        """Set an array of trapped charge."""
         for i, trap in enumerate(self.trap_list):
             if not charge_3d[i].shape == trap.charge.shape:
                 raise ValueError(
@@ -69,15 +76,18 @@ class Persistence:
 
     @property
     def trap_time_constants(self) -> np.ndarray:
+        """Return trap time constants."""
         return self._trap_time_constants
 
     @property
     def trap_proportions(self) -> np.ndarray:
+        """Return trap proportions."""
         return self._trap_proportions
 
 
 @dataclass
 class SimpleTrap:
+    """Simple trap dataclass."""
 
     time_constant: float
     density: float
@@ -85,6 +95,8 @@ class SimpleTrap:
 
 
 class SimplePersistence:
+    """Simple persistence dataclass."""
+
     def __init__(
         self,
         trap_time_constants: t.Sequence[float],
@@ -113,16 +125,19 @@ class SimplePersistence:
 
     @property
     def trap_list(self) -> t.Sequence[SimpleTrap]:
+        """Return a list of traps."""
         return self._trap_list
 
     @property
     def trapped_charge_array(self) -> np.ndarray:
+        """Return an array of trapped charge."""
         # for i, trap in enumerate(self.trap_list):
         #     out[i] = trap.charge
         return self._trapped_charge_array
 
     @trapped_charge_array.setter
     def trapped_charge_array(self, charge_3d: np.ndarray) -> None:
+        """Set an array of trapped charge."""
         for i, trap in enumerate(self.trap_list):
             if not charge_3d[i].shape == trap.charge.shape:
                 raise ValueError(
@@ -133,8 +148,10 @@ class SimplePersistence:
 
     @property
     def trap_time_constants(self) -> np.ndarray:
+        """Return trap time constants."""
         return self._trap_time_constants
 
     @property
     def trap_densities(self) -> np.ndarray:
+        """Return trap densities."""
         return self._trap_densities

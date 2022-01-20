@@ -76,17 +76,17 @@ Model reference in the YAML config file
 
 .. code-block:: yaml
 
-    pipeline:
+pipeline:
 
-      # Persistence model based on MOONS detector (H4RG) measurements
-      - name: persistence
-        func: pyxel.models.charge_collection.persistence.persistence
-        enabled: true
-        arguments:
-          trap_time_constants: [1, 10, 100, 1000, 10000]
-          trap_densities_filename: data/fits/20210408121614_20210128_ENG20370_AUTOCHAR-Persistence_FitTrapDensityMap.fits
-          trap_capacities_filename: data/fits/20210408093114_20210128_ENG20370_AUTOCHAR-Persistence_FitMaximumTrapMap.fits
-          trap_proportions: [0.307, 0.175, 0.188, 0.136, 0.194]
+  # Persistence model based on MOONS detector (H4RG) measurements
+  - name: persistence
+    func: pyxel.models.charge_collection.persistence.persistence
+    enabled: true
+    arguments:
+      trap_time_constants: [1, 10, 100, 1000, 10000]
+      trap_densities_filename: data/fits/20210408121614_20210128_ENG20370_AUTOCHAR-Persistence_FitTrapDensityMap.fits
+      trap_capacities_filename: data/fits/20210408093114_20210128_ENG20370_AUTOCHAR-Persistence_FitMaximumTrapMap.fits
+      trap_proportions: [0.307, 0.175, 0.188, 0.136, 0.194]
 
 Useful links
 ============
