@@ -12,6 +12,8 @@ Readout electronics models are used to add TBW.
 Simple digitization
 ===================
 
+:guilabel:`Signal` 🠆 :guilabel:`Image`
+
 Digitize signal array mimicking readout electronics.
 
 Example of the configuration file:
@@ -29,6 +31,8 @@ Example of the configuration file:
 Simple amplification
 ====================
 
+:guilabel:`Signal` 🠆 :guilabel:`Signal`
+
 Amplify signal using gain from the output amplifier (in V/V) and
 the signal processor (in V/V).
 
@@ -45,6 +49,8 @@ Example of the configuration file:
 
 DC crosstalk
 ============
+
+:guilabel:`Signal` 🠆 :guilabel:`Signal`
 
 Apply DC crosstalk signal to detector signal.
 
@@ -65,6 +71,8 @@ Example of the configuration file:
 AC crosstalk
 ============
 
+:guilabel:`Signal` 🠆 :guilabel:`Signal`
+
 Apply AC crosstalk signal to detector signal.
 
 Example of the configuration file:
@@ -83,6 +91,8 @@ Example of the configuration file:
 
 Dead time filter
 ================
+
+:guilabel:`Phase` 🠆 :guilabel:`Phase`
 
 This model only applies to the :py:class:`~pyxel.detectors.MKID` detector.
 
@@ -114,6 +124,8 @@ Example of the configuration file:
 SAR ADC
 =======
 
+:guilabel:`Signal` 🠆 :guilabel:`Image`
+
 Digitize signal array using SAR (Successive Approximation Register) ADC logic.
 
 Example of the configuration file:
@@ -132,6 +144,8 @@ Example of the configuration file:
 Simple phase conversion
 =======================
 
+:guilabel:`Phase` 🠆 :guilabel:`Image`
+
 With this model you can convert :py:class:`~pyxel.data_structure.Phase`
 array into :py:class:`~pyxel.data_structure.Image`, given a hard-coded multiplicative conversion factor.
 
@@ -149,6 +163,8 @@ Example of the configuration file:
 
 Simple processing
 =================
+
+:guilabel:`Signal` 🠆 :guilabel:`Image`
 
 With this model you can convert :py:class:`~pyxel.data_structure.Signal`
 array into :py:class:`~pyxel.data_structure.Image`.

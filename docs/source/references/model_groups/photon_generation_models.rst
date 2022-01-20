@@ -13,6 +13,9 @@ so number of photons per pixel area per second. Time scale of the incoming flux 
 
 Loading an image
 ----------------
+
+:guilabel:`Photon` 🠆 :guilabel:`Photon`
+
 With this model you can add photons to :py:class:`~pyxel.detectors.Detector` by loading an image from a file.
 Accepted file formats are ``.npy``, ``.fits``, ``.txt``, ``.data``, ``.jpg``, ``.jpeg``, ``.bmp``,
 ``.png`` and ``.tiff``. Use argument ``position`` to set the offset from (0,0) pixel
@@ -39,6 +42,9 @@ photon numbers for each pixel using the Photon Transfer Function:
 
 Simple illumination
 -------------------
+
+:guilabel:`Photon` 🠆 :guilabel:`Photon`
+
 With this model you can create different simple photon distributions: uniform, elliptical/circular
 or rectangular, by setting the argument ``type``. The calculated photon count will be added to the
 :py:class:`~pyxel.data_structure.Photon` array. User can specify the brightness of the object
@@ -67,6 +73,8 @@ Example of the configuration file for a circular object:
 Stripe pattern
 --------------
 
+:guilabel:`Photon` 🠆 :guilabel:`Photon`
+
 With this model you can add a two-dimensional square signal - a stripe pattern
 to the :py:class:`~pyxel.data_structure.Photon` array. User can specify amplitude with argument ``level``,
 the ``period`` of the square signal in unit of pixels and the ``angle`` of stripes.
@@ -90,6 +98,9 @@ Example of the configuration file:
 
 Shot noise
 ----------
+
+:guilabel:`Photon` 🠆 :guilabel:`Photon`
+
 Use this model to add shot noise to the :py:class:`~pyxel.data_structure.Photon` array.
 By default (no arguments provided), the model uses the Poisson distribution (``numpy.random.poisson``).
 User can also set the argument  ``type`` to ``"normal"`` for normal distribution (``numpy.random.normal``).

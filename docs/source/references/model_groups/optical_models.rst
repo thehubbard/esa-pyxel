@@ -11,6 +11,8 @@ Optical models
 Physical Optics Propagation in PYthon (POPPY)
 =============================================
 
+:guilabel:`Photon` 🠆 :guilabel:`Photon`
+
 POPPY (Physical Optics Propagation in Python) model wrapper.
 
 It calculates the optical Point Spread Function of an optical system and applies the convolution.
