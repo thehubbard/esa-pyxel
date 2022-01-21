@@ -39,12 +39,12 @@ def cmos_5x10() -> CMOS:
     return detector
 
 
-def test_simple_persistence(cmos_5x10: CMOS):
+def test_simple_persistence_two_traps(cmos_5x10: CMOS):
     """Test model 'simple_persistence'."""
     detector = cmos_5x10
 
     # No persistence
-    assert "persistence" not in detector._memory
+    assert not detector.has_persistence()
 
     simple_persistence(
         detector=detector,
@@ -55,6 +55,14 @@ def test_simple_persistence(cmos_5x10: CMOS):
     assert detector.has_persistence()
     assert len(detector.persistence.trap_list) == 2
 
+
+def test_simple_persistence_one_trap(cmos_5x10: CMOS):
+    """Test model 'simple_persistence'."""
+    detector = cmos_5x10
+
+    # No persistence
+    assert not detector.has_persistence()
+
     # With persistence
     simple_persistence(
         detector=detector,
@@ -63,7 +71,7 @@ def test_simple_persistence(cmos_5x10: CMOS):
     )
 
     assert detector.has_persistence()
-    assert len(detector.persistence.trap_list) == 2
+    assert len(detector.persistence.trap_list) == 1
 
 
 @pytest.mark.parametrize(
