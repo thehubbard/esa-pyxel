@@ -425,8 +425,8 @@ def champion_heatmap(
         {"param_id": range(len(ds.param_id))}
     )
 
-    x = np.array([])
-    y = np.array([])
+    x = np.array([])  # type: np.ndarray
+    y = np.array([])  # type: np.ndarray
 
     for parameter in output_champions.param_id[parameter_slice]:
         for island in output_champions.island[island_slice]:
