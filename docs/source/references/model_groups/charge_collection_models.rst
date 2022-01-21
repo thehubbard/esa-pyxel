@@ -147,9 +147,9 @@ Simple trapping / detrapping charges.
 .. autofunction:: simple_persistence
 
 
-Current Persistence
-===================
+Persistence
+===========
 
 :guilabel:`Pixel` 🠆 :guilabel:`Pixel`
 
-.. autofunction:: current_persistence
+.. autofunction:: persistence

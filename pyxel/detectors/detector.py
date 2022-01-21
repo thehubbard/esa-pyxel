@@ -14,7 +14,15 @@ import h5py as h5
 import numpy as np
 
 from pyxel import __version__
-from pyxel.data_structure import Charge, Image, Photon, Pixel, Signal
+from pyxel.data_structure import (
+    Charge,
+    Image,
+    Persistence,
+    Photon,
+    Pixel,
+    Signal,
+    SimplePersistence,
+)
 from pyxel.detectors import Environment
 from pyxel.detectors.readout_properties import ReadoutProperties
 from pyxel.util.memory import get_size, memory_usage_details
@@ -39,6 +47,9 @@ class Detector:
 
         # This will be the memory of the detector where trapped charges will be saved
         self._memory = dict()  # type: t.Dict
+        self._persistence = (
+            None
+        )  # type: t.Optional[t.Union[Persistence, SimplePersistence]]
 
         self.input_image = None  # type: t.Optional[np.ndarray]
         self._output_dir = None  # type: t.Optional[Path]  # TODO: See #330
@@ -283,6 +294,30 @@ class Detector:
             return self._readout_properties.non_destructive
         else:
             raise ValueError("No sampling defined.")
+
+    def has_persistence(self) -> bool:
+        """TBW."""
+        if self._persistence is not None:
+            return True
+        else:
+            return False
+
+    @property
+    def persistence(self) -> t.Union[Persistence, SimplePersistence]:
+        """TBW."""
+        if self._persistence is not None:
+            return self._persistence
+        else:
+            raise RuntimeError("'persistence' not initialized.")
+
+    @persistence.setter
+    def persistence(self, value: t.Union[Persistence, SimplePersistence]) -> None:
+        """TBW."""
+        if not isinstance(value, (Persistence, SimplePersistence)):
+            raise TypeError(
+                "Expecting Persistence or SimplePersistence type to set detector persistence."
+            )
+        self._persistence = value
 
     @property
     def numbytes(self) -> int:

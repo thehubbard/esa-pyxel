@@ -65,7 +65,7 @@ def _set_relative_position(
 
 def fit_into_array(
     array: np.ndarray,
-    output_shape: t.Tuple[int, int],
+    output_shape: t.Tuple[int, ...],
     relative_position: t.Tuple[int, int] = (0, 0),
     align: t.Optional[
         Literal["center", "top_left", "top_right", "bottom_left", "bottom_right"]
@@ -151,13 +151,14 @@ def fit_into_array(
 
 @lru_cache(maxsize=128)  # One must add parameter 'maxsize' for Python 3.7
 def load_cropped_and_aligned_image(
-    shape: t.Tuple[int, int],
+    shape: t.Tuple[int, ...],
     filename: t.Union[str, Path],
     position_x: int = 0,
     position_y: int = 0,
     align: t.Optional[
         Literal["center", "top_left", "top_right", "bottom_left", "bottom_right"]
     ] = None,
+    allow_smaller_array: bool = True,
 ) -> np.ndarray:
     """Load image from file and fit to detector shape.
 
@@ -188,6 +189,7 @@ def load_cropped_and_aligned_image(
         output_shape=shape,
         relative_position=(position_y, position_x),
         align=align,
+        allow_smaller_array=allow_smaller_array,
     )  # type: np.ndarray
 
     return cropped_and_aligned_image
