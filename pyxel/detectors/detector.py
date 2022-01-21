@@ -313,7 +313,7 @@ class Detector:
     @persistence.setter
     def persistence(self, value: t.Union[Persistence, SimplePersistence]) -> None:
         """TBW."""
-        if not (isinstance(value, Persistence) or isinstance(value, SimplePersistence)):
+        if not isinstance(value, (Persistence, SimplePersistence)):
             raise TypeError(
                 "Expecting Persistence or SimplePersistence type to set detector persistence."
             )
