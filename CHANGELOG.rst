@@ -18,6 +18,8 @@ Models
   (See `!404 <https://gitlab.com/esa/pyxel/-/merge_requests/404>`_).
 * Optimize persistence model.
   (See `!285 <https://gitlab.com/esa/pyxel/-/merge_requests/285>`_).
+* Fix for persistence model when using long time steps.
+  (See `!407 <https://gitlab.com/esa/pyxel/-/merge_requests/407>`_).
 
 Others
 ~~~~~~
