@@ -192,30 +192,48 @@ def compute_simple_persistence(
     -------
     tuple of ndarray
     """
+    pixel_start = pixel_array.copy()
+
     for i, trapped_charge in enumerate(all_trapped_charge):
         # Computer trapped charge for this increment of time
         # Time factor is the integration time divided by the time constant (1, 10, 100, 1000, 10000)
         time_factor = delta_t / trap_time_constants[i]
 
         # Compute trapped charges
-        diff = time_factor * (trap_densities[i] * pixel_array - trapped_charge)
+        available_traps = trap_densities[i] * pixel_array
+        empty_traps = available_traps - trapped_charge
+        diff = time_factor * empty_traps
+
+        # maximum you can release is trapped_charge, max you can add is empty traps
+        diff = clip_diff(diff=diff, trapped_charge=trapped_charge, empty_traps=empty_traps)
 
         trapped_charge += diff
+
+        pixel_array -= diff
+
+        all_trapped_charge[i] = trapped_charge
+
+    pixel_diff = pixel_array - pixel_start
+
+    for i, trapped_charge in enumerate(all_trapped_charge):
 
         if trap_capacities is None:
             fwc = None
         else:
             fwc = trap_capacities[i] * np.ones(trapped_charge.shape)
 
-        trapped_charge_clipped = clip_trapped_charge(
-            trapped_charge=trapped_charge, trap_capacities=fwc
-        )
+        densities = trap_densities[i] * np.ones(trapped_charge.shape)
+        available_traps = pixel_array * densities
 
-        pixel_array -= diff
-
+        trapped_charge_clipped, output_pixel = clip_trapped_charge(trapped_charge=trapped_charge,
+                                                                   pixel=pixel_array,
+                                                                   available_traps=available_traps,
+                                                                   pixel_diff=pixel_diff,
+                                                                   trap_capacities=fwc
+                                                                   )
         all_trapped_charge[i] = trapped_charge_clipped
 
-    return pixel_array, all_trapped_charge
+    return output_pixel, all_trapped_charge
 
 
 def persistence(
@@ -223,7 +241,7 @@ def persistence(
     trap_time_constants: t.Sequence[float],
     trap_proportions: t.Sequence[float],
     trap_densities_filename: t.Union[Path, str],
-    trap_capacities_filename: t.Union[Path, str],
+    trap_capacities_filename: t.Optional[t.Union[Path, str]] = None,
     trap_densities_position: t.Tuple[int, int] = (0, 0),
     trap_densities_align: t.Optional[
         Literal["center", "top_left", "top_right", "bottom_left", "bottom_right"]
@@ -262,18 +280,25 @@ def persistence(
         align=trap_densities_align,
         allow_smaller_array=False,
     )
-    # Extract the max amount of trap by long soak
-    trap_capacities_2d = load_cropped_and_aligned_image(
-        shape=shape,
-        filename=trap_capacities_filename,
-        position_x=capacities_position_x,
-        position_y=capacities_position_y,
-        align=trap_capacities_align,
-        allow_smaller_array=False,
-    )
+
+    if trap_capacities_filename is not None:
+
+        # Extract the max amount of trap by long soak
+        trap_capacities_2d = load_cropped_and_aligned_image(
+            shape=shape,
+            filename=trap_capacities_filename,
+            position_x=capacities_position_x,
+            position_y=capacities_position_y,
+            align=trap_capacities_align,
+            allow_smaller_array=False,
+        )
+
+        trap_capacities_2d[np.where(trap_capacities_2d < 0)] = 0
+
+    else:
+        trap_capacities_2d = None
 
     trap_densities_2d[np.where(trap_densities_2d < 0)] = 0
-    trap_capacities_2d[np.where(trap_capacities_2d < 0)] = 0
     trap_densities_2d = np.nan_to_num(
         trap_densities_2d, nan=0.0, posinf=0.0, neginf=0.0
     )
@@ -306,25 +331,27 @@ def compute_persistence(
     trap_proportions: np.ndarray,
     trap_time_constants: np.ndarray,
     trap_densities_2d: np.ndarray,
-    trap_capacities_2d: np.ndarray,
     delta_t: float,
+    trap_capacities_2d: t.Optional[np.ndarray] = None,
 ) -> t.Tuple[np.ndarray, np.ndarray]:
     """TBW.
 
     Parameters
     ----------
-    pixel_array
-    all_trapped_charge
-    trap_proportions
-    trap_time_constants
-    trap_densities_2d
-    trap_capacities_2d
-    delta_t
+    pixel_array: ndarray
+    all_trapped_charge: ndarray
+    trap_proportions: ndarray
+    trap_time_constants: ndarray
+    trap_densities_2d: ndarray
+    delta_t: float
+    trap_capacities_2d: ndarray, optional
 
     Returns
     -------
     tuple of ndarray
     """
+    pixel_start = pixel_array.copy()
+
     for i, trapped_charge in enumerate(all_trapped_charge):
 
         # Computer trapped charge for this increment of time
@@ -334,54 +361,107 @@ def compute_persistence(
         # Amount of charges trapped per unit of full well
         densities = trap_densities_2d * trap_proportions[i]
 
-        # Maximum of amount of charges trapped
-        fw_trap = trap_capacities_2d * trap_proportions[i]
-
         # Compute trapped charges
-        diff = time_factor * (densities * pixel_array - trapped_charge)
+        available_traps = densities * pixel_array
+        empty_traps = available_traps - trapped_charge
+        diff = time_factor * empty_traps
+
+        # maximum you can release is trapped_charge, max you can add is empty traps
+        diff = clip_diff(diff=diff, trapped_charge=trapped_charge, empty_traps=empty_traps)
 
         trapped_charge += diff
 
-        # When the amount of trapped charges is superior to the maximum of available traps, set to max
-        # Can't have a negative amount of charges trapped
-        trapped_charge_clipped = clip_trapped_charge(
-            trapped_charge=trapped_charge, trap_capacities=fw_trap
-        )
-
-        # Remove the trapped charges from the pixel
-        # detector.pixel.array -= trapped_charges.astype(np.int32)
         pixel_array -= diff
 
+        all_trapped_charge[i] = trapped_charge
+
+    pixel_diff = pixel_array - pixel_start
+
+    for i, trapped_charge in enumerate(all_trapped_charge):
+
+        if trap_capacities_2d is None:
+            fwc = None
+        else:
+            fwc = trap_capacities_2d * trap_proportions[i]
+
+        densities = trap_densities_2d * trap_proportions[i]
+        available_traps = pixel_array * densities
+
+        trapped_charge_clipped, output_pixel = clip_trapped_charge(trapped_charge=trapped_charge,
+                                                                   pixel=pixel_array,
+                                                                   available_traps=available_traps,
+                                                                   pixel_diff=pixel_diff,
+                                                                   trap_capacities=fwc
+                                                                   )
         all_trapped_charge[i] = trapped_charge_clipped
 
-    return pixel_array, all_trapped_charge
+    return output_pixel, all_trapped_charge
 
 
 @numba.njit(fastmath=True)
 def clip_trapped_charge(
-    trapped_charge: np.ndarray, trap_capacities: t.Optional[np.ndarray] = None
+    trapped_charge: np.ndarray,
+    pixel: np.ndarray,
+    available_traps: np.ndarray,
+    pixel_diff: np.ndarray,
+    trap_capacities: t.Optional[np.ndarray] = None
 ) -> np.ndarray:
     """Clip input array between arrays of minimum and maximum values.
 
     Parameters
     ----------
     trapped_charge: ndarray
-    trap_capacities: ndarray
+    pixel: ndarray
+    available_traps: ndarray
+    pixel_diff: ndarray
+    trap_capacities: ndarray, optional
 
     Returns
     -------
-    clipped: ndarray
+    output: tuple of ndarray
     """
 
     n, m = trapped_charge.shape
     clipped = trapped_charge.copy()
+    pixel_output = pixel.copy()
 
     for i in range(n):
         for j in range(m):
-            if trap_capacities is not None:
-                maximum = trap_capacities[i, j]
+            if pixel_diff[i, j] < 0:
+                if trap_capacities is not None:
+                    maximum = min(available_traps[i, j], trap_capacities[i, j])
+                else:
+                    maximum = available_traps[i, j]
                 if trapped_charge[i, j] > maximum:
                     clipped[i, j] = maximum
-            if trapped_charge[i, j] < 0:
-                clipped[i, j] = 0
-    return clipped
+
+    pixel_output += (trapped_charge - clipped)
+
+    return clipped, pixel_output
+
+
+@numba.njit(fastmath=True)
+def clip_diff(diff: np.ndarray, trapped_charge: np.ndarray, empty_traps: np.ndarray) -> np.ndarray:
+    """Clip diff array between arrays of minimum and maximum values.
+
+    Parameters
+    ----------
+    diff: ndarray
+    trapped_charge: ndarray
+    empty_traps: ndarray
+
+    Returns
+    -------
+    output: ndarray
+    """
+    n, m = diff.shape
+    output = diff.copy()
+    for i in range(n):
+        for j in range(m):
+            if diff[i, j] < 0:
+                if diff[i, j] < -trapped_charge[i, j]:
+                    output[i, j] = -trapped_charge[i, j]
+            else:
+                if diff[i, j] > empty_traps[i, j]:
+                    output[i, j] = empty_traps[i, j]
+    return output
