@@ -5,7 +5,7 @@
 #  this file, may be copied, modified, propagated, or distributed except according to
 #  the terms contained in the file ‘LICENCE.txt’.
 
-"""Pyxel TARS model to generate charge by ionization."""
+"""Pyxel CosmiX model to generate charge by ionization."""
 
 import bisect
 import typing as t

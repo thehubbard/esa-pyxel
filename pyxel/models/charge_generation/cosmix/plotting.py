@@ -5,7 +5,7 @@
 #  this file, may be copied, modified, propagated, or distributed except according to
 #  the terms contained in the file ‘LICENCE.txt’.
 
-"""Pyxel TARS model to generate charge by ionization."""
+"""Pyxel CosmiX model to generate charge by ionization."""
 
 import typing as t
 from pathlib import Path
@@ -14,7 +14,7 @@ import numpy as np
 import pandas as pd
 
 if t.TYPE_CHECKING:
-    from pyxel.models.charge_generation.tars.tars import TARS
+    from pyxel.models.charge_generation.cosmix.cosmix import Cosmix
 
 try:
     from matplotlib import pyplot as plt
@@ -24,17 +24,17 @@ except ImportError:
     pass
 
 
-class PlottingTARS:
-    """Plotting class for TARS."""
+class PlottingCosmix:
+    """Plotting class for CosmiX."""
 
     def __init__(
         self,
-        tars: "TARS",
+        cosmix: "Cosmix",
         draw_plots: bool = False,
         save_plots: bool = False,
         file_format: str = "png",
     ) -> None:
-        self.tars = tars
+        self.cosmix = cosmix
 
         self.draw_plots = draw_plots
         self.save_plots = save_plots
@@ -57,15 +57,15 @@ class PlottingTARS:
 
     def save_edep(self) -> None:
         """TBW."""
-        np.save("orig2_edep_per_step_10k", self.tars.sim_obj.edep_per_step)
+        np.save("orig2_edep_per_step_10k", self.cosmix.sim_obj.edep_per_step)
         np.save(
-            "orig2_edep_per_particle_10k", self.tars.sim_obj.total_edep_per_particle
+            "orig2_edep_per_particle_10k", self.cosmix.sim_obj.total_edep_per_particle
         )
 
     def plot_edep_per_step(self) -> tuple:
         """TBW."""
         plt.figure()
-        n, bins, patches = plt.hist(self.tars.sim_obj.edep_per_step, 300, facecolor="b")
+        n, bins, patches = plt.hist(self.cosmix.sim_obj.edep_per_step, 300, facecolor="b")
         plt.xlabel("E_dep (keV)")
         plt.ylabel("Counts")
         plt.title("Histogram of E deposited per step")
@@ -78,7 +78,7 @@ class PlottingTARS:
         """TBW."""
         plt.figure()
         n, bins, patches = plt.hist(
-            self.tars.sim_obj.total_edep_per_particle, 200, facecolor="g"
+            self.cosmix.sim_obj.total_edep_per_particle, 200, facecolor="g"
         )
         plt.xlabel("E_dep (keV)")
         plt.ylabel("Counts")
@@ -90,7 +90,7 @@ class PlottingTARS:
 
     def plot_spectrum_cdf(self) -> None:
         """TBW."""
-        sim_obj = self.tars.sim_obj
+        sim_obj = self.cosmix.sim_obj
         assert sim_obj.spectrum_cdf is not None
         assert sim_obj.flux_dist is not None
 
@@ -105,7 +105,7 @@ class PlottingTARS:
 
     def plot_flux_spectrum(self) -> None:
         """TBW."""
-        sim_obj = self.tars.sim_obj
+        sim_obj = self.cosmix.sim_obj
         assert sim_obj.spectrum_cdf is not None
         assert sim_obj.flux_dist is not None
 
@@ -121,7 +121,7 @@ class PlottingTARS:
     def plot_spectrum_hist(self, data: t.Optional[str] = None) -> None:
         """TBW."""
         plt.figure()
-        plt.title("Proton flux spectrum sampled by TARS")
+        plt.title("Proton flux spectrum sampled by CosmiX")
         plt.xlabel("Energy (MeV)")
         plt.ylabel("Counts")
         # plt.ylabel('Flux (1/(s*MeV))')
@@ -141,30 +141,30 @@ class PlottingTARS:
 
     def plot_charges_3d(self) -> None:
         """TBW."""
-        geo = self.tars.sim_obj.detector.geometry
+        geo = self.cosmix.sim_obj.detector.geometry
 
         # set up a figure twice as wide as it is tall
         fig = plt.figure(figsize=plt.figaspect(0.5))
         # fig = plt.figure()
 
-        e_num_lst_per_event = self.tars.sim_obj.e_num_lst_per_event
+        e_num_lst_per_event = self.cosmix.sim_obj.e_num_lst_per_event
         size = [x / 10.0 for x in e_num_lst_per_event]
         # ax = fig.add_subplot(1, 2, 1, projection='3d')
         ax = fig.add_subplot(1, 2, 1, projection="3d")
         ax.scatter(
-            self.tars.sim_obj.e_pos0_lst,
-            self.tars.sim_obj.e_pos1_lst,
-            self.tars.sim_obj.e_pos2_lst,
+            self.cosmix.sim_obj.e_pos0_lst,
+            self.cosmix.sim_obj.e_pos1_lst,
+            self.cosmix.sim_obj.e_pos2_lst,
             c="b",
             marker=".",
             s=size,
         )
-        # ax.plot(self.tars.sim_obj.particle.trajectory[:, 0],
-        #         self.tars.sim_obj.particle.trajectory[:, 1],
-        #         self.tars.sim_obj.particle.trajectory[:, 2], 'c-')
+        # ax.plot(self.cosmix.sim_obj.particle.trajectory[:, 0],
+        #         self.cosmix.sim_obj.particle.trajectory[:, 1],
+        #         self.cosmix.sim_obj.particle.trajectory[:, 2], 'c-')
 
         # ax2 = fig.add_subplot(1, 2, 2, projection='3d')
-        # ax2.scatter(self.tars.sim_obj.e_pos0_lst, self.tars.sim_obj.e_pos1_lst, 0,
+        # ax2.scatter(self.cosmix.sim_obj.e_pos0_lst, self.cosmix.sim_obj.e_pos1_lst, 0,
         #             c='r', marker='.', s=size)
 
         # ax.hold(True)
@@ -216,7 +216,7 @@ class PlottingTARS:
     #     """TBW."""
     #     plt.figure()
     #     plt.title('LET CDF')
-    #     plt.plot(self.tars.sim_obj.let_cdf[:, 0], self.tars.sim_obj.let_cdf[:, 1], '.')
+    #     plt.plot(self.cosmix.sim_obj.let_cdf[:, 0], self.cosmix.sim_obj.let_cdf[:, 1], '.')
     #     self.save_and_draw('let_cdf')
 
     def plot_step_cdf(self) -> None:
@@ -224,7 +224,7 @@ class PlottingTARS:
         plt.figure()
         plt.title("Step size CDF")
         plt.plot(
-            self.tars.sim_obj.step_cdf[:, 0], self.tars.sim_obj.step_cdf[:, 1], "."
+            self.cosmix.sim_obj.step_cdf[:, 0], self.cosmix.sim_obj.step_cdf[:, 1], "."
         )
         self.save_and_draw("step_cdf")
 
@@ -235,8 +235,8 @@ class PlottingTARS:
         plt.xlabel("step size (um)")
         plt.ylabel("counts")
         plt.plot(
-            self.tars.sim_obj.step_size_dist["step_size"],
-            self.tars.sim_obj.step_size_dist["counts"],
+            self.cosmix.sim_obj.step_size_dist["step_size"],
+            self.cosmix.sim_obj.step_size_dist["counts"],
             ".",
         )
         self.save_and_draw("step_dist")
@@ -246,8 +246,8 @@ class PlottingTARS:
         plt.figure()
         plt.title("Tertiary electron number CDF")
         plt.plot(
-            self.tars.sim_obj.elec_number_cdf[:, 0],
-            self.tars.sim_obj.elec_number_cdf[:, 1],
+            self.cosmix.sim_obj.elec_number_cdf[:, 0],
+            self.cosmix.sim_obj.elec_number_cdf[:, 1],
             ".",
         )
         self.save_and_draw("elec_number_cdf")
@@ -257,8 +257,8 @@ class PlottingTARS:
         plt.figure()
         plt.title("Tertiary electron number distribution")
         plt.plot(
-            self.tars.sim_obj.elec_number_dist["electron"],
-            self.tars.sim_obj.elec_number_dist["counts"],
+            self.cosmix.sim_obj.elec_number_dist["electron"],
+            self.cosmix.sim_obj.elec_number_dist["counts"],
             ".",
         )
         self.save_and_draw("elec_number_dist")
@@ -267,15 +267,15 @@ class PlottingTARS:
     #     """TBW."""
     #     plt.figure()
     #     plt.title('LET dist')
-    #     plt.plot(self.tars.sim_obj.let_dist[:, 1], self.tars.sim_obj.let_dist[:, 2], '.')
+    #     plt.plot(self.cosmix.sim_obj.let_dist[:, 1], self.cosmix.sim_obj.let_dist[:, 2], '.')
     #     self.save_and_draw('let_dist')
 
     def plot_trajectory_xy(self) -> None:
         """TBW."""
         plt.figure()
-        geo = self.tars.sim_obj.detector.geometry
+        geo = self.cosmix.sim_obj.detector.geometry
 
-        particle = self.tars.sim_obj.particle
+        particle = self.cosmix.sim_obj.particle
         assert particle is not None
 
         # self.trajectory[:, 0] - VERTICAL COORDINATE
@@ -291,8 +291,8 @@ class PlottingTARS:
     def plot_trajectory_xz(self) -> None:
         """TBW."""
         plt.figure()
-        geo = self.tars.sim_obj.detector.geometry
-        particle = self.tars.sim_obj.particle
+        geo = self.cosmix.sim_obj.detector.geometry
+        particle = self.cosmix.sim_obj.particle
         assert particle is not None
 
         # self.trajectory[:, 2] - Z COORDINATE
@@ -438,9 +438,9 @@ class PlottingTARS:
             "CRs_from_BAM_Gaia_CCDs.npy",  # GAIA BAM data
             "complete_G4_H_He_GCR_sim_deposition.npy",  # G4, contains a lot of events with ZERO number of e-!
             r"C:\dev\work\pyxel\pyxel\models\charge_generation"
-            + r"\tars\data\validation\G4_app_results_20180425\tars-e_num_lst_per_event.npy",
+            + r"\cosmix\data\validation\G4_app_results_20180425\cosmix-e_num_lst_per_event.npy",
         ]
-        labels = ["Gaia BAM CCD data", "GRAS simulation", "TARS (Pyxel) simulation"]
+        labels = ["Gaia BAM CCD data", "GRAS simulation", "CosmiX (Pyxel) simulation"]
         i = 0
 
         hist_bins = 250
