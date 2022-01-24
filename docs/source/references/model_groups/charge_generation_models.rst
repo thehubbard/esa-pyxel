@@ -106,8 +106,8 @@ Example of YAML configuration model:
 .. autofunction:: charge_blocks
 
 
-TARS cosmic ray model
-=====================
+CosmiX cosmic ray model
+=======================
 
 :guilabel:`Charge` 🠆 :guilabel:`Charge`
 
@@ -116,15 +116,31 @@ Initially it was a simple, semi-analytical model in Fortran using the stopping
 power curve of protons to optimize the on-board source detection algorithm
 of the Gaia telescope to discriminate between stars and cosmic rays. Then it
 was reimplemented in Python as TARS (Tools for Astronomical Radiation
-Simulations).
+Simulations) and later as CosmiX.
 
-It is now being upgraded to either randomly sample distributions pre-generated
-using Geant4 Monte Carlo particle transport simulations or directly call a
-Geant4 application for each single event. The validation of the latest
-version of the model against cosmic ray signals of the Gaia Basic Angle
-Monitor CCDs is ongoing via Pyxel.
+With this model you can add the effect of cosmic rays to the :py:class:`~pyxel.data_structure.Charge` data structure.
+See the documentation below for descriptions of parameters.
+CosmiX model is described in detail in :cite:p:`2020:cosmix`.
 
-.. autofunction:: pyxel.models.charge_generation.run_tars
+Example of the configuration file:
+
+.. code-block:: yaml
+
+    - name: cosmix
+      func: pyxel.models.charge_generation.cosmix
+      enabled: true
+      arguments:
+        simulation_mode: cosmic_ray
+        running_mode: "stepsize"
+        particle_type: proton
+        initial_energy: 100.          # MeV
+        particle_number: 100
+        incident_angles:
+        starting_position:
+        spectrum_file: 'data/proton_L2_solarMax_11mm_Shielding.txt'
+        seed: 4321
+
+.. autofunction:: pyxel.models.charge_generation.cosmix
 
 
 Dark current rule07
