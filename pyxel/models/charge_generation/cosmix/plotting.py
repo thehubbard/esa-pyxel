@@ -65,7 +65,9 @@ class PlottingCosmix:
     def plot_edep_per_step(self) -> tuple:
         """TBW."""
         plt.figure()
-        n, bins, patches = plt.hist(self.cosmix.sim_obj.edep_per_step, 300, facecolor="b")
+        n, bins, patches = plt.hist(
+            self.cosmix.sim_obj.edep_per_step, 300, facecolor="b"
+        )
         plt.xlabel("E_dep (keV)")
         plt.ylabel("Counts")
         plt.title("Histogram of E deposited per step")
