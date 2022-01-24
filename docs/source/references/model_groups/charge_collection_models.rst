@@ -139,6 +139,8 @@ At each iteration of the pipeline, the model  will compute the amount of trapped
 to the memory of the detector and then remove this amount from the pixel array.
 More on the persistence model can be found in  :cite:p:`2019:persistence`.
 
+Example of the configuration file:
+
 .. code-block:: yaml
 
     - name: simple_persistence
@@ -175,6 +177,8 @@ and set where the input map is placed onto detector.
 You can set preset positions with arguments ``trap_densities_align`` and ``trap_capacities_align``.
 Values outside of detector shape will be cropped.
 Read more about placement in the documentation of function :py:func:`~pyxel.util.fit_into_array`.
+
+Example of the configuration file:
 
 .. code-block:: yaml
 

@@ -108,6 +108,9 @@ def simple_persistence(
         List of trap capacities.
     """
 
+    if not isinstance(detector, CMOS):
+        raise TypeError("Expecting a CMOS object for detector.")
+
     if not len(trap_time_constants) == len(trap_densities):
         raise ValueError(
             "Expecting same number of elements for parameters 'trap_time_constants'"
@@ -117,6 +120,14 @@ def simple_persistence(
     if len(trap_time_constants) == 0:
         raise ValueError(
             "Expecting at least one 'trap_time_constants' and 'trap_densities'"
+        )
+
+    if trap_capacities is not None and not len(trap_capacities) == len(
+        trap_time_constants
+    ):
+        raise ValueError(
+            "Expecting same number of elements for parameters 'trap_capacities'"
+            "and 'trap_time_constants'"
         )
 
     if not detector.has_persistence():
@@ -255,6 +266,21 @@ def persistence(
         Keyword to align the capacities to detector. Can be any from:
         ("center", "top_left", "top_right", "bottom_left", "bottom_right")
     """
+
+    if not isinstance(detector, CMOS):
+        raise TypeError("Expecting a CMOS object for detector.")
+
+    if not len(trap_time_constants) == len(trap_proportions):
+        raise ValueError(
+            "Expecting same number of elements for parameters 'trap_time_constants'"
+            "and 'trap_proportions'"
+        )
+
+    if len(trap_time_constants) == 0:
+        raise ValueError(
+            "Expecting at least one 'trap_time_constants' and 'trap_proportions'"
+        )
+
     # If the file for trap density is correct open it and use it
     # otherwise I need to define a default trap density map
     shape = detector.pixel.shape
@@ -292,6 +318,9 @@ def persistence(
     trap_densities_2d = np.nan_to_num(
         trap_densities_2d, nan=0.0, posinf=0.0, neginf=0.0
     )
+
+    if not np.all((0 <= trap_densities_2d) & (trap_densities_2d <= 1)):
+        raise ValueError("Trap density map values not between 0 and 1.")
 
     if not detector.has_persistence():
         detector.persistence = Persistence(
