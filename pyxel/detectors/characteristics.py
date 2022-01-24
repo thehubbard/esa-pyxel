@@ -39,8 +39,8 @@ class Characteristics:
         pre_amplification: float = 1,  # unit: V/V
         adc_gain: float = 1,  # unit: adu/V
         full_well_capacity: float = 0,  # unit: electron
-        adc_voltage_range: t.Tuple[float, float] = (0., 10.),
-        adc_bit_resolution: int = 8
+        adc_voltage_range: t.Tuple[float, float] = (0.0, 10.0),
+        adc_bit_resolution: int = 8,
     ):
         if not (0.0 <= quantum_efficiency <= 1.0):
             raise ValueError("'quantum_efficiency' must be between 0.0 and 1.0.")
@@ -55,8 +55,8 @@ class Characteristics:
         if not (0.0 <= full_well_capacity <= 1.0e7):
             raise ValueError("'full_well_capacity' must be between 0 and 1e7.")
         if not (4 <= adc_bit_resolution <= 64):
-            raise ValueError("'full_well_capacity' must be between 0 and 1e7.")
-        if not len(adc_voltage_range)==2:
+            raise ValueError("'adc_bit_resolution' must be between 4 and 64.")
+        if not len(adc_voltage_range) == 2:
             raise ValueError("Voltage range must have length of 2.")
 
         self._quantum_efficiency = quantum_efficiency  # type: float
