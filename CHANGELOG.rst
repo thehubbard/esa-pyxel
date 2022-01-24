@@ -23,6 +23,8 @@ Models
 
 Others
 ~~~~~~
+* Fix mypy issues with new version of numpy 1.22.0.
+  (See `!408 <https://gitlab.com/esa/pyxel/-/merge_requests/408>`_).
 
 
 version 1.0.0-rc.2 / 2022-01-18
