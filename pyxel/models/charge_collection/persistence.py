@@ -100,7 +100,7 @@ def simple_persistence(
     ----------
     detector: CMOS
         Pyxel CMOS object.
-    trap_time_constants: sequence of flots
+    trap_time_constants: sequence of floats
         List of trap time constants.
     trap_densities: sequence of floats
         List of trap densities.
