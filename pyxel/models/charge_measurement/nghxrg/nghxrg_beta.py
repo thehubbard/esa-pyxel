@@ -300,8 +300,10 @@ class HXRGNoise:
         self.m_short = self.m_short.flatten()
 
         # Define frequency arrays
-        self.f1 = np.fft.rfftfreq(self.nstep2)  # Frequencies for nstep elements
-        self.f2 = np.fft.rfftfreq(2 * self.nstep2)  # ... for 2*nstep elements
+        self.f1 = np.fft.rfftfreq(
+            n=self.nstep2, d=1.0
+        )  # Frequencies for nstep elements
+        self.f2 = np.fft.rfftfreq(n=2 * self.nstep2, d=1.0)  # ... for 2*nstep elements
 
         # Define pinkening filters. F1 and p_filter1 are used to
         # generate ACN. F2 and p_filter2 are used to generate 1/f noise.

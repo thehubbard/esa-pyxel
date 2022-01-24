@@ -17,7 +17,7 @@ if t.TYPE_CHECKING:
     from pyxel.detectors import Detector
 
 
-def square_signal(n: int, lw: int, start_with: int = 0) -> list:
+def square_signal(n: int, lw: int, start_with: int = 0) -> t.List[int]:
     """Compute a 1D periodic square signal.
 
     Parameters
@@ -36,8 +36,8 @@ def square_signal(n: int, lw: int, start_with: int = 0) -> list:
     """
     if lw > n // 2:
         raise ValueError("Line too wide.")
-    start = [start_with] * lw
-    second = [1 - start_with] * lw
+    start = [start_with] * lw  # type: t.List[int]
+    second = [1 - start_with] * lw  # type: t.List[int]
     pair = start + second
     num = n // len(pair)
     out = pair * num
@@ -87,8 +87,11 @@ def compute_pattern(
     sx = slice(n // 2 - y // 2, n // 2 + y // 2)
     sy = slice(m // 2 - x // 2, m // 2 + x // 2)
 
-    signal = square_signal(n=n, lw=period // 2, start_with=start_with)
-    signal = np.array(signal + ([1] * (n - len(signal))))[::-1]
+    signal_lst = square_signal(
+        n=n, lw=period // 2, start_with=start_with
+    )  # type: t.List[int]
+    new_signal_lst = signal_lst + ([1] * (n - len(signal_lst)))  # type: t.List[int]
+    signal = np.array(new_signal_lst)[::-1]
 
     out = np.ones((n, m))
 

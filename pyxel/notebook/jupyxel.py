@@ -213,9 +213,10 @@ def display_array(data: np.ndarray, axes: t.List[plt.axes], **kwargs: str) -> No
     cax1.yaxis.set_label_position("left")
     cax1.yaxis.set_ticks_position("left")
     if mini == maxi:
-        bins = 50
+        bins = 50  # type: t.Union[int, np.ndarray]
     else:
-        bins = np.arange(mini, maxi, (maxi - mini) / 50)
+        bins = np.arange(start=mini, stop=maxi, step=(maxi - mini) / 50)
+
     axes[1].hist(data.flatten(), bins=bins, **kwargs)
     plt.setp(axes[1].xaxis.get_majorticklabels(), rotation=45)
     axes[1].legend(fontsize=12)
