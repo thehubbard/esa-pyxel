@@ -6,7 +6,7 @@ observation:
       key: pipeline.photon_generation.illumination.arguments.level
       values: [10, 20, 30]
     - enabled: true
-      key: pipeline.charge_generation.tars.arguments.initial_energy
+      key: pipeline.charge_generation.cosmix.arguments.initial_energy
       values: [100, 200, 300]
 
   outputs:
