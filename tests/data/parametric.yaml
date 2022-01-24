@@ -87,8 +87,8 @@ pipeline:
       enabled: false
       func: pyxel.models.charge_generation.simple_conversion
     -
-      name: tars
-      func: pyxel.models.charge_generation.run_tars
+      name: cosmix
+      func: pyxel.models.charge_generation.cosmix
       enabled: true
       arguments:
         simulation_mode: cosmic_ray   # snowflakes
