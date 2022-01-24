@@ -85,7 +85,7 @@ def shot_noise(
     Parameters
     ----------
     detector: Detector
-        Pyxel Detecotr object.
+        Pyxel Detector object.
     type: str, optional
         Choose either 'poisson' or 'normal'. Default is Poisson noise.
     seed: int, optional

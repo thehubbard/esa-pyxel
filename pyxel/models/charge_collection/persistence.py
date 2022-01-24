@@ -1,7 +1,12 @@
-#  Copyright (c) YOUR COPYRIGHT HERE
+#  Copyright (c) European Space Agency, 2017, 2018, 2019, 2020, 2021, 2022.
+#
+#  This file is subject to the terms and conditions defined in file 'LICENCE.txt', which
+#  is part of this Pyxel package. No part of the package, including
+#  this file, may be copied, modified, propagated, or distributed except according to
+#  the terms contained in the file ‘LICENCE.txt’.
 
 """
-persistence module for the PyXel simulation.
+Persistence module for the PyXel simulation.
 
 This module is used in charge_collection
 
@@ -29,31 +34,9 @@ The persistence model take as input the total number of detrapped charges
 which is the previous one divided by full well capacity. This gives the total
 amount of trap per charge.
 
-At each iteration of the pipeline, the model will first check if there is a
-'persistence' entry in the memore of the detector and if not will create it
-(happens only at the first iteration).
-Then, it will compute the amount of trapped charges in this iteration, add it
+At each iteration of the pipeline, the model  will compute the amount of trapped charges in this iteration, add it
 to the memory of the detector and then will remove this amount from the pixel array.
 
-Default parameter
-=================
-
-The defaults parameter are the one derived from the characterization of the ENG grade
-detector for MOONS (H4RG).
-
-+----------------+-------------+
-| Time constants | Proportions |
-+================+=============+
-| 1              | 0.307       |
-+----------------+-------------+
-| 10             | 0.175       |
-+----------------+-------------+
-| 100            | 0.188       |
-+----------------+-------------+
-| 1000           | 0.136       |
-+----------------+-------------+
-| 10000          | 0.194       |
-+----------------+-------------+
 
 Code example
 ============
@@ -62,14 +45,7 @@ Code example
 
     # To access the memory of the detector with the persistence map
 
-    detector._memory["persistence"]
-
-    # This dictionnary consist of 5 entries (one per time constant)
-
-.. literalinclude:: pyxel/models/charge_collection/persistence.py
-    :language: python
-    :linenos:
-    :lines: 84-87
+    detector.persistence
 
 Model reference in the YAML config file
 =======================================
@@ -80,7 +56,7 @@ pipeline:
 
   # Persistence model based on MOONS detector (H4RG) measurements
   - name: persistence
-    func: pyxel.models.charge_collection.persistence.persistence
+    func: pyxel.models.charge_collection.persistence
     enabled: true
     arguments:
       trap_time_constants: [1, 10, 100, 1000, 10000]
@@ -94,11 +70,7 @@ Useful links
 Persistence paper from S. Tulloch
 https://arxiv.org/abs/1908.06469
 
-ReadTheDocs documentation
-https://sphinx-rtd-theme.readthedocs.io/en/latest/index.html
-
-.. todo::
-
+TO DO:
    - Add temperature dependency
    - Add default -flat?- trap maps
 
@@ -122,15 +94,22 @@ def simple_persistence(
     trap_densities: t.Sequence[float],
     trap_capacities: t.Optional[t.Sequence[float]] = None,
 ) -> None:
-    """TBW.
+    """Apply simple persistence model.
 
     Parameters
     ----------
-    detector
-    trap_time_constants
-    trap_densities
-    trap_capacities
+    detector: CMOS
+        Pyxel CMOS object.
+    trap_time_constants: sequence of floats
+        List of trap time constants.
+    trap_densities: sequence of floats
+        List of trap densities.
+    trap_capacities: sequence of floats, optional
+        List of trap capacities.
     """
+
+    if not isinstance(detector, CMOS):
+        raise TypeError("Expecting a CMOS object for detector.")
 
     if not len(trap_time_constants) == len(trap_densities):
         raise ValueError(
@@ -141,6 +120,14 @@ def simple_persistence(
     if len(trap_time_constants) == 0:
         raise ValueError(
             "Expecting at least one 'trap_time_constants' and 'trap_densities'"
+        )
+
+    if trap_capacities is not None and not len(trap_capacities) == len(
+        trap_time_constants
+    ):
+        raise ValueError(
+            "Expecting same number of elements for parameters 'trap_capacities'"
+            "and 'trap_time_constants'"
         )
 
     if not detector.has_persistence():
@@ -177,16 +164,16 @@ def compute_simple_persistence(
     delta_t: float,
     trap_capacities: t.Optional[np.ndarray] = None,
 ) -> t.Tuple[np.ndarray, np.ndarray]:
-    """TBW.
+    """Compute simple persistence.
 
     Parameters
     ----------
-    pixel_array
-    all_trapped_charge
-    trap_densities
-    trap_time_constants
-    trap_capacities
-    delta_t
+    pixel_array: ndarray
+    all_trapped_charge: ndarray
+    trap_densities: ndarray
+    trap_time_constants: ndarray
+    trap_capacities: ndarray, optional
+    delta_t: float
 
     Returns
     -------
@@ -254,20 +241,46 @@ def persistence(
         Literal["center", "top_left", "top_right", "bottom_left", "bottom_right"]
     ] = None,
 ) -> None:
-    """TBW.
+    """Apply persistence model.
 
     Parameters
     ----------
-    detector
-    trap_time_constants
-    trap_proportions
-    trap_densities_filename
-    trap_capacities_filename
-    trap_densities_position
-    trap_densities_align
-    trap_capacities_position
-    trap_capacities_align
+    detector: CMOS
+        Pyxel CMOS object.
+    trap_time_constants: sequence of floats
+        A list of trap time constants.
+    trap_proportions: sequence of floats
+        A list of trap proportions.
+    trap_densities_filename: path or str
+        Path to densities file.
+    trap_capacities_filename: path or str
+        Path to capacities file.
+    trap_densities_position: tuple of int
+        Indices of starting row and column, used when fitting densities to detector.
+    trap_densities_align: literal
+        Keyword to align the densities to detector. Can be any from:
+        ("center", "top_left", "top_right", "bottom_left", "bottom_right")
+    trap_capacities_position: tuple of int
+        Indices of starting row and column, used when fitting capacities to detector.
+    trap_capacities_align: literal
+        Keyword to align the capacities to detector. Can be any from:
+        ("center", "top_left", "top_right", "bottom_left", "bottom_right")
     """
+
+    if not isinstance(detector, CMOS):
+        raise TypeError("Expecting a CMOS object for detector.")
+
+    if not len(trap_time_constants) == len(trap_proportions):
+        raise ValueError(
+            "Expecting same number of elements for parameters 'trap_time_constants'"
+            "and 'trap_proportions'"
+        )
+
+    if len(trap_time_constants) == 0:
+        raise ValueError(
+            "Expecting at least one 'trap_time_constants' and 'trap_proportions'"
+        )
+
     # If the file for trap density is correct open it and use it
     # otherwise I need to define a default trap density map
     shape = detector.pixel.shape
@@ -306,6 +319,9 @@ def persistence(
         trap_densities_2d, nan=0.0, posinf=0.0, neginf=0.0
     )
 
+    if not np.all((0 <= trap_densities_2d) & (trap_densities_2d <= 1)):
+        raise ValueError("Trap density map values not between 0 and 1.")
+
     if not detector.has_persistence():
         detector.persistence = Persistence(
             trap_time_constants=trap_time_constants,
@@ -337,7 +353,7 @@ def compute_persistence(
     delta_t: float,
     trap_capacities_2d: t.Optional[np.ndarray] = None,
 ) -> t.Tuple[np.ndarray, np.ndarray]:
-    """TBW.
+    """Compute persistence.
 
     Parameters
     ----------
@@ -412,7 +428,7 @@ def clip_trapped_charge(
     pixel_diff: np.ndarray,
     trap_capacities: t.Optional[np.ndarray] = None,
 ) -> t.Tuple[np.ndarray, np.ndarray]:
-    """Clip input array between arrays of minimum and maximum values.
+    """Clip trapped charge between arrays of max and min value.
 
     Parameters
     ----------
@@ -450,7 +466,7 @@ def clip_trapped_charge(
 def clip_diff(
     diff: np.ndarray, trapped_charge: np.ndarray, empty_traps: np.ndarray
 ) -> np.ndarray:
-    """Clip diff array between arrays of minimum and maximum values.
+    """Clip diff array between arrays of min and max values.
 
     Parameters
     ----------

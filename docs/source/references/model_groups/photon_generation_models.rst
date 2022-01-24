@@ -25,8 +25,8 @@ Read more about placement in the documentation of function :py:func:`~pyxel.util
 With ``multiplier`` you can multiply the photon number by a custom float,
 and ``time_scale`` is to set the time scale of the incoming photons, default is 1 second.
 By setting ``convert_to_photons`` to ``true``, the model converts the values of loaded image array from ADU to
-photon numbers for each pixel using the Photon Transfer Function:
-:math:`PTF = QE \cdot \eta \cdot S_{v} \cdot amp \cdot a_{1} \cdot a_{2}`.
+photon numbers for each pixel using the Photon Transfer Function.
+:math:`PTF = quantum\_efficiency \cdot charge\_to\_voltage\_conversion \cdot pre\_amplification \cdot adc\_gain`.
 
 .. code-block:: yaml
 
