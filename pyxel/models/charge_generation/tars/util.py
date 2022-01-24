@@ -41,7 +41,12 @@ def get_xvalue_with_interpolation(function_array: np.ndarray, y_value: float) ->
     elif y_value >= function_array[-1, 1]:
         intpol_x_value = function_array[-1, 0]
     else:
-        y_index_bot = bisect.bisect(function_array[:, 1], y_value) - 1  # type: int
+        value_bisect = bisect.bisect(
+            a=function_array[:, 1],  # type: ignore
+            x=y_value,
+        )  # type: int
+        y_index_bot = value_bisect - 1  # type: int
+
         y_index_top = y_index_bot + 1  # type: int
         y_value_bot = function_array[y_index_bot, 1]  # type: float
         y_value_top = function_array[y_index_top, 1]  # type: float

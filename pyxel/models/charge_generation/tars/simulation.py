@@ -455,10 +455,12 @@ class Simulation:
         if g4data.shape == (
             3,
         ):  # alternative running mode, only all electron number without proton step size data
-            electron_number_vector = [g4data[0].astype(int)]
+            electron_number_vector = [
+                g4data[0].astype(int)
+            ]  # type: t.Union[t.List, np.ndarray]
             secondaries = g4data[1].astype(int)
             tertiaries = g4data[2].astype(int)
-            step_size_vector = [0]
+            step_size_vector = [0]  # type: t.Union[t.List, np.ndarray]
         elif g4data.shape == (0,):
             step_size_vector = []  # um
             electron_number_vector = []

@@ -202,32 +202,37 @@ class Particle:
             )
 
             eps = 1e-8
-            if 0.0 - eps <= intersect_points[i, 0] <= geo.vert_dimension + eps:
-                if 0.0 - eps <= intersect_points[i, 1] <= geo.horz_dimension + eps:
-                    if (
-                        -1 * geo.total_thickness - eps
-                        <= intersect_points[i, 2]
-                        <= 0.0 + eps
-                    ):
-                        if (
-                            np.dot(
-                                track_direction,
-                                intersect_points[i, :] - random_det_point,
-                            )
-                            < 0
-                        ):
-                            surface_start_point = self.intersection_correction(
-                                intersect_points[i, :]
-                            )
-                        else:
-                            surface_end_point = self.intersection_correction(
-                                intersect_points[i, :]
-                            )
+            if (
+                (0.0 - eps <= intersect_points[i, 0] <= geo.vert_dimension + eps)
+                and (0.0 - eps <= intersect_points[i, 1] <= geo.horz_dimension + eps)
+                and (
+                    -1 * geo.total_thickness - eps
+                    <= intersect_points[i, 2]
+                    <= 0.0 + eps
+                )
+            ):
+                if (
+                    np.dot(
+                        track_direction,
+                        intersect_points[i, :] - random_det_point,
+                    )
+                    < 0
+                ):
+                    surface_start_point = self.intersection_correction(
+                        intersect_points[i, :]
+                    )
+                else:
+                    surface_end_point = self.intersection_correction(
+                        intersect_points[i, :]
+                    )
 
-        assert surface_start_point is not None
-        assert surface_end_point is not None
+        if surface_start_point is None or surface_end_point is None:
+            raise RuntimeError(
+                "'surface_start_point' and/or 'surface_end_point' are not defined."
+            )
 
-        self.track_length = np.linalg.norm(surface_end_point - surface_start_point)
+        surface_1d = surface_end_point - surface_start_point  # type: np.ndarray
+        self.track_length = float(np.linalg.norm(x=surface_1d))
 
         if np.all(surface_start_point == surface_end_point):
             raise ValueError("This should not happen")
