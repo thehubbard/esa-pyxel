@@ -43,7 +43,7 @@ def cosmix(
     ] = None,
     particle_type: t.Optional[Literal["proton", "alpha", "ion"]] = None,
     initial_energy: t.Optional[t.Union[int, float, Literal["random"]]] = None,
-    particle_number: t.Optional[int] = None,
+    particles_per_second: t.Optional[float] = None,
     incident_angles: t.Optional[t.Tuple[str, str]] = None,
     starting_position: t.Optional[t.Tuple[str, str, str]] = None,
     # step_size_file: str = None,
@@ -67,8 +67,8 @@ def cosmix(
         Type of particle: ``proton``, ``alpha``, ``ion``.
     initial_energy: int or float or literal
         Kinetic energy of particle, set `random` for random.
-    particle_number: int
-        Number of particles.
+    particles_per_second: float
+        Number of particles per second.
     incident_angles: tuple of str
         Incident angles: ``(α, β)``.
     starting_position: tuple of str
@@ -88,8 +88,8 @@ def cosmix(
         raise ValueError("CosmiX: Running mode is not defined")
     if particle_type is None:
         raise ValueError("CosmiX: Particle type is not defined")
-    if particle_number is None:
-        raise ValueError("CosmiX: Particle number is not defined")
+    if particles_per_second is None:
+        raise ValueError("CosmiX: Particles per second is not defined")
     if spectrum_file is None:
         raise ValueError("CosmiX: Spectrum is not defined")
 
@@ -105,6 +105,8 @@ def cosmix(
         start_pos_ver, start_pos_hor, start_pos_z = ("random", "random", "random")
     else:
         start_pos_ver, start_pos_hor, start_pos_z = starting_position
+
+    particle_number = int(particles_per_second * detector.time_step)
 
     cosmix = Cosmix(
         detector=detector,
