@@ -8,14 +8,14 @@
 import pytest
 
 from pyxel.detectors import (
+    CCD,
     CMOS,
+    CCDCharacteristics,
+    CCDGeometry,
     CMOSCharacteristics,
     CMOSGeometry,
     Environment,
     ReadoutProperties,
-    CCD,
-    CCDCharacteristics,
-    CCDGeometry,
 )
 from pyxel.models.charge_collection import simple_persistence
 
@@ -128,9 +128,7 @@ def test_simple_persistence_bad_inputs(
         )
 
 
-def test_persistence_with_ccd(
-    ccd_5x5: CCD
-):
+def test_persistence_with_ccd(ccd_5x5: CCD):
     """Test model 'simple_persistence' with a `CCD` detector."""
     with pytest.raises(TypeError, match="Expecting a CMOS object for detector."):
         detector = ccd_5x5

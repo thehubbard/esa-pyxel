@@ -94,7 +94,7 @@ def simple_persistence(
     trap_densities: t.Sequence[float],
     trap_capacities: t.Optional[t.Sequence[float]] = None,
 ) -> None:
-    """Simple persistence model.
+    """Apply simple persistence model.
 
     Parameters
     ----------
@@ -241,7 +241,7 @@ def persistence(
         Literal["center", "top_left", "top_right", "bottom_left", "bottom_right"]
     ] = None,
 ) -> None:
-    """Persistence model.
+    """Apply persistence model.
 
     Parameters
     ----------

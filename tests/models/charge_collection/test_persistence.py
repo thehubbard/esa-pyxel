@@ -14,12 +14,12 @@ import pytest
 
 from pyxel.detectors import (
     CCD,
+    CMOS,
     CCDCharacteristics,
     CCDGeometry,
-    Environment,
-    CMOS,
     CMOSCharacteristics,
     CMOSGeometry,
+    Environment,
     ReadoutProperties,
 )
 from pyxel.models.charge_collection import persistence
@@ -200,7 +200,9 @@ def test_persistence_with_invalid_density_map(
     cmos_5x5: CMOS, invalid_density_map_path: str
 ):
     """Test model 'persistence' with an invalid density map."""
-    with pytest.raises(ValueError, match="Trap density map values not between 0 and 1."):
+    with pytest.raises(
+        ValueError, match="Trap density map values not between 0 and 1."
+    ):
         detector = cmos_5x5
 
         persistence(
