@@ -5,7 +5,7 @@
 #  this file, may be copied, modified, propagated, or distributed except according to
 #  the terms contained in the file ‘LICENCE.txt’.
 
-"""Pyxel TARS model to generate charge by ionization."""
+"""Pyxel CosmiX model to generate charge by ionization."""
 
 import subprocess
 import typing as t  # noqa: F401
@@ -17,8 +17,8 @@ import pandas as pd
 from typing_extensions import Literal
 
 from pyxel.detectors import Detector
-from pyxel.models.charge_generation.tars.particle import Particle
-from pyxel.models.charge_generation.tars.util import (
+from pyxel.models.charge_generation.cosmix.particle import Particle
+from pyxel.models.charge_generation.cosmix.util import (
     load_histogram_data,
     read_data,
     sampling_distribution,
@@ -411,7 +411,7 @@ class Simulation:
 
         error = subprocess.call(
             [
-                "./pyxel/models/charge_generation/tars/data/geant4/TestEm18",
+                "./pyxel/models/charge_generation/cosmix/data/geant4/TestEm18",
                 "Silicon",
                 particle.type,
                 str(particle.energy),

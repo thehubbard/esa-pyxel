@@ -5,7 +5,7 @@
 #  this file, may be copied, modified, propagated, or distributed except according to
 #  the terms contained in the file ‘LICENCE.txt’.
 
-"""Pyxel TARS model to generate charge by ionization."""
+"""Pyxel CosmiX model to generate charge by ionization."""
 
 import logging
 import math
@@ -18,9 +18,9 @@ from tqdm.auto import tqdm
 from typing_extensions import Literal
 
 from pyxel.detectors import Detector
-from pyxel.models.charge_generation.tars.plotting import PlottingTARS
-from pyxel.models.charge_generation.tars.simulation import Simulation
-from pyxel.models.charge_generation.tars.util import (  # , load_histogram_data
+from pyxel.models.charge_generation.cosmix.plotting import PlottingCosmix
+from pyxel.models.charge_generation.cosmix.simulation import Simulation
+from pyxel.models.charge_generation.cosmix.util import (  # , load_histogram_data
     interpolate_data,
     read_data,
 )
@@ -33,7 +33,7 @@ from pyxel.util import temporary_random_state
 # @validators.validate
 # @config.argument(name='', label='', units='', validate=)
 @temporary_random_state
-def run_tars(
+def cosmix(
     detector: Detector,
     simulation_mode: t.Optional[
         Literal["cosmic_ray", "cosmics", "radioactive_decay", "snowflakes"]
@@ -43,7 +43,7 @@ def run_tars(
     ] = None,
     particle_type: t.Optional[Literal["proton", "alpha", "ion"]] = None,
     initial_energy: t.Optional[t.Union[int, float, Literal["random"]]] = None,
-    particle_number: t.Optional[int] = None,
+    particles_per_second: t.Optional[float] = None,
     incident_angles: t.Optional[t.Tuple[str, str]] = None,
     starting_position: t.Optional[t.Tuple[str, str, str]] = None,
     # step_size_file: str = None,
@@ -53,7 +53,7 @@ def run_tars(
     ionization_energy: float = 3.6,
     progressbar: bool = True,
 ) -> None:
-    """TARS model.
+    """Apply CosmiX model.
 
     Parameters
     ----------
@@ -67,8 +67,8 @@ def run_tars(
         Type of particle: ``proton``, ``alpha``, ``ion``.
     initial_energy: int or float or literal
         Kinetic energy of particle, set `random` for random.
-    particle_number: int
-        Number of particles.
+    particles_per_second: float
+        Number of particles per second.
     incident_angles: tuple of str
         Incident angles: ``(α, β)``.
     starting_position: tuple of str
@@ -83,15 +83,15 @@ def run_tars(
         Progressbar.
     """
     if simulation_mode is None:
-        raise ValueError("TARS: Simulation mode is not defined")
+        raise ValueError("CosmiX: Simulation mode is not defined")
     if running_mode is None:
-        raise ValueError("TARS: Running mode is not defined")
+        raise ValueError("CosmiX: Running mode is not defined")
     if particle_type is None:
-        raise ValueError("TARS: Particle type is not defined")
-    if particle_number is None:
-        raise ValueError("TARS: Particle number is not defined")
+        raise ValueError("CosmiX: Particle type is not defined")
+    if particles_per_second is None:
+        raise ValueError("CosmiX: Particles per second is not defined")
     if spectrum_file is None:
-        raise ValueError("TARS: Spectrum is not defined")
+        raise ValueError("CosmiX: Spectrum is not defined")
 
     if initial_energy is None:
         initial_energy = "random"  # TODO
@@ -106,7 +106,9 @@ def run_tars(
     else:
         start_pos_ver, start_pos_hor, start_pos_z = starting_position
 
-    tars = TARS(
+    particle_number = int(particles_per_second * detector.time_step)
+
+    cosmix = Cosmix(
         detector=detector,
         simulation_mode=simulation_mode,
         particle_type=particle_type,
@@ -121,28 +123,28 @@ def run_tars(
         progressbar=progressbar,
     )
 
-    # tars.set_simulation_mode(simulation_mode)
-    # tars.set_particle_type(particle_type)                # MeV
-    # tars.set_initial_energy(initial_energy)              # MeV
-    # tars.set_particle_number(particle_number)            # -
-    # tars.set_incident_angles(incident_angles)            # rad
-    # tars.set_starting_position(starting_position)        # um
-    tars.set_particle_spectrum(Path(spectrum_file))
+    # cosmix.set_simulation_mode(simulation_mode)
+    # cosmix.set_particle_type(particle_type)                # MeV
+    # cosmix.set_initial_energy(initial_energy)              # MeV
+    # cosmix.set_particle_number(particle_number)            # -
+    # cosmix.set_incident_angles(incident_angles)            # rad
+    # cosmix.set_starting_position(starting_position)        # um
+    cosmix.set_particle_spectrum(Path(spectrum_file))
 
     if running_mode == "stopping":
-        # tars.run_mod()          ########
+        # cosmix.run_mod()          ########
         raise NotImplementedError
-        # tars.set_stopping_power(stopping_file)
-        # tars.run()
+        # cosmix.set_stopping_power(stopping_file)
+        # cosmix.run()
     elif running_mode == "stepsize":
-        tars.set_stepsize()
-        tars.run()
+        cosmix.set_stepsize()
+        cosmix.run()
     elif running_mode == "geant4":
-        tars.set_geant4()
-        tars.run()
+        cosmix.set_geant4()
+        cosmix.run()
     elif running_mode == "plotting":
 
-        plot_obj = PlottingTARS(tars, save_plots=True, draw_plots=True)
+        plot_obj = PlottingCosmix(cosmix, save_plots=True, draw_plots=True)
 
         # # # plot_obj.plot_flux_spectrum()
 
@@ -168,95 +170,95 @@ def run_tars(
 
         plot_obj.plot_gaia_vs_gras_hist(normalize=True)
 
-        # plot_obj.plot_track_histogram(tars.sim_obj.track_length_list)
+        # plot_obj.plot_track_histogram(cosmix.sim_obj.track_length_list)
         # plot_obj.plot_track_histogram(
-        #     r'C:\dev\work\pyxel\pyxel\models\charge_generation\tars\data\validation\G4_app_results_20180425\tars-track_length_lst_per_event.npy',
+        #     r'C:\dev\work\pyxel\pyxel\models\charge_generation\cosmix\data\validation\G4_app_results_20180425\cosmix-track_length_lst_per_event.npy',
         #     normalize=True)
 
-        # plot_obj.plot_electron_hist(tars.sim_obj.e_num_lst_per_event, normalize=True)
+        # plot_obj.plot_electron_hist(cosmix.sim_obj.e_num_lst_per_event, normalize=True)
 
-        # plot_obj.plot_electron_hist(r'C:\dev\work\pyxel\pyxel\models\charge_generation\tars\data\validation\G4_app_results_20180420_2\tars-e_num_lst_per_step.npy',
-        # plot_obj.plot_electron_hist(r'C:\dev\work\pyxel\pyxel\models\charge_generation\tars\data\validation\G4_app_results_20180420_2\tars-p_energy_lst_per_event.npy',
+        # plot_obj.plot_electron_hist(r'C:\dev\work\pyxel\pyxel\models\charge_generation\cosmix\data\validation\G4_app_results_20180420_2\cosmix-e_num_lst_per_step.npy',
+        # plot_obj.plot_electron_hist(r'C:\dev\work\pyxel\pyxel\models\charge_generation\cosmix\data\validation\G4_app_results_20180420_2\cosmix-p_energy_lst_per_event.npy',
 
-        # plot_obj.plot_electron_hist(r'C:\dev\work\pyxel\pyxel\models\charge_generation\tars\data\validation\G4_app_results_20180425\tars-e_num_lst_per_event.npy',
+        # plot_obj.plot_electron_hist(r'C:\dev\work\pyxel\pyxel\models\charge_generation\cosmix\data\validation\G4_app_results_20180425\cosmix-e_num_lst_per_event.npy',
         #                             title='all e per event', hist_bins=500, hist_range=(0, 15000))
 
-        # plot_obj.plot_electron_hist(r'C:\dev\work\pyxel\pyxel\models\charge_generation\tars\data\validation\G4_app_results_20180425\tars-sec_lst_per_event.npy',
+        # plot_obj.plot_electron_hist(r'C:\dev\work\pyxel\pyxel\models\charge_generation\cosmix\data\validation\G4_app_results_20180425\cosmix-sec_lst_per_event.npy',
         #                             title='secondary e per event', hist_bins=500, hist_range=(0, 15000))
         #
-        # plot_obj.plot_electron_hist(r'C:\dev\work\pyxel\pyxel\models\charge_generation\tars\data\validation\G4_app_results_20180425\tars-ter_lst_per_event.npy',
+        # plot_obj.plot_electron_hist(r'C:\dev\work\pyxel\pyxel\models\charge_generation\cosmix\data\validation\G4_app_results_20180425\cosmix-ter_lst_per_event.npy',
         #                             title='tertiary e per event', hist_bins=500, hist_range=(0, 15000))
 
         # plot_obj.plot_spectrum_hist(
-        #     r'C:\dev\work\pyxel\pyxel\models\charge_generation\tars\data\validation\G4_app_results_20180420_6\tars-p_energy_lst_per_event.npy')
-        # plot_obj.plot_spectrum_hist(r'C:\dev\work\pyxel\tars-p_energy_lst_per_event.npy')
+        #     r'C:\dev\work\pyxel\pyxel\models\charge_generation\cosmix\data\validation\G4_app_results_20180420_6\cosmix-p_energy_lst_per_event.npy')
+        # plot_obj.plot_spectrum_hist(r'C:\dev\work\pyxel\cosmix-p_energy_lst_per_event.npy')
 
-        # plot_obj.plot_electron_hist(r'C:\dev\work\pyxel\pyxel\models\charge_generation\tars\data\validation\G4_app_results_20180420\tars-e_num_lst_per_event.npy',
+        # plot_obj.plot_electron_hist(r'C:\dev\work\pyxel\pyxel\models\charge_generation\cosmix\data\validation\G4_app_results_20180420\cosmix-e_num_lst_per_event.npy',
         #                             title='all e per event', hist_bins=500, hist_range=(0, 15000))
         #
-        # plot_obj.plot_electron_hist(r'C:\dev\work\pyxel\pyxel\models\charge_generation\tars\data\validation\G4_app_results_20180420\tars-sec_lst_per_event.npy',
+        # plot_obj.plot_electron_hist(r'C:\dev\work\pyxel\pyxel\models\charge_generation\cosmix\data\validation\G4_app_results_20180420\cosmix-sec_lst_per_event.npy',
         #                             title='secondary e per event', hist_bins=400, hist_range=(0, 2000))
         #
-        # plot_obj.plot_electron_hist(r'C:\dev\work\pyxel\pyxel\models\charge_generation\tars\data\validation\G4_app_results_20180420\tars-ter_lst_per_event.npy',
+        # plot_obj.plot_electron_hist(r'C:\dev\work\pyxel\pyxel\models\charge_generation\cosmix\data\validation\G4_app_results_20180420\cosmix-ter_lst_per_event.npy',
         #                             title='tertiary e per event', hist_bins=500, hist_range=(0, 5000))
 
-        # plot_obj.plot_spectrum_hist(r'C:\dev\work\pyxel\pyxel\models\charge_generation\tars\data\validation\G4_app_results_20180420\tars-p_energy_lst_per_event.npy')
+        # plot_obj.plot_spectrum_hist(r'C:\dev\work\pyxel\pyxel\models\charge_generation\cosmix\data\validation\G4_app_results_20180420\cosmix-p_energy_lst_per_event.npy')
 
-        # plot_obj.polar_angle_dist(r'C:\dev\work\pyxel\pyxel\models\charge_generation\tars\data\validation\G4_app_results_20180420_6\tars-alpha_lst_per_event.npy')
-        # plot_obj.polar_angle_dist(r'C:\dev\work\pyxel\tars-alpha_lst_per_event.npy')
+        # plot_obj.polar_angle_dist(r'C:\dev\work\pyxel\pyxel\models\charge_generation\cosmix\data\validation\G4_app_results_20180420_6\cosmix-alpha_lst_per_event.npy')
+        # plot_obj.polar_angle_dist(r'C:\dev\work\pyxel\cosmix-alpha_lst_per_event.npy')
 
-        # plot_obj.polar_angle_dist(r'C:\dev\work\pyxel\pyxel\models\charge_generation\tars\data\validation\G4_app_results_20180420_6\tars-beta_lst_per_event.npy')
+        # plot_obj.polar_angle_dist(r'C:\dev\work\pyxel\pyxel\models\charge_generation\cosmix\data\validation\G4_app_results_20180420_6\cosmix-beta_lst_per_event.npy')
 
-        # plot_obj.polar_angle_dist(r'C:\dev\work\pyxel\tars-beta_lst_per_event.npy')
+        # plot_obj.polar_angle_dist(r'C:\dev\work\pyxel\cosmix-beta_lst_per_event.npy')
         # plot_obj.polar_angle_dist(
-        #     r'C:\dev\work\pyxel\pyxel\models\charge_generation\tars\data\validation\Results-20180404T121902Z-001\
+        #     r'C:\dev\work\pyxel\pyxel\models\charge_generation\cosmix\data\validation\Results-20180404T121902Z-001\
         # Results\All primary protons from Geant4 Gaia H He GCR(16-08-2016_11h18)\Raw data\alpha.npy')
         # plot_obj.polar_angle_dist(
-        #     r'C:\dev\work\pyxel\pyxel\models\charge_generation\tars\data\validation\Results-20180404T121902Z-001\
+        #     r'C:\dev\work\pyxel\pyxel\models\charge_generation\cosmix\data\validation\Results-20180404T121902Z-001\
         # Results\All primary protons from Geant4 Gaia H He GCR(16-08-2016_11h18)\Raw data\beta.npy')
 
         # plot_obj.polar_angle_dist(
-        #     r'C:\dev\work\pyxel\pyxel\models\charge_generation\tars\data\validation\Results-20180404T121902Z-001\
+        #     r'C:\dev\work\pyxel\pyxel\models\charge_generation\cosmix\data\validation\Results-20180404T121902Z-001\
         # Results\All primary protons from Geant4 Gaia H He GCR(16-08-2016_11h18)(17-08-2016_13h51)\Raw data\alpha.npy')
         # plot_obj.polar_angle_dist(
-        #     r'C:\dev\work\pyxel\pyxel\models\charge_generation\tars\data\validation\Results-20180404T121902Z-001\
+        #     r'C:\dev\work\pyxel\pyxel\models\charge_generation\cosmix\data\validation\Results-20180404T121902Z-001\
         # Results\All primary protons from Geant4 Gaia H He GCR(16-08-2016_11h18)(17-08-2016_13h51)\Raw data\beta.npy')
 
         # plot_obj.polar_angle_dist(
-        #     r'C:\dev\work\pyxel\pyxel/models/charge_generation/tars/data/validation/Results-20180404T121902Z-001/
+        #     r'C:\dev\work\pyxel\pyxel/models/charge_generation/cosmix/data/validation/Results-20180404T121902Z-001/
         # Results/10000 events from random protons CREME96 (step=0.5)(16-08-2016_15h56)\Raw data\alpha.npy')
         # plot_obj.polar_angle_dist(
-        #     r'C:\dev\work\pyxel\pyxel\models\charge_generation\tars\data\validation\Results-20180404T121902Z-001\
+        #     r'C:\dev\work\pyxel\pyxel\models\charge_generation\cosmix\data\validation\Results-20180404T121902Z-001\
         # Results\10000 events from random protons CREME96 (step=0.5)(16-08-2016_15h56)\Raw data\beta.npy')
 
         # todo: not implemented yet:
         # file_path = Path(__file__).parent.joinpath('data', 'inputs', 'all_elec_num_proton.ascii')
         # g4_all_e_num_hist = load_histogram_data(file_path, hist_type='electron', skip_rows=4, read_rows=1000)
-        # plot_obj.plot_electron_hist(tars.sim_obj.e_num_lst_per_event, g4_all_e_num_hist, normalize=True)
+        # plot_obj.plot_electron_hist(cosmix.sim_obj.e_num_lst_per_event, g4_all_e_num_hist, normalize=True)
 
-        # plot_obj.plot_electron_hist(tars.sim_obj.e_num_lst_per_event,
-        #                             tars.sim_obj.sec_lst_per_event,
-        #                             tars.sim_obj.ter_lst_per_event, normalize=True)
+        # plot_obj.plot_electron_hist(cosmix.sim_obj.e_num_lst_per_event,
+        #                             cosmix.sim_obj.sec_lst_per_event,
+        #                             cosmix.sim_obj.ter_lst_per_event, normalize=True)
 
         plot_obj.show()
     else:
         raise ValueError
     #
-    # np.save('tars-e_num_lst_per_event.npy', tars.sim_obj.e_num_lst_per_event)
-    # np.save('tars-sec_lst_per_event.npy', tars.sim_obj.sec_lst_per_event)
-    # np.save('tars-ter_lst_per_event.npy', tars.sim_obj.ter_lst_per_event)
-    # np.save('tars-track_length_lst_per_event.npy', tars.sim_obj.track_length_lst_per_event)
-    # np.save('tars-p_energy_lst_per_event.npy', tars.sim_obj.p_energy_lst_per_event)
-    # np.save('tars-alpha_lst_per_event.npy', tars.sim_obj.alpha_lst_per_event)
-    # np.save('tars-beta_lst_per_event.npy', tars.sim_obj.beta_lst_per_event)
-    # np.save('tars-e_num_lst_per_step.npy', tars.sim_obj.e_num_lst_per_step)
+    # np.save('cosmix-e_num_lst_per_event.npy', cosmix.sim_obj.e_num_lst_per_event)
+    # np.save('cosmix-sec_lst_per_event.npy', cosmix.sim_obj.sec_lst_per_event)
+    # np.save('cosmix-ter_lst_per_event.npy', cosmix.sim_obj.ter_lst_per_event)
+    # np.save('cosmix-track_length_lst_per_event.npy', cosmix.sim_obj.track_length_lst_per_event)
+    # np.save('cosmix-p_energy_lst_per_event.npy', cosmix.sim_obj.p_energy_lst_per_event)
+    # np.save('cosmix-alpha_lst_per_event.npy', cosmix.sim_obj.alpha_lst_per_event)
+    # np.save('cosmix-beta_lst_per_event.npy', cosmix.sim_obj.beta_lst_per_event)
+    # np.save('cosmix-e_num_lst_per_step.npy', cosmix.sim_obj.e_num_lst_per_step)
 
-    # plot_obj = PlottingTARS(tars, save_plots=True, draw_plots=True)
+    # plot_obj = PlottingTARS(cosmix, save_plots=True, draw_plots=True)
     # plot_obj.plot_charges_3d()
     # plot_obj.show()
 
 
-class TARS:
+class Cosmix:
     """TBW."""
 
     def __init__(
@@ -438,7 +440,7 @@ class TARS:
 
     def run(self) -> None:
         """TBW."""
-        # print("TARS - simulation processing...\n")
+        # print("CosmiX - simulation processing...\n")
 
         self.sim_obj.parameters(
             sim_mode=self.simulation_mode,
@@ -460,7 +462,7 @@ class TARS:
 
         for k in tqdm(
             range(self.particle_number),
-            desc="TARS",
+            desc="Cosmix",
             unit=" particle",
             disable=(not self._progressbar),
         ):
@@ -472,52 +474,52 @@ class TARS:
                 err = self.sim_obj.event_generation_geant4()
             if k % 10 == 0:
                 np.save(
-                    f"{out_path}/tars-e_num_lst_per_event.npy",
+                    f"{out_path}/cosmix-e_num_lst_per_event.npy",
                     self.sim_obj.e_num_lst_per_event,
                 )
                 np.save(
-                    f"{out_path}/tars-sec_lst_per_event.npy",
+                    f"{out_path}/cosmix-sec_lst_per_event.npy",
                     self.sim_obj.sec_lst_per_event,
                 )
                 np.save(
-                    f"{out_path}/tars-ter_lst_per_event.npy",
+                    f"{out_path}/cosmix-ter_lst_per_event.npy",
                     self.sim_obj.ter_lst_per_event,
                 )
                 np.save(
-                    f"{out_path}/tars-track_length_lst_per_event.npy",
+                    f"{out_path}/cosmix-track_length_lst_per_event.npy",
                     self.sim_obj.track_length_lst_per_event,
                 )
                 np.save(
-                    f"{out_path}/tars-p_energy_lst_per_event.npy",
+                    f"{out_path}/cosmix-p_energy_lst_per_event.npy",
                     self.sim_obj.p_energy_lst_per_event,
                 )
                 np.save(
-                    f"{out_path}/tars-alpha_lst_per_event.npy",
+                    f"{out_path}/cosmix-alpha_lst_per_event.npy",
                     self.sim_obj.alpha_lst_per_event,
                 )
                 np.save(
-                    f"{out_path}/tars-beta_lst_per_event.npy",
+                    f"{out_path}/cosmix-beta_lst_per_event.npy",
                     self.sim_obj.beta_lst_per_event,
                 )
 
                 np.save(
-                    f"{out_path}/tars-e_num_lst_per_step.npy",
+                    f"{out_path}/cosmix-e_num_lst_per_step.npy",
                     self.sim_obj.e_num_lst_per_step,
                 )
-                np.save(f"{out_path}/tars-e_pos0_lst.npy", self.sim_obj.e_pos0_lst)
-                np.save(f"{out_path}/tars-e_pos1_lst.npy", self.sim_obj.e_pos1_lst)
-                np.save(f"{out_path}/tars-e_pos2_lst.npy", self.sim_obj.e_pos2_lst)
+                np.save(f"{out_path}/cosmix-e_pos0_lst.npy", self.sim_obj.e_pos0_lst)
+                np.save(f"{out_path}/cosmix-e_pos1_lst.npy", self.sim_obj.e_pos1_lst)
+                np.save(f"{out_path}/cosmix-e_pos2_lst.npy", self.sim_obj.e_pos2_lst)
 
                 np.save(
-                    f"{out_path}/tars-all_e_from_eloss.npy",
+                    f"{out_path}/cosmix-all_e_from_eloss.npy",
                     self.sim_obj.electron_number_from_eloss,
                 )
                 np.save(
-                    f"{out_path}/tars-sec_e_from_eloss.npy",
+                    f"{out_path}/cosmix-sec_e_from_eloss.npy",
                     self.sim_obj.secondaries_from_eloss,
                 )
                 np.save(
-                    f"{out_path}/tars-ter_e_from_eloss.npy",
+                    f"{out_path}/cosmix-ter_e_from_eloss.npy",
                     self.sim_obj.tertiaries_from_eloss,
                 )
             if err:
@@ -544,14 +546,14 @@ class TARS:
     def run_mod(self) -> None:
         """TBW."""
         # TODO: Use `logging`
-        print("TARS - adding previous cosmic ray signals to image ...\n")
+        print("CosmiX - adding previous cosmic ray signals to image ...\n")
 
         # TODO: Use `pathlib.Path`
         out_path = "data/"
-        e_num_lst_per_step = np.load(out_path + "tars-e_num_lst_per_step.npy")
-        e_pos0_lst = np.load(out_path + "tars-e_pos0_lst.npy")
-        e_pos1_lst = np.load(out_path + "tars-e_pos1_lst.npy")
-        e_pos2_lst = np.load(out_path + "tars-e_pos2_lst.npy")
+        e_num_lst_per_step = np.load(out_path + "cosmix-e_num_lst_per_step.npy")
+        e_pos0_lst = np.load(out_path + "cosmix-e_pos0_lst.npy")
+        e_pos1_lst = np.load(out_path + "cosmix-e_pos1_lst.npy")
+        e_pos2_lst = np.load(out_path + "cosmix-e_pos2_lst.npy")
 
         size = len(e_num_lst_per_step)
         e_energy_lst = np.zeros(size)

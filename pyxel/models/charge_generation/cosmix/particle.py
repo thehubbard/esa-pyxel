@@ -5,7 +5,7 @@
 #  this file, may be copied, modified, propagated, or distributed except according to
 #  the terms contained in the file ‘LICENCE.txt’.
 
-"""Pyxel TARS model to generate charge by ionization."""
+"""Pyxel CosmiX model to generate charge by ionization."""
 
 import typing as t
 
@@ -13,7 +13,7 @@ import numpy as np
 from typing_extensions import Literal
 
 from pyxel.detectors import Detector
-from pyxel.models.charge_generation.tars.util import sampling_distribution
+from pyxel.models.charge_generation.cosmix.util import sampling_distribution
 
 
 class Particle:

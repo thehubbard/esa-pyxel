@@ -20,6 +20,8 @@ Models
   (See `!285 <https://gitlab.com/esa/pyxel/-/merge_requests/285>`_).
 * Fix for persistence model when using long time steps.
   (See `!407 <https://gitlab.com/esa/pyxel/-/merge_requests/407>`_).
+* Rename TARS to Cosmix.
+  (See `!409 <https://gitlab.com/esa/pyxel/-/merge_requests/409>`_).
 
 Others
 ~~~~~~
