@@ -6,10 +6,11 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """TBW."""
+import typing as t
+
 import numpy as np
 
 from pyxel.util.memory import get_size
-import typing as t
 
 
 class Characteristics:

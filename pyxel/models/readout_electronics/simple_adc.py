@@ -6,10 +6,14 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 #
 #
-import numpy as np
-from pyxel.detectors import Detector
+"""Simple ADC model functions."""
+
 import typing as t
+
+import numpy as np
 from typing_extensions import Literal
+
+from pyxel.detectors import Detector
 
 
 def apply_simple_adc(
@@ -43,7 +47,7 @@ def simple_adc(
     voltage_range: t.Optional[t.Tuple[float, float]] = None,
     data_type: Literal["uint16", "uint32", "uint64", "uint"] = "uint32",
 ) -> None:
-    """Apply simple Analog to Digital conversion
+    """Apply simple Analog to Digital conversion.
 
     Parameters
     ----------
@@ -82,8 +86,11 @@ def simple_adc(
     if not len(final_voltage_range) == 2:
         raise ValueError("Voltage range must have length of 2.")
 
-    detector.image.array = np.asarray(apply_simple_adc(
-        signal=detector.signal.array,
-        bit_resolution=final_bit_resolution,
-        voltage_range=final_voltage_range,
-    ), dtype=d_type)
+    detector.image.array = np.asarray(
+        apply_simple_adc(
+            signal=detector.signal.array,
+            bit_resolution=final_bit_resolution,
+            voltage_range=final_voltage_range,
+        ),
+        dtype=d_type,
+    )
