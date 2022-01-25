@@ -13,5 +13,5 @@ from .simple_digitization import simple_digitization
 from .sar_adc import sar_adc
 from .amplifier_crosstalk import dc_crosstalk, ac_crosstalk
 from .dead_time import dead_time_filter
-from .others import simple_phase_conversion, simple_processing
+from .phase_conversion import simple_phase_conversion
 from .simple_adc import simple_adc

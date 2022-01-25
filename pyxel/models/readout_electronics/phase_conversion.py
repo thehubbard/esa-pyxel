@@ -13,27 +13,6 @@ from pyxel.detectors import MKID, Detector
 from pyxel.models.readout_electronics.util import apply_gain_adc
 
 
-def simple_processing(detector: Detector, gain_adc: t.Optional[float] = None) -> None:
-    """Create a new image array (in adu) by applying the gain from the :term:`ADC` (in adu/V) from the signal array.
-
-    Parameters
-    ----------
-    detector: Detector
-        Pyxel Detector object.
-    gain_adc: float
-        Gain in units of ADU/V.
-    """
-
-    if gain_adc is None:
-        final_gain = detector.characteristics.adc_gain
-    else:
-        final_gain = gain_adc
-
-    # Apply gain from analog-to-digital converter
-    new_image_2d = apply_gain_adc(signal_2d=detector.signal.array, gain_adc=final_gain)
-    detector.image.array = new_image_2d
-
-
 def simple_phase_conversion(detector: MKID, phase_conversion: float = 1.0) -> None:
     """Create an image array from phase array.
 
