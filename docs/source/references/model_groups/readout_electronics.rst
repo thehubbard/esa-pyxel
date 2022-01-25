@@ -38,6 +38,7 @@ array into :py:class:`~pyxel.data_structure.Image` mimicking an ideal Analog to 
 User can specify optional arguments ``bit_resolution`` and ```voltage_range``.
 If not, the parameters ``adc_bit_resolution`` and ``adc_voltage_range`` from detector
 :py:class:`~pyxel.detectors.Characteristics` is used.
+Output data_type can also be specified with the parameter ``data_type``, default is ``uint32``.
 
 Example of the configuration file:
 
@@ -49,6 +50,7 @@ Example of the configuration file:
       arguments:
         bit_resolution: 16  # optional
         voltage_range: [0., 5.]  # optional
+        data_type: uint32   # optional
 
 .. autofunction:: simple_adc
 
