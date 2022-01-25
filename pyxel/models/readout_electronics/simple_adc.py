@@ -8,6 +8,8 @@
 #
 import numpy as np
 from pyxel.detectors import Detector
+import typing as t
+from typing_extensions import Literal
 
 
 def apply_simple_adc(
@@ -32,6 +34,7 @@ def apply_simple_adc(
         start=voltage_range[0], stop=voltage_range[1], num=2 ** bit_resolution
     )
     output = np.digitize(x=signal, bins=bins[:-1], right=True)
+    return output
 
 
 def simple_adc(
