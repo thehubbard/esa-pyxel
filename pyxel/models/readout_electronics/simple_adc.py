@@ -17,13 +17,16 @@ def apply_simple_adc(
 
     Parameters
     ----------
-    signal
-    bit_resolution
-    voltage_range
+    signal: np.ndarray
+        Input signal.
+    bit_resolution: int
+        ADC bit resolution.
+    voltage_range: tuple of floats
+        ADC voltage range.
 
     Returns
     -------
-    ndarray
+    output: ndarray
     """
     bins = np.linspace(
         start=voltage_range[0], stop=voltage_range[1], num=2 ** bit_resolution
