@@ -8,6 +8,8 @@ Core
 ~~~~
 * Improve digitization models and detector digitization characteristics.
   (See `!413 <https://gitlab.com/esa/pyxel/-/merge_requests/413>`_).
+* Remove default values from detector properties.
+  (See `!415 <https://gitlab.com/esa/pyxel/-/merge_requests/415>`_).
 
 Documentation
 ~~~~~~~~~~~~~
