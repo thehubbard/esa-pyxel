@@ -53,7 +53,7 @@ def pulse_processing(
     Parameters
     ----------
     detector: MKID
-        Pyxel MKID detector object.
+        Pyxel :term:`MKID` detector object.
     wavelength: float
         Wavelength.
     responsivity: float

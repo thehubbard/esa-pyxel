@@ -36,10 +36,10 @@ Conversion with custom QE map
 
 With this model you can create and add charge to :py:class:`~pyxel.detectors.Detector` via photoelectric effect
 by converting photons in charge.
-Beside that, user can input a custom quantum efficiency map by providing a ``filename`` of the QE map.
-Accepted file formats for QE map are ``.npy``, ``.fits``, ``.txt``, ``.data``, ``.jpg``, ``.jpeg``, ``.bmp``,
+Beside that, user can input a custom quantum efficiency map by providing a ``filename`` of the :term:`QE` map.
+Accepted file formats for :term:`QE` map are ``.npy``, ``.fits``, ``.txt``, ``.data``, ``.jpg``, ``.jpeg``, ``.bmp``,
 ``.png`` and ``.tiff``. Use argument ``position`` to set the offset from (0,0) pixel
-and set where the input QE map is placed onto detector. You can set preset positions with argument ``align``.
+and set where the input :term:`QE` map is placed onto detector. You can set preset positions with argument ``align``.
 Values outside of detector shape will be cropped.
 Read more about placement in the documentation of function :py:func:`~pyxel.util.fit_into_array`.
 
@@ -101,7 +101,7 @@ Example of YAML configuration model:
         block_start: 10
         block_end: 50
 
-.. note:: This model is specific for the CCD detector.
+.. note:: This model is specific for the :term:`CCD` detector.
 
 .. autofunction:: charge_blocks
 
@@ -150,7 +150,7 @@ Dark current rule07
 
 With this model you can add dark current to :py:class:`~pyxel.data_structure.Charge` following the
 model described in :cite:p:`Tennant2008MBEHT`.
-This model is only valid for MCT hybridised array (MCT + CMOS).
+This model is only valid for :term:`MCT` hybridised array (:term:`MCT` + :term:`CMOS`).
 The model has one extra argument: ``cut-off wavelength``,and also takes some values from :py:class:`~pyxel.detectors.Detector` object,
 to be precise: ``temperature``, ``pixel size`` (assuming it is square),
 and ``time step`` since last read-out.
@@ -167,7 +167,7 @@ Example of the configuration file:
       arguments:
         cutoff_wavelength: 2.5
 
-.. note:: This model is specific for the MCT and CMOS detector.
+.. note:: This model is specific for the :term:`MCT` and :term:`CMOS` detector.
 
 .. autofunction:: pyxel.models.charge_generation.dark_current_rule07    
 

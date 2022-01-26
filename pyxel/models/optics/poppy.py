@@ -348,7 +348,7 @@ def calc_psf(
         Field Of View on detector plane in arcsec.
     pixelscale : float
         Pixel scale on detector plane (arcsec/pixel).
-        Defines sampling resolution of PSF.
+        Defines sampling resolution of :term:`PSF`.
     optical_parameters : list of OpticalParameter
         List of optical parameters before detector with their specific arguments.
 
@@ -436,7 +436,7 @@ def optical_psf(
         Field Of View on detector plane in arcsec.
     pixelscale : float
         Pixel scale on detector plane (arcsec/pixel).
-        Defines sampling resolution of PSF.
+        Defines sampling resolution of :term:`PSF`.
     optical_system : list of dict
         List of optical elements before detector with their specific arguments.
     """

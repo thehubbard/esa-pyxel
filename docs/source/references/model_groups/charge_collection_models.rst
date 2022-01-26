@@ -122,7 +122,7 @@ Example of the configuration file:
           diagonal_coupling: 0.05
           anisotropic_coupling: 0.03
 
-.. note:: This model is specific for the CMOS detector.
+.. note:: This model is specific for the :term:`CMOS` detector.
 
 .. autofunction:: simple_ipc
 
@@ -152,7 +152,7 @@ Example of the configuration file:
         trap_capacities: [100., 100.]  # optional
 
 
-.. note:: This model is specific for the CMOS detector.
+.. note:: This model is specific for the :term:`CMOS` detector.
 
 .. autofunction:: simple_persistence
 

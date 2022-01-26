@@ -26,13 +26,16 @@ from pyxel.models.charge_generation.cosmix.util import (
 
 
 class Simulation:
-    """Main class of the program, Simulation contain all the methods to set and run a simulation."""
+    """Main class of the program, Simulation contain all the methods to set and run a simulation.
+
+    Parameters
+    ----------
+    detector : Detector
+        Detector object(from :term:`CCD`/:term:`CMOS` library) containing all
+        the simulated detector specs.
+    """
 
     def __init__(self, detector: Detector) -> None:
-        """Initialize the simulation.
-
-        :param Detector detector: Detector object(from CCD/CMSO library) containing all the simulated detector specs
-        """
         self.detector = detector
         self.simulation_mode = (
             None

@@ -409,8 +409,8 @@ def main():
     """Pyxel detector simulation framework.
 
     Pyxel is a detector simulation framework, that can simulate a variety of
-    detector effects (e.g., cosmic rays, radiation-induced CTI in CCDs, persistence
-    in MCT, charge diffusion, crosshatches, noises, crosstalk etc.) on a given image.
+    detector effects (e.g., cosmic rays, radiation-induced :term:`CTI` in :term:`CCDs<CCD>`, persistence
+    in :term:`MCT`, charge diffusion, crosshatches, noises, crosstalk etc.) on a given image.
     """
 
 

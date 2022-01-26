@@ -43,7 +43,7 @@ Add noise to signal array of detector output node using normal random distributi
       arguments:
         std_deviation: 1.0
 
-.. note:: This model is specific to the CCD detector.
+.. note:: This model is specific to the :term:`CCD` detector.
 
 .. autofunction:: output_node_noise
 
@@ -52,7 +52,7 @@ Output node noise CMOS
 
 :guilabel:`Signal` 🠆 :guilabel:`Signal`
 
-Output node noise model for CMOS detectors where readout is statistically independent for each pixel.
+Output node noise model for :term:`CMOS` detectors where readout is statistically independent for each pixel.
 
 .. code-block:: yaml
 
@@ -63,7 +63,7 @@ Output node noise model for CMOS detectors where readout is statistically indepe
         readout_noise: 1.0
         readout_noise_std: 2.0
 
-.. note:: This model is specific to the CMOS detector.
+.. note:: This model is specific to the :term:`CMOS` detector.
 
 .. autofunction:: output_node_noise_cmos
 
@@ -98,7 +98,7 @@ HxRG noise generator
 With this model you can add noise to :py:class:`~pyxel.data_structure.Pixel` array,
 before converting to :py:class:`~pyxel.data_structure.Signal` array in the charge measurement part of the pipeline.
 
-It is a near-infrared CMOS noise generator (ngHxRG) developed for the
+It is a near-infrared :term:`CMOS` noise generator (ngHxRG) developed for the
 James Webb Space Telescope (JWST) Near Infrared Spectrograph (NIRSpec)
 described in :cite:p:`2015:rauscher`. It simulates many important noise
 components including white read noise, residual bias drifts, pink 1/f
@@ -158,7 +158,7 @@ Signal Transfer models (CMOS)
 =============================
 
 .. important::
-   This model group is only for CMOS-based detectors!
+   This model group is only for :term:`CMOS`-based detectors!
 
 .. currentmodule:: pyxel.models.signal_transfer
 .. automodule:: pyxel.models.signal_transfer

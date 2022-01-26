@@ -25,6 +25,6 @@ Example of YAML configuration model:
         responsivity:
         scaling_factor: 2.5e2
 
-.. note:: This model is specific for the MKID detector.
+.. note:: This model is specific for the :term:`MKID` detector.
 
 .. autofunction:: pulse_processing

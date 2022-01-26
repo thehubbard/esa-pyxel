@@ -34,7 +34,7 @@ Geometry
 
 CCD specific
 ------------
-CCD specific classes.
+:term:`CCD` specific classes.
 
 CCDCharacteristics
 ==================
@@ -56,7 +56,7 @@ CCDGeometry
 
 CMOS specific
 -------------
-CMOS specific classes.
+:term:`CMOS` specific classes.
 
 CMOSCharacteristics
 ===================
@@ -67,7 +67,7 @@ CMOSCharacteristics
     :show-inheritance:
     :exclude-members:
 
-CMOSGeoemtry
+CMOSGeometry
 ============
 .. autoclass:: CMOSGeometry
     :members:
@@ -78,7 +78,7 @@ CMOSGeoemtry
 
 MKID specific
 -------------
-MKID specific classes.
+:term:`MKID` specific classes.
 
 MKIDCharacteristics
 ===================

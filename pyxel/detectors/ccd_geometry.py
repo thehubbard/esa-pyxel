@@ -10,7 +10,7 @@ from pyxel.detectors import Geometry
 
 
 class CCDGeometry(Geometry):
-    """Geometrical attributes of a CCD detector.
+    """Geometrical attributes of a :term:`CCD` detector.
 
     Parameters
     ----------

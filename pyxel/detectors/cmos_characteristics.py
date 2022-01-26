@@ -10,7 +10,7 @@ from pyxel.detectors import Characteristics
 
 
 class CMOSCharacteristics(Characteristics):
-    """Characteristic attributes of a CMOS-based detector.
+    """Characteristic attributes of a :term:`CMOS`-based detector.
 
     Parameters
     ----------

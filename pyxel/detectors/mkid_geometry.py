@@ -10,7 +10,7 @@ from pyxel.detectors import Geometry
 
 
 class MKIDGeometry(Geometry):
-    """Geometrical attributes of a MKID-based detector.
+    """Geometrical attributes of a :term:`MKID`-based detector.
 
     Parameters
     ----------

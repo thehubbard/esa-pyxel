@@ -64,7 +64,7 @@ def conversion_with_qe_map(
         Literal["center", "top_left", "top_right", "bottom_left", "bottom_right"]
     ] = None,
 ) -> None:
-    """Generate charge from incident photon via photoelectric effect, simple model with custom QE map.
+    """Generate charge from incident photon via photoelectric effect, simple model with custom :term:`QE` map.
 
     Parameters
     ----------
@@ -73,9 +73,9 @@ def conversion_with_qe_map(
     filename : str or Path
         File path.
     position: tuple
-        Indices of starting row and column, used when fitting QE map to detector.
+        Indices of starting row and column, used when fitting :term:`QE` map to detector.
     align: Literal
-        Keyword to align the QE map to detector. Can be any from:
+        Keyword to align the :term:`QE` map to detector. Can be any from:
         ("center", "top_left", "top_right", "bottom_left", "bottom_right")
     """
     geo = detector.geometry

@@ -143,7 +143,7 @@ Example of the configuration file:
         tau_esc: 1.4e-10
         tau_sat: 1.0e-3
 
-.. note:: This model is specific to the MKID detector.
+.. note:: This model is specific to the :term:`MKID` detector.
 
 .. autofunction:: dead_time_filter
 
@@ -152,7 +152,7 @@ SAR ADC
 
 :guilabel:`Signal` 🠆 :guilabel:`Image`
 
-Digitize signal array using SAR (Successive Approximation Register) ADC logic.
+Digitize signal array using SAR (Successive Approximation Register) :term:`ADC` logic.
 
 Example of the configuration file:
 
@@ -183,7 +183,7 @@ Example of the configuration file:
       func: pyxel.models.readout_electronics.simple_phase_conversion
       enabled: true
 
-.. note:: This model is specific to the MKID detector.
+.. note:: This model is specific to the :term:`MKID` detector.
 
 .. autofunction:: simple_phase_conversion
 

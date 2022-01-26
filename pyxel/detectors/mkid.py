@@ -5,7 +5,7 @@
 #  this file, may be copied, modified, propagated, or distributed except according to
 #  the terms contained in the file ‘LICENCE.txt’.
 
-"""MKID-array detector modeling class."""
+""":term:`MKID`-array detector modeling class."""
 
 import typing as t
 from pathlib import Path
@@ -23,7 +23,7 @@ if t.TYPE_CHECKING:
 
 
 class MKID(Detector):
-    """MKID-based detector class containing all detector attributes and data."""
+    """:term:`MKID`-based detector class containing all detector attributes and data."""
 
     def __init__(
         self,

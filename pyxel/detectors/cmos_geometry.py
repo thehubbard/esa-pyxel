@@ -10,7 +10,7 @@ from pyxel.detectors import Geometry
 
 
 class CMOSGeometry(Geometry):
-    """Geometrical attributes of a CMOS-based detector.
+    """Geometrical attributes of a :term:`CMOS`-based detector.
 
     Parameters
     ----------

@@ -3,24 +3,37 @@
 List of Acronyms
 =================
 
-=======          ==========
-Acronym          Definition
-=======          ==========
-CCD              Charge-Coupled Device
-CMOS             Complementary Metal Oxide Semiconductor
-MCT              Mercury Cadmium Telluride (HgCdTe)
+.. glossary::
 
-CDM              Charge Distortion Model
+    ACN
+      Alternating Column Noise.
 
-CTI              Charge Transfer Inefficiency
-SNR              Signal-to-Noise Ratio
-QE               Quantum Efficiency
-PNRU             Photo-Response Non-Uniformity
-FPN              Fixed-pattern noise
-ADC              Analog-Digital Converter
-PSF              Point Spread Function
-ACN              Alternating Column Noise
-RTG              Random Telegraph Noise
-SAR              Successive Approximation Register
-MKID             Microwave Kinetic-Inductance Detector
-=======          ==========
+    ADC
+      Analog-Digital Converter.
+
+    CCD
+      Charge-Coupled Device.
+
+    CDM
+      Charge Distortion Model.
+
+    CMOS
+      Complementary Metal Oxide Semiconductor.
+
+    CTI
+      Charge Transfer Inefficiency.
+
+    MCT
+      Mercury Cadmium Telluride (HgCdTe).
+
+    MKID
+        Microwave Kinetic-Inductance Detector.
+
+    PSF
+      Point Spread Function.
+
+    QE
+      Quantum Efficiency.
+
+    SAR
+        Successive Approximation Register.

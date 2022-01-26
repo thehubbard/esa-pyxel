@@ -5,10 +5,10 @@
 #  this file, may be copied, modified, propagated, or distributed except according to
 #  the terms contained in the file ‘LICENCE.txt’.
 
-"""Charge Distortion Model for CCDs.
+"""Charge Distortion Model for :term:`CCDs<CCD>`.
 
 ============================
-This is a function to run the upgraded CDM CTI model developed by Alex Short (ESA).
+This is a function to run the upgraded :term:`CDM` :term:`CTI` model developed by Alex Short (ESA).
 
 :requires: NumPy
 
@@ -47,7 +47,7 @@ from pyxel.detectors import CCD
 
 
 class CDMdirection(Enum):
-    """CDM direction class."""
+    """:term:`CDM` direction class."""
 
     Parallel = "parallel"
     Serial = "serial"
@@ -73,7 +73,7 @@ def cdm(
     detector: CCD
         Pyxel CCD detector object.
     direction: literal
-        Set ``"parallel"`` for CTI in parallel direction or ``"serial"`` for CTI in serial register.
+        Set ``"parallel"`` for :term:`CTI` in parallel direction or ``"serial"`` for :term:`CTI` in serial register.
     beta: float
         Electron cloud expansion coefficient :math:`\beta`.
     trap_release_times: sequence of float
@@ -169,7 +169,7 @@ def run_cdm_parallel(
     charge_injection: bool = False,
     chg_inj_parallel_transfers: int = 0,
 ) -> np.ndarray:
-    r"""Run CDM in parallel direction.
+    r"""Run :term:`CDM` in parallel direction.
 
     Parameters
     ----------
@@ -251,7 +251,7 @@ def run_cdm_serial(
     nt: np.ndarray,
     sigma: np.ndarray,
 ) -> np.ndarray:
-    r"""Run CDM in serial direction.
+    r"""Run :term:`CDM` in serial direction.
 
     Parameters
     ----------

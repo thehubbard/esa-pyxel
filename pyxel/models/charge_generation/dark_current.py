@@ -18,7 +18,7 @@ from pyxel.util import temporary_random_state
 def calculate_dark_current(
     num_rows: int, num_cols: int, current: float, exposure_time: float
 ) -> np.ndarray:
-    """Simulate dark current in a CCD.
+    """Simulate dark current in a :term:`CCD`.
 
     Parameters
     ----------

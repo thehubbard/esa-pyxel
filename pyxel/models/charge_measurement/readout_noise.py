@@ -38,7 +38,7 @@ def create_noise_cmos(
     readout_noise_std: float,
     charge_readout_sensitivity: float,
 ) -> np.ndarray:
-    """Create noise to signal array for CMOS detectors.
+    """Create noise to signal array for :term:`CMOS` detectors.
 
     Parameters
     ----------
@@ -102,12 +102,12 @@ def output_node_noise_cmos(
     readout_noise_std: float,
     seed: t.Optional[int] = None,
 ) -> None:
-    """Output node noise model for CMOS detectors where readout is statistically independent for each pixel.
+    """Output node noise model for :term:`CMOS` detectors where readout is statistically independent for each pixel.
 
     Parameters
     ----------
     detector: CMOS
-        Pyxel CMOS object.
+        Pyxel :term:`CMOS` object.
     readout_noise: float
         Mean readout noise for the array in units of electrons. Unit: electron
     readout_noise_std: float
@@ -118,7 +118,7 @@ def output_node_noise_cmos(
     Raises
     ------
     TypeError
-        Raised if the 'detector' is not a CMOS object.
+        Raised if the 'detector' is not a :term:`CMOS` object.
     ValueError
         Raised if 'readout_noise_std' is negative.
     """

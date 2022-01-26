@@ -426,7 +426,7 @@ def to_ccd(dct: dict) -> CCD:
 
 
 def to_cmos(dct: dict) -> CMOS:
-    """Create a CMOS class from a dictionary.
+    """Create a :term:`CMOS` class from a dictionary.
 
     Parameters
     ----------

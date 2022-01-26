@@ -52,7 +52,7 @@ def charge_blocks(
     block_start: int = 0,
     block_end: t.Optional[int] = None,
 ) -> None:
-    """Inject a block of charge into the CCD detector.
+    """Inject a block of charge into the :term:`CCD` detector.
 
     Parameters
     ----------

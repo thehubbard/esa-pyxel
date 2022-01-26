@@ -16,8 +16,8 @@ Modification History:
   reporting. This was done by adding the "verbose" arguement.
 - Implement a request from Pierre Ferruit (ESA/ESTEC) to generate
   3-dimensional data cubes.
-- Implement a request from Pierre Ferruit to treat ACN as different 1/f
-  noise in even/odd columns. Previously ACN was treated purely as a feature
+- Implement a request from Pierre Ferruit to treat :term:`ACN` as different 1/f
+  noise in even/odd columns. Previously :term:`ACN` was treated purely as a feature
   in Fourier space.
 - Version 2(Beta)
 
@@ -65,8 +65,8 @@ Modification History:
 - Code has been made PEP8 compatible
 - Fixed NGHXRG_HOME file path
 - Fixed make_noise() variables
-- Bug fixed in ACN mask, now code works with any naxis1, naxis2 and n_out values not just default arguments
-- Commented out unused code for ACN arrays
+- Bug fixed in :term:`ACN` mask, now code works with any naxis1, naxis2 and n_out values not just default arguments
+- Commented out unused code for :term:`ACN` arrays
 - make_noise() function separated into different noise generator functions,
 which returns result numpy array to be able to add to Pyxel detector signal
 - removed STRIPE mode (did not work), use WINDOW instead -> BUG: code doesn't work with different x and y array sizes
