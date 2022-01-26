@@ -25,8 +25,6 @@ List of Acronyms
 Acronym          Definition
 =======          ==========
 
-
-SNR              Signal-to-Noise Ratio
 QE               Quantum Efficiency
 PNRU             Photo-Response Non-Uniformity
 FPN              Fixed-pattern noise
