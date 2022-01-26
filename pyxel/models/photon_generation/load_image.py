@@ -24,6 +24,7 @@ def load_image(
     convert_to_photons: bool = False,
     multiplier: float = 1.0,
     time_scale: float = 1.0,
+    bit_resolution: t.Optional[int] = None,
 ) -> None:
     r"""Load FITS file as a numpy array and add to the detector as input image.
 
@@ -40,11 +41,14 @@ def load_image(
     convert_to_photons: bool
         If ``True``, the model converts the values of loaded image array from ADU to
         photon numbers for each pixel using the Photon Transfer Function:
-        :math:`PTF = quantum\_efficiency \cdot charge\_to\_voltage\_conversion \cdot pre\_amplification \cdot adc\_gain`
+        :math:`PTF = quantum\_efficiency \cdot charge\_to\_voltage\_conversion
+        \cdot pre\_amplification \cdot adc\_factor`.
     multiplier: float
         Multiply photon array level with a custom number.
     time_scale: float
         Time scale of the photon flux, default is 1 second. 0.001 would be ms.
+    bit_resolution: int
+        Bit resolution of the loaded image.
     """
 
     shape = (detector.geometry.row, detector.geometry.col)
@@ -62,12 +66,20 @@ def load_image(
     photon_array = image
 
     if convert_to_photons:
+
+        if not bit_resolution:
+            raise ValueError(
+                "Bit resolution of the input image has to be specified for converting to photons."
+            )
+
         cht = detector.characteristics
+        adc_multiplier = cht.adc_voltage_range[1] / 2 ** bit_resolution
+
         photon_array = photon_array / (
             cht.quantum_efficiency
             * cht.charge_to_volt_conversion
             * cht.pre_amplification
-            * cht.adc_gain
+            * adc_multiplier
         )
     photon_array = photon_array * (detector.time_step / time_scale) * multiplier
 

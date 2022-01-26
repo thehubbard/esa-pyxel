@@ -24,9 +24,13 @@ Values outside of detector shape will be cropped.
 Read more about placement in the documentation of function :py:func:`~pyxel.util.fit_into_array`.
 With ``multiplier`` you can multiply the photon number by a custom float,
 and ``time_scale`` is to set the time scale of the incoming photons, default is 1 second.
-By setting ``convert_to_photons`` to ``true``, the model converts the values of loaded image array from ADU to
-photon numbers for each pixel using the Photon Transfer Function.
-:math:`PTF = quantum\_efficiency \cdot charge\_to\_voltage\_conversion \cdot pre\_amplification \cdot adc\_gain`.
+By setting ``convert_to_photons`` to ``true`` together with ``bit_resolution``,
+the model converts the values of loaded image array from ADU
+to photon numbers for each pixel using the Photon Transfer Function.
+:math:`PTF = quantum\_efficiency \cdot charge\_to\_voltage\_conversion \cdot pre\_amplification \cdot adc\_factor`.
+ADC conversion factor in this case is :math:`max(characteristics.voltage\_range)/2^{bit\_resolution}`.
+
+Example of the configuration file:
 
 .. code-block:: yaml
 
@@ -37,6 +41,7 @@ photon numbers for each pixel using the Photon Transfer Function.
         image_file: data/HorseHead.fits
         position: [0,0]
         convert_to_photons: true
+        bit_resolution: 16
 
 .. autofunction:: load_image
 

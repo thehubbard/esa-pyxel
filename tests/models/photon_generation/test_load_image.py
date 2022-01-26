@@ -66,9 +66,9 @@ def ccd_10x10() -> CCD:
 
 
 @pytest.mark.parametrize(
-    "image_file, position, align, convert_to_photons, multiplier, time_scale",
+    "image_file, position, align, convert_to_photons, multiplier, time_scale, bit_resolution",
     [
-        pytest.param("img.npy", (0, 0), None, True, 1.0, 1.0, id="valid"),
+        pytest.param("img.npy", (0, 0), None, True, 1.0, 1.0, 16, id="valid"),
     ],
 )
 def test_load_image(
@@ -82,6 +82,7 @@ def test_load_image(
     convert_to_photons: bool,
     multiplier: float,
     time_scale: float,
+    bit_resolution: int,
 ):
     """Test input parameters for function 'load_image'."""
     load_image(
@@ -92,4 +93,51 @@ def test_load_image(
         convert_to_photons=convert_to_photons,
         multiplier=multiplier,
         time_scale=time_scale,
+        bit_resolution=bit_resolution,
     )
+
+
+@pytest.mark.parametrize(
+    "image_file, position, align, convert_to_photons, multiplier, time_scale, bit_resolution, exp_exc, exp_msg",
+    [
+        pytest.param(
+            "img.npy",
+            (0, 0),
+            None,
+            True,
+            1.0,
+            1.0,
+            None,
+            ValueError,
+            "Bit resolution of the input image has to be specified for converting to photons.",
+            id="invalid",
+        ),
+    ],
+)
+def test_load_image_with_invalid_params(
+    ccd_10x10: CCD,
+    valid_data2d: str,
+    image_file: str,
+    position: t.Tuple[int, int],
+    align: t.Optional[
+        Literal["center", "top_left", "top_right", "bottom_left", "bottom_right"]
+    ],
+    convert_to_photons: bool,
+    multiplier: float,
+    time_scale: float,
+    bit_resolution: int,
+    exp_exc,
+    exp_msg,
+):
+    """Test input parameters for function 'load_image'."""
+    with pytest.raises(exp_exc, match=exp_msg):
+        load_image(
+            detector=ccd_10x10,
+            image_file=f"{valid_data2d}/{image_file}",
+            position=position,
+            align=align,
+            convert_to_photons=convert_to_photons,
+            multiplier=multiplier,
+            time_scale=time_scale,
+            bit_resolution=bit_resolution,
+        )

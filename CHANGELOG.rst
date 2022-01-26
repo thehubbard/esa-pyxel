@@ -6,6 +6,8 @@ version 1.0.0-rc.3 / UNRELEASED-YYYY-MM-DD
 
 Core
 ~~~~
+* Improve digitization models and detector digitization characteristics.
+  (See `!413 <https://gitlab.com/esa/pyxel/-/merge_requests/413>`_).
 
 Documentation
 ~~~~~~~~~~~~~

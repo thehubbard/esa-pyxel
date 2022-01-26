@@ -43,8 +43,6 @@ def apply_simple_adc(
 
 def simple_adc(
     detector: Detector,
-    bit_resolution: t.Optional[int] = None,
-    voltage_range: t.Optional[t.Tuple[float, float]] = None,
     data_type: Literal["uint16", "uint32", "uint64", "uint"] = "uint32",
 ) -> None:
     """Apply simple Analog to Digital conversion.
@@ -53,23 +51,14 @@ def simple_adc(
     ----------
     detector: Detector
         Pyxel Detector object.
-    bit_resolution: int, optional
-        ADC bit resolution.
-    voltage_range: tuple of floats, optional
-        ADC voltage range.
     data_type : str
         The desired data-type for the Image array. The data-type must be an unsigned integer.
         Valid values: 'uint16', 'uint32', 'uint64', 'uint'
         Invalid values: 'int16', 'int32', 'int64', 'int', 'float'...
     """
-    if bit_resolution is None:
-        final_bit_resolution = detector.characteristics.adc_bit_resolution
-    else:
-        final_bit_resolution = bit_resolution
-    if voltage_range is None:
-        final_voltage_range = detector.characteristics.adc_voltage_range
-    else:
-        final_voltage_range = voltage_range
+
+    bit_resolution = detector.characteristics.adc_bit_resolution
+    voltage_range = detector.characteristics.adc_voltage_range
 
     try:
         d_type = np.dtype(data_type)  # type: np.dtype
@@ -81,16 +70,11 @@ def simple_adc(
     if not issubclass(d_type.type, np.integer):
         raise TypeError("Expecting a signed/unsigned integer.")
 
-    if not (4 <= final_bit_resolution <= 64):
-        raise ValueError("'adc_bit_resolution' must be between 4 and 64.")
-    if not len(final_voltage_range) == 2:
-        raise ValueError("Voltage range must have length of 2.")
-
     detector.image.array = np.asarray(
         apply_simple_adc(
             signal=detector.signal.array,
-            bit_resolution=final_bit_resolution,
-            voltage_range=final_voltage_range,
+            bit_resolution=bit_resolution,
+            voltage_range=voltage_range,
         ),
         dtype=d_type,
     )

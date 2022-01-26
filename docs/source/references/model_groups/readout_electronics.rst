@@ -9,25 +9,6 @@ Readout Electronics models
 Readout electronics models are used to add TBW.
 
 
-Simple digitization
-===================
-
-:guilabel:`Signal` 🠆 :guilabel:`Image`
-
-Digitize signal array mimicking readout electronics.
-
-Example of the configuration file:
-
-.. code-block:: yaml
-
-    - name: simple_digitization
-      func: pyxel.models.readout_electronics.simple_digitization
-      enabled: true
-      arguments:
-        data_type: uint16   # This is optional
-
-.. autofunction:: simple_digitization
-
 Simple ADC
 ==========
 
@@ -35,9 +16,8 @@ Simple ADC
 
 With this model you can convert :py:class:`~pyxel.data_structure.Signal`
 array into :py:class:`~pyxel.data_structure.Image` mimicking an ideal Analog to Digital Converter (ADC).
-User can specify optional arguments ``bit_resolution`` and ```voltage_range``.
-If not, the parameters ``adc_bit_resolution`` and ``adc_voltage_range`` from detector
-:py:class:`~pyxel.detectors.Characteristics` is used.
+The parameters ``adc_bit_resolution`` and ``adc_voltage_range`` from detector
+:py:class:`~pyxel.detectors.Characteristics` are used.
 Output data_type can also be specified with the parameter ``data_type``, default is ``uint32``.
 
 Example of the configuration file:
@@ -48,8 +28,6 @@ Example of the configuration file:
       func: pyxel.models.readout_electronics.simple_adc
       enabled: true
       arguments:
-        bit_resolution: 16  # optional
-        voltage_range: [0., 5.]  # optional
         data_type: uint32   # optional
 
 .. autofunction:: simple_adc
@@ -153,6 +131,8 @@ SAR ADC
 :guilabel:`Signal` 🠆 :guilabel:`Image`
 
 Digitize signal array using SAR (Successive Approximation Register) :term:`ADC` logic.
+The parameters ``adc_bit_resolution`` and ``adc_voltage_range`` from detector
+:py:class:`~pyxel.detectors.Characteristics` are used.
 
 Example of the configuration file:
 
@@ -161,9 +141,6 @@ Example of the configuration file:
     - name: sar_adc
       func: pyxel.models.readout_electronics.sar_adc
       enabled: true
-      arguments:
-        adc_bits: 16
-        range_volt: [0.0, 5.0]
 
 .. autofunction:: sar_adc
 
@@ -186,25 +163,3 @@ Example of the configuration file:
 .. note:: This model is specific to the :term:`MKID` detector.
 
 .. autofunction:: simple_phase_conversion
-
-Simple processing
-=================
-
-:guilabel:`Signal` 🠆 :guilabel:`Image`
-
-With this model you can convert :py:class:`~pyxel.data_structure.Signal`
-array into :py:class:`~pyxel.data_structure.Image`.
-User can specify optional argument ``gain_adc``. If not, the parameter from detector
-:py:class:`~pyxel.detectors.Characteristics` is used.
-
-Example of the configuration file:
-
-.. code-block:: yaml
-
-    - name: simple_processing
-      func: pyxel.models.readout_electronics.simple_processing
-      enabled: true
-      arguments:
-        gain_adc: 1.  # optional
-
-.. autofunction:: simple_processing
