@@ -40,7 +40,7 @@ def simple_phase_conversion(detector: MKID, phase_conversion: float = 1.0) -> No
     Parameters
     ----------
     detector: MKID
-        Pyxel MKID detector object.
+        Pyxel :term:`MKID` detector object.
     phase_conversion : float
         Phase conversion factor
     """

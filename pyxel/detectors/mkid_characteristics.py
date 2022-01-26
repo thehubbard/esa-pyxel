@@ -10,7 +10,7 @@ from pyxel.detectors import CMOSCharacteristics
 
 
 class MKIDCharacteristics(CMOSCharacteristics):
-    """Characteristic attributes of a MKID-based detector.
+    """Characteristic attributes of a :term:`MKID`-based detector.
 
     Parameters
     ----------

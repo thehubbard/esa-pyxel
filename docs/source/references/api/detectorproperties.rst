@@ -78,7 +78,7 @@ CMOSGeometry
 
 MKID specific
 -------------
-MKID specific classes.
+:term:`MKID` specific classes.
 
 MKIDCharacteristics
 ===================

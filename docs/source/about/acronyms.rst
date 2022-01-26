@@ -26,6 +26,9 @@ List of Acronyms
     MCT
       Mercury Cadmium Telluride (HgCdTe).
 
+    MKID
+        Microwave Kinetic-Inductance Detector.
+
     PSF
       Point Spread Function.
 
@@ -34,10 +37,3 @@ List of Acronyms
 
     SAR
         Successive Approximation Register.
-
-=======          ==========
-Acronym          Definition
-=======          ==========
-
-MKID             Microwave Kinetic-Inductance Detector
-=======          ==========

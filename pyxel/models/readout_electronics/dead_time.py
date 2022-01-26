@@ -51,7 +51,7 @@ def dead_time_filter(
     Parameters
     ----------
     detector: MKID
-        Pyxel Detector MKID object.
+        Pyxel Detector :term:`MKID` object.
     tau_0 : float
         Material dependent characteristic time for the electron-phonon coupling. Unit: s
     n_0 : float
