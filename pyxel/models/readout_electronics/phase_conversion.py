@@ -7,10 +7,7 @@
 
 """Readout electronics model."""
 
-import typing as t
-
-from pyxel.detectors import MKID, Detector
-from pyxel.models.readout_electronics.util import apply_gain_adc
+from pyxel.detectors import MKID
 
 
 def simple_phase_conversion(detector: MKID, phase_conversion: float = 1.0) -> None:
