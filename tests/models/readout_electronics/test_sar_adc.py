@@ -29,7 +29,6 @@ def ccd_10x3() -> CCD:
     )
 
 
-
 def test_sar_adc(ccd_10x3: CCD):
     """Test model 'sar_adc' with valid inputs."""
     sar_adc(detector=ccd_10x3)

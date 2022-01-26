@@ -6,8 +6,6 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """:term:`SAR` :term:`ADC` model."""
-import typing as t
-
 import numpy as np
 
 from pyxel.detectors import Detector
