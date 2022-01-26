@@ -6,6 +6,8 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """TBW."""
+import typing as t
+
 import numpy as np
 
 from pyxel.util.memory import get_size
@@ -26,6 +28,10 @@ class Characteristics:
         Gain of the Analog-Digital Converter. Unit: ADU/V
     full_well_capacity: float
         Full well capacity. Unit: e-
+    adc_voltage_range: tuple of floats
+        ADC voltage range.
+    adc_bit_resolution: int
+        ADC bit resolution.
     """
 
     def __init__(
@@ -35,29 +41,33 @@ class Characteristics:
         pre_amplification: float = 1,  # unit: V/V
         adc_gain: float = 1,  # unit: adu/V
         full_well_capacity: float = 0,  # unit: electron
+        adc_voltage_range: t.Tuple[float, float] = (0.0, 10.0),
+        adc_bit_resolution: int = 8,
     ):
         if not (0.0 <= quantum_efficiency <= 1.0):
             raise ValueError("'quantum_efficiency' must be between 0.0 and 1.0.")
-
         if not (0.0 <= charge_to_volt_conversion <= 100.0):
             raise ValueError(
                 "'charge_to_volt_conversion' must be between 0.0 and 100.0."
             )
-
         if not (0.0 <= pre_amplification <= 10000.0):
             raise ValueError("'pre_amplification' must be between 0.0 and 10000.0.")
-
         if adc_gain not in range(65537):
             raise ValueError("'adc_gain' must be between 0 and 65536.")
-
         if not (0.0 <= full_well_capacity <= 1.0e7):
             raise ValueError("'full_well_capacity' must be between 0 and 1e7.")
+        if not (4 <= adc_bit_resolution <= 64):
+            raise ValueError("'adc_bit_resolution' must be between 4 and 64.")
+        if not len(adc_voltage_range) == 2:
+            raise ValueError("Voltage range must have length of 2.")
 
         self._quantum_efficiency = quantum_efficiency  # type: float
         self._charge_to_volt_conversion = charge_to_volt_conversion  # type: float
         self._pre_amplification = pre_amplification  # type: float
         self._adc_gain = adc_gain  # type: float
         self._full_well_capacity = full_well_capacity  # type: float
+        self._adc_voltage_range = adc_voltage_range  # type: t.Tuple[float, float]
+        self._adc_bit_resolution = adc_bit_resolution  # type: int
 
         self._numbytes = 0
 
@@ -113,6 +123,26 @@ class Characteristics:
             raise ValueError("'adc_gain' must be between 0 and 65536.")
 
         self._adc_gain = value
+
+    @property
+    def adc_bit_resolution(self) -> int:
+        """Get bit resolution of the Analog-Digital Converter."""
+        return self._adc_bit_resolution
+
+    @adc_bit_resolution.setter
+    def adc_bit_resolution(self, value: int) -> None:
+        """Set bit resolution of the Analog-Digital Converter."""
+        self._adc_bit_resolution = value
+
+    @property
+    def adc_voltage_range(self) -> t.Tuple[float, float]:
+        """Get voltage range of the Analog-Digital Converter."""
+        return self._adc_voltage_range
+
+    @adc_voltage_range.setter
+    def adc_voltage_range(self, value: t.Tuple[float, float]) -> None:
+        """Set voltage range of the Analog-Digital Converter."""
+        self._adc_voltage_range = value
 
     @property
     def full_well_capacity(self) -> float:
