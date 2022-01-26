@@ -87,6 +87,7 @@ pipeline:
         image_file: 'tests/data/calibrate-data.fits'
         position: [0, 0]
         convert_to_photons: true
+        bit_resolution: 16
     -
       name: illumination
       func: pyxel.models.photon_generation.illumination
