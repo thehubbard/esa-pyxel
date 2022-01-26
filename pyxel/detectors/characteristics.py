@@ -24,12 +24,10 @@ class Characteristics:
         Sensitivity of charge readout. Unit: V/e-
     pre_amplification: float
         Gain of pre-amplifier. Unit: V/V
-    adc_gain: float
-        Gain of the Analog-Digital Converter. Unit: ADU/V
     full_well_capacity: float
         Full well capacity. Unit: e-
     adc_voltage_range: tuple of floats
-        ADC voltage range.
+        ADC voltage range. Unit: V
     adc_bit_resolution: int
         ADC bit resolution.
     """
@@ -39,9 +37,8 @@ class Characteristics:
         quantum_efficiency: float = 1,  # unit: NA
         charge_to_volt_conversion: float = 1.0e-6,  # unit: volt/electron
         pre_amplification: float = 1,  # unit: V/V
-        adc_gain: float = 1,  # unit: adu/V
         full_well_capacity: float = 0,  # unit: electron
-        adc_voltage_range: t.Tuple[float, float] = (0.0, 10.0),
+        adc_voltage_range: t.Tuple[float, float] = (0.0, 10.0),  # unit: V
         adc_bit_resolution: int = 8,
     ):
         if not (0.0 <= quantum_efficiency <= 1.0):
@@ -52,8 +49,6 @@ class Characteristics:
             )
         if not (0.0 <= pre_amplification <= 10000.0):
             raise ValueError("'pre_amplification' must be between 0.0 and 10000.0.")
-        if adc_gain not in range(65537):
-            raise ValueError("'adc_gain' must be between 0 and 65536.")
         if not (0.0 <= full_well_capacity <= 1.0e7):
             raise ValueError("'full_well_capacity' must be between 0 and 1e7.")
         if not (4 <= adc_bit_resolution <= 64):
@@ -64,7 +59,6 @@ class Characteristics:
         self._quantum_efficiency = quantum_efficiency  # type: float
         self._charge_to_volt_conversion = charge_to_volt_conversion  # type: float
         self._pre_amplification = pre_amplification  # type: float
-        self._adc_gain = adc_gain  # type: float
         self._full_well_capacity = full_well_capacity  # type: float
         self._adc_voltage_range = adc_voltage_range  # type: t.Tuple[float, float]
         self._adc_bit_resolution = adc_bit_resolution  # type: int
@@ -110,19 +104,6 @@ class Characteristics:
             raise ValueError("'pre_amplification' must be between 0.0 and 10000.0.")
 
         self._pre_amplification = value
-
-    @property
-    def adc_gain(self) -> float:
-        """Get gain of the Analog-Digital Converter."""
-        return self._adc_gain
-
-    @adc_gain.setter
-    def adc_gain(self, value: float) -> None:
-        """Set gain of the Analog-Digital Converter."""
-        if value not in range(65537):
-            raise ValueError("'adc_gain' must be between 0 and 65536.")
-
-        self._adc_gain = value
 
     @property
     def adc_bit_resolution(self) -> int:
