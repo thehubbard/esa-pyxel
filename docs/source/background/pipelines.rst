@@ -91,7 +91,7 @@ which is either a general, a :py:class:`~pyxel.detectors.CCD` or
 a :py:class:`~pyxel.detectors.CMOS` type :py:class:`~pyxel.detectors.Detector` object,
 depending on what the model is supposed to simulate:
 a general (e.g. cosmic rays),
-a :term:`CCD` (e.g. CTI) or a CMOS (e.g. Alternating Column Noise) specific
+a :term:`CCD` (e.g. CTI) or a :term:`CMOS` (e.g. Alternating Column Noise) specific
 detector effect.
 
 Any other (optional) input arguments can be defined for the model as well,

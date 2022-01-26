@@ -31,7 +31,7 @@ class Simulation:
     def __init__(self, detector: Detector) -> None:
         """Initialize the simulation.
 
-        :param Detector detector: Detector object(from :term:`CCD`/CMOS library) containing all the simulated detector specs
+        :param Detector detector: Detector object(from :term:`CCD`/:term:`CMOS` library) containing all the simulated detector specs
         """
         self.detector = detector
         self.simulation_mode = (

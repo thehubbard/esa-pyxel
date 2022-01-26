@@ -56,7 +56,7 @@ CCDGeometry
 
 CMOS specific
 -------------
-CMOS specific classes.
+:term:`CMOS` specific classes.
 
 CMOSCharacteristics
 ===================
@@ -67,7 +67,7 @@ CMOSCharacteristics
     :show-inheritance:
     :exclude-members:
 
-CMOSGeoemtry
+CMOSGeometry
 ============
 .. autoclass:: CMOSGeometry
     :members:

@@ -8,11 +8,13 @@ List of Acronyms
     CCD
       Charge-Coupled Device.
 
+    CMOS
+      Complementary Metal Oxide Semiconductor.
+
 
 =======          ==========
 Acronym          Definition
 =======          ==========
-CMOS             Complementary Metal Oxide Semiconductor
 MCT              Mercury Cadmium Telluride (HgCdTe)
 
 CDM              Charge Distortion Model

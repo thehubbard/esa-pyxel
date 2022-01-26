@@ -5,7 +5,7 @@
 #  this file, may be copied, modified, propagated, or distributed except according to
 #  the terms contained in the file ‘LICENCE.txt’.
 
-"""CMOS detector modeling class."""
+""":term:`CMOS` detector modeling class."""
 import typing as t
 
 from pyxel.detectors import Detector
@@ -15,7 +15,7 @@ if t.TYPE_CHECKING:
 
 
 class CMOS(Detector):
-    """CMOS-based detector class containing all detector attributes and data."""
+    """:term:`CMOS`-based detector class containing all detector attributes and data."""
 
     def __init__(
         self,

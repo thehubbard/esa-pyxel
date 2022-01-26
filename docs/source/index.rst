@@ -8,7 +8,7 @@ Pyxel is a general detector simulation framework.
 
 An easy-to-use framework that can simulate a variety of imaging detector
 effects combined on images (e.g. radiation and optical effects, noises)
-made by :term:`CCD` or CMOS-based detectors.
+made by :term:`CCD` or :term:`CMOS`-based detectors.
 
 **Version:** |version|
 
