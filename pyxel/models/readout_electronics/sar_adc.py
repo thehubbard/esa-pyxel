@@ -5,7 +5,7 @@
 #  this file, may be copied, modified, propagated, or distributed except according to
 #  the terms contained in the file ‘LICENCE.txt’.
 
-"""SAR :term:`ADC` model."""
+""":term:`SAR` :term:`ADC` model."""
 import typing as t
 
 import numpy as np
@@ -21,7 +21,7 @@ def apply_sar_adc(
     max_volt: float,
     adc_bits: int,
 ) -> np.ndarray:
-    """Apply SAR :term:`ADC`.
+    """Apply :term:`SAR` :term:`ADC`.
 
     Parameters
     ----------
@@ -68,7 +68,7 @@ def sar_adc(
     adc_bits: int = 16,
     range_volt: t.Tuple[float, float] = (0.0, 5.0),
 ) -> None:
-    """Digitize signal array using SAR (Successive Approximation Register) :term:`ADC` logic.
+    """Digitize signal array using :term:`SAR` (Successive Approximation Register) :term:`ADC` logic.
 
     Parameters
     ----------

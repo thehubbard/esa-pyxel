@@ -32,11 +32,12 @@ List of Acronyms
     QE
       Quantum Efficiency.
 
+    SAR
+        Successive Approximation Register.
 
 =======          ==========
 Acronym          Definition
 =======          ==========
 
-SAR              Successive Approximation Register
 MKID             Microwave Kinetic-Inductance Detector
 =======          ==========
