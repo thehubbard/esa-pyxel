@@ -38,15 +38,15 @@ def test_simple_adc(ccd_3x3: CCD, data_type: str):
 
 
 @pytest.mark.parametrize(
-    "voltage_range, bit_resolution, data_type, exp_exc, exp_error",
+    "data_type, exp_exc, exp_error",
     [
-        ([0.0, 5.0], 16, "float", TypeError, "Expecting a signed/unsigned integer"),
-        ([0.0, 5.0], 16, "float32", TypeError, "Expecting a signed/unsigned integer"),
-        ([0.0, 5.0], 16, "float64", TypeError, "Expecting a signed/unsigned integer"),
-        ([0.0, 5.0], 16, "uint8", TypeError, "Expected type of Image array is uint64"),
-        ([0.0, 5.0], 16, "int32", TypeError, "Expected type of Image array is uint64"),
-        ([0.0, 5.0], 16, "int64", TypeError, "Expected type of Image array is uint64"),
-        ([0.0, 5.0], 16, "int", TypeError, "Expected type of Image array is uint64"),
+        ("float", TypeError, "Expecting a signed/unsigned integer"),
+        ("float32", TypeError, "Expecting a signed/unsigned integer"),
+        ("float64", TypeError, "Expecting a signed/unsigned integer"),
+        ("uint8", TypeError, "Expected type of Image array is uint64"),
+        ("int32", TypeError, "Expected type of Image array is uint64"),
+        ("int64", TypeError, "Expected type of Image array is uint64"),
+        ("int", TypeError, "Expected type of Image array is uint64"),
     ],
 )
 def test_simple_adc_wrong_data_type(
