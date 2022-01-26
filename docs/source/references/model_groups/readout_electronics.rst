@@ -152,7 +152,7 @@ SAR ADC
 
 :guilabel:`Signal` 🠆 :guilabel:`Image`
 
-Digitize signal array using SAR (Successive Approximation Register) ADC logic.
+Digitize signal array using SAR (Successive Approximation Register) :term:`ADC` logic.
 
 Example of the configuration file:
 

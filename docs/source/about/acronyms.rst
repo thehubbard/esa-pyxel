@@ -5,6 +5,9 @@ List of Acronyms
 
 .. glossary::
 
+    ADC
+      Analog-Digital Converter.
+
     CCD
       Charge-Coupled Device.
 
@@ -20,16 +23,18 @@ List of Acronyms
     MCT
       Mercury Cadmium Telluride (HgCdTe).
 
+    PSF
+      Point Spread Function.
+
     QE
       Quantum Efficiency.
+
 
 
 =======          ==========
 Acronym          Definition
 =======          ==========
 
-ADC              Analog-Digital Converter
-PSF              Point Spread Function
 ACN              Alternating Column Noise
 RTG              Random Telegraph Noise
 SAR              Successive Approximation Register
