@@ -57,7 +57,8 @@ ccd_detector:
     quantum_efficiency: 0.5                 # -
     charge_to_volt_conversion: 1.0e-6              # V/e
     pre_amplification: 100                 # V/V
-    adc_gain: 65536               # DN/V
+    adc_bit_resolution: 16
+    adc_voltage_range: [0., 10.]
     full_well_capacity: 20000               # e
 
 pipeline:
@@ -70,6 +71,7 @@ pipeline:
       arguments:
         image_file: null
         convert_to_photons: true
+        bit_resolution: 16
     -
       name: illumination
       func: pyxel.models.photon_generation.illumination
