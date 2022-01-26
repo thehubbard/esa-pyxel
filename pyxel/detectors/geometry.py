@@ -9,6 +9,7 @@
 import numpy as np
 
 from pyxel.util.memory import get_size
+import typing as t
 
 
 def get_vertical_pixel_center_pos(
@@ -44,21 +45,21 @@ class Geometry:
         Number of pixel rows.
     col: int
         Number of pixel columns.
-    total_thickness: float
+    total_thickness: float, optional
         Thickness of detector. Unit: um
-    pixel_vert_size: float
+    pixel_vert_size: float, optional
         Vertical dimension of pixel. Unit: um
-    pixel_horz_size: float
+    pixel_horz_size: float, optional
         Horizontal dimension of pixel. Unit: um
     """
 
     def __init__(
         self,
-        row: int = 0,
-        col: int = 0,
-        total_thickness: float = 0.0,  # unit: um
-        pixel_vert_size: float = 0.0,  # unit: um
-        pixel_horz_size: float = 0.0,  # unit: um
+        row: int,
+        col: int,
+        total_thickness: t.Optional[float] = None,  # unit: um
+        pixel_vert_size: t.Optional[float] = None,  # unit: um
+        pixel_horz_size: t.Optional[float] = None,  # unit: um
     ):
         if row not in range(10001):
             raise ValueError("'row' must be between 0 and 10000.")
@@ -66,13 +67,13 @@ class Geometry:
         if col not in range(10001):
             raise ValueError("'col' must be between 0 and 10000.")
 
-        if not (0.0 <= total_thickness <= 10000.0):
+        if total_thickness and not (0.0 <= total_thickness <= 10000.0):
             raise ValueError("'total_thickness' must be between 0.0 and 10000.0.")
 
-        if not (0.0 <= pixel_vert_size <= 1000.0):
+        if pixel_vert_size and not (0.0 <= pixel_vert_size <= 1000.0):
             raise ValueError("'pixel_vert_size' must be between 0.0 and 1000.0.")
 
-        if not (0.0 <= pixel_horz_size <= 1000.0):
+        if pixel_horz_size and not (0.0 <= pixel_horz_size <= 1000.0):
             raise ValueError("'pixel_horz_size' must be between 0.0 and 1000.0.")
 
         self._row = row
@@ -121,7 +122,10 @@ class Geometry:
     @property
     def total_thickness(self) -> float:
         """Get Thickness of detector."""
-        return self._total_thickness
+        if self._total_thickness:
+            return self._total_thickness
+        else:
+            raise ValueError("'total_thickness' not specified in detector geometry.")
 
     @total_thickness.setter
     def total_thickness(self, value: float) -> None:
@@ -134,7 +138,10 @@ class Geometry:
     @property
     def pixel_vert_size(self) -> float:
         """Get Vertical dimension of pixel."""
-        return self._pixel_vert_size
+        if self._pixel_vert_size:
+            return self._pixel_vert_size
+        else:
+            raise ValueError("'pixel_vert_size' not specified in detector geometry.")
 
     @pixel_vert_size.setter
     def pixel_vert_size(self, value: float) -> None:
@@ -147,7 +154,10 @@ class Geometry:
     @property
     def pixel_horz_size(self) -> float:
         """Get Horizontal dimension of pixel."""
-        return self._pixel_horz_size
+        if self._pixel_horz_size:
+            return self._pixel_horz_size
+        else:
+            raise ValueError("'pixel_horz_size' not specified in detector geometry.")
 
     @pixel_horz_size.setter
     def pixel_horz_size(self, value: float) -> None:

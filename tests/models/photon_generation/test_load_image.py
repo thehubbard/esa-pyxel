@@ -59,7 +59,13 @@ def ccd_10x10() -> CCD:
             pixel_horz_size=10.0,
         ),
         environment=Environment(),
-        characteristics=CCDCharacteristics(),
+        characteristics=CCDCharacteristics(
+            quantum_efficiency=1.0,
+            charge_to_volt_conversion=1.0e-6,
+            pre_amplification=1.0,
+            adc_bit_resolution=16,
+            adc_voltage_range=(0.0, 10.0),
+        ),
     )
     detector._readout_properties = ReadoutProperties(num_steps=1)
     return detector

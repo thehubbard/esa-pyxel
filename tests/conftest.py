@@ -19,7 +19,7 @@ def environment() -> Environment:
 
 @pytest.fixture
 def ccd_geometry() -> CCDGeometry:
-    return CCDGeometry()
+    return CCDGeometry(row=1, col=1)
 
 
 @pytest.fixture

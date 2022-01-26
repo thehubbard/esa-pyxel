@@ -7,6 +7,7 @@
 
 """TBW."""
 
+import typing as t
 from pyxel.util.memory import get_size
 
 
@@ -15,12 +16,12 @@ class Environment:
 
     Parameters
     ----------
-    temperature: float
+    temperature: float, optional
         Temperature of the detector. Unit: K
     """
 
-    def __init__(self, temperature: float = 273.15):
-        if not (0.0 <= temperature <= 1000.0):
+    def __init__(self, temperature: t.Optional[float] = None):
+        if temperature and not (0.0 <= temperature <= 1000.0):
             raise ValueError("'temperature' must be between 0.0 and 1000.0.")
 
         self._temperature = temperature
@@ -34,7 +35,10 @@ class Environment:
     @property
     def temperature(self) -> float:
         """Get Temperature of the detector."""
-        return self._temperature
+        if self._temperature:
+            return self._temperature
+        else:
+            raise ValueError("'temperature' not specified in detector environment.")
 
     @temperature.setter
     def temperature(self, value: float) -> None:

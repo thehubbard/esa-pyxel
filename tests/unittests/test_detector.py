@@ -32,12 +32,12 @@ from pyxel.detectors import (
         # (Geometry(), Environment(), Characteristics(), Material()),
         # (Geometry(), Environment(), CCDCharacteristics(), Material()),
         # (Geometry(), Environment(), CMOSCharacteristics(), Material()),
-        (CCD, CCDGeometry(), Environment(), Characteristics()),
-        (CCD, CCDGeometry(), Environment(), CCDCharacteristics()),
-        (CCD, CCDGeometry(), Environment(), CMOSCharacteristics()),
-        (CMOS, CMOSGeometry(), Environment(), Characteristics()),
-        (CMOS, CMOSGeometry(), Environment(), CCDCharacteristics()),
-        (CMOS, CMOSGeometry(), Environment(), CMOSCharacteristics()),
+        (CCD, CCDGeometry(row=1, col=1), Environment(), Characteristics()),
+        (CCD, CCDGeometry(row=1, col=1), Environment(), CCDCharacteristics()),
+        (CCD, CCDGeometry(row=1, col=1), Environment(), CMOSCharacteristics()),
+        (CMOS, CMOSGeometry(row=1, col=1), Environment(), Characteristics()),
+        (CMOS, CMOSGeometry(row=1, col=1), Environment(), CCDCharacteristics()),
+        (CMOS, CMOSGeometry(row=1, col=1), Environment(), CMOSCharacteristics()),
     ],
 )
 def test_init(cls, geometry, environment, characteristics):
@@ -91,7 +91,7 @@ def test_init(cls, geometry, environment, characteristics):
 
 
 @pytest.mark.parametrize(
-    "obj", [CCD(CCDGeometry(), Environment(), CCDCharacteristics())]
+    "obj", [CCD(CCDGeometry(row=1, col=1), Environment(), CCDCharacteristics())]
 )
 def test_copy(obj):
     """Test Detector.copy."""

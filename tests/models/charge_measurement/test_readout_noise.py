@@ -48,7 +48,7 @@ def cmos_5x10() -> CMOS:
             pixel_horz_size=10.0,
         ),
         environment=Environment(),
-        characteristics=CMOSCharacteristics(),
+        characteristics=CMOSCharacteristics(charge_to_volt_conversion=1.0e-6),
     )
 
 
