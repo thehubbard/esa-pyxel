@@ -28,7 +28,6 @@ List of Acronyms
 Acronym          Definition
 =======          ==========
 
-FPN              Fixed-pattern noise
 ADC              Analog-Digital Converter
 PSF              Point Spread Function
 ACN              Alternating Column Noise
