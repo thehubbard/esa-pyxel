@@ -51,7 +51,7 @@ def compute_arctic_add(
     parallel_traps: t.Sequence[Trap],
     parallel_express: int,
 ) -> np.ndarray:
-    """Create a new image with CTI trails.
+    """Create a new image with :term:`CTI` trails.
 
     Parameters
     ----------
@@ -66,7 +66,7 @@ def compute_arctic_add(
     Returns
     -------
     ndarray
-        2D array with CTI trails.
+        2D array with :term:`CTI` trails.
     """
     ccd = ac.CCD(
         phases=[
@@ -107,7 +107,7 @@ def arctic_add(
     trap_release_timescales: t.Sequence[float],
     express: int = 0,
 ) -> None:
-    """Add CTI trails to an image by trapping, releasing and moving electrons.
+    """Add :term:`CTI` trails to an image by trapping, releasing and moving electrons.
 
     Parameters
     ----------
@@ -133,7 +133,7 @@ def arctic_add(
     Notes
     -----
     The external library `arcticpy <https://github.com/jkeger/arcticpy>`_ is used to add
-    the CTI trails.
+    the :term:`CTI` trails.
     """
     # Validation
     if len(trap_densities) != len(trap_release_timescales):
@@ -175,7 +175,7 @@ def compute_arctic_remove(
     parallel_express: int,
     num_iterations: int,
 ) -> np.ndarray:
-    """Create a new image with removed CTI trails.
+    """Create a new image with removed :term:`CTI` trails.
 
     Parameters
     ----------
@@ -191,7 +191,7 @@ def compute_arctic_remove(
     Returns
     -------
     ndarray
-        2D array without CTI trails.
+        2D array without :term:`CTI` trails.
     """
     ccd = ac.CCD(well_fill_power=well_fill_power, full_well_depth=full_well_depth)
     roe = ac.ROE()
@@ -224,7 +224,7 @@ def arctic_remove(
     num_iterations: int,
     express: int = 0,
 ) -> None:
-    """Remove CTI trails from an image by first modelling the addition of CTI.
+    """Remove :term:`CTI` trails from an image by first modelling the addition of :term:`CTI`.
 
     Parameters
     ----------

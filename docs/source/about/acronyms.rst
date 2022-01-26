@@ -14,10 +14,11 @@ List of Acronyms
     CMOS
       Complementary Metal Oxide Semiconductor.
 
+    CTI
+      Charge Transfer Inefficiency.
+
     MCT
       Mercury Cadmium Telluride (HgCdTe).
-
-
 
 
 =======          ==========
@@ -25,7 +26,6 @@ Acronym          Definition
 =======          ==========
 
 
-CTI              Charge Transfer Inefficiency
 SNR              Signal-to-Noise Ratio
 QE               Quantum Efficiency
 PNRU             Photo-Response Non-Uniformity

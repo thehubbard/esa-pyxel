@@ -8,7 +8,7 @@
 """Charge Distortion Model for :term:`CCDs<CCD>`.
 
 ============================
-This is a function to run the upgraded :term:`CDM` CTI model developed by Alex Short (ESA).
+This is a function to run the upgraded :term:`CDM` :term:`CTI` model developed by Alex Short (ESA).
 
 :requires: NumPy
 
@@ -73,7 +73,7 @@ def cdm(
     detector: CCD
         Pyxel CCD detector object.
     direction: literal
-        Set ``"parallel"`` for CTI in parallel direction or ``"serial"`` for CTI in serial register.
+        Set ``"parallel"`` for :term:`CTI` in parallel direction or ``"serial"`` for :term:`CTI` in serial register.
     beta: float
         Electron cloud expansion coefficient :math:`\beta`.
     trap_release_times: sequence of float

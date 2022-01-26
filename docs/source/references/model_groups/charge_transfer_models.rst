@@ -23,9 +23,9 @@ a generalized version has already been applied in a broader context, for
 example to investigate the impact of radiation damage on the Euclid mission.
 This generalized version has been included and used in Pyxel.
 
-Use this model to add radiation induced CTI effects to :py:class:`~pyxel.data_structure.Pixel` array of the
+Use this model to add radiation induced :term:`CTI` effects to :py:class:`~pyxel.data_structure.Pixel` array of the
 to :py:class:`~pyxel.detectors.CCD` detector. Argument ``direction`` should be set as either ``"parallel"``
-for parallel direction CTI or ``"serial"`` for serial register CTI.
+for parallel direction :term:`CTI` or ``"serial"`` for serial register :term:`CTI`.
 User should also set arguments ``trap_release_times``, ``trap_densities`` and ``sigma``
 as lists for an arbitrary number of trap species. See below for descriptions.
 Other arguments include ``max_electron_volume``, ``transfer_period``,
@@ -66,7 +66,7 @@ trapping, releasing, and moving of charge along pixels.
 The primary inputs are the initial image followed by the properties of the :term:`CCD`,
 readout electronics and trap species for serial clocking.
 
-More information about adding CTI trailing is described
+More information about adding :term:`CTI` trailing is described
 in section 2.1 in :cite:p:`2010:massey`.
 
 
@@ -92,7 +92,7 @@ Remove CTI trails
 
 :guilabel:`Pixel` 🠆 :guilabel:`Pixel`
 
-Remove CTI trails is done by iteratively modelling the addition of CTI, as described
+Remove :term:`CTI` trails is done by iteratively modelling the addition of :term:`CTI`, as described
 in :cite:p:`2010:massey` section 3.2 and Table 1.
 
 Example of the configuration file:
