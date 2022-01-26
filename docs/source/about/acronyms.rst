@@ -37,7 +37,6 @@ List of Acronyms
 Acronym          Definition
 =======          ==========
 
-RTG              Random Telegraph Noise
 SAR              Successive Approximation Register
 MKID             Microwave Kinetic-Inductance Detector
 =======          ==========
