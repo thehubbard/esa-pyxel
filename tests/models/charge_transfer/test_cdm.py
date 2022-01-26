@@ -35,7 +35,7 @@ def ccd_5x5() -> CCD:
             pixel_vert_size=10.0,
             pixel_horz_size=10.0,
         ),
-        environment=Environment(),
+        environment=Environment(temperature=273.15),
         characteristics=CCDCharacteristics(),
     )
 

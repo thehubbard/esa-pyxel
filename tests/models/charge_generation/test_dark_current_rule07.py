@@ -34,7 +34,7 @@ def cmos_10x10() -> CMOS:
             pixel_vert_size=10.0,
             pixel_horz_size=10.0,
         ),
-        environment=Environment(),
+        environment=Environment(temperature=273.15),
         characteristics=CMOSCharacteristics(),
     )
     detector._readout_properties = ReadoutProperties(num_steps=1)

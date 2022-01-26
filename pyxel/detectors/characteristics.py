@@ -34,16 +34,18 @@ class Characteristics:
 
     def __init__(
         self,
-        quantum_efficiency: t.Optional[float]= None,  # unit: NA
-        charge_to_volt_conversion: t.Optional[float]= None,  # unit: volt/electron
-        pre_amplification: t.Optional[float]= None,  # unit: V/V
-        full_well_capacity: t.Optional[float]= None,  # unit: electron
-        adc_bit_resolution: t.Optional[int]= None,
+        quantum_efficiency: t.Optional[float] = None,  # unit: NA
+        charge_to_volt_conversion: t.Optional[float] = None,  # unit: volt/electron
+        pre_amplification: t.Optional[float] = None,  # unit: V/V
+        full_well_capacity: t.Optional[float] = None,  # unit: electron
+        adc_bit_resolution: t.Optional[int] = None,
         adc_voltage_range: t.Optional[t.Tuple[float, float]] = None,  # unit: V
     ):
         if quantum_efficiency and not (0.0 <= quantum_efficiency <= 1.0):
             raise ValueError("'quantum_efficiency' must be between 0.0 and 1.0.")
-        if charge_to_volt_conversion and not (0.0 <= charge_to_volt_conversion <= 100.0):
+        if charge_to_volt_conversion and not (
+            0.0 <= charge_to_volt_conversion <= 100.0
+        ):
             raise ValueError(
                 "'charge_to_volt_conversion' must be between 0.0 and 100.0."
             )
@@ -71,7 +73,9 @@ class Characteristics:
         if self._quantum_efficiency:
             return self._quantum_efficiency
         else:
-            raise ValueError("'quantum_efficiency' not specified in detector characteristics.")
+            raise ValueError(
+                "'quantum_efficiency' not specified in detector characteristics."
+            )
 
     @quantum_efficiency.setter
     def quantum_efficiency(self, value: float) -> None:
@@ -87,7 +91,9 @@ class Characteristics:
         if self._charge_to_volt_conversion:
             return self._charge_to_volt_conversion
         else:
-            raise ValueError("'charge_to_volt_conversion' not specified in detector characteristics.")
+            raise ValueError(
+                "'charge_to_volt_conversion' not specified in detector characteristics."
+            )
 
     @charge_to_volt_conversion.setter
     def charge_to_volt_conversion(self, value: float) -> None:
@@ -104,7 +110,9 @@ class Characteristics:
         if self._pre_amplification:
             return self._pre_amplification
         else:
-            raise ValueError("'pre_amplification' not specified in detector characteristics.")
+            raise ValueError(
+                "'pre_amplification' not specified in detector characteristics."
+            )
 
     @pre_amplification.setter
     def pre_amplification(self, value: float) -> None:
@@ -120,7 +128,9 @@ class Characteristics:
         if self._adc_bit_resolution:
             return self._adc_bit_resolution
         else:
-            raise ValueError("'adc_bit_resolution' not specified in detector characteristics.")
+            raise ValueError(
+                "'adc_bit_resolution' not specified in detector characteristics."
+            )
 
     @adc_bit_resolution.setter
     def adc_bit_resolution(self, value: int) -> None:
@@ -133,7 +143,9 @@ class Characteristics:
         if self._adc_voltage_range:
             return self._adc_voltage_range
         else:
-            raise ValueError("'adc_voltage_range' not specified in detector characteristics.")
+            raise ValueError(
+                "'adc_voltage_range' not specified in detector characteristics."
+            )
 
     @adc_voltage_range.setter
     def adc_voltage_range(self, value: t.Tuple[float, float]) -> None:
@@ -146,7 +158,9 @@ class Characteristics:
         if self._full_well_capacity:
             return self._full_well_capacity
         else:
-            raise ValueError("'full_well_capacity' not specified in detector characteristics.")
+            raise ValueError(
+                "'full_well_capacity' not specified in detector characteristics."
+            )
 
     @full_well_capacity.setter
     def full_well_capacity(self, value: float) -> None:

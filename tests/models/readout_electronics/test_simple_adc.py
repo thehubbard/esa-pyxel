@@ -26,7 +26,9 @@ def ccd_3x3() -> CCD:
             pixel_horz_size=10.0,
         ),
         environment=Environment(),
-        characteristics=CCDCharacteristics(),
+        characteristics=CCDCharacteristics(
+            adc_bit_resolution=16, adc_voltage_range=(0.0, 10.0)
+        ),
     )
     return detector
 
