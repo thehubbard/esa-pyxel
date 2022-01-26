@@ -5,6 +5,9 @@ List of Acronyms
 
 .. glossary::
 
+    ACN
+      Alternating Column Noise.
+
     ADC
       Analog-Digital Converter.
 
@@ -30,12 +33,10 @@ List of Acronyms
       Quantum Efficiency.
 
 
-
 =======          ==========
 Acronym          Definition
 =======          ==========
 
-ACN              Alternating Column Noise
 RTG              Random Telegraph Noise
 SAR              Successive Approximation Register
 MKID             Microwave Kinetic-Inductance Detector
