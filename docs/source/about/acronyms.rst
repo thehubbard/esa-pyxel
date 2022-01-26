@@ -11,11 +11,13 @@ List of Acronyms
     CMOS
       Complementary Metal Oxide Semiconductor.
 
+    MCT
+      Mercury Cadmium Telluride (HgCdTe).
+
 
 =======          ==========
 Acronym          Definition
 =======          ==========
-MCT              Mercury Cadmium Telluride (HgCdTe)
 
 CDM              Charge Distortion Model
 
