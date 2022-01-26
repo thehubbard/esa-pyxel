@@ -28,8 +28,6 @@ def ccd_3x3() -> CCD:
         environment=Environment(),
         characteristics=CCDCharacteristics(),
     )
-    detector.characteristics.adc_bit_resolution = 16
-    detector.characteristics.adc_voltage_range = (0.0, 5.0)
     return detector
 
 
@@ -49,26 +47,10 @@ def test_simple_adc(ccd_3x3: CCD, data_type: str):
         ([0.0, 5.0], 16, "int32", TypeError, "Expected type of Image array is uint64"),
         ([0.0, 5.0], 16, "int64", TypeError, "Expected type of Image array is uint64"),
         ([0.0, 5.0], 16, "int", TypeError, "Expected type of Image array is uint64"),
-        (
-            [0.0, 5.0, 6.0],
-            16,
-            "int",
-            ValueError,
-            "Voltage range must have length of 2.",
-        ),
-        (
-            [0.0, 5.0],
-            100,
-            "int",
-            ValueError,
-            "'adc_bit_resolution' must be between 4 and 64.",
-        ),
     ],
 )
 def test_simple_adc_wrong_data_type(
     ccd_3x3: CCD,
-    voltage_range: t.Tuple[float, float],
-    bit_resolution: int,
     data_type: str,
     exp_exc,
     exp_error,
@@ -77,7 +59,5 @@ def test_simple_adc_wrong_data_type(
     with pytest.raises(exp_exc, match=exp_error):
         simple_adc(
             detector=ccd_3x3,
-            voltage_range=voltage_range,
-            bit_resolution=bit_resolution,
             data_type=data_type,
         )
