@@ -36,10 +36,10 @@ Conversion with custom QE map
 
 With this model you can create and add charge to :py:class:`~pyxel.detectors.Detector` via photoelectric effect
 by converting photons in charge.
-Beside that, user can input a custom quantum efficiency map by providing a ``filename`` of the QE map.
-Accepted file formats for QE map are ``.npy``, ``.fits``, ``.txt``, ``.data``, ``.jpg``, ``.jpeg``, ``.bmp``,
+Beside that, user can input a custom quantum efficiency map by providing a ``filename`` of the :term:`QE` map.
+Accepted file formats for :term:`QE` map are ``.npy``, ``.fits``, ``.txt``, ``.data``, ``.jpg``, ``.jpeg``, ``.bmp``,
 ``.png`` and ``.tiff``. Use argument ``position`` to set the offset from (0,0) pixel
-and set where the input QE map is placed onto detector. You can set preset positions with argument ``align``.
+and set where the input :term:`QE` map is placed onto detector. You can set preset positions with argument ``align``.
 Values outside of detector shape will be cropped.
 Read more about placement in the documentation of function :py:func:`~pyxel.util.fit_into_array`.
 

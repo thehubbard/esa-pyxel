@@ -20,12 +20,13 @@ List of Acronyms
     MCT
       Mercury Cadmium Telluride (HgCdTe).
 
+    QE
+      Quantum Efficiency.
 
 =======          ==========
 Acronym          Definition
 =======          ==========
 
-QE               Quantum Efficiency
 PNRU             Photo-Response Non-Uniformity
 FPN              Fixed-pattern noise
 ADC              Analog-Digital Converter
