@@ -65,8 +65,6 @@ def apply_sar_adc(
 # TODO: documentation, range volt - only max is used
 def sar_adc(
     detector: Detector,
-    adc_bits: int = 16,
-    range_volt: t.Tuple[float, float] = (0.0, 5.0),
 ) -> None:
     """Digitize signal array using :term:`SAR` (Successive Approximation Register) :term:`ADC` logic.
 
@@ -74,16 +72,10 @@ def sar_adc(
     ----------
     detector : Detector
         Pyxel Detector object.
-    adc_bits : int
-        Number of bits for the :term:`ADC`.
-    range_volt : float, float
-        Minimal and maximal volt value.
     """
-    # Validation
-    if adc_bits <= 0:
-        raise ValueError("Expecting a strictly positive value for 'adc_bits'")
 
-    min_volt, max_volt = range_volt
+    min_volt, max_volt = detector.characteristics.adc_voltage_range
+    adc_bits = detector.characteristics.adc_bit_resolution
 
     image_2d = apply_sar_adc(
         signal_2d=detector.signal.array,

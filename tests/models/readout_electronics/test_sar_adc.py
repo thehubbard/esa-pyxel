@@ -29,37 +29,7 @@ def ccd_10x3() -> CCD:
     )
 
 
-@pytest.mark.parametrize(
-    "adc_bits, range_volt",
-    [
-        pytest.param(16, (0.0, 5.0)),
-        pytest.param(32, (0.0, 5.0)),
-        pytest.param(8, (5.0, 10.0)),
-    ],
-)
-def test_sar_adc(ccd_10x3: CCD, adc_bits: int, range_volt: t.Tuple[int, int]):
+
+def test_sar_adc(ccd_10x3: CCD):
     """Test model 'sar_adc' with valid inputs."""
-    sar_adc(detector=ccd_10x3, adc_bits=adc_bits, range_volt=range_volt)
-
-
-@pytest.mark.parametrize(
-    "adc_bits, range_volt, exp_exc, exp_error",
-    [
-        pytest.param(
-            0,
-            (0.0, 5.0),
-            ValueError,
-            "Expecting a strictly positive value for 'adc_bits'",
-        ),
-        pytest.param(
-            -1,
-            (0.0, 5.0),
-            ValueError,
-            "Expecting a strictly positive value for 'adc_bits'",
-        ),
-    ],
-)
-def test_sar_adc_bad_inputs(ccd_10x3: CCD, adc_bits, range_volt, exp_exc, exp_error):
-    """Test model 'sar_adc' with bad inputs."""
-    with pytest.raises(exp_exc, match=exp_error):
-        sar_adc(detector=ccd_10x3, adc_bits=adc_bits, range_volt=range_volt)
+    sar_adc(detector=ccd_10x3)
