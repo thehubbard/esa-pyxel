@@ -8,7 +8,7 @@
 """Charge Distortion Model for :term:`CCDs<CCD>`.
 
 ============================
-This is a function to run the upgraded CDM CTI model developed by Alex Short (ESA).
+This is a function to run the upgraded :term:`CDM` CTI model developed by Alex Short (ESA).
 
 :requires: NumPy
 
@@ -47,7 +47,7 @@ from pyxel.detectors import CCD
 
 
 class CDMdirection(Enum):
-    """CDM direction class."""
+    """:term:`CDM` direction class."""
 
     Parallel = "parallel"
     Serial = "serial"
@@ -169,7 +169,7 @@ def run_cdm_parallel(
     charge_injection: bool = False,
     chg_inj_parallel_transfers: int = 0,
 ) -> np.ndarray:
-    r"""Run CDM in parallel direction.
+    r"""Run :term:`CDM` in parallel direction.
 
     Parameters
     ----------
@@ -251,7 +251,7 @@ def run_cdm_serial(
     nt: np.ndarray,
     sigma: np.ndarray,
 ) -> np.ndarray:
-    r"""Run CDM in serial direction.
+    r"""Run :term:`CDM` in serial direction.
 
     Parameters
     ----------

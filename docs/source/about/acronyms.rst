@@ -8,6 +8,9 @@ List of Acronyms
     CCD
       Charge-Coupled Device.
 
+    CDM
+      Charge Distortion Model.
+
     CMOS
       Complementary Metal Oxide Semiconductor.
 
@@ -15,11 +18,12 @@ List of Acronyms
       Mercury Cadmium Telluride (HgCdTe).
 
 
+
+
 =======          ==========
 Acronym          Definition
 =======          ==========
 
-CDM              Charge Distortion Model
 
 CTI              Charge Transfer Inefficiency
 SNR              Signal-to-Noise Ratio

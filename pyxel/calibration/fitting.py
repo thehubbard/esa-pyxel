@@ -5,7 +5,7 @@
 #  this file, may be copied, modified, propagated, or distributed except according to
 #  the terms contained in the file ‘LICENCE.txt’.
 
-"""CDM model calibration with PYGMO.
+""":term:`CDM` model calibration with PYGMO.
 
 https://esa.github.io/pagmo2/index.html
 """
