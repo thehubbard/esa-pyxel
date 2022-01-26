@@ -5,7 +5,7 @@
 #  this file, may be copied, modified, propagated, or distributed except according to
 #  the terms contained in the file ‘LICENCE.txt’.
 
-"""Charge Distortion Model for CCDs.
+"""Charge Distortion Model for :term:`CCDs<CCD>`.
 
 ============================
 This is a function to run the upgraded CDM CTI model developed by Alex Short (ESA).

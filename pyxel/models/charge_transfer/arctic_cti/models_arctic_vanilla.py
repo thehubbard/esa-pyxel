@@ -112,7 +112,7 @@ def arctic_add(
     Parameters
     ----------
     detector : CCD
-        Pyxel CCD Detector object.
+        Pyxel :term:`CCD` Detector object.
     well_fill_power : float
     trap_densities : sequence of float
         A 1D arrays of all trap species densities for serial clocking.
@@ -229,7 +229,7 @@ def arctic_remove(
     Parameters
     ----------
     detector : CCD
-        Pyxel CCD Detector object.
+        Pyxel :term:`CCD` Detector object.
     well_fill_power : float
     instant_traps : sequence of mapping
         A sequence of all trap species for parallel clocking.

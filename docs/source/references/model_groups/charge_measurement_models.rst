@@ -43,7 +43,7 @@ Add noise to signal array of detector output node using normal random distributi
       arguments:
         std_deviation: 1.0
 
-.. note:: This model is specific to the CCD detector.
+.. note:: This model is specific to the :term:`CCD` detector.
 
 .. autofunction:: output_node_noise
 

@@ -10,7 +10,7 @@ It is an instance of :py:class:`~pyxel.pipelines.DetectionPipeline` class.
 
 Inside the pipeline the :ref:`models <models_explanation>` are grouped into 7 different
 levels per detector type imitating the working principle of the detector, for example
-in case of a CCD the model levels are :ref:`photon generation <photon_generation>`,
+in case of a :term:`CCD` the model levels are :ref:`photon generation <photon_generation>`,
 :ref:`optics <optical>`, :ref:`charge <charge_transfer>`, :ref:`generation <charge_generation>`,
 :ref:`charge collection <charge_collection>`, :ref:`charge transfer <charge_transfer>`,
 :ref:`charge measurement <charge_measurement>` and :ref:`readout electronics <readout_electronics>`
@@ -91,7 +91,7 @@ which is either a general, a :py:class:`~pyxel.detectors.CCD` or
 a :py:class:`~pyxel.detectors.CMOS` type :py:class:`~pyxel.detectors.Detector` object,
 depending on what the model is supposed to simulate:
 a general (e.g. cosmic rays),
-a CCD (e.g. CTI) or a CMOS (e.g. Alternating Column Noise) specific
+a :term:`CCD` (e.g. CTI) or a CMOS (e.g. Alternating Column Noise) specific
 detector effect.
 
 Any other (optional) input arguments can be defined for the model as well,

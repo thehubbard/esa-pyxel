@@ -3,10 +3,15 @@
 List of Acronyms
 =================
 
+.. glossary::
+
+    CCD
+      Charge-Coupled Device.
+
+
 =======          ==========
 Acronym          Definition
 =======          ==========
-CCD              Charge-Coupled Device
 CMOS             Complementary Metal Oxide Semiconductor
 MCT              Mercury Cadmium Telluride (HgCdTe)
 

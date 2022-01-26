@@ -5,7 +5,7 @@ Charge Transfer models (CCD)
 ============================
 
 .. important::
-    This model group is only for CCD detectors!
+    This model group is only for :term:`CCD` detectors!
 
 .. currentmodule:: pyxel.models.charge_transfer
 
@@ -50,7 +50,7 @@ Example of the configuration file.
         charge_injection: true  # only used for parallel mode
         full_well_capacity: 1000.  # optional (otherwise one from detector characteristics is used)
 
-.. note:: This model is specific for the CCD detector.
+.. note:: This model is specific for the :term:`CCD` detector.
 
 .. autofunction:: cdm
 
@@ -60,10 +60,10 @@ Add CTI trails
 
 :guilabel:`Pixel` 🠆 :guilabel:`Pixel`
 
-Add image trails due to charge transfer inefficiency in CCD detectors by modelling the
+Add image trails due to charge transfer inefficiency in :term:`CCD` detectors by modelling the
 trapping, releasing, and moving of charge along pixels.
 
-The primary inputs are the initial image followed by the properties of the CCD,
+The primary inputs are the initial image followed by the properties of the :term:`CCD`,
 readout electronics and trap species for serial clocking.
 
 More information about adding CTI trailing is described

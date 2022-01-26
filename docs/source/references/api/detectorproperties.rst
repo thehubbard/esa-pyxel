@@ -34,7 +34,7 @@ Geometry
 
 CCD specific
 ------------
-CCD specific classes.
+:term:`CCD` specific classes.
 
 CCDCharacteristics
 ==================

@@ -10,7 +10,7 @@ from pyxel.detectors import Characteristics
 
 
 class CCDCharacteristics(Characteristics):
-    """Characteristic attributes of a CCD detector.
+    """Characteristic attributes of a :term:`CCD` detector.
 
     Parameters
     ----------

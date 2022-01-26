@@ -101,7 +101,7 @@ Example of YAML configuration model:
         block_start: 10
         block_end: 50
 
-.. note:: This model is specific for the CCD detector.
+.. note:: This model is specific for the :term:`CCD` detector.
 
 .. autofunction:: charge_blocks
 

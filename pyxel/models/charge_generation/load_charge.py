@@ -26,7 +26,7 @@ def load_charge(
     ] = None,
     time_scale: float = 1.0,
 ) -> None:
-    """Load charge from txt file for detector, mostly for but not limited to CCDs.
+    """Load charge from txt file for detector, mostly for but not limited to :term:`CCDs<CCD>`.
 
     Parameters
     ----------
