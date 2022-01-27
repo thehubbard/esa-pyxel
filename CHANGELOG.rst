@@ -13,6 +13,8 @@ Documentation
 
 Models
 ~~~~~~
+* Fix a bug when converting to photons in load_image.
+  (See `!419 <https://gitlab.com/esa/pyxel/-/merge_requests/419>`_).
 
 Others
 ~~~~~~
