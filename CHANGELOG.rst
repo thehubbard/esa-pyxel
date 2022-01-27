@@ -16,6 +16,8 @@ Models
 
 Others
 ~~~~~~
+* Pin astropy version due to a bug.
+  (See `!420 <https://gitlab.com/esa/pyxel/-/merge_requests/420>`_).
 
 
 version 1.0.0-rc.3 / 2022-01-26
