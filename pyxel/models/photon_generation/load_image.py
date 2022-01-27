@@ -75,11 +75,14 @@ def load_image(
         cht = detector.characteristics
         adc_multiplier = cht.adc_voltage_range[1] / 2 ** bit_resolution
 
-        photon_array = photon_array / (
-            cht.quantum_efficiency
-            * cht.charge_to_volt_conversion
-            * cht.pre_amplification
+        photon_array = (
+            photon_array
             * adc_multiplier
+            / (
+                cht.quantum_efficiency
+                * cht.charge_to_volt_conversion
+                * cht.pre_amplification
+            )
         )
     photon_array = photon_array * (detector.time_step / time_scale) * multiplier
 
