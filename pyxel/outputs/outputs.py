@@ -14,12 +14,12 @@ import typing as t
 from glob import glob
 from pathlib import Path
 from time import strftime
-from PIL import Image
 
 import h5py as h5
 import numpy as np
 import pandas as pd
 import xarray as xr
+from PIL import Image
 from typing_extensions import Literal
 
 from pyxel import __version__ as version
@@ -253,7 +253,7 @@ class Outputs:
         with_auto_suffix: bool = True,
         run_number: t.Optional[int] = None,
     ) -> Path:
-        """Write Numpy array to a PNG image file."""
+        """Write Numpy array to a JPEG image file."""
         name = str(name).replace(".", "_")
 
         if with_auto_suffix:
@@ -281,7 +281,7 @@ class Outputs:
         with_auto_suffix: bool = True,
         run_number: t.Optional[int] = None,
     ) -> Path:
-        """Write Numpy array to a PNG image file."""
+        """Write Numpy array to a JPG image file."""
         name = str(name).replace(".", "_")
 
         if with_auto_suffix:
@@ -361,16 +361,23 @@ class Outputs:
 
                     if out_format in ["png", "jpg", "jpeg"]:
                         if obj != "detector.image.array":
-                            raise ValueError("Cannot save non-digitized data into image formats.")
-                        maximum = 2 ** processor.detector.characteristics.adc_bit_resolution - 1
+                            raise ValueError(
+                                "Cannot save non-digitized data into image formats."
+                            )
+                        maximum = (
+                            2 ** processor.detector.characteristics.adc_bit_resolution
+                            - 1
+                        )
                         rescaled_data = (255.0 / maximum * data).astype(np.uint8)
 
-                        filename = func(
+                        image_filename = func(
                             data=rescaled_data,
                             name=name,
                             with_auto_suffix=with_auto_suffix,
                             run_number=run_number,
                         )  # type: Path
+
+                        filenames.append(image_filename)
 
                     else:
                         filename = func(
@@ -380,7 +387,7 @@ class Outputs:
                             run_number=run_number,
                         )  # type: Path
 
-                    filenames.append(filename)
+                        filenames.append(filename)
 
         return filenames
 

@@ -8,6 +8,7 @@
 """TBW."""
 
 import typing as t
+
 from pyxel.util.memory import get_size
 
 
