@@ -16,10 +16,12 @@ import pandas as pd
 from typing_extensions import Literal
 
 from pyxel.detectors import Detector
+from pyxel.data_structure import Charge
 from pyxel.util import temporary_random_state
 
 
-def charge_deposition_mono_energetic(
+@temporary_random_state
+def charge_deposition(
     detector: Detector,
     flux: float,
     step_size: float = 1.,
@@ -72,7 +74,6 @@ def charge_deposition_mono_energetic(
         energy in MeV, stopping power in MeV cm2/g
     seed: int, optional
     """
-    # todo : it  is not clear to me how seeds are now used in Pyxel, please fix
     tracks = simulate_charge_deposition(
         flux=flux,
         exposure=detector.time_step,
@@ -87,25 +88,43 @@ def charge_deposition_mono_energetic(
         ehpair_creation=ehpair_creation,
         material_density=material_density,
         particle_direction=particle_direction,
-        stopping_power_curve=stopping_power_curve,
-        seed=seed
+        stopping_power_curve=stopping_power_curve
     )
 
     detector.charge.add_charge_dataframe(tracks_to_charge(tracks))
 
 
-def tracks_to_charge(tracks: pd.DataFrame) -> Detector.charge:
+def tracks_to_charge(tracks: list) -> pd.DataFrame:
     """
-    Convert tracks into the Detector charge object.
+    Convert tracks into a panda dataframe compatible with a detector charge object.
 
         Parameters
         ----------
-        tracks : Panda dataframe
-        with the following structure for each track : TBW
+        tracks : list
+            with the following structure for each track :
+            tracks[track_id], track_id = (vc, vx, vy, vz), vc[cluster_id] etc.
     """
-    # todo : the management of charge frame as panda dataframe is different in the latest version of Pyxel
+    tracks = np.array(tracks, dtype='object')
 
-@temporary_random_state
+    tracks_arr = np.array(tracks, dtype='object')
+    vc_arr = np.concatenate(tracks_arr[:, 0])
+    vx_arr = np.concatenate(tracks[:, 1])
+    vy_arr = np.concatenate(tracks[:, 2])
+    vz_arr = np.concatenate(tracks[:, 3])
+    zeros = np.zeros(np.shape(vc_arr))
+
+    return Charge.create_charges(
+        particle_type="e",
+        particles_per_cluster=vc_arr,
+        init_energy=zeros,
+        init_ver_position=vy_arr,
+        init_hor_position=vx_arr,
+        init_z_position=vz_arr,
+        init_ver_velocity=zeros,
+        init_hor_velocity=zeros,
+        init_z_velocity=zeros)
+
+
 def simulate_charge_deposition(
         flux: float,
         exposure: float,
@@ -120,8 +139,7 @@ def simulate_charge_deposition(
         ehpair_creation: float = 3.65,
         material_density: float = 2.3290,
         particle_direction: t.Optional[Literal["isotropic", "orthogonal", None]] = "isotropic",
-        stopping_power_curve: t.Union[str, Path, None] = None,
-        seed: t.Optional[int] = None
+        stopping_power_curve: t.Union[str, Path, None] = None
 ) -> list:
     """Simulate charge deposition of incident ionizing particles inside a detector.
 
@@ -166,7 +184,6 @@ def simulate_charge_deposition(
             energetic loss per mass of material and per unit path length versus particle energy
             note that the the stopping power curve is assumed to be a csv file with two columns [energy, stopping power]
             energy in MeV, stopping power in MeV cm2/g
-        seed: int, optional
         """
 
     # determine the total number of ionizing particles to simulate based on flux and exposure duration
