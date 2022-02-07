@@ -42,7 +42,7 @@ def output_node_linearity_poly(
     detector: Detector,
     coefficients: t.Sequence[float],
 ) -> None:
-    """.Add non-linearity to signal array to simulate the non-linearity of the output node circuit.
+    """Add non-linearity to signal array to simulate the non-linearity of the output node circuit.
 
     The non-linearity is simulated by a polynomial function. The user specifies the polynomial coefficients.
 

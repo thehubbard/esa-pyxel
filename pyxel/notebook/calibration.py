@@ -377,7 +377,7 @@ def champion_heatmap(
     """Plot a heatmap of champion parameters vs fitness.
 
     Parameters
-    ----------
+    ---------- 
     ds: Dataset
         Result dataset.
     num_bins: int

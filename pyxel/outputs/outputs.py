@@ -14,6 +14,7 @@ import typing as t
 from glob import glob
 from pathlib import Path
 from time import strftime
+from PIL import Image
 
 import h5py as h5
 import numpy as np
@@ -44,7 +45,7 @@ if t.TYPE_CHECKING:
 ValidName = Literal[
     "detector.image.array", "detector.signal.array", "detector.pixel.array"
 ]
-ValidFormat = Literal["fits", "hdf", "npy", "txt", "csv", "png"]
+ValidFormat = Literal["fits", "hdf", "npy", "txt", "csv", "png", "jpg", "jpeg"]
 
 
 class Outputs:
@@ -217,6 +218,90 @@ class Outputs:
         np.save(file=full_filename, arr=data)
         return full_filename
 
+    def save_to_png(
+        self,
+        data: np.ndarray,
+        name: str,
+        with_auto_suffix: bool = True,
+        run_number: t.Optional[int] = None,
+    ) -> Path:
+        """Write Numpy array to a PNG image file."""
+        name = str(name).replace(".", "_")
+
+        if with_auto_suffix:
+            filename = apply_run_number(
+                template_filename=self.output_dir.joinpath(f"{name}_?.png"),
+                run_number=run_number,
+            )
+        else:
+            filename = self.output_dir / f"{name}.png"
+
+        full_filename = filename.resolve()  # type: Path
+
+        if os.path.exists(full_filename):
+            raise FileExistsError(f"File {str(full_filename)} already exists!")
+
+        im = Image.fromarray(data)
+        im.save(full_filename)
+
+        return full_filename
+
+    def save_to_jpeg(
+        self,
+        data: np.ndarray,
+        name: str,
+        with_auto_suffix: bool = True,
+        run_number: t.Optional[int] = None,
+    ) -> Path:
+        """Write Numpy array to a PNG image file."""
+        name = str(name).replace(".", "_")
+
+        if with_auto_suffix:
+            filename = apply_run_number(
+                template_filename=self.output_dir.joinpath(f"{name}_?.jpeg"),
+                run_number=run_number,
+            )
+        else:
+            filename = self.output_dir / f"{name}.jpeg"
+
+        full_filename = filename.resolve()  # type: Path
+
+        if os.path.exists(full_filename):
+            raise FileExistsError(f"File {str(full_filename)} already exists!")
+
+        im = Image.fromarray(data)
+        im.save(full_filename)
+
+        return full_filename
+
+    def save_to_jpg(
+        self,
+        data: np.ndarray,
+        name: str,
+        with_auto_suffix: bool = True,
+        run_number: t.Optional[int] = None,
+    ) -> Path:
+        """Write Numpy array to a PNG image file."""
+        name = str(name).replace(".", "_")
+
+        if with_auto_suffix:
+            filename = apply_run_number(
+                template_filename=self.output_dir.joinpath(f"{name}_?.jpg"),
+                run_number=run_number,
+            )
+        else:
+            filename = self.output_dir / f"{name}.jpg"
+
+        full_filename = filename.resolve()  # type: Path
+
+        if os.path.exists(full_filename):
+            raise FileExistsError(f"File {str(full_filename)} already exists!")
+
+        im = Image.fromarray(data)
+        im.save(full_filename)
+
+        return full_filename
+
     def save_to_file(
         self,
         processor: "Processor",
@@ -244,7 +329,9 @@ class Outputs:
             "npy": self.save_to_npy,
             "txt": self.save_to_txt,
             "csv": self.save_to_csv,
-            # "png": self.save_to_png,
+            "png": self.save_to_png,
+            "jpg": self.save_to_jpg,
+            "jpeg": self.save_to_jpeg,
         }  # type: t.Mapping[ValidFormat, SaveToFile]
 
         filenames = []  # type: t.List[Path]
@@ -271,6 +358,13 @@ class Outputs:
                 out_format: ValidFormat
                 for out_format in format_list:
                     func = save_methods[out_format]  # type: SaveToFile
+
+                    if out_format in ["png", "jpg", "jpeg"]:
+                        if obj != "detector.image.array":
+                            raise ValueError("Cannot save non-digitized data into image formats.")
+                        maximum = 2 ** processor.detector.characteristics.adc_bit_resolution - 1
+                        data = (255.0 / maximum * data).astype(np.uint8)
+
                     filename = func(
                         data=data,
                         name=name,
