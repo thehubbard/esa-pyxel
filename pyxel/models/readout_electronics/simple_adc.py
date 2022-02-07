@@ -35,9 +35,9 @@ def apply_simple_adc(
     output: ndarray
     """
     bins = np.linspace(
-        start=voltage_range[0], stop=voltage_range[1], num=2 ** bit_resolution
+        start=voltage_range[0], stop=voltage_range[1], num=2 ** bit_resolution-1
     )
-    output = np.digitize(x=signal, bins=bins[:-1], right=True)
+    output = np.digitize(x=signal, bins=bins, right=True)
     return output
 
 
