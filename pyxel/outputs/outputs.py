@@ -363,14 +363,22 @@ class Outputs:
                         if obj != "detector.image.array":
                             raise ValueError("Cannot save non-digitized data into image formats.")
                         maximum = 2 ** processor.detector.characteristics.adc_bit_resolution - 1
-                        data = (255.0 / maximum * data).astype(np.uint8)
+                        rescaled_data = (255.0 / maximum * data).astype(np.uint8)
 
-                    filename = func(
-                        data=data,
-                        name=name,
-                        with_auto_suffix=with_auto_suffix,
-                        run_number=run_number,
-                    )  # type: Path
+                        filename = func(
+                            data=rescaled_data,
+                            name=name,
+                            with_auto_suffix=with_auto_suffix,
+                            run_number=run_number,
+                        )  # type: Path
+
+                    else:
+                        filename = func(
+                            data=data,
+                            name=name,
+                            with_auto_suffix=with_auto_suffix,
+                            run_number=run_number,
+                        )  # type: Path
 
                     filenames.append(filename)
 
