@@ -5,17 +5,10 @@ Changelog
 version 1.0.0-rc.5 / UNRELEASED-YYYY-MM-DD
 ------------------------------------------
 
-Core
-~~~~
-
-Documentation
-~~~~~~~~~~~~~
-
-Models
-~~~~~~
-
 Others
 ~~~~~~
+* Implement option to save outputs in common picture formats.
+  (See `!416 <https://gitlab.com/esa/pyxel/-/merge_requests/416>`_).
 
 
 version 1.0.0-rc.4 / 2022-01-27
