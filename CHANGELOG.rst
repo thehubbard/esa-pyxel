@@ -9,6 +9,8 @@ Others
 ~~~~~~
 * Implement option to save outputs in common picture formats.
   (See `!416 <https://gitlab.com/esa/pyxel/-/merge_requests/416>`_).
+* Update MANIFEST.in.
+  (See `!423 <https://gitlab.com/esa/pyxel/-/merge_requests/423>`_).
 
 
 version 1.0.0-rc.4 / 2022-01-27
