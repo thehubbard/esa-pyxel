@@ -2,6 +2,22 @@ Changelog
 =========
 
 
+version 1.0.0 / UNRELEASED-YYYY-MM-DD
+-------------------------------------
+
+Core
+~~~~
+
+Documentation
+~~~~~~~~~~~~~
+
+Models
+~~~~~~
+
+Others
+~~~~~~
+
+
 version 1.0.0-rc.6 / 2022-02-09
 -------------------------------
 
@@ -155,9 +171,6 @@ Documentation
 * Split documentation into 'stable' and 'latest''.
   (See `!380 <https://gitlab.com/esa/pyxel/-/merge_requests/380>`_).
 
-Models
-~~~~~~
-
 Others
 ~~~~~~
 
@@ -187,6 +200,10 @@ Models
   (See `!361 <https://gitlab.com/esa/pyxel/-/merge_requests/361>`_).
 * Remove alignment model.
   (See `!364 <https://gitlab.com/esa/pyxel/-/merge_requests/364>`_).
+* Implement a non-linear FWC.
+  (See `!338 <https://gitlab.com/esa/pyxel/-/merge_requests/338>`_).
+* Create a dark current model.
+  (See `!310 <https://gitlab.com/esa/pyxel/-/merge_requests/310>`_).
 
 
 version 0.11.4 / 2021-11-23
