@@ -5,17 +5,10 @@ Changelog
 version 1.0.0-rc.6 / UNRELEASED-YYYY-MM-DD
 ------------------------------------------
 
-Core
-~~~~
-
-Documentation
-~~~~~~~~~~~~~
-
-Models
-~~~~~~
-
 Others
 ~~~~~~
+* Update function display_persist.
+  (See `!426 <https://gitlab.com/esa/pyxel/-/merge_requests/426>`_).
 
 
 version 1.0.0-rc.5 / 2022-02-09
