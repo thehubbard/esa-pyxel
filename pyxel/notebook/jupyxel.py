@@ -17,6 +17,8 @@ import numpy as np
 from IPython.display import Markdown, display
 from mpl_toolkits.axes_grid1 import make_axes_locatable
 
+from pyxel.data_structure import Persistence, SimplePersistence
+
 if t.TYPE_CHECKING:
     from holoviews import Layout
 
@@ -255,19 +257,37 @@ def display_array(data: np.ndarray, axes: t.List[plt.axes], **kwargs: str) -> No
 # These method are used to display the detector memory
 
 
-def display_persist(persist_dict: dict, vmin: int = 1, vmax: int = 99) -> None:
+def display_persist(
+    persistence: t.Union[Persistence, SimplePersistence], vmin: int = 1, vmax: int = 99
+) -> None:
     """Plot all trapped charges using the memory dict.
 
     Parameters
     ----------
     persist_dict: dict
     """
-    trapped_charges = [trapmap for trapmap in persist_dict.values()]
+    trapped_charges = persistence.trapped_charge_array
 
     fig, axes = plt.subplots(
         len(trapped_charges), 2, figsize=(10, 5 * len(trapped_charges))
     )
-    for ax, trapmap, keyw in zip(
-        axes, trapped_charges, [i.replace("_", "\n") for i in persist_dict.keys()]
-    ):
+
+    if isinstance(persistence, SimplePersistence):
+        labels = [
+            f"Trap time constant: {persistence.trap_time_constants[i]}; trap density: {persistence.trap_densities[i]}"
+            for i in range(len(trapped_charges))
+        ]
+
+    elif isinstance(persistence, Persistence):
+        labels = [
+            f"Trap time constant: {persistence.trap_time_constants[i]}; "
+            + f"trap proportion: {persistence.trap_proportions[i]}"
+            for i in range(len(trapped_charges))
+        ]
+    else:
+        raise TypeError(
+            "Persistence or SimplePersistence expected for argument 'persistence'!"
+        )
+
+    for ax, trapmap, keyw in zip(axes, trapped_charges, labels):
         display_array(trapmap, ax, label=keyw)
