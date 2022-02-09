@@ -257,14 +257,12 @@ def display_array(data: np.ndarray, axes: t.List[plt.axes], **kwargs: str) -> No
 # These method are used to display the detector memory
 
 
-def display_persist(
-    persistence: t.Union[Persistence, SimplePersistence], vmin: int = 1, vmax: int = 99
-) -> None:
-    """Plot all trapped charges using the memory dict.
+def display_persist(persistence: t.Union[Persistence, SimplePersistence]) -> None:
+    """Plot all trapped charges using the detector persistence.
 
     Parameters
     ----------
-    persist_dict: dict
+    persistence: Persistence or SimplePersistence
     """
     trapped_charges = persistence.trapped_charge_array
 
