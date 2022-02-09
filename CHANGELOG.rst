@@ -2,6 +2,22 @@ Changelog
 =========
 
 
+version 1.0.0-rc.6 / UNRELEASED-YYYY-MM-DD
+------------------------------------------
+
+Core
+~~~~
+
+Documentation
+~~~~~~~~~~~~~
+
+Models
+~~~~~~
+
+Others
+~~~~~~
+
+
 version 1.0.0-rc.5 / 2022-02-09
 -------------------------------
 
