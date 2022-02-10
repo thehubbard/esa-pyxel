@@ -17,6 +17,9 @@ List of Acronyms
     CDM
       Charge Distortion Model.
 
+    CIS
+      Contact Imaging Sensor.
+
     CMOS
       Complementary Metal Oxide Semiconductor.
 

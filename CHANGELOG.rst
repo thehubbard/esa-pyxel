@@ -5,17 +5,10 @@ Changelog
 version 1.0.0 / UNRELEASED-YYYY-MM-DD
 -------------------------------------
 
-Core
-~~~~
-
 Documentation
 ~~~~~~~~~~~~~
-
-Models
-~~~~~~
-
-Others
-~~~~~~
+* Add pyxel brief history to documentation.
+  (See `!429 <https://gitlab.com/esa/pyxel/-/merge_requests/429>`_).
 
 
 version 1.0.0-rc.6 / 2022-02-09
