@@ -2,8 +2,17 @@ Changelog
 =========
 
 
-version 1.0.0 / UNRELEASED-YYYY-MM-DD
--------------------------------------
+version 1.0.0 / 2022-02-10
+--------------------------
+
+We are happy to announce that Pyxel has reached a stable version 1.0.0!
+Pyxel releases will use `semantic versioning <https://semver.org/>`_ notation.
+Version 1.0 brings a simplified user experience, new models, 
+parallel computing in observation mode, updated documentation, 
+new examples, various bug fixes and much more. 
+Excited for what comes next, stay tuned!
+
+**Changes since last version:**
 
 Documentation
 ~~~~~~~~~~~~~
