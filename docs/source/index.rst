@@ -139,6 +139,7 @@ to look for certain things:
    :maxdepth: 1
    :hidden:
 
+   about/brief_history.rst
    about/citation.rst
    about/contributors.rst
    about/license.rst
