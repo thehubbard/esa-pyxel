@@ -3,8 +3,8 @@ Changelog
 =========
 
 
-version 1.1 / UNRELEASED
-========================
+UNRELEASED
+==========
 
 Core
 ----
