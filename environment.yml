@@ -46,7 +46,7 @@ dependencies:
   - jupyterlab
   - nodejs
 # Input/Output
-  - astropy<=5.0
+  - astropy
   - fsspec
   - h5py
   - pyyaml
