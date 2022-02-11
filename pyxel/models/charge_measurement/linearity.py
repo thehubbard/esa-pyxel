@@ -70,6 +70,7 @@ def output_node_linearity_poly(
 
     detector.signal.array = signal_non_linear
 
+
 # ---------------------------------------------------------------------
 def non_linear_model_v2(detector: Detector) -> None:
     """
@@ -77,27 +78,36 @@ def non_linear_model_v2(detector: Detector) -> None:
     :return:
     """
     # Fixed capacitance
-    fixed_capa = detector.characteristics._fixed_capacitance*1E-15 # in F
+    fixed_capa = detector.characteristics._fixed_capacitance * 1e-15  # in F
     # Surface of the diode, assumed to be planar and circular
-    Ad = np.pi * (detector.geometry._implementation_diameter/ 2.0 * 1e-6) ** 2
+    Ad = np.pi * (detector.geometry._implementation_diameter / 2.0 * 1e-6) ** 2
     # Detector bias
     vb = detector.characteristics._vreset - detector.characteristics._dsub
     # Build in potential
     vbi = detector.material._vbi_build_in_potential
 
     # Initial value  of the diode capacitance
-    co = Ad * np.sqrt((Q * detector.material.eps * EPS0) / (2 * (vbi - vb)) * \
-                      ((detector.material.n_acceptor * 1e6 * detector.material.n_donor * 1e6) / (
-                                  detector.material.n_acceptor * 1e6 + detector.material.n_donor * 1e6)))
+    co = Ad * np.sqrt(
+        (Q * detector.material.eps * EPS0)
+        / (2 * (vbi - vb))
+        * (
+            (detector.material.n_acceptor * 1e6 * detector.material.n_donor * 1e6)
+            / (detector.material.n_acceptor * 1e6 + detector.material.n_donor * 1e6)
+        )
+    )
 
     # Resolution of 2nd order equation
-    ao = 2. * co * vbi * np.sqrt(1. - vb / vbi) - fixed_capa * vb - detector.pixel.array*Q
-    b = -2. * co / fixed_capa
-    c = ao / (fixed_capa * vbi) + 1.
-    discriminant = b**2 - 4.*c*(-1.)
+    ao = (
+        2.0 * co * vbi * np.sqrt(1.0 - vb / vbi)
+        - fixed_capa * vb
+        - detector.pixel.array * Q
+    )
+    b = -2.0 * co / fixed_capa
+    c = ao / (fixed_capa * vbi) + 1.0
+    discriminant = b ** 2 - 4.0 * c * (-1.0)
 
-    u1 = (-b - np.sqrt(discriminant))/2.
-    v1 = (1. - u1**2)*vbi - vb # vb is substracted it only deals with offset level
+    u1 = (-b - np.sqrt(discriminant)) / 2.0
+    v1 = (1.0 - u1 ** 2) * vbi - vb  # vb is substracted it only deals with offset level
 
     array = np.copy(v1)  # unit if V, voltage at the gate of the pixel SFD
     detector.signal.array = array.astype("float64")
