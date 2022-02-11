@@ -3,6 +3,22 @@ Changelog
 =========
 
 
+version 1.1 / UNRELEASED
+========================
+
+Core
+----
+
+Documentation
+-------------
+
+Models
+------
+
+Others
+------
+
+
 version 1.0.0 / 2022-02-10
 ==========================
 
