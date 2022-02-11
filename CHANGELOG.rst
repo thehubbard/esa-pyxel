@@ -1,9 +1,26 @@
+=========
 Changelog
 =========
 
 
+UNRELEASED
+==========
+
+Core
+----
+
+Documentation
+-------------
+
+Models
+------
+
+Others
+------
+
+
 version 1.0.0 / 2022-02-10
---------------------------
+==========================
 
 We are happy to announce that Pyxel has reached a stable version 1.0.0!
 Pyxel releases will use `semantic versioning <https://semver.org/>`_ notation.
@@ -15,25 +32,25 @@ Excited for what comes next, stay tuned!
 **Changes since last version:**
 
 Documentation
-~~~~~~~~~~~~~
+-------------
 * Add pyxel brief history to documentation.
   (See `!429 <https://gitlab.com/esa/pyxel/-/merge_requests/429>`_).
 
 
 version 1.0.0-rc.6 / 2022-02-09
--------------------------------
+===============================
 
 Others
-~~~~~~
+------
 * Update function display_persist.
   (See `!426 <https://gitlab.com/esa/pyxel/-/merge_requests/426>`_).
 
 
 version 1.0.0-rc.5 / 2022-02-09
--------------------------------
+===============================
 
 Others
-~~~~~~
+------
 * Implement option to save outputs in common picture formats.
   (See `!416 <https://gitlab.com/esa/pyxel/-/merge_requests/416>`_).
 * Update MANIFEST.in.
@@ -41,38 +58,38 @@ Others
 
 
 version 1.0.0-rc.4 / 2022-01-27
--------------------------------
+===============================
 
 Models
-~~~~~~
+------
 * Fix a bug when converting to photons in load_image.
   (See `!419 <https://gitlab.com/esa/pyxel/-/merge_requests/419>`_).
 
 Others
-~~~~~~
+------
 * Pin astropy version due to a bug.
   (See `!420 <https://gitlab.com/esa/pyxel/-/merge_requests/420>`_).
 
 
 version 1.0.0-rc.3 / 2022-01-26
--------------------------------
+===============================
 
 Core
-~~~~
+----
 * Improve digitization models and detector digitization characteristics.
   (See `!413 <https://gitlab.com/esa/pyxel/-/merge_requests/413>`_).
 * Remove default values from detector properties.
   (See `!415 <https://gitlab.com/esa/pyxel/-/merge_requests/415>`_).
 
 Documentation
-~~~~~~~~~~~~~
+-------------
 * Put labels to model API to know which data structures are models changing.
   (See `!405 <https://gitlab.com/esa/pyxel/-/merge_requests/405>`_).
 * Improved acronyms.
   (See `!414 <https://gitlab.com/esa/pyxel/-/merge_requests/414>`_).
 
 Models
-~~~~~~
+------
 * Nghxrg model replacing pixel array instead of adding.
   (See `!404 <https://gitlab.com/esa/pyxel/-/merge_requests/404>`_).
 * Optimize persistence model.
@@ -85,25 +102,25 @@ Models
   (See `!410 <https://gitlab.com/esa/pyxel/-/merge_requests/410>`_).
 
 Others
-~~~~~~
+------
 * Fix mypy issues with new version of numpy 1.22.0.
   (See `!408 <https://gitlab.com/esa/pyxel/-/merge_requests/408>`_).
 
 
 version 1.0.0-rc.2 / 2022-01-18
--------------------------------
+===============================
 
 Core
-~~~~
+----
 * Fix Characteristics validation checks.
   (See `!402 <https://gitlab.com/esa/pyxel/-/merge_requests/402>`_).
 
 
 version 1.0.0-rc.1 / 2022-01-18
--------------------------------
+===============================
 
 Core
-~~~~
+----
 
 * Rename detector properties using whole words.
   (See `!292 <https://gitlab.com/esa/pyxel/-/merge_requests/292>`_).
@@ -111,13 +128,13 @@ Core
   (See `!393 <https://gitlab.com/esa/pyxel/-/merge_requests/393>`_).
 
 Documentation
-~~~~~~~~~~~~~
+-------------
 
 * Add more documentation for CCDCharacteristics, CMOSCharacteristics, ....
   (See `!399 <https://gitlab.com/esa/pyxel/-/merge_requests/399>`_).
 
 Others
-~~~~~~
+------
 
 * Small simplification. From `Albern S. <https://gitlab.com/abnsy>`.
   (See `!395 <https://gitlab.com/esa/pyxel/-/merge_requests/395>`_).
@@ -130,10 +147,10 @@ Others
 
 
 version 0.11.7 / 2022-01-07
----------------------------
+===========================
 
 Documentation
-~~~~~~~~~~~~~
+-------------
 
 * Fix broken links in the documentation.
   (See `!388 <https://gitlab.com/esa/pyxel/-/merge_requests/388>`_).
@@ -143,13 +160,13 @@ Documentation
   (See `!390 <https://gitlab.com/esa/pyxel/-/merge_requests/390>`_).
 
 Models
-~~~~~~
+------
 
 * Refactoring of CDM model.
   (See `!375 <https://gitlab.com/esa/pyxel/-/merge_requests/375>`_).
 
 Others
-~~~~~~
+------
 
 * Add netcdf4 to function show_versions.
   (See `!383 <https://gitlab.com/esa/pyxel/-/merge_requests/383>`_).
@@ -158,33 +175,33 @@ Others
 
 
 version 0.11.6 / 2021-12-13
----------------------------
+===========================
 
 Core
-~~~~
+----
 
 * Add new attribute 'Config.detector'.
   (See `!378 <https://gitlab.com/esa/pyxel/-/merge_requests/378>`_).
 
 
 Documentation
-~~~~~~~~~~~~~
+-------------
 
 * Split documentation into 'stable' and 'latest''.
   (See `!380 <https://gitlab.com/esa/pyxel/-/merge_requests/380>`_).
 
 Others
-~~~~~~
+------
 
 * Include netcdf4 in dependencies.
   (See `!374 <https://gitlab.com/esa/pyxel/-/merge_requests/374>`_).
 
 
 version 0.11.5 / 2021-12-07
----------------------------
+===========================
 
 Core
-~~~~
+----
 
 * Fix an issue with calibration.
   (See `!353 <https://gitlab.com/esa/pyxel/-/merge_requests/353>`_).
@@ -196,7 +213,7 @@ Core
   (See `!365 <https://gitlab.com/esa/pyxel/-/merge_requests/365>`_).
 
 Models
-~~~~~~
+------
 
 * Model 'nghxrg' is not working on Windows.
   (See `!361 <https://gitlab.com/esa/pyxel/-/merge_requests/361>`_).
@@ -209,16 +226,16 @@ Models
 
 
 version 0.11.4 / 2021-11-23
----------------------------
+===========================
 
 Core
-~~~~
+----
 
 * Implement array-like data structures as numpy custom array containers.
   (See `!325 <https://gitlab.com/esa/pyxel/-/merge_requests/325>`_).
 
 Documentation
-~~~~~~~~~~~~~
+-------------
 
 * Add more internal links in the documentation.
   (See `!333 <https://gitlab.com/esa/pyxel/-/merge_requests/333>`_).
@@ -226,7 +243,7 @@ Documentation
   (See `!343 <https://gitlab.com/esa/pyxel/-/merge_requests/343>`_).
 
 Models
-~~~~~~
+------
 
 * Move some models from 'readout_electronics' into separated files.
   (See `!323 <https://gitlab.com/esa/pyxel/-/merge_requests/323>`_).
@@ -236,7 +253,7 @@ Models
   (See `!337 <https://gitlab.com/esa/pyxel/-/merge_requests/337>`_).
 
 Others
-~~~~~~
+------
 
 * Use 'deployment' in CI/CD.
   (See `!336 <https://gitlab.com/esa/pyxel/-/merge_requests/336>`_).
@@ -247,10 +264,10 @@ Others
 
 
 version 0.11.3 / 2021-11-15
----------------------------
+===========================
 
 Core
-~~~~
+----
 
 * Multiply photon flux with detector time step in photon generation models.
   (See `!305 <https://gitlab.com/esa/pyxel/-/merge_requests/305>`_).
@@ -260,17 +277,17 @@ Core
   (See `!175 <https://gitlab.com/esa/pyxel/-/merge_requests/175>`_).
 
 Others
-~~~~~~
+------
 
 * Remove some TODOs.
   (See `!288 <https://gitlab.com/esa/pyxel/-/merge_requests/288>`_).
 
 
 version 0.11.2 / 2021-11-09
----------------------------
+===========================
 
 Core
-~~~~
+----
 
 * Remove unnecessary warnings when Pygmo is not installed.
   (See `!286 <https://gitlab.com/esa/pyxel/-/merge_requests/286>`_).
@@ -286,7 +303,7 @@ Core
   (See `!172 <https://gitlab.com/esa/pyxel/-/merge_requests/172>`_).
 
 Documentation
-~~~~~~~~~~~~~
+-------------
 
 * Make pyxel compatible with Python 3.9.
   (See `!289 <https://gitlab.com/esa/pyxel/-/merge_requests/289>`_).
@@ -296,7 +313,7 @@ Documentation
   (See `!299 <https://gitlab.com/esa/pyxel/-/merge_requests/299>`_).
 
 Others
-~~~~~~
+------
 
 * Fix issue with xarray 0.20.
   (See `!291 <https://gitlab.com/esa/pyxel/-/merge_requests/291>`_).
@@ -307,20 +324,20 @@ Others
 
 
 version 0.11.1 / 2021-10-29
----------------------------
+===========================
 
 Models
-~~~~~~
+------
 
 * Add a readout noise model for CMOS detectors.
   (See `!283 <https://gitlab.com/esa/pyxel/-/merge_requests/283>`_).
 
 
 version 0.11 / 2021-10-27
--------------------------
+=========================
 
 Core
-~~~~
+----
 
 * Output folder already existing when running 'load' two times.
   (See `!232 <https://gitlab.com/esa/pyxel/-/merge_requests/232>`_).
@@ -344,7 +361,7 @@ Core
   (See `!276 <https://gitlab.com/esa/pyxel/-/merge_requests/276>`_).
 
 Documentation
-~~~~~~~~~~~~~
+-------------
 
 * Add more information about how-to release to Conda Forge.
   (See `!252 <https://gitlab.com/esa/pyxel/-/merge_requests/252>`_).
@@ -356,7 +373,7 @@ Documentation
   (See `!280 <https://gitlab.com/esa/pyxel/-/merge_requests/280>`_).
 
 Models
-~~~~~~
+------
 
 * Fix for consecutive photon generation models.
   (See `!193 <https://gitlab.com/esa/pyxel/-/merge_requests/193>`_).
@@ -368,7 +385,7 @@ Models
   (See `!281 <https://gitlab.com/esa/pyxel/-/merge_requests/281>`_).
 
 Others
-~~~~~~
+------
 
 * Use tryceratops for try and except styling.
   (See `!255 <https://gitlab.com/esa/pyxel/-/merge_requests/255>`_).
@@ -383,26 +400,26 @@ Others
 
 
 version 0.10.2 / 2021-09-02
----------------------------
+===========================
 
 Core
-~~~~
+----
 
 * Enable logarithmic timing in dynamic mode.
   (See `!249 <https://gitlab.com/esa/pyxel/-/merge_requests/249>`_).
 
 Others
-~~~~~~
+------
 
 * Fix issue with latest version of Mypy.
   (See `!253 <https://gitlab.com/esa/pyxel/-/merge_requests/253>`_).
 
 
 version 0.10.1 / 2021-08-18
----------------------------
+===========================
 
 Core
-~~~~
+----
 
 * Add more debugging information when Calibration mode fails.
   (See `!228 <https://gitlab.com/esa/pyxel/-/merge_requests/228>`_).
@@ -412,13 +429,13 @@ Core
   (See `!250 <https://gitlab.com/esa/pyxel/-/merge_requests/250>`_).
 
 Documentation
-~~~~~~~~~~~~~
+-------------
 
 * Install a specific conda package version.
   (See `!235 <https://gitlab.com/esa/pyxel/-/merge_requests/235>`_).
 
 Others
-~~~~~~
+------
 * Resolved calibration not allowing one column text files
   (See `!233 <https://gitlab.com/esa/pyxel/-/merge_requests/233>`_).
 * Update dependency to 'pygmo' from 2.11 to 2.16.1.
@@ -428,10 +445,10 @@ Others
 
 
 version 0.10 / 2021-06-13
--------------------------
+=========================
 
 Core
-~~~~
+----
 
 * Add capability to save outputs of parametric mode as a xarray dataset.
   (See `!212 <https://gitlab.com/esa/pyxel/-/merge_requests/212>`_).
@@ -449,7 +466,7 @@ Core
   (See `!230 <https://gitlab.com/esa/pyxel/-/merge_requests/230>`_).
 
 Documentation
-~~~~~~~~~~~~~
+-------------
 
 * Update installation section.
   (See `!220 <https://gitlab.com/esa/pyxel/-/merge_requests/220>`_).
@@ -457,7 +474,7 @@ Documentation
   (See `!228 <https://gitlab.com/esa/pyxel/-/merge_requests/228>`_).
 
 Models
-~~~~~~
+------
 
 * Fix TARS model.
   (See `!227 <https://gitlab.com/esa/pyxel/-/merge_requests/227>`_).
@@ -465,7 +482,7 @@ Models
   (See `!224 <https://gitlab.com/esa/pyxel/-/merge_requests/224>`_).
 
 Others
-~~~~~~
+------
 
 * Fix circular import in parametric.py.
   (See `!216 <https://gitlab.com/esa/pyxel/-/merge_requests/216>`_).
@@ -474,10 +491,10 @@ Others
 
 
 version 0.9.1 / 2021-05-17
---------------------------
+==========================
 
 Core
-~~~~
+----
 
 * Add missing packages when running 'pyxel.show_versions().
   (See `!193 <https://gitlab.com/esa/pyxel/-/merge_requests/193>`_).
@@ -489,7 +506,7 @@ Core
   (See `!206 <https://gitlab.com/esa/pyxel/-/merge_requests/206>`_).
 
 Others
-~~~~~~
+------
 
 * Fix issue when displaying current version.
   (See `!196 <https://gitlab.com/esa/pyxel/-/merge_requests/196>`_).
@@ -508,10 +525,10 @@ Others
 
 
 version 0.9 / 2021-03-25
-------------------------
+========================
 
 Core
-~~~~
+----
 
 * Fix a circular import in 'pyxel.data_structure'.
   (See `!171 <https://gitlab.com/esa/pyxel/-/merge_requests/171>`_).
@@ -537,7 +554,7 @@ Core
   (See `!188 <https://gitlab.com/esa/pyxel/-/merge_requests/188>`_).
 
 Documentation
-~~~~~~~~~~~~~
+-------------
 
 * Use the 'Documentation System'.
   (See `!178 <https://gitlab.com/esa/pyxel/-/merge_requests/178>`_).
@@ -547,7 +564,7 @@ Documentation
   (See `!183 <https://gitlab.com/esa/pyxel/-/merge_requests/183>`_).
 
 Others
-~~~~~~
+------
 
 * Add a new badge for Binder.
   (See `!163 <https://gitlab.com/esa/pyxel/-/merge_requests/163>`_).
@@ -561,7 +578,7 @@ Others
   (See `!191 <https://gitlab.com/esa/pyxel/-/merge_requests/191>`_).
 
 Pipelines
-~~~~~~~~~
+---------
 
 * Calibration - Export champions for every evolution and every island.
   (See `!164 <https://gitlab.com/esa/pyxel/-/merge_requests/164>`_).
@@ -572,16 +589,16 @@ Pipelines
 
 
 version 0.8.1 / 2021-01-26
---------------------------
+==========================
 
 Documentation
-~~~~~~~~~~~~~
+-------------
 
 * Enabled sphinxcontrib-bibtex version 2.
   (See `#155 <https://gitlab.com/esa/pyxel/-/issues/155>`_).
 
 Others
-~~~~~~
+------
 
 * Add a new badge for Google Group.
   (See `!157 <https://gitlab.com/esa/pyxel/-/merge_requests/157>`_).
@@ -590,10 +607,10 @@ Others
 
 
 version 0.8 / 2020-12-11
-------------------------
+========================
 
 Core
-~~~~
+----
 
 * Improved user friendliness.
   (See `#144 <https://gitlab.com/esa/pyxel/issues/144>`_).
@@ -617,7 +634,7 @@ Core
   (See `!145 <https://gitlab.com/esa/pyxel/-/merge_requests/145>`_).
 
 Others
-~~~~~~
+------
 
 * Change licence to MIT.
   (See `!142 <https://gitlab.com/esa/pyxel/-/merge_requests/142>`_).
@@ -634,10 +651,10 @@ Others
 
 
 version 0.7 / 2020-10-22
-------------------------
+========================
 
 Core
-~~~~
+----
 
 * Update .gitignore file.
   (See `!123 <https://gitlab.com/esa/pyxel/-/merge_requests/123>`_).
@@ -665,14 +682,14 @@ Core
   (See `!122 <https://gitlab.com/esa/pyxel/-/merge_requests/122>`_).
 
 Documentation
-~~~~~~~~~~~~~
+-------------
 
 * Remove comments for magic methods.
   (See `!127 <https://gitlab.com/esa/pyxel/-/merge_requests/127>`_).
 
 
 version 0.6 / 2020-09-16
-------------------------
+========================
 
 * Improved contributing guide
   (See `#68 <https://gitlab.com/esa/pyxel/issues/68>`_).
@@ -708,7 +725,7 @@ version 0.6 / 2020-09-16
 
 
 version 0.5 / 2019-12-20
-------------------------
+========================
 
 * Clean-up code.
 * Remove any dependencies to esapy_config
@@ -720,7 +737,7 @@ version 0.5 / 2019-12-20
 
 
 version 0.4 / 2019-07-09
-------------------------
+========================
 
 * Running modes implemented:
   * Calibration mode for model fitting and detector optimization
@@ -736,7 +753,7 @@ version 0.4 / 2019-07-09
 * Documentation
 
 version 0.3 / 2018-03-26
-------------------------
+========================
 
 * Single and Parametric mode have been implemented
 * Infrastructure code has been placed in 2 new projects: esapy_config and esapy_web
@@ -744,11 +761,11 @@ version 0.3 / 2018-03-26
 * NGHxRG noise generator model has been added
 
 version 0.2 / 2018-01-18
-------------------------
+========================
 
 * TARS cosmic ray model has been reimplemented and added
 
 version 0.1 / 2018-01-10
-------------------------
+========================
 
 * Prototype: first pipeline for a CCD detector
