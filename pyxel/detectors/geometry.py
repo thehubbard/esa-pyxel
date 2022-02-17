@@ -62,11 +62,11 @@ class Geometry:
         pixel_vert_size: t.Optional[float] = None,  # unit: um
         pixel_horz_size: t.Optional[float] = None,  # unit: um
     ):
-        if row not in range(10001):
-            raise ValueError("'row' must be between 0 and 10000.")
+        if row <= 0:
+            raise ValueError("'row' must be strictly greater than 0.")
 
-        if col not in range(10001):
-            raise ValueError("'col' must be between 0 and 10000.")
+        if col <= 0:
+            raise ValueError("'col' must be strictly greater than 0.")
 
         if total_thickness and not (0.0 <= total_thickness <= 10000.0):
             raise ValueError("'total_thickness' must be between 0.0 and 10000.0.")
@@ -102,8 +102,8 @@ class Geometry:
     @row.setter
     def row(self, value: int) -> None:
         """Set Number of pixel rows."""
-        if value not in range(10001):
-            raise ValueError("'row' must be between 0 and 10000.")
+        if value <= 0:
+            raise ValueError("'row' must be strictly greater than 0.")
 
         self._row = value
 
@@ -115,8 +115,8 @@ class Geometry:
     @col.setter
     def col(self, value: int) -> None:
         """Set Number of pixel columns."""
-        if value not in range(10001):
-            raise ValueError("'columns' must be between 0 and 10000.")
+        if value <= 0:
+            raise ValueError("'col' must be strictly greater than 0.")
 
         self._col = value
 
