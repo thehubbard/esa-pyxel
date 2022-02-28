@@ -23,7 +23,8 @@ Others
 * Updated ``poppy`` dependency to version 1.0.2. The previous version of ``poppy``
   are not compatible with ``astropy`` version 5.0.1.
   (See `!431 <https://gitlab.com/esa/pyxel/-/merge_requests/431>`_).
-
+* Fix an issue when building the documentation with Python 3.8.
+  (See `!436 <https://gitlab.com/esa/pyxel/-/merge_requests/436>`_).
 
 
 version 1.0.0 / 2022-02-10
