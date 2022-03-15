@@ -72,7 +72,7 @@ def main(
     deployable_dct = rsp["last_deployment"]["deployable"]  # type: t.Mapping
     job_id = deployable_dct["id"]  # type: int
     # artifact_filename = deployable_dct["artifacts_file"]["filename"]  # type: str
-    artifact_filename = "artifact.zip"  # type: str
+    artifact_filename = "artifacts.zip"  # type: str
 
     # Download artifact
     url_download = f"{addr}/jobs/{job_id}/artifacts"
