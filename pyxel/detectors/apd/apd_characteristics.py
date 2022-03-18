@@ -9,8 +9,8 @@
 from pyxel.detectors.characteristics import Characteristics
 
 
-class CCDCharacteristics(Characteristics):
-    """Characteristic attributes of a :term:`CCD` detector.
+class APDCharacteristics(Characteristics):
+    """Characteristic attributes of the detector.
 
     Parameters
     ----------
@@ -20,7 +20,7 @@ class CCDCharacteristics(Characteristics):
         Sensitivity of charge readout. Unit: V/e-
     pre_amplification: float, optional
         Gain of pre-amplifier. Unit: V/V
-    full_well_capacity: float
+    full_well_capacity: float, optional
         Full well capacity. Unit: e-
     adc_voltage_range: tuple of floats, optional
         ADC voltage range. Unit: V
