@@ -6,11 +6,11 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """TBW."""
-from pyxel.detectors import CMOSCharacteristics
+from pyxel.detectors.characteristics import Characteristics
 
 
-class MKIDCharacteristics(CMOSCharacteristics):
-    """Characteristic attributes of a :term:`MKID`-based detector.
+class CCDCharacteristics(Characteristics):
+    """Characteristic attributes of a :term:`CCD` detector.
 
     Parameters
     ----------

@@ -6,7 +6,7 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """TBW."""
-from pyxel.detectors import Characteristics
+from pyxel.detectors.characteristics import Characteristics
 
 
 class CMOSCharacteristics(Characteristics):

@@ -4,6 +4,13 @@
 #  is part of this Pyxel package. No part of the package, including
 #  this file, may be copied, modified, propagated, or distributed except according to
 #  the terms contained in the file ‘LICENCE.txt’.
+#
+#
+#
+#  This file is subject to the terms and conditions defined in file 'LICENCE.txt', which
+#  is part of this Pyxel package. No part of the package, including
+#  this file, may be copied, modified, propagated, or distributed except according to
+#  the terms contained in the file ‘LICENCE.txt’.
 
 """:term:`MKID`-array detector modeling class."""
 
@@ -19,7 +26,9 @@ from pyxel.detectors import Detector
 from pyxel.util.memory import memory_usage_details
 
 if t.TYPE_CHECKING:
-    from pyxel.detectors import Environment, MKIDCharacteristics, MKIDGeometry
+    from pyxel.detectors import Environment
+    from .mkid_characteristics import MKIDCharacteristics
+    from .mkid_geometry import MKIDGeometry
 
 
 class MKID(Detector):

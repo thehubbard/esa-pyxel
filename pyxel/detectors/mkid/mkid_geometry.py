@@ -6,11 +6,11 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """TBW."""
-from pyxel.detectors import Geometry
+from pyxel.detectors.geometry import Geometry
 
 
-class CCDGeometry(Geometry):
-    """Geometrical attributes of a :term:`CCD` detector.
+class MKIDGeometry(Geometry):
+    """Geometrical attributes of a :term:`MKID`-based detector.
 
     Parameters
     ----------
