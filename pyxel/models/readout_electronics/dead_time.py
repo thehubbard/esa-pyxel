@@ -93,7 +93,7 @@ def dead_time_filter(
 
     # Compute recombination constant
     recombination_cst = (
-        tau_0 * n_0 * (boltzmann_cst * t_c) ** 3 / (2.0 * delta ** 2)
+        tau_0 * n_0 * (boltzmann_cst * t_c) ** 3 / (2.0 * delta**2)
     )  # type: float
 
     # Compute intrinsic quasiparticle lifetime with respect to recombination

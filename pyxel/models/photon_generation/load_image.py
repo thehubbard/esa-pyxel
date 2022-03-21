@@ -73,7 +73,7 @@ def load_image(
             )
 
         cht = detector.characteristics
-        adc_multiplier = cht.adc_voltage_range[1] / 2 ** bit_resolution
+        adc_multiplier = cht.adc_voltage_range[1] / 2**bit_resolution
 
         photon_array = (
             photon_array

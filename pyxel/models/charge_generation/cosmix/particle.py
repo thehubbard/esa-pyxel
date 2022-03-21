@@ -352,7 +352,7 @@ def isotropic_direction() -> t.Tuple[float, float, float]:
     :return:
     """
     u = 2 * np.random.random() - 1
-    r = np.sqrt(1 - u ** 2)
+    r = np.sqrt(1 - u**2)
     kszi = np.random.random()
     v = r * np.cos(2 * np.pi * kszi)
     w = r * np.sin(2 * np.pi * kszi)
