@@ -210,8 +210,8 @@ def run_cdm_parallel(
     # IMAGING (non-TDI) MODE
     # Parallel direction
     no = np.zeros((xdim, kdim_p))
-    alpha_p = t * sigma * vth * fwc ** beta / (2.0 * vg)  # type: np.ndarray
-    g_p = 2.0 * nt * vg / fwc ** beta  # type: np.ndarray
+    alpha_p = t * sigma * vth * fwc**beta / (2.0 * vg)  # type: np.ndarray
+    g_p = 2.0 * nt * vg / fwc**beta  # type: np.ndarray
     for i in range(0, ydim):
         if charge_injection:
             gamma_p = (
@@ -288,8 +288,8 @@ def run_cdm_serial(
     # Serial direction
 
     sno = np.zeros((ydim, kdim_s))
-    alpha_s = t * sigma * vth * fwc ** beta / (2.0 * vg)  # type: np.ndarray
-    g_s = 2.0 * nt * vg / fwc ** beta
+    alpha_s = t * sigma * vth * fwc**beta / (2.0 * vg)  # type: np.ndarray
+    g_s = 2.0 * nt * vg / fwc**beta
     for j in range(0, xdim):
         gamma_s = g_s * j  # TODO: (j+1) ?????????????
         for k in range(kdim_s):

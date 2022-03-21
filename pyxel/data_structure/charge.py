@@ -279,11 +279,11 @@ class Charge:
                     pixel_vertical_size=self._geo.pixel_vert_size,
                     pixel_horizontal_size=self._geo.pixel_horz_size,
                 )
-                new_frame = df.append(new_charges, ignore_index=True)
+                new_frame = pd.concat([df, new_charges], ignore_index=True)
             else:
                 new_frame = new_charges
         else:
-            new_frame = self._frame.append(new_charges, ignore_index=True)
+            new_frame = pd.concat([self._frame, new_charges], ignore_index=True)
 
         self._frame = new_frame
         self.nextid = self.nextid + len(new_charges)

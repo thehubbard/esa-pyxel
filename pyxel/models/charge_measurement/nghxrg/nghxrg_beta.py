@@ -794,7 +794,7 @@ class HXRGNoise:
             # Ensure that there are no negative pixel values.
             result[result < 0] = 0
             # And that anything higher than 65535 gets tacked to the top end
-            result[result >= 2 ** 16] = 2 ** 16 - 1
+            result[result >= 2**16] = 2**16 - 1
 
             # self.message('Converting to 16-bit unsigned integer')
             # result = result.astype('uint16')
