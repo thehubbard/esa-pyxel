@@ -11,6 +11,8 @@ Core
 * Remove maximum limit for attributes 'col' and 'row' in class ``Geometry``.
   The previous limit was set at a maximum of 10000 columns and 10000 rows.
   (See `!434 <https://gitlab.com/esa/pyxel/-/merge_requests/434>`_).
+* Replace deprecated appeding to dataframes with concatenating.
+  (See `!444 <https://gitlab.com/esa/pyxel/-/merge_requests/444>`_).
 
 Documentation
 -------------
