@@ -19,7 +19,7 @@ from pyxel.detectors import Detector
 
 if t.TYPE_CHECKING:
     from .ccd_characteristics import CCDCharacteristics
-    from .ccd_geometry import  CCDGeometry
+    from .ccd_geometry import CCDGeometry
     from pyxel.detectors import Environment
 
 
