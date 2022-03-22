@@ -15,10 +15,12 @@ from dataclasses import dataclass
 from graphlib import TopologicalSorter
 from pathlib import Path
 
+import click
 from boltons.strutils import under2camel
 from numpydoc.docscrape import NumpyDocString
 from tqdm.auto import tqdm
 
+from pyxel import __version__
 from pyxel.detectors import (
     CCDCharacteristics,
     CCDGeometry,
@@ -630,6 +632,7 @@ def generate_all_models() -> t.Iterator[str]:
     yield "import typing"
     yield "from dataclasses import dataclass, field"
     yield ""
+    yield "import click"
     yield "from apischema import schema"
     yield ""
     yield ""
@@ -667,9 +670,17 @@ def generate_all_models() -> t.Iterator[str]:
 
     yield ""
     yield ""
-    yield "if __name__ == '__main__':"
+    yield "@click.command()"
+    yield "@click.option("
+    yield "    '-f',"
+    yield "    '--filename',"
+    yield "    default='../../static/pyxel_schema.json',"
+    yield "    type=click.Path(),"
+    yield "    help='JSON schema filename',"
+    yield "    show_default=True,"
+    yield ")"
+    yield "def create_json_schema(filename: pathlib.Path):"
     yield "    import json"
-    yield "    from pathlib import Path"
     yield ""
     yield "    from apischema.json_schema import JsonSchemaVersion, deserialization_schema"
     yield "    dct_schema = deserialization_schema("
@@ -678,15 +689,37 @@ def generate_all_models() -> t.Iterator[str]:
     yield ""
     yield "    print(json.dumps(dct_schema))"
     yield ""
-    yield "    schema_filename = Path(__file__).parent / '../static/pyxel_schema.json'"
-    yield "    full_filename = schema_filename.resolve()"
+    yield "    full_filename = pathlib.Path(filename).resolve()"
     yield ""
     yield "    with full_filename.open('w') as fh:"
     yield "        json.dump(obj=dct_schema, fp=fh, indent=2)"
+    yield ""
+    yield ""
+    yield "if __name__ == '__main__':"
+    yield "    create_json_schema()"
+
+
+def create_auto_generated(filename: Path) -> None:
+    """Create an auto-generated file."""
+    with Path(filename).open("w") as fh:
+        for line in tqdm(generate_all_models()):
+            fh.write(f"{line}\n")
+
+
+@click.command()
+@click.option(
+    "-f",
+    "--filename",
+    default="./auto_generated.py",
+    type=click.Path(),
+    help="Auto generated filename.",
+    show_default=True,
+)
+@click.version_option(version=__version__)
+def main(filename: Path):
+    """Create an auto-generated file."""
+    create_auto_generated(filename)
 
 
 if __name__ == "__main__":
-    # Create an auto generated file
-    with Path("auto_generated.py").open("w") as fh:
-        for line in tqdm(generate_all_models()):
-            fh.write(f"{line}\n")
+    main()

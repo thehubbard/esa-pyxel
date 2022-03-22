@@ -1,2 +1,6 @@
 click
 requests
+
+boltons
+numpydoc
+tqdm
