@@ -242,9 +242,9 @@ class Geometry:
         return {
             "row": self.row,
             "col": self.col,
-            "total_thickness": self.total_thickness,
-            "pixel_vert_size": self.pixel_vert_size,
-            "pixel_horz_size": self.pixel_horz_size,
+            "total_thickness": self._total_thickness,
+            "pixel_vert_size": self._pixel_vert_size,
+            "pixel_horz_size": self._pixel_horz_size,
         }
 
     @classmethod

@@ -127,7 +127,62 @@ def comparison(dct, other_dct):
 @pytest.mark.parametrize(
     "obj, exp_dict",
     [
-        (
+        pytest.param(
+            CCD(
+                geometry=CCDGeometry(row=100, col=120),
+                environment=Environment(),
+                characteristics=CCDCharacteristics(),
+            ),
+            {
+                "version": 1,
+                "type": "ccd",
+                "properties": {
+                    "geometry": {
+                        "row": 100,
+                        "col": 120,
+                        "total_thickness": None,
+                        "pixel_horz_size": None,
+                        "pixel_vert_size": None,
+                    },
+                    "environment": {"temperature": None},
+                    "characteristics": {
+                        "quantum_efficiency": None,
+                        "charge_to_volt_conversion": None,
+                        "pre_amplification": None,
+                        "full_well_capacity": None,
+                    },
+                },
+                "data": {
+                    "photon": np.zeros(shape=(100, 120)),
+                    "pixel": np.zeros(shape=(100, 120)),
+                    "signal": np.zeros(shape=(100, 120)),
+                    "image": np.zeros(shape=(100, 120)),
+                    "charge": {
+                        "array": np.zeros(shape=(100, 120)),
+                        "frame": pd.DataFrame(
+                            columns=[
+                                "charge",
+                                "number",
+                                "init_energy",
+                                "energy",
+                                "init_pos_ver",
+                                "init_pos_hor",
+                                "init_pos_z",
+                                "position_ver",
+                                "position_hor",
+                                "position_z",
+                                "velocity_ver",
+                                "velocity_hor",
+                                "velocity_z",
+                            ],
+                            dtype=float,
+                        ),
+                    },
+                },
+            },
+            id="Default parameters",
+        ),
+        pytest.param(
             CCD(
                 geometry=CCDGeometry(
                     row=100,
@@ -191,7 +246,8 @@ def comparison(dct, other_dct):
                     },
                 },
             },
-        )
+            id="CCD fully defined",
+        ),
     ],
 )
 def test_to_and_from_dict(klass, obj, exp_dict):
