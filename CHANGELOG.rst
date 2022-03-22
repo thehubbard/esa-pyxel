@@ -28,7 +28,7 @@ Others
 * Fix an issue when building the documentation with Python 3.8.
   (See `!436 <https://gitlab.com/esa/pyxel/-/merge_requests/436>`_).
 * Create a JSON Schema file.
-  (See `!437 <https://gitlab.com/esa/pyxel/-/merge_requests/437>`_).
+  (See `!445 <https://gitlab.com/esa/pyxel/-/merge_requests/445>`_).
 
 
 version 1.0.0 / 2022-02-10
