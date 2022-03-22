@@ -377,26 +377,25 @@ class Detector:
                 dataset = detector_grp.create_dataset(name, shape=np.shape(array))
                 dataset[:] = array
 
+    # TODO: Replace `-> 'Detector'` by `t.Union[CCD, CMOS, MKID]`
     @classmethod
     def from_dict(cls, dct: t.Mapping) -> "Detector":
         """Create a new instance of a `Detector` from a `dict`."""
         # TODO: This is a simplistic implementation. Improve this.
         if dct["type"] == "ccd":
-            from pyxel.detectors import CCD
+            from pyxel.detectors import CCD  # Imported here to avoid circular import
 
-            obj = CCD.from_dict(dct)
+            return CCD.from_dict(dct)
 
         elif dct["type"] == "cmos":
             from pyxel.detectors import CMOS
 
-            obj = CMOS.from_dict(dct)
+            return CMOS.from_dict(dct)
 
         elif dct["type"] == "mkid":
             from pyxel.detectors import MKID
 
-            obj = MKID.from_dict(dct)
+            return MKID.from_dict(dct)
 
         else:
             raise NotImplementedError
-
-        return obj

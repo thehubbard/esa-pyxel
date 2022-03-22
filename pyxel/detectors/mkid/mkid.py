@@ -136,7 +136,7 @@ class MKID(Detector):
 
     # TODO: Refactor this
     def to_dict(self) -> t.Mapping:
-        """Get the attributes of this instance as a `dict`."""
+        """Convert an instance of `MKID` to a `dict`."""
         dct = {
             "version": 1,
             "type": "mkid",
@@ -164,10 +164,13 @@ class MKID(Detector):
 
     # TODO: Refactor this
     @classmethod
-    def from_dict(cls, dct: t.Mapping):
-        """Create a new instance of `CCD` from a `dict`."""
+    def from_dict(cls, dct: t.Mapping) -> "MKID":
+        """Create a new instance of `MKID` from a `dict`."""
         # TODO: This is a simplistic implementation. Improve this.
         if dct["type"] != "mkid":
+            raise ValueError
+
+        if dct["version"] != 1:
             raise ValueError
 
         properties = dct["properties"]
