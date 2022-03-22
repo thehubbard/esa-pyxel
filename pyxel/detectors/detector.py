@@ -12,6 +12,7 @@ from pathlib import Path
 
 import h5py as h5
 import numpy as np
+import pandas as pd
 
 from pyxel import __version__
 from pyxel.data_structure import (
@@ -370,22 +371,57 @@ class Detector:
     # TODO: Move this to another place. See #241
     def to_hdf5(self, filename: t.Union[str, Path]) -> None:
         """Convert the detector to a HDF5 object."""
+        dct = self.to_dict()  # type: t.Mapping
+
         with h5.File(filename, "w") as h5file:
-            h5file.attrs["type"] = self.__class__.__name__
+            h5file.attrs["version"] = dct["version"]
+            h5file.attrs["type"] = dct["type"]
             h5file.attrs["pyxel-version"] = str(__version__)
-            detector_grp = h5file.create_group("detector")
-            for array, name in zip(
-                [
-                    self.signal.array,
-                    self.image.array,
-                    self.photon.array,
-                    self.pixel.array,
-                    self.charge.frame,
-                ],
-                ["Signal", "Image", "Photon", "Pixel", "Charge"],
-            ):
-                dataset = detector_grp.create_dataset(name, shape=np.shape(array))
-                dataset[:] = array
+
+            geometry_grp = h5file.create_group("/geometry")
+            geometry_grp.attrs.update(dct["properties"]["geometry"])
+
+            environment_grp = h5file.create_group("/environment")
+            environment_grp.attrs.update(dct["properties"]["environment"])
+
+            characteristics_grp = h5file.create_group("/characteristics")
+            characteristics_grp.attrs.update(dct["properties"]["characteristics"])
+
+            def _store(hdf_store, name: str, dct: t.Mapping):
+                group = hdf_store.create_group(name)
+
+                for key, value in dct.items():
+                    if isinstance(value, np.ndarray):
+                        group.create_dataset(name=key, data=value)
+                    elif isinstance(value, pd.DataFrame):
+                        # new_group = hdf_store.create_group(f'{name}/{key}')
+                        # pd.HDFStore
+                        value.to_hdf(hdf_store, f"{name}/{key}")
+                    elif isinstance(value, dict):
+                        _store(hdf_store, name=f"{name}/{key}", dct=value)
+                    else:
+                        raise NotImplementedError
+
+            _store(h5file, name="/data", dct=dct["data"])
+
+            #
+            #
+            # for array, name in zip(
+            #     [
+            #         self.signal.array,
+            #         self.image.array,
+            #         self.photon.array,
+            #         self.pixel.array,
+            #         self.charge.frame,
+            #     ],
+            #     ["Signal", "Image", "Photon", "Pixel", "Charge"],
+            # ):
+            #     dataset = detector_grp.create_dataset(name, shape=np.shape(array))
+            #     dataset[:] = array
+
+    def to_dict(self) -> t.Mapping:
+        """Convert a `Detector` to a `dict`."""
+        raise NotImplementedError
 
     # TODO: Replace `-> 'Detector'` by `t.Union[CCD, CMOS, MKID]`
     @classmethod
