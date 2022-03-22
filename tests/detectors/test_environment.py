@@ -13,45 +13,25 @@ from pyxel.detectors import Environment
 
 
 @pytest.mark.parametrize(
-    "temperature, total_ionising_dose, total_non_ionising_dose",
-    [(0.0, 0.0, 0.0), (1000.0, 1e15, 1e15)],
+    "temperature ",
+    [0.0, 1000.0],
 )
-def test_create_environment(
-    temperature: float, total_ionising_dose: float, total_non_ionising_dose: float
-):
+def test_create_environment(temperature: float):
     """Test when creating a valid `Environment` object."""
-    _ = Environment(
-        temperature=temperature,
-        total_ionising_dose=total_ionising_dose,
-        total_non_ionising_dose=total_non_ionising_dose,
-    )
+    _ = Environment(temperature=temperature)
 
 
 @pytest.mark.parametrize(
-    "temperature, total_ionising_dose, total_non_ionising_dose, exp_exc, exp_error",
+    "temperature, exp_exc, exp_error",
     [
-        pytest.param(-0.1, 0.0, 0.0, ValueError, r"\'temperature\'"),
-        pytest.param(1001, 0.0, 0.0, ValueError, r"\'temperature\'"),
-        pytest.param(0.0, -0.1, 0.0, ValueError, r"\'total_ionising_dose\'"),
-        pytest.param(0.0, 1.1e15, 0.0, ValueError, r"\'total_ionising_dose\'"),
-        pytest.param(0.0, 0.0, -0.1, ValueError, r"\'total_non_ionising_dose\'"),
-        pytest.param(0.0, 0.0, 1.1e15, ValueError, r"\'total_non_ionising_dose\'"),
+        pytest.param(-0.1, ValueError, r"\'temperature\'"),
+        pytest.param(1001, ValueError, r"\'temperature\'"),
     ],
 )
-def test_create_invalid_environment(
-    temperature: float,
-    total_ionising_dose: float,
-    total_non_ionising_dose: float,
-    exp_exc,
-    exp_error,
-):
+def test_create_invalid_environment(temperature: float, exp_exc, exp_error):
     """Test when creating an invalid `Environment` object."""
     with pytest.raises(exp_exc, match=exp_error):
-        _ = Environment(
-            temperature=temperature,
-            total_ionising_dose=total_ionising_dose,
-            total_non_ionising_dose=total_non_ionising_dose,
-        )
+        _ = Environment(temperature=temperature)
 
 
 @pytest.mark.parametrize(
@@ -59,23 +39,12 @@ def test_create_invalid_environment(
     [
         pytest.param(None, False, id="None"),
         pytest.param(Environment(), False, id="Empty 'Environment'"),
-        pytest.param(Environment(temperature=100.1), False, id="Only one parameter"),
-        pytest.param(
-            Environment(
-                temperature=100.1,
-                total_ionising_dose=200.2,
-                total_non_ionising_dose=300.3,
-            ),
-            True,
-            id="Same parameters, same class",
-        ),
+        pytest.param(Environment(temperature=100.1), True, id="Valid"),
     ],
 )
 def test_is_equal(other_obj, is_equal):
     """Test equality statement for Environment."""
-    obj = Environment(
-        temperature=100.1, total_ionising_dose=200.2, total_non_ionising_dose=300.3
-    )
+    obj = Environment(temperature=100.1)
 
     if is_equal:
         assert obj == other_obj
@@ -87,16 +56,8 @@ def test_is_equal(other_obj, is_equal):
     "obj, exp_dict",
     [
         (
-            Environment(
-                temperature=100.1,
-                total_ionising_dose=200.2,
-                total_non_ionising_dose=300.3,
-            ),
-            {
-                "temperature": 100.1,
-                "total_ionising_dose": 200.2,
-                "total_non_ionising_dose": 300.3,
-            },
+            Environment(temperature=100.1),
+            {"temperature": 100.1},
         )
     ],
 )

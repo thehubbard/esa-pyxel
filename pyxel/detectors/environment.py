@@ -34,15 +34,7 @@ class Environment:
         return f"{cls_name}(temperature={self._temperature!r})"
 
     def __eq__(self, other) -> bool:
-        return type(self) == type(other) and (
-            self.temperature,
-            self.total_ionising_dose,
-            self.total_non_ionising_dose,
-        ) == (
-            other.temperature,
-            other.total_ionising_dose,
-            other.total_non_ionising_dose,
-        )
+        return type(self) == type(other) and self._temperature == other._temperature
 
     @property
     def temperature(self) -> float:
@@ -72,16 +64,12 @@ class Environment:
         self._numbytes = get_size(self)
         return self._numbytes
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> t.Mapping:
         """Get the attributes of this instance as a `dict`."""
-        return {
-            "temperature": self._temperature,
-            "total_ionising_dose": self._total_ionising_dose,
-            "total_non_ionising_dose": self._total_non_ionising_dose,
-        }
+        return {"temperature": self._temperature}
 
     @classmethod
-    def from_dict(cls, dct: dict):
+    def from_dict(cls, dct: t.Mapping):
         """Create a new instance of `Geometry` from a `dict`."""
         # TODO: This is a simplistic implementation. Improve this.
         return cls(**dct)

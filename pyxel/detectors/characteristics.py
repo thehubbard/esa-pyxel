@@ -70,11 +70,10 @@ class Characteristics:
     def __eq__(self, other) -> bool:
         return (
             type(self) == type(other)
-            and self.quantum_efficiency == other.quantum_efficiency
-            and self.charge_to_volt_conversion == other.charge_to_volt_conversion
-            and self.pre_amplification == other.pre_amplification
-            and self.adc_gain == other.adc_gain
-            and self.full_well_capacity == other.full_well_capacity
+            and self._quantum_efficiency == other._quantum_efficiency
+            and self._charge_to_volt_conversion == other._charge_to_volt_conversion
+            and self._pre_amplification == other._pre_amplification
+            and self._full_well_capacity == other._full_well_capacity
         )
 
     @property
@@ -202,17 +201,17 @@ class Characteristics:
         self._numbytes = get_size(self)
         return self._numbytes
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> t.Mapping:
         """Get the attributes of this instance as a `dict`."""
         return {
-            "qe": self._quantum_efficiency,
-            "sv": self._charge_to_volt_conversion,
-            "a2": self._adc_gain,
-            "fwc": self.full_well_capacity,
+            "quantum_efficiency": self._quantum_efficiency,
+            "charge_to_volt_conversion": self._charge_to_volt_conversion,
+            "pre_amplification": self._pre_amplification,
+            "full_well_capacity": self._full_well_capacity,
         }
 
     @classmethod
-    def from_dict(cls, dct: dict):
+    def from_dict(cls, dct: t.Mapping):
         """Create a new instance of `Geometry` from a `dict`."""
         # TODO: This is a simplistic implementation. Improve this.
         return cls(**dct)

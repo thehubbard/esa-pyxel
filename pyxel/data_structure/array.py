@@ -43,6 +43,9 @@ class Array:
 
         return f"{cls_name}<shape={self.shape}, dtype={self.dtype}>"
 
+    def __eq__(self, other) -> bool:
+        return type(self) == type(other) and np.array_equal(self.array, other.array)
+
     def validate_type(self, value: np.ndarray) -> None:
         """Validate a value.
 

@@ -98,15 +98,15 @@ class Geometry:
         return type(self) == type(other) and (
             self.row,
             self.col,
-            self.total_thickness,
-            self.pixel_vert_size,
-            self.pixel_horz_size,
+            self._total_thickness,
+            self._pixel_vert_size,
+            self._pixel_horz_size,
         ) == (
             other.row,
             other.col,
-            other.total_thickness,
-            other.pixel_vert_size,
-            other.pixel_horz_size,
+            other._total_thickness,
+            other._pixel_vert_size,
+            other._pixel_horz_size,
         )
 
     # def _repr_html_(self):
@@ -237,7 +237,7 @@ class Geometry:
         self._numbytes = get_size(self)
         return self._numbytes
 
-    def to_dict(self) -> dict:
+    def to_dict(self) -> t.Mapping:
         """Get the attributes of this instance as a `dict`."""
         return {
             "row": self.row,
@@ -248,7 +248,7 @@ class Geometry:
         }
 
     @classmethod
-    def from_dict(cls, dct: dict):
+    def from_dict(cls, dct: t.Mapping):
         """Create a new instance of `Geometry` from a `dict`."""
         # TODO: This is a simplistic implementation. Improve this.
         return cls(**dct)

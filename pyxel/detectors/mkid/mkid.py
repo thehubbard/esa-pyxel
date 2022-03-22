@@ -22,12 +22,7 @@ import numpy as np
 
 from pyxel import __version__
 from pyxel.data_structure import Phase
-from pyxel.detectors import (
-    Detector,
-    Environment,
-    MKIDCharacteristics,
-    MKIDGeometry,
-)
+from pyxel.detectors import Detector, Environment, MKIDCharacteristics, MKIDGeometry
 from pyxel.util.memory import memory_usage_details
 
 
@@ -53,6 +48,7 @@ class MKID(Detector):
             and self.geometry == other.geometry
             and self.environment == other.environment
             and self.characteristics == other.characteristics
+            and self._phase == other._phase
         )
 
     def reset(self) -> None:
@@ -139,9 +135,10 @@ class MKID(Detector):
                 dataset[:] = array
 
     # TODO: Refactor this
-    def to_dict(self) -> dict:
+    def to_dict(self) -> t.Mapping:
         """Get the attributes of this instance as a `dict`."""
         dct = {
+            "version": 1,
             "type": "mkid",
             "properties": {
                 "geometry": self.geometry.to_dict(),
@@ -167,7 +164,7 @@ class MKID(Detector):
 
     # TODO: Refactor this
     @classmethod
-    def from_dict(cls, dct: dict):
+    def from_dict(cls, dct: t.Mapping):
         """Create a new instance of `CCD` from a `dict`."""
         # TODO: This is a simplistic implementation. Improve this.
         if dct["type"] != "mkid":

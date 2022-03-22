@@ -378,7 +378,7 @@ class Detector:
                 dataset[:] = array
 
     @classmethod
-    def from_dict(cls, dct: dict) -> "Detector":
+    def from_dict(cls, dct: t.Mapping) -> "Detector":
         """Create a new instance of a `Detector` from a `dict`."""
         # TODO: This is a simplistic implementation. Improve this.
         if dct["type"] == "ccd":

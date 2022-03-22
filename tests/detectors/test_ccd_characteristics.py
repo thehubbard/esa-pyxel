@@ -13,17 +13,16 @@ from pyxel.detectors import CCDCharacteristics, Characteristics
 
 
 @pytest.mark.parametrize(
-    "quantum_efficiency, charge_to_volt_conversion, pre_amplification, adc_gain, full_well_capacity",
+    "quantum_efficiency, charge_to_volt_conversion, pre_amplification, full_well_capacity",
     [
-        (0, 0, 0, 0, 0),
-        (1.0, 1.0, 100.0, 65536, 10_000_000),
+        (0, 0, 0, 0),
+        (1.0, 1.0, 100.0, 10_000_000),
     ],
 )
 def test_create_valid_ccdcharacteristics(
     quantum_efficiency,
     charge_to_volt_conversion,
     pre_amplification,
-    adc_gain,
     full_well_capacity,
 ):
     """Test when creating a valid `CCDCharacteristics` object."""
@@ -31,7 +30,6 @@ def test_create_valid_ccdcharacteristics(
         quantum_efficiency=quantum_efficiency,
         charge_to_volt_conversion=charge_to_volt_conversion,
         pre_amplification=pre_amplification,
-        adc_gain=adc_gain,
         full_well_capacity=full_well_capacity,
     )
 
@@ -49,7 +47,6 @@ def test_create_valid_ccdcharacteristics(
                 quantum_efficiency=0.1,
                 charge_to_volt_conversion=0.2,
                 pre_amplification=4.4,
-                adc_gain=6,
             ),
             False,
             id="Wrong type",
@@ -59,7 +56,6 @@ def test_create_valid_ccdcharacteristics(
                 quantum_efficiency=0.1,
                 charge_to_volt_conversion=0.2,
                 pre_amplification=4.4,
-                adc_gain=6,
                 full_well_capacity=10,
             ),
             True,
@@ -73,7 +69,6 @@ def test_is_equal(other_obj, is_equal):
         quantum_efficiency=0.1,
         charge_to_volt_conversion=0.2,
         pre_amplification=4.4,
-        adc_gain=6,
         full_well_capacity=10,
     )
 
@@ -91,14 +86,12 @@ def test_is_equal(other_obj, is_equal):
                 quantum_efficiency=0.1,
                 charge_to_volt_conversion=0.2,
                 pre_amplification=4.4,
-                adc_gain=6,
                 full_well_capacity=10,
             ),
             {
                 "quantum_efficiency": 0.1,
                 "charge_to_volt_conversion": 0.2,
                 "pre_amplification": 4.4,
-                "adc_gain": 6,
                 "full_well_capacity": 10,
             },
         )

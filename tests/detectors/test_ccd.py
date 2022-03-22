@@ -8,17 +8,10 @@
 from copy import deepcopy
 
 import numpy as np
+import pandas as pd
 import pytest
 
-from pyxel.detectors import (
-    CCD,
-    CCDCharacteristics,
-    CCDGeometry,
-    Detector,
-    Environment,
-    Material,
-)
-from pyxel.detectors.material import MaterialType
+from pyxel.detectors import CCD, CCDCharacteristics, CCDGeometry, Detector, Environment
 
 
 @pytest.fixture
@@ -32,26 +25,11 @@ def valid_ccd() -> CCD:
             pixel_horz_size=12.4,
             pixel_vert_size=34.5,
         ),
-        material=Material(
-            trapped_charge=None,
-            n_acceptor=1.0,
-            n_donor=2.0,
-            material=MaterialType.HXRG,
-            material_density=3.0,
-            ionization_energy=4.0,
-            band_gap=5.0,
-            e_effective_mass=1e-12,
-        ),
-        environment=Environment(
-            temperature=100.1,
-            total_ionising_dose=200.2,
-            total_non_ionising_dose=300.3,
-        ),
+        environment=Environment(temperature=100.1),
         characteristics=CCDCharacteristics(
             quantum_efficiency=0.1,
             charge_to_volt_conversion=0.2,
             pre_amplification=3.3,
-            adc_gain=5,
             full_well_capacity=10,
         ),
     )
@@ -63,8 +41,7 @@ def valid_ccd() -> CCD:
         pytest.param(None, False, id="None"),
         pytest.param(
             CCD(
-                geometry=CCDGeometry(),
-                material=Material(),
+                geometry=CCDGeometry(row=100, col=120),
                 environment=Environment(),
                 characteristics=CCDCharacteristics(),
             ),
@@ -80,7 +57,6 @@ def valid_ccd() -> CCD:
                     pixel_horz_size=12.4,
                     pixel_vert_size=34.5,
                 ),
-                material=Material(),
                 environment=Environment(),
                 characteristics=CCDCharacteristics(),
             ),
@@ -96,26 +72,11 @@ def valid_ccd() -> CCD:
                     pixel_horz_size=12.4,
                     pixel_vert_size=34.5,
                 ),
-                material=Material(
-                    trapped_charge=None,
-                    n_acceptor=1.0,
-                    n_donor=2.0,
-                    material=MaterialType.HXRG,
-                    material_density=3.0,
-                    ionization_energy=4.0,
-                    band_gap=5.0,
-                    e_effective_mass=1e-12,
-                ),
-                environment=Environment(
-                    temperature=100.1,
-                    total_ionising_dose=200.2,
-                    total_non_ionising_dose=300.3,
-                ),
+                environment=Environment(temperature=100.1),
                 characteristics=CCDCharacteristics(
                     quantum_efficiency=0.1,
                     charge_to_volt_conversion=0.2,
                     pre_amplification=3.3,
-                    adc_gain=5,
                     full_well_capacity=10,
                 ),
             ),
@@ -134,9 +95,32 @@ def test_is_equal(valid_ccd: CCD, other_obj, is_equal):
 
 
 def comparison(dct, other_dct):
-    assert set(dct) == set(other_dct) == {"type", "data", "properties"}
+    assert set(dct) == set(other_dct) == {"version", "type", "data", "properties"}
+    assert dct["version"] == other_dct["version"]
+    assert dct["type"] == other_dct["type"]
     assert dct["properties"] == other_dct["properties"]
-    np.testing.assert_equal(dct["data"], other_dct["data"])
+
+    assert (
+        set(dct["data"])
+        == set(other_dct["data"])
+        == {"photon", "pixel", "signal", "image", "charge"}
+    )
+    np.testing.assert_equal(dct["data"]["photon"], other_dct["data"]["photon"])
+    np.testing.assert_equal(dct["data"]["pixel"], other_dct["data"]["pixel"])
+    np.testing.assert_equal(dct["data"]["signal"], other_dct["data"]["signal"])
+    np.testing.assert_equal(dct["data"]["image"], other_dct["data"]["image"])
+
+    assert (
+        set(dct["data"]["charge"])
+        == set(other_dct["data"]["charge"])
+        == {"array", "frame"}
+    )
+    np.testing.assert_equal(
+        dct["data"]["charge"]["array"], other_dct["data"]["charge"]["array"]
+    )
+    pd.testing.assert_frame_equal(
+        dct["data"]["charge"]["frame"], other_dct["data"]["charge"]["frame"]
+    )
 
 
 @pytest.mark.parametrize("klass", [CCD, Detector])
@@ -152,30 +136,16 @@ def comparison(dct, other_dct):
                     pixel_horz_size=12.4,
                     pixel_vert_size=34.5,
                 ),
-                material=Material(
-                    trapped_charge=None,
-                    n_acceptor=1.0,
-                    n_donor=2.0,
-                    material=MaterialType.HXRG,
-                    material_density=3.0,
-                    ionization_energy=4.0,
-                    band_gap=5.0,
-                    e_effective_mass=1e-12,
-                ),
-                environment=Environment(
-                    temperature=100.1,
-                    total_ionising_dose=200.2,
-                    total_non_ionising_dose=300.3,
-                ),
+                environment=Environment(temperature=100.1),
                 characteristics=CCDCharacteristics(
                     quantum_efficiency=0.1,
                     charge_to_volt_conversion=0.2,
                     pre_amplification=3.3,
-                    adc_gain=5,
                     full_well_capacity=10,
                 ),
             ),
             {
+                "version": 1,
                 "type": "ccd",
                 "properties": {
                     "geometry": {
@@ -185,26 +155,11 @@ def comparison(dct, other_dct):
                         "pixel_horz_size": 12.4,
                         "pixel_vert_size": 34.5,
                     },
-                    "material": {
-                        "trapped_charge": None,
-                        "n_acceptor": 1.0,
-                        "n_donor": 2.0,
-                        "material": "hxrg",
-                        "material_density": 3.0,
-                        "ionization_energy": 4.0,
-                        "band_gap": 5.0,
-                        "e_effective_mass": 1e-12,
-                    },
-                    "environment": {
-                        "temperature": 100.1,
-                        "total_ionising_dose": 200.2,
-                        "total_non_ionising_dose": 300.3,
-                    },
+                    "environment": {"temperature": 100.1},
                     "characteristics": {
                         "quantum_efficiency": 0.1,
                         "charge_to_volt_conversion": 0.2,
                         "pre_amplification": 3.3,
-                        "adc_gain": 5,
                         "full_well_capacity": 10,
                     },
                 },
@@ -213,7 +168,27 @@ def comparison(dct, other_dct):
                     "pixel": np.zeros(shape=(100, 120)),
                     "signal": np.zeros(shape=(100, 120)),
                     "image": np.zeros(shape=(100, 120)),
-                    "charge": None,
+                    "charge": {
+                        "array": np.zeros(shape=(100, 120)),
+                        "frame": pd.DataFrame(
+                            columns=[
+                                "charge",
+                                "number",
+                                "init_energy",
+                                "energy",
+                                "init_pos_ver",
+                                "init_pos_hor",
+                                "init_pos_z",
+                                "position_ver",
+                                "position_hor",
+                                "position_z",
+                                "velocity_ver",
+                                "velocity_hor",
+                                "velocity_z",
+                            ],
+                            dtype=float,
+                        ),
+                    },
                 },
             },
         )

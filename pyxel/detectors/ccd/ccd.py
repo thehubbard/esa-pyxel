@@ -7,12 +7,9 @@
 
 """CCD detector modeling class."""
 
-from pyxel.detectors import (
-    CCDCharacteristics,
-    CCDGeometry,
-    Detector,
-    Environment,
-)
+import typing as t
+
+from pyxel.detectors import CCDCharacteristics, CCDGeometry, Detector, Environment
 
 
 class CCD(Detector):
@@ -34,7 +31,6 @@ class CCD(Detector):
         return (
             type(self) == type(other)
             and self.geometry == other.geometry
-            and self.material == other.material
             and self.environment == other.environment
             and self.characteristics == other.characteristics
         )
@@ -50,13 +46,13 @@ class CCD(Detector):
         return self._characteristics
 
     # TODO: Refactor this
-    def to_dict(self) -> dict:
+    def to_dict(self) -> t.Mapping:
         """Get the attributes of this instance as a `dict`."""
         dct = {
+            "version": 1,
             "type": "ccd",
             "properties": {
                 "geometry": self.geometry.to_dict(),
-                "material": self.material.to_dict(),
                 "environment": self.environment.to_dict(),
                 "characteristics": self.characteristics.to_dict(),
             },
@@ -78,7 +74,7 @@ class CCD(Detector):
 
     # TODO: Refactor this
     @classmethod
-    def from_dict(cls, dct: dict):
+    def from_dict(cls, dct: t.Mapping):
         """Create a new instance of `CCD` from a `dict`."""
         # TODO: This is a simplistic implementation. Improve this.
         if dct["type"] != "ccd":
@@ -86,13 +82,11 @@ class CCD(Detector):
 
         properties = dct["properties"]
         geometry = CCDGeometry.from_dict(properties["geometry"])
-        material = Material.from_dict(properties["material"])
         environment = Environment.from_dict(properties["environment"])
         characteristics = CCDCharacteristics.from_dict(properties["characteristics"])
 
         detector = cls(
             geometry=geometry,
-            material=material,
             environment=environment,
             characteristics=characteristics,
         )

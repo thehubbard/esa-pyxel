@@ -15,7 +15,7 @@ from pyxel.detectors import CMOSGeometry, Geometry
 @pytest.mark.parametrize(
     "row, col, total_thickness, pixel_vert_size, pixel_horz_size",
     [
-        (0, 0, 0.0, 0.0, 0.0),
+        (1, 1, 0.0, 0.0, 0.0),
         (10000, 10000, 10000.0, 1000.0, 1000.0),
     ],
 )
@@ -35,47 +35,15 @@ def test_create_valid_geometry(
 @pytest.mark.parametrize(
     "row, col, total_thickness, pixel_vert_size, pixel_horz_size, exp_exc",
     [
+        pytest.param(0, 100, 100.0, 100.0, 100.0, ValueError, id="row == 0"),
         pytest.param(-1, 100, 100.0, 100.0, 100.0, ValueError, id="row < 0"),
-        pytest.param(10001, 100, 100.0, 100.0, 100.0, ValueError, id="row > 10000"),
+        pytest.param(100, 0, 100.0, 100.0, 100.0, ValueError, id="col == 0"),
         pytest.param(100, -1, 100.0, 100.0, 100.0, ValueError, id="col < 0"),
-        pytest.param(100, 10001, 100.0, 100.0, 100.0, ValueError, id="col > 10000"),
         pytest.param(
             100, 100, -0.1, 100.0, 100.0, ValueError, id="total_thickness < 0."
         ),
         pytest.param(
             100, 100, 10000.1, 100.0, 100.0, ValueError, id="total_thickness > 10000."
-        ),
-        pytest.param(100, 100, 10000, 100.0, 100.0, ValueError, id="n_output < 0"),
-        pytest.param(100, 100, 10000, 100.0, 100.0, ValueError, id="n_output > 32"),
-        pytest.param(
-            100, 100, 10000, 100.0, 100.0, ValueError, id="n_row_overhead < 0"
-        ),
-        pytest.param(
-            100, 100, 10000, 100.0, 100.0, ValueError, id="n_row_overhead > 100"
-        ),
-        pytest.param(
-            100, 100, 10000, 100.0, 100.0, ValueError, id="n_frame_overhead < 0"
-        ),
-        pytest.param(
-            100, 100, 10000, 100.0, 100.0, ValueError, id="n_frame_overhead > 100"
-        ),
-        pytest.param(
-            100,
-            100,
-            10000,
-            100.0,
-            100.0,
-            ValueError,
-            id="reference_pixel_border_width < 0",
-        ),
-        pytest.param(
-            100,
-            100,
-            10000,
-            100.0,
-            100.0,
-            ValueError,
-            id="reference_pixel_border_width > 33",
         ),
     ],
 )
@@ -102,8 +70,7 @@ def test_create_invalid_geometry(
     "other_obj, is_equal",
     [
         pytest.param(None, False, id="None"),
-        pytest.param(CMOSGeometry(), False, id="Empty 'Geometry'"),
-        pytest.param(CMOSGeometry(row=100), False, id="Only one parameter"),
+        pytest.param(CMOSGeometry(row=100, col=120), False, id="Only two parameters"),
         pytest.param(
             Geometry(
                 row=100,

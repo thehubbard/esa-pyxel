@@ -13,17 +13,16 @@ from pyxel.detectors import Characteristics, MKIDCharacteristics
 
 
 @pytest.mark.parametrize(
-    "quantum_efficiency, charge_to_volt_conversion, pre_amplification, adc_gain, full_well_capacity",
+    "quantum_efficiency, charge_to_volt_conversion, pre_amplification, full_well_capacity",
     [
-        (0, 0, 0, 0, 0),
-        (1.0, 1.0, 100.0, 100.0, 100),
+        (0, 0, 0, 0),
+        (1.0, 1.0, 100.0, 100),
     ],
 )
 def test_create_valid_MKIDCharacteristics(
     quantum_efficiency,
     charge_to_volt_conversion,
     pre_amplification,
-    adc_gain,
     full_well_capacity,
 ):
     """Test when creating a valid `MKIDCharacteristics` object."""
@@ -31,7 +30,6 @@ def test_create_valid_MKIDCharacteristics(
         quantum_efficiency=quantum_efficiency,
         charge_to_volt_conversion=charge_to_volt_conversion,
         pre_amplification=pre_amplification,
-        adc_gain=adc_gain,
         full_well_capacity=full_well_capacity,
     )
 
@@ -49,7 +47,6 @@ def test_create_valid_MKIDCharacteristics(
                 quantum_efficiency=0.1,
                 charge_to_volt_conversion=0.2,
                 pre_amplification=3.3,
-                adc_gain=4,
                 full_well_capacity=5,
             ),
             False,
@@ -60,7 +57,6 @@ def test_create_valid_MKIDCharacteristics(
                 quantum_efficiency=0.1,
                 charge_to_volt_conversion=0.2,
                 pre_amplification=3.3,
-                adc_gain=4,
                 full_well_capacity=5,
             ),
             True,
@@ -74,7 +70,6 @@ def test_is_equal(other_obj, is_equal):
         quantum_efficiency=0.1,
         charge_to_volt_conversion=0.2,
         pre_amplification=3.3,
-        adc_gain=4,
         full_well_capacity=5,
     )
 
@@ -92,14 +87,12 @@ def test_is_equal(other_obj, is_equal):
                 quantum_efficiency=0.1,
                 charge_to_volt_conversion=0.2,
                 pre_amplification=3.3,
-                adc_gain=4,
                 full_well_capacity=5,
             ),
             {
                 "quantum_efficiency": 0.1,
                 "charge_to_volt_conversion": 0.2,
                 "pre_amplification": 3.3,
-                "adc_gain": 4,
                 "full_well_capacity": 5,
             },
         )

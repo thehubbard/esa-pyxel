@@ -8,12 +8,7 @@
 """:term:`CMOS` detector modeling class."""
 import typing as t
 
-from pyxel.detectors import (
-    CMOSCharacteristics,
-    CMOSGeometry,
-    Detector,
-    Environment,
-)
+from pyxel.detectors import CMOSCharacteristics, CMOSGeometry, Detector, Environment
 
 
 class CMOS(Detector):
@@ -50,9 +45,10 @@ class CMOS(Detector):
         return self._characteristics
 
     # TODO: Refactor this
-    def to_dict(self) -> dict:
+    def to_dict(self) -> t.Mapping:
         """Get the attributes of this instance as a `dict`."""
         dct = {
+            "version": 1,
             "type": "cmos",
             "properties": {
                 "geometry": self.geometry.to_dict(),
@@ -77,7 +73,7 @@ class CMOS(Detector):
 
     # TODO: Refactor this
     @classmethod
-    def from_dict(cls, dct: dict):
+    def from_dict(cls, dct: t.Mapping):
         """Create a new instance of `CCD` from a `dict`."""
         # TODO: This is a simplistic implementation. Improve this.
         if dct["type"] != "cmos":
