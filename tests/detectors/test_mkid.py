@@ -98,6 +98,48 @@ def test_is_equal(valid_mkid: MKID, other_obj, is_equal):
         assert valid_mkid != other_obj
 
 
+def test_is_equal_with_arrays(valid_mkid: MKID):
+    other_detector = deepcopy(valid_mkid)
+
+    assert valid_mkid.geometry is not other_detector.geometry
+    assert valid_mkid.environment is not other_detector.environment
+    assert valid_mkid.characteristics is not other_detector.characteristics
+    assert valid_mkid._photon is not other_detector._photon
+    assert valid_mkid._charge is not other_detector._charge
+    assert valid_mkid._pixel is not other_detector._pixel
+    assert valid_mkid._signal is not other_detector._signal
+    assert valid_mkid._image is not other_detector._image
+    assert valid_mkid._phase is not other_detector._phase
+
+    shape = valid_mkid.geometry.row, valid_mkid.geometry.col  # type: t.Tuple[int, int]
+    photon = np.random.random(size=shape)
+    pixel = np.random.random(size=shape)
+    signal = np.random.random(size=shape)
+    image = np.random.random(size=shape)
+    charge = np.random.random(size=shape)
+    phase = np.random.random(size=shape)
+
+    valid_mkid.photon.array = photon.copy()
+    valid_mkid.pixel.array = pixel.copy()
+    valid_mkid.signal.array = signal.copy()
+    valid_mkid.image.array = image.copy()
+    valid_mkid.phase.array = phase.copy()
+
+    valid_mkid.charge._array = charge.copy()
+    valid_mkid.charge._frame.append({"charge": 1}, ignore_index=True)
+
+    other_detector.photon.array = photon.copy()
+    other_detector.pixel.array = pixel.copy()
+    other_detector.signal.array = signal.copy()
+    other_detector.image.array = image.copy()
+    other_detector.phase.array = phase.copy()
+
+    other_detector.charge._array = charge.copy()
+    other_detector.charge._frame.append({"charge": 1}, ignore_index=True)
+
+    assert valid_mkid == other_detector
+
+
 def comparison(dct, other_dct):
     assert set(dct) == set(other_dct) == {"version", "type", "data", "properties"}
     assert dct["version"] == other_dct["version"]

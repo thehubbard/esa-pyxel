@@ -49,6 +49,7 @@ class MKID(Detector):
             and self.environment == other.environment
             and self.characteristics == other.characteristics
             and self._phase == other._phase
+            and super().__eq__(other)
         )
 
     def reset(self) -> None:

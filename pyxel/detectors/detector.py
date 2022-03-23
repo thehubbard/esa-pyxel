@@ -58,6 +58,16 @@ class Detector:
 
         self._numbytes = get_size(self)
 
+    def __eq__(self, other) -> bool:
+        return (
+            isinstance(other, Detector)
+            and self._photon == other._photon
+            and self._charge == other._charge
+            and self._pixel == other._pixel
+            and self._signal == other._signal
+            and self._image == other._image
+        )
+
     @property
     def geometry(self):
         """TBW."""

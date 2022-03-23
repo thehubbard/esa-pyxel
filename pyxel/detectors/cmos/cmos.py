@@ -32,6 +32,7 @@ class CMOS(Detector):
             and self.geometry == other.geometry
             and self.environment == other.environment
             and self.characteristics == other.characteristics
+            and super().__eq__(other)
         )
 
     @property

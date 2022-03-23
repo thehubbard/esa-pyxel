@@ -94,6 +94,51 @@ def test_is_equal(valid_ccd: CCD, other_obj, is_equal):
         assert valid_ccd != other_obj
 
 
+def test_is_equal_with_arrays(valid_ccd: CCD):
+    other_detector = deepcopy(valid_ccd)
+
+    # Check that the deepcopy was applied
+    assert valid_ccd.geometry is not other_detector.geometry
+    assert valid_ccd.environment is not other_detector.environment
+    assert valid_ccd.characteristics is not other_detector.characteristics
+    assert valid_ccd._photon is not other_detector._photon
+    assert valid_ccd._charge is not other_detector._charge
+    assert valid_ccd._pixel is not other_detector._pixel
+    assert valid_ccd._signal is not other_detector._signal
+    assert valid_ccd._image is not other_detector._image
+
+    # Generate random data
+    shape = valid_ccd.geometry.row, valid_ccd.geometry.col  # type: t.Tuple[int, int]
+    photon_2d = np.random.random(size=shape)
+    pixel_2d = np.random.random(size=shape)
+    signal_2d = np.random.random(size=shape)
+    image_2d = np.random.random(size=shape)
+    charge_2d = np.random.random(size=shape)
+
+    # Apply the random data to 'valid_ccd' and 'other_detector'
+    valid_ccd.photon.array = photon_2d.copy()
+    valid_ccd.pixel.array = pixel_2d.copy()
+    valid_ccd.signal.array = signal_2d.copy()
+    valid_ccd.image.array = image_2d.copy()
+
+    valid_ccd.charge._array = charge_2d.copy()
+    valid_ccd.charge._frame = valid_ccd.charge._frame.append(
+        {"charge": 1}, ignore_index=True
+    )
+
+    other_detector.photon.array = photon_2d.copy()
+    other_detector.pixel.array = pixel_2d.copy()
+    other_detector.signal.array = signal_2d.copy()
+    other_detector.image.array = image_2d.copy()
+
+    other_detector.charge._array = charge_2d.copy()
+    other_detector.charge._frame = other_detector.charge._frame.append(
+        {"charge": 1}, ignore_index=True
+    )
+
+    assert valid_ccd == other_detector
+
+
 def comparison(dct, other_dct):
     assert set(dct) == set(other_dct) == {"version", "type", "data", "properties"}
     assert dct["version"] == other_dct["version"]
@@ -268,4 +313,88 @@ def test_to_and_from_dict(klass, obj, exp_dict):
     assert type(other_obj) == CCD
     assert obj == other_obj
     assert obj is not other_obj
+    comparison(copied_dct, exp_dict)
+
+
+@pytest.mark.parametrize("klass", [CCD, Detector])
+def test_to_and_from_dict_with_arrays_no_frame(valid_ccd: CCD, klass):
+    # Generate random data
+    shape = valid_ccd.geometry.row, valid_ccd.geometry.col  # type: t.Tuple[int, int]
+    photon_2d = np.random.random(size=shape)
+    pixel_2d = np.random.random(size=shape)
+    signal_2d = np.random.random(size=shape)
+    image_2d = np.random.random(size=shape)
+    charge_2d = np.random.random(size=shape)
+
+    valid_ccd.photon.array = photon_2d.copy()
+    valid_ccd.pixel.array = pixel_2d.copy()
+    valid_ccd.signal.array = signal_2d.copy()
+    valid_ccd.image.array = image_2d.copy()
+
+    valid_ccd.charge._array = charge_2d.copy()
+    # valid_ccd.charge._frame=valid_ccd.charge._frame.append({"charge": 1}, ignore_index=True)
+
+    # Convert from the detector to a `dict`
+    dct = valid_ccd.to_dict()
+
+    exp_dict = {
+        "version": 1,
+        "type": "ccd",
+        "properties": {
+            "geometry": {
+                "row": 100,
+                "col": 120,
+                "total_thickness": 123.1,
+                "pixel_horz_size": 12.4,
+                "pixel_vert_size": 34.5,
+            },
+            "environment": {"temperature": 100.1},
+            "characteristics": {
+                "quantum_efficiency": 0.1,
+                "charge_to_volt_conversion": 0.2,
+                "pre_amplification": 3.3,
+                "full_well_capacity": 10,
+            },
+        },
+        "data": {
+            "photon": photon_2d.copy(),
+            "pixel": pixel_2d.copy(),
+            "signal": signal_2d.copy(),
+            "image": image_2d.copy(),
+            "charge": {
+                "array": charge_2d.copy(),
+                "frame": pd.DataFrame(
+                    columns=[
+                        "charge",
+                        "number",
+                        "init_energy",
+                        "energy",
+                        "init_pos_ver",
+                        "init_pos_hor",
+                        "init_pos_z",
+                        "position_ver",
+                        "position_hor",
+                        "position_z",
+                        "velocity_ver",
+                        "velocity_hor",
+                        "velocity_z",
+                    ],
+                    dtype=float,
+                ),
+            },
+        },
+    }
+
+    comparison(dct, exp_dict)
+
+    # Copy 'exp_dict'
+    copied_dct = deepcopy(exp_dict)  # create a new dict
+    assert copied_dct is not exp_dict
+    comparison(copied_dct, exp_dict)
+
+    # Convert from `dict` to `CCD`
+    new_detector = klass.from_dict(copied_dct)
+    assert type(new_detector) == CCD
+    assert valid_ccd == new_detector
+    assert valid_ccd is not new_detector
     comparison(copied_dct, exp_dict)

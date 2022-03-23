@@ -100,6 +100,44 @@ def test_is_equal(valid_cmos: CMOS, other_obj, is_equal):
         assert valid_cmos != other_obj
 
 
+def test_is_equal_with_arrays(valid_cmos: CMOS):
+    other_detector = deepcopy(valid_cmos)
+
+    assert valid_cmos.geometry is not other_detector.geometry
+    assert valid_cmos.environment is not other_detector.environment
+    assert valid_cmos.characteristics is not other_detector.characteristics
+    assert valid_cmos._photon is not other_detector._photon
+    assert valid_cmos._charge is not other_detector._charge
+    assert valid_cmos._pixel is not other_detector._pixel
+    assert valid_cmos._signal is not other_detector._signal
+    assert valid_cmos._image is not other_detector._image
+
+    shape = valid_cmos.geometry.row, valid_cmos.geometry.col  # type: t.Tuple[int, int]
+    photon = np.random.random(size=shape)
+    pixel = np.random.random(size=shape)
+    signal = np.random.random(size=shape)
+    image = np.random.random(size=shape)
+    charge = np.random.random(size=shape)
+
+    valid_cmos.photon.array = photon.copy()
+    valid_cmos.pixel.array = pixel.copy()
+    valid_cmos.signal.array = signal.copy()
+    valid_cmos.image.array = image.copy()
+
+    valid_cmos.charge._array = charge.copy()
+    valid_cmos.charge._frame.append({"charge": 1}, ignore_index=True)
+
+    other_detector.photon.array = photon.copy()
+    other_detector.pixel.array = pixel.copy()
+    other_detector.signal.array = signal.copy()
+    other_detector.image.array = image.copy()
+
+    other_detector.charge._array = charge.copy()
+    other_detector.charge._frame.append({"charge": 1}, ignore_index=True)
+
+    assert valid_cmos == other_detector
+
+
 def comparison(dct, other_dct):
     assert set(dct) == set(other_dct) == {"version", "type", "data", "properties"}
     assert dct["version"] == other_dct["version"]
