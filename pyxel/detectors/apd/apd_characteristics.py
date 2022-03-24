@@ -5,7 +5,30 @@
 #  this file, may be copied, modified, propagated, or distributed except according to
 #  the terms contained in the file ‘LICENCE.txt’.
 
-"""TBW."""
+"""TBW.
+
+References
+----------
+[1] Leonardo MW Ltd., Electrical Interface Document for SAPHIRA (ME1000) in a 68-pin LLC
+(3313-520-), issue 1A, 2012.
+
+[2] I. Pastrana et al., HgCdTe SAPHIRA arrays: individual pixel measurement of charge gain and
+node capacitance utilizing a stable IR LED, in High Energy, Optical, and Infrared Detectors for
+Astronomy VIII, 2018, vol. 10709, no. July 2018, 2018, p. 37.
+
+[3] S. B. Goebel et al., Overview of the SAPHIRA detector for adaptive optics applications, in
+Journal of Astronomical Telescopes, Instruments, and Systems, 2018, vol. 4, no. 02, p. 1.
+
+[4] G. Finger et al., Sub-electron read noise and millisecond full-frame readout with the near
+infrared eAPD array SAPHIRA, in Adaptive Optics Systems V, 2016, vol. 9909, no. July 2016, p.
+990912.
+
+[5] I. M. Baker et al., Linear-mode avalanche photodiode arrays in HgCdTe at Leonardo, UK: the
+current status, in Image Sensing Technologies: Materials, Devices, Systems, and Applications VI,
+2019, vol. 10980, no. May, p. 20.
+"""
+
+
 import math
 import typing as t
 
@@ -16,7 +39,7 @@ from pyxel.util.memory import get_size
 
 
 class APDCharacteristics:
-    """Characteristic attributes of the detector.
+    """Characteristic attributes of the APD detector.
 
     Parameters
     ----------
@@ -31,9 +54,11 @@ class APDCharacteristics:
     avalanche_gain: float, optional
         APD gain. Unit: electron/electron
     pixel_reset_voltage: float
-        Pixel reset voltage. Unit: V
-    common_voltage
-    roic_gain
+        DC voltage going into the detector, not the voltage of a reset pixel. Unit: V
+    common_voltage: float
+        Common voltage. Unit: V
+    roic_gain:
+        Gain of the read-out integrated circuit. Unit: V/V
     """
 
     def __init__(
@@ -131,7 +156,7 @@ class APDCharacteristics:
 
     @property
     def pixel_reset_voltage(self) -> float:
-        """Get APD gain."""
+        """Get pixel reset voltage."""
         if self._pixel_reset_voltage:
             return self._pixel_reset_voltage
         else:
@@ -139,14 +164,14 @@ class APDCharacteristics:
 
     @pixel_reset_voltage.setter
     def pixel_reset_voltage(self, value: float) -> None:
-        """Set APD gain."""
+        """Set pixel reset voltage."""
         self._avalanche_bias = value - self.common_voltage
         self._avalanche_gain = self.bias_to_gain_saphira(self.avalanche_bias)
         self._pixel_reset_voltage = value
 
     @property
     def common_voltage(self) -> float:
-        """Get APD gain."""
+        """Get common voltage."""
         if self._common_voltage:
             return self._common_voltage
         else:
@@ -154,14 +179,14 @@ class APDCharacteristics:
 
     @common_voltage.setter
     def common_voltage(self, value: float) -> None:
-        """Set APD gain."""
+        """Set common voltage."""
         self._avalanche_bias = self.pixel_reset_voltage - value
         self._avalanche_gain = self.bias_to_gain_saphira(self.avalanche_bias)
         self._common_voltage = value
 
     @property
     def avalanche_bias(self) -> float:
-        """Get APD gain."""
+        """Get avalanche bias."""
         if self._avalanche_bias:
             return self._avalanche_bias
         else:
@@ -169,7 +194,7 @@ class APDCharacteristics:
 
     @property
     def roic_gain(self) -> float:
-        """Get APD gain."""
+        """Get roic gainn."""
         if self._roic_gain:
             return self._roic_gain
         else:
@@ -177,7 +202,7 @@ class APDCharacteristics:
 
     @property
     def node_capacitance(self) -> float:
-        """Get APD gain."""
+        """Get node capacitance."""
         self._node_capacitance = self.bias_to_node_capacitance_saphira(
             self.avalanche_bias
         )
@@ -185,6 +210,7 @@ class APDCharacteristics:
 
     @property
     def charge_to_volt_conversion(self):
+        """Get charge to voltage conversion factor."""
         self._charge_to_volt_conversion = self.detector_gain_saphira(
             capacitance=self.node_capacitance, roic_gain=self.roic_gain
         )
@@ -240,6 +266,7 @@ class APDCharacteristics:
 
     @property
     def system_gain(self) -> float:
+        """Get system gain."""
         return (
             self.quantum_efficiency
             * self.avalanche_gain
@@ -261,15 +288,19 @@ class APDCharacteristics:
 
     @staticmethod
     def bias_to_node_capacitance_saphira(bias: float) -> float:
-        """
+        """Pixel integrating node capacitance in F.
+
+        The below interpolates empirical published data, however note that
+        Node C = Charge Gain / Voltage Gain
+        So can be calculated by measuring V gain (varying PRV) and chg gain (PTC); see [2]
 
         Parameters
         ----------
-        bias
+        bias: float
 
         Returns
         -------
-
+        output_capacitance: float
         """
         if bias < 1:
             raise ValueError(
@@ -286,8 +317,19 @@ class APDCharacteristics:
 
     @staticmethod
     def bias_to_gain_saphira(bias: float) -> float:
-        """The formula ignores the soft knee between the linear and
-        unity gain ranges, but should be close enough. [2] (Mk13 ME1000)"""
+        """Calculate gain from bias.
+
+        The formula ignores the soft knee between the linear and unity gain ranges,
+        but should be close enough. [2] (Mk13 ME1000)
+
+        Parameters
+        ----------
+        bias: float
+
+        Returns
+        -------
+        gain: float
+        """
 
         gain = 2 ** ((bias - 2.65) / 2.17)
 
@@ -298,8 +340,19 @@ class APDCharacteristics:
 
     @staticmethod
     def gain_to_bias_saphira(gain: float) -> float:
-        """The formula ignores the soft knee between the linear and
-        unity gain ranges, but should be close enough. [2] (Mk13 ME1000)"""
+        """Calculate bias from gain.
+
+        The formula ignores the soft knee between the linear and
+        unity gain ranges, but should be close enough. [2] (Mk13 ME1000)
+
+        Parameters
+        ----------
+        gain: float
+
+        Returns
+        -------
+        bias: float
+        """
 
         bias = (2.17 * math.log2(gain)) + 2.65
 
@@ -307,5 +360,15 @@ class APDCharacteristics:
 
     @staticmethod
     def detector_gain_saphira(capacitance: float, roic_gain: float) -> float:
-        """"""
+        """Saphira detector gain.
+
+        Parameters
+        ----------
+        capacitance: flaot
+        roic_gain: float
+
+        Returns
+        -------
+        float
+        """
         return roic_gain * (const.e.value / capacitance)

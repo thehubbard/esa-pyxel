@@ -6,6 +6,7 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 #
 #
+"""TBW."""
 # flake8: noqa
 from .ccd import CCD
 from .ccd_geometry import CCDGeometry

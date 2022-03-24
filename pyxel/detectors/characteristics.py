@@ -172,6 +172,7 @@ class Characteristics:
 
     @property
     def system_gain(self) -> float:
+        """Get system gain."""
         return (
             self.quantum_efficiency
             * self.pre_amplification
