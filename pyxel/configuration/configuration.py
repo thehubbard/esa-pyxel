@@ -73,12 +73,12 @@ class Configuration:
                 "'exposure', 'observation' or 'calibration'."
             )
 
-        detectors = [self.ccd_detector, self.cmos_detector, self.mkid_detector]
+        detectors = [self.ccd_detector, self.cmos_detector, self.mkid_detector, self.apd_detector]
         num_detectors = sum([el is not None for el in detectors])
 
         if num_detectors != 1:
             raise ValueError(
-                "Expecting only one detector: 'ccd_detector', 'cmos_detector' or 'mkid_detector'."
+                "Expecting only one detector: 'ccd_detector', 'cmos_detector', 'mkid_detector' or 'apd_detector'."
             )
 
     @property
