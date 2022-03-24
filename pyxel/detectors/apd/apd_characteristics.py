@@ -12,6 +12,8 @@ import typing as t
 import astropy.constants as const
 import numpy as np
 
+from pyxel.util.memory import get_size
+
 
 class APDCharacteristics:
     """Characteristic attributes of the detector.
@@ -90,6 +92,25 @@ class APDCharacteristics:
         self._charge_to_volt_conversion = self.detector_gain_saphira(
             capacitance=self.node_capacitance, roic_gain=self.roic_gain
         )
+        self._numbytes = 0
+
+    @property
+    def quantum_efficiency(self) -> float:
+        """Get Quantum efficiency."""
+        if self._quantum_efficiency:
+            return self._quantum_efficiency
+        else:
+            raise ValueError(
+                "'quantum_efficiency' not specified in detector characteristics."
+            )
+
+    @quantum_efficiency.setter
+    def quantum_efficiency(self, value: float) -> None:
+        """Set Quantum efficiency."""
+        if np.min(value) < 0.0 and np.max(value) <= 1.0:
+            raise ValueError("'quantum_efficiency' values must be between 0.0 and 1.0.")
+
+        self._quantum_efficiency = value
 
     @property
     def avalanche_gain(self) -> float:
@@ -168,6 +189,75 @@ class APDCharacteristics:
             capacitance=self.node_capacitance, roic_gain=self.roic_gain
         )
         return self._charge_to_volt_conversion
+
+    @property
+    def adc_bit_resolution(self) -> int:
+        """Get bit resolution of the Analog-Digital Converter."""
+        if self._adc_bit_resolution:
+            return self._adc_bit_resolution
+        else:
+            raise ValueError(
+                "'adc_bit_resolution' not specified in detector characteristics."
+            )
+
+    @adc_bit_resolution.setter
+    def adc_bit_resolution(self, value: int) -> None:
+        """Set bit resolution of the Analog-Digital Converter."""
+        self._adc_bit_resolution = value
+
+    @property
+    def adc_voltage_range(self) -> t.Tuple[float, float]:
+        """Get voltage range of the Analog-Digital Converter."""
+        if self._adc_voltage_range:
+            return self._adc_voltage_range
+        else:
+            raise ValueError(
+                "'adc_voltage_range' not specified in detector characteristics."
+            )
+
+    @adc_voltage_range.setter
+    def adc_voltage_range(self, value: t.Tuple[float, float]) -> None:
+        """Set voltage range of the Analog-Digital Converter."""
+        self._adc_voltage_range = value
+
+    @property
+    def full_well_capacity(self) -> float:
+        """Get Full well capacity."""
+        if self._full_well_capacity:
+            return self._full_well_capacity
+        else:
+            raise ValueError(
+                "'full_well_capacity' not specified in detector characteristics."
+            )
+
+    @full_well_capacity.setter
+    def full_well_capacity(self, value: float) -> None:
+        """Set Full well capacity."""
+        if value not in range(10000001):
+            raise ValueError("'full_well_capacity' must be between 0 and 1e+7.")
+
+        self._full_well_capacity = value
+
+    @property
+    def system_gain(self) -> float:
+        return (
+            self.quantum_efficiency
+            * self.avalanche_gain
+            * self.charge_to_volt_conversion
+            * 2**self.adc_bit_resolution
+        ) / (max(self.adc_voltage_range) - min(self.adc_voltage_range))
+
+    @property
+    def numbytes(self) -> int:
+        """Recursively calculates object size in bytes using Pympler library.
+
+        Returns
+        -------
+        int
+            Size of the object in bytes.
+        """
+        self._numbytes = get_size(self)
+        return self._numbytes
 
     @staticmethod
     def bias_to_node_capacitance_saphira(bias: float) -> float:

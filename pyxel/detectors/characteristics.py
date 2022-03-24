@@ -171,6 +171,15 @@ class Characteristics:
         self._full_well_capacity = value
 
     @property
+    def system_gain(self) -> float:
+        return (
+            self.quantum_efficiency
+            * self.pre_amplification
+            * self.charge_to_volt_conversion
+            * 2**self.adc_bit_resolution
+        ) / (max(self.adc_voltage_range) - min(self.adc_voltage_range))
+
+    @property
     def numbytes(self) -> int:
         """Recursively calculates object size in bytes using Pympler library.
 
