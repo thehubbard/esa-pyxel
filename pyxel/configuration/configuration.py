@@ -24,9 +24,12 @@ import yaml
 from pyxel import __version__ as version
 from pyxel.calibration import Algorithm, Calibration
 from pyxel.detectors import (
+    APD,
     CCD,
     CMOS,
     MKID,
+    APDCharacteristics,
+    APDGeometry,
     CCDCharacteristics,
     CCDGeometry,
     CMOSCharacteristics,
@@ -34,9 +37,6 @@ from pyxel.detectors import (
     Environment,
     MKIDCharacteristics,
     MKIDGeometry,
-    APD,
-    APDGeometry,
-    APDCharacteristics,
 )
 from pyxel.evaluator import evaluate_reference
 from pyxel.exposure import Exposure, Readout

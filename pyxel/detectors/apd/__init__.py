@@ -6,7 +6,7 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 #
 #
-
+# flake8: noqa
 from .apd_geometry import APDGeometry
 from .apd_characteristics import APDCharacteristics
 from .apd import APD

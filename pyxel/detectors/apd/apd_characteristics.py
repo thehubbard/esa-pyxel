@@ -6,10 +6,11 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """TBW."""
-import typing as t
-import numpy as np
 import math
+import typing as t
+
 import astropy.constants as const
+import numpy as np
 
 
 class APDCharacteristics:
@@ -27,7 +28,8 @@ class APDCharacteristics:
         ADC voltage range. Unit: V
     avalanche_gain: float, optional
         APD gain. Unit: electron/electron
-    pixel_reset_voltage
+    pixel_reset_voltage: float
+        Pixel reset voltage. Unit: V
     common_voltage
     roic_gain
     """
@@ -86,7 +88,7 @@ class APDCharacteristics:
         )
         self._roic_gain = roic_gain
         self._charge_to_volt_conversion = self.detector_gain_saphira(
-            capacitance=self._node_capacitance, roic_gain=roic_gain
+            capacitance=self.node_capacitance, roic_gain=self.roic_gain
         )
 
     @property
@@ -117,8 +119,8 @@ class APDCharacteristics:
     @pixel_reset_voltage.setter
     def pixel_reset_voltage(self, value: float) -> None:
         """Set APD gain."""
-        self._avalanche_bias = value - self._common_voltage
-        self._avalanche_gain = self.bias_to_gain_saphira(self._avalanche_bias)
+        self._avalanche_bias = value - self.common_voltage
+        self._avalanche_gain = self.bias_to_gain_saphira(self.avalanche_bias)
         self._pixel_reset_voltage = value
 
     @property
@@ -133,7 +135,7 @@ class APDCharacteristics:
     def common_voltage(self, value: float) -> None:
         """Set APD gain."""
         self._avalanche_bias = self.pixel_reset_voltage - value
-        self._avalanche_gain = self.bias_to_gain_saphira(self._avalanche_bias)
+        self._avalanche_gain = self.bias_to_gain_saphira(self.avalanche_bias)
         self._common_voltage = value
 
     @property
@@ -185,10 +187,10 @@ class APDCharacteristics:
             )
 
         # From [2] (Mk13 ME1000; data supplied by Leonardo):
-        bias = [1, 1.5, 2.5, 3.5, 4.5, 6.5, 8.5, 10.5]
+        bias_list = [1, 1.5, 2.5, 3.5, 4.5, 6.5, 8.5, 10.5]
         capacitance = [46.5, 41.3, 37.3, 34.8, 33.2, 31.4, 30.7, 30.4]
 
-        output_capacitance = np.interp(bias, bias, capacitance)
+        output_capacitance = np.interp(bias, bias_list, capacitance)
 
         return output_capacitance * 1.0e-15
 

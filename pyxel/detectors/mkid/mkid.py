@@ -27,6 +27,7 @@ from pyxel.util.memory import memory_usage_details
 
 if t.TYPE_CHECKING:
     from pyxel.detectors import Environment
+
     from .mkid_characteristics import MKIDCharacteristics
     from .mkid_geometry import MKIDGeometry
 

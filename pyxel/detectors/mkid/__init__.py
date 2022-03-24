@@ -6,7 +6,7 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 #
 #
-
+# flake8: noqa
 from .mkid_characteristics import MKIDCharacteristics
 from .mkid_geometry import MKIDGeometry
 from .mkid import MKID

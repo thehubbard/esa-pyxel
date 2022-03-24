@@ -18,9 +18,10 @@ import typing as t
 from pyxel.detectors import Detector
 
 if t.TYPE_CHECKING:
+    from pyxel.detectors import Environment
+
     from .cmos_characteristics import CMOSCharacteristics
     from .cmos_geometry import CMOSGeometry
-    from pyxel.detectors import Environment
 
 
 class CMOS(Detector):

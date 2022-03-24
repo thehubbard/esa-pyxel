@@ -18,9 +18,10 @@ import typing as t
 from pyxel.detectors import Detector
 
 if t.TYPE_CHECKING:
+    from pyxel.detectors import Environment
+
     from .apd_characteristics import APDCharacteristics
     from .apd_geometry import APDGeometry
-    from pyxel.detectors import Environment
 
 
 class APD(Detector):

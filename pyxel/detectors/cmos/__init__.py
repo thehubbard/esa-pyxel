@@ -6,7 +6,7 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 #
 #
-
+# flake8: noqa
 from .cmos_geometry import CMOSGeometry
 from .cmos_characteristics import CMOSCharacteristics
 from .cmos import CMOS
