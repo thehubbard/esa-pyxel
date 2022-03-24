@@ -28,7 +28,8 @@ Others
 * Fix an issue when building the documentation with Python 3.8.
   (See `!436 <https://gitlab.com/esa/pyxel/-/merge_requests/436>`_).
 * Create a static JSON Schema file.
-  (See `!445 <https://gitlab.com/esa/pyxel/-/merge_requests/445>`_).
+  (See `!445 <https://gitlab.com/esa/pyxel/-/merge_requests/445>`_
+  and `!446 <https://gitlab.com/esa/pyxel/-/merge_requests/446>`_).
 * Bump pre-commit hook versions.
   (See `!447 <https://gitlab.com/esa/pyxel/-/merge_requests/447>`_).
 
