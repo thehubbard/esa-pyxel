@@ -13,6 +13,8 @@ Core
   (See `!434 <https://gitlab.com/esa/pyxel/-/merge_requests/434>`_).
 * Replace deprecated appeding to dataframes with concatenating.
   (See `!444 <https://gitlab.com/esa/pyxel/-/merge_requests/444>`_).
+* Add an APD detector.
+  (See `!449 <https://gitlab.com/esa/pyxel/-/merge_requests/449>`_).
 
 Documentation
 -------------
