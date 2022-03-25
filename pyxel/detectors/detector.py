@@ -10,11 +10,9 @@ import collections
 import typing as t
 from pathlib import Path
 
-import h5py as h5
 import numpy as np
-import pandas as pd
 
-from pyxel import __version__
+from pyxel import backends
 from pyxel.data_structure import (
     Charge,
     Image,
@@ -370,54 +368,59 @@ class Detector:
 
     # TODO: Move this to another place. See #241
     def to_hdf5(self, filename: t.Union[str, Path]) -> None:
-        """Convert the detector to a HDF5 object."""
+        """Convert the detector to a HDF5 object.
+
+        The HDF5 file has the following structure:
+
+        filename.h5  (4 objects, 3 attributes)
+        ├── characteristics  (4 objects)
+        │   ├── charge_to_volt_conversion  (), float64
+        │   ├── full_well_capacity  (), int64
+        │   ├── pre_amplification  (), float64
+        │   └── quantum_efficiency  (), float64
+        ├── data  (5 objects)
+        │   ├── charge  (2 objects, 2 attributes)
+        │   │   ├── array  (100, 120), float64
+        │   │   └── frame  (13 objects, 1 attribute)
+        │   │       ├── charge  (0,), float64
+        │   │       ├── energy  (0,), float64
+        │   │       ├── init_energy  (0,), float64
+        │   │       ├── init_pos_hor  (0,), float64
+        │   │       ├── init_pos_ver  (0,), float64
+        │   │       ├── init_pos_z  (0,), float64
+        │   │       ├── number  (0,), float64
+        │   │       ├── position_hor  (0,), float64
+        │   │       ├── position_ver  (0,), float64
+        │   │       ├── position_z  (0,), float64
+        │   │       ├── velocity_hor  (0,), float64
+        │   │       ├── velocity_ver  (0,), float64
+        │   │       └── velocity_z  (0,), float64
+        │   ├── image  (100, 120), uint64
+        │   ├── photon  (100, 120), float64
+        │   ├── pixel  (100, 120), float64
+        │   └── signal  (100, 120), float64
+        ├── environment  (1 object)
+        │   └── temperature  (), float64
+        └── geometry  (5 objects)
+            ├── col  (), int64
+            ├── pixel_horz_size  (), float64
+            ├── pixel_vert_size  (), float64
+            ├── row  (), int64
+            └── total_thickness  (), float64
+
+        Parameters
+        ----------
+        filename : str or Path
+
+        Examples
+        --------
+        >>> from pyxel.detectors import CCD
+        >>> detector = CCD(...)
+
+        >>> detector.to_hdf5("ccd.h5")
+        """
         dct = self.to_dict()  # type: t.Mapping
-
-        with h5.File(filename, "w") as h5file:
-            h5file.attrs["version"] = dct["version"]
-            h5file.attrs["type"] = dct["type"]
-            h5file.attrs["pyxel-version"] = str(__version__)
-
-            geometry_grp = h5file.create_group("/geometry")
-            geometry_grp.attrs.update(dct["properties"]["geometry"])
-
-            environment_grp = h5file.create_group("/environment")
-            environment_grp.attrs.update(dct["properties"]["environment"])
-
-            characteristics_grp = h5file.create_group("/characteristics")
-            characteristics_grp.attrs.update(dct["properties"]["characteristics"])
-
-            def _store(hdf_store, name: str, dct: t.Mapping):
-                group = hdf_store.create_group(name)
-
-                for key, value in dct.items():
-                    if isinstance(value, np.ndarray):
-                        group.create_dataset(name=key, data=value)
-                    elif isinstance(value, pd.DataFrame):
-                        # new_group = hdf_store.create_group(f'{name}/{key}')
-                        # pd.HDFStore
-                        value.to_hdf(hdf_store, f"{name}/{key}")
-                    elif isinstance(value, dict):
-                        _store(hdf_store, name=f"{name}/{key}", dct=value)
-                    else:
-                        raise NotImplementedError
-
-            _store(h5file, name="/data", dct=dct["data"])
-
-            #
-            #
-            # for array, name in zip(
-            #     [
-            #         self.signal.array,
-            #         self.image.array,
-            #         self.photon.array,
-            #         self.pixel.array,
-            #         self.charge.frame,
-            #     ],
-            #     ["Signal", "Image", "Photon", "Pixel", "Charge"],
-            # ):
-            #     dataset = detector_grp.create_dataset(name, shape=np.shape(array))
-            #     dataset[:] = array
+        backends.to_hdf5(filename=filename, dct=dct)
 
     def to_dict(self) -> t.Mapping:
         """Convert a `Detector` to a `dict`."""
