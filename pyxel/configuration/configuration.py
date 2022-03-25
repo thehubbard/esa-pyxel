@@ -73,7 +73,12 @@ class Configuration:
                 "'exposure', 'observation' or 'calibration'."
             )
 
-        detectors = [self.ccd_detector, self.cmos_detector, self.mkid_detector, self.apd_detector]
+        detectors = [
+            self.ccd_detector,
+            self.cmos_detector,
+            self.mkid_detector,
+            self.apd_detector,
+        ]
         num_detectors = sum([el is not None for el in detectors])
 
         if num_detectors != 1:
