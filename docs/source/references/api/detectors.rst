@@ -44,3 +44,13 @@ MKID
     :undoc-members:
     :show-inheritance:
     :exclude-members:
+
+APD
+---
+
+.. autoclass:: APD
+    :members:
+    :inherited-members:
+    :undoc-members:
+    :show-inheritance:
+    :exclude-members:
