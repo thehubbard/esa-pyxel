@@ -422,6 +422,14 @@ class Detector:
         dct = self.to_dict()  # type: t.Mapping
         backends.to_hdf5(filename=filename, dct=dct)
 
+    @classmethod
+    def from_hdf5(cls, filename: t.Union[str, Path]) -> "Detector":
+        """Convert a HDF5 object into a detector."""
+        dct = backends.from_hdf5(filename)  # type: t.Mapping[str, t.Any]
+
+        obj = cls.from_dict(dct)  # type: Detector
+        return obj
+
     def to_dict(self) -> t.Mapping:
         """Convert a `Detector` to a `dict`."""
         raise NotImplementedError
