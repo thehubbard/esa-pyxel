@@ -52,7 +52,7 @@ class Readout:
 
         if self._times[0] == 0:
             raise ValueError("Readout times should be non-zero values.")
-        elif start_time == self._times[0]:
+        elif start_time >= self._times[0]:
             raise ValueError("Readout times should be greater than start time.")
 
         self._non_destructive = non_destructive
@@ -78,9 +78,37 @@ class Readout:
         return zip(self._times, self._steps)
 
     @property
+    def start_time(self) -> float:
+        """Return start time."""
+        return self._start_time
+
+    @start_time.setter
+    def start_time(self, value: float) -> None:
+        """Set start time."""
+        if value >= self._times[0]:
+            raise ValueError("Readout times should be greater than start time.")
+        self._start_time = value
+        self._set_steps()
+
+    @property
     def times(self) -> t.Any:
         """TBW."""
         return self._times
+
+    @times.setter
+    def times(self, value: t.Union[t.Sequence, np.ndarray]) -> None:
+        """
+
+        Parameters
+        ----------
+        value
+        """
+        if value[0] == 0:
+            raise ValueError("Readout times should be non-zero values.")
+        elif self._start_time >= value[0]:
+            raise ValueError("Readout times should be greater than start time.")
+        self._times = np.array(value)
+        self._set_steps()
 
     @property
     def time_domain_simulation(self) -> bool:
@@ -96,6 +124,11 @@ class Readout:
     def non_destructive(self) -> bool:
         """TBW."""
         return self._non_destructive
+
+    @non_destructive.setter
+    def non_destructive(self, value: bool) -> None:
+        """Set non-destructive mode."""
+        self._non_destructive = value
 
 
 def calculate_steps(
