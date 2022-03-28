@@ -94,6 +94,25 @@ class Geometry:
             f"pixel_horz_size={self._pixel_horz_size})"
         )
 
+    def __eq__(self, other) -> bool:
+        return type(self) == type(other) and (
+            self.row,
+            self.col,
+            self._total_thickness,
+            self._pixel_vert_size,
+            self._pixel_horz_size,
+        ) == (
+            other.row,
+            other.col,
+            other._total_thickness,
+            other._pixel_vert_size,
+            other._pixel_horz_size,
+        )
+
+    # def _repr_html_(self):
+    #     """TBW."""
+    #     return "Hello World"
+
     @property
     def row(self) -> int:
         """Get Number of pixel rows."""
@@ -217,3 +236,19 @@ class Geometry:
         """
         self._numbytes = get_size(self)
         return self._numbytes
+
+    def to_dict(self) -> t.Mapping:
+        """Get the attributes of this instance as a `dict`."""
+        return {
+            "row": self.row,
+            "col": self.col,
+            "total_thickness": self._total_thickness,
+            "pixel_vert_size": self._pixel_vert_size,
+            "pixel_horz_size": self._pixel_horz_size,
+        }
+
+    @classmethod
+    def from_dict(cls, dct: t.Mapping):
+        """Create a new instance of `Geometry` from a `dict`."""
+        # TODO: This is a simplistic implementation. Improve this.
+        return cls(**dct)

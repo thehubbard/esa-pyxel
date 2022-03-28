@@ -87,6 +87,13 @@ class Charge:
         )  # type: pd.DataFrame
         self._frame = self.EMPTY_FRAME.copy()  # type: pd.DataFrame
 
+    def __eq__(self, other) -> bool:
+        return (
+            isinstance(other, Charge)
+            and np.array_equal(self._array, other._array)
+            and self._frame.equals(other._frame)
+        )
+
     @staticmethod
     def create_charges(
         *,

@@ -67,6 +67,15 @@ class Characteristics:
 
         self._numbytes = 0
 
+    def __eq__(self, other) -> bool:
+        return (
+            type(self) == type(other)
+            and self._quantum_efficiency == other._quantum_efficiency
+            and self._charge_to_volt_conversion == other._charge_to_volt_conversion
+            and self._pre_amplification == other._pre_amplification
+            and self._full_well_capacity == other._full_well_capacity
+        )
+
     @property
     def quantum_efficiency(self) -> float:
         """Get Quantum efficiency."""
@@ -191,3 +200,18 @@ class Characteristics:
         """
         self._numbytes = get_size(self)
         return self._numbytes
+
+    def to_dict(self) -> t.Mapping:
+        """Get the attributes of this instance as a `dict`."""
+        return {
+            "quantum_efficiency": self._quantum_efficiency,
+            "charge_to_volt_conversion": self._charge_to_volt_conversion,
+            "pre_amplification": self._pre_amplification,
+            "full_well_capacity": self._full_well_capacity,
+        }
+
+    @classmethod
+    def from_dict(cls, dct: t.Mapping):
+        """Create a new instance from a `dict`."""
+        # TODO: This is a simplistic implementation. Improve this.
+        return cls(**dct)

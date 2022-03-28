@@ -26,10 +26,7 @@ from pyxel.detectors import Detector
 from pyxel.util.memory import memory_usage_details
 
 if t.TYPE_CHECKING:
-    from pyxel.detectors import Environment
-
-    from .mkid_characteristics import MKIDCharacteristics
-    from .mkid_geometry import MKIDGeometry
+    from pyxel.detectors import Environment, MKIDCharacteristics, MKIDGeometry
 
 
 class MKID(Detector):
@@ -47,6 +44,16 @@ class MKID(Detector):
 
         super().__init__(environment=environment)
         self.reset()
+
+    def __eq__(self, other) -> bool:
+        return (
+            type(self) == type(other)
+            and self.geometry == other.geometry
+            and self.environment == other.environment
+            and self.characteristics == other.characteristics
+            and self._phase == other._phase
+            and super().__eq__(other)
+        )
 
     def reset(self) -> None:
         """TBW."""
@@ -130,3 +137,74 @@ class MKID(Detector):
             ):
                 dataset = detector_grp.create_dataset(name, shape=np.shape(array))
                 dataset[:] = array
+
+    # TODO: Refactor this
+    def to_dict(self) -> t.Mapping:
+        """Convert an instance of `MKID` to a `dict`."""
+        dct = {
+            "version": 1,
+            "type": "MKID",
+            "properties": {
+                "geometry": self.geometry.to_dict(),
+                "environment": self.environment.to_dict(),
+                "characteristics": self.characteristics.to_dict(),
+            },
+            "data": {
+                "photon": None if self._photon is None else self._photon.array.copy(),
+                "pixel": None if self._pixel is None else self._pixel.array.copy(),
+                "signal": None if self._signal is None else self._signal.array.copy(),
+                "image": None if self._image is None else self._image.array.copy(),
+                "phase": None if self._phase is None else self._phase.array.copy(),
+                "charge": None
+                if self._charge is None
+                else {
+                    "array": self._charge.array.copy(),
+                    "frame": self._charge.frame.copy(),
+                },
+            },
+        }
+
+        return dct
+
+    # TODO: Refactor this
+    @classmethod
+    def from_dict(cls, dct: t.Mapping) -> "MKID":
+        """Create a new instance of `MKID` from a `dict`."""
+        # TODO: This is a simplistic implementation. Improve this.
+        from pyxel.detectors import Environment, MKIDCharacteristics, MKIDGeometry
+
+        if dct["type"] != "MKID":
+            raise ValueError
+
+        if dct["version"] != 1:
+            raise ValueError
+
+        properties = dct["properties"]
+        geometry = MKIDGeometry.from_dict(properties["geometry"])
+        environment = Environment.from_dict(properties["environment"])
+        characteristics = MKIDCharacteristics.from_dict(properties["characteristics"])
+
+        detector = cls(
+            geometry=geometry,
+            environment=environment,
+            characteristics=characteristics,
+        )
+
+        data = dct["data"]
+
+        if "photon" in data:
+            detector.photon.array = data["photon"]
+        if "pixel" in data:
+            detector.pixel.array = data["pixel"]
+        if "signal" in data:
+            detector.signal.array = data["signal"]
+        if "image" in data:
+            detector.image.array = data["image"]
+        if "phase" in data and data["phase"] is not None:
+            detector.phase.array = data["phase"]
+        if "charge" in data and data["charge"] is not None:
+            charge_dct = data["charge"]
+            detector.charge._array = charge_dct["array"]
+            detector.charge._frame = charge_dct["frame"]
+
+        return detector

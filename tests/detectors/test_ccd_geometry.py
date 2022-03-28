@@ -1,107 +1,15 @@
-#  Copyright (c) European Space Agency, 2017, 2018, 2019, 2020, 2021, 2022.
+#  Copyright (c) European Space Agency, 2017, 2018, 2019, 2020, 2021.
 #
 #  This file is subject to the terms and conditions defined in file 'LICENCE.txt', which
 #  is part of this Pyxel package. No part of the package, including
 #  this file, may be copied, modified, propagated, or distributed except according to
 #  the terms contained in the file ‘LICENCE.txt’.
 
-import typing as t
 from copy import deepcopy
-from dataclasses import dataclass
 
-import numpy as np
 import pytest
 
-from pyxel.detectors import CCDGeometry, CMOSGeometry, Geometry
-
-
-@dataclass
-class Parameters:
-    """Only for testing."""
-
-    row: int
-    col: int
-    pixel_vert_size: float
-    pixel_horz_size: float
-
-
-@pytest.mark.parametrize("geometry_cls", [CCDGeometry, CMOSGeometry])
-@pytest.mark.parametrize(
-    "parameters, exp_values",
-    [
-        pytest.param(
-            Parameters(row=3, col=2, pixel_vert_size=0.1, pixel_horz_size=0.2),
-            np.array([0.05, 0.05, 0.15, 0.15, 0.25, 0.25]),
-            id="3x2",
-        ),
-        pytest.param(
-            Parameters(row=3, col=1, pixel_vert_size=0.1, pixel_horz_size=0.2),
-            np.array([0.05, 0.15, 0.25]),
-            id="3x1",
-        ),
-        pytest.param(
-            Parameters(row=1, col=3, pixel_vert_size=0.1, pixel_horz_size=0.2),
-            np.array([0.05, 0.05, 0.05]),
-            id="1x3",
-        ),
-    ],
-)
-def test_vertical_pixel_center_pos(
-    geometry_cls: t.Type[Geometry], parameters: Parameters, exp_values: np.ndarray
-):
-    """Test method '.vertical_pixel_center_pos_list'."""
-    # Create the geometry object
-    geometry = geometry_cls(
-        row=parameters.row,
-        col=parameters.col,
-        pixel_vert_size=parameters.pixel_vert_size,
-        pixel_horz_size=parameters.pixel_horz_size,
-    )
-
-    # Get the positions
-    values = geometry.vertical_pixel_center_pos_list()
-
-    # Check the positions
-    np.testing.assert_allclose(values, exp_values)
-
-
-@pytest.mark.parametrize("geometry_cls", [CCDGeometry, CMOSGeometry])
-@pytest.mark.parametrize(
-    "parameters, exp_values",
-    [
-        pytest.param(
-            Parameters(row=3, col=2, pixel_vert_size=0.1, pixel_horz_size=0.2),
-            np.array([0.1, 0.3, 0.1, 0.3, 0.1, 0.3]),
-            id="3x2",
-        ),
-        pytest.param(
-            Parameters(row=3, col=1, pixel_vert_size=0.1, pixel_horz_size=0.2),
-            np.array([0.1, 0.1, 0.1]),
-            id="3x1",
-        ),
-        pytest.param(
-            Parameters(row=1, col=3, pixel_vert_size=0.1, pixel_horz_size=0.2),
-            np.array([0.1, 0.3, 0.5]),
-            id="1x3",
-        ),
-    ],
-)
-def test_horizontal_pixel_center_pos(
-    geometry_cls: t.Type[Geometry], parameters: Parameters, exp_values: np.ndarray
-):
-    """Test method '.horizontal_pixel_center_pos_list'."""
-    # Create the geometry object
-    geometry = geometry_cls(
-        row=parameters.row,
-        col=parameters.col,
-        pixel_vert_size=parameters.pixel_vert_size,
-        pixel_horz_size=parameters.pixel_horz_size,
-    )
-
-    # Get the positions
-    values = geometry.horizontal_pixel_center_pos_list()
-
-    np.testing.assert_allclose(values, exp_values)
+from pyxel.detectors import CCDGeometry, Geometry
 
 
 @pytest.mark.parametrize(
@@ -112,7 +20,7 @@ def test_create_valid_geometry(
     row, col, total_thickness, pixel_vert_size, pixel_horz_size
 ):
     """Test when creating a valid `Geometry` object."""
-    _ = Geometry(
+    _ = CCDGeometry(
         row=row,
         col=col,
         total_thickness=total_thickness,
@@ -141,7 +49,7 @@ def test_create_invalid_geometry(
 ):
     """Test when creating an invalid `Geometry` object."""
     with pytest.raises(exp_exc):
-        _ = Geometry(
+        _ = CCDGeometry(
             row=row,
             col=col,
             total_thickness=total_thickness,
@@ -154,9 +62,9 @@ def test_create_invalid_geometry(
     "other_obj, is_equal",
     [
         pytest.param(None, False, id="None"),
-        pytest.param(Geometry(row=100, col=120), False, id="Only two parameters"),
+        pytest.param(CCDGeometry(row=100, col=120), False, id="Only two parameters"),
         pytest.param(
-            Geometry(
+            CCDGeometry(
                 row=100,
                 col=120,
                 total_thickness=123.1,
@@ -167,7 +75,7 @@ def test_create_invalid_geometry(
             id="Same parameters, same class",
         ),
         pytest.param(
-            CCDGeometry(
+            Geometry(
                 row=100,
                 col=120,
                 total_thickness=123.1,
@@ -180,8 +88,8 @@ def test_create_invalid_geometry(
     ],
 )
 def test_is_equal(other_obj, is_equal):
-    """Test equality statement for Geometry."""
-    obj = Geometry(
+    """Test equality statement for CCDGeometry."""
+    obj = CCDGeometry(
         row=100,
         col=120,
         total_thickness=123.1,
@@ -199,7 +107,7 @@ def test_is_equal(other_obj, is_equal):
     "obj, exp_dict",
     [
         (
-            Geometry(
+            CCDGeometry(
                 row=100,
                 col=120,
                 total_thickness=123.1,
@@ -218,9 +126,9 @@ def test_is_equal(other_obj, is_equal):
 )
 def test_to_and_from_dict(obj, exp_dict):
     """Test methods 'to_dict', 'from_dict'."""
-    assert type(obj) == Geometry
+    assert type(obj) == CCDGeometry
 
-    # Convert from `Geometry` to a `dict`
+    # Convert from `CCDGeometry` to a `dict`
     dct = obj.to_dict()
     assert dct == exp_dict
 
@@ -229,9 +137,9 @@ def test_to_and_from_dict(obj, exp_dict):
     assert copied_dct is not exp_dict
     assert copied_dct == exp_dict
 
-    # Convert from `dict` to `Geometry`
-    other_obj = Geometry.from_dict(copied_dct)
-    assert type(other_obj) == Geometry
+    # Convert from `dict` to `CCDGeometry`
+    other_obj = CCDGeometry.from_dict(copied_dct)
+    assert type(other_obj) == CCDGeometry
     assert obj == other_obj
     assert obj is not other_obj
     assert copied_dct == exp_dict

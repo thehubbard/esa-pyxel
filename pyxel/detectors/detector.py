@@ -58,6 +58,16 @@ class Detector:
 
         self._numbytes = get_size(self)
 
+    def __eq__(self, other) -> bool:
+        return (
+            isinstance(other, Detector)
+            and self._photon == other._photon
+            and self._charge == other._charge
+            and self._pixel == other._pixel
+            and self._signal == other._signal
+            and self._image == other._image
+        )
+
     @property
     def geometry(self):
         """TBW."""
@@ -376,3 +386,31 @@ class Detector:
             ):
                 dataset = detector_grp.create_dataset(name, shape=np.shape(array))
                 dataset[:] = array
+
+    # TODO: Replace `-> 'Detector'` by `t.Union[CCD, CMOS, MKID]`
+    @classmethod
+    def from_dict(cls, dct: t.Mapping) -> "Detector":
+        """Create a new instance of a `Detector` from a `dict`."""
+        # TODO: This is a simplistic implementation. Improve this.
+        if dct["type"] == "CCD":
+            from pyxel.detectors import CCD  # Imported here to avoid circular import
+
+            return CCD.from_dict(dct)
+
+        elif dct["type"] == "CMOS":
+            from pyxel.detectors import CMOS
+
+            return CMOS.from_dict(dct)
+
+        elif dct["type"] == "MKID":
+            from pyxel.detectors import MKID
+
+            return MKID.from_dict(dct)
+
+        elif dct["type"] == "APD":
+            from pyxel.detectors import APD
+
+            return APD.from_dict(dct)
+
+        else:
+            raise NotImplementedError(f"Unknown type: {dct['type']!r}")
