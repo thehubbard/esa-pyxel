@@ -9,7 +9,10 @@
 
 import typing as t
 
-from pyxel.detectors import CCDCharacteristics, CCDGeometry, Detector, Environment
+from pyxel.detectors import Detector
+
+if t.TYPE_CHECKING:
+    from pyxel.detectors import CCDCharacteristics, CCDGeometry, Environment
 
 
 class CCD(Detector):
@@ -17,9 +20,9 @@ class CCD(Detector):
 
     def __init__(
         self,
-        geometry: CCDGeometry,
-        environment: Environment,
-        characteristics: CCDCharacteristics,
+        geometry: "CCDGeometry",
+        environment: "Environment",
+        characteristics: "CCDCharacteristics",
     ):
         self._geometry = geometry  # type: CCDGeometry
         self._characteristics = characteristics  # type: CCDCharacteristics
@@ -37,12 +40,12 @@ class CCD(Detector):
         )
 
     @property
-    def geometry(self) -> CCDGeometry:
+    def geometry(self) -> "CCDGeometry":
         """TBW."""
         return self._geometry
 
     @property
-    def characteristics(self) -> CCDCharacteristics:
+    def characteristics(self) -> "CCDCharacteristics":
         """TBW."""
         return self._characteristics
 
@@ -78,6 +81,8 @@ class CCD(Detector):
     def from_dict(cls, dct: t.Mapping) -> "CCD":
         """Create a new instance of `CCD` from a `dict`."""
         # TODO: This is a simplistic implementation. Improve this.
+        from pyxel.detectors import CCDCharacteristics, CCDGeometry, Environment
+
         if dct["type"] != "ccd":
             raise ValueError
 

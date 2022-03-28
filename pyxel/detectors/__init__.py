@@ -12,15 +12,10 @@
 from .environment import Environment
 from .detector import Detector
 from .geometry import Geometry
+from .characteristics import Characteristics
 from .ccd import CCDGeometry, CCD, CCDCharacteristics
 from .mkid import MKID, MKIDGeometry, MKIDCharacteristics
 from .apd import APD, APDCharacteristics, APDGeometry
-from .characteristics import Characteristics
-from pyxel.detectors.cmos import CMOSGeometry, CMOS, CMOSCharacteristics
+from .cmos import CMOSGeometry, CMOS, CMOSCharacteristics
 from .optics import Optics
 from .readout_properties import ReadoutProperties
-
-# Moved here to avoid circular imports
-from .ccd import CCD
-from .cmos import CMOS
-from .mkid import MKID

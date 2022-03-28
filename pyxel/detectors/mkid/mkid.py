@@ -22,8 +22,11 @@ import numpy as np
 
 from pyxel import __version__
 from pyxel.data_structure import Phase
-from pyxel.detectors import Detector, Environment, MKIDCharacteristics, MKIDGeometry
+from pyxel.detectors import Detector
 from pyxel.util.memory import memory_usage_details
+
+if t.TYPE_CHECKING:
+    from pyxel.detectors import Environment, MKIDCharacteristics, MKIDGeometry
 
 
 class MKID(Detector):
@@ -31,9 +34,9 @@ class MKID(Detector):
 
     def __init__(
         self,
-        geometry: MKIDGeometry,
-        environment: Environment,
-        characteristics: MKIDCharacteristics,
+        geometry: "MKIDGeometry",
+        environment: "Environment",
+        characteristics: "MKIDCharacteristics",
     ):
         self._geometry = geometry  # type: MKIDGeometry
         self._characteristics = characteristics  # type: MKIDCharacteristics
@@ -70,12 +73,12 @@ class MKID(Detector):
             self.phase.array *= 0
 
     @property
-    def geometry(self) -> MKIDGeometry:
+    def geometry(self) -> "MKIDGeometry":
         """TBW."""
         return self._geometry
 
     @property
-    def characteristics(self) -> MKIDCharacteristics:
+    def characteristics(self) -> "MKIDCharacteristics":
         """TBW."""
         return self._characteristics
 
@@ -168,6 +171,8 @@ class MKID(Detector):
     def from_dict(cls, dct: t.Mapping) -> "MKID":
         """Create a new instance of `MKID` from a `dict`."""
         # TODO: This is a simplistic implementation. Improve this.
+        from pyxel.detectors import Environment, MKIDCharacteristics, MKIDGeometry
+
         if dct["type"] != "mkid":
             raise ValueError
 

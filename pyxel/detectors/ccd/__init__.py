@@ -8,6 +8,6 @@
 #
 """TBW."""
 # flake8: noqa
-from .ccd import CCD
 from .ccd_geometry import CCDGeometry
 from .ccd_characteristics import CCDCharacteristics
+from .ccd import CCD
