@@ -212,6 +212,6 @@ class Characteristics:
 
     @classmethod
     def from_dict(cls, dct: t.Mapping):
-        """Create a new instance of `Geometry` from a `dict`."""
+        """Create a new instance from a `dict`."""
         # TODO: This is a simplistic implementation. Improve this.
         return cls(**dct)

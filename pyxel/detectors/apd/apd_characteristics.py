@@ -112,12 +112,24 @@ class APDCharacteristics:
         self._adc_bit_resolution = adc_bit_resolution
         self._node_capacitance = self.bias_to_node_capacitance_saphira(
             self.avalanche_bias
-        )
+        )  # type: float
         self._roic_gain = roic_gain
         self._charge_to_volt_conversion = self.detector_gain_saphira(
             capacitance=self.node_capacitance, roic_gain=self.roic_gain
-        )
+        )  # type: float
         self._numbytes = 0
+
+    def __eq__(self, other) -> bool:
+        return (
+            type(self) == type(other)
+            and self._quantum_efficiency == other._quantum_efficiency
+            and self._full_well_capacity == other._full_well_capacity
+            and self._adc_bit_resolution == other._adc_bit_resolution
+            and self._adc_voltage_range == other._adc_voltage_range
+            and self._avalanche_gain == other._avalanche_gain
+            and self._pixel_reset_voltage == other._pixel_reset_voltage
+            and self._common_voltage == other._common_voltage
+        )
 
     @property
     def quantum_efficiency(self) -> float:
@@ -372,3 +384,21 @@ class APDCharacteristics:
         float
         """
         return roic_gain * (const.e.value / capacitance)
+
+    def to_dict(self) -> t.Mapping:
+        """Get the attributes of this instance as a `dict`."""
+        return {
+            "quantum_efficiency": self._quantum_efficiency,
+            "full_well_capacity": self._full_well_capacity,
+            "adc_bit_resolution": self._adc_bit_resolution,
+            "adc_voltage_range": self._adc_voltage_range,
+            "avalanche_gain": self._avalanche_gain,
+            "pixel_reset_voltage": self._pixel_reset_voltage,
+            "common_voltage": self._common_voltage,
+            "roic_gain": self._roic_gain,
+        }
+
+    @classmethod
+    def from_dict(cls, dct: t.Mapping):
+        """Create a new instance from a `dict`."""
+        return cls(**dct)

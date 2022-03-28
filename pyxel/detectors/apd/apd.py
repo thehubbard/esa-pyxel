@@ -39,6 +39,15 @@ class APD(Detector):
         super().__init__(environment=environment)
         super().reset()
 
+    def __eq__(self, other) -> bool:
+        return (
+            type(self) == type(other)
+            and self.geometry == other.geometry
+            and self.environment == other.environment
+            and self.characteristics == other.characteristics
+            and super().__eq__(other)
+        )
+
     @property
     def geometry(self) -> "APDGeometry":
         """TBW."""
@@ -48,3 +57,71 @@ class APD(Detector):
     def characteristics(self) -> "APDCharacteristics":
         """TBW."""
         return self._characteristics
+
+    # TODO: Refactor this
+    def to_dict(self) -> t.Mapping:
+        """Convert an instance of `APD` to a `dict`."""
+        dct = {
+            "version": 1,
+            "type": "apd",
+            "properties": {
+                "geometry": self.geometry.to_dict(),
+                "environment": self.environment.to_dict(),
+                "characteristics": self.characteristics.to_dict(),
+            },
+            "data": {
+                "photon": None if self._photon is None else self._photon.array.copy(),
+                "pixel": None if self._pixel is None else self._pixel.array.copy(),
+                "signal": None if self._signal is None else self._signal.array.copy(),
+                "image": None if self._image is None else self._image.array.copy(),
+                "charge": None
+                if self._charge is None
+                else {
+                    "array": self._charge.array.copy(),
+                    "frame": self._charge.frame.copy(),
+                },
+            },
+        }
+
+        return dct
+
+    # TODO: Refactor this
+    @classmethod
+    def from_dict(cls, dct: t.Mapping) -> "APD":
+        """Create a new instance of `APD` from a `dict`."""
+        # TODO: This is a simplistic implementation. Improve this.
+        from pyxel.detectors import APDCharacteristics, APDGeometry, Environment
+
+        if dct["type"] != "apd":
+            raise ValueError
+
+        if dct["version"] != 1:
+            raise ValueError
+
+        properties = dct["properties"]
+        geometry = APDGeometry.from_dict(properties["geometry"])
+        environment = Environment.from_dict(properties["environment"])
+        characteristics = APDCharacteristics.from_dict(properties["characteristics"])
+
+        detector = cls(
+            geometry=geometry,
+            environment=environment,
+            characteristics=characteristics,
+        )
+
+        data = dct["data"]
+
+        if "photon" in data:
+            detector.photon.array = data["photon"]
+        if "pixel" in data:
+            detector.pixel.array = data["pixel"]
+        if "signal" in data:
+            detector.signal.array = data["signal"]
+        if "image" in data:
+            detector.image.array = data["image"]
+        if "charge" in data and data["charge"] is not None:
+            charge_dct = data["charge"]
+            detector.charge._array = charge_dct["array"]
+            detector.charge._frame = charge_dct["frame"]
+
+        return detector

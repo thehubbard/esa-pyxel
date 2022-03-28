@@ -407,5 +407,10 @@ class Detector:
 
             return MKID.from_dict(dct)
 
+        elif dct["type"] == "apd":
+            from pyxel.detectors import APD
+
+            return APD.from_dict(dct)
+
         else:
             raise NotImplementedError
