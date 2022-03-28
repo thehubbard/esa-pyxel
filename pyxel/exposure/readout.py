@@ -92,12 +92,12 @@ class Readout:
 
     @property
     def times(self) -> t.Any:
-        """TBW."""
+        """Get readout times."""
         return self._times
 
     @times.setter
     def times(self, value: t.Union[t.Sequence, np.ndarray]) -> None:
-        """
+        """Set readout times.
 
         Parameters
         ----------
@@ -122,7 +122,7 @@ class Readout:
 
     @property
     def non_destructive(self) -> bool:
-        """TBW."""
+        """Get non-destructive readout mode."""
         return self._non_destructive
 
     @non_destructive.setter

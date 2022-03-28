@@ -15,6 +15,8 @@ Core
   (See `!444 <https://gitlab.com/esa/pyxel/-/merge_requests/444>`_).
 * Add an APD detector.
   (See `!449 <https://gitlab.com/esa/pyxel/-/merge_requests/449>`_).
+* Implement a property setter for the attribute times in class Readout.
+  (See `!455 <https://gitlab.com/esa/pyxel/-/merge_requests/455>`_).
 
 Documentation
 -------------
