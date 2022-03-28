@@ -31,19 +31,19 @@ Output pixel reset voltage APD
 
 :guilabel:`Signal` 🠆 :guilabel:`Signal`
 
-Add noise to signal array of detector output node using normal random distribution.
+Add output pixel reset voltage to the signal array of the :term:`APD` detector.
 
 .. code-block:: yaml
 
-    - name: output_pixel_reset_voltage
-      func: pyxel.models.charge_measurement.output_pixel_reset_voltage
+    - name: output_pixel_reset_voltage_apd
+      func: pyxel.models.charge_measurement.output_pixel_reset_voltage_apd
       enabled: true
       arguments:
         roic_drop: 3.3
 
 .. note:: This model is specific to the :term:`APD` detector.
 
-.. autofunction:: output_pixel_reset_voltage
+.. autofunction:: output_pixel_reset_voltage_apd
 
 
 Simple charge measurement
