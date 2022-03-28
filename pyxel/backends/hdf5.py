@@ -5,6 +5,8 @@
 #  this file, may be copied, modified, propagated, or distributed except according to
 #  the terms contained in the file ‘LICENCE.txt’.
 
+"""TBW."""
+
 import typing as t
 from pathlib import Path
 
@@ -65,7 +67,7 @@ def _store(
 
 
 def to_hdf5(filename: t.Union[str, Path], dct: t.Mapping[str, t.Any]) -> None:
-    """TBW."""
+    """Write data to a HDF5 file."""
     if dct["version"] != 1:
         raise NotImplementedError
 
@@ -117,7 +119,7 @@ def _load(
 
 
 def from_hdf5(filename: t.Union[str, Path]) -> t.Mapping[str, t.Any]:
-    """TBW."""
+    """Read data from a HDF5 file."""
     dct = {}
     with h5.File(filename, mode="r") as h5file:
         # Read main attributes
