@@ -22,7 +22,7 @@ from pyxel import Configuration
 from pyxel import __version__ as version
 from pyxel import load, outputs, save
 from pyxel.calibration import Calibration, CalibrationResult
-from pyxel.detectors import CCD, CMOS, MKID, Detector
+from pyxel.detectors import APD, CCD, CMOS, MKID, Detector
 from pyxel.exposure import Exposure
 from pyxel.observation import Observation, ObservationResult
 from pyxel.pipelines import DetectionPipeline, Processor
@@ -358,11 +358,13 @@ def run(
     pipeline = configuration.pipeline  # type: DetectionPipeline
 
     if isinstance(configuration.ccd_detector, CCD):
-        detector = configuration.ccd_detector  # type: t.Union[CCD, CMOS, MKID]
+        detector = configuration.ccd_detector  # type: t.Union[CCD, CMOS, MKID, APD]
     elif isinstance(configuration.cmos_detector, CMOS):
         detector = configuration.cmos_detector
     elif isinstance(configuration.mkid_detector, MKID):
         detector = configuration.mkid_detector
+    elif isinstance(configuration.apd_detector, APD):
+        detector = configuration.apd_detector
     else:
         raise NotImplementedError("Detector is not defined in YAML config. file!")
 

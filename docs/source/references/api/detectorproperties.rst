@@ -97,3 +97,25 @@ MKIDGeometry
     :undoc-members:
     :show-inheritance:
     :exclude-members:
+
+APD specific
+------------
+:term:`APD` specific classes.
+
+APDCharacteristics
+==================
+.. autoclass:: APDCharacteristics
+    :members:
+    :inherited-members:
+    :undoc-members:
+    :show-inheritance:
+    :exclude-members:
+
+APDGeometry
+===========
+.. autoclass:: APDGeometry
+    :members:
+    :inherited-members:
+    :undoc-members:
+    :show-inheritance:
+    :exclude-members:

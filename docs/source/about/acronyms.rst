@@ -11,6 +11,9 @@ List of Acronyms
     ADC
       Analog-Digital Converter.
 
+    APD
+      Avalanche Photo Diode.
+
     CCD
       Charge-Coupled Device.
 

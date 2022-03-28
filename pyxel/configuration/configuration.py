@@ -24,9 +24,12 @@ import yaml
 from pyxel import __version__ as version
 from pyxel.calibration import Algorithm, Calibration
 from pyxel.detectors import (
+    APD,
     CCD,
     CMOS,
     MKID,
+    APDCharacteristics,
+    APDGeometry,
     CCDCharacteristics,
     CCDGeometry,
     CMOSCharacteristics,
@@ -57,6 +60,7 @@ class Configuration:
     ccd_detector: t.Optional[CCD] = None
     cmos_detector: t.Optional[CMOS] = None
     mkid_detector: t.Optional[MKID] = None
+    apd_detector: t.Optional[APD] = None
 
     def __post_init__(self):
         # Sanity checks
@@ -69,16 +73,21 @@ class Configuration:
                 "'exposure', 'observation' or 'calibration'."
             )
 
-        detectors = [self.ccd_detector, self.cmos_detector, self.mkid_detector]
+        detectors = [
+            self.ccd_detector,
+            self.cmos_detector,
+            self.mkid_detector,
+            self.apd_detector,
+        ]
         num_detectors = sum([el is not None for el in detectors])
 
         if num_detectors != 1:
             raise ValueError(
-                "Expecting only one detector: 'ccd_detector', 'cmos_detector' or 'mkid_detector'."
+                "Expecting only one detector: 'ccd_detector', 'cmos_detector', 'mkid_detector' or 'apd_detector'."
             )
 
     @property
-    def detector(self) -> t.Union[CCD, CMOS, MKID]:
+    def detector(self) -> t.Union[CCD, CMOS, MKID, APD]:
         """Get current detector."""
         if self.ccd_detector is not None:
             return self.ccd_detector
@@ -86,6 +95,8 @@ class Configuration:
             return self.cmos_detector
         elif self.mkid_detector is not None:
             return self.mkid_detector
+        elif self.apd_detector is not None:
+            return self.apd_detector
         else:
             raise NotImplementedError
 
@@ -343,6 +354,20 @@ def to_mkid_geometry(dct: dict) -> MKIDGeometry:
     return MKIDGeometry(**dct)
 
 
+def to_apd_geometry(dct: dict) -> APDGeometry:
+    """Create a APDGeometry class from a dictionary.
+
+    Parameters
+    ----------
+    dct
+
+    Returns
+    -------
+    APDGeometry
+    """
+    return APDGeometry(**dct)
+
+
 def to_environment(dct: t.Optional[dict]) -> Environment:
     """Create an Environment class from a dictionary.
 
@@ -407,6 +432,22 @@ def to_mkid_characteristics(dct: t.Optional[dict]) -> MKIDCharacteristics:
     return MKIDCharacteristics(**dct)
 
 
+def to_apd_characteristics(dct: t.Optional[dict]) -> APDCharacteristics:
+    """Create a APDCharacteristics class from a dictionary.
+
+    Parameters
+    ----------
+    dct
+
+    Returns
+    -------
+    APDCharacteristics
+    """
+    if dct is None:
+        dct = {}
+    return APDCharacteristics(**dct)
+
+
 def to_ccd(dct: dict) -> CCD:
     """Create a CCD class from a dictionary.
 
@@ -458,6 +499,24 @@ def to_mkid_array(dct: dict) -> MKID:
         geometry=to_mkid_geometry(dct["geometry"]),
         environment=to_environment(dct["environment"]),
         characteristics=to_mkid_characteristics(dct["characteristics"]),
+    )
+
+
+def to_apd(dct: dict) -> APD:
+    """Create an APDarray class from a dictionary.
+
+    Parameters
+    ----------
+    dct
+
+    Returns
+    -------
+    MKID-array
+    """
+    return APD(
+        geometry=to_apd_geometry(dct["geometry"]),
+        environment=to_environment(dct["environment"]),
+        characteristics=to_apd_characteristics(dct["characteristics"]),
     )
 
 
@@ -527,6 +586,7 @@ def build_configuration(dct: dict) -> Configuration:
         "ccd_detector",
         "cmos_detector",
         "mkid_detector",
+        "apd_detector",
     ]  # type: t.Sequence[str]
     num_detector = sum([key in dct for key in keys_detectors])  # type: int
     if num_detector != 1:
@@ -543,13 +603,15 @@ def build_configuration(dct: dict) -> Configuration:
     else:
         raise ValueError("No mode configuration provided.")
 
-    detector = {}  # type: t.Dict[str, t.Union[CCD, CMOS, MKID]]
+    detector = {}  # type: t.Dict[str, t.Union[CCD, CMOS, MKID, APD]]
     if "ccd_detector" in dct:
         detector["ccd_detector"] = to_ccd(dct["ccd_detector"])
     elif "cmos_detector" in dct:
         detector["cmos_detector"] = to_cmos(dct["cmos_detector"])
     elif "mkid_detector" in dct:
         detector["mkid_detector"] = to_mkid_array(dct["mkid_detector"])
+    elif "apd_detector" in dct:
+        detector["apd_detector"] = to_apd(dct["apd_detector"])
     else:
         raise ValueError("No detector configuration provided.")
 

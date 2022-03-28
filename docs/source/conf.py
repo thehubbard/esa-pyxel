@@ -19,8 +19,12 @@ from datetime import datetime
 from pathlib import Path
 
 from setuptools.config import read_configuration
+from sphinx.util import logging
 
 import pyxel
+
+# https://github.com/sphinx-doc/sphinx/issues/10112
+logging.getLogger("sphinx.ext.extlinks").setLevel(40)
 
 # Read 'setup.cfg' file
 parent_folder = Path(__file__).parent

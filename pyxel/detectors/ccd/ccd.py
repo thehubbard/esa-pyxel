@@ -4,6 +4,13 @@
 #  is part of this Pyxel package. No part of the package, including
 #  this file, may be copied, modified, propagated, or distributed except according to
 #  the terms contained in the file ‘LICENCE.txt’.
+#
+#
+#
+#  This file is subject to the terms and conditions defined in file 'LICENCE.txt', which
+#  is part of this Pyxel package. No part of the package, including
+#  this file, may be copied, modified, propagated, or distributed except according to
+#  the terms contained in the file ‘LICENCE.txt’.
 
 """CCD detector modeling class."""
 import typing as t
@@ -11,7 +18,10 @@ import typing as t
 from pyxel.detectors import Detector
 
 if t.TYPE_CHECKING:
-    from pyxel.detectors import CCDCharacteristics, CCDGeometry, Environment
+    from pyxel.detectors import Environment
+
+    from .ccd_characteristics import CCDCharacteristics
+    from .ccd_geometry import CCDGeometry
 
 
 class CCD(Detector):

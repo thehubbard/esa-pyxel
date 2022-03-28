@@ -11,16 +11,11 @@
 # Warning: Import order matters
 from .environment import Environment
 from .detector import Detector
-from .ccd import CCD
-from .cmos import CMOS
-from .mkid import MKID
 from .geometry import Geometry
-from .ccd_geometry import CCDGeometry
-from .cmos_geometry import CMOSGeometry
-from .mkid_geometry import MKIDGeometry
+from .ccd import CCDGeometry, CCD, CCDCharacteristics
+from .mkid import MKID, MKIDGeometry, MKIDCharacteristics
+from .apd import APD, APDCharacteristics, APDGeometry
 from .characteristics import Characteristics
-from .ccd_characteristics import CCDCharacteristics
-from .cmos_characteristics import CMOSCharacteristics
-from .mkid_characteristics import MKIDCharacteristics
+from pyxel.detectors.cmos import CMOSGeometry, CMOS, CMOSCharacteristics
 from .optics import Optics
 from .readout_properties import ReadoutProperties

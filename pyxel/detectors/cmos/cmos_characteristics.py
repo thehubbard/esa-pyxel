@@ -6,20 +6,24 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """TBW."""
-from pyxel.detectors import Characteristics
+from pyxel.detectors.characteristics import Characteristics
 
 
-class CCDCharacteristics(Characteristics):
-    """Characteristic attributes of a :term:`CCD` detector.
+class CMOSCharacteristics(Characteristics):
+    """Characteristic attributes of a :term:`CMOS`-based detector.
 
     Parameters
     ----------
-    quantum_efficiency: float
+    quantum_efficiency: float, optional
         Quantum efficiency.
-    charge_to_volt_conversion: float
+    charge_to_volt_conversion: float, optional
         Sensitivity of charge readout. Unit: V/e-
-    pre_amplification: float
+    pre_amplification: float, optional
         Gain of pre-amplifier. Unit: V/V
-    full_well_capacity: float
+    full_well_capacity: float, optional
         Full well capacity. Unit: e-
+    adc_voltage_range: tuple of floats, optional
+        ADC voltage range. Unit: V
+    adc_bit_resolution: int, optional
+        ADC bit resolution.
     """
