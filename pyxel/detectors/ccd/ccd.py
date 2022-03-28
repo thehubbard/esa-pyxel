@@ -12,6 +12,8 @@ import typing as t
 from pyxel.detectors import Detector
 
 if t.TYPE_CHECKING:
+    import pandas as pd
+
     from pyxel.detectors import CCDCharacteristics, CCDGeometry, Environment
 
 
@@ -113,6 +115,9 @@ class CCD(Detector):
         if "charge" in data and data["charge"] is not None:
             charge_dct = data["charge"]
             detector.charge._array = charge_dct["array"]
-            detector.charge._frame = charge_dct["frame"]
+
+            new_frame = charge_dct["frame"]  # type: pd.DataFrame
+            previous_frame = detector.charge._frame  # type: pd.DataFrame
+            detector.charge._frame = new_frame[previous_frame.columns]
 
         return detector

@@ -26,7 +26,7 @@ ATTRIBUTES = {
 def _store(
     h5file: h5.File,
     name: str,
-    dct: t.Mapping,
+    dct: t.Mapping[str, t.Union[int, float, pd.DataFrame, pd.Series, np.ndarray, dict]],
     attributes: t.Optional[t.Mapping[str, t.Mapping[str, str]]] = None,
 ):
     """TBW."""
@@ -86,18 +86,21 @@ def to_hdf5(filename: t.Union[str, Path], dct: t.Mapping[str, t.Any]) -> None:
 
 def _load(
     h5file: h5.File, name: str
-) -> t.Union[int, float, t.Mapping[str, t.Any], np.ndarray]:
+) -> t.Union[int, float, t.Mapping[str, t.Any], np.ndarray, pd.DataFrame]:
     """TBW."""
     dataset = h5file[name]  # type: t.Union[h5.Dataset, h5.Group]
 
     if isinstance(dataset, h5.Group):
         dct = {}
-        for key, dataset in h5file[name].items():
+        for key, _ in h5file[name].items():
             result = _load(h5file, name=f"{name}/{key}")
 
-        dct[key] = result
+            dct[key] = result
 
-        return dct
+        if name.endswith("frame"):
+            return pd.DataFrame.from_dict(dct)
+        else:
+            return dct
 
     elif isinstance(dataset, h5.Dataset):
         if dataset.ndim == 0:
@@ -141,8 +144,5 @@ def from_hdf5(filename: t.Union[str, Path]) -> t.Mapping[str, t.Any]:
             data[name] = _load(h5file, name=f"/data/{name}")
 
         dct["data"] = data
-
-        print("Hello World")
-        print("Hello World")
 
     return dct
