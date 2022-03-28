@@ -54,7 +54,7 @@ class CCD(Detector):
         """Convert an instance of `CCD` to a `dict`."""
         dct = {
             "version": 1,
-            "type": "ccd",
+            "type": "CCD",
             "properties": {
                 "geometry": self.geometry.to_dict(),
                 "environment": self.environment.to_dict(),
@@ -83,7 +83,7 @@ class CCD(Detector):
         # TODO: This is a simplistic implementation. Improve this.
         from pyxel.detectors import CCDCharacteristics, CCDGeometry, Environment
 
-        if dct["type"] != "ccd":
+        if dct["type"] != "CCD":
             raise ValueError
 
         if dct["version"] != 1:

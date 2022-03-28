@@ -392,25 +392,25 @@ class Detector:
     def from_dict(cls, dct: t.Mapping) -> "Detector":
         """Create a new instance of a `Detector` from a `dict`."""
         # TODO: This is a simplistic implementation. Improve this.
-        if dct["type"] == "ccd":
+        if dct["type"] == "CCD":
             from pyxel.detectors import CCD  # Imported here to avoid circular import
 
             return CCD.from_dict(dct)
 
-        elif dct["type"] == "cmos":
+        elif dct["type"] == "CMOS":
             from pyxel.detectors import CMOS
 
             return CMOS.from_dict(dct)
 
-        elif dct["type"] == "mkid":
+        elif dct["type"] == "MKID":
             from pyxel.detectors import MKID
 
             return MKID.from_dict(dct)
 
-        elif dct["type"] == "apd":
+        elif dct["type"] == "APD":
             from pyxel.detectors import APD
 
             return APD.from_dict(dct)
 
         else:
-            raise NotImplementedError
+            raise NotImplementedError(f"Unknown type: {dct['type']!r}")

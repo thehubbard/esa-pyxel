@@ -182,7 +182,7 @@ def comparison(dct, other_dct):
             ),
             {
                 "version": 1,
-                "type": "mkid",
+                "type": "MKID",
                 "properties": {
                     "geometry": {
                         "row": 100,
@@ -248,7 +248,7 @@ def comparison(dct, other_dct):
             ),
             {
                 "version": 1,
-                "type": "mkid",
+                "type": "MKID",
                 "properties": {
                     "geometry": {
                         "row": 100,

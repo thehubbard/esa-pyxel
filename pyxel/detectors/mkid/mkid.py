@@ -143,7 +143,7 @@ class MKID(Detector):
         """Convert an instance of `MKID` to a `dict`."""
         dct = {
             "version": 1,
-            "type": "mkid",
+            "type": "MKID",
             "properties": {
                 "geometry": self.geometry.to_dict(),
                 "environment": self.environment.to_dict(),
@@ -173,7 +173,7 @@ class MKID(Detector):
         # TODO: This is a simplistic implementation. Improve this.
         from pyxel.detectors import Environment, MKIDCharacteristics, MKIDGeometry
 
-        if dct["type"] != "mkid":
+        if dct["type"] != "MKID":
             raise ValueError
 
         if dct["version"] != 1:

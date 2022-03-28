@@ -63,7 +63,7 @@ class APD(Detector):
         """Convert an instance of `APD` to a `dict`."""
         dct = {
             "version": 1,
-            "type": "apd",
+            "type": "APD",
             "properties": {
                 "geometry": self.geometry.to_dict(),
                 "environment": self.environment.to_dict(),
@@ -92,7 +92,7 @@ class APD(Detector):
         # TODO: This is a simplistic implementation. Improve this.
         from pyxel.detectors import APDCharacteristics, APDGeometry, Environment
 
-        if dct["type"] != "apd":
+        if dct["type"] != "APD":
             raise ValueError
 
         if dct["version"] != 1:

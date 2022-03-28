@@ -180,7 +180,7 @@ def comparison(dct, other_dct):
             ),
             {
                 "version": 1,
-                "type": "ccd",
+                "type": "CCD",
                 "properties": {
                     "geometry": {
                         "row": 100,
@@ -246,7 +246,7 @@ def comparison(dct, other_dct):
             ),
             {
                 "version": 1,
-                "type": "ccd",
+                "type": "CCD",
                 "properties": {
                     "geometry": {
                         "row": 100,
@@ -339,7 +339,7 @@ def test_to_and_from_dict_with_arrays_no_frame(valid_ccd: CCD, klass):
 
     exp_dict = {
         "version": 1,
-        "type": "ccd",
+        "type": "CCD",
         "properties": {
             "geometry": {
                 "row": 100,

@@ -53,7 +53,7 @@ class CMOS(Detector):
         """Convert an instance of `CMOS` to a `dict`."""
         dct = {
             "version": 1,
-            "type": "cmos",
+            "type": "CMOS",
             "properties": {
                 "geometry": self.geometry.to_dict(),
                 "environment": self.environment.to_dict(),
@@ -82,7 +82,7 @@ class CMOS(Detector):
         # TODO: This is a simplistic implementation. Improve this.
         from pyxel.detectors import CMOSCharacteristics, CMOSGeometry, Environment
 
-        if dct["type"] != "cmos":
+        if dct["type"] != "CMOS":
             raise ValueError
 
         if dct["version"] != 1:

@@ -179,7 +179,7 @@ def comparison(dct, other_dct):
             ),
             {
                 "version": 1,
-                "type": "cmos",
+                "type": "CMOS",
                 "properties": {
                     "geometry": {
                         "row": 100,
@@ -245,7 +245,7 @@ def comparison(dct, other_dct):
             ),
             {
                 "version": 1,
-                "type": "cmos",
+                "type": "CMOS",
                 "properties": {
                     "geometry": {
                         "row": 100,
