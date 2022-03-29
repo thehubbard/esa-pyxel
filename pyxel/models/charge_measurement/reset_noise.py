@@ -6,10 +6,12 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 #
 #
-from pyxel.detectors import Detector
-import numpy as np
-import astropy.constants as const
 import typing as t
+
+import astropy.constants as const
+import numpy as np
+
+from pyxel.detectors import Detector
 from pyxel.util import temporary_random_state
 
 
@@ -68,14 +70,14 @@ def ktc_noise(
 
     else:
         try:
-            node_capacitance = detector.characteristics.node_capacitance
+            capacitance = detector.characteristics.node_capacitance
 
-            if node_capacitance <= 0:
+            if capacitance <= 0:
                 raise ValueError("Node capacitance should be larger than 0!")
 
             detector.signal.array += compute_ktc_noise(
                 temperature=detector.environment.temperature,
-                capacitance=node_capacitance,
+                capacitance=capacitance,
                 shape=detector.geometry.shape,
             )
 
