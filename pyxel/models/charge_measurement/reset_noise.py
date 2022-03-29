@@ -6,6 +6,7 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 #
 #
+"""Reset noise models."""
 import typing as t
 
 import astropy.constants as const

@@ -6,8 +6,10 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 #
 #
-import pytest
+"""Reset noise model tests."""
 import typing as t
+
+import pytest
 
 from pyxel.detectors import (
     APD,
