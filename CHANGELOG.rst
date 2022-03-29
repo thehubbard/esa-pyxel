@@ -27,6 +27,8 @@ Models
 ------
 * Add a DC offset model.
   (See `!452 <https://gitlab.com/esa/pyxel/-/merge_requests/452>`_).
+* Add kTC reset noise model.
+  (See `!451 <https://gitlab.com/esa/pyxel/-/merge_requests/451>`_).
 
 Others
 ------

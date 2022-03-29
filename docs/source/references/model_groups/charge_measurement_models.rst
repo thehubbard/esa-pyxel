@@ -46,6 +46,26 @@ Add output pixel reset voltage to the signal array of the :term:`APD` detector.
 .. autofunction:: output_pixel_reset_voltage_apd
 
 
+kTC reset noise
+===============
+
+:guilabel:`Signal` 🠆 :guilabel:`Signal`
+
+Add kTC reset noise to the signal array of the detector object.
+
+.. code-block:: yaml
+
+    - name: ktc_noise
+      func: pyxel.models.charge_measurement.ktc_noise
+      enabled: true
+      arguments:
+        node_capacitance: 30.e-15
+
+.. note:: When using with the :term:`APD` detector, node capacitance is calculated from detector characteristics.
+
+.. autofunction:: ktc_noise
+
+
 Simple charge measurement
 =========================
 
