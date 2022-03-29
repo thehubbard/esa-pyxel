@@ -31,6 +31,8 @@ Models
   (See `!452 <https://gitlab.com/esa/pyxel/-/merge_requests/452>`_).
 * Add kTC reset noise model.
   (See `!451 <https://gitlab.com/esa/pyxel/-/merge_requests/451>`_).
+* Add an APD dark current model.
+  (See `!453 <https://gitlab.com/esa/pyxel/-/merge_requests/453>`_).
 
 Others
 ------
