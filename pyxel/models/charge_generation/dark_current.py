@@ -11,7 +11,7 @@ import typing as t
 
 import numpy as np
 
-from pyxel.detectors import Detector, APD
+from pyxel.detectors import APD, Detector
 from pyxel.util import temporary_random_state
 
 
@@ -126,9 +126,7 @@ def calculate_dark_current_saphira(
 
 
 @temporary_random_state
-def dark_current_saphira(
-    detector: APD, seed: t.Optional[int] = None
-) -> None:
+def dark_current_saphira(detector: APD, seed: t.Optional[int] = None) -> None:
     """Simulate dark current in a Saphira APD detector.
 
     Reference: I. M. Baker et al., Linear-mode avalanche photodiode arrays in HgCdTe at Leonardo, UK: the
@@ -145,9 +143,11 @@ def dark_current_saphira(
     if not isinstance(detector, APD):
         raise TypeError("Expecting an APD object for detector.")
     if detector.environment.temperature > 100:
-        raise ValueError("Warning! Dark current estimation is inaccurate for temperatures more than 100 K!")
+        raise ValueError(
+            "Dark current estimation is inaccurate for temperatures more than 100 K!"
+        )
     if detector.characteristics.avalanche_gain < 2:
-        raise ValueError("Warning! Dark current is inaccurate for avalanche gains less than 2!")
+        raise ValueError("Dark current is inaccurate for avalanche gains less than 2!")
 
     exposure_time = detector.time_step
 
