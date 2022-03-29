@@ -93,6 +93,8 @@ def output_pixel_reset_voltage_apd(detector: APD, roic_drop: float) -> None:
     roic_drop: float
         Readout circuit drop voltage. Unit: V
     """
+    if not isinstance(detector, APD):
+        raise TypeError("Expecting a 'APD' detector object.")
 
     ch = detector.characteristics
     shape = detector.geometry.shape
