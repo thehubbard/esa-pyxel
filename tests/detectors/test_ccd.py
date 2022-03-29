@@ -6,6 +6,7 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 from copy import deepcopy
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -398,3 +399,14 @@ def test_to_and_from_dict_with_arrays_no_frame(valid_ccd: CCD, klass):
     assert valid_ccd == new_detector
     assert valid_ccd is not new_detector
     comparison(copied_dct, exp_dict)
+
+
+def test_to_from_hdf5(valid_ccd: CCD, tmp_path: Path):
+    """Test method `Detector.to_hdf5' and `Detector.from_hdf5`."""
+    filename = tmp_path / "ccd.h5"
+
+    valid_ccd.to_hdf5(filename)
+
+    new_ccd = Detector.from_hdf5(filename)
+
+    assert new_ccd == valid_ccd

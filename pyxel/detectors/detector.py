@@ -10,10 +10,9 @@ import collections
 import typing as t
 from pathlib import Path
 
-import h5py as h5
 import numpy as np
 
-from pyxel import __version__
+from pyxel import backends
 from pyxel.data_structure import (
     Charge,
     Image,
@@ -369,23 +368,73 @@ class Detector:
 
     # TODO: Move this to another place. See #241
     def to_hdf5(self, filename: t.Union[str, Path]) -> None:
-        """Convert the detector to a HDF5 object."""
-        with h5.File(filename, "w") as h5file:
-            h5file.attrs["type"] = self.__class__.__name__
-            h5file.attrs["pyxel-version"] = str(__version__)
-            detector_grp = h5file.create_group("detector")
-            for array, name in zip(
-                [
-                    self.signal.array,
-                    self.image.array,
-                    self.photon.array,
-                    self.pixel.array,
-                    self.charge.frame,
-                ],
-                ["Signal", "Image", "Photon", "Pixel", "Charge"],
-            ):
-                dataset = detector_grp.create_dataset(name, shape=np.shape(array))
-                dataset[:] = array
+        """Convert the detector to a HDF5 object.
+
+        The HDF5 file has the following structure:
+
+        .. code-block:: bash
+
+            filename.h5  (4 objects, 3 attributes)
+            ├── characteristics  (4 objects)
+            │   ├── charge_to_volt_conversion  (), float64
+            │   ├── full_well_capacity  (), int64
+            │   ├── pre_amplification  (), float64
+            │   └── quantum_efficiency  (), float64
+            ├── data  (5 objects)
+            │   ├── charge  (2 objects, 2 attributes)
+            │   │   ├── array  (100, 120), float64
+            │   │   └── frame  (13 objects, 1 attribute)
+            │   │       ├── charge  (0,), float64
+            │   │       ├── energy  (0,), float64
+            │   │       ├── init_energy  (0,), float64
+            │   │       ├── init_pos_hor  (0,), float64
+            │   │       ├── init_pos_ver  (0,), float64
+            │   │       ├── init_pos_z  (0,), float64
+            │   │       ├── number  (0,), float64
+            │   │       ├── position_hor  (0,), float64
+            │   │       ├── position_ver  (0,), float64
+            │   │       ├── position_z  (0,), float64
+            │   │       ├── velocity_hor  (0,), float64
+            │   │       ├── velocity_ver  (0,), float64
+            │   │       └── velocity_z  (0,), float64
+            │   ├── image  (100, 120), uint64
+            │   ├── photon  (100, 120), float64
+            │   ├── pixel  (100, 120), float64
+            │   └── signal  (100, 120), float64
+            ├── environment  (1 object)
+            │   └── temperature  (), float64
+            └── geometry  (5 objects)
+                ├── col  (), int64
+                ├── pixel_horz_size  (), float64
+                ├── pixel_vert_size  (), float64
+                ├── row  (), int64
+                └── total_thickness  (), float64
+
+        Parameters
+        ----------
+        filename : str or Path
+
+        Examples
+        --------
+        >>> from pyxel.detectors import CCD
+        >>> detector = CCD(...)
+
+        >>> detector.to_hdf5("ccd.h5")
+        """
+        dct = self.to_dict()  # type: t.Mapping
+        backends.to_hdf5(filename=filename, dct=dct)
+
+    @classmethod
+    def from_hdf5(cls, filename: t.Union[str, Path]) -> "Detector":
+        """Convert a HDF5 object into a detector."""
+        dct = backends.from_hdf5(filename)  # type: t.Mapping[str, t.Any]
+
+        obj = cls.from_dict(dct)  # type: Detector
+        return obj
+
+    def to_dict(self) -> t.Mapping:
+        """Convert a `Detector` to a `dict`."""
+        raise NotImplementedError
 
     # TODO: Replace `-> 'Detector'` by `t.Union[CCD, CMOS, MKID]`
     @classmethod

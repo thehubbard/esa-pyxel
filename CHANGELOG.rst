@@ -19,6 +19,8 @@ Core
   (See `!455 <https://gitlab.com/esa/pyxel/-/merge_requests/455>`_).
 * Convert a Detector (CCD, CMOS...) to a dictionary and vice versa.
   (See `!267 <https://gitlab.com/esa/pyxel/-/merge_requests/267>`_).
+* Implement methods `Detector.from_hdf5` and `Detector.to_hdf5`.
+  (See `!448 <https://gitlab.com/esa/pyxel/-/merge_requests/448>`_).
 
 Documentation
 -------------
