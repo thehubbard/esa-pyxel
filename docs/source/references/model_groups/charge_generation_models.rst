@@ -190,3 +190,30 @@ Example of the configuration file:
         dark_rate: 10.0
 
 .. autofunction:: pyxel.models.charge_generation.dark_current
+
+
+Dark current Saphira
+====================
+
+:guilabel:`Charge` 🠆 :guilabel:`Charge`
+
+With this empirical model you can add dark current to a :py:class:`~pyxel.detectors.APD` object.
+The model is an approximation the dark current vs. gain vs. temp plot in :cite:p:`2019:baker`, Fig. 3.
+We can split it into three linear 'regimes': 1) low-gain, low dark current; 2) nominal; and 3) trap-assisted tunneling.
+The model ignores the first one for now since this only applies at gains less than ~2.
+All the necessary arguments are provided through the detector characteristics.
+The model works best for ``temperature`` less than 100 and ``avalanche gain`` more than 2.
+
+Example of the configuration file:
+
+.. code-block:: yaml
+
+    - name: dark_current_saphira
+      func: pyxel.models.charge_generation.dark_current_saphira
+      enabled: true
+
+.. note:: This model is specific to the :term:`APD` detector.
+
+.. note:: Dark current calculated with this model already takes into account the avalanche gain.
+
+.. autofunction:: pyxel.models.charge_generation.dark_current_saphira
