@@ -25,6 +25,8 @@ Documentation
 
 Models
 ------
+* Add a DC offset model.
+  (See `!452 <https://gitlab.com/esa/pyxel/-/merge_requests/452>`_).
 
 Others
 ------
