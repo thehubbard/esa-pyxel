@@ -72,9 +72,6 @@ def ktc_noise(
         try:
             capacitance = detector.characteristics.node_capacitance
 
-            if capacitance <= 0:
-                raise ValueError("Node capacitance should be larger than 0!")
-
             detector.signal.array += compute_ktc_noise(
                 temperature=detector.environment.temperature,
                 capacitance=capacitance,
@@ -83,8 +80,6 @@ def ktc_noise(
 
         except AttributeError as ex:
             raise AttributeError(
-                """
-                Characteristic node_capacitance not available for the detector used.
-                Please specify node_capacitance in the model argument!
-                """
+                "Characteristic node_capacitance not available for the detector used. "
+                "Please specify node_capacitance in the model argument!"
             ) from ex
