@@ -8,6 +8,44 @@ Charge Measurement models
 .. automodule:: pyxel.models.charge_measurement
 
 
+DC offset
+=========
+
+:guilabel:`Signal` 🠆 :guilabel:`Signal`
+
+Add a DC offset to signal array of detector.
+
+.. code-block:: yaml
+
+    - name: dc_offset
+      func: pyxel.models.charge_measurement.dc_offset
+      enabled: true
+      arguments:
+        offset: 0.1
+
+.. autofunction:: dc_offset
+
+
+Output pixel reset voltage APD
+==============================
+
+:guilabel:`Signal` 🠆 :guilabel:`Signal`
+
+Add output pixel reset voltage to the signal array of the :term:`APD` detector.
+
+.. code-block:: yaml
+
+    - name: output_pixel_reset_voltage_apd
+      func: pyxel.models.charge_measurement.output_pixel_reset_voltage_apd
+      enabled: true
+      arguments:
+        roic_drop: 3.3
+
+.. note:: This model is specific to the :term:`APD` detector.
+
+.. autofunction:: output_pixel_reset_voltage_apd
+
+
 Simple charge measurement
 =========================
 

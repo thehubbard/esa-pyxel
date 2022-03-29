@@ -140,6 +140,11 @@ class Geometry:
         self._col = value
 
     @property
+    def shape(self) -> t.Tuple[int, int]:
+        """Return detector shape."""
+        return self.row, self.col
+
+    @property
     def total_thickness(self) -> float:
         """Get Thickness of detector."""
         if self._total_thickness:
