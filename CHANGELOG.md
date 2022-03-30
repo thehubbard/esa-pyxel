@@ -32,6 +32,8 @@
   (See [!451](https://gitlab.com/esa/pyxel/-/merge_requests/451)).
 * Add an APD dark current model.
   (See [!453](https://gitlab.com/esa/pyxel/-/merge_requests/453)).
+* Add an APD gain model.
+  (See [!450](https://gitlab.com/esa/pyxel/-/merge_requests/450)).
 
 ### Others
 
