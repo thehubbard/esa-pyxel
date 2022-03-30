@@ -29,7 +29,8 @@ def apd_gain(detector: APD) -> None:
 
     Parameters
     ----------
-    detector
+    detector: APD
+        Pyxel APD detector object.
     """
 
     if not isinstance(detector, APD):
