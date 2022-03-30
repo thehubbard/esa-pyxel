@@ -1,4 +1,3 @@
+```{include} ../../../CHANGELOG.md
 
-.. _changelog:
-
-.. include:: ../../../CHANGELOG.rst
+```
