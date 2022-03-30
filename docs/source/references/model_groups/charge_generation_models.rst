@@ -192,6 +192,28 @@ Example of the configuration file:
 .. autofunction:: pyxel.models.charge_generation.dark_current
 
 
+APD gain
+========
+
+:guilabel:`Charge` 🠆 :guilabel:`Charge`
+
+With this model you can apply APD gain to the a :py:class:`~pyxel.detectors.APD` object.
+Model simply multiplies the values of charge with the avalanche gain,
+which should be specified in the detector characteristics.
+
+Example of the configuration file:
+
+.. code-block:: yaml
+
+    - name: apd_gain
+      func: pyxel.models.charge_generation.apd_gain
+      enabled: true
+
+.. note:: This model is specific to the :term:`APD` detector.
+
+.. autofunction:: pyxel.models.charge_generation.apd_gain
+
+
 Dark current Saphira
 ====================
 
