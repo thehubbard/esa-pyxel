@@ -16,8 +16,11 @@ from pyxel.detectors import (
     CMOSCharacteristics,
     CMOSGeometry,
     Environment,
+    APD,
+    APDGeometry,
+    APDCharacteristics,
 )
-from pyxel.models.charge_measurement import output_node_noise, output_node_noise_cmos
+from pyxel.models.charge_measurement import output_node_noise, output_node_noise_cmos, readout_noise_saphira
 
 
 @pytest.fixture
@@ -49,6 +52,29 @@ def cmos_5x10() -> CMOS:
         ),
         environment=Environment(),
         characteristics=CMOSCharacteristics(charge_to_volt_conversion=1.0e-6),
+    )
+
+@pytest.fixture
+def apd_5x5() -> APD:
+    """Create a valid CCD detector."""
+    return APD(
+        geometry=APDGeometry(
+            row=5,
+            col=5,
+            total_thickness=40.0,
+            pixel_vert_size=10.0,
+            pixel_horz_size=10.0,
+        ),
+        environment=Environment(),
+        characteristics=APDCharacteristics(
+            quantum_efficiency=1.0,
+            adc_voltage_range=(0.0, 10.0),
+            adc_bit_resolution=16,
+            full_well_capacity=100000,
+            avalanche_gain=1.0,
+            pixel_reset_voltage=5.0,
+            roic_gain=0.8,
+        ),
     )
 
 
@@ -113,3 +139,20 @@ def test_output_node_noise_invalid_noise(cmos_5x10: CMOS):
         output_node_noise_cmos(
             detector=detector, readout_noise=1.0, readout_noise_std=-1.0
         )
+
+
+def test_readout_noise_saphira_with_ccd(ccd_5x10: CCD):
+    """Test model 'readout_noise_saphira' with a 'CCD'."""
+    detector = ccd_5x10
+
+    with pytest.raises(TypeError, match="Expecting a 'APD' detector object."):
+        readout_noise_saphira(
+            detector=detector, roic_readout_noise=0.1, controller_noise=0.1
+        )
+
+
+def test_readout_noise_saphira(apd_5x5: APD):
+    """Test model 'readout_noise_saphira' with valid inputs."""
+    detector = apd_5x5
+
+    readout_noise_saphira(detector=detector, roic_readout_noise=0.1, controller_noise=0.1)
