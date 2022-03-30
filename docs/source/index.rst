@@ -132,7 +132,7 @@ to look for certain things:
    references/apireference.rst
    references/models.rst
    references/contributing.rst
-   references/changelog.rst
+   references/changelog.md
 
 .. toctree::
    :caption: About

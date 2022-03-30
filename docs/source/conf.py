@@ -58,6 +58,7 @@ extensions = [
     "sphinx_panels",
     "sphinx_inline_tabs",  # Add inline tabs
     "sphinx.ext.intersphinx",  # Link to other project's documentation
+    "myst_parser",  # for markdown
 ]
 
 extlinks = {
