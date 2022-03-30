@@ -10,7 +10,7 @@
   (See [!434](https://gitlab.com/esa/pyxel/-/merge_requests/434)).
 * Replace deprecated appeding to dataframes with concatenating.
   (See [!444](https://gitlab.com/esa/pyxel/-/merge_requests/444)).
-* Add an APD detector.
+* Add an APD detector. Based on code from [James Gilbert](https://gitlab.com/labjg).
   (See [!449](https://gitlab.com/esa/pyxel/-/merge_requests/449)).
 * Implement a property setter for the attribute times in class Readout.
   (See [!455](https://gitlab.com/esa/pyxel/-/merge_requests/455)).
@@ -26,14 +26,16 @@
 
 ### Models
 
-* Add a DC offset model.
+* Add a DC offset model. Based on code from [James Gilbert](https://gitlab.com/labjg).
   (See [!452](https://gitlab.com/esa/pyxel/-/merge_requests/452)).
 * Add kTC reset noise model.
   (See [!451](https://gitlab.com/esa/pyxel/-/merge_requests/451)).
-* Add an APD dark current model.
+* Add an APD dark current model. Based on code from [James Gilbert](https://gitlab.com/labjg).
   (See [!453](https://gitlab.com/esa/pyxel/-/merge_requests/453)).
 * Add an APD gain model.
   (See [!450](https://gitlab.com/esa/pyxel/-/merge_requests/450)).
+* Add an APD readout noise model. Based on code from [James Gilbert](https://gitlab.com/labjg).
+  (See [!454](https://gitlab.com/esa/pyxel/-/merge_requests/454)).
 
 ### Others
 
