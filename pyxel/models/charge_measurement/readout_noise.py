@@ -10,7 +10,7 @@ import typing as t
 
 import numpy as np
 
-from pyxel.detectors import CMOS, Detector
+from pyxel.detectors import CMOS, Detector, APD
 from pyxel.util import temporary_random_state
 
 
@@ -136,3 +136,61 @@ def output_node_noise_cmos(
     )  # type: np.ndarray
 
     detector.signal.array = noise_2d
+
+
+def compute_readout_noise_apd(
+    roic_readout_noise: float,
+    avalanche_gain: float,
+    shape: t.Tuple[int, int],
+    controller_noise: float = 0.0,
+) -> np.ndarray:
+    """
+
+    Parameters
+    ----------
+    roic_readout_noise
+    avalanche_gain
+    shape
+    controller_noise
+
+    Returns
+    -------
+
+    """
+
+    noise_factor = (((1.2 - 1.0) / np.log10(1000)) * np.log10(avalanche_gain)) + 1.0
+
+    total_noise_level = np.sqrt(
+        (roic_readout_noise * noise_factor) ** 2 + controller_noise**2
+    )
+
+    total_noise = np.random.normal(0, total_noise_level, shape)
+
+    return total_noise
+
+
+@temporary_random_state
+def readout_noise_apd(
+    detector: APD,
+    roic_readout_noise: float,
+    controller_noise: float = 0.0,
+    seed: t.Optional[int] = None,
+) -> None:
+    """
+
+    Parameters
+    ----------
+    detector
+    roic_readout_noise
+    controller_noise
+    """
+
+    if not isinstance(detector, APD):
+        raise TypeError("Expecting a 'APD' detector object.")
+
+    detector.signal.array += compute_readout_noise_apd(
+        roic_readout_noise=roic_readout_noise,
+        avalanche_gain=detector.characteristics.avalanche_gain,
+        shape=detector.geometry.shape,
+        controller_noise=controller_noise,
+    )
