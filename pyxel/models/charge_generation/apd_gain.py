@@ -34,7 +34,7 @@ def apd_gain(detector: APD) -> None:
     """
 
     if not isinstance(detector, APD):
-        raise TypeError("Expecting a CMOS object for detector.")
+        raise TypeError("Expecting a 'APD' detector object.")
 
     if detector.charge.frame_empty():
 
