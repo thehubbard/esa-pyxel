@@ -21,6 +21,9 @@
 
 ### Documentation
 
+* Convert Changelog from Restructured Text to Markdown format.
+  (See [!456](https://gitlab.com/esa/pyxel/-/merge_requests/456)).
+
 ### Models
 
 * Add a DC offset model.
