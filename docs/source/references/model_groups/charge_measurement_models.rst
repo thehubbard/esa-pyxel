@@ -125,6 +125,28 @@ Output node noise model for :term:`CMOS` detectors where readout is statisticall
 
 .. autofunction:: output_node_noise_cmos
 
+Readout noise Saphira
+=====================
+
+:guilabel:`Signal` 🠆 :guilabel:`Signal`
+
+Empirical noise for adding noise to the signal array of the :term:`APD` detector using normal random distribution.
+Additional noise factor for `roic_readout_noise` is computed from detector characteristic `avalanche gain` in the model.
+Noise factor based on a figure from :cite:p:`2015:rauscher` for temperature of 90K.
+
+.. code-block:: yaml
+
+    - name: readout_noise_saphira
+      func: pyxel.models.charge_measurement.readout_noise_saphira
+      enabled: true
+      arguments:
+        roic_readout_noise: 0.15
+        controller_noise: 0.1, optional
+
+.. note:: This model is specific to the :term:`APD` detector.
+
+.. autofunction:: readout_noise_saphira
+
 Non-linearity
 =============
 
@@ -210,16 +232,17 @@ Example of the configuration file:
 * **Correlated pink noise**
 * **PCA0 noise**
 
-.. _signal_transfer:
+..
+    .. _signal_transfer:
 
-Signal Transfer models (CMOS)
-=============================
+    Signal Transfer models (CMOS)
+    =============================
 
-.. important::
-   This model group is only for :term:`CMOS`-based detectors!
+    .. important::
+       This model group is only for :term:`CMOS`-based detectors!
 
-.. currentmodule:: pyxel.models.signal_transfer
-.. automodule:: pyxel.models.signal_transfer
-    :members:
-    :undoc-members:
-    :imported-members:
+    .. currentmodule:: pyxel.models.signal_transfer
+    .. automodule:: pyxel.models.signal_transfer
+        :members:
+        :undoc-members:
+        :imported-members:
