@@ -1,7 +1,7 @@
 # Pyxel additional requirements for generating documentation
 
 doc8
-sphinx==4.2.0
+sphinx
 sphinx-book-theme
 sphinxcontrib-bibtex
 sphinxcontrib-napoleon
@@ -9,3 +9,4 @@ sphinx-panels
 ipython != 8.1; python_version < '3.9'
 ipython>=8.1; python_version >= '3.9'
 sphinx-inline-tabs
+myst-parser
