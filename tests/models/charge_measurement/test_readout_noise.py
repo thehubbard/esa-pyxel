@@ -9,18 +9,22 @@
 import pytest
 
 from pyxel.detectors import (
+    APD,
     CCD,
     CMOS,
+    APDCharacteristics,
+    APDGeometry,
     CCDCharacteristics,
     CCDGeometry,
     CMOSCharacteristics,
     CMOSGeometry,
     Environment,
-    APD,
-    APDGeometry,
-    APDCharacteristics,
 )
-from pyxel.models.charge_measurement import output_node_noise, output_node_noise_cmos, readout_noise_saphira
+from pyxel.models.charge_measurement import (
+    output_node_noise,
+    output_node_noise_cmos,
+    readout_noise_saphira,
+)
 
 
 @pytest.fixture
@@ -53,6 +57,7 @@ def cmos_5x10() -> CMOS:
         environment=Environment(),
         characteristics=CMOSCharacteristics(charge_to_volt_conversion=1.0e-6),
     )
+
 
 @pytest.fixture
 def apd_5x5() -> APD:
@@ -155,4 +160,6 @@ def test_readout_noise_saphira(apd_5x5: APD):
     """Test model 'readout_noise_saphira' with valid inputs."""
     detector = apd_5x5
 
-    readout_noise_saphira(detector=detector, roic_readout_noise=0.1, controller_noise=0.1)
+    readout_noise_saphira(
+        detector=detector, roic_readout_noise=0.1, controller_noise=0.1
+    )

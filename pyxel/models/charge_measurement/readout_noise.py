@@ -10,7 +10,7 @@ import typing as t
 
 import numpy as np
 
-from pyxel.detectors import CMOS, Detector, APD
+from pyxel.detectors import APD, CMOS, Detector
 from pyxel.util import temporary_random_state
 
 
