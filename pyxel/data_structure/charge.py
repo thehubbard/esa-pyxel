@@ -388,6 +388,13 @@ class Charge:
             self._frame = self.EMPTY_FRAME.copy()
         self._array *= 0
 
+    def frame_empty(self) -> bool:
+        """Return True if frame is empty and False otherwise."""
+        if self._frame.empty:
+            return True
+        else:
+            return False
+
     def validate_type(self, value: np.ndarray) -> None:
         """Validate a value.
 

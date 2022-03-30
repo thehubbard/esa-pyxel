@@ -14,3 +14,4 @@ from .load_charge import load_charge
 from .photoelectrons import simple_conversion, conversion_with_qe_map
 from .cosmix.cosmix import cosmix
 from .dark_current import dark_current, dark_current_saphira
+from .apd_gain import apd_gain
