@@ -23,6 +23,8 @@
 
 * Convert Changelog from Restructured Text to Markdown format.
   (See [!456](https://gitlab.com/esa/pyxel/-/merge_requests/456)).
+* Write in documentation a list of available models for each detector type.
+  (See [!457](https://gitlab.com/esa/pyxel/-/merge_requests/457)).
 
 ### Models
 
