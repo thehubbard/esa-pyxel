@@ -115,4 +115,4 @@ def output_pixel_reset_voltage_apd(detector: APD, roic_drop: float) -> None:
             "Output pixel reset voltage out of bonds of the ADC voltage range."
         )
 
-    detector.signal.array += offset
+    detector.signal.array += max(ch.adc_voltage_range) - offset
