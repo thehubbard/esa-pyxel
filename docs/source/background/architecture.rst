@@ -4,7 +4,7 @@
 Architecture
 ============
 
-There are two main structures behind Pyxel's architecture, the :ref:`detectors`  and the :ref:`pipelines`,
+There are two main structures behind Pyxel's architecture, the :ref:`detectors`  and the :ref:`pipeline`,
 each one represented by a class. See :ref:`apireference` for further information on the two classes.
 As illustrated below, the detector holds information about the detector properties such as geometry, characteristics,
 material and environment. Apart from that, it is also a bucket for storing simulated data,
@@ -18,8 +18,3 @@ which are grouped into different model groups, levels imitating the working prin
     :scale: 70%
     :alt: architecture
     :align: center
-
-.. toctree::
-
-   detectors.rst
-   pipelines.rst

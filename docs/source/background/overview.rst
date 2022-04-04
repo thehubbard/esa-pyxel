@@ -11,5 +11,7 @@ Use this section if you want to learn more about how Pyxel works and what differ
 Further information on specific parts of the code can be found in section :ref:`Reference<reference>`.
 
 * :doc:`architecture`
+* :doc:`detectors`
+* :doc:`pipeline`
 * :doc:`yaml`
 * :doc:`running_modes`

@@ -50,7 +50,7 @@ or subgroup.
 
     It contains the model levels as subgroups
     (*photon_generation*, *optics*, *charge_generation*, etc.).
-    For details, see :ref:`pipelines`.
+    For details, see :ref:`pipeline`.
 
     The order of model levels and models are important,
     as the execution order is defined here!

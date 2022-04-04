@@ -111,7 +111,7 @@ Add noise to signal array of detector output node using normal random distributi
 
 .. autofunction:: output_node_noise
 
-.. _kTC reset noise CMOS:
+.. _Output node noise CMOS:
 
 Output node noise CMOS
 ======================

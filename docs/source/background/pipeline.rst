@@ -1,8 +1,8 @@
-.. _pipelines:
+.. _pipeline:
 
-#########
-Pipelines
-#########
+########
+Pipeline
+########
 
 The core algorithm of the architecture is the Detection pipeline allowing to
 host any type of :ref:`models <models_explanation>` in an arbitrary number.
