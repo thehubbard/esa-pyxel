@@ -18,15 +18,20 @@ from pathlib import Path
 import click
 from boltons.strutils import under2camel
 from numpydoc.docscrape import NumpyDocString
+from toolz import dicttoolz
 from tqdm.auto import tqdm
 
 from pyxel import __version__
 from pyxel.detectors import (
+    CCD,
+    CMOS,
+    MKID,
     CCDCharacteristics,
     CCDGeometry,
     Characteristics,
     CMOSCharacteristics,
     CMOSGeometry,
+    Detector,
     Environment,
     Geometry,
     MKIDCharacteristics,
@@ -72,6 +77,10 @@ class Klass:
     cls: t.Type
     base_cls: t.Optional[t.Type] = None
 
+    @property
+    def name(self) -> str:
+        return self.cls.__name__
+
 
 def get_documentation(func: t.Callable) -> FuncDocumentation:
     assert func.__doc__
@@ -80,27 +89,46 @@ def get_documentation(func: t.Callable) -> FuncDocumentation:
     signature = inspect.signature(func)  # type: inspect.Signature
 
     parameters = {}
-    for params in doc["Parameters"]:
-        name, *_ = params.name.split(":")
-        description = "\n".join(params.desc)
 
-        parameter = signature.parameters[name]  # type: inspect.Parameter
+    if doc["Parameters"]:
+        for params in doc["Parameters"]:
+            name, *_ = params.name.split(":")
+            description = "\n".join(params.desc)
 
-        if hasattr(parameter.annotation, "__name__"):
-            annotation = parameter.annotation.__name__  # type: str
-        else:
-            annotation = str(parameter.annotation)
+            parameter = signature.parameters[name]  # type: inspect.Parameter
 
-        if parameter.default != inspect.Parameter.empty:
-            param = ParamDefault(
-                description=description,
-                annotation=annotation.replace("NoneType", "None"),
-                default=parameter.default,
-            )  # type: t.Union[ParamDefault, Param]
-        else:
-            param = Param(description=description, annotation=annotation)
+            if hasattr(parameter.annotation, "__name__"):
+                annotation = parameter.annotation.__name__  # type: str
+            else:
+                annotation = str(parameter.annotation)
 
-        parameters[name.strip()] = param
+            if parameter.default != inspect.Parameter.empty:
+                param = ParamDefault(
+                    description=description,
+                    annotation=annotation.replace("NoneType", "None"),
+                    default=parameter.default,
+                )  # type: t.Union[ParamDefault, Param]
+            else:
+                param = Param(description=description, annotation=annotation)
+
+            parameters[name.strip()] = param
+    else:
+        for name, parameter in signature.parameters.items():
+            if hasattr(parameter.annotation, "__name__"):
+                annotation = parameter.annotation.__name__  # type: str
+            else:
+                annotation = str(parameter.annotation)
+
+            if parameter.default != inspect.Parameter.empty:
+                param = ParamDefault(
+                    description="",
+                    annotation=annotation.replace("NoneType", "None"),
+                    default=parameter.default,
+                )  # type: t.Union[ParamDefault, Param]
+            else:
+                param = Param(description="", annotation=annotation)
+
+            parameters[name.strip()] = param
 
     return FuncDocumentation(
         description="\n".join(doc["Summary"]), parameters=parameters
@@ -116,9 +144,26 @@ def generate_class(klass: Klass) -> t.Iterator[str]:
 
         doc = FuncDocumentation(
             description=doc_inherited.description,
-            parameters={**doc_base.parameters, **doc_inherited.parameters},
+            # parameters={**doc_base.parameters, **doc_inherited.parameters},
+            parameters=dicttoolz.dissoc(doc_inherited.parameters, *doc_base.parameters),
         )
 
+    klass_description_lst = textwrap.wrap(doc.description)  # type: t.Sequence[str]
+
+    yield "@schema("
+    if len(klass_description_lst) == 1:
+        yield f"    title={klass.name!r},"
+        yield f"    description={klass_description_lst[0]!r}"
+    elif len(klass_description_lst) > 1:
+        yield f"    title={klass.name!r},"
+        yield "    description=("
+        for line in klass_description_lst:
+            yield f"        {line!r}"
+        yield "        )"
+    else:
+        yield f"    title={klass.name!r}"
+
+    yield ")"
     yield "@dataclass"
 
     if klass.base_cls is None:
@@ -134,19 +179,23 @@ def generate_class(klass: Klass) -> t.Iterator[str]:
             if isinstance(param, ParamDefault):
                 yield f"        default={param.default!r},"
             yield "        metadata=schema("
-            yield f"            title={title!r},"
 
             description_lst = textwrap.wrap(param.description)  # type: t.Sequence[str]
             if len(description_lst) == 1:
+                yield f"            title={title!r},"
                 yield f"            description={description_lst[0]!r}"
             elif len(description_lst) > 1:
+                yield f"            title={title!r},"
                 yield "            description=("
                 for line in description_lst:
                     yield f"                    {line!r}"
                 yield "                )"
+            else:
+                yield f"            title={title!r}"
 
             yield "        )"
             yield "    )"
+
     else:
         yield "    pass"
 
@@ -353,58 +402,34 @@ def generate_detectors() -> t.Iterator[str]:
     cmos_geometry = Klass(CMOSGeometry, base_cls=Geometry)
     mkid_geometry = Klass(MKIDGeometry, base_cls=Geometry)
 
-    # detector = Klass(Detector)
-    # ccd = Klass(CCD, base_cls=Detector)
-    # cmos = Klass(CMOS, base_cls=Detector)
-    # mkid = Klass(MKID, base_cls=Detector)
+    detector = Klass(Detector)
+    ccd = Klass(CCD, base_cls=Detector)
+    cmos = Klass(CMOS, base_cls=Detector)
+    mkid = Klass(MKID, base_cls=Detector)
 
     environment = Klass(Environment)
 
     graph = {
+        # CCD
         ccd_characteristics: {characteristics},
-        cmos_characteristics: {characteristics},
-        mkid_characteristics: {characteristics},
         ccd_geometry: {geometry},
+        ccd: {ccd_geometry, ccd_characteristics},
+        # CMOS
+        cmos_characteristics: {characteristics},
         cmos_geometry: {geometry},
+        cmos: {cmos_geometry, cmos_characteristics},
+        # MKID
+        mkid_characteristics: {characteristics},
         mkid_geometry: {geometry},
+        mkid: {mkid_geometry, mkid_characteristics},
+        # General
         environment: set(),
-        # detector: {environment},
-        # ccd: {ccd_geometry, ccd_characteristics},
-        # cmos: {cmos_geometry, cmos_characteristics},
-        # mkid: {mkid_geometry, mkid_characteristics},
+        detector: {environment},
     }  # type: t.Mapping[Klass, t.Set[Klass]]
     ts = TopologicalSorter(graph)
 
     for klass in ts.static_order():
         yield from generate_class(klass)
-
-    yield "@dataclass"
-    yield "class Detector:"
-    yield "    environment: Environment"
-
-    yield ""
-    yield ""
-    yield "@schema(title='CCD')"
-    yield "@dataclass"
-    yield "class CCD(Detector):"
-    yield "    geometry: CCDGeometry"
-    yield "    characteristics: CCDCharacteristics"
-
-    yield ""
-    yield ""
-    yield "@schema(title='CMOS')"
-    yield "@dataclass"
-    yield "class CMOS(Detector):"
-    yield "    geometry: CMOSGeometry"
-    yield "    characteristics: CMOSCharacteristics"
-
-    yield ""
-    yield ""
-    yield "@schema(title='MKID')"
-    yield "@dataclass"
-    yield "class MKID(Detector):"
-    yield "    geometry: MKIDGeometry"
-    yield "    characteristics: MKIDCharacteristics"
 
     yield ""
     yield "#"
