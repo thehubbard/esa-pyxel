@@ -7,6 +7,7 @@ Optical models
 .. currentmodule:: pyxel.models.optics
 .. automodule:: pyxel.models.optics
 
+.. _Physical Optics Propagation in PYthon (POPPY):
 
 Physical Optics Propagation in PYthon (POPPY)
 =============================================

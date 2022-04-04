@@ -7,6 +7,7 @@ Charge Measurement models
 .. currentmodule:: pyxel.models.charge_measurement
 .. automodule:: pyxel.models.charge_measurement
 
+.. _DC offset:
 
 DC offset
 =========
@@ -25,6 +26,7 @@ Add a DC offset to signal array of detector.
 
 .. autofunction:: dc_offset
 
+.. _Output pixel reset voltage APD:
 
 Output pixel reset voltage APD
 ==============================
@@ -45,6 +47,7 @@ Add output pixel reset voltage to the signal array of the :term:`APD` detector.
 
 .. autofunction:: output_pixel_reset_voltage_apd
 
+.. _kTC reset noise:
 
 kTC reset noise
 ===============
@@ -65,6 +68,7 @@ Add kTC reset noise to the signal array of the detector object.
 
 .. autofunction:: ktc_noise
 
+.. _Simple charge measurement:
 
 Simple charge measurement
 =========================
@@ -86,6 +90,8 @@ Example of the configuration file:
 
 .. autofunction:: simple_measurement
 
+.. _Output node noise:
+
 Output node noise
 =================
 
@@ -104,6 +110,8 @@ Add noise to signal array of detector output node using normal random distributi
 .. note:: This model is specific to the :term:`CCD` detector.
 
 .. autofunction:: output_node_noise
+
+.. _kTC reset noise CMOS:
 
 Output node noise CMOS
 ======================
@@ -124,6 +132,8 @@ Output node noise model for :term:`CMOS` detectors where readout is statisticall
 .. note:: This model is specific to the :term:`CMOS` detector.
 
 .. autofunction:: output_node_noise_cmos
+
+.. _Readout noise Saphira:
 
 Readout noise Saphira
 =====================
@@ -147,8 +157,10 @@ Noise factor based on a figure from :cite:p:`2015:rauscher` for temperature of 9
 
 .. autofunction:: readout_noise_saphira
 
-Non-linearity
-=============
+.. _Non-linearity (polynomial):
+
+Non-linearity (polynomial)
+==========================
 
 :guilabel:`Signal` 🠆 :guilabel:`Signal`
 
@@ -169,6 +181,8 @@ Example of the configuration file where a 10% non-linearity is introduced as a f
         coefficients: [0, 1, 0.9]  # e- [a,b,c] -> S = a + bx+ cx2 (x is signal)
 
 .. autofunction:: pyxel.models.charge_measurement.output_node_linearity_poly
+
+.. _HxRG noise generator:
 
 HxRG noise generator
 ====================

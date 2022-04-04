@@ -9,6 +9,7 @@ Charge Transfer models (CCD)
 
 .. currentmodule:: pyxel.models.charge_transfer
 
+.. _Charge Distortion Model (CDM):
 
 Charge Distortion Model (CDM)
 =============================
@@ -54,6 +55,7 @@ Example of the configuration file.
 
 .. autofunction:: cdm
 
+.. _Add CTI trails (ArCTIc):
 
 Add CTI trails
 ==============
@@ -86,6 +88,7 @@ Example of the configuration file:
 
 .. autofunction:: arctic_add
 
+.. _Remove CTI trails (ArCTIc):
 
 Remove CTI trails
 =================

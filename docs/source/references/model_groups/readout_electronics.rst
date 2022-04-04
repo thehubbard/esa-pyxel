@@ -8,6 +8,7 @@ Readout Electronics models
 
 Readout electronics models are used to add TBW.
 
+.. _Simple ADC:
 
 Simple ADC
 ==========
@@ -32,6 +33,8 @@ Example of the configuration file:
 
 .. autofunction:: simple_adc
 
+.. _Simple amplification:
+
 Simple amplification
 ====================
 
@@ -50,6 +53,8 @@ Example of the configuration file:
       enabled: true
 
 .. autofunction:: simple_amplifier
+
+.. _DC crosstalk:
 
 DC crosstalk
 ============
@@ -72,6 +77,8 @@ Example of the configuration file:
 
 .. autofunction:: dc_crosstalk
 
+.. _AC crosstalk:
+
 AC crosstalk
 ============
 
@@ -92,6 +99,8 @@ Example of the configuration file:
         readout_directions: [1,2,1,2]
 
 .. autofunction:: ac_crosstalk
+
+.. _Dead time filter:
 
 Dead time filter
 ================
@@ -125,6 +134,8 @@ Example of the configuration file:
 
 .. autofunction:: dead_time_filter
 
+.. _SAR ADC:
+
 SAR ADC
 =======
 
@@ -143,6 +154,8 @@ Example of the configuration file:
       enabled: true
 
 .. autofunction:: sar_adc
+
+.. _Simple phase conversion:
 
 Simple phase conversion
 =======================
