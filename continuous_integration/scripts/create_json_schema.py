@@ -7,10 +7,12 @@
 #  this file, may be copied, modified, propagated, or distributed except according to
 #  the terms contained in the file ‘LICENCE.txt’.
 
+import functools
 import importlib
 import inspect
 import textwrap
 import typing as t
+from collections import defaultdict
 from dataclasses import dataclass
 from graphlib import TopologicalSorter
 from pathlib import Path
@@ -22,21 +24,6 @@ from toolz import dicttoolz
 from tqdm.auto import tqdm
 
 from pyxel import __version__
-from pyxel.detectors import (
-    CCD,
-    CMOS,
-    MKID,
-    CCDCharacteristics,
-    CCDGeometry,
-    Characteristics,
-    CMOSCharacteristics,
-    CMOSGeometry,
-    Detector,
-    Environment,
-    Geometry,
-    MKIDCharacteristics,
-    MKIDGeometry,
-)
 
 
 @dataclass
@@ -135,7 +122,8 @@ def get_documentation(func: t.Callable) -> FuncDocumentation:
     )
 
 
-def generate_class(klass: Klass) -> t.Iterator[str]:
+@functools.cache
+def get_doc_from_klass(klass: Klass) -> FuncDocumentation:
     if klass.base_cls is None:
         doc = get_documentation(klass.cls)  # type: FuncDocumentation
     else:
@@ -144,10 +132,15 @@ def generate_class(klass: Klass) -> t.Iterator[str]:
 
         doc = FuncDocumentation(
             description=doc_inherited.description,
-            # parameters={**doc_base.parameters, **doc_inherited.parameters},
             parameters=dicttoolz.dissoc(doc_inherited.parameters, *doc_base.parameters),
         )
 
+    return doc
+
+
+def generate_class(klass: Klass) -> t.Iterator[str]:
+
+    doc = get_doc_from_klass(klass)
     klass_description_lst = textwrap.wrap(doc.description)  # type: t.Sequence[str]
 
     yield "@schema("
@@ -390,44 +383,64 @@ def get_model_group_info() -> t.Sequence[ModelGroupInfo]:
     return lst
 
 
+@functools.cache
+def create_klass(cls: t.Union[t.Type, str]) -> Klass:
+    import pyxel.detectors
+
+    if isinstance(cls, str):
+        cls_type = getattr(pyxel.detectors, cls)  # type: t.Type
+        return create_klass(cls_type)
+
+    # Try to find a base class
+    _, *base_classes, _ = inspect.getmro(cls)  # type: tuple
+
+    if base_classes:
+        return Klass(cls, base_cls=base_classes[0])
+
+    return Klass(cls)
+
+
+def create_graph(cls: t.Type, graph: t.Mapping[Klass, t.Set[Klass]]) -> None:
+    klass = create_klass(cls)  # type: Klass
+
+    doc = get_doc_from_klass(klass)  # type: FuncDocumentation
+
+    if klass.base_cls is None:
+        parameters = (
+            doc.parameters
+        )  # type: t.Mapping[str, t.Union[Param, ParamDefault]]
+    else:
+        create_graph(cls=klass.base_cls, graph=graph)
+        klass_base = create_klass(klass.base_cls)  # type: Klass
+        graph[klass].add(klass_base)
+
+        klass_base_doc = get_doc_from_klass(klass_base)  # type:  FuncDocumentation
+
+        parameters = {**doc.parameters, **klass_base_doc.parameters}
+
+    for name, parameter in parameters.items():
+        assert parameter.annotation
+
+        klass_param = create_klass(parameter.annotation)  # type: Klass
+        graph[klass].add(klass_param)
+
+        if klass_param.base_cls is not None:
+            klass_param_base = create_klass(klass_param.base_cls)  # type: Klass
+            graph[klass_param].add(klass_param_base)
+
+
 def generate_detectors() -> t.Iterator[str]:
-    # Generate code for the detectors
-    characteristics = Klass(Characteristics)
-    ccd_characteristics = Klass(CCDCharacteristics, base_cls=Characteristics)
-    cmos_characteristics = Klass(CMOSCharacteristics, base_cls=Characteristics)
-    mkid_characteristics = Klass(MKIDCharacteristics, base_cls=Characteristics)
+    from pyxel.detectors import APD, CCD, CMOS, MKID
 
-    geometry = Klass(Geometry)
-    ccd_geometry = Klass(CCDGeometry, base_cls=Geometry)
-    cmos_geometry = Klass(CMOSGeometry, base_cls=Geometry)
-    mkid_geometry = Klass(MKIDGeometry, base_cls=Geometry)
+    registered_detectors = (CCD, CMOS, MKID, APD)  # type: t.Sequence[t.Type[Detector]]
 
-    detector = Klass(Detector)
-    ccd = Klass(CCD, base_cls=Detector)
-    cmos = Klass(CMOS, base_cls=Detector)
-    mkid = Klass(MKID, base_cls=Detector)
+    # Build a dependency graph
+    graph = defaultdict(set)  # type: t.Mapping[Klass, t.Set[Klass]]
+    for detector in registered_detectors:  # type: t.Type[Detector]
+        create_graph(cls=detector, graph=graph)
 
-    environment = Klass(Environment)
-
-    graph = {
-        # CCD
-        ccd_characteristics: {characteristics},
-        ccd_geometry: {geometry},
-        ccd: {ccd_geometry, ccd_characteristics},
-        # CMOS
-        cmos_characteristics: {characteristics},
-        cmos_geometry: {geometry},
-        cmos: {cmos_geometry, cmos_characteristics},
-        # MKID
-        mkid_characteristics: {characteristics},
-        mkid_geometry: {geometry},
-        mkid: {mkid_geometry, mkid_characteristics},
-        # General
-        environment: set(),
-        detector: {environment},
-    }  # type: t.Mapping[Klass, t.Set[Klass]]
+    # Generate code based on the dependency graph
     ts = TopologicalSorter(graph)
-
     for klass in ts.static_order():
         yield from generate_class(klass)
 
@@ -599,33 +612,33 @@ def generate_detectors() -> t.Iterator[str]:
     yield ""
 
     # Create wrappers for the detectors
-    detector_classes = ["CCD", "CMOS", "MKID"]  # type: t.Sequence[str]
-    for klass_name in detector_classes:
-        yield f"#@schema(title='{klass_name}')"
-        yield "#@dataclass"
-        yield f"#class Wrapper{klass_name}:"
-        yield f"#    {klass_name.lower()}: {klass_name}"
-        yield ""
-        yield ""
+    detector_classes = ["CCD", "CMOS", "MKID", "APD"]  # type: t.Sequence[str]
+    # for klass_name in detector_classes:
+    #     yield f"#@schema(title='{klass_name}')"
+    #     yield "#@dataclass"
+    #     yield f"#class Wrapper{klass_name}:"
+    #     yield f"#    {klass_name.lower()}: {klass_name}"
+    #     yield ""
+    #     yield ""
 
     # Create wrappers for the modes
     mode_classes = ["Exposure", "Observation", "Calibration"]  # type: t.Sequence[str]
-    for klass_name in mode_classes:
-        yield f"#@schema(title='{klass_name}')"
-        yield "#@dataclass"
-        yield f"#class Wrapper{klass_name}:"
-        yield f"#    {klass_name.lower()}: {klass_name}"
-        yield ""
-        yield ""
+    # for klass_name in mode_classes:
+    #     yield f"#@schema(title='{klass_name}')"
+    #     yield "#@dataclass"
+    #     yield f"#class Wrapper{klass_name}:"
+    #     yield f"#    {klass_name.lower()}: {klass_name}"
+    #     yield ""
+    #     yield ""
 
-    wrapper_detector_classes = [f"Wrapper{el}" for el in detector_classes]
-    wrapper_mode_classes = [f"Wrapper{el}" for el in mode_classes]
+    # wrapper_detector_classes = [f"Wrapper{el}" for el in detector_classes]
+    # wrapper_mode_classes = [f"Wrapper{el}" for el in mode_classes]
 
     yield "@dataclass"
     yield "class Configuration:"
     yield "    pipeline: DetailedDetectionPipeline"
-    yield f"    # mode: typing.Union[{', '.join(wrapper_mode_classes)}]"
-    yield f"    # detector: typing.Union[{', '.join(wrapper_detector_classes)}]"
+    # yield f"    # mode: typing.Union[{', '.join(wrapper_mode_classes)}]"
+    # yield f"    # detector: typing.Union[{', '.join(wrapper_detector_classes)}]"
 
     yield ""
     yield "    # Running modes"
