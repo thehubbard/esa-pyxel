@@ -7,6 +7,7 @@ Charge Generation models
 .. currentmodule:: pyxel.models.charge_generation
 .. automodule:: pyxel.models.charge_generation
 
+.. _Simple photoconversion:
 
 Simple photoconversion
 ======================
@@ -28,6 +29,8 @@ Basic example of YAML configuration model:
         qe: 0.8  # optional
 
 .. autofunction:: simple_conversion
+
+.. _Conversion with custom QE map:
 
 Conversion with custom QE map
 =============================
@@ -55,6 +58,8 @@ Basic example of YAML configuration model:
 
 .. autofunction:: conversion_with_qe_map
 
+.. _Load charge:
+
 Load charge
 ===========
 
@@ -81,6 +86,8 @@ Basic example of YAML configuration model:
 
 .. autofunction:: load_charge
 
+.. _Charge injection:
+
 Charge injection
 ================
 
@@ -105,6 +112,7 @@ Example of YAML configuration model:
 
 .. autofunction:: charge_blocks
 
+.. _CosmiX cosmic ray model:
 
 CosmiX cosmic ray model
 =======================
@@ -142,6 +150,7 @@ Example of the configuration file:
 
 .. autofunction:: pyxel.models.charge_generation.cosmix
 
+.. _Dark current rule07:
 
 Dark current rule07
 ===================
@@ -171,6 +180,7 @@ Example of the configuration file:
 
 .. autofunction:: pyxel.models.charge_generation.dark_current_rule07    
 
+.. _Dark current:
 
 Dark current
 ============
@@ -191,6 +201,7 @@ Example of the configuration file:
 
 .. autofunction:: pyxel.models.charge_generation.dark_current
 
+.. _APD gain:
 
 APD gain
 ========
@@ -213,6 +224,7 @@ Example of the configuration file:
 
 .. autofunction:: pyxel.models.charge_generation.apd_gain
 
+.. _Dark current Saphira:
 
 Dark current Saphira
 ====================

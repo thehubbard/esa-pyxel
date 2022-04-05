@@ -120,6 +120,8 @@ to look for certain things:
 
    background/overview.rst
    background/architecture.rst
+   background/detectors.rst
+   background/pipeline.rst
    background/yaml.rst
    background/running_modes.rst
 

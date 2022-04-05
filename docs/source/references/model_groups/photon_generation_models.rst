@@ -11,8 +11,10 @@ array is an array of zeros. Multiple photon generation models can be linked toge
 The values in the :py:class:`~pyxel.data_structure.Photon` array represent photon flux,
 so number of photons per pixel area per second. Time scale of the incoming flux can be changed in the model arguments.
 
-Loading an image
-----------------
+.. _Load image:
+
+Load image
+----------
 
 :guilabel:`Photon` 🠆 :guilabel:`Photon`
 
@@ -45,6 +47,8 @@ Example of the configuration file:
 
 .. autofunction:: load_image
 
+.. _Simple illumination:
+
 Simple illumination
 -------------------
 
@@ -75,6 +79,8 @@ Example of the configuration file for a circular object:
 
 .. autofunction:: illumination
 
+.. _Stripe pattern:
+
 Stripe pattern
 --------------
 
@@ -100,6 +106,8 @@ Example of the configuration file:
         angle: 5
 
 .. autofunction:: stripe_pattern
+
+.. _Shot noise:
 
 Shot noise
 ----------

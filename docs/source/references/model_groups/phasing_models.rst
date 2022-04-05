@@ -6,6 +6,8 @@ Phasing models
 
 .. currentmodule:: pyxel.models.phasing
 
+.. _Pulse processing:
+
 Pulse processing
 ================
 

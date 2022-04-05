@@ -12,6 +12,8 @@ The data represents amount of charge stored in each of the pixels.
 A charge collection model is necessary to first convert from charge data stored in
 :py:class:`~pyxel.data_structure.Charge` class. Multiple models are available to add detector effects after.
 
+.. _Simple collection:
+
 Simple collection
 =================
 
@@ -35,6 +37,8 @@ Example of YAML configuration model:
 
 .. autofunction:: simple_collection
 
+.. _Simple full well:
+
 Simple full well
 ================
 
@@ -56,6 +60,8 @@ Example of the configuration file:
           fwc: 1000  # optional
 
 .. autofunction:: simple_full_well
+
+.. _Fixed pattern noise:
 
 Fixed pattern noise
 ===================
@@ -83,6 +89,7 @@ Basic example of the configuration file:
 
 .. autofunction:: fix_pattern_noise
 
+.. _Inter pixel capacitance:
 
 Inter-pixel capacitance
 =======================
@@ -126,6 +133,8 @@ Example of the configuration file:
 
 .. autofunction:: simple_ipc
 
+.. _Simple persistence:
+
 Simple Persistence
 ==================
 
@@ -156,6 +165,7 @@ Example of the configuration file:
 
 .. autofunction:: simple_persistence
 
+.. _Persistence:
 
 Persistence
 ===========
