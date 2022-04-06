@@ -19,7 +19,7 @@ from pyxel.detectors import (
     Environment,
     ReadoutProperties,
 )
-from pyxel.models.charge_generation import dark_current, dark_current_saphira
+from pyxel.models.charge_generation import simple_dark_current, dark_current_saphira
 
 
 @pytest.fixture
@@ -68,7 +68,7 @@ def apd_5x5() -> APD:
 
 def test_dark_current_valid(ccd_10x10: CCD):
     """Test model 'dark_current' with valid inputs."""
-    dark_current(detector=ccd_10x10, dark_rate=1.0)
+    simple_dark_current(detector=ccd_10x10, dark_rate=1.0)
 
 
 def test_dark_current_saphira_valid(apd_5x5: APD):

@@ -182,8 +182,8 @@ Example of the configuration file:
 
 .. _Dark current:
 
-Dark current
-============
+Simple dark current
+===================
 
 :guilabel:`Charge` 🠆 :guilabel:`Charge`
 
@@ -193,13 +193,13 @@ Example of the configuration file:
 
 .. code-block:: yaml
 
-    - name: dark_current
-      func: pyxel.models.charge_generation.dark_current
+    - name: simple_dark_current
+      func: pyxel.models.charge_generation.simple_dark_current
       enabled: true
       arguments:
         dark_rate: 10.0
 
-.. autofunction:: pyxel.models.charge_generation.dark_current
+.. autofunction:: pyxel.models.charge_generation.simple_dark_current
 
 .. _APD gain:
 

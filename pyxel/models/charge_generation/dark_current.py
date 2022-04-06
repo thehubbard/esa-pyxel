@@ -15,7 +15,7 @@ from pyxel.detectors import APD, Detector
 from pyxel.util import temporary_random_state
 
 
-def calculate_dark_current(
+def calculate_simple_dark_current(
     num_rows: int, num_cols: int, current: float, exposure_time: float
 ) -> np.ndarray:
     """Simulate dark current in a :term:`CCD`.
@@ -46,7 +46,7 @@ def calculate_dark_current(
 
 
 @temporary_random_state
-def dark_current(
+def simple_dark_current(
     detector: Detector, dark_rate: float, seed: t.Optional[int] = None
 ) -> None:
     """Simulate dark current in a detector.
@@ -64,7 +64,7 @@ def dark_current(
     exposure_time = detector.time_step
     geo = detector.geometry
 
-    dark_current_array = calculate_dark_current(
+    dark_current_array = calculate_simple_dark_current(
         num_rows=geo.row,
         num_cols=geo.col,
         current=dark_rate,
