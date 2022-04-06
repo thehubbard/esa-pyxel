@@ -16,6 +16,7 @@ Available models
     * :ref:`Shot noise`
 * Optics
     * :ref:`Physical Optics Propagation in PYthon (POPPY)`
+    * :ref:`Load PSF`
 * Charge generation
     * :ref:`Simple photoconversion`
     * :ref:`Conversion with custom QE map`

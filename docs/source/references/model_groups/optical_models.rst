@@ -63,3 +63,30 @@ Example of the configuration file:
             aperture_stop: false
 
 .. autofunction:: optical_psf
+
+.. _Load PSF:
+
+Load PSF
+========
+
+:guilabel:`Photon` 🠆 :guilabel:`Photon`
+
+With this model you can load a Point Spread Function (:term:`PSF`) from a file.
+The model will convolve the :py:class:`~pyxel.data_structure.Photon` array
+inside the :py:class:`~pyxel.detectors.Detector` object with the loaded :term:`PSF`, using the
+`astropy.convolution.convolve_fft <https://docs.astropy.org/en/stable/api/astropy.convolution.convolve_fft.html>`_
+function.
+
+Example of the configuration file:
+
+.. code-block:: yaml
+
+    - name: load_psf
+      func: pyxel.models.optics.load_psf
+      enabled: true
+      arguments:
+        filename: "psf.npy"
+        normalize_kernel: true  # optional
+
+.. autofunction:: load_psf
+
