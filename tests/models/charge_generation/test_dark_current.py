@@ -19,7 +19,7 @@ from pyxel.detectors import (
     Environment,
     ReadoutProperties,
 )
-from pyxel.models.charge_generation import simple_dark_current, dark_current_saphira
+from pyxel.models.charge_generation import dark_current_saphira, simple_dark_current
 
 
 @pytest.fixture

@@ -5,14 +5,125 @@
 #   this file, may be copied, modified, propagated, or distributed except according to
 #   the terms contained in the file ‘LICENCE.txt’.
 
-"""Simple models to generate charge due to dark current process."""
+"""Mmodels to generate charge due to dark current process."""
 
 import typing as t
 
 import numpy as np
+from astropy import constants as const
 
 from pyxel.detectors import APD, Detector
 from pyxel.util import temporary_random_state
+
+
+def compute_dark_current(
+    shape: t.Tuple[int, int],
+    time_step: float,
+    temperature: float,
+    pixel_area: float,
+    figure_of_merit: float,
+    band_gap: float,
+    fixed_pattern_noise_factor: float,
+) -> np.ndarray:
+    """Compute dark current.
+
+    Based on:
+    Konnik, Mikhail V. and James S. Welsh.
+    “High-level numerical simulations of noise in CCD and CMOS photosensors: review and tutorial.”
+    ArXiv abs/1412.4031 (2014): n. pag.
+
+    Parameters
+    ----------
+    shape: tuple
+        Output array shape.
+    time_step: float
+        Time step. Unit: s
+    temperature: float
+        Temperature. Unit: K
+    pixel_area:
+        Pixel area. Unit: cm^2
+    figure_of_merit: float
+        Dark current figure of merit. Unit: nA/cm^2
+    band_gap: float
+        Semiconductor band_gap. Unit: eV
+    fixed_pattern_noise_factor: float
+        Fixed pattern noise factor.
+
+    Returns
+    -------
+    dark_current_2d: ndarray
+    """
+    k_B = const.k_B.value
+    e_0 = const.e.value
+
+    average_dark_current = (
+        pixel_area  # in cm^2
+        * figure_of_merit  # in nA/cm^2
+        * 1e-9  # conversion to A/cm^2
+        * (1 / e_0)  # conversion to e-/s/cm^2
+        * temperature ** (3 / 2)
+        * np.exp(-band_gap * e_0 / (2 * k_B * temperature))
+    )  # Unit: e-/s/pixel
+
+    dark_signal_2d = np.ones(shape) * average_dark_current * time_step
+    dark_current_shot_noise_2d = np.random.poisson(
+        dark_signal_2d
+    )  # dark current shot noise
+    dark_current_fpn_sigma = (
+        time_step * average_dark_current * fixed_pattern_noise_factor
+    )  # sigma of fpn distribution
+
+    dark_current_2d = dark_current_shot_noise_2d * (
+        1 + np.random.lognormal(sigma=dark_current_fpn_sigma**2, size=shape)
+    )
+
+    return dark_current_2d
+
+
+@temporary_random_state
+def dark_current(
+    detector: Detector,
+    figure_of_merit: float,
+    band_gap: float,
+    fixed_pattern_noise_factor: float,
+    seed: t.Optional[int] = None,
+) -> None:
+    """Add dark current to the detector charge.
+
+    Based on:
+    Konnik, Mikhail V. and James S. Welsh.
+    “High-level numerical simulations of noise in CCD and CMOS photosensors: review and tutorial.”
+    ArXiv abs/1412.4031 (2014): n. pag.
+
+    Parameters
+    ----------
+    detector: Detector
+        Pyxel detector object.
+    figure_of_merit: float
+        Dark current figure of merit. Unit: nA/cm^2
+    band_gap: float
+        Semiconductor band_gap. Unit: eV
+    fixed_pattern_noise_factor: float
+        Fixed pattern noise factor. Usually between 0.1 and 0.4.
+    seed: int, optional
+        Random seed.
+    """
+    geo = detector.geometry
+    pixel_area = geo.pixel_vert_size * 1e-4 * geo.pixel_horz_size * 1e-4  # in cm^2
+    temperature = detector.environment.temperature
+    time_step = detector.time_step
+
+    dark_current_array = compute_dark_current(
+        shape=geo.shape,
+        time_step=time_step,
+        temperature=temperature,
+        pixel_area=pixel_area,
+        figure_of_merit=figure_of_merit,
+        band_gap=band_gap,
+        fixed_pattern_noise_factor=fixed_pattern_noise_factor,
+    )
+
+    detector.charge.add_charge_array(dark_current_array)
 
 
 def calculate_simple_dark_current(
