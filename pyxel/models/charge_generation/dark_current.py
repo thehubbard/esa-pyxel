@@ -74,7 +74,7 @@ def compute_dark_current(
     )  # sigma of fpn distribution
 
     dark_current_2d = dark_current_shot_noise_2d * (
-        1 + np.random.lognormal(sigma=dark_current_fpn_sigma**2, size=shape)
+        1 + np.random.lognormal(sigma=dark_current_fpn_sigma, size=shape)
     )
 
     return dark_current_2d
@@ -104,7 +104,7 @@ def dark_current(
     band_gap: float
         Semiconductor band_gap. Unit: eV
     fixed_pattern_noise_factor: float
-        Fixed pattern noise factor. Usually between 0.1 and 0.4.
+        Fixed pattern noise factor.
     seed: int, optional
         Random seed.
     """
