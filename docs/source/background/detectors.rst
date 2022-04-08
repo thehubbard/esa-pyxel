@@ -23,6 +23,9 @@ and the generated signals we are interested in at the end of the simulation.
     :alt: detector
     :align: center
 
+Implemented detector types:
+===========================
+
 .. toctree::
     detectors/ccd.rst
     detectors/cmos.rst
@@ -31,8 +34,13 @@ and the generated signals we are interested in at the end of the simulation.
 
 .. _data_structure:
 
-Data Structure
-==============
+Detector properties
+===================
+
+.. _data_structure:
+
+Data
+====
 
 Models in Pyxel should be able to add photons, charges, charge packets, signal [#]_ or
 image pixel values to the corresponding data structure classes
