@@ -35,9 +35,13 @@ def _store(
     for key, value in dct.items():
         new_name = f"{name}/{key}"
 
-        if isinstance(value, (int, float)):
+        if isinstance(value, (int, float)) or value is None:
+
+            if value is None:
+                value = np.nan
+
             dataset = h5file.create_dataset(
-                name=new_name, data=value
+                name=new_name, data=value, shape=()
             )  # type: h5.Dataset
 
             if attributes is not None and key in attributes:
@@ -62,6 +66,7 @@ def _store(
                 new_group.attrs.update(attributes[key])
 
             _store(h5file, name=new_name, dct=value)
+
         else:
             raise NotImplementedError
 
@@ -88,7 +93,7 @@ def to_hdf5(filename: t.Union[str, Path], dct: t.Mapping[str, t.Any]) -> None:
 
 def _load(
     h5file: h5.File, name: str
-) -> t.Union[int, float, t.Mapping[str, t.Any], np.ndarray, pd.DataFrame]:
+) -> t.Union[None, int, float, t.Mapping[str, t.Any], np.ndarray, pd.DataFrame]:
     """TBW."""
     dataset = h5file[name]  # type: t.Union[h5.Dataset, h5.Group]
 
@@ -106,10 +111,14 @@ def _load(
 
     elif isinstance(dataset, h5.Dataset):
         if dataset.ndim == 0:
-            if np.issubdtype(dataset.dtype, np.integer):
-                return int(np.array(dataset))
+            value = np.array(dataset)
+
+            if np.isnan(value):
+                return None
+            elif np.issubdtype(dataset.dtype, np.integer):
+                return int(value)
             elif np.issubdtype(dataset.dtype, np.floating):
-                return float(np.array(dataset))
+                return float(value)
             else:
                 raise TypeError
         else:

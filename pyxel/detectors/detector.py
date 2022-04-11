@@ -375,40 +375,40 @@ class Detector:
         .. code-block:: bash
 
             filename.h5  (4 objects, 3 attributes)
+            ├── geometry  (5 objects)
+            │   ├── col  (), int64
+            │   ├── pixel_horz_size  (), float64
+            │   ├── pixel_vert_size  (), float64
+            │   ├── row  (), int64
+            │   └── total_thickness  (), float64
+            ├── environment  (1 object)
+            │   └── temperature  (), float64
             ├── characteristics  (4 objects)
             │   ├── charge_to_volt_conversion  (), float64
             │   ├── full_well_capacity  (), int64
             │   ├── pre_amplification  (), float64
             │   └── quantum_efficiency  (), float64
-            ├── data  (5 objects)
-            │   ├── charge  (2 objects, 2 attributes)
-            │   │   ├── array  (100, 120), float64
-            │   │   └── frame  (13 objects, 1 attribute)
-            │   │       ├── charge  (0,), float64
-            │   │       ├── energy  (0,), float64
-            │   │       ├── init_energy  (0,), float64
-            │   │       ├── init_pos_hor  (0,), float64
-            │   │       ├── init_pos_ver  (0,), float64
-            │   │       ├── init_pos_z  (0,), float64
-            │   │       ├── number  (0,), float64
-            │   │       ├── position_hor  (0,), float64
-            │   │       ├── position_ver  (0,), float64
-            │   │       ├── position_z  (0,), float64
-            │   │       ├── velocity_hor  (0,), float64
-            │   │       ├── velocity_ver  (0,), float64
-            │   │       └── velocity_z  (0,), float64
-            │   ├── image  (100, 120), uint64
-            │   ├── photon  (100, 120), float64
-            │   ├── pixel  (100, 120), float64
-            │   └── signal  (100, 120), float64
-            ├── environment  (1 object)
-            │   └── temperature  (), float64
-            └── geometry  (5 objects)
-                ├── col  (), int64
-                ├── pixel_horz_size  (), float64
-                ├── pixel_vert_size  (), float64
-                ├── row  (), int64
-                └── total_thickness  (), float64
+            └── data  (5 objects)
+                ├── charge  (2 objects, 2 attributes)
+                │   ├── array  (100, 120), float64
+                │   └── frame  (13 objects, 1 attribute)
+                │       ├── charge  (0,), float64
+                │       ├── energy  (0,), float64
+                │       ├── init_energy  (0,), float64
+                │       ├── init_pos_hor  (0,), float64
+                │       ├── init_pos_ver  (0,), float64
+                │       ├── init_pos_z  (0,), float64
+                │       ├── number  (0,), float64
+                │       ├── position_hor  (0,), float64
+                │       ├── position_ver  (0,), float64
+                │       ├── position_z  (0,), float64
+                │       ├── velocity_hor  (0,), float64
+                │       ├── velocity_ver  (0,), float64
+                │       └── velocity_z  (0,), float64
+                ├── image  (100, 120), uint64
+                ├── photon  (100, 120), float64
+                ├── pixel  (100, 120), float64
+                └── signal  (100, 120), float64
 
         Parameters
         ----------
