@@ -34,6 +34,7 @@ import typing as t
 
 import astropy.constants as const
 import numpy as np
+from toolz import dicttoolz
 
 from pyxel.util.memory import get_size
 
@@ -421,4 +422,13 @@ class APDCharacteristics:
     @classmethod
     def from_dict(cls, dct: t.Mapping):
         """Create a new instance from a `dict`."""
-        return cls(**dct)
+        if "adc_voltage_range" in dct:
+            new_dct = dicttoolz.dissoc(dct, "adc_voltage_range")  # type: t.Mapping
+            adc_voltage_range = dct["adc_voltage_range"]
+
+            if adc_voltage_range is not None:
+                adc_voltage_range = tuple(adc_voltage_range)
+
+            return cls(adc_voltage_range=adc_voltage_range, **new_dct)
+        else:
+            return cls(**dct)

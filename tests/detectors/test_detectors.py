@@ -163,7 +163,7 @@ def test_equal(detector: t.Union[CCD, CMOS, MKID, APD]):
 
 def test_to_from_hdf5(detector: t.Union[CCD, CMOS, MKID, APD], tmp_path: Path):
     """Test methods `Detector.to_hdf5' and `Detector.from_hdf5`."""
-    filename = tmp_path / "ccd.h5"
+    filename = tmp_path / f"{detector.__class__.__name__}.h5"
 
     # Save to 'hdf5'
     detector.to_hdf5(filename)

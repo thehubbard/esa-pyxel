@@ -8,6 +8,7 @@
 """TBW."""
 
 import typing as t
+from collections import abc
 from pathlib import Path
 
 import h5py as h5
@@ -53,7 +54,7 @@ def _store(
 
             _store(h5file, name=new_name, dct=value.to_dict(orient="series"))
 
-        elif isinstance(value, (pd.Series, np.ndarray)):
+        elif isinstance(value, (pd.Series, np.ndarray, abc.Sequence)):
             dataset = h5file.create_dataset(name=new_name, data=np.asarray(value))
 
             if attributes is not None and key in attributes:
