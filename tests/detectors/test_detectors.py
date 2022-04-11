@@ -6,6 +6,7 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 
+import copy
 import typing as t
 from pathlib import Path
 
@@ -42,7 +43,7 @@ from pyxel.detectors import (
     )
 )
 def detector(request) -> t.Union[CCD, CMOS, MKID, APD]:
-
+    """Create a valid detector."""
     if request.param == "ccd_basic":
         return CCD(
             geometry=CCDGeometry(row=4, col=5),
@@ -116,7 +117,9 @@ def detector(request) -> t.Union[CCD, CMOS, MKID, APD]:
         return APD(
             geometry=APDGeometry(row=4, col=5),
             environment=Environment(),
-            characteristics=APDCharacteristics(),
+            characteristics=APDCharacteristics(
+                roic_gain=1.0, avalanche_gain=2.0, pixel_reset_voltage=3.0
+            ),
         )
     elif request.param == "apd_100x120":
         return APD(
@@ -135,12 +138,27 @@ def detector(request) -> t.Union[CCD, CMOS, MKID, APD]:
                 adc_voltage_range=(0.0, 5.0),
                 avalanche_gain=1.0,
                 pixel_reset_voltage=12.0,
-                common_voltage=3.0,
                 roic_gain=4.1,
             ),
         )
     else:
         raise NotImplementedError
+
+
+def test_equal(detector: t.Union[CCD, CMOS, MKID, APD]):
+    new_detector = copy.deepcopy(detector)
+
+    assert new_detector.geometry is not detector.geometry
+    assert new_detector.geometry == detector.geometry
+
+    assert new_detector.environment is not detector.environment
+    assert new_detector.environment == detector.environment
+
+    assert new_detector.characteristics is not detector.characteristics
+    assert new_detector.characteristics == detector.characteristics
+
+    assert new_detector is not detector
+    assert new_detector == detector
 
 
 def test_to_from_hdf5(detector: t.Union[CCD, CMOS, MKID, APD], tmp_path: Path):
@@ -153,5 +171,9 @@ def test_to_from_hdf5(detector: t.Union[CCD, CMOS, MKID, APD], tmp_path: Path):
     # Load from 'hdf5
     new_detector = Detector.from_hdf5(filename)
 
-    # Comparse
+    # Comparisons
+    assert new_detector.geometry == detector.geometry
+    assert new_detector.environment == detector.environment
+    assert new_detector.characteristics == detector.characteristics
+
     assert new_detector == detector

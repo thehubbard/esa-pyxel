@@ -112,6 +112,9 @@ class CMOS(Detector):
         if "charge" in data and data["charge"] is not None:
             charge_dct = data["charge"]
             detector.charge._array = charge_dct["array"]
-            detector.charge._frame = charge_dct["frame"]
+
+            new_frame = charge_dct["frame"]  # type: pd.DataFrame
+            previous_frame = detector.charge._frame  # type: pd.DataFrame
+            detector.charge._frame = new_frame[previous_frame.columns]
 
         return detector
