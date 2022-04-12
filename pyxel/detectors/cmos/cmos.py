@@ -11,6 +11,8 @@ import typing as t
 from pyxel.detectors import Detector
 
 if t.TYPE_CHECKING:
+    import pandas as pd
+
     from pyxel.detectors import CMOSCharacteristics, CMOSGeometry, Environment
 
 

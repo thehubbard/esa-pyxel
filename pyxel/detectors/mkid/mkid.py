@@ -15,17 +15,14 @@
 """:term:`MKID`-array detector modeling class."""
 
 import typing as t
-from pathlib import Path
 
-import h5py as h5
-import numpy as np
-
-from pyxel import __version__
 from pyxel.data_structure import Phase
 from pyxel.detectors import Detector
 from pyxel.util.memory import memory_usage_details
 
 if t.TYPE_CHECKING:
+    import pandas as pd
+
     from pyxel.detectors import Environment, MKIDCharacteristics, MKIDGeometry
 
 

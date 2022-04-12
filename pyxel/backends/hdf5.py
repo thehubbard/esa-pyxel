@@ -31,13 +31,12 @@ def _store(
     name: str,
     dct: t.Mapping[str, t.Union[int, float, pd.DataFrame, pd.Series, np.ndarray, dict]],
     attributes: t.Optional[t.Mapping[str, t.Mapping[str, str]]] = None,
-):
+) -> None:
     """TBW."""
     for key, value in dct.items():
         new_name = f"{name}/{key}"
 
         if isinstance(value, (int, float)) or value is None:
-
             if value is None:
                 value = np.nan
 
