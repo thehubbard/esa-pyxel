@@ -11,6 +11,8 @@
 
 * Add a temperature dependent dark current model.
   (See [!460](https://gitlab.com/esa/pyxel/-/merge_requests/460)).
+* Add new model to simulate noise with SAR ADC.
+  (See [!461](https://gitlab.com/esa/pyxel/-/merge_requests/461)).
 
 ### Others
 
