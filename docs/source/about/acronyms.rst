@@ -9,7 +9,7 @@ List of Acronyms
       Alternating Column Noise.
 
     ADC
-      Analog-Digital Converter.
+      Analog-to-Digital Converter.
 
     APD
       Avalanche Photo Diode.
@@ -29,14 +29,26 @@ List of Acronyms
     CTI
       Charge Transfer Inefficiency.
 
+    DAC
+      Digital-to-Analog Converter.
+
+    ESO
+      European South Observatory.
+
     HDF5
       Hierarchical Data Format.
+
+    LSB
+      Least Significant Bit.
 
     MCT
       Mercury Cadmium Telluride (HgCdTe).
 
     MKID
         Microwave Kinetic-Inductance Detector.
+
+    MSB
+      Most Significant Bit.
 
     PSF
       Point Spread Function.
@@ -45,4 +57,4 @@ List of Acronyms
       Quantum Efficiency.
 
     SAR
-        Successive Approximation Register.
+      Successive Approximation Register.

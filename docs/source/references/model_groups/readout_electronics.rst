@@ -155,6 +155,30 @@ Example of the configuration file:
 
 .. autofunction:: sar_adc
 
+.. _SAR ADC with noise:
+
+SAR ADC with noise
+==================
+
+:guilabel:`Signal` 🠆 :guilabel:`Image`
+
+Digitize signal array using :term:`SAR` (Successive Approximation Register) :term:`ADC`
+logic with noise.
+The parameters ``adc_bit_resolution`` and ``adc_voltage_range`` from detector
+:py:class:`~pyxel.detectors.Characteristics` are used.
+
+Example of the configuration file for ``adc_bit_resolution`` equals to 8 bits:
+
+.. code-block:: yaml
+
+    - name: sar_adc_with_noise
+      func: pyxel.models.readout_electronics.sar_adc_with_noise
+      strengths: [0., 0., 0., 0., 0.1, 0.2, 0.3, 0.1]
+      noises: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1]
+      enabled: true
+
+.. autofunction:: sar_adc_with_noise
+
 .. _Simple phase conversion:
 
 Simple phase conversion

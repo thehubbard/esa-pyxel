@@ -81,34 +81,79 @@ def sar_adc_with_noise(
     strengths: t.Tuple[float, ...],
     noises: t.Tuple[float, ...],
 ) -> None:
-    """Digitize signal array using :term:`SAR` (Successive Approximation Register) :term:`ADC` logic with noise.
+    r"""Digitize signal array using :term:`SAR` (Successive Approximation Register) :term:`ADC` logic with noise.
 
-    Successive-approximation-register (SAR) analog-to-digital converters (ADCs)
-    for each bit, will compare the randomly perturbated reference voltage to the voltage
-    of the pixel, adding the corresponding digital value if it is superior.
+    Successive-approximation-register (:term:`SAR`) analog-to-digital converters (:term:`ADC`)
+    for each bit, will compare the randomly perturbated **reference voltage** to
+    the voltage of the pixel, adding the corresponding digital value if it is superior.
     The perturbations are generated randomly for each pixel.
 
-    Strength and noise are the parameters that regulate the random fluctuations of
-    the reference voltage.
+    The reference voltage fluctuations are regulated by two parameters, **strength** and
+    **noise**, that are set independently for each bit.
+
+    This model is based on the work of Emma Esparza Borges from :term:`ESO`.
 
     Parameters
     ----------
     detector : Detector
         Pyxel Detector object.
     strengths : tuple of float
+        Sequence of ``detector.characteristics.adc_bit_resolution`` number(s). Unit: V
     noises : tuple of float
-    """
-    assert len(strengths) == len(noises) == detector.characteristics.adc_bit_resolution
+        Sequence of ``detector.characteristics.adc_bit_resolution`` number(s). Unit: V
 
+    Raises
+    ------
+    ValueError
+        Raised if parameters ``strengths`` and/or ``noises`` does not have exactly the
+        correct numbers of parameters.
+        It is expected to have ``detector.characteristics.adc_bit_resolution`` elements.
+
+    Notes
+    -----
+    Those notes are based on the work of Emma Esparza Borges from :term:`ESO`
+
+    The :term:`SAR` :term:`ADC` architecture is based on a binary search algorithm.
+    Essentially, it works comparing the analog input to the output of a
+    Digital-to-Analog Converter (:term:`DAC`), which is initialized with the
+    :term:`MSB` high and all other bits low.
+    If the analog sample is higher than the :term:`DAC` output the :term:`MSB` keeps high,
+    while if the :term:`DAC` output is higher the :term:`MSB` is set low.
+    This comparison is performed for each bit from the :term:`MSB` to the :term:`LSB`
+    following the same procedure.
+
+
+    In order to understand better the potential sources of digitization issues,
+    that will be exposed later, it is useful to detail the way of performing of the
+    :term:`DAC` setting an example to remark the importance of the stability of the
+    reference voltage (`V_{REF}`). Considering a 16 bits :term:`SAR` :term:`ADC`,
+    for the first comparison the register is set to midscale (1000000000000000)
+    forcing the :term:`DAC` output (`V_{DAC}`) to be half of the reference voltage:
+    `V_{DAC}=\frac{V_{REF}}{2}`.
+    Hence, it is essential that the reference remains stable through all comparisons
+    to be able to perform an accurate conversion from the analog inputs of
+    the instrument to a matrix of digital values, i.e., an image.
+
+    """
     min_volt, max_volt = detector.characteristics.adc_voltage_range
     adc_bits = detector.characteristics.adc_bit_resolution
+
+    if len(strengths) != detector.characteristics.adc_bit_resolution:
+        raise ValueError(
+            f"Expecting a sequence of {adc_bits} elements for parameter 'strengths'."
+        )
+
+    if len(noises) != detector.characteristics.adc_bit_resolution:
+        raise ValueError(
+            f"Expecting a sequence of {adc_bits} elements for parameter 'noises'."
+        )
 
     image_2d = apply_sar_adc_with_noise(
         signal_2d=detector.signal.array,
         num_rows=detector.geometry.row,
         num_cols=detector.geometry.col,
-        strengths=strengths,
-        noises=noises,
+        strengths=np.asarray(strengths, dtype=float),
+        noises=np.asarray(noises, dtype=float),
         max_volt=max_volt,
         adc_bits=adc_bits,
     )  # type: np.ndarray
