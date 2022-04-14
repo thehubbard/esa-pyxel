@@ -122,18 +122,24 @@ def sar_adc_with_noise(
     This comparison is performed for each bit from the :term:`MSB` to the :term:`LSB`
     following the same procedure.
 
+    .. figure:: _static/sar_architecture.png
+        :scale: 70%
+        :alt: Simplified N-bit SAR ADC architecture.
+        :align: center
+
+        Simplified N-bit :term:`SAR` :term:`ADC` architecture
+        (see https://www.maximintegrated.com/en/app-notes/index.mvp/id/1080).
 
     In order to understand better the potential sources of digitization issues,
     that will be exposed later, it is useful to detail the way of performing of the
     :term:`DAC` setting an example to remark the importance of the stability of the
-    reference voltage (`V_{REF}`). Considering a 16 bits :term:`SAR` :term:`ADC`,
+    reference voltage (:math:`V_{REF}`). Considering a 16 bits :term:`SAR` :term:`ADC`,
     for the first comparison the register is set to midscale (1000000000000000)
-    forcing the :term:`DAC` output (`V_{DAC}`) to be half of the reference voltage:
-    `V_{DAC}=\frac{V_{REF}}{2}`.
+    forcing the :term:`DAC` output (:math:`V_{DAC}`) to be half of the reference voltage:
+    :math:`V_{DAC}=\frac{V_{REF}}{2}`.
     Hence, it is essential that the reference remains stable through all comparisons
     to be able to perform an accurate conversion from the analog inputs of
     the instrument to a matrix of digital values, i.e., an image.
-
     """
     min_volt, max_volt = detector.characteristics.adc_voltage_range
     adc_bits = detector.characteristics.adc_bit_resolution
