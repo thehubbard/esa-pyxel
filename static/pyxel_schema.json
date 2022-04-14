@@ -337,6 +337,54 @@
                   "arguments": {
                     "type": "object",
                     "properties": {
+                      "filename": {
+                        "type": [
+                          "string",
+                          "string"
+                        ],
+                        "title": "filename",
+                        "description": "Input filename of the point spread function."
+                      },
+                      "normalize_kernel": {
+                        "type": "boolean",
+                        "title": "normalize_kernel",
+                        "description": "Normalize kernel.",
+                        "default": true
+                      }
+                    },
+                    "required": [
+                      "filename"
+                    ],
+                    "additionalProperties": false,
+                    "title": "Parameters"
+                  },
+                  "func": {
+                    "type": "string",
+                    "const": "pyxel.models.optics.load_psf",
+                    "default": "pyxel.models.optics.load_psf"
+                  },
+                  "enabled": {
+                    "type": "boolean",
+                    "default": true
+                  }
+                },
+                "required": [
+                  "name",
+                  "arguments"
+                ],
+                "additionalProperties": false,
+                "title": "Model 'load_psf'",
+                "description": "Load a point spread function from file and convolve the photon arraywith the PSF."
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "arguments": {
+                    "type": "object",
+                    "properties": {
                       "wavelength": {
                         "type": "number",
                         "title": "wavelength",
@@ -463,6 +511,35 @@
           "type": "array",
           "items": {
             "anyOf": [
+              {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "arguments": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "title": "Parameters",
+                    "default": {}
+                  },
+                  "func": {
+                    "type": "string",
+                    "const": "pyxel.models.charge_generation.apd_gain",
+                    "default": "pyxel.models.charge_generation.apd_gain"
+                  },
+                  "enabled": {
+                    "type": "boolean",
+                    "default": true
+                  }
+                },
+                "required": [
+                  "name"
+                ],
+                "additionalProperties": false,
+                "title": "Model 'apd_gain'",
+                "description": "Apply APD gain."
+              },
               {
                 "type": "object",
                 "properties": {
@@ -887,6 +964,47 @@
                 "additionalProperties": false,
                 "title": "Model 'dark_current_rule07'",
                 "description": "Generate charge from dark current process."
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "arguments": {
+                    "type": "object",
+                    "properties": {
+                      "seed": {
+                        "type": [
+                          "integer",
+                          "null"
+                        ],
+                        "title": "seed",
+                        "default": null
+                      }
+                    },
+                    "additionalProperties": false,
+                    "title": "Parameters",
+                    "default": {
+                      "seed": null
+                    }
+                  },
+                  "func": {
+                    "type": "string",
+                    "const": "pyxel.models.charge_generation.dark_current_saphira",
+                    "default": "pyxel.models.charge_generation.dark_current_saphira"
+                  },
+                  "enabled": {
+                    "type": "boolean",
+                    "default": true
+                  }
+                },
+                "required": [
+                  "name"
+                ],
+                "additionalProperties": false,
+                "title": "Model 'dark_current_saphira'",
+                "description": "Simulate dark current in a Saphira APD detector."
               },
               {
                 "type": "object",
@@ -1474,6 +1592,97 @@
                   "arguments": {
                     "type": "object",
                     "properties": {
+                      "offset": {
+                        "type": "number",
+                        "title": "offset",
+                        "description": "DC offset voltage. Unit: V"
+                      }
+                    },
+                    "required": [
+                      "offset"
+                    ],
+                    "additionalProperties": false,
+                    "title": "Parameters"
+                  },
+                  "func": {
+                    "type": "string",
+                    "const": "pyxel.models.charge_measurement.dc_offset",
+                    "default": "pyxel.models.charge_measurement.dc_offset"
+                  },
+                  "enabled": {
+                    "type": "boolean",
+                    "default": true
+                  }
+                },
+                "required": [
+                  "name",
+                  "arguments"
+                ],
+                "additionalProperties": false,
+                "title": "Model 'dc_offset'",
+                "description": "Apply DC voltage to the detector."
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "arguments": {
+                    "type": "object",
+                    "properties": {
+                      "node_capacitance": {
+                        "type": [
+                          "number",
+                          "null"
+                        ],
+                        "title": "node_capacitance",
+                        "description": "Node capacitance. Unit: F",
+                        "default": null
+                      },
+                      "seed": {
+                        "type": [
+                          "integer",
+                          "null"
+                        ],
+                        "title": "seed",
+                        "description": "Random seed.",
+                        "default": null
+                      }
+                    },
+                    "additionalProperties": false,
+                    "title": "Parameters",
+                    "default": {
+                      "node_capacitance": null,
+                      "seed": null
+                    }
+                  },
+                  "func": {
+                    "type": "string",
+                    "const": "pyxel.models.charge_measurement.ktc_noise",
+                    "default": "pyxel.models.charge_measurement.ktc_noise"
+                  },
+                  "enabled": {
+                    "type": "boolean",
+                    "default": true
+                  }
+                },
+                "required": [
+                  "name"
+                ],
+                "additionalProperties": false,
+                "title": "Model 'ktc_noise'",
+                "description": "Apply KTC reset noise to detector signal array."
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "arguments": {
+                    "type": "object",
+                    "properties": {
                       "noise": {
                         "type": "array",
                         "items": {
@@ -1749,6 +1958,90 @@
                 "additionalProperties": false,
                 "title": "Model 'output_node_noise_cmos'",
                 "description": "Output node noise model for :term:`CMOS` detectors where readout isstatistically independent for each pixel."
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "arguments": {
+                    "type": "object",
+                    "properties": {
+                      "roic_drop": {
+                        "type": "number",
+                        "title": "roic_drop",
+                        "description": "Readout circuit drop voltage. Unit: V"
+                      }
+                    },
+                    "required": [
+                      "roic_drop"
+                    ],
+                    "additionalProperties": false,
+                    "title": "Parameters"
+                  },
+                  "func": {
+                    "type": "string",
+                    "const": "pyxel.models.charge_measurement.output_pixel_reset_voltage_apd",
+                    "default": "pyxel.models.charge_measurement.output_pixel_reset_voltage_apd"
+                  },
+                  "enabled": {
+                    "type": "boolean",
+                    "default": true
+                  }
+                },
+                "required": [
+                  "name",
+                  "arguments"
+                ],
+                "additionalProperties": false,
+                "title": "Model 'output_pixel_reset_voltage_apd'",
+                "description": "Apply output pixel reset voltage to APD detector."
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string"
+                  },
+                  "arguments": {
+                    "type": "object",
+                    "properties": {
+                      "roic_readout_noise": {
+                        "type": "number",
+                        "title": "roic_readout_noise",
+                        "description": "Readout integrated circuit noise in volts RMS. Unit: V"
+                      },
+                      "controller_noise": {
+                        "type": "number",
+                        "title": "controller_noise",
+                        "description": "Controller noise in volts RMS. Unit: V",
+                        "default": 0.0
+                      }
+                    },
+                    "required": [
+                      "roic_readout_noise"
+                    ],
+                    "additionalProperties": false,
+                    "title": "Parameters"
+                  },
+                  "func": {
+                    "type": "string",
+                    "const": "pyxel.models.charge_measurement.readout_noise_saphira",
+                    "default": "pyxel.models.charge_measurement.readout_noise_saphira"
+                  },
+                  "enabled": {
+                    "type": "boolean",
+                    "default": true
+                  }
+                },
+                "required": [
+                  "name",
+                  "arguments"
+                ],
+                "additionalProperties": false,
+                "title": "Model 'readout_noise_saphira'",
+                "description": "Apply Saphira specific readout noise to the APD detector."
               },
               {
                 "type": "object",
@@ -3035,7 +3328,12 @@
       ],
       "properties": {
         "environment": {
-          "$ref": "#/definitions/Environment"
+          "title": "environment",
+          "allOf": [
+            {
+              "$ref": "#/definitions/Environment"
+            }
+          ]
         },
         "geometry": {
           "type": "object",
@@ -3082,7 +3380,9 @@
             "row",
             "col"
           ],
-          "additionalProperties": false
+          "additionalProperties": false,
+          "title": "geometry",
+          "description": "Geometrical attributes of a :term:`CCD` detector."
         },
         "characteristics": {
           "type": "object",
@@ -3161,7 +3461,9 @@
               "default": null
             }
           },
-          "additionalProperties": false
+          "additionalProperties": false,
+          "title": "characteristics",
+          "description": "Characteristic attributes of a :term:`CCD` detector."
         }
       },
       "required": [
@@ -3171,6 +3473,7 @@
       ],
       "additionalProperties": false,
       "title": "CCD",
+      "description": "Charge-Coupled Device class containing all detector attributes anddata.",
       "default": null
     },
     "cmos_detector": {
@@ -3180,7 +3483,12 @@
       ],
       "properties": {
         "environment": {
-          "$ref": "#/definitions/Environment"
+          "title": "environment",
+          "allOf": [
+            {
+              "$ref": "#/definitions/Environment"
+            }
+          ]
         },
         "geometry": {
           "type": "object",
@@ -3227,7 +3535,9 @@
             "row",
             "col"
           ],
-          "additionalProperties": false
+          "additionalProperties": false,
+          "title": "geometry",
+          "description": "Geometrical attributes of a :term:`CMOS`-based detector."
         },
         "characteristics": {
           "type": "object",
@@ -3306,7 +3616,9 @@
               "default": null
             }
           },
-          "additionalProperties": false
+          "additionalProperties": false,
+          "title": "characteristics",
+          "description": "Characteristic attributes of a :term:`CMOS`-based detector."
         }
       },
       "required": [
@@ -3316,6 +3628,7 @@
       ],
       "additionalProperties": false,
       "title": "CMOS",
+      "description": ":term:`CMOS`-based detector class containing all detector attributesand data.",
       "default": null
     },
     "mkid_detector": {
@@ -3325,7 +3638,12 @@
       ],
       "properties": {
         "environment": {
-          "$ref": "#/definitions/Environment"
+          "title": "environment",
+          "allOf": [
+            {
+              "$ref": "#/definitions/Environment"
+            }
+          ]
         },
         "geometry": {
           "type": "object",
@@ -3372,7 +3690,9 @@
             "row",
             "col"
           ],
-          "additionalProperties": false
+          "additionalProperties": false,
+          "title": "geometry",
+          "description": "Geometrical attributes of a :term:`MKID`-based detector."
         },
         "characteristics": {
           "type": "object",
@@ -3451,7 +3771,9 @@
               "default": null
             }
           },
-          "additionalProperties": false
+          "additionalProperties": false,
+          "title": "characteristics",
+          "description": "Characteristic attributes of a :term:`MKID`-based detector."
         }
       },
       "required": [
@@ -3461,6 +3783,180 @@
       ],
       "additionalProperties": false,
       "title": "MKID",
+      "description": ":term:`MKID`-based detector class containing all detector attributesand data.",
+      "default": null
+    },
+    "apd_detector": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "properties": {
+        "environment": {
+          "title": "environment",
+          "allOf": [
+            {
+              "$ref": "#/definitions/Environment"
+            }
+          ]
+        },
+        "geometry": {
+          "type": "object",
+          "properties": {
+            "row": {
+              "type": "integer",
+              "title": "row",
+              "description": "Number of pixel rows."
+            },
+            "col": {
+              "type": "integer",
+              "title": "col",
+              "description": "Number of pixel columns."
+            },
+            "total_thickness": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "title": "total_thickness",
+              "description": "Thickness of detector. Unit: um",
+              "default": null
+            },
+            "pixel_vert_size": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "title": "pixel_vert_size",
+              "description": "Vertical dimension of pixel. Unit: um",
+              "default": null
+            },
+            "pixel_horz_size": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "title": "pixel_horz_size",
+              "description": "Horizontal dimension of pixel. Unit: um",
+              "default": null
+            }
+          },
+          "required": [
+            "row",
+            "col"
+          ],
+          "additionalProperties": false,
+          "title": "geometry",
+          "description": "Geometrical attributes of a :term:`APD`-based detector."
+        },
+        "characteristics": {
+          "type": "object",
+          "properties": {
+            "quantum_efficiency": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "title": "quantum_efficiency",
+              "description": "Quantum efficiency.",
+              "default": null
+            },
+            "full_well_capacity": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "title": "full_well_capacity",
+              "description": "Full well capacity. Unit: e-",
+              "default": null
+            },
+            "adc_bit_resolution": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "title": "adc_bit_resolution",
+              "description": "ADC bit resolution.",
+              "default": null
+            },
+            "adc_voltage_range": {
+              "type": [
+                "array",
+                "null"
+              ],
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "minItems": 2,
+              "maxItems": 2,
+              "title": "adc_voltage_range",
+              "description": "ADC voltage range. Unit: V",
+              "default": null,
+              "additionalItems": false,
+              "items": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ]
+            },
+            "avalanche_gain": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "title": "avalanche_gain",
+              "description": "APD gain. Unit: electron/electron",
+              "default": null
+            },
+            "pixel_reset_voltage": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "title": "pixel_reset_voltage",
+              "description": "DC voltage going into the detector, not the voltage of a reset pixel.Unit: V",
+              "default": null
+            },
+            "common_voltage": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "title": "common_voltage",
+              "description": "Common voltage. Unit: V",
+              "default": null
+            },
+            "roic_gain": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "title": "roic_gain",
+              "description": "Gain of the read-out integrated circuit. Unit: V/V",
+              "default": null
+            }
+          },
+          "additionalProperties": false,
+          "title": "characteristics",
+          "description": "Characteristic attributes of the APD detector."
+        }
+      },
+      "required": [
+        "environment",
+        "geometry",
+        "characteristics"
+      ],
+      "additionalProperties": false,
+      "title": "APD",
+      "description": ":term:`CMOS`-based detector class containing all detector attributesand data.",
       "default": null
     }
   },
@@ -3612,7 +4108,9 @@
           "default": null
         }
       },
-      "additionalProperties": false
+      "additionalProperties": false,
+      "title": "Environment",
+      "description": "Environmental attributes of the detector."
     }
   },
   "$schema": "http://json-schema.org/draft-07/schema#"
