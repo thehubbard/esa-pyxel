@@ -375,6 +375,9 @@ class Detector:
         .. code-block:: bash
 
             filename.h5  (4 objects, 3 attributes)
+            │   ├── pyxel-version  1.0.0+161.g659eec86
+            │   ├── type  CCD
+            │   └── version  1
             ├── geometry  (5 objects)
             │   ├── col  (), int64
             │   ├── pixel_horz_size  (), float64
@@ -390,8 +393,11 @@ class Detector:
             │   └── quantum_efficiency  (), float64
             └── data  (5 objects)
                 ├── charge  (2 objects, 2 attributes)
+                │   ├── name  Charge
+                │   ├── unit  electron
                 │   ├── array  (100, 120), float64
                 │   └── frame  (13 objects, 1 attribute)
+                │       ├── type  DataFrame
                 │       ├── charge  (0,), float64
                 │       ├── energy  (0,), float64
                 │       ├── init_energy  (0,), float64
@@ -406,6 +412,7 @@ class Detector:
                 │       ├── velocity_ver  (0,), float64
                 │       └── velocity_z  (0,), float64
                 ├── image  (100, 120), uint64
+                │   └── name  Image
                 ├── photon  (100, 120), float64
                 ├── pixel  (100, 120), float64
                 └── signal  (100, 120), float64
