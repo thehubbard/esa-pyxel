@@ -91,7 +91,9 @@ class Charge:
         return (
             isinstance(other, Charge)
             and np.array_equal(self._array, other._array)
-            and self._frame.equals(other._frame)
+            and self._frame.sort_index(axis="columns").equals(
+                other._frame.sort_index(axis="columns")
+            )
         )
 
     @staticmethod

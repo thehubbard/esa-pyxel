@@ -15,17 +15,14 @@
 """:term:`MKID`-array detector modeling class."""
 
 import typing as t
-from pathlib import Path
 
-import h5py as h5
-import numpy as np
-
-from pyxel import __version__
 from pyxel.data_structure import Phase
 from pyxel.detectors import Detector
 from pyxel.util.memory import memory_usage_details
 
 if t.TYPE_CHECKING:
+    import pandas as pd
+
     from pyxel.detectors import Environment, MKIDCharacteristics, MKIDGeometry
 
 
@@ -117,27 +114,6 @@ class MKID(Detector):
             self, attributes, print_result=print_result, human_readable=human_readable
         )
 
-    # TODO: Move this to another place. See #241
-    def to_hdf5(self, filename: t.Union[str, Path]) -> None:
-        """Convert the detector to a HDF5 object."""
-        with h5.File(filename, "w") as h5file:
-            h5file.attrs["type"] = self.__class__.__name__
-            h5file.attrs["pyxel-version"] = str(__version__)
-            detector_grp = h5file.create_group("detector")
-            for array, name in zip(
-                [
-                    self.signal.array,
-                    self.image.array,
-                    self.photon.array,
-                    self.pixel.array,
-                    self.phase.array,
-                    self.charge.frame,
-                ],
-                ["Signal", "Image", "Photon", "Pixel", "Phase", "Charge"],
-            ):
-                dataset = detector_grp.create_dataset(name, shape=np.shape(array))
-                dataset[:] = array
-
     # TODO: Refactor this
     def to_dict(self) -> t.Mapping:
         """Convert an instance of `MKID` to a `dict`."""
@@ -205,6 +181,9 @@ class MKID(Detector):
         if "charge" in data and data["charge"] is not None:
             charge_dct = data["charge"]
             detector.charge._array = charge_dct["array"]
-            detector.charge._frame = charge_dct["frame"]
+
+            new_frame = charge_dct["frame"]  # type: pd.DataFrame
+            previous_frame = detector.charge._frame  # type: pd.DataFrame
+            detector.charge._frame = new_frame[previous_frame.columns]
 
         return detector

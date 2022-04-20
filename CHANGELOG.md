@@ -18,6 +18,8 @@
   (See [!267](https://gitlab.com/esa/pyxel/-/merge_requests/267)).
 * Implement methods `Detector.from_hdf5` and `Detector.to_hdf5`.
   (See [!448](https://gitlab.com/esa/pyxel/-/merge_requests/448)).
+* Fix issues when saving/loading CMOS, APD and MKID Detector objects.
+  (See [!463](https://gitlab.com/esa/pyxel/-/merge_requests/463)).
 
 ### Documentation
 

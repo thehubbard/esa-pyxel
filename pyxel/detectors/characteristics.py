@@ -74,6 +74,8 @@ class Characteristics:
             and self._charge_to_volt_conversion == other._charge_to_volt_conversion
             and self._pre_amplification == other._pre_amplification
             and self._full_well_capacity == other._full_well_capacity
+            and self._adc_voltage_range == other._adc_voltage_range
+            and self._adc_bit_resolution == other._adc_bit_resolution
         )
 
     @property

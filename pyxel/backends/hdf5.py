@@ -8,6 +8,7 @@
 """TBW."""
 
 import typing as t
+from collections import abc
 from pathlib import Path
 
 import h5py as h5
@@ -30,14 +31,29 @@ def _store(
     name: str,
     dct: t.Mapping[str, t.Union[int, float, pd.DataFrame, pd.Series, np.ndarray, dict]],
     attributes: t.Optional[t.Mapping[str, t.Mapping[str, str]]] = None,
-):
-    """TBW."""
+) -> None:
+    """Write data into a new HDF5 group.
+
+    Parameters
+    ----------
+    h5file : h5.File
+        Writeable HDF5 file object.
+    name : str
+        Name of the HDF5 group to create. (e.g. '/' or '/geometry')
+    dct : dict
+        Data to write into a HDF5 dataset.
+    attributes : dict
+        Attributes to store.
+    """
     for key, value in dct.items():
         new_name = f"{name}/{key}"
 
-        if isinstance(value, (int, float)):
+        if isinstance(value, (int, float)) or value is None:
+            if value is None:
+                value = np.nan
+
             dataset = h5file.create_dataset(
-                name=new_name, data=value
+                name=new_name, data=value, shape=()
             )  # type: h5.Dataset
 
             if attributes is not None and key in attributes:
@@ -49,7 +65,7 @@ def _store(
 
             _store(h5file, name=new_name, dct=value.to_dict(orient="series"))
 
-        elif isinstance(value, (pd.Series, np.ndarray)):
+        elif isinstance(value, (pd.Series, np.ndarray, abc.Sequence)):
             dataset = h5file.create_dataset(name=new_name, data=np.asarray(value))
 
             if attributes is not None and key in attributes:
@@ -62,6 +78,7 @@ def _store(
                 new_group.attrs.update(attributes[key])
 
             _store(h5file, name=new_name, dct=value)
+
         else:
             raise NotImplementedError
 
@@ -88,8 +105,21 @@ def to_hdf5(filename: t.Union[str, Path], dct: t.Mapping[str, t.Any]) -> None:
 
 def _load(
     h5file: h5.File, name: str
-) -> t.Union[int, float, t.Mapping[str, t.Any], np.ndarray, pd.DataFrame]:
-    """TBW."""
+) -> t.Union[None, int, float, t.Mapping[str, t.Any], np.ndarray, pd.DataFrame]:
+    """Write data from a HDF5 group.
+
+    Parameters
+    ----------
+    h5file : h5.File
+        Readable HDF5 file object.
+    name : str
+        Name of the HDF5 group to read. (e.g. '/' or '/geometry')
+
+    Returns
+    -------
+    dict
+        Data to read from a HDF5 dataset.
+    """
     dataset = h5file[name]  # type: t.Union[h5.Dataset, h5.Group]
 
     if isinstance(dataset, h5.Group):
@@ -106,10 +136,14 @@ def _load(
 
     elif isinstance(dataset, h5.Dataset):
         if dataset.ndim == 0:
-            if np.issubdtype(dataset.dtype, np.integer):
-                return int(np.array(dataset))
+            value = np.array(dataset)
+
+            if np.isnan(value):
+                return None
+            elif np.issubdtype(dataset.dtype, np.integer):
+                return int(value)
             elif np.issubdtype(dataset.dtype, np.floating):
-                return float(np.array(dataset))
+                return float(value)
             else:
                 raise TypeError
         else:

@@ -34,6 +34,7 @@ import typing as t
 
 import astropy.constants as const
 import numpy as np
+from toolz import dicttoolz
 
 from pyxel.util.memory import get_size
 
@@ -43,6 +44,8 @@ class APDCharacteristics:
 
     Parameters
     ----------
+    roic_gain:
+        Gain of the read-out integrated circuit. Unit: V/V
     quantum_efficiency: float, optional
         Quantum efficiency.
     full_well_capacity: float, optional
@@ -57,12 +60,11 @@ class APDCharacteristics:
         DC voltage going into the detector, not the voltage of a reset pixel. Unit: V
     common_voltage: float
         Common voltage. Unit: V
-    roic_gain:
-        Gain of the read-out integrated circuit. Unit: V/V
     """
 
     def __init__(
         self,
+        roic_gain: float,  # unit: V
         quantum_efficiency: t.Optional[float] = None,  # unit: NA
         full_well_capacity: t.Optional[float] = None,  # unit: electron
         adc_bit_resolution: t.Optional[int] = None,
@@ -70,7 +72,6 @@ class APDCharacteristics:
         avalanche_gain: t.Optional[float] = None,  # unit: electron/electron
         pixel_reset_voltage: t.Optional[float] = None,  # unit: V
         common_voltage: t.Optional[float] = None,  # unit: V
-        roic_gain: t.Optional[float] = None,  # unit: V
     ):
 
         self._avalanche_gain = avalanche_gain
@@ -376,7 +377,7 @@ class APDCharacteristics:
 
         Parameters
         ----------
-        capacitance: flaot
+        capacitance: float
         roic_gain: float
 
         Returns
@@ -387,18 +388,47 @@ class APDCharacteristics:
 
     def to_dict(self) -> t.Mapping:
         """Get the attributes of this instance as a `dict`."""
-        return {
+        if self._avalanche_gain and self._pixel_reset_voltage:
+            dct = {
+                "avalanche_gain": self._avalanche_gain,
+                "common_voltage": None,
+                "pixel_reset_voltage": self._pixel_reset_voltage,
+            }
+        elif self._avalanche_gain and self._common_voltage:
+            dct = {
+                "avalanche_gain": self._avalanche_gain,
+                "common_voltage": self._common_voltage,
+                "pixel_reset_voltage": None,
+            }
+        elif self._common_voltage and self._pixel_reset_voltage:
+            dct = {
+                "avalanche_gain": None,
+                "common_voltage": self._common_voltage,
+                "pixel_reset_voltage": self._pixel_reset_voltage,
+            }
+        else:
+            raise NotImplementedError
+
+        other_dct = {
             "quantum_efficiency": self._quantum_efficiency,
             "full_well_capacity": self._full_well_capacity,
-            "adc_bit_resolution": self._adc_bit_resolution,
             "adc_voltage_range": self._adc_voltage_range,
-            "avalanche_gain": self._avalanche_gain,
-            "pixel_reset_voltage": self._pixel_reset_voltage,
-            "common_voltage": self._common_voltage,
+            "adc_bit_resolution": self._adc_bit_resolution,
             "roic_gain": self._roic_gain,
         }
+
+        return {**dct, **other_dct}
 
     @classmethod
     def from_dict(cls, dct: t.Mapping):
         """Create a new instance from a `dict`."""
-        return cls(**dct)
+        if "adc_voltage_range" in dct:
+            new_dct = dicttoolz.dissoc(dct, "adc_voltage_range")  # type: t.Mapping
+            adc_voltage_range = dct["adc_voltage_range"]
+
+            if adc_voltage_range is not None:
+                adc_voltage_range = tuple(adc_voltage_range)
+
+            return cls(adc_voltage_range=adc_voltage_range, **new_dct)
+        else:
+            return cls(**dct)
