@@ -91,7 +91,8 @@ def sar_adc_with_noise(
     The reference voltage fluctuations are regulated by two parameters, **strength** and
     **noise**, that are set independently for each bit.
 
-    This model is based on the work of Emma Esparza Borges from :term:`ESO`.
+    This model and the notes are based on the work of Emma Esparza Borges
+    from :term:`ESO`.
 
     Parameters
     ----------
@@ -111,8 +112,6 @@ def sar_adc_with_noise(
 
     Notes
     -----
-    Those notes are based on the work of Emma Esparza Borges from :term:`ESO`
-
     The :term:`SAR` :term:`ADC` architecture is based on a binary search algorithm.
     Essentially, it works comparing the analog input to the output of a
     Digital-to-Analog Converter (:term:`DAC`), which is initialized with the
@@ -130,16 +129,36 @@ def sar_adc_with_noise(
         Simplified N-bit :term:`SAR` :term:`ADC` architecture
         (see https://www.maximintegrated.com/en/app-notes/index.mvp/id/1080).
 
-    In order to understand better the potential sources of digitization issues,
-    that will be exposed later, it is useful to detail the way of performing of the
-    :term:`DAC` setting an example to remark the importance of the stability of the
-    reference voltage (:math:`V_{REF}`). Considering a 16 bits :term:`SAR` :term:`ADC`,
-    for the first comparison the register is set to midscale (1000000000000000)
-    forcing the :term:`DAC` output (:math:`V_{DAC}`) to be half of the reference voltage:
+    Considering a 8-bits :term:`SAR` :term:`ADC`, for the first comparison the
+    8-bit register is set to midscale (`10000000`) forcing the :term:`DAC` output
+    (:math:`V_{DAC}`) to be half of the reference voltage:
     :math:`V_{DAC}=\frac{V_{REF}}{2}`.
-    Hence, it is essential that the reference remains stable through all comparisons
+    For the second comparison, if :math:`V_{DAC} < V_{IN}` then the 8-bit register is set
+    to `11000000`, if :math:`V_{DAC} > V_{IN}` then the 8-bit register is set to `01000000`.
+    In both cases :math:`V_{DAC} = \frac{V_{REF}}{4}`.
+
+    It is essential that :math:`V_{REF}` remains stable through all comparisons
     to be able to perform an accurate conversion from the analog inputs of
-    the instrument to a matrix of digital values, i.e., an image.
+    the instrument.
+
+    A potential sources of digitization issues can be modeled by adding
+    voltage fluctuations to :math:`V_{REF}` at each stage of the process.
+
+    These fluctuations can be represented by the vectors :math:`strength` and :math:`noise`.
+    For a 8-bits :term:`SAR` :term:`ADC`, we have
+    :math:`strength = \begin{pmatrix}strength_{bit7}\\ \vdots\\ strength_{bit0}\end{pmatrix}`
+    and
+    :math:`noise = \begin{pmatrix}noise_{bit7}\\ \vdots\\ noise_{bit0}\end{pmatrix}`.
+
+    The fluctuations at each stage of the process (in this case 8 stages) are represented by
+    the vector :math:`V^{perturbated}_{REF}` with
+
+    .. math::
+       \begin{matrix}
+       V^{perturbated}_{{REF}_{bit7}}  = V_{REF} \left(1+np.random.normal(strength_{bit7}, noise_{bit7})\right)\\
+       \cdots\\
+       V^{perturbated}_{{REF}_{bit0}}  = V_{REF} \left(1 + np.random.normal(strength_{bit0}, noise_{bit0})\right)
+       \end{matrix}
     """
     min_volt, max_volt = detector.characteristics.adc_voltage_range
     adc_bits = detector.characteristics.adc_bit_resolution
