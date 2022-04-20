@@ -16,6 +16,54 @@ from pyxel.detectors import APD, Detector
 from pyxel.util import temporary_random_state
 
 
+def band_gap(band_gap_0: float, alpha: float, beta: float, temperature: float) -> float:
+
+    gap = band_gap_0 - (alpha * temperature**2) / (temperature + beta)
+
+    return gap
+
+
+def band_gap_silicon(temperature: float) -> float:
+
+    band_gap_0 = 1.1557  # eV
+    alpha = 7.021e-4  # ev/K
+    beta = 1108.0  # K
+
+    return band_gap(
+        band_gap_0=band_gap_0, alpha=alpha, beta=beta, temperature=temperature
+    )
+
+
+def average_dark_current(
+    temperature: float,
+    pixel_area: float,
+    figure_of_merit: float,
+    band_gap: float,
+    band_gap_room_temperature: float,
+) -> float:
+
+    k_B = const.k_B.value
+    e_0 = const.e.value
+
+    room_temperature = 300
+
+    room_temperature_factor = room_temperature ** (3 / 2) * np.exp(
+        -band_gap_room_temperature * e_0 / (2 * k_B * room_temperature)
+    )
+
+    average_dark_current = (
+        pixel_area  # in cm^2
+        * figure_of_merit  # in nA/cm^2
+        * 1e-9  # conversion to A/cm^2
+        * (1 / e_0)  # conversion to e-/s/cm^2
+        * temperature ** (3 / 2)
+        * np.exp(-band_gap * e_0 / (2 * k_B * temperature))
+        * (1 / room_temperature_factor)
+    )  # Unit: e-/s/pixel
+
+    return average_dark_current
+
+
 def compute_dark_current(
     shape: t.Tuple[int, int],
     time_step: float,
@@ -24,6 +72,7 @@ def compute_dark_current(
     figure_of_merit: float,
     band_gap: float,
     fixed_pattern_noise_factor: float,
+    band_gap_room_temperature: float,
 ) -> np.ndarray:
     """Compute dark current.
 
@@ -48,29 +97,27 @@ def compute_dark_current(
         Semiconductor band_gap. Unit: eV
     fixed_pattern_noise_factor: float
         Fixed pattern noise factor.
+    band_gap_room_temperature: float, optional
+        Semiconductor band gap at 300K. If none, the one for silicon is used. Unit: eV
 
     Returns
     -------
     dark_current_2d: ndarray
     """
-    k_B = const.k_B.value
-    e_0 = const.e.value
+    avg_dark_current = average_dark_current(
+        temperature=temperature,
+        pixel_area=pixel_area,
+        figure_of_merit=figure_of_merit,
+        band_gap=band_gap,
+        band_gap_room_temperature=band_gap_room_temperature,
+    )
 
-    average_dark_current = (
-        pixel_area  # in cm^2
-        * figure_of_merit  # in nA/cm^2
-        * 1e-9  # conversion to A/cm^2
-        * (1 / e_0)  # conversion to e-/s/cm^2
-        * temperature ** (3 / 2)
-        * np.exp(-band_gap * e_0 / (2 * k_B * temperature))
-    )  # Unit: e-/s/pixel
-
-    dark_signal_2d = np.ones(shape) * average_dark_current * time_step
+    dark_signal_2d = np.ones(shape) * avg_dark_current * time_step
     dark_current_shot_noise_2d = np.random.poisson(
         dark_signal_2d
     )  # dark current shot noise
     dark_current_fpn_sigma = (
-        time_step * average_dark_current * fixed_pattern_noise_factor
+        time_step * avg_dark_current * fixed_pattern_noise_factor
     )  # sigma of fpn distribution
 
     dark_current_2d = dark_current_shot_noise_2d * (
@@ -84,8 +131,9 @@ def compute_dark_current(
 def dark_current(
     detector: Detector,
     figure_of_merit: float,
-    band_gap: float,
     fixed_pattern_noise_factor: float,
+    band_gap: t.Optional[float] = None,
+    band_gap_room_temperature: t.Optional[float] = None,
     seed: t.Optional[int] = None,
 ) -> None:
     """Add dark current to the detector charge.
@@ -101,10 +149,12 @@ def dark_current(
         Pyxel detector object.
     figure_of_merit: float
         Dark current figure of merit. Unit: nA/cm^2
-    band_gap: float
-        Semiconductor band_gap. Unit: eV
     fixed_pattern_noise_factor: float
         Fixed pattern noise factor.
+    band_gap: float
+        Semiconductor band_gap. If none, the one for silicon is used. Unit: eV
+    band_gap_room_temperature: float
+        Semiconductor band gap at 300K. If none, the one for silicon is used. Unit: eV
     seed: int, optional
         Random seed.
     """
@@ -113,6 +163,8 @@ def dark_current(
     temperature = detector.environment.temperature
     time_step = detector.time_step
 
+    # if
+
     dark_current_array = compute_dark_current(
         shape=geo.shape,
         time_step=time_step,
@@ -120,6 +172,7 @@ def dark_current(
         pixel_area=pixel_area,
         figure_of_merit=figure_of_merit,
         band_gap=band_gap,
+        band_gap_room_temperature=band_gap_room_temperature,
         fixed_pattern_noise_factor=fixed_pattern_noise_factor,
     )
 
