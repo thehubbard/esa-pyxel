@@ -29,6 +29,9 @@ List of Acronyms
     CTI
       Charge Transfer Inefficiency.
 
+    HDF5
+      Hierarchical Data Format.
+
     MCT
       Mercury Cadmium Telluride (HgCdTe).
 

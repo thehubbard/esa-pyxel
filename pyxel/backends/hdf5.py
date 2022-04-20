@@ -32,7 +32,19 @@ def _store(
     dct: t.Mapping[str, t.Union[int, float, pd.DataFrame, pd.Series, np.ndarray, dict]],
     attributes: t.Optional[t.Mapping[str, t.Mapping[str, str]]] = None,
 ) -> None:
-    """TBW."""
+    """Write data into a new HDF5 group.
+
+    Parameters
+    ----------
+    h5file : h5.File
+        Writeable HDF5 file object.
+    name : str
+        Name of the HDF5 group to create. (e.g. '/' or '/geometry')
+    dct : dict
+        Data to write into a HDF5 dataset.
+    attributes : dict
+        Attributes to store.
+    """
     for key, value in dct.items():
         new_name = f"{name}/{key}"
 
@@ -94,7 +106,20 @@ def to_hdf5(filename: t.Union[str, Path], dct: t.Mapping[str, t.Any]) -> None:
 def _load(
     h5file: h5.File, name: str
 ) -> t.Union[None, int, float, t.Mapping[str, t.Any], np.ndarray, pd.DataFrame]:
-    """TBW."""
+    """Write data from a HDF5 group.
+
+    Parameters
+    ----------
+    h5file : h5.File
+        Readable HDF5 file object.
+    name : str
+        Name of the HDF5 group to read. (e.g. '/' or '/geometry')
+
+    Returns
+    -------
+    dict
+        Data to read from a HDF5 dataset.
+    """
     dataset = h5file[name]  # type: t.Union[h5.Dataset, h5.Group]
 
     if isinstance(dataset, h5.Group):

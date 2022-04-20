@@ -368,7 +368,7 @@ class Detector:
 
     # TODO: Move this to another place. See #241
     def to_hdf5(self, filename: t.Union[str, Path]) -> None:
-        """Convert the detector to a HDF5 object.
+        """Write the detector content to a :term:`HDF5` file.
 
         The HDF5 file has the following structure:
 
@@ -433,7 +433,18 @@ class Detector:
 
     @classmethod
     def from_hdf5(cls, filename: t.Union[str, Path]) -> "Detector":
-        """Convert a HDF5 object into a detector."""
+        """Load a detector object from a :term:`HDF5` file.
+
+        Parameters
+        ----------
+        filename : str or Path
+
+        Examples
+        --------
+        >>> detector = Detector.from_hdf5("ccd.h5")
+        >>> detector
+        CCD(...)
+        """
         dct = backends.from_hdf5(filename)  # type: t.Mapping[str, t.Any]
 
         obj = cls.from_dict(dct)  # type: Detector
