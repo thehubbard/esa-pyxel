@@ -58,16 +58,16 @@ def apply_sar_adc_with_noise(
         noise = noises[i]
 
         # digital value associated with this step
-        digital_value = 2 ** (adc_bits - (i + 1))
+        digital_value = 2 ** (adc_bits - (i + 1))  # type: int
 
         ref_2d += np.random.normal(loc=strength, scale=noise, size=(num_rows, num_cols))
 
         # All data that is higher than the ref is equal to the dig. value
-        mask_2d = signal_normalized_2d >= ref_2d
-        data_digitized_2d[mask_2d] += digital_value
+        mask_2d = signal_normalized_2d >= ref_2d  # type: np.ndarray
+        data_digitized_2d += digital_value * mask_2d
 
         # Subtract ref value from the data
-        signal_normalized_2d[mask_2d] -= ref_2d
+        signal_normalized_2d -= ref_2d * mask_2d
 
         # Divide reference voltage by 2 for next step
         ref_2d /= 2.0
