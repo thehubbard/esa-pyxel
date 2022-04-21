@@ -141,9 +141,9 @@ class Detector:
             self.signal.array *= 0
         if self._image:
             self.image.array *= 0
+        if self._charge:
+            self._charge.empty()
         if empty_all:
-            if self._charge:
-                self._charge.empty()
             if self._pixel:
                 self.pixel.array *= 0
 
