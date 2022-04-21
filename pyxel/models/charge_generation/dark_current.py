@@ -17,6 +17,19 @@ from pyxel.util import temporary_random_state
 
 
 def band_gap(band_gap_0: float, alpha: float, beta: float, temperature: float) -> float:
+    """
+
+    Parameters
+    ----------
+    band_gap_0
+    alpha
+    beta
+    temperature
+
+    Returns
+    -------
+
+    """
 
     gap = band_gap_0 - (alpha * temperature**2) / (temperature + beta)
 
@@ -24,6 +37,16 @@ def band_gap(band_gap_0: float, alpha: float, beta: float, temperature: float) -
 
 
 def band_gap_silicon(temperature: float) -> float:
+    """
+
+    Parameters
+    ----------
+    temperature
+
+    Returns
+    -------
+
+    """
 
     band_gap_0 = 1.1557  # eV
     alpha = 7.021e-4  # ev/K
@@ -41,6 +64,20 @@ def average_dark_current(
     band_gap: float,
     band_gap_room_temperature: float,
 ) -> float:
+    """
+
+    Parameters
+    ----------
+    temperature
+    pixel_area
+    figure_of_merit
+    band_gap
+    band_gap_room_temperature
+
+    Returns
+    -------
+
+    """
 
     k_B = const.k_B.value
     e_0 = const.e.value
