@@ -42,6 +42,8 @@
   (See [!454](https://gitlab.com/esa/pyxel/-/merge_requests/454)).
 * Add a simple model that loads and applies PSF from a file.
   (See [!459](https://gitlab.com/esa/pyxel/-/merge_requests/459)).
+* Fix models for usage in non-destructive mode.
+  (See [!465](https://gitlab.com/esa/pyxel/-/merge_requests/465)).
 
 ### Others
 

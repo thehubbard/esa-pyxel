@@ -137,15 +137,15 @@ class Detector:
         """
         if self._photon:
             self.photon.array *= 0
+        if self._signal:
+            self.signal.array *= 0
+        if self._image:
+            self.image.array *= 0
+        if self._charge:
+            self._charge.empty()
         if empty_all:
-            if self._charge:
-                self._charge.empty()
             if self._pixel:
                 self.pixel.array *= 0
-            if self._signal:
-                self.signal.array *= 0
-            if self._image:
-                self.image.array *= 0
 
     # TODO: Set an `Output` object ? Is it really needed ? See #330
     def set_output_dir(self, path: t.Union[str, Path]) -> None:
