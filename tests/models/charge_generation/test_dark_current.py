@@ -20,9 +20,9 @@ from pyxel.detectors import (
     ReadoutProperties,
 )
 from pyxel.models.charge_generation import (
+    dark_current,
     dark_current_saphira,
     simple_dark_current,
-    dark_current,
 )
 
 
@@ -86,7 +86,7 @@ def test_dark_current_valid(ccd_10x10: CCD):
     "figure_of_merit, fixed_pattern_noise_factor, band_gap, band_gap_room_temperature, exp_exc, exp_error",
     [
         pytest.param(
-            1.,
+            1.0,
             0.01,
             None,
             1.2,
@@ -94,7 +94,7 @@ def test_dark_current_valid(ccd_10x10: CCD):
             "Both parameters band_gap and band_gap_room_temperature have to be defined.",
         ),
         pytest.param(
-            1.,
+            1.0,
             0.01,
             1.2,
             None,
