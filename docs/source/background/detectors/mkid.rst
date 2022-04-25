@@ -45,6 +45,7 @@ Available models
     * :ref:`Load charge`
     * :ref:`CosmiX cosmic ray model`
     * :ref:`Dark current`
+    * :ref:`Simple dark current`
 * Phasing
     * :ref:`Pulse processing`
 * Charge collection

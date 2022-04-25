@@ -23,6 +23,7 @@ Available models
     * :ref:`Load charge`
     * :ref:`CosmiX cosmic ray model`
     * :ref:`Dark current`
+    * :ref:`Simple dark current`
     * :ref:`APD gain`
     * :ref:`Dark current Saphira`
 * Charge collection

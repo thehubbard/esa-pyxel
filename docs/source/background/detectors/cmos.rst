@@ -24,6 +24,7 @@ Available models
     * :ref:`CosmiX cosmic ray model`
     * :ref:`Dark current rule07`
     * :ref:`Dark current`
+    * :ref:`Simple dark current`
 * Charge collection
     * :ref:`Simple collection`
     * :ref:`Simple full well`

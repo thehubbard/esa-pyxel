@@ -150,6 +150,61 @@ Example of the configuration file:
 
 .. autofunction:: pyxel.models.charge_generation.cosmix
 
+.. _Dark current:
+
+Dark current
+============
+
+:guilabel:`Charge` 🠆 :guilabel:`Charge`
+
+With this model you can add a temperature dependent dark current to charge data,
+stored in the a :py:class:`~pyxel.detectors.Detector` object.
+The model follows the description in :cite:p:`Konnik:noises`.
+The average dark current rate (in :math:`e^-/s/pixel`) is:
+
+:math:`D_R=\frac{D_{FM}P_S}{qT_{RM}^{3/2}e^{-E_{g,RM}/-2k_B T_{RM}}} T^{3/2} e^{-E_g/2k_BT}`,
+
+where
+
+:math:`T` is temperature, :math:`T_{RM}` room temperature (:math:`300 K`), :math:`E_{g}` band gap,
+:math:`k_B` Boltzmann constant, :math:`D_{FM}` dark current figure of merit,
+:math:`P_S` pixel area, :math:`q` charge of an electron and :math:`E_{g, RM}` band gap at room temperature.
+The entire dark current during exposure is:
+
+:math:`I_{dark}=\mathcal{P}(t_{exp}D_R)(1+\mathcal{lnN}(0, \sigma^2_{fpn}))`,
+
+where :math:`\sigma_{fpn}=t_{exp} D_R D_N`, :math:`\mathcal{P}` Poisson distribution,
+:math:`\mathcal{lnN}` log-normal distribution, :math:`D_N` the dark current fixed pattern noise factor
+and :math:`t_{exp}` exposure time.
+
+To use the model,
+user has to provide arguments ``figure_of_merit`` in :math:`nA/cm^2` (:math:`D_{FM}`),
+``fixed_pattern_noise_factor`` (:math:`D_N`),
+``band_gap`` in :math:`eV` and ``band_gap_room_temperature`` in :math:`eV`.
+Parameter ``temperature`` in :math:`K` is taken from detector :py:class:`~pyxel.detectors.Environment`.
+If arguments ``band_gap`` and ``band_gap_room_temperature`` are not provided,
+the model will use the Varshni empirical formula with parameters for Silicon by default:
+
+:math:`E_{gap}(T) = E_{gap}(0) - \frac{\alpha T^2}{T+\beta}`.
+
+For Silicon, material constants are :math:`E_{gap}(0)=1.1577[eV]`, :math:`\alpha=7.021\times10^{-4}[eV/K]`,
+and :math:`\beta=1108[K]`.
+
+Example of the configuration file:
+
+.. code-block:: yaml
+
+    - name: dark_current
+      func: pyxel.models.charge_generation.dark_current
+      enabled: true
+      arguments:
+        figure_of_merit: 1.  # nA/cm^2
+        fixed_pattern_noise_factor: 0.01
+        band_gap: 1.2  # ev, optional
+        band_gap_room_temperature: 1.2  # eV, optional
+
+.. autofunction:: pyxel.models.charge_generation.dark_current
+
 .. _Dark current rule07:
 
 Dark current rule07
@@ -180,7 +235,7 @@ Example of the configuration file:
 
 .. autofunction:: pyxel.models.charge_generation.dark_current_rule07    
 
-.. _Dark current:
+.. _Simple dark current:
 
 Simple dark current
 ===================
