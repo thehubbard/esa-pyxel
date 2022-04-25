@@ -200,7 +200,7 @@ Example of the configuration file:
       arguments:
         figure_of_merit: 1.  # nA/cm^2
         fixed_pattern_noise_factor: 0.01
-        band_gap: 1.2  # ev, optional
+        band_gap: 1.2  # eV, optional
         band_gap_room_temperature: 1.2  # eV, optional
 
 .. autofunction:: pyxel.models.charge_generation.dark_current
