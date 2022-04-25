@@ -5,7 +5,7 @@
 #   this file, may be copied, modified, propagated, or distributed except according to
 #   the terms contained in the file ‘LICENCE.txt’.
 
-"""Mmodels to generate charge due to dark current process."""
+"""Models to generate charge due to dark current process."""
 
 import typing as t
 
@@ -17,18 +17,23 @@ from pyxel.util import temporary_random_state
 
 
 def band_gap(band_gap_0: float, alpha: float, beta: float, temperature: float) -> float:
-    """
+    """Return band gap based on Varshni empirical expression.
 
     Parameters
     ----------
-    band_gap_0
-    alpha
-    beta
-    temperature
+    band_gap_0: float
+        Parameter E_0. Unit: eV
+    alpha: float
+        Alpha parameter. Unit: eV/K
+    beta: float
+        Beta parameter. Unit: K
+    temperature:
+        Temperature. Unit K
 
     Returns
     -------
-
+    gap: float
+        Band gap value. Unit: eV
     """
 
     gap = band_gap_0 - (alpha * temperature**2) / (temperature + beta)
@@ -37,15 +42,17 @@ def band_gap(band_gap_0: float, alpha: float, beta: float, temperature: float) -
 
 
 def band_gap_silicon(temperature: float) -> float:
-    """
+    """Return band gap in Silicon based on Varshni empirical expression.
 
     Parameters
     ----------
-    temperature
+    temperature: float
+        Temperature. Unit: K
 
     Returns
     -------
-
+    float
+        Band gap value. Unit: eV
     """
 
     band_gap_0 = 1.1557  # eV
@@ -64,19 +71,25 @@ def average_dark_current(
     band_gap: float,
     band_gap_room_temperature: float,
 ) -> float:
-    """
+    """Compute average dark current.
 
     Parameters
     ----------
-    temperature
-    pixel_area
-    figure_of_merit
-    band_gap
-    band_gap_room_temperature
+    temperature: float
+        Temperature. Unit: K
+    pixel_area:
+        Pixel area. Unit: cm^2
+    figure_of_merit: float
+        Dark current figure of merit. Unit: nA/cm^2
+    band_gap: float
+        Semiconductor band_gap. Unit: eV
+    band_gap_room_temperature: float
+        Semiconductor band gap at 300K. If none, the one for silicon is used. Unit: eV
 
     Returns
     -------
-
+    avg_dark_current: float
+        Average dark current. Unit: e-/pixel/s
     """
 
     k_B = const.k_B.value
@@ -88,7 +101,7 @@ def average_dark_current(
         -band_gap_room_temperature * e_0 / (2 * k_B * room_temperature)
     )
 
-    average_dark_current = (
+    avg_dark_current = (
         pixel_area  # in cm^2
         * figure_of_merit  # in nA/cm^2
         * 1e-9  # conversion to A/cm^2
@@ -98,7 +111,7 @@ def average_dark_current(
         * (1 / room_temperature_factor)
     )  # Unit: e-/s/pixel
 
-    return average_dark_current
+    return avg_dark_current
 
 
 def compute_dark_current(
@@ -134,12 +147,13 @@ def compute_dark_current(
         Semiconductor band_gap. Unit: eV
     fixed_pattern_noise_factor: float
         Fixed pattern noise factor.
-    band_gap_room_temperature: float, optional
+    band_gap_room_temperature: float
         Semiconductor band gap at 300K. If none, the one for silicon is used. Unit: eV
 
     Returns
     -------
     dark_current_2d: ndarray
+        Dark current values. Unit: e-
     """
     avg_dark_current = average_dark_current(
         temperature=temperature,
@@ -188,9 +202,9 @@ def dark_current(
         Dark current figure of merit. Unit: nA/cm^2
     fixed_pattern_noise_factor: float
         Fixed pattern noise factor.
-    band_gap: float
+    band_gap: float, optional
         Semiconductor band_gap. If none, the one for silicon is used. Unit: eV
-    band_gap_room_temperature: float
+    band_gap_room_temperature: float, optional
         Semiconductor band gap at 300K. If none, the one for silicon is used. Unit: eV
     seed: int, optional
         Random seed.
@@ -200,7 +214,16 @@ def dark_current(
     temperature = detector.environment.temperature
     time_step = detector.time_step
 
-    # if
+    if band_gap and band_gap_room_temperature:
+        final_band_gap = band_gap
+        final_band_gap_room_temperature = band_gap_room_temperature
+    elif band_gap or band_gap_room_temperature:
+        raise ValueError(
+            "Both parameters band_gap and band_gap_room_temperature have to be defined."
+        )
+    else:
+        final_band_gap = band_gap_silicon(temperature)
+        final_band_gap_room_temperature = band_gap_silicon(temperature=300)
 
     dark_current_array = compute_dark_current(
         shape=geo.shape,
@@ -208,8 +231,8 @@ def dark_current(
         temperature=temperature,
         pixel_area=pixel_area,
         figure_of_merit=figure_of_merit,
-        band_gap=band_gap,
-        band_gap_room_temperature=band_gap_room_temperature,
+        band_gap=final_band_gap,
+        band_gap_room_temperature=final_band_gap_room_temperature,
         fixed_pattern_noise_factor=fixed_pattern_noise_factor,
     )
 
