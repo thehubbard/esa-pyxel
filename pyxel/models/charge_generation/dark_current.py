@@ -92,13 +92,13 @@ def average_dark_current(
         Average dark current. Unit: e-/pixel/s
     """
 
-    k_B = const.k_B.value
+    k_b = const.k_B.value
     e_0 = const.e.value
 
     room_temperature = 300
 
     room_temperature_factor = room_temperature ** (3 / 2) * np.exp(
-        -band_gap_room_temperature * e_0 / (2 * k_B * room_temperature)
+        -band_gap_room_temperature * e_0 / (2 * k_b * room_temperature)
     )
 
     avg_dark_current = (
@@ -107,7 +107,7 @@ def average_dark_current(
         * 1e-9  # conversion to A/cm^2
         * (1 / e_0)  # conversion to e-/s/cm^2
         * temperature ** (3 / 2)
-        * np.exp(-band_gap * e_0 / (2 * k_B * temperature))
+        * np.exp(-band_gap * e_0 / (2 * k_b * temperature))
         * (1 / room_temperature_factor)
     )  # Unit: e-/s/pixel
 
