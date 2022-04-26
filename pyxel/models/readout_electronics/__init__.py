@@ -10,6 +10,7 @@
 # flake8: noqa
 from .amplification import simple_amplifier
 from .sar_adc import sar_adc
+from .sar_adc_with_noise import sar_adc_with_noise
 from .amplifier_crosstalk import dc_crosstalk, ac_crosstalk
 from .dead_time import dead_time_filter
 from .phase_conversion import simple_phase_conversion
