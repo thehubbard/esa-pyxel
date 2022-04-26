@@ -210,6 +210,8 @@ class Characteristics:
             "charge_to_volt_conversion": self._charge_to_volt_conversion,
             "pre_amplification": self._pre_amplification,
             "full_well_capacity": self._full_well_capacity,
+            "adc_bit_resolution": self._adc_bit_resolution,
+            "adc_voltage_range": self._adc_voltage_range,
         }
 
     @classmethod

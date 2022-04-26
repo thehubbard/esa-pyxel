@@ -194,6 +194,8 @@ def comparison(dct, other_dct):
                         "charge_to_volt_conversion": None,
                         "pre_amplification": None,
                         "full_well_capacity": None,
+                        "adc_bit_resolution": None,
+                        "adc_voltage_range": None,
                     },
                 },
                 "data": {
@@ -241,6 +243,8 @@ def comparison(dct, other_dct):
                     charge_to_volt_conversion=0.2,
                     pre_amplification=3.3,
                     full_well_capacity=4.4,
+                    adc_bit_resolution=16,
+                    adc_voltage_range=(0.0, 10.0),
                 ),
             ),
             {
@@ -260,6 +264,8 @@ def comparison(dct, other_dct):
                         "charge_to_volt_conversion": 0.2,
                         "pre_amplification": 3.3,
                         "full_well_capacity": 4.4,
+                        "adc_bit_resolution": 16,
+                        "adc_voltage_range": (0.0, 10.0),
                     },
                 },
                 "data": {
