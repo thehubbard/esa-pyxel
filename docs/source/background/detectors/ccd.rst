@@ -24,6 +24,7 @@ Available models
     * :ref:`Charge injection`
     * :ref:`CosmiX cosmic ray model`
     * :ref:`Dark current`
+    * :ref:`Simple dark current`
 * Charge collection
     * :ref:`Simple collection`
     * :ref:`Simple full well`

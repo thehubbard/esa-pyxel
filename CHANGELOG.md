@@ -9,6 +9,9 @@
 
 ### Models
 
+* Add a temperature dependent dark current model.
+  (See [!460](https://gitlab.com/esa/pyxel/-/merge_requests/460)).
+
 ### Others
 
 
