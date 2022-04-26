@@ -7,8 +7,10 @@
 
 """TBW."""
 import typing as t
+from collections import abc
 
 import numpy as np
+from toolz import dicttoolz
 
 from pyxel.util.memory import get_size
 
@@ -218,4 +220,11 @@ class Characteristics:
     def from_dict(cls, dct: t.Mapping):
         """Create a new instance from a `dict`."""
         # TODO: This is a simplistic implementation. Improve this.
-        return cls(**dct)
+
+        adc_voltage_range = dct.get("adc_voltage_range")
+        if isinstance(adc_voltage_range, abc.Iterable):
+            adc_voltage_range = list(adc_voltage_range)
+
+        new_dct = dicttoolz.dissoc(dct, "adc_voltage_range")  # type: t.Mapping
+
+        return cls(**new_dct, adc_voltage_range=adc_voltage_range)
