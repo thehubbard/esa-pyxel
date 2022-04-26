@@ -20,3 +20,5 @@ They are composed of the following **goal-oriented** series of steps:
 
 * Working in the local development environment
 * :doc:`new_model`
+* :doc:`detector_import_export`
+
