@@ -13,10 +13,12 @@ from pyxel.detectors import Characteristics, CMOSCharacteristics
 
 
 @pytest.mark.parametrize(
-    "quantum_efficiency, charge_to_volt_conversion, pre_amplification, full_well_capacity",
+    "quantum_efficiency, charge_to_volt_conversion, pre_amplification, "
+    "full_well_capacity, adc_voltage_range, adc_bit_resolution",
     [
-        (0, 0, 0, 0),
-        (1.0, 1.0, 100.0, 100.0),
+        (0, 0, 0, 0, None, None),
+        (1.0, 1.0, 100.0, 10_000_000, None, None),
+        (1.0, 1.0, 100.0, 10_000_000, [0.0, 3.0], 16),
     ],
 )
 def test_create_valid_cmoscharacteristics(
@@ -24,6 +26,8 @@ def test_create_valid_cmoscharacteristics(
     charge_to_volt_conversion,
     pre_amplification,
     full_well_capacity,
+    adc_voltage_range,
+    adc_bit_resolution,
 ):
     """Test when creating a valid `CMOSCharacteristics` object."""
     _ = CMOSCharacteristics(
@@ -31,6 +35,8 @@ def test_create_valid_cmoscharacteristics(
         charge_to_volt_conversion=charge_to_volt_conversion,
         pre_amplification=pre_amplification,
         full_well_capacity=full_well_capacity,
+        adc_voltage_range=adc_voltage_range,
+        adc_bit_resolution=adc_bit_resolution,
     )
 
 
@@ -58,6 +64,8 @@ def test_create_valid_cmoscharacteristics(
                 charge_to_volt_conversion=0.2,
                 pre_amplification=3.3,
                 full_well_capacity=5,
+                adc_voltage_range=(0.0, 10.0),
+                adc_bit_resolution=16,
             ),
             True,
             id="Same parameters, same class",
@@ -71,6 +79,8 @@ def test_is_equal(other_obj, is_equal):
         charge_to_volt_conversion=0.2,
         pre_amplification=3.3,
         full_well_capacity=5,
+        adc_voltage_range=(0.0, 10.0),
+        adc_bit_resolution=16,
     )
 
     if is_equal:
@@ -94,8 +104,28 @@ def test_is_equal(other_obj, is_equal):
                 "charge_to_volt_conversion": 0.2,
                 "pre_amplification": 3.3,
                 "full_well_capacity": 5,
+                "adc_bit_resolution": None,
+                "adc_voltage_range": None,
             },
-        )
+        ),
+        (
+            CMOSCharacteristics(
+                quantum_efficiency=0.1,
+                charge_to_volt_conversion=0.2,
+                pre_amplification=3.3,
+                full_well_capacity=5,
+                adc_voltage_range=(0.0, 10.0),
+                adc_bit_resolution=16,
+            ),
+            {
+                "quantum_efficiency": 0.1,
+                "charge_to_volt_conversion": 0.2,
+                "pre_amplification": 3.3,
+                "full_well_capacity": 5,
+                "adc_voltage_range": (0.0, 10.0),
+                "adc_bit_resolution": 16,
+            },
+        ),
     ],
 )
 def test_to_and_from_dict(obj, exp_dict):

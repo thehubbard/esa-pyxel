@@ -9,6 +9,7 @@
 import typing as t
 
 import numpy as np
+from toolz import dicttoolz
 
 from pyxel.util.memory import get_size
 
@@ -210,10 +211,23 @@ class Characteristics:
             "charge_to_volt_conversion": self._charge_to_volt_conversion,
             "pre_amplification": self._pre_amplification,
             "full_well_capacity": self._full_well_capacity,
+            "adc_bit_resolution": self._adc_bit_resolution,
+            "adc_voltage_range": self._adc_voltage_range,
         }
 
     @classmethod
     def from_dict(cls, dct: t.Mapping):
         """Create a new instance from a `dict`."""
         # TODO: This is a simplistic implementation. Improve this.
-        return cls(**dct)
+
+        # Extract param 'adc_voltage_range'
+        param = dct.get("adc_voltage_range")  # type: t.Optional[t.Iterable[float]]
+        new_dct = dicttoolz.dissoc(dct, "adc_voltage_range")  # type: t.Mapping
+
+        if param is None:
+            adc_voltage_range = None  # type: t.Optional[t.Tuple[float, float]]
+        else:
+            adc_voltage_min, adc_voltage_max = tuple(param)
+            adc_voltage_range = adc_voltage_min, adc_voltage_max
+
+        return cls(adc_voltage_range=adc_voltage_range, **new_dct)
