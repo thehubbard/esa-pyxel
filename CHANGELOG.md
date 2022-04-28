@@ -12,6 +12,9 @@
 
 ### Documentation
 
+* Add how-to guide about saving/loading a Detector object.
+  (See [!468](https://gitlab.com/esa/pyxel/-/merge_requests/468)).
+
 ### Models
 
 * Add a temperature dependent dark current model.
