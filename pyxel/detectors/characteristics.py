@@ -221,10 +221,14 @@ class Characteristics:
         """Create a new instance from a `dict`."""
         # TODO: This is a simplistic implementation. Improve this.
 
-        adc_voltage_range = dct.get("adc_voltage_range")
-        if isinstance(adc_voltage_range, abc.Iterable):
-            adc_voltage_range = list(adc_voltage_range)
-
+        # Extract param 'adc_voltage_range'
+        param = dct.get("adc_voltage_range")  # type: t.Optional[t.Iterable[float]]
         new_dct = dicttoolz.dissoc(dct, "adc_voltage_range")  # type: t.Mapping
 
-        return cls(**new_dct, adc_voltage_range=adc_voltage_range)
+        if param is None:
+            adc_voltage_range = None  # type: t.Optional[t.Tuple[float, float]]
+        else:
+            adc_voltage_min, adc_voltage_max = tuple(param)
+            adc_voltage_range = adc_voltage_min, adc_voltage_max
+
+        return cls(adc_voltage_range=adc_voltage_range, **new_dct)
