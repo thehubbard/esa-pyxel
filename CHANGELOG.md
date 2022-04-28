@@ -7,6 +7,8 @@
 
 * Add fsspec >= 2021 compatibility.
   (See [!469](https://gitlab.com/esa/pyxel/-/merge_requests/469)).
+* Implement parameters 'adc_voltage' and 'adc_bit_resolution' in 'Characteristics.to_dict'.
+  (See [!470](https://gitlab.com/esa/pyxel/-/merge_requests/470)).
 
 ### Documentation
 
