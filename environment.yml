@@ -47,7 +47,7 @@ dependencies:
   - nodejs
 # Input/Output
   - astropy
-  - fsspec
+  - fsspec>=2021
   - h5py
   - pyyaml
   - xlrd

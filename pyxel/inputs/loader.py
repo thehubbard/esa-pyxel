@@ -85,13 +85,6 @@ def load_image(filename: t.Union[str, Path]) -> np.ndarray:
     if suffix.startswith(".fits"):
         with fsspec.open(url_path, mode="rb", **extras) as file_handler:
 
-            # Fix for fsspec version 0.9
-            if isinstance(file_handler, fsspec.implementations.local.LocalFileOpener):
-                try:
-                    _ = file_handler.fileno()
-                except OSError:
-                    file_handler.fileno = file_handler.f.fileno
-
             from astropy.io import fits  # Late import to speed-up general import time
 
             data_2d = fits.getdata(file_handler)  # type: np.ndarray
