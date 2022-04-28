@@ -112,6 +112,7 @@ to look for certain things:
 
    howto/overview.rst
    howto/new_model.rst
+   howto/detector_import_export.ipynb
 
 .. toctree::
    :caption: Background / Explanations

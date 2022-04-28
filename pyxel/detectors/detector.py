@@ -421,6 +421,10 @@ class Detector:
         ----------
         filename : str or Path
 
+        Notes
+        -----
+        You can find more information in the 'how-to' guide section.
+
         Examples
         --------
         >>> from pyxel.detectors import CCD
