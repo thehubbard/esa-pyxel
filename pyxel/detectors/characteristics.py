@@ -7,7 +7,6 @@
 
 """TBW."""
 import typing as t
-from collections import abc
 
 import numpy as np
 from toolz import dicttoolz
