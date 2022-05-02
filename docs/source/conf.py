@@ -103,6 +103,10 @@ napoleon_type_aliases = {
     "hv.Layout": "~holoviews.core.Layout",
 }
 
+# For 'MyST-NB'
+nb_execution_timeout = 60
+suppress_warnings = ["mystnb.unknown_mime_type"]
+
 autodoc_member_order = "bysource"
 
 # Add any paths that contain templates here, relative to this directory.

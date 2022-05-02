@@ -12,10 +12,10 @@ from concurrent.futures.thread import ThreadPoolExecutor
 from timeit import default_timer as timer
 
 import dask.array as da
-import dask.delayed as delayed
 import numpy as np
 import pandas as pd
 import xarray as xr
+from dask.delayed import Delayed
 from tqdm.auto import tqdm
 
 from pyxel.calibration import Algorithm, AlgorithmType, IslandProtocol
@@ -117,11 +117,11 @@ def extract_data_3d(
     for _, row in df_results.iterrows():
         island = row["island"]  # type: int
         id_processor = row["id_processor"]  # type: int
-        result = row["processor"].result  # type: delayed.Delayed
+        result = row["processor"].result  # type: t.Mapping[str, Delayed]
 
-        image_delayed = result["image"]  # type: delayed.Delayed
-        signal_delayed = result["signal"]  # type: delayed.Delayed
-        pixel_delayed = result["pixel"]  # type: delayed.Delayed
+        image_delayed = result["image"]  # type: Delayed
+        signal_delayed = result["signal"]  # type: Delayed
+        pixel_delayed = result["pixel"]  # type: Delayed
 
         image_3d = da.from_delayed(
             image_delayed, shape=(times, rows, cols), dtype=float

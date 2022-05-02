@@ -17,9 +17,9 @@ from copy import deepcopy
 from numbers import Number
 from pathlib import Path
 
-import dask.delayed as delayed
 import numpy as np
 import pandas as pd
+from dask.delayed import delayed
 from typing_extensions import Literal
 
 from pyxel.calibration import (

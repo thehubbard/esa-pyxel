@@ -12,7 +12,7 @@ import typing as t
 
 import numpy as np
 from dask import array as da
-from dask import delayed as delayed
+from dask.delayed import Delayed, delayed
 
 if t.TYPE_CHECKING:
     import pygmo as pg
@@ -175,9 +175,7 @@ class DaskIsland:
         algo_pickable = AlgoSerializable(algo)
 
         # Run 'algo.evolve' with `Dask`
-        new_delayed_pop = delayed(algo_pickable.evolve, nout=2)(
-            pop
-        )  # type: delayed.Delayed
+        new_delayed_pop = delayed(algo_pickable.evolve, nout=2)(pop)  # type: Delayed
 
         (
             new_algo,

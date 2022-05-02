@@ -10,9 +10,8 @@
 import typing as t
 from pathlib import Path
 
-import dask.delayed as delayed
 import pandas as pd
-from dask.delayed import Delayed
+from dask.delayed import Delayed, delayed
 from typing_extensions import Literal
 
 from pyxel.outputs import Outputs
@@ -61,7 +60,7 @@ class CalibrationOutputs(Outputs):
 
     def save_processors(self, processors: pd.DataFrame) -> t.Sequence[Delayed]:
         """TBW."""
-        lst = []  # type: t.List[delayed.Delayed]
+        lst = []  # type: t.List[Delayed]
 
         if self.save_data_to_file:
 

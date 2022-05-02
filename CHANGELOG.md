@@ -24,6 +24,9 @@
 
 ### Others
 
+* Fix issues found by 'mypy' version 0.950 and 'myst-nb' version 0.14.0.
+  (See [!471](https://gitlab.com/esa/pyxel/-/merge_requests/471)).
+
 
 ## version 1.1.0 / 2022-04-22
 
