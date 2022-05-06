@@ -5,12 +5,10 @@ Architecture
 ============
 
 There are three main elements behind Pyxel's architecture,
-the :ref:`running_modes`, :ref:`detectors` and the :ref:`pipeline`,
-each of them represented by classes in the code.
+the :ref:`running_modes`, the :ref:`detectors` and the :ref:`pipeline`,
+each of them represented by a class in the code and corresponding to a section in the configuration file.
 See :ref:`apireference` for further information on the three types of classes.
-
-All the three elements are defined at the beginning through the input YAML configuration file.
-
+All the three elements are defined before running Pyxel through the input YAML configuration file.
 
 As illustrated below, the detector holds information about the detector properties such as geometry, characteristics,
 material and environment. Apart from that, it is also a bucket for storing simulated data,

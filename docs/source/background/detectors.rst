@@ -32,7 +32,7 @@ Implemented detector types:
     detectors/mkid.rst
     detectors/apd.rst
 
-.. _data_structure:
+.. _detector_properties:
 
 Detector properties
 ===================
