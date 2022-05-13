@@ -14,6 +14,7 @@ from typing_extensions import Literal
 
 from pyxel.detectors import Detector
 from pyxel.util import load_cropped_and_aligned_image
+from pyxel.util import temporary_random_state
 
 
 def apply_qe(array: np.ndarray, qe: t.Union[float, np.ndarray]) -> np.ndarray:
@@ -29,11 +30,13 @@ def apply_qe(array: np.ndarray, qe: t.Union[float, np.ndarray]) -> np.ndarray:
     -------
     ndarray
     """
-    return array * qe
+    output = np.random.binomial(n=array, p=qe)
+    return output
 
 
+@temporary_random_state
 def simple_conversion(
-    detector: Detector, quantum_efficiency: t.Optional[float] = None
+    detector: Detector, quantum_efficiency: t.Optional[float] = None, seed: t.Optional[int] = None,
 ) -> None:
     """Generate charge from incident photon via photoelectric effect, simple model.
 
@@ -56,6 +59,7 @@ def simple_conversion(
     detector.charge.add_charge_array(detector_charge)
 
 
+@temporary_random_state
 def conversion_with_qe_map(
     detector: Detector,
     filename: t.Union[str, Path],
@@ -63,6 +67,7 @@ def conversion_with_qe_map(
     align: t.Optional[
         Literal["center", "top_left", "top_right", "bottom_left", "bottom_right"]
     ] = None,
+    seed: t.Optional[int] = None,
 ) -> None:
     """Generate charge from incident photon via photoelectric effect, simple model with custom :term:`QE` map.
 
