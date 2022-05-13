@@ -1,7 +1,7 @@
 # Changelog
 
 
-## UNRELEASED
+## version 1.1.1 / 2022-05-13
 
 ### Core
 
