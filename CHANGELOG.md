@@ -8,6 +8,8 @@
 ### Documentation
 
 ### Models
+* Fix for: Charge generation model suppressing shot noise.
+  (See [!475](https://gitlab.com/esa/pyxel/-/merge_requests/465)).
 
 ### Others
 
