@@ -15,8 +15,11 @@ Simple photoconversion
 :guilabel:`Photon` 🠆 :guilabel:`Charge`
 
 With this model you can create and add charge to :py:class:`~pyxel.detectors.Detector` via photoelectric effect
-by converting photons in charge. User can provide an optional quantum efficiency (``qe``) parameter.
+by converting photons in charge.
+Binomial sampling of incoming Poisson distributed photons is used in the conversion, with probability :term:`QE`.
+User can provide an optional quantum efficiency (``qe``) parameter.
 If not provided, quantum efficiency from detector :py:class:`~pyxel.detectors.Characteristics` is used.
+It is also possible to set the seed of the random generator with the argument ```seed``.
 
 Basic example of YAML configuration model:
 
@@ -30,6 +33,8 @@ Basic example of YAML configuration model:
 
 .. autofunction:: simple_conversion
 
+.. warning:: Model assumes shot noise model was applied to photon array.
+
 .. _Conversion with custom QE map:
 
 Conversion with custom QE map
@@ -39,7 +44,8 @@ Conversion with custom QE map
 
 With this model you can create and add charge to :py:class:`~pyxel.detectors.Detector` via photoelectric effect
 by converting photons in charge.
-Beside that, user can input a custom quantum efficiency map by providing a ``filename`` of the :term:`QE` map.
+Binomial sampling of incoming Poisson distributed photons is used in the conversion, with probability :term:`QE`.
+Besides that, user can input a custom quantum efficiency map by providing a ``filename`` of the :term:`QE` map.
 Accepted file formats for :term:`QE` map are ``.npy``, ``.fits``, ``.txt``, ``.data``, ``.jpg``, ``.jpeg``, ``.bmp``,
 ``.png`` and ``.tiff``. Use argument ``position`` to set the offset from (0,0) pixel
 and set where the input :term:`QE` map is placed onto detector. You can set preset positions with argument ``align``.
@@ -57,6 +63,8 @@ Basic example of YAML configuration model:
         filename: data/qe_map.npy
 
 .. autofunction:: conversion_with_qe_map
+
+.. warning:: Model assumes shot noise model was applied to photon array.
 
 .. _Load charge:
 
