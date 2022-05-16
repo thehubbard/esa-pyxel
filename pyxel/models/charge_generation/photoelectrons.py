@@ -30,8 +30,8 @@ def apply_qe(array: np.ndarray, qe: t.Union[float, np.ndarray]) -> np.ndarray:
     -------
     ndarray
     """
-    output = np.random.binomial(n=array, p=qe)
-    return output
+    output = np.random.binomial(n=array.astype(int), p=qe)
+    return output.astype(float)
 
 
 @temporary_random_state
