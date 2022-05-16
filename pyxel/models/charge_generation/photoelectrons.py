@@ -13,8 +13,7 @@ import numpy as np
 from typing_extensions import Literal
 
 from pyxel.detectors import Detector
-from pyxel.util import load_cropped_and_aligned_image
-from pyxel.util import temporary_random_state
+from pyxel.util import load_cropped_and_aligned_image, temporary_random_state
 
 
 def apply_qe(array: np.ndarray, qe: t.Union[float, np.ndarray]) -> np.ndarray:
@@ -36,7 +35,9 @@ def apply_qe(array: np.ndarray, qe: t.Union[float, np.ndarray]) -> np.ndarray:
 
 @temporary_random_state
 def simple_conversion(
-    detector: Detector, quantum_efficiency: t.Optional[float] = None, seed: t.Optional[int] = None,
+    detector: Detector,
+    quantum_efficiency: t.Optional[float] = None,
+    seed: t.Optional[int] = None,
 ) -> None:
     """Generate charge from incident photon via photoelectric effect, simple model.
 
