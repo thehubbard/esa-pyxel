@@ -16,7 +16,9 @@ from pyxel.detectors import Detector
 from pyxel.util import load_cropped_and_aligned_image, temporary_random_state
 
 
-def apply_qe(array: np.ndarray, qe: t.Union[float, np.ndarray]) -> np.ndarray:
+def apply_qe(
+    array: np.ndarray, qe: t.Union[float, np.ndarray], binomial_sampling: bool = True
+) -> np.ndarray:
     """Apply quantum efficiency to an array.
 
     Parameters
@@ -24,13 +26,18 @@ def apply_qe(array: np.ndarray, qe: t.Union[float, np.ndarray]) -> np.ndarray:
     array: np.ndarray
     qe: ndarray or float
         Quantum efficiency.
+    binomial_sampling: bool
+        Binomial sampling. Default is True.
 
     Returns
     -------
     ndarray
     """
-    output = np.random.binomial(n=array.astype(int), p=qe)
-    return output.astype(float)
+    if binomial_sampling:
+        output = np.random.binomial(n=array.astype(int), p=qe).astype(float)
+    else:
+        output = array * qe
+    return output
 
 
 @temporary_random_state
@@ -38,6 +45,7 @@ def simple_conversion(
     detector: Detector,
     quantum_efficiency: t.Optional[float] = None,
     seed: t.Optional[int] = None,
+    binomial_sampling: bool = True,
 ) -> None:
     """Generate charge from incident photon via photoelectric effect, simple model.
 
@@ -47,6 +55,8 @@ def simple_conversion(
         Pyxel Detector object.
     quantum_efficiency: float, optional
         Quantum efficiency.
+    binomial_sampling: bool
+        Binomial sampling. Default is True.
     """
     if quantum_efficiency is None:
         final_qe = detector.characteristics.quantum_efficiency
@@ -56,7 +66,9 @@ def simple_conversion(
     if not 0 <= final_qe <= 1:
         raise ValueError("Quantum efficiency not between 0 and 1.")
 
-    detector_charge = apply_qe(array=detector.photon.array, qe=final_qe)
+    detector_charge = apply_qe(
+        array=detector.photon.array, qe=final_qe, binomial_sampling=binomial_sampling
+    )
     detector.charge.add_charge_array(detector_charge)
 
 
@@ -69,6 +81,7 @@ def conversion_with_qe_map(
         Literal["center", "top_left", "top_right", "bottom_left", "bottom_right"]
     ] = None,
     seed: t.Optional[int] = None,
+    binomial_sampling: bool = True,
 ) -> None:
     """Generate charge from incident photon via photoelectric effect, simple model with custom :term:`QE` map.
 
@@ -83,6 +96,8 @@ def conversion_with_qe_map(
     align: Literal
         Keyword to align the :term:`QE` map to detector. Can be any from:
         ("center", "top_left", "top_right", "bottom_left", "bottom_right")
+    binomial_sampling: bool
+        Binomial sampling. Default is True.
     """
     geo = detector.geometry
     position_y, position_x = position
@@ -99,7 +114,9 @@ def conversion_with_qe_map(
     if not np.all((0 <= qe) & (qe <= 1)):
         raise ValueError("Quantum efficiency values not between 0 and 1.")
 
-    detector_charge = apply_qe(array=detector.photon.array, qe=qe)
+    detector_charge = apply_qe(
+        array=detector.photon.array, qe=qe, binomial_sampling=binomial_sampling
+    )
     detector.charge.add_charge_array(detector_charge)
 
 
