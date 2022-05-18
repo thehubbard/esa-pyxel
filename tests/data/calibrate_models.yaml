@@ -104,6 +104,8 @@ pipeline:
       name: photoelectrons
       func: pyxel.models.charge_generation.simple_conversion
       enabled: true
+      arguments:
+          binomial_sampling: false
 
   # charge -> charge
   charge_collection:

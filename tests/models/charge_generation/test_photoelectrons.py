@@ -125,13 +125,7 @@ def test_conversion_with_qe_valid(ccd_5x5: CCD, valid_qe_map_path: t.Union[str, 
 
     detector = ccd_5x5
 
-    array = np.ones((5, 5))
-    detector.photon.array = array
-    target = array * 0.5
-
     conversion_with_qe_map(detector=detector, filename=valid_qe_map_path)
-
-    np.testing.assert_array_almost_equal(detector.charge.array, target)
 
 
 def test_simple_conversion_invalid(
