@@ -13,7 +13,8 @@
   (See [!475](https://gitlab.com/esa/pyxel/-/merge_requests/465)).
 
 ### Others
-
+* Provide multi-line string to 'pyxel.load.
+  (See [!476](https://gitlab.com/esa/pyxel/-/merge_requests/476)).
 
 ## version 1.1.1 / 2022-05-13
 
