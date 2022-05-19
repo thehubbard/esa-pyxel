@@ -9,4 +9,4 @@
 """TBW."""
 
 # flake8: noqa
-from .configuration import load, Configuration, save
+from .configuration import load, loads, Configuration, save

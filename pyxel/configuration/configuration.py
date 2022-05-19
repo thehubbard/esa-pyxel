@@ -121,6 +121,21 @@ def load(yaml_file: t.Union[str, Path]) -> Configuration:
     return build_configuration(dct)
 
 
+def loads(yaml_string: str) -> Configuration:
+    """Load configuration from a ``YAML`` string.
+
+    Parameters
+    ----------
+    yaml_string: str
+
+    Returns
+    -------
+    configuration: Configuration
+    """
+    dct = load_yaml(yaml_string)
+    return build_configuration(dct)
+
+
 def load_yaml(stream: t.Union[str, t.IO]) -> t.Any:
     """Load a ``YAML`` document.
 
