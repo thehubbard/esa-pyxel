@@ -12,7 +12,7 @@ and what different :ref:`running modes <running_modes>` can be used for.
 Further information on specific parts of the code can be found in section :ref:`Reference<reference>`.
 
 * :doc:`architecture`
+* :doc:`yaml`
 * :doc:`detectors`
 * :doc:`pipeline`
-* :doc:`yaml`
 * :doc:`running_modes`
