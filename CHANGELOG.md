@@ -15,6 +15,8 @@
 ### Others
 * Provide multi-line string to 'pyxel.load.
   (See [!476](https://gitlab.com/esa/pyxel/-/merge_requests/476)).
+* Fix issue with Mypy when using Numpy 1.22.
+  (See [!477](https://gitlab.com/esa/pyxel/-/merge_requests/477)).
 
 ## version 1.1.1 / 2022-05-13
 
