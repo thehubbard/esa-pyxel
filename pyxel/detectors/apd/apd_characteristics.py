@@ -324,7 +324,7 @@ class APDCharacteristics:
         bias_list = [1, 1.5, 2.5, 3.5, 4.5, 6.5, 8.5, 10.5]
         capacitance = [46.5, 41.3, 37.3, 34.8, 33.2, 31.4, 30.7, 30.4]
 
-        output_capacitance = np.interp(bias, bias_list, capacitance)
+        output_capacitance = float(np.interp(x=bias, xp=bias_list, fp=capacitance))
 
         return output_capacitance * 1.0e-15
 
