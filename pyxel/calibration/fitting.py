@@ -419,7 +419,7 @@ class ModelFitting(ProblemSingleObjective):
         array_like
             Parameters
         """
-        parameters = np.asarray(decisions_vector)
+        parameters = np.array(decisions_vector)
 
         a = 0
         for var in self.variables:

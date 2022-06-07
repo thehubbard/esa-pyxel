@@ -319,7 +319,10 @@ def test_fitness(yaml, parameter, expected_fitness):
 
     configure(mf, cfg)
 
+    parameter_before = parameter.copy()
     overall_fitness = mf.fitness(parameter)
+
+    np.testing.assert_array_equal(parameter, parameter_before)
     assert overall_fitness[0] == expected_fitness
 
     print("fitness: ", overall_fitness[0])
