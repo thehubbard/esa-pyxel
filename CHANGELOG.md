@@ -1,11 +1,7 @@
 # Changelog
 
 
-## UNRELEASED
-
-### Core
-
-### Documentation
+## version 1.1.2 / 2022-06-06
 
 ### Models
 * Fix for: Charge generation model suppressing shot noise. 
