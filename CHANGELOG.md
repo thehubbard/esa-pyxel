@@ -10,7 +10,9 @@
 ### Models
 * Fix for: Charge generation model suppressing shot noise. 
   Solution from Gitter by [Lawrence Jones](https://gitlab.com/l_jones).
-  (See [!475](https://gitlab.com/esa/pyxel/-/merge_requests/465)).
+  (See [!475](https://gitlab.com/esa/pyxel/-/merge_requests/475)).
+* Fix for: Redundant normalization in SAR ADC model.
+  (See [!478](https://gitlab.com/esa/pyxel/-/merge_requests/478)).
 
 ### Others
 * Provide multi-line string to 'pyxel.load.
