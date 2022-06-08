@@ -36,9 +36,7 @@ def apply_sar_adc(
     """
     data_digitized_2d = np.zeros((num_rows, num_cols))
 
-    # First normalize the data to voltage since there is no model for
-    # the conversion photogenerated carrier > volts in the model/charge_measure
-    signal_normalized_2d = signal_2d * max_volt / np.max(signal_2d)
+    signal_normalized_2d = signal_2d.copy()
 
     # Set the reference voltage of the ADC to half the max
     ref = max_volt / 2.0  # type: float
