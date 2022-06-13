@@ -28,14 +28,14 @@ dependencies:
   - pip
 # Scientific computing
   - numba
-  - numpy>=1.17
+  - numpy>=1.20
   - pandas
   - scipy
-  - xarray
+  - xarray>=0.19
 # Plotting
   - matplotlib>=3.1
   - seaborn
-  - holoviews
+  - holoviews>=1.14.2
   - bokeh
 # Parallel computing
   - dask>=2.9
@@ -46,7 +46,7 @@ dependencies:
   - jupyterlab
   - nodejs
 # Input/Output
-  - astropy
+  - astropy>=4.3
   - fsspec>=2021
   - h5py
   - pyyaml

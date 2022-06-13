@@ -136,15 +136,15 @@ Dependencies
 Pyxel has the following **mandatory** dependencies:
 
 * `python <https://www.python.org>`_ 3.7 or later
-* `numpy <https://numpy.org>`_
-* `xarray <http://xarray.pydata.org/>`_
+* `numpy <https://numpy.org>`_ 1.20 or later
+* `xarray <http://xarray.pydata.org/>`_ 0.19 or later
 * `dask <https://dask.org>`_
 * `jupyterlab <https://jupyterlab.readthedocs.io>`_
-* `astropy <https://www.astropy.org>`_
+* `astropy <https://www.astropy.org>`_ 4.3 or later
 * `pandas <https://pandas.pydata.org>`_
 * `numba <https://numba.pydata.org>`_
 * `tqdm <https://tqdm.github.io>`_
-* `holoviews <https://holoviews.org>`_
+* `holoviews <https://holoviews.org>`_ 1.14.2 or later
 * `matplotlib <https://matplotlib.org>`_
 * `h5py <https://www.h5py.org>`_
 
