@@ -9,7 +9,6 @@
 
 import typing as t
 
-import holoviews as hv
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -136,11 +135,18 @@ def display_detector(detector: "Detector") -> "Layout":
     detector: Detector
     hist: bool
 
-    Returns
+    Returnsimport pandas as pd
+
     -------
     hv.Layout
         A Holoviews object.
     """
+    # Late import to speedup start-up time
+    import holoviews as hv
+
+    # Apply an extension to Holoviews (if needed)
+    if not hv.Store.renderers:
+        hv.extension("bokeh")
 
     # Container for detector data, leave out where there is none.
     det = {}  # type: t.Dict[str, np.ndarray]

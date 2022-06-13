@@ -18,13 +18,14 @@ from time import strftime
 import h5py as h5
 import numpy as np
 import pandas as pd
-import xarray as xr
 from PIL import Image
 from typing_extensions import Literal
 
 from pyxel import __version__ as version
 
 if t.TYPE_CHECKING:
+    import xarray as xr
+
     from pyxel.detectors import Detector
     from pyxel.pipelines import Processor
 
@@ -392,7 +393,7 @@ class Outputs:
         return filenames
 
     def save_to_netcdf(
-        self, data: xr.Dataset, name: str, with_auto_suffix: bool = False
+        self, data: "xr.Dataset", name: str, with_auto_suffix: bool = False
     ) -> Path:
         """Write Xarray dataset to NetCDF file.
 

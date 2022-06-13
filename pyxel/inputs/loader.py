@@ -19,10 +19,12 @@ from pathlib import Path
 
 import fsspec
 import numpy as np
-import pandas as pd
 from PIL import Image
 
 from pyxel.options import global_options
+
+if t.TYPE_CHECKING:
+    import pandas as pd
 
 
 def load_image(filename: t.Union[str, Path]) -> np.ndarray:
@@ -120,7 +122,7 @@ def load_image(filename: t.Union[str, Path]) -> np.ndarray:
     return data_2d
 
 
-def load_table(filename: t.Union[str, Path]) -> pd.DataFrame:
+def load_table(filename: t.Union[str, Path]) -> "pd.DataFrame":
     """Load a table from a file and returns a pandas dataframe. No header is expected in xlsx.
 
     Parameters
@@ -141,6 +143,9 @@ def load_table(filename: t.Union[str, Path]) -> pd.DataFrame:
         When the extension of the filename is unknown or separator is not found.
 
     """
+    # Late import to speedup start-up time
+    import pandas as pd
+
     suffix = Path(filename).suffix.lower()  # type: str
 
     if isinstance(filename, Path):

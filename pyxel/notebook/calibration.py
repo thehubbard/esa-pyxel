@@ -11,7 +11,6 @@
 import os
 import typing as t
 
-import holoviews as hv
 import numpy as np
 import pandas as pd
 import xarray as xr
@@ -20,13 +19,15 @@ from bokeh.models import PrintfTickFormatter
 from pyxel import load_image
 
 if t.TYPE_CHECKING:
+    import holoviews as hv
+
     from pyxel.calibration import Calibration
     from pyxel.detectors import Detector
 
 
 def display_calibration_inputs(
     calibration: "Calibration", detector: "Detector"
-) -> hv.Layout:
+) -> "hv.Layout":
     """Display calibration inputs and target data based on configuration file.
 
     Parameters
@@ -40,6 +41,12 @@ def display_calibration_inputs(
     -------
     plot: hv.Layout
     """
+    # Late import to speedup start-up time
+    import holoviews as hv
+
+    # Apply an extension to Holoviews (if needed)
+    if not hv.Store.renderers:
+        hv.extension("bokeh")
 
     fnames_input = calibration.result_input_arguments[0].values
     fnames_target = [str(os.path.relpath(x)) for x in calibration.target_data_path]
@@ -50,7 +57,7 @@ def display_calibration_inputs(
     input_columns = input_range[3] - input_range[2]
     target_columns = target_range[3] - target_range[2]
 
-    def get_data_input(data_id: int) -> t.Union[hv.Image, hv.Curve]:
+    def get_data_input(data_id: int) -> t.Union["hv.Image", "hv.Curve"]:
         """Get input data based on configuration file.
 
         Parameters
@@ -61,6 +68,12 @@ def display_calibration_inputs(
         -------
         im
         """
+        # Late import to speedup start-up time
+        import holoviews as hv
+
+        # Apply an extension to Holoviews (if needed)
+        if not hv.Store.renderers:
+            hv.extension("bokeh")
 
         # TODO: Fix typing, what if input arguments in calibration not strings?
         data = load_image(fnames_input[data_id])  # type: ignore
@@ -82,7 +95,7 @@ def display_calibration_inputs(
 
         return im
 
-    def get_data_target(data_id: int) -> t.Union[hv.Image, hv.Curve]:
+    def get_data_target(data_id: int) -> t.Union["hv.Image", "hv.Curve"]:
         """Get target data based on the configuration file.
 
         Parameters
@@ -93,7 +106,6 @@ def display_calibration_inputs(
         -------
         im
         """
-
         data = load_image(fnames_target[data_id])
 
         if data.ndim == 1:
@@ -141,7 +153,7 @@ def display_calibration_inputs(
     return plot
 
 
-def display_simulated(ds: xr.Dataset) -> hv.Layout:
+def display_simulated(ds: xr.Dataset) -> "hv.Layout":
     """Display simulated and target data from the output dataset.
 
     Parameters
@@ -153,6 +165,13 @@ def display_simulated(ds: xr.Dataset) -> hv.Layout:
     -------
     hv.Layout
     """
+    # Late import to speedup start-up time
+    import holoviews as hv
+
+    # Apply an extension to Holoviews (if needed)
+    if not hv.Store.renderers:
+        hv.extension("bokeh")
+
     result_type = ds.attrs["result_type"]
 
     var_name = {
@@ -308,7 +327,7 @@ def display_simulated(ds: xr.Dataset) -> hv.Layout:
         return (plot_simulated + plot_target + plot_residuals).opts(tabs=True)
 
 
-def display_evolution(ds: xr.Dataset) -> hv.Layout:
+def display_evolution(ds: xr.Dataset) -> "hv.Layout":
     """Display best champion parameter and overall fitness vs evolution.
 
     Parameters
@@ -321,6 +340,13 @@ def display_evolution(ds: xr.Dataset) -> hv.Layout:
     plot: hv.Layout
         Output plot.
     """
+    # Late import to speedup start-up time
+    import holoviews as hv
+
+    # Apply an extension to Holoviews (if needed)
+    if not hv.Store.renderers:
+        hv.extension("bokeh")
+
     output_champions = xr.Dataset()
     output_champions["fitness"] = ds["champion_fitness"].drop(labels="evolution")  # type: ignore
     output_champions["parameters"] = ds["champion_parameters"].assign_coords(
@@ -373,7 +399,7 @@ def champion_heatmap(
     parameter_range: t.Optional[list] = None,
     island_range: t.Optional[list] = None,
     ind_range: t.Optional[list] = None,
-) -> hv.Points:
+) -> "hv.Points":
     """Plot a heatmap of champion parameters vs fitness.
 
     Parameters
@@ -396,6 +422,12 @@ def champion_heatmap(
     plot: hv.Points
         Champion heatmap.
     """
+    # Late import to speedup start-up time
+    import holoviews as hv
+
+    # Apply an extension to Holoviews (if needed)
+    if not hv.Store.renderers:
+        hv.extension("bokeh")
 
     if parameter_range:
         parameter_slice = slice(parameter_range[0], parameter_range[1])

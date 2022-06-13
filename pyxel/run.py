@@ -15,13 +15,10 @@ from pathlib import Path
 import click
 import dask
 import pandas as pd
-import xarray as xr
-from matplotlib import pyplot as plt
 
 from pyxel import Configuration
 from pyxel import __version__ as version
 from pyxel import load, outputs, save
-from pyxel.calibration import Calibration, CalibrationResult
 from pyxel.detectors import APD, CCD, CMOS, MKID, Detector
 from pyxel.exposure import Exposure
 from pyxel.observation import Observation, ObservationResult
@@ -29,6 +26,9 @@ from pyxel.pipelines import DetectionPipeline, Processor
 from pyxel.util import create_model, download_examples
 
 if t.TYPE_CHECKING:
+    import xarray as xr
+
+    from pyxel.calibration import Calibration
     from pyxel.outputs import CalibrationOutputs, ExposureOutputs, ObservationOutputs
 
 
@@ -36,7 +36,7 @@ def exposure_mode(
     exposure: "Exposure",
     detector: Detector,
     pipeline: "DetectionPipeline",
-) -> xr.Dataset:
+) -> "xr.Dataset":
     """Run an 'exposure' pipeline.
 
     For more information, see :ref:`exposure_mode`.
@@ -161,7 +161,7 @@ def calibration_mode(
     detector: Detector,
     pipeline: "DetectionPipeline",
     compute_and_save: bool = True,
-) -> t.Tuple[xr.Dataset, pd.DataFrame, pd.DataFrame, t.Sequence]:
+) -> t.Tuple["xr.Dataset", pd.DataFrame, pd.DataFrame, t.Sequence]:
     """Run a 'calibration' pipeline.
 
     For more information, see :ref:`calibration_mode`.
@@ -243,6 +243,9 @@ def calibration_mode(
     >>> filenames
     []
     """
+    # Late import to speedup start-up time
+    from pyxel.calibration import CalibrationResult
+
     logging.info("Mode: Calibration")
 
     calibration_outputs = calibration.outputs  # type: CalibrationOutputs
@@ -314,6 +317,9 @@ def output_directory(configuration: Configuration) -> Path:
     -------
     output_dir
     """
+    # Late import to speedup start-up time
+    from pyxel.calibration import Calibration
+
     if isinstance(configuration.exposure, Exposure):
         output_dir = configuration.exposure.outputs.output_dir
     elif isinstance(configuration.calibration, Calibration):
@@ -342,6 +348,9 @@ def run(
     >>> import pyxel
     >>> pyxel.run("configuration.yaml")
     """
+    # Late import to speedup start-up time
+    from pyxel.calibration import Calibration
+
     logging.info("Pyxel version %s", version)
     logging.info("Pipeline started.")
 
@@ -401,6 +410,10 @@ def run(
     # Closing the logger in order to be able to move the file in the output dir
     logging.shutdown()
     outputs.save_log_file(output_dir)
+
+    # Late import to speedup start-up time
+    from matplotlib import pyplot as plt
+
     plt.close()
 
 

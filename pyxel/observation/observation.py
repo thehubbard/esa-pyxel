@@ -15,7 +15,6 @@ from functools import partial
 
 import dask.bag as db
 import numpy as np
-import xarray as xr
 from tqdm.auto import tqdm
 from typing_extensions import Literal
 
@@ -25,6 +24,8 @@ from pyxel.pipelines import ResultType
 from pyxel.state import get_obj_att, get_value
 
 if t.TYPE_CHECKING:
+    import xarray as xr
+
     from pyxel.exposure import Readout
     from pyxel.outputs import ObservationOutputs
     from pyxel.pipelines import Processor
@@ -41,9 +42,9 @@ class ParameterMode(Enum):
 class ObservationResult(t.NamedTuple):
     """Result class for observation class."""
 
-    dataset: t.Union[xr.Dataset, t.Dict[str, xr.Dataset]]
-    parameters: xr.Dataset
-    logs: xr.Dataset
+    dataset: t.Union["xr.Dataset", t.Dict[str, "xr.Dataset"]]
+    parameters: "xr.Dataset"
+    logs: "xr.Dataset"
 
 
 class Observation:
@@ -275,7 +276,7 @@ class Observation:
 
     def run_debug_mode(
         self, processor: "Processor"
-    ) -> t.Tuple[t.List["Processor"], xr.Dataset]:
+    ) -> t.Tuple[t.List["Processor"], "xr.Dataset"]:
         """Run observation pipelines in debug mode and return list of processors and parameter logs.
 
         Parameters
@@ -287,6 +288,9 @@ class Observation:
         processors: list
         final_logs: Dataset
         """
+        # Late import to speedup start-up time
+        import xarray as xr
+
         processors = []
         logs = []  # type: t.List[xr.Dataset]
 
@@ -364,6 +368,9 @@ class Observation:
         -------
         result: Result
         """
+        # Late import to speedup start-up time
+        import xarray as xr
+
         # validation
         self._check_steps(processor)
 
@@ -769,7 +776,7 @@ def short(s: str) -> str:
     return out
 
 
-def log_parameters(processor_id: int, parameter_dict: dict) -> xr.Dataset:
+def log_parameters(processor_id: int, parameter_dict: dict) -> "xr.Dataset":
     """Return parameters in the current processor in a xarray dataset.
 
     Parameters
@@ -781,6 +788,9 @@ def log_parameters(processor_id: int, parameter_dict: dict) -> xr.Dataset:
     -------
     out: Dataset
     """
+    # Late import to speedup start-up time
+    import xarray as xr
+
     out = xr.Dataset()
     for key, value in parameter_dict.items():
         da = xr.DataArray(value)
@@ -792,7 +802,7 @@ def log_parameters(processor_id: int, parameter_dict: dict) -> xr.Dataset:
 
 def parameter_to_dataset(
     parameter_dict: dict, index: int, coordinate_name: str
-) -> xr.Dataset:
+) -> "xr.Dataset":
     """Return a specific parameter dataset from a parameter dictionary.
 
     Parameters
@@ -805,6 +815,8 @@ def parameter_to_dataset(
     -------
     parameter_ds: Dataset
     """
+    # Late import to speedup start-up time
+    import xarray as xr
 
     parameter_ds = xr.Dataset()
     parameter = xr.DataArray(parameter_dict[coordinate_name])
@@ -815,7 +827,7 @@ def parameter_to_dataset(
     return parameter_ds
 
 
-def _add_custom_parameters(ds: xr.Dataset, index: int) -> xr.Dataset:
+def _add_custom_parameters(ds: "xr.Dataset", index: int) -> "xr.Dataset":
     """Add coordinate coordinate "index" to the dataset.
 
     Parameters
@@ -835,12 +847,12 @@ def _add_custom_parameters(ds: xr.Dataset, index: int) -> xr.Dataset:
 
 
 def _add_sequential_parameters(
-    ds: xr.Dataset,
+    ds: "xr.Dataset",
     parameter_dict: dict,
     index: int,
     coordinate_name: str,
     types: dict,
-) -> xr.Dataset:
+) -> "xr.Dataset":
     """Add true coordinates or index to sequential mode dataset.
 
     Parameters
@@ -871,8 +883,8 @@ def _add_sequential_parameters(
 
 
 def _add_product_parameters(
-    ds: xr.Dataset, parameter_dict: dict, indices: t.Tuple, types: dict
-) -> xr.Dataset:
+    ds: "xr.Dataset", parameter_dict: dict, indices: t.Tuple, types: dict
+) -> "xr.Dataset":
     """Add true coordinates or index to product mode dataset.
 
     Parameters
@@ -908,7 +920,7 @@ def _add_product_parameters(
 
 def compute_final_sequential_dataset(
     list_of_index_and_parameter: list, list_of_datasets: list
-) -> t.Dict[str, xr.Dataset]:
+) -> t.Dict[str, "xr.Dataset"]:
     """Return a dictionary of result datasets where keys are different parameters.
 
     Parameters
@@ -920,6 +932,8 @@ def compute_final_sequential_dataset(
     -------
     final_datasets: dict
     """
+    # Late import to speedup start-up time
+    import xarray as xr
 
     final_dict = {}  # type: t.Dict[str, list]
 

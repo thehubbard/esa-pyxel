@@ -9,7 +9,6 @@
 
 import typing as t
 
-import numba
 import numpy as np
 import pandas as pd
 from typing_extensions import Literal
@@ -21,31 +20,6 @@ from pyxel.detectors.geometry import (
 
 if t.TYPE_CHECKING:
     from pyxel.detectors import Geometry
-
-
-@numba.jit(nopython=True)
-def df_to_array(
-    array: np.ndarray,
-    charge_per_pixel: list,
-    pixel_index_ver: list,
-    pixel_index_hor: list,
-) -> np.ndarray:
-    """Assign charge in dataframe to nearest pixel.
-
-    Parameters
-    ----------
-    array: ndarray
-    charge_per_pixel: list
-    pixel_index_ver: list
-    pixel_index_hor:list
-
-    Returns
-    -------
-    ndarray
-    """
-    for i, charge_value in enumerate(charge_per_pixel):
-        array[pixel_index_ver[i], pixel_index_hor[i]] += charge_value
-    return array
 
 
 class Charge:
@@ -195,6 +169,33 @@ class Charge:
 
         Charge in the detector volume is collected and assigned to the nearest pixel.
         """
+        # Late import to speedup start-up time
+        import numba
+
+        @numba.jit(nopython=True)
+        def df_to_array(
+            array: np.ndarray,
+            charge_per_pixel: list,
+            pixel_index_ver: list,
+            pixel_index_hor: list,
+        ) -> np.ndarray:
+            """Assign charge in dataframe to nearest pixel.
+
+            Parameters
+            ----------
+            array: ndarray
+            charge_per_pixel: list
+            pixel_index_ver: list
+            pixel_index_hor:list
+
+            Returns
+            -------
+            ndarray
+            """
+            for i, charge_value in enumerate(charge_per_pixel):
+                array[pixel_index_ver[i], pixel_index_hor[i]] += charge_value
+            return array
+
         array = np.zeros((self._geo.row, self._geo.col))
 
         charge_per_pixel = self.get_frame_values(quantity="number")
