@@ -90,7 +90,7 @@ def reduce_chi_squared(
     diff_square = diff * diff
     diff_square /= weighting * weighting
 
-    degrees_of_freedom = target.size() - free_parameters
+    degrees_of_freedom = target.size - free_parameters
     reduced_chi2 = float(np.sum(diff_square)) / degrees_of_freedom
 
     return reduced_chi2
