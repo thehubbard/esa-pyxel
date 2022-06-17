@@ -397,6 +397,9 @@ class Calibration:
             file_path=output_dir,
         )
 
+        # FRED
+        result = self.fitting.fitness(np.array([1, 1, 1, 1, 1], dtype=float))
+
         if self.num_islands > 1:  # default
             # Create an archipelago
             user_defined_island = DaskIsland()
