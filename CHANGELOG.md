@@ -4,6 +4,8 @@
 ## UNRELEASED
 
 ### Core
+* Fix bug in 'ModelFitting.convert_to_parameters'.
+  (See [!484](https://gitlab.com/esa/pyxel/-/merge_requests/484)).
 
 ### Documentation
 
