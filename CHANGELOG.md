@@ -12,6 +12,15 @@
 ### Models
 
 ### Others
+* The minimum versions of dependencies 'astropy', 'holoviews' and 'xarray' 
+  (See [!481](https://gitlab.com/esa/pyxel/-/merge_requests/481)) were changed:
+
+  | Package   | Old   | New        |
+  | --------- |-------| ---------- |
+  | astropy   | undef | **4.3**    |
+  | holoviews | undef | **1.14.2** |
+  | numpy     | 1.17  | **1.20**   |
+  | xarray    | undef | **0.19**   |
 
 
 ## version 1.1.2 / 2022-06-06
