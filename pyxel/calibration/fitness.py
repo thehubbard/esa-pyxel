@@ -62,3 +62,35 @@ def sum_of_squared_residuals(
 
     result = float(np.sum(diff_square))
     return result
+
+
+# @numba.njit
+def reduce_chi_squared(
+    simulated: np.ndarray,
+    target: np.ndarray,
+    weighting: np.ndarray,
+    free_parameters: int,
+) -> float:
+    """TBW.
+    see https://en.wikipedia.org/wiki/Reduced_chi-squared_statistic
+
+    Parameters
+    ----------
+    simulated
+    target
+    weighting
+    free_parameters
+
+    Returns
+    -------
+    array
+        TBW.
+    """
+    diff = target - simulated
+    diff_square = diff * diff
+    diff_square /= weighting * weighting
+
+    degrees_of_freedom = target.size() - free_parameters
+    reduced_chi2 = float(np.sum(diff_square)) / degrees_of_freedom
+
+    return reduced_chi2
