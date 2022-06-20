@@ -64,31 +64,32 @@ def sum_of_squared_residuals(
     return result
 
 
-# @numba.njit
+@numba.njit
 def reduced_chi_squared(
     simulated: np.ndarray,
     target: np.ndarray,
     weighting: np.ndarray,
     free_parameters: int,
 ) -> float:
-    """TBW.
+    """Compute the reduced chi-square error statistic.
 
     Notes
     -----
     You can find more information at this link
-    https://en.wikipedia.org/wiki/Reduced_chi-squared_statistic
+    https://en.wikipedia.org/wiki/Goodness_of_fit
 
     Parameters
     ----------
     simulated
     target
     weighting
-    free_parameters
+    free_parameters : int
+        Number of free parameters in the model
 
     Returns
     -------
-    array
-        TBW.
+    float
+        The reduced :math:`\chi^{2}`.
     """
     diff = target - simulated
     deviation2 = np.square(diff / weighting)
