@@ -6,6 +6,8 @@
 ### Core
 * Fix bug in 'ModelFitting.convert_to_parameters'.
   (See [!484](https://gitlab.com/esa/pyxel/-/merge_requests/484)).
+* Implement new fitness function 'reduced_chi_squared'.
+  (See [!485](https://gitlab.com/esa/pyxel/-/merge_requests/485)).
 
 ### Documentation
 

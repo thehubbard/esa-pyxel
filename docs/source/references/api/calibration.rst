@@ -62,3 +62,6 @@ sum_of_squared_residuals
 ========================
 .. autofunction:: sum_of_squared_residuals
 
+reduced_chi_squared
+===================
+.. autofunction:: reduced_chi_squared
