@@ -71,7 +71,7 @@ def reduced_chi_squared(
     weighting: np.ndarray,
     free_parameters: int,
 ) -> float:
-    """Compute the reduced chi-square error statistic.
+    r"""Compute the reduced chi-square error statistic.
 
     Notes
     -----
