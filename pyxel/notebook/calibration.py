@@ -13,13 +13,13 @@ import typing as t
 
 import numpy as np
 import pandas as pd
-import xarray as xr
 from bokeh.models import PrintfTickFormatter
 
 from pyxel import load_image
 
 if t.TYPE_CHECKING:
     import holoviews as hv
+    import xarray as xr
 
     from pyxel.calibration import Calibration
     from pyxel.detectors import Detector
@@ -153,7 +153,7 @@ def display_calibration_inputs(
     return plot
 
 
-def display_simulated(ds: xr.Dataset) -> "hv.Layout":
+def display_simulated(ds: "xr.Dataset") -> "hv.Layout":
     """Display simulated and target data from the output dataset.
 
     Parameters
@@ -167,6 +167,7 @@ def display_simulated(ds: xr.Dataset) -> "hv.Layout":
     """
     # Late import to speedup start-up time
     import holoviews as hv
+    import xarray as xr
 
     # Apply an extension to Holoviews (if needed)
     if not hv.Store.renderers:
@@ -327,7 +328,7 @@ def display_simulated(ds: xr.Dataset) -> "hv.Layout":
         return (plot_simulated + plot_target + plot_residuals).opts(tabs=True)
 
 
-def display_evolution(ds: xr.Dataset) -> "hv.Layout":
+def display_evolution(ds: "xr.Dataset") -> "hv.Layout":
     """Display best champion parameter and overall fitness vs evolution.
 
     Parameters
@@ -342,6 +343,7 @@ def display_evolution(ds: xr.Dataset) -> "hv.Layout":
     """
     # Late import to speedup start-up time
     import holoviews as hv
+    import xarray as xr
 
     # Apply an extension to Holoviews (if needed)
     if not hv.Store.renderers:
@@ -370,7 +372,7 @@ def display_evolution(ds: xr.Dataset) -> "hv.Layout":
     return plot
 
 
-def optimal_parameters(ds: xr.Dataset) -> pd.DataFrame:
+def optimal_parameters(ds: "xr.Dataset") -> pd.DataFrame:
     """Return a dataframe of best parameters.
 
     Parameters
@@ -393,7 +395,7 @@ def optimal_parameters(ds: xr.Dataset) -> pd.DataFrame:
 
 
 def champion_heatmap(
-    ds: xr.Dataset,
+    ds: "xr.Dataset",
     num_bins: int = 100,
     logx: bool = False,
     parameter_range: t.Optional[list] = None,
@@ -410,11 +412,11 @@ def champion_heatmap(
         Number of bins, default is 100.
     logx: bool
         Logarithmic x axis.
-    parameter_slice: slice
+    parameter_range: slice
         Parameters slice.
-    island_slice: slice
+    island_range: slice
         Islands slice.
-    ind_slice: slice
+    ind_range: slice
         Individuals slice.
 
     Returns
@@ -424,6 +426,7 @@ def champion_heatmap(
     """
     # Late import to speedup start-up time
     import holoviews as hv
+    import xarray as xr
 
     # Apply an extension to Holoviews (if needed)
     if not hv.Store.renderers:
