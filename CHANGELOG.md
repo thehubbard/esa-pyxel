@@ -10,6 +10,9 @@
   (See [!485](https://gitlab.com/esa/pyxel/-/merge_requests/485)).
 
 ### Documentation
+* Add benchmarks in the documentation at this link 
+  https://esa.gitlab.io/pyxel/benchmarks.
+  (See [!486](https://gitlab.com/esa/pyxel/-/merge_requests/486)).
 
 ### Models
 
