@@ -26,6 +26,8 @@
   | holoviews | undef | **1.14.2** |
   | numpy     | 1.17  | **1.20**   |
   | xarray    | undef | **0.19**   |
+* Speedup start-up time of Pyxel.
+  (See [!482](https://gitlab.com/esa/pyxel/-/merge_requests/482)).
 
 
 ## version 1.1.2 / 2022-06-06
