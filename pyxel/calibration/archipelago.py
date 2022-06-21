@@ -86,7 +86,7 @@ class ArchipelagoLogs:
         partial_df = self._from_archi(archi=archi)  # type: pd.DataFrame
         partial_df["id_evolution"] = id_evolution
 
-        self._df = self._df.append(partial_df)
+        self._df = pd.concat([self._df, partial_df])
 
     def get_full_total(self) -> pd.DataFrame:
         """TBW."""
@@ -329,9 +329,8 @@ class MyArchipelago:
                 else:
                     all_champions = partial_champions
 
-                champions_lst.append(
-                    all_champions.assign_coords(evolution=id_evolution)
-                )
+                ds = all_champions.assign_coords(evolution=id_evolution)
+                champions_lst.append(ds)
 
         champions = xr.concat(champions_lst, dim="evolution")  # type: xr.Dataset
 
