@@ -113,7 +113,7 @@ def extract_data_3d(
     readout_times: np.ndarray,
 ) -> xr.Dataset:
     """Extract 'image', 'signal' and 'pixel' arrays from several delayed dynamic results."""
-    lst = []
+    lst = []  # type: t.List[xr.Dataset]
     for _, row in df_results.iterrows():
         island = row["island"]  # type: int
         id_processor = row["id_processor"]  # type: int
@@ -155,7 +155,10 @@ def extract_data_3d(
         readout_time=readout_times,
         y=range(rows),
         x=range(cols),
-    )  # type: xr.Dataset
+    )  # type: t.Union[xr.Dataset, xr.DataArray]
+
+    if not isinstance(ds, xr.Dataset):
+        raise TypeError("Expected a Dataset.")
 
     return ds
 
