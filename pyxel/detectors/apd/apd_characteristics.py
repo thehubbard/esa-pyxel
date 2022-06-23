@@ -32,7 +32,6 @@ current status, in Image Sensing Technologies: Materials, Devices, Systems, and 
 import math
 import typing as t
 
-import astropy.constants as const
 import numpy as np
 from toolz import dicttoolz
 
@@ -384,6 +383,9 @@ class APDCharacteristics:
         -------
         float
         """
+        # Late import to speedup start-up time
+        import astropy.constants as const
+
         return roic_gain * (const.e.value / capacitance)
 
     def to_dict(self) -> t.Mapping:

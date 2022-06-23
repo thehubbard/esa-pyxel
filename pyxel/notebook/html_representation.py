@@ -8,13 +8,15 @@
 
 import typing as t
 
-from IPython.core.display import HTML
 from jinja2 import Template
 
 from pyxel.pipelines import ModelFunction, ModelGroup
 
+if t.TYPE_CHECKING:
+    from IPython.core.display import HTML
 
-def display_html(obj: t.Union[t.Callable, ModelFunction, ModelGroup]) -> HTML:
+
+def display_html(obj: t.Union[t.Callable, ModelFunction, ModelGroup]) -> "HTML":
     """Display object attributes and their types in a HTML table.
 
     Parameters
@@ -27,6 +29,8 @@ def display_html(obj: t.Union[t.Callable, ModelFunction, ModelGroup]) -> HTML:
     HTML
         HTML object from the rendered template.
     """
+    # Late import to speedup start-up time
+    from IPython.core.display import HTML
 
     if isinstance(obj, ModelGroup):
         return display_model_group_html(obj)
@@ -64,7 +68,7 @@ def display_html(obj: t.Union[t.Callable, ModelFunction, ModelGroup]) -> HTML:
         return HTML(template.render(data=d, name=obj.__class__.__name__))
 
 
-def display_model_html(mf: "ModelFunction") -> HTML:
+def display_model_html(mf: "ModelFunction") -> "HTML":
     """Display ModelFunction attributes and their types in a HTML table.
 
     Parameters
@@ -77,6 +81,9 @@ def display_model_html(mf: "ModelFunction") -> HTML:
     HTML
         HTML object from the rendered template.
     """
+    # Late import to speedup start-up time
+    from IPython.core.display import HTML
+
     d = {
         key: [
             type(mf.__dict__[key]).__name__,
@@ -130,7 +137,7 @@ def display_model_html(mf: "ModelFunction") -> HTML:
     return HTML(template.render(data=d, arguments=a, model_name=mf._name))
 
 
-def display_model_group_html(mg: "ModelGroup") -> HTML:
+def display_model_group_html(mg: "ModelGroup") -> "HTML":
     """Display ModelGroup attributes and their types in a HTML table.
 
     Parameters
@@ -143,6 +150,8 @@ def display_model_group_html(mg: "ModelGroup") -> HTML:
     HTML
         HTML object from the rendered template.
     """
+    # Late import to speedup start-up time
+    from IPython.core.display import HTML
 
     d = {
         key: [

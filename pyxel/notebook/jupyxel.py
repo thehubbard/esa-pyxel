@@ -9,23 +9,17 @@
 
 import typing as t
 
-import holoviews as hv
-import matplotlib.pyplot as plt
 import numpy as np
-
-# Display methods for detector objects in Jupyter notebook
-from IPython.display import Markdown, display
-from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 from pyxel.data_structure import Persistence, SimplePersistence
 
 if t.TYPE_CHECKING:
+    import matplotlib.pyplot as plt
     from holoviews import Layout
 
     from pyxel import Configuration
     from pyxel.detectors import Detector
     from pyxel.pipelines import DetectionPipeline, ModelFunction, Processor
-
 
 # ----------------------------------------------------------------------------------------------
 # Those two methods are used to display the contents of the configuration once loaded in pyxel
@@ -39,6 +33,9 @@ def display_config(configuration: "Configuration", only: str = "all") -> None:
     cfg: Configuration
     only: str
     """
+    # Late import to speedup start-up time
+    from IPython.display import Markdown, display
+
     cfg = configuration.__dict__  # type: dict
     for key in cfg:
         if cfg[key] is None:
@@ -66,6 +63,9 @@ def display_dict(cfg: dict) -> None:
     ----------
     cfg: dict
     """
+    # Late import to speedup start-up time
+    from IPython.display import Markdown, display
+
     for key in cfg:
         display(Markdown(f"#### <font color=#0088FF> {key} </font>"))
         display(Markdown("\t" + str(cfg[key])))
@@ -83,6 +83,8 @@ def display_model(configuration: "Configuration", model_name: str) -> None:
     pipeline_container: Processor or dict
     model_name: str
     """
+    # Late import to speedup start-up time
+    from IPython.display import Markdown, display
 
     pipeline = configuration.pipeline  # type: DetectionPipeline
     model = pipeline.get_model(name=model_name)  # type: ModelFunction
@@ -103,6 +105,9 @@ def change_modelparam(
     argument:str
     changed_value
     """
+    # Late import to speedup start-up time
+    from IPython.display import Markdown, display
+
     display(Markdown(f"## <font color=blue> {model_name} </font>"))
     model = processor.pipeline.get_model(name=model_name)  # type: ModelFunction
     model.arguments[argument] = changed_value
@@ -118,6 +123,9 @@ def set_modelstate(processor: "Processor", model_name: str, state: bool = True) 
     model_name: str
     state: bool
     """
+    # Late import to speedup start-up time
+    from IPython.display import Markdown, display
+
     display(Markdown(f"## <font color=blue> {model_name} </font>"))
     model = processor.pipeline.get_model(name=model_name)  # type: ModelFunction
     model.enabled = state
@@ -136,11 +144,18 @@ def display_detector(detector: "Detector") -> "Layout":
     detector: Detector
     hist: bool
 
-    Returns
+    Returnsimport pandas as pd
+
     -------
     hv.Layout
         A Holoviews object.
     """
+    # Late import to speedup start-up time
+    import holoviews as hv
+
+    # Apply an extension to Holoviews (if needed)
+    if not hv.Store.renderers:
+        hv.extension("bokeh")
 
     # Container for detector data, leave out where there is none.
     det = {}  # type: t.Dict[str, np.ndarray]
@@ -193,7 +208,9 @@ def display_detector(detector: "Detector") -> "Layout":
     return out
 
 
-def display_array(data: np.ndarray, axes: t.List[plt.axes], **kwargs: str) -> None:
+def display_array(
+    data: np.ndarray, axes: t.Sequence["plt.axes"], **kwargs: str
+) -> None:
     """For a pair of axes, display the image on the first one, the histogram on the second.
 
     Parameters
@@ -203,6 +220,10 @@ def display_array(data: np.ndarray, axes: t.List[plt.axes], **kwargs: str) -> No
     axes: list
         A list of two axes in a figure.
     """
+    # Late import to speedup start-up time
+    import matplotlib.pyplot as plt
+    from mpl_toolkits.axes_grid1 import make_axes_locatable
+
     mini = np.nanpercentile(data, 1)
     maxi = np.nanpercentile(data, 99)
     im = axes[0].imshow(data, vmin=mini, vmax=maxi)
@@ -264,6 +285,9 @@ def display_persist(persistence: t.Union[Persistence, SimplePersistence]) -> Non
     ----------
     persistence: Persistence or SimplePersistence
     """
+    # Late import to speedup start-up time
+    import matplotlib.pyplot as plt
+
     trapped_charges = persistence.trapped_charge_array
 
     fig, axes = plt.subplots(

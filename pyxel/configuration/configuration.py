@@ -22,7 +22,6 @@ from shutil import copy2
 import yaml
 
 from pyxel import __version__ as version
-from pyxel.calibration import Algorithm, Calibration
 from pyxel.detectors import (
     APD,
     CCD,
@@ -44,6 +43,9 @@ from pyxel.observation import Observation, ParameterValues
 from pyxel.outputs import CalibrationOutputs, ExposureOutputs, ObservationOutputs
 from pyxel.pipelines import DetectionPipeline, ModelFunction
 
+if t.TYPE_CHECKING:
+    from pyxel.calibration import Algorithm, Calibration
+
 
 @dataclass
 class Configuration:
@@ -54,7 +56,7 @@ class Configuration:
     # Running modes
     exposure: t.Optional[Exposure] = None
     observation: t.Optional[Observation] = None
-    calibration: t.Optional[Calibration] = None
+    calibration: t.Optional["Calibration"] = None
 
     # Detectors
     ccd_detector: t.Optional[CCD] = None
@@ -265,7 +267,7 @@ def to_calibration_outputs(dct: dict) -> CalibrationOutputs:
     return CalibrationOutputs(**dct)
 
 
-def to_algorithm(dct: t.Optional[dict]) -> t.Optional[Algorithm]:
+def to_algorithm(dct: t.Optional[dict]) -> t.Optional["Algorithm"]:
     """Create an Algorithm class from a dictionary.
 
     Parameters
@@ -276,6 +278,9 @@ def to_algorithm(dct: t.Optional[dict]) -> t.Optional[Algorithm]:
     -------
     Algorithm
     """
+    # Late import to speedup start-up time
+    from pyxel.calibration import Algorithm
+
     if dct is None:
         return None
     return Algorithm(**dct)
@@ -299,7 +304,7 @@ def to_callable(dct: dict) -> t.Callable:
     return partial(func, **arguments)
 
 
-def to_calibration(dct: dict) -> Calibration:
+def to_calibration(dct: dict) -> "Calibration":
     """Create a Calibration class from a dictionary.
 
     Parameters
@@ -310,6 +315,9 @@ def to_calibration(dct: dict) -> Calibration:
     -------
     Calibration
     """
+    # Late import to speedup start-up time
+    from pyxel.calibration import Calibration
+
     dct.update({"outputs": to_calibration_outputs(dct["outputs"])})
     dct.update({"fitness_function": to_callable(dct["fitness_function"])})
     dct.update({"algorithm": to_algorithm(dct["algorithm"])})
@@ -608,7 +616,9 @@ def build_configuration(dct: dict) -> Configuration:
         keys = ", ".join(map(repr, keys_detectors))
         raise ValueError(f"Expecting only one detector: {keys}")
 
-    running_mode = {}  # type: t.Dict[str, t.Union[Exposure, Observation, Calibration]]
+    running_mode = (
+        {}
+    )  # type: t.Dict[str, t.Union[Exposure, Observation, "Calibration"]]
     if "exposure" in dct:
         running_mode["exposure"] = to_exposure(dct["exposure"])
     elif "observation" in dct:

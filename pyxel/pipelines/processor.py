@@ -14,7 +14,6 @@ from enum import Enum
 from numbers import Number
 
 import numpy as np
-import xarray as xr
 
 from pyxel.evaluator import eval_entry
 from pyxel.pipelines import DetectionPipeline, ModelGroup
@@ -22,6 +21,8 @@ from pyxel.state import get_obj_att
 from pyxel.util.memory import get_size
 
 if t.TYPE_CHECKING:
+    import xarray as xr
+
     from pyxel.detectors import Detector
 
 
@@ -229,8 +230,11 @@ class Processor:
 
     def result_to_dataset(
         self, y: range, x: range, times: np.ndarray, result_type: ResultType
-    ) -> xr.Dataset:
+    ) -> "xr.Dataset":
         """Return the result in an xarray dataset."""
+        # Late import to speedup start-up time
+        import xarray as xr
+
         if not self._result:
             raise ValueError("No result saved in the processor.")
 
