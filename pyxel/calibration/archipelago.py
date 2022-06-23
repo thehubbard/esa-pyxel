@@ -329,8 +329,9 @@ class MyArchipelago:
                 else:
                     all_champions = partial_champions
 
-                ds = all_champions.assign_coords(evolution=id_evolution)
-                champions_lst.append(ds)
+                champions_lst.append(
+                    all_champions.assign_coords(evolution=id_evolution)
+                )
 
         champions = xr.concat(champions_lst, dim="evolution")  # type: xr.Dataset
 
