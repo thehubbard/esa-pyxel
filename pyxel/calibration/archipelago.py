@@ -86,7 +86,7 @@ class ArchipelagoLogs:
         partial_df = self._from_archi(archi=archi)  # type: pd.DataFrame
         partial_df["id_evolution"] = id_evolution
 
-        self._df = self._df.append(partial_df)
+        self._df = pd.concat([self._df, partial_df])
 
     def get_full_total(self) -> pd.DataFrame:
         """TBW."""
