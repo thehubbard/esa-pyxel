@@ -8,6 +8,9 @@
   (See [!484](https://gitlab.com/esa/pyxel/-/merge_requests/484)).
 * Implement new fitness function 'reduced_chi_squared'.
   (See [!485](https://gitlab.com/esa/pyxel/-/merge_requests/485)).
+* In 'Archipelago', fix warnings with deprecated pandas function.
+  Replace deprecated function `DataFrame.append` by `pandas.concat`.
+  (See [!487](https://gitlab.com/esa/pyxel/-/merge_requests/487)).
 
 ### Documentation
 * Add benchmarks in the documentation at this link 
