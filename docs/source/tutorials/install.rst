@@ -41,8 +41,11 @@ If you use ``conda``, you can install Pyxel from ``conda-forge`` channels:
 
 .. code-block:: bash
 
+    # Update 'conda' in your base environment
+    conda update -n base conda
+
     # Best practice, use an environment rather than install in the base env
-    # This is optional
+    # It This is optional
     conda create -n my-env
     conda activate my-env
 
