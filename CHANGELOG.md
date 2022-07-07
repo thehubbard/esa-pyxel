@@ -16,6 +16,8 @@
 * Add benchmarks in the documentation at this link 
   https://esa.gitlab.io/pyxel/benchmarks.
   (See [!486](https://gitlab.com/esa/pyxel/-/merge_requests/486)).
+* Add more information about installation from 'conda' and 'pip'.
+  (See [!488](https://gitlab.com/esa/pyxel/-/merge_requests/488)).
 
 ### Models
 
