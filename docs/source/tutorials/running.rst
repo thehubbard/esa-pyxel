@@ -4,6 +4,17 @@ Running Pyxel
 
 Pyxel can be run either from command line or used as a library, for example in Jupyter notebooks.
 
+.. note::
+
+    Once you've installed Pyxel, you can download directly some examples with command:
+
+    .. code-block:: bash
+
+       pyxel download-examples
+
+    You can find more information in :doc:`examples`.
+
+
 Running Pyxel from command line
 ===============================
 
@@ -11,11 +22,11 @@ To run Pyxel on your local computer, simply run it from the command-line:
 
 .. code-block:: bash
 
-    $ pyxel run input.yaml
+    pyxel run input.yaml
 
     or
 
-    $ python -m pyxel run input.yaml
+    python -m pyxel run input.yaml
 
 Usage:
 
@@ -64,13 +75,13 @@ from the `Pyxel GitLab repository <https://gitlab.com/esa/pyxel>`_.
 
 .. code-block:: console
 
-    $ git clone https://gitlab.com/esa/pyxel.git
-    $ cd pyxel
+    git clone https://gitlab.com/esa/pyxel.git
+    cd pyxel
 
 
 .. Note::
-    Folder ‘./pyxel/volumes/notebooks’ is linked to
-    folder ‘/home/pyxel/jupyter/notebooks’ in the container.
+    Folder ``./pyxel/volumes/notebooks`` is linked to
+    folder ``/home/pyxel/jupyter/notebooks`` in the container.
 
 
 Build an image
