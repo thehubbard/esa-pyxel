@@ -10,7 +10,7 @@ import scipy.constants as const
 
 
 # --------------------------------------------------------------
-def buildin_potential(T, Nacceptor, Ndonor, xcd, Ni=None):
+def build_in_potential(temperature: float, n_acceptor:float, n_donor:float, x_cd:float, n_intrinsic: float, k_b: float, electron_charge: float):
     """
 
     Parameters
@@ -37,14 +37,14 @@ def buildin_potential(T, Nacceptor, Ndonor, xcd, Ni=None):
     """
 
     # Calcul des grandeurs semiconducteurs
-    eg = hgcdte_bandgap(xcd, T)  # Ok for HgCdTe
-    ni = setni(T, Eg=eg, Nc=nc, Nv=nv) if Ni is None else Ni
+    # eg = hgcdte_bandgap(x_cd=x_cd, temperature=temperature)  # Ok for HgCdTe
+    #ni = setni(T, Eg=eg, Nc=nc, Nv=nv) if Ni is None else Ni
 
     # Definition of the constant
-    kb = const.k
-    q = const.e
+    # kb = const.k
+    # q = const.e
 
-    return kb * T / q * np.log(Nacceptor * Ndonor / ni ** 2)
+    return k_b * temperature / electron_charge * np.log(n_acceptor * n_donor / n_intrinsic ** 2)
 
 
 # -------------------------------------------------------------------------------
@@ -89,7 +89,7 @@ def wdep(
     e = const.e
     eps0 = const.epsilon_0
     # Calculation of build in potenial
-    Vbi = buildin_potential(temp, Na, Nd, xcd, Ni=ni_hansen(temp, xcd))
+    Vbi = build_in_potential(temperature=temp, n_acceptor=Na, n_donor=Nd, x_cd=xcd, n_intrinsic=ni_hansen(temp, xcd), electron_charge=e, k_b=const.k)
 
     return np.sqrt(
         2.0 * eps * eps0 / e * (Na * 1e6 + Nd * 1e6) / (Na * 1e6 * Nd * 1e6) * (Vbi - V)
@@ -110,17 +110,17 @@ def hgcdte_bandgap(x_cd: float, temperature: float):
             T : (float) Temperature in K
     OUTPUT : Bandgap energy in eV
     """
-    if isinstance(x_cd, float) and not (0.2 <= x_cd <= 0.6):
-        print(
-            "WARNING: Hansen bangap expression used out of its nomimal application range. \
-                x_cd must be between 0.2 and 0.6"
-        )
-
-    if not (4 <= temperature <= 300):
-        print(
-            "WARNING: Hansen bangap expression used out of its nomimal application range. \
-                temperature must be between 4K and 300K"
-        )
+    # if isinstance(x_cd, float) and not (0.2 <= x_cd <= 0.6):
+    #     print(
+    #         "WARNING: Hansen bangap expression used out of its nomimal application range. \
+    #             x_cd must be between 0.2 and 0.6"
+    #     )
+    #
+    # if not (4 <= temperature <= 300):
+    #     print(
+    #         "WARNING: Hansen bangap expression used out of its nomimal application range. \
+    #             temperature must be between 4K and 300K"
+    #     )
 
     return (
         -0.302

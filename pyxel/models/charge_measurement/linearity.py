@@ -7,12 +7,10 @@
 
 """Linearity models."""
 import typing as t
-
-import matplotlib.pyplot as plt
 import numpy as np
 
 from pyxel.detectors import Detector
-from pyxel.models.charge_measurement.non_linearity_calculation import euler
+from pyxel.models.charge_measurement.non_linearity_calculation import euler, hgcdte_bandgap
 
 # Universal global constants
 M_ELECTRON = 9.10938356e-31  # kg     #TODO: put these global constants to a data file
@@ -81,7 +79,7 @@ def output_node_linearity_poly(
 
 
 # ---------------------------------------------------------------------
-def compute_physical_non_linearity_model_1(
+def compute_simple_physical_non_linearity(
     array_2d: np.ndarray,
     temperature: float,  # Detector operating temperature
     vbias: float,
@@ -156,12 +154,12 @@ def compute_physical_non_linearity_model_1(
     return non_linear_signal
 
 
-def output_node_linearity_non_linearity_model_1(
+def simple_physical_non_linearity(
     detector: Detector,
 ) -> None:
 
     signal_mean_array = detector.charge.array.astype("float64")
-    signal_non_linear = compute_physical_non_linearity_model_1(
+    signal_non_linear = compute_simple_physical_non_linearity(
         array_2d=signal_mean_array,
         temperature=detector.environment.temperature,
         vbias=-0.250,
@@ -171,7 +169,7 @@ def output_node_linearity_non_linearity_model_1(
 
 
 # ---------------------------------------------------------------------
-def compute_physical_non_linearity_model_2(
+def compute_physical_non_linearity(
     array_2d: np.ndarray,
     temperature: float,  # Detector operating temperature
     vbias: float,
@@ -257,7 +255,7 @@ def compute_physical_non_linearity_model_2(
     return non_linear_signal
 
 
-def output_node_linearity_non_linearity_model_2(
+def physical_non_linearity(
     detector: Detector,
 ) -> None:
     """
@@ -270,7 +268,7 @@ def output_node_linearity_non_linearity_model_2(
 
     """
     signal_mean_array = detector.pixel.array.astype("float64")
-    signal_non_linear = compute_physical_non_linearity_model_2(
+    signal_non_linear = compute_physical_non_linearity(
         array_2d=signal_mean_array,
         temperature=detector.environment.temperature,
         vbias=-0.220,
@@ -280,7 +278,7 @@ def output_node_linearity_non_linearity_model_2(
 
 
 # -----------------------------------------------------------------------
-def compute_physical_non_linearity_model_3(
+def compute_physical_non_linearity_with_saturation(
     detector,
     temperature: float,  # Detector operating temperature
     fixed_capa: float,  # Additionnal fixed capacitance
@@ -296,7 +294,7 @@ def compute_physical_non_linearity_model_3(
     """
     # Derivation of Cd concentration in the alloy,  it depends on cutoff wavelength and targeted operating temperature
     # Here we are considering the case where the detector is operated at its nominal temperature, it might not be always the case
-    cutoff = 2.1  # Can be extracted from CMOS characteristics ?
+    cutoff = 2.48  # Can be extracted from CMOS characteristics ?
     Eg_targeted = 1.24 / cutoff  # cutoff is um and Eg in eV
     xcd = np.linspace(0.2, 0.6, 1000)
     targeted_operating_temperature = temperature
@@ -313,10 +311,10 @@ def compute_physical_non_linearity_model_3(
     n_donor = 3e15  # in atoms/cm3
 
     # Surface of the diode, assumed to be planar
-    phi_implant = 6  # in um
+    phi_implant = 10.2  # in um
     d_implant = 1  # in um
 
-    sat_current = 0.002
+    sat_current = 0.003
     ideality_factor = 1.34
     v_reset = 0.0  # in V
     d_sub = 0.220  # in V
@@ -351,8 +349,17 @@ def compute_physical_non_linearity_model_3(
     return non_linear_signal
 
 
-def output_node_linearity_non_linearity_model_3(
+def physical_non_linearity_with_saturation(
     detector: Detector,
+    cutoff: float,
+    n_donor: float,
+    phi_implant: float,
+    d_implant: float,
+    saturation_current: float,
+    ideality_factor: float,
+    v_reset: float,
+    d_sub: float,
+    fixed_capacitance: float
 ) -> None:
     """
     Parameters
@@ -363,42 +370,7 @@ def output_node_linearity_non_linearity_model_3(
     -------
 
     """
-    signal_non_linear = compute_physical_non_linearity_model_3(
-        detector, temperature=detector.environment.temperature, fixed_capa=50.0 * 1e-15
+    signal_non_linear = compute_physical_non_linearity_with_saturation(
+        detector, temperature=detector.environment.temperature, fixed_capa=6.8 * 1e-15
     )
     detector.signal.array = signal_non_linear
-
-
-# -------------------------------------------------------------------------
-def hgcdte_bandgap(x_cd, temperature: float):
-    """
-    This expression of the Gap of HgCdTe is valid for a Cadmium concentration between 0.2 and 0.6.
-    Over a wide range of temperature beteween 4K and 300K
-
-    Ref : Hansen, G. L., Schmit, J. L., & Casselman, T. N. (1982).
-          Energy gap versus alloy composition and temperature in Hg1− x Cd x Te.
-          Journal of Applied Physics, 53(10), 7099-7101.
-
-    INPUT : x_cd (float) cadmium composition between 0 and 1
-            T : (float) Temperature in K
-    OUTPUT : Bandgap energy in eV
-    """
-    if isinstance(x_cd, float) and not (0.2 <= x_cd <= 0.6):
-        print(
-            "WARNING: Hansen bangap expression used out of its nomimal application range. \
-                x_cd must be between 0.2 and 0.6"
-        )
-
-    if not (4 <= temperature <= 300):
-        print(
-            "WARNING: Hansen bangap expression used out of its nomimal application range. \
-                temperature must be between 4K and 300K"
-        )
-
-    return (
-        -0.302
-        + 1.93 * x_cd
-        - 0.81 * x_cd ** 2
-        + 0.832 * x_cd ** 3
-        + 5.35 * 1e-4 * (1 - 2 * x_cd) * temperature
-    )
