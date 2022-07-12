@@ -1,7 +1,7 @@
 # Changelog
 
 
-## UNRELEASED
+## version 1.2.0 / 2022-07-12
 
 ### Core
 * Fix bug in 'ModelFitting.convert_to_parameters'.
