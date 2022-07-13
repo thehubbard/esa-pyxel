@@ -279,14 +279,43 @@ def physical_non_linearity(
 
 # -----------------------------------------------------------------------
 def compute_physical_non_linearity_with_saturation(
-    detector,
-    temperature: float,  # Detector operating temperature
-    fixed_capa: float,  # Additionnal fixed capacitance
+    signal_array_2d: np.ndarray,
+    photon_array_2d: np.ndarray,
+    time: float,
+    time_step: float,
+    temperature: float,
+    cutoff: float,
+    n_donor: float,
+    n_acceptor: float,
+    phi_implant: float,
+    d_implant: float,
+    saturation_current: float,
+    ideality_factor: float,
+    v_reset: float,
+    d_sub: float,
+    fixed_capacitance: float,
+    euler_points: int,
 ) -> np.ndarray:
     """
+
     Parameters
     ----------
-    detector
+    signal_array_2d
+    photon_array_2d
+    time
+    time_step
+    temperature
+    cutoff
+    n_donor
+    n_acceptor
+    phi_implant
+    d_implant
+    saturation_current
+    ideality_factor
+    v_reset
+    d_sub
+    fixed_capacitance
+    euler_points
 
     Returns
     -------
@@ -294,55 +323,58 @@ def compute_physical_non_linearity_with_saturation(
     """
     # Derivation of Cd concentration in the alloy,  it depends on cutoff wavelength and targeted operating temperature
     # Here we are considering the case where the detector is operated at its nominal temperature, it might not be always the case
-    cutoff = 2.48  # Can be extracted from CMOS characteristics ?
+    #cutoff = 2.48  # Can be extracted from CMOS characteristics ?
     Eg_targeted = 1.24 / cutoff  # cutoff is um and Eg in eV
     xcd = np.linspace(0.2, 0.6, 1000)
-    targeted_operating_temperature = temperature
+    #targeted_operating_temperature = temperature
     Eg_calculated = hgcdte_bandgap(
-        xcd, targeted_operating_temperature
+        xcd, temperature
     )  # Expected bandgap
     index = np.where(Eg_calculated > Eg_targeted)[0][0]
     x_cd = xcd[index]  # Targeted cadmium concentration in the HgCdTe alloy
     # Calculate the effective bandgap value at the temperature at which simulations are performed.
-    Eg = hgcdte_bandgap(x_cd, temperature)
+    #Eg = hgcdte_bandgap(x_cd, temperature)
 
-    # Acceptor and donor doping concentrations
-    n_acceptor = 1e18  # in atom/cm3
-    n_donor = 3e15  # in atoms/cm3
+    # # Acceptor and donor doping concentrations
+    # n_acceptor = 1e18  # in atom/cm3
+    # n_donor = 3e15  # in atoms/cm3
+    #
+    # # Surface of the diode, assumed to be planar
+    # phi_implant = 10.2  # in um
+    # d_implant = 1  # in um
+    #
+    # sat_current = 0.003
+    # ideality_factor = 1.34
+    # v_reset = 0.0  # in V
+    # d_sub = 0.220  # in V
 
-    # Surface of the diode, assumed to be planar
-    phi_implant = 10.2  # in um
-    d_implant = 1  # in um
+    row, col = signal_array_2d.shape
 
-    sat_current = 0.003
-    ideality_factor = 1.34
-    v_reset = 0.0  # in V
-    d_sub = 0.220  # in V
-    if detector.signal.array[5, 5] == 0:
-        detector.signal.array = v_reset * np.ones(
-            (detector.geometry.row, detector.geometry.col)
+    if signal_array_2d[5, 5] == 0:
+        signal_array_2d = v_reset * np.ones(
+            (row, col)
         )
 
     # detector.signal.array should be expressed in unit of mV. It is the bias at the gate of the pixel SFD
     det_polar = euler(
-        detector.time - detector.time_step,
-        detector.time,
-        200,
-        vbias=np.ravel(detector.signal.array) - d_sub,
+        t0=time - time_step,
+        t_end=time,
+        nb_pts=euler_points,
+        vbias=np.ravel(signal_array_2d) - d_sub,
         phi_implant=phi_implant,
         d_implant=d_implant,
         n_acceptor=n_acceptor,
         n_donor=n_donor,
         x_cd=x_cd,
         temperature=temperature,
-        photonic_current=np.ravel(detector.photon.array) / detector.time_step,
-        fixed_capa=fixed_capa,
-        sat_current=sat_current,
+        photonic_current=np.ravel(photon_array_2d) / time_step,
+        fixed_capa=fixed_capacitance,
+        sat_current=saturation_current,
         n=ideality_factor,
     )
 
     array = np.reshape(
-        det_polar + d_sub, (detector.geometry.row, detector.geometry.col)
+        det_polar + d_sub, (row, col)
     )
     non_linear_signal = array.astype("float64")
 
@@ -353,24 +385,52 @@ def physical_non_linearity_with_saturation(
     detector: Detector,
     cutoff: float,
     n_donor: float,
+    n_acceptor: float,
     phi_implant: float,
     d_implant: float,
     saturation_current: float,
     ideality_factor: float,
     v_reset: float,
     d_sub: float,
-    fixed_capacitance: float
+    fixed_capacitance: float,
+    euler_points: int,
 ) -> None:
     """
     Parameters
     ----------
     detector
+    cutoff
+    n_donor
+    n_acceptor
+    phi_implant
+    d_implant
+    saturation_current
+    ideality_factor
+    v_reset
+    d_sub
+    fixed_capacitance
+    euler_points
 
     Returns
     -------
 
     """
     signal_non_linear = compute_physical_non_linearity_with_saturation(
-        detector, temperature=detector.environment.temperature, fixed_capa=6.8 * 1e-15
+        signal_array_2d=detector.signal.array,
+        photon_array_2d=detector.photon.array,
+        time=detector.time,
+        time_step=detector.time_step,
+        temperature=detector.environment.temperature,
+        cutoff=cutoff,
+        n_donor=n_donor,
+        n_acceptor=n_acceptor,
+        phi_implant=phi_implant,
+        d_implant=d_implant,
+        saturation_current=saturation_current,
+        ideality_factor=ideality_factor,
+        v_reset=v_reset,
+        d_sub=d_sub,
+        fixed_capacitance=fixed_capacitance,
+        euler_points=euler_points,
     )
     detector.signal.array = signal_non_linear
