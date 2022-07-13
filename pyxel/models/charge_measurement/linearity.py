@@ -83,18 +83,30 @@ def compute_simple_physical_non_linearity(
     array_2d: np.ndarray,
     temperature: float,  # Detector operating temperature
     vbias: float,
+    cutoff: float,
+    n_acceptor: float,
+    n_donor: float,
+    diode_diameter: float,
 ) -> np.ndarray:
     """
+
     Parameters
     ----------
-    detector
+    array_2d
+    temperature
+    vbias
+    cutoff
+    n_acceptor
+    n_donor
+    diode_diameter
 
     Returns
     -------
+
     """
     # Derivation of Cd concentration in the alloy,  it depends on cutoff wavelength and targeted operating temperature
     # Here we are considering the case where the detector is operated at its nominal temperature, it might not be always the case
-    cutoff = 2.1
+    # cutoff = 2.1
     Eg_targeted = 1.24 / cutoff  # cutoff is um and Eg in eV
     xcd = np.linspace(0.2, 0.6, 1000)
     targeted_operating_temperature = temperature
@@ -107,8 +119,8 @@ def compute_simple_physical_non_linearity(
     Eg = hgcdte_bandgap(x_cd, temperature)
 
     # Acceptor and donor doping concentrations
-    n_acceptor = 1e18  # in atoms/cm3
-    n_donor = 3e15  # in atoms/cm3
+    # n_acceptor = 1e18  # in atoms/cm3
+    # n_donor = 3e15  # in atoms/cm3
 
     # Intrinsic carrier concentration
     # Standard semiconductor expression can also be used
@@ -120,19 +132,19 @@ def compute_simple_physical_non_linearity(
             - 1.364 * 1e-3 * temperature * x_cd
         )
         * 1e14
-        * Eg ** 0.75
-        * temperature ** 1.5
+        * Eg**0.75
+        * temperature**1.5
         * np.exp(-Q * Eg / (2 * KB * temperature))
     )
 
     # Build in potential
-    vbi = KB * temperature / Q * np.log(n_acceptor * n_donor / ni ** 2)
+    vbi = KB * temperature / Q * np.log(n_acceptor * n_donor / ni**2)
 
     # HgCdTe dielectric constant
-    eps = 20.5 - 15.6 * x_cd + 5.7 * x_cd ** 2
+    eps = 20.5 - 15.6 * x_cd + 5.7 * x_cd**2
 
     # Surface of the diode, assumed to be planar
-    diode_diameter = 10  # in um
+    # diode_diameter = 10  # in um
     Ad = (
         np.pi * (diode_diameter / 2.0 * 1e-6) ** 2
     )  # Surface of the diode, assumed to be circular
@@ -148,7 +160,7 @@ def compute_simple_physical_non_linearity(
         1
         / (2 * vbi)
         * (Q * array_2d / co) ** 2
-        * (-1 + np.sqrt(1 + 4 * (co / (Q * array_2d)) ** 2 * vbi ** 2))
+        * (-1 + np.sqrt(1 + 4 * (co / (Q * array_2d)) ** 2 * vbi**2))
     )
 
     return non_linear_signal
@@ -156,13 +168,37 @@ def compute_simple_physical_non_linearity(
 
 def simple_physical_non_linearity(
     detector: Detector,
+    cutoff: float,
+    n_acceptor: float,
+    n_donor: float,
+    diode_diameter: float,
+    v_bias: float,
 ) -> None:
+    """
+
+    Parameters
+    ----------
+    detector
+    cutoff
+    n_acceptor
+    n_donor
+    diode_diameter
+    v_bias
+
+    Returns
+    -------
+
+    """
 
     signal_mean_array = detector.charge.array.astype("float64")
     signal_non_linear = compute_simple_physical_non_linearity(
         array_2d=signal_mean_array,
         temperature=detector.environment.temperature,
-        vbias=-0.250,
+        vbias=v_bias,
+        cutoff=cutoff,
+        n_acceptor=n_acceptor,
+        n_donor=n_donor,
+        diode_diameter=diode_diameter,
     )
 
     detector.signal.array = signal_non_linear
@@ -172,13 +208,25 @@ def simple_physical_non_linearity(
 def compute_physical_non_linearity(
     array_2d: np.ndarray,
     temperature: float,  # Detector operating temperature
-    vbias: float,
     fixed_capa: float,  # Additionnal fixed capacitance
+    vbias: float,
+    cutoff: float,
+    n_acceptor: float,
+    n_donor: float,
+    diode_diameter: float,
 ) -> np.ndarray:
     """
+
     Parameters
     ----------
-    detector
+    array_2d
+    temperature
+    fixed_capa
+    vbias
+    cutoff
+    n_acceptor
+    n_donor
+    diode_diameter
 
     Returns
     -------
@@ -186,7 +234,7 @@ def compute_physical_non_linearity(
     """
     # Derivation of Cd concentration in the alloy,  it depends on cutoff wavelength and targeted operating temperature
     # Here we are considering the case where the detector is operated at its nominal temperature, it might not be always the case
-    cutoff = 2.1  # Can be extracted from CMOS characteristics ?
+    # cutoff = 2.1  # Can be extracted from CMOS characteristics ?
     Eg_targeted = 1.24 / cutoff  # cutoff is um and Eg in eV
     xcd = np.linspace(0.2, 0.6, 1000)
     targeted_operating_temperature = temperature
@@ -200,8 +248,8 @@ def compute_physical_non_linearity(
     Eg = hgcdte_bandgap(x_cd, temperature)
 
     # Acceptor and donor doping concentrations
-    n_acceptor = 1e18  # in atom/cm3
-    n_donor = 3e15  # in atoms/cm3
+    # n_acceptor = 1e18  # in atom/cm3
+    # n_donor = 3e15  # in atoms/cm3
 
     # Intrinsic carrier concentration
     # Standard semiconductor expression can also be used
@@ -213,19 +261,19 @@ def compute_physical_non_linearity(
             - 1.364 * 1e-3 * temperature * x_cd
         )
         * 1e14
-        * Eg ** 0.75
-        * temperature ** 1.5
+        * Eg**0.75
+        * temperature**1.5
         * np.exp(-Q * Eg / (2 * KB * temperature))
     )  # in carriers/cm3
 
     # Build in potential
-    vbi = KB * temperature / Q * np.log(n_acceptor * n_donor / ni ** 2)  # in V
+    vbi = KB * temperature / Q * np.log(n_acceptor * n_donor / ni**2)  # in V
 
     # HgCdTe dielectric constant
-    eps = 20.5 - 15.6 * x_cd + 5.7 * x_cd ** 2  # without dimension
+    eps = 20.5 - 15.6 * x_cd + 5.7 * x_cd**2  # without dimension
 
     # Surface of the diode, assumed to be planar
-    diode_diameter = 10  # (in um)
+    # diode_diameter = 10  # (in um)
     Ad = (
         np.pi * (diode_diameter / 2.0 * 1e-6) ** 2
     )  # Surface of the diode, assumed to be circular (in cm)
@@ -245,9 +293,9 @@ def compute_physical_non_linearity(
         + 2.0 * co / fixed_capa * np.sqrt(1.0 - vbias / vbi)
         - array_2d * Q / (fixed_capa * vbi)
     )
-    discriminant = b ** 2 - 4.0 * c * a
+    discriminant = b**2 - 4.0 * c * a
     u1 = (-b - np.sqrt(discriminant)) / (2.0 * a)
-    v1 = (1.0 - u1 ** 2) * vbi - vbias  # is substracted it only deals with offset level
+    v1 = (1.0 - u1**2) * vbi - vbias  # is substracted it only deals with offset level
 
     array = np.copy(v1)  # unit if V, voltage at the gate of the pixel SFD
     non_linear_signal = array.astype("float64")
@@ -257,11 +305,24 @@ def compute_physical_non_linearity(
 
 def physical_non_linearity(
     detector: Detector,
+    cutoff: float,
+    n_acceptor: float,
+    n_donor: float,
+    diode_diameter: float,
+    v_bias: float,
+    fixed_capacitance: float,
 ) -> None:
     """
+
     Parameters
     ----------
     detector
+    cutoff
+    n_acceptor
+    n_donor
+    diode_diameter
+    v_bias
+    fixed_capacitance
 
     Returns
     -------
@@ -271,8 +332,12 @@ def physical_non_linearity(
     signal_non_linear = compute_physical_non_linearity(
         array_2d=signal_mean_array,
         temperature=detector.environment.temperature,
-        vbias=-0.220,
-        fixed_capa=50.0 * 1e-15,
+        fixed_capa=fixed_capacitance,  # =50.0 * 1e-15,
+        vbias=v_bias,
+        cutoff=cutoff,
+        n_acceptor=n_acceptor,
+        n_donor=n_donor,
+        diode_diameter=diode_diameter,
     )
     detector.signal.array = signal_non_linear
 
