@@ -6,11 +6,36 @@ Created on Wed Mar 10 09:39:18 2021
 @author: tpichon
 """
 import numpy as np
-import scipy.constants as const
+from numba import njit
+from numba.experimental import jitclass
+from numba import float64
+
+spec = [
+    ('m_electron', float64),
+    ('k_b', float64),
+    ('electron_charge', float64),
+    ('eps_0', float64),
+]
+
+
+@jitclass(spec)
+class Constants(object):
+    def __init__(self):
+        self.m_electron = 9.10938356e-31  # kg
+        self.k_b = 1.38064852e-23  #
+        self.electron_charge = 1.60217662e-19
+        self.eps_0 = 8.85418782e-12
 
 
 # --------------------------------------------------------------
-def build_in_potential(temperature: float, n_acceptor:float, n_donor:float, x_cd:float, n_intrinsic: float, k_b: float, electron_charge: float):
+@njit
+def build_in_potential(
+        temperature: float,
+        n_acceptor: float,
+        n_donor: float,
+        # x_cd: float,
+        n_intrinsic: float,
+):
     """
 
     Parameters
@@ -38,18 +63,31 @@ def build_in_potential(temperature: float, n_acceptor:float, n_donor:float, x_cd
 
     # Calcul des grandeurs semiconducteurs
     # eg = hgcdte_bandgap(x_cd=x_cd, temperature=temperature)  # Ok for HgCdTe
-    #ni = setni(T, Eg=eg, Nc=nc, Nv=nv) if Ni is None else Ni
+    # ni = setni(T, Eg=eg, Nc=nc, Nv=nv) if Ni is None else Ni
 
     # Definition of the constant
     # kb = const.k
     # q = const.e
 
-    return k_b * temperature / electron_charge * np.log(n_acceptor * n_donor / n_intrinsic ** 2)
+    const = Constants()
+
+    return (
+            const.k_b
+            * temperature
+            / const.electron_charge
+            * np.log(n_acceptor * n_donor / n_intrinsic ** 2)
+    )
 
 
 # -------------------------------------------------------------------------------
-def wdep(
-    vbias=None, epsilon=None, n_acceptor=None, n_donor=None, x_cd=None, temperature=None
+@njit
+def w_dep(
+        v_bias: np.ndarray,
+        epsilon: float,
+        n_acceptor: float,
+        n_donor: float,
+        x_cd: float,
+        temperature: float,
 ):
     """
 
@@ -76,27 +114,38 @@ def wdep(
 
     """
     # definition of variable
-    V = -0.50 if vbias is None else vbias  # Bias applied to the junction
-    Na = 1e17 if n_acceptor is None else n_acceptor  # Acceptor concentratuion
-    Nd = 1e14 if n_donor is None else n_donor  # Donor concentration
-    xcd = 0.515 if x_cd is None else x_cd  # Cd concentration
-    temp = 80 if temperature is None else temperature  # Temperature in K
-    eps = (
-        20.5 - 15.6 * xcd + 5.7 * xcd ** 2 if epsilon is None else epsilon
-    )  # Static dielectric constant
+    # V = -0.50 if vbias is None else vbias  # Bias applied to the junction
+    # Na = 1e17 if n_acceptor is None else n_acceptor  # Acceptor concentratuion
+    # Nd = 1e14 if n_donor is None else n_donor  # Donor concentration
+    # xcd = 0.515 if x_cd is None else x_cd  # Cd concentration
+    # temp = 80 if temperature is None else temperature  # Temperature in K
+    # eps = (
+    #     20.5 - 15.6 * xcd + 5.7 * xcd ** 2 if epsilon is None else epsilon
+    # )  # Static dielectric constant
 
-    # Definition of constant
-    e = const.e
-    eps0 = const.epsilon_0
+    const = Constants()
+
     # Calculation of build in potenial
-    Vbi = build_in_potential(temperature=temp, n_acceptor=Na, n_donor=Nd, x_cd=xcd, n_intrinsic=ni_hansen(temp, xcd), electron_charge=e, k_b=const.k)
+    v_bi = build_in_potential(
+        temperature=temperature,
+        n_acceptor=n_acceptor,
+        n_donor=n_donor,
+        n_intrinsic=ni_hansen(temperature, x_cd),
+    )
 
     return np.sqrt(
-        2.0 * eps * eps0 / e * (Na * 1e6 + Nd * 1e6) / (Na * 1e6 * Nd * 1e6) * (Vbi - V)
+        2.0
+        * epsilon
+        * const.eps_0
+        / const.electron_charge
+        * (n_acceptor * 1e6 + n_donor * 1e6)
+        / (n_acceptor * 1e6 * n_donor * 1e6)
+        * (v_bi - v_bias)
     )
 
 
 # -------------------------------------------------------------------------
+@njit
 def hgcdte_bandgap(x_cd: float, temperature: float):
     """
     This expression of the Gap of HgCdTe is valid for a Cadmium concentration between 0.2 and 0.6.
@@ -123,16 +172,17 @@ def hgcdte_bandgap(x_cd: float, temperature: float):
     #     )
 
     return (
-        -0.302
-        + 1.93 * x_cd
-        - 0.81 * x_cd ** 2
-        + 0.832 * x_cd ** 3
-        + 5.35 * 1e-4 * (1 - 2 * x_cd) * temperature
+            -0.302
+            + 1.93 * x_cd
+            - 0.81 * x_cd ** 2
+            + 0.832 * x_cd ** 3
+            + 5.35 * 1e-4 * (1 - 2 * x_cd) * temperature
     )
 
 
 # -------------------------------------------------------------------------------
-def ni_hansen(T, xCd):
+@njit
+def ni_hansen(temperature, x_cd):
     """
     ni : intrinsic carrier concentration for HgCdTe
 
@@ -142,83 +192,95 @@ def ni_hansen(T, xCd):
 
     Ref : G.L. Hansen and J.L. Schmit  J. Applied Physics, 54, 1639 (1983)
     """
-    k = const.k
-    e = const.e
 
-    Eg = hgcdte_bandgap(xCd, T)
+    const = Constants()
+
+    Eg = hgcdte_bandgap(x_cd, temperature)
     return (
-        (5.585 - 3.820 * xCd + 1.753 * 1e-3 * T - 1.364 * 1e-3 * T * xCd)
-        * 1e14
-        * Eg ** 0.75
-        * T ** 1.5
-        * np.exp(-e * Eg / (2 * k * T))
+            (
+                    5.585
+                    - 3.820 * x_cd
+                    + 1.753 * 1e-3 * temperature
+                    - 1.364 * 1e-3 * temperature * x_cd
+            )
+            * 1e14
+            * Eg ** 0.75
+            * temperature ** 1.5
+            * np.exp(-const.electron_charge * Eg / (2 * const.k_b * temperature))
     )
 
 
 # ==============================================================
 #                   CYLINDRICAL PN JUNCTION
 # ==============================================================
+@njit
 def capa_pn_junction_cylindrical(
-    vbias=None,
-    phi_implant=None,
-    d_implant=None,
-    epsilon=None,
-    n_acceptor=None,
-    n_donor=None,
-    x_cd=None,
-    temperature=None,
+        v_bias: np.ndarray,
+        phi_implant: float,
+        d_implant: float,
+        epsilon: float,
+        n_acceptor: float,
+        n_donor: float,
+        x_cd: float,
+        temperature: float,
 ):
     """ """
     # Definition of the variable
-    vb = -0.50 if vbias is None else vbias  # Bias applied to the junction
-    phi_imp = (
-        6 * 1e-6 if phi_implant is None else phi_implant * 1e-6
-    )  # size of the implantation diameter
-    d_imp = (
-        1 * 1e-6 if d_implant is None else d_implant * 1e-6
-    )  # Depth of the implantation
-    Na = 1e17 if n_acceptor is None else n_acceptor  # Acceptor concentration in cm3
-    Nd = 1e14 if n_donor is None else n_donor  # Donor concentration in cm3
-    xcd = 0.515 if x_cd is None else x_cd  # Cd concentration
-    T = 80 if temperature is None else temperature  # Temperature in K
-    eps = (
-        20.5 - 15.6 * xcd + 5.7 * xcd ** 2 if epsilon is None else epsilon
-    )  # Static dielectric constant, this value is ok for HgCdTe
+    # vb = -0.50 if vbias is None else vbias  # Bias applied to the junction
+    # phi_imp = (
+    #     6 * 1e-6 if phi_implant is None else phi_implant * 1e-6
+    # )  # size of the implantation diameter
+    # d_imp = (
+    #     1 * 1e-6 if d_implant is None else d_implant * 1e-6
+    # )  # Depth of the implantation
+    # Na = 1e17 if n_acceptor is None else n_acceptor  # Acceptor concentration in cm3
+    # Nd = 1e14 if n_donor is None else n_donor  # Donor concentration in cm3
+    # xcd = 0.515 if x_cd is None else x_cd  # Cd concentration
+    # T = 80 if temperature is None else temperature  # Temperature in K
 
     # Definition of the constants
-    eps0 = const.epsilon_0
-    # Calculation of W
-    W = wdep(vbias=vb, epsilon=eps, n_acceptor=Na, n_donor=Nd, x_cd=xcd, temperature=T)
+    const = Constants()
+    eps0 = const.eps_0
+    # Calculation of w
+    w = w_dep(
+        v_bias=v_bias,
+        epsilon=epsilon,
+        n_acceptor=n_acceptor,
+        n_donor=n_donor,
+        x_cd=x_cd,
+        temperature=temperature,
+    )
 
-    ao = np.pi * eps * eps0 * ((phi_imp / 2.0) ** 2 + d_imp * phi_imp)
-    bo = np.pi * eps * eps0 * 2.0 * (d_imp + phi_imp)
-    co = 3.0 * np.pi * eps * eps0
-    return ao * 1.0 / W + bo + co * W
+    ao = np.pi * epsilon * eps0 * ((phi_implant / 2.0) ** 2 + d_implant * phi_implant)
+    bo = np.pi * epsilon * eps0 * 2.0 * (d_implant + phi_implant)
+    co = 3.0 * np.pi * epsilon * eps0
+    return ao * 1.0 / w + bo + co * w
 
 
 # ----------------------------------------------------------------
 # CYLINDRICAL PN JUNCTION
+@njit
 def dv_dt_cylindrical(
-    vbias,
-    photonic_current,
-    fixed_capa,
-    sat_current,
-    n,
-    phi_implant,
-    d_implant,
-    n_acceptor,
-    n_donor,
-    x_cd,
-    temperature,
+        v_bias: np.ndarray,
+        photonic_current: np.ndarray,
+        fixed_capacitance: float,
+        sat_current: float,
+        n: float,
+        phi_implant: float,
+        d_implant: float,
+        n_acceptor: float,
+        n_donor: float,
+        x_cd: float,
+        temperature: float,
 ):
     """
     Use this diode discharge equation when considering a cylindrical diode
 
     Parameters
     ----------
-    vbias : FLOAT, Diode polarisation
+    v_bias : FLOAT, Diode polarisation
     photonic_current : FLOAT, Photonic current
-    fixed_capa : FLOAT, Fixed capacitance
+    fixed_capacitance : FLOAT, Fixed capacitance
     sat_current : FLOAT, Saturating current under dark conditions
     n : FLOAT, Quality factor
     phi_implant : FLOAT, diameter of the implantation
@@ -232,41 +294,50 @@ def dv_dt_cylindrical(
     -------
     dv_dt : FLOAT Polarisation evolution per second.
     """
+    const = Constants()
     # Constant definition
-    e, k = const.e, const.k
+    e, k = const.electron_charge, const.k_b
     # Capacitance calculation as a function of Bias
-    C = capa_pn_junction_cylindrical(
-        vbias=vbias,
+
+    epsilon = (
+        20.5 - 15.6 * x_cd + 5.7 * x_cd**2
+    )  # Static dielectric constant, this value is ok for HgCdTe
+
+    c = capa_pn_junction_cylindrical(
+        v_bias=v_bias,
         phi_implant=phi_implant,
+        epsilon=epsilon,
         d_implant=d_implant,
         n_acceptor=n_acceptor,
         n_donor=n_donor,
         x_cd=x_cd,
         temperature=temperature,
     )
+
     return -(
-        e * sat_current * (np.exp(e * vbias / (n * k * temperature)) - 1)
-        - e * photonic_current
-    ) / (fixed_capa + C)
+            e * sat_current * (np.exp(e * v_bias / (n * k * temperature)) - 1)
+            - e * photonic_current
+    ) / (fixed_capacitance + c)
 
 
 # ----------------------------------------------------------------
 # Euler method
+@njit
 def euler(
-    t0,
-    t_end,
-    nb_pts,
-    vbias=None,
-    phi_implant=None,
-    d_implant=None,
-    n_acceptor=None,
-    n_donor=None,
-    x_cd=None,
-    temperature=None,
-    photonic_current=None,
-    fixed_capa=None,
-    sat_current=None,
-    n=None,
+        t0: float,
+        t_end: float,
+        nb_pts: int,
+        v_bias: np.ndarray,
+        phi_implant: float,
+        d_implant: float,
+        n_acceptor: float,
+        n_donor: float,
+        x_cd: float,
+        temperature: float,
+        photonic_current: np.ndarray,
+        fixed_capacitance: float,
+        sat_current: float,
+        n: float,
 ):
     """
     Use this diode discharge equation when considering a cylindrical diode
@@ -276,7 +347,7 @@ def euler(
     t0 : FLOAT, init time
     t_end : FLOAT, end time
     nb_pts : FLOAT number of points
-    vbias : FLOAT, Diode polarisation
+    v_bias : FLOAT, Diode polarisation
     phi_implant : FLOAT, diameter of the implantation
     d_implant : FLOAT, depth of the implantation
     n_acceptor : FLOAT, density of acceptors
@@ -284,7 +355,7 @@ def euler(
     x_cd : FLOAT, cadmium concentrations
     temperature : FLOAT, temperature of the sample
     photonic_current : FLOAT, Photonic current
-    fixed_capa : FLOAT, Fixed capacitance
+    fixed_capacitance : FLOAT, Fixed capacitance
     sat_current : FLOAT, Saturating current under dark conditions
     n : FLOAT, Quality factor
 
@@ -295,16 +366,16 @@ def euler(
     # Calculating step size
     h = (t_end - t0) / nb_pts
     # Initialization of variables
-    V = [vbias]
+    v = [v_bias]
     # ==============================
     #           SOLVE THE DIFFERENTIAL EQUATION
     # ==============================
     # EULER Method to solve the differential equation
     for i in range(1, nb_pts):
         slope = dv_dt_cylindrical(
-            V[-1],
+            v[-1],
             photonic_current,
-            fixed_capa,
+            fixed_capacitance,
             sat_current,
             n,
             phi_implant,
@@ -315,9 +386,9 @@ def euler(
             temperature,
         )
         # Calculate new bias
-        yn = V[-1] + h * slope
+        yn = v[-1] + h * slope
         # Saved the old bias
-        V.append(yn)
+        v.append(yn)
 
     # Return bias evolution, capacitance and time
-    return V[-1]
+    return v[-1]

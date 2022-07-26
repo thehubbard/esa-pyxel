@@ -7,10 +7,14 @@
 
 """Linearity models."""
 import typing as t
+
 import numpy as np
 
 from pyxel.detectors import Detector
-from pyxel.models.charge_measurement.non_linearity_calculation import euler, hgcdte_bandgap
+from pyxel.models.charge_measurement.non_linearity_calculation import (
+    euler,
+    hgcdte_bandgap,
+)
 
 # Universal global constants
 M_ELECTRON = 9.10938356e-31  # kg     #TODO: put these global constants to a data file
@@ -105,7 +109,8 @@ def compute_simple_physical_non_linearity(
 
     """
     # Derivation of Cd concentration in the alloy,  it depends on cutoff wavelength and targeted operating temperature
-    # Here we are considering the case where the detector is operated at its nominal temperature, it might not be always the case
+    # Here we are considering the case where the detector is operated at its nominal temperature,
+    # it might not be always the case
     # cutoff = 2.1
     Eg_targeted = 1.24 / cutoff  # cutoff is um and Eg in eV
     xcd = np.linspace(0.2, 0.6, 1000)
@@ -233,7 +238,8 @@ def compute_physical_non_linearity(
 
     """
     # Derivation of Cd concentration in the alloy,  it depends on cutoff wavelength and targeted operating temperature
-    # Here we are considering the case where the detector is operated at its nominal temperature, it might not be always the case
+    # Here we are considering the case where the detector is operated at its nominal temperature,
+    # it might not be always the case
     # cutoff = 2.1  # Can be extracted from CMOS characteristics ?
     Eg_targeted = 1.24 / cutoff  # cutoff is um and Eg in eV
     xcd = np.linspace(0.2, 0.6, 1000)
@@ -387,18 +393,17 @@ def compute_physical_non_linearity_with_saturation(
 
     """
     # Derivation of Cd concentration in the alloy,  it depends on cutoff wavelength and targeted operating temperature
-    # Here we are considering the case where the detector is operated at its nominal temperature, it might not be always the case
-    #cutoff = 2.48  # Can be extracted from CMOS characteristics ?
+    # Here we are considering the case where the detector is operated at its nominal temperature,
+    # it might not be always the case
+    # cutoff = 2.48  # Can be extracted from CMOS characteristics ?
     Eg_targeted = 1.24 / cutoff  # cutoff is um and Eg in eV
     xcd = np.linspace(0.2, 0.6, 1000)
-    #targeted_operating_temperature = temperature
-    Eg_calculated = hgcdte_bandgap(
-        xcd, temperature
-    )  # Expected bandgap
+    # targeted_operating_temperature = temperature
+    Eg_calculated = hgcdte_bandgap(xcd, temperature)  # Expected bandgap
     index = np.where(Eg_calculated > Eg_targeted)[0][0]
     x_cd = xcd[index]  # Targeted cadmium concentration in the HgCdTe alloy
     # Calculate the effective bandgap value at the temperature at which simulations are performed.
-    #Eg = hgcdte_bandgap(x_cd, temperature)
+    # Eg = hgcdte_bandgap(x_cd, temperature)
 
     # # Acceptor and donor doping concentrations
     # n_acceptor = 1e18  # in atom/cm3
@@ -416,16 +421,14 @@ def compute_physical_non_linearity_with_saturation(
     row, col = signal_array_2d.shape
 
     if signal_array_2d[5, 5] == 0:
-        signal_array_2d = v_reset * np.ones(
-            (row, col)
-        )
+        signal_array_2d = v_reset * np.ones((row, col))
 
     # detector.signal.array should be expressed in unit of mV. It is the bias at the gate of the pixel SFD
     det_polar = euler(
         t0=time - time_step,
         t_end=time,
         nb_pts=euler_points,
-        vbias=np.ravel(signal_array_2d) - d_sub,
+        v_bias=np.ravel(signal_array_2d) - d_sub,
         phi_implant=phi_implant,
         d_implant=d_implant,
         n_acceptor=n_acceptor,
@@ -433,14 +436,12 @@ def compute_physical_non_linearity_with_saturation(
         x_cd=x_cd,
         temperature=temperature,
         photonic_current=np.ravel(photon_array_2d) / time_step,
-        fixed_capa=fixed_capacitance,
+        fixed_capacitance=fixed_capacitance,
         sat_current=saturation_current,
         n=ideality_factor,
     )
 
-    array = np.reshape(
-        det_polar + d_sub, (row, col)
-    )
+    array = np.reshape(det_polar + d_sub, (row, col))
     non_linear_signal = array.astype("float64")
 
     return non_linear_signal
