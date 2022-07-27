@@ -352,7 +352,6 @@ def physical_non_linearity(
 def compute_physical_non_linearity_with_saturation(
     signal_array_2d: np.ndarray,
     photon_array_2d: np.ndarray,
-    time: float,
     time_step: float,
     temperature: float,
     cutoff: float,
@@ -373,7 +372,6 @@ def compute_physical_non_linearity_with_saturation(
     ----------
     signal_array_2d
     photon_array_2d
-    time
     time_step
     temperature
     cutoff
@@ -425,8 +423,7 @@ def compute_physical_non_linearity_with_saturation(
 
     # detector.signal.array should be expressed in unit of mV. It is the bias at the gate of the pixel SFD
     det_polar = euler(
-        t0=time - time_step,
-        t_end=time,
+        time_step=time_step,
         nb_pts=euler_points,
         v_bias=np.ravel(signal_array_2d) - d_sub,
         phi_implant=phi_implant,
@@ -484,7 +481,6 @@ def physical_non_linearity_with_saturation(
     signal_non_linear = compute_physical_non_linearity_with_saturation(
         signal_array_2d=detector.signal.array,
         photon_array_2d=detector.photon.array,
-        time=detector.time,
         time_step=detector.time_step,
         temperature=detector.environment.temperature,
         cutoff=cutoff,

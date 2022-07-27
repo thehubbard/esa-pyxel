@@ -18,7 +18,7 @@ spec = [
 ]
 
 
-@jitclass(spec)
+#@jitclass(spec)
 class Constants(object):
     def __init__(self):
         self.m_electron = 9.10938356e-31  # kg
@@ -28,7 +28,7 @@ class Constants(object):
 
 
 # --------------------------------------------------------------
-@njit
+#@njit
 def build_in_potential(
         temperature: float,
         n_acceptor: float,
@@ -80,7 +80,7 @@ def build_in_potential(
 
 
 # -------------------------------------------------------------------------------
-@njit
+#@njit
 def w_dep(
         v_bias: np.ndarray,
         epsilon: float,
@@ -145,7 +145,7 @@ def w_dep(
 
 
 # -------------------------------------------------------------------------
-@njit
+#@njit
 def hgcdte_bandgap(x_cd: float, temperature: float):
     """
     This expression of the Gap of HgCdTe is valid for a Cadmium concentration between 0.2 and 0.6.
@@ -181,7 +181,7 @@ def hgcdte_bandgap(x_cd: float, temperature: float):
 
 
 # -------------------------------------------------------------------------------
-@njit
+#@njit
 def ni_hansen(temperature, x_cd):
     """
     ni : intrinsic carrier concentration for HgCdTe
@@ -213,7 +213,7 @@ def ni_hansen(temperature, x_cd):
 # ==============================================================
 #                   CYLINDRICAL PN JUNCTION
 # ==============================================================
-@njit
+#@njit
 def capa_pn_junction_cylindrical(
         v_bias: np.ndarray,
         phi_implant: float,
@@ -259,7 +259,7 @@ def capa_pn_junction_cylindrical(
 
 # ----------------------------------------------------------------
 # CYLINDRICAL PN JUNCTION
-@njit
+#@njit
 def dv_dt_cylindrical(
         v_bias: np.ndarray,
         photonic_current: np.ndarray,
@@ -322,10 +322,9 @@ def dv_dt_cylindrical(
 
 # ----------------------------------------------------------------
 # Euler method
-@njit
+#@njit
 def euler(
-        t0: float,
-        t_end: float,
+        time_step: float,
         nb_pts: int,
         v_bias: np.ndarray,
         phi_implant: float,
@@ -344,8 +343,7 @@ def euler(
 
     Parameters
     ----------
-    t0 : FLOAT, init time
-    t_end : FLOAT, end time
+    time_step
     nb_pts : FLOAT number of points
     v_bias : FLOAT, Diode polarisation
     phi_implant : FLOAT, diameter of the implantation
@@ -364,7 +362,7 @@ def euler(
     V : FLOAT: voltage at the gate of the pixel SFD
     """
     # Calculating step size
-    h = (t_end - t0) / nb_pts
+    h = time_step / nb_pts
     # Initialization of variables
     v = [v_bias]
     # ==============================
