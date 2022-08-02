@@ -18,7 +18,7 @@ spec = [
 ]
 
 
-#@jitclass(spec)
+@jitclass(spec)
 class Constants(object):
     def __init__(self):
         self.m_electron = 9.10938356e-31  # kg
@@ -28,7 +28,7 @@ class Constants(object):
 
 
 # --------------------------------------------------------------
-#@njit
+@njit
 def build_in_potential(
         temperature: float,
         n_acceptor: float,
@@ -80,7 +80,7 @@ def build_in_potential(
 
 
 # -------------------------------------------------------------------------------
-#@njit
+@njit
 def w_dep(
         v_bias: np.ndarray,
         epsilon: float,
@@ -145,7 +145,7 @@ def w_dep(
 
 
 # -------------------------------------------------------------------------
-#@njit
+@njit
 def hgcdte_bandgap(x_cd: float, temperature: float):
     """
     This expression of the Gap of HgCdTe is valid for a Cadmium concentration between 0.2 and 0.6.
@@ -181,7 +181,7 @@ def hgcdte_bandgap(x_cd: float, temperature: float):
 
 
 # -------------------------------------------------------------------------------
-#@njit
+@njit
 def ni_hansen(temperature, x_cd):
     """
     ni : intrinsic carrier concentration for HgCdTe
@@ -213,12 +213,11 @@ def ni_hansen(temperature, x_cd):
 # ==============================================================
 #                   CYLINDRICAL PN JUNCTION
 # ==============================================================
-#@njit
+@njit
 def capa_pn_junction_cylindrical(
         v_bias: np.ndarray,
         phi_implant: float,
         d_implant: float,
-        epsilon: float,
         n_acceptor: float,
         n_donor: float,
         x_cd: float,
@@ -238,9 +237,14 @@ def capa_pn_junction_cylindrical(
     # xcd = 0.515 if x_cd is None else x_cd  # Cd concentration
     # T = 80 if temperature is None else temperature  # Temperature in K
 
+    epsilon = (
+        20.5 - 15.6 * x_cd + 5.7 * x_cd**2
+    )  # Static dielectric constant, this value is ok for HgCdTe
+
     # Definition of the constants
     const = Constants()
     eps0 = const.eps_0
+
     # Calculation of w
     w = w_dep(
         v_bias=v_bias,
@@ -259,7 +263,7 @@ def capa_pn_junction_cylindrical(
 
 # ----------------------------------------------------------------
 # CYLINDRICAL PN JUNCTION
-#@njit
+@njit
 def dv_dt_cylindrical(
         v_bias: np.ndarray,
         photonic_current: np.ndarray,
@@ -299,14 +303,9 @@ def dv_dt_cylindrical(
     e, k = const.electron_charge, const.k_b
     # Capacitance calculation as a function of Bias
 
-    epsilon = (
-        20.5 - 15.6 * x_cd + 5.7 * x_cd**2
-    )  # Static dielectric constant, this value is ok for HgCdTe
-
     c = capa_pn_junction_cylindrical(
         v_bias=v_bias,
         phi_implant=phi_implant,
-        epsilon=epsilon,
         d_implant=d_implant,
         n_acceptor=n_acceptor,
         n_donor=n_donor,
@@ -322,7 +321,7 @@ def dv_dt_cylindrical(
 
 # ----------------------------------------------------------------
 # Euler method
-#@njit
+@njit
 def euler(
         time_step: float,
         nb_pts: int,
@@ -371,17 +370,17 @@ def euler(
     # EULER Method to solve the differential equation
     for i in range(1, nb_pts):
         slope = dv_dt_cylindrical(
-            v[-1],
-            photonic_current,
-            fixed_capacitance,
-            sat_current,
-            n,
-            phi_implant,
-            d_implant,
-            n_acceptor,
-            n_donor,
-            x_cd,
-            temperature,
+            v_bias=v[-1],
+            photonic_current=photonic_current,
+            fixed_capacitance=fixed_capacitance,
+            sat_current=sat_current,
+            n=n,
+            phi_implant=phi_implant,
+            d_implant=d_implant,
+            n_acceptor=n_acceptor,
+            n_donor=n_donor,
+            x_cd=x_cd,
+            temperature=temperature,
         )
         # Calculate new bias
         yn = v[-1] + h * slope

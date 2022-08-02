@@ -15,6 +15,7 @@ from pyxel.models.charge_measurement.non_linearity_calculation import (
     euler,
     hgcdte_bandgap,
 )
+from numba import njit
 
 # Universal global constants
 M_ELECTRON = 9.10938356e-31  # kg     #TODO: put these global constants to a data file
@@ -349,6 +350,7 @@ def physical_non_linearity(
 
 
 # -----------------------------------------------------------------------
+@njit
 def compute_physical_non_linearity_with_saturation(
     signal_array_2d: np.ndarray,
     photon_array_2d: np.ndarray,
