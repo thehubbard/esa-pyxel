@@ -9,13 +9,13 @@
 import typing as t
 
 import numpy as np
+from numba import njit
 
 from pyxel.detectors import Detector
 from pyxel.models.charge_measurement.non_linearity_calculation import (
     euler,
     hgcdte_bandgap,
 )
-from numba import njit
 
 # Universal global constants
 M_ELECTRON = 9.10938356e-31  # kg     #TODO: put these global constants to a data file
@@ -124,6 +124,11 @@ def compute_simple_physical_non_linearity(
     # Calculate the effective bandgap value at the temperature at which simulations are performed.
     Eg = hgcdte_bandgap(x_cd, temperature)
 
+    if not (0.2 <= x_cd <= 0.6):
+        raise ValueError(
+            "Hansen bangap expression used out of its nomimal application range. \
+                x_cd must be between 0.2 and 0.6"
+        )
     # Acceptor and donor doping concentrations
     # n_acceptor = 1e18  # in atoms/cm3
     # n_donor = 3e15  # in atoms/cm3
@@ -196,6 +201,12 @@ def simple_physical_non_linearity(
 
     """
 
+    if not (4 <= detector.environment.temperature <= 300):
+        raise ValueError(
+            "Hansen bangap expression used out of its nomimal application range. \
+                temperature must be between 4K and 300K"
+        )
+
     signal_mean_array = detector.charge.array.astype("float64")
     signal_non_linear = compute_simple_physical_non_linearity(
         array_2d=signal_mean_array,
@@ -241,7 +252,6 @@ def compute_physical_non_linearity(
     # Derivation of Cd concentration in the alloy,  it depends on cutoff wavelength and targeted operating temperature
     # Here we are considering the case where the detector is operated at its nominal temperature,
     # it might not be always the case
-    # cutoff = 2.1  # Can be extracted from CMOS characteristics ?
     Eg_targeted = 1.24 / cutoff  # cutoff is um and Eg in eV
     xcd = np.linspace(0.2, 0.6, 1000)
     targeted_operating_temperature = temperature
@@ -250,6 +260,12 @@ def compute_physical_non_linearity(
     )  # Expected band-gap
     index = np.where(Eg_calculated > Eg_targeted)[0][0]
     x_cd = xcd[index]  # Targeted cadmium concentration in the HgCdTe alloy
+
+    if not (0.2 <= x_cd <= 0.6):
+        raise ValueError(
+            "Hansen bangap expression used out of its nomimal application range. \
+                x_cd must be between 0.2 and 0.6"
+        )
 
     # Calculate the effective band-gap value at the temperature at which simulations are performed.
     Eg = hgcdte_bandgap(x_cd, temperature)
@@ -335,6 +351,12 @@ def physical_non_linearity(
     -------
 
     """
+    if not (4 <= detector.environment.temperature <= 300):
+        raise ValueError(
+            "Hansen bangap expression used out of its nomimal application range. \
+                temperature must be between 4K and 300K"
+        )
+
     signal_mean_array = detector.pixel.array.astype("float64")
     signal_non_linear = compute_physical_non_linearity(
         array_2d=signal_mean_array,
@@ -350,7 +372,6 @@ def physical_non_linearity(
 
 
 # -----------------------------------------------------------------------
-@njit
 def compute_physical_non_linearity_with_saturation(
     signal_array_2d: np.ndarray,
     photon_array_2d: np.ndarray,
@@ -395,7 +416,6 @@ def compute_physical_non_linearity_with_saturation(
     # Derivation of Cd concentration in the alloy,  it depends on cutoff wavelength and targeted operating temperature
     # Here we are considering the case where the detector is operated at its nominal temperature,
     # it might not be always the case
-    # cutoff = 2.48  # Can be extracted from CMOS characteristics ?
     Eg_targeted = 1.24 / cutoff  # cutoff is um and Eg in eV
     xcd = np.linspace(0.2, 0.6, 1000)
     # targeted_operating_temperature = temperature
@@ -403,27 +423,22 @@ def compute_physical_non_linearity_with_saturation(
     index = np.where(Eg_calculated > Eg_targeted)[0][0]
     x_cd = xcd[index]  # Targeted cadmium concentration in the HgCdTe alloy
     # Calculate the effective bandgap value at the temperature at which simulations are performed.
-    # Eg = hgcdte_bandgap(x_cd, temperature)
 
-    # # Acceptor and donor doping concentrations
-    # n_acceptor = 1e18  # in atom/cm3
-    # n_donor = 3e15  # in atoms/cm3
-    #
-    # # Surface of the diode, assumed to be planar
-    # phi_implant = 10.2  # in um
-    # d_implant = 1  # in um
-    #
-    # sat_current = 0.003
-    # ideality_factor = 1.34
-    # v_reset = 0.0  # in V
-    # d_sub = 0.220  # in V
+    if not (0.2 <= x_cd <= 0.6):
+        raise ValueError(
+            "Hansen bangap expression used out of its nomimal application range. \
+                x_cd must be between 0.2 and 0.6"
+        )
+
+    phi_implant = phi_implant * 1e-6  # in um
+    d_implant = d_implant * 1e-6  # in um
 
     row, col = signal_array_2d.shape
 
     if signal_array_2d[5, 5] == 0:
         signal_array_2d = v_reset * np.ones((row, col))
 
-    # detector.signal.array should be expressed in unit of mV. It is the bias at the gate of the pixel SFD
+    # detector.signal.array should be expressed in unit of mV. It is the bias at the gate of the pixel SFD ????
     det_polar = euler(
         time_step=time_step,
         nb_pts=euler_points,
@@ -463,8 +478,10 @@ def physical_non_linearity_with_saturation(
     """
     Parameters
     ----------
-    detector
-    cutoff
+    detector: Detector
+        Pyxel detector object.
+    cutoff: float
+        Cutoff wavelength. unit: um
     n_donor
     n_acceptor
     phi_implant
@@ -480,6 +497,12 @@ def physical_non_linearity_with_saturation(
     -------
 
     """
+    if not (4 <= detector.environment.temperature <= 300):
+        raise ValueError(
+            "Hansen bangap expression used out of its nomimal application range. \
+                temperature must be between 4K and 300K"
+        )
+
     signal_non_linear = compute_physical_non_linearity_with_saturation(
         signal_array_2d=detector.signal.array,
         photon_array_2d=detector.photon.array,
