@@ -1,6 +1,6 @@
 # Pyxel additional requirements for generating documentation
 
-doc8
+doc8<1.0.0
 sphinx
 sphinx-book-theme
 sphinxcontrib-bibtex
