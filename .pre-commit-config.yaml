@@ -17,11 +17,11 @@ repos:
 
   # https://github.com/python/black#version-control-integration
   - repo: https://github.com/python/black
-    rev: 22.1.0
+    rev: 22.6.0
     hooks:
       - id: black
 
   - repo: https://github.com/keewis/blackdoc
-    rev: v0.3.4
+    rev: v0.3.5
     hooks:
       - id: blackdoc

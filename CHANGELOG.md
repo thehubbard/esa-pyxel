@@ -29,6 +29,8 @@
   (See [!486](https://gitlab.com/esa/pyxel/-/merge_requests/486)).
 * Add more information about installation from 'conda' and 'pip'.
   (See [!488](https://gitlab.com/esa/pyxel/-/merge_requests/488)).
+* Fix issues with latest version of 'fsspec' (2022.7.1) and 'doc8' (1.0.0).
+  (See [!491](https://gitlab.com/esa/pyxel/-/merge_requests/491)).
 
 ### Models
 

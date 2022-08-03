@@ -15,6 +15,7 @@
 """Subpackage to load images and tables."""
 
 import typing as t
+from io import BytesIO
 from pathlib import Path
 
 import fsspec
@@ -89,7 +90,8 @@ def load_image(filename: t.Union[str, Path]) -> np.ndarray:
 
             from astropy.io import fits  # Late import to speed-up general import time
 
-            data_2d = fits.getdata(file_handler)  # type: np.ndarray
+            with BytesIO(file_handler.read()) as content:
+                data_2d = fits.getdata(content)  # type: np.ndarray
 
     elif suffix.startswith(".npy"):
         with fsspec.open(url_path, mode="rb", **extras) as file_handler:
