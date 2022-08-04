@@ -1,5 +1,5 @@
 """
-Created on Wed Mar 10 09:39:18 2021
+Non-linearity models utility functions.
 
 @author: tpichon
 """
@@ -17,6 +17,8 @@ spec = [
 
 @jitclass(spec)
 class Constants(object):
+    """Constants class."""
+
     def __init__(self):
         self.m_electron = 9.10938356e-31  # kg
         self.k_b = 1.38064852e-23  #
@@ -142,7 +144,7 @@ def hgcdte_bandgap(x_cd: float, temperature: float) -> float:
 
 @njit
 def ni_hansen(x_cd: float, temperature: float) -> float:
-    """intrinsic carrier concentration for HgCdTe.
+    """Intrinsic carrier concentration for HgCdTe.
 
     Ref : G.L. Hansen and J.L. Schmit  J. Applied Physics, 54, 1639 (1983)
 
@@ -187,7 +189,7 @@ def capa_pn_junction_cylindrical(
     x_cd: float,
     temperature: float,
 ) -> np.ndarray:
-    """
+    """Calculate the capacitance of the cylindrical pn junction.
 
     Parameters
     ----------
@@ -241,32 +243,31 @@ def dv_dt_cylindrical(
     x_cd: float,
     temperature: float,
 ) -> np.ndarray:
-    """
-    Use this diode discharge equation when considering a cylindrical diode
+    """Use this diode discharge equation when considering a cylindrical diode.
 
     Parameters
     ----------
     v_bias : float,
         Diode polarisation
-    photonic_current : float,
+    photonic_current : float
         Photonic current
-    fixed_capacitance : float,
+    fixed_capacitance : float
         Fixed capacitance
-    sat_current : float,
+    sat_current : float
         Saturating current under dark conditions
-    n : float,
+    n : float
         Ideality factor
-    phi_implant : float,
+    phi_implant : float
         diameter of the implantation
-    d_implant : float,
+    d_implant : float
         depth of the implantation
-    n_acceptor : float,
+    n_acceptor : float
         density of acceptors
-    n_donor : float,
+    n_donor : float
         density of donor
-    x_cd : float,
+    x_cd : float
         cadmium concentrations
-    temperature : float,
+    temperature : float
         temperature of the sample
 
     Returns
@@ -310,8 +311,7 @@ def euler(
     sat_current: float,
     n: float,
 ):
-    """
-    Use this diode discharge equation when considering a cylindrical diode
+    """Apply Euler method to solve the differential equation for detector non-linearity.
 
     Parameters
     ----------
@@ -319,27 +319,27 @@ def euler(
         Time step.
     nb_pts : float
         Number of points.
-    v_bias : float,
+    v_bias : float
         Diode polarisation.
-    phi_implant : float,
+    phi_implant : float
         Diameter of the implantation.
-    d_implant : float,
+    d_implant : float
         Depth of the implantation.
-    n_acceptor : float,
+    n_acceptor : float
         Density of acceptors.
-    n_donor : float,
+    n_donor : float
         Density of donor.
-    x_cd : float,
+    x_cd : float
         Cadmium concentration.
-    temperature : float,
+    temperature : float
         Temperature of the sample.
-    photonic_current : float,
+    photonic_current : float
         Photonic current.
-    fixed_capacitance : float,
+    fixed_capacitance : float
         Fixed capacitance.
-    sat_current : float,
+    sat_current : float
         Saturating current under dark conditions.
-    n : float,
+    n : float
         Ideality factor.
 
     Returns

@@ -9,19 +9,14 @@
 import typing as t
 
 import numpy as np
-from numba import njit
+from astropy import constants as const
 
 from pyxel.detectors import Detector
 from pyxel.models.charge_measurement.non_linearity_calculation import (
     euler,
     hgcdte_bandgap,
+    ni_hansen,
 )
-
-# Universal global constants
-M_ELECTRON = 9.10938356e-31  # kg     #TODO: put these global constants to a data file
-KB = 1.38064852e-23  #
-Q = 1.60217662e-19
-EPS0 = 8.85418782e-12
 
 
 def compute_poly_linearity(
@@ -83,31 +78,38 @@ def output_node_linearity_poly(
     detector.signal.array = signal_non_linear
 
 
-# ---------------------------------------------------------------------
 def compute_simple_physical_non_linearity(
     array_2d: np.ndarray,
     temperature: float,  # Detector operating temperature
-    vbias: float,
+    v_bias: float,
     cutoff: float,
     n_acceptor: float,
     n_donor: float,
     diode_diameter: float,
 ) -> np.ndarray:
-    """
+    """Compute simple physical non-linear signal.
 
     Parameters
     ----------
-    array_2d
-    temperature
-    vbias
-    cutoff
-    n_acceptor
-    n_donor
-    diode_diameter
+    array_2d: ndarray
+        Input array.
+    temperature:
+        Temperature. Unit: K.
+    v_bias: float
+        Initial bias voltage. Unit: V.
+    cutoff: float
+        Cutoff wavelength. unit: um
+    n_acceptor: float
+        Acceptor density. Unit: atoms/cm^3
+    n_donor: float
+        Donor density. Unit: atoms/cm^3
+    diode_diameter: float
+        Diode diameter. Unit: um
 
     Returns
     -------
-
+    non_linear_signal: ndarray
+        Output array.
     """
     # Derivation of Cd concentration in the alloy,  it depends on cutoff wavelength and targeted operating temperature
     # Here we are considering the case where the detector is operated at its nominal temperature,
@@ -121,57 +123,43 @@ def compute_simple_physical_non_linearity(
     )  # Expected bandgap
     index = np.where(Eg_calculated > Eg_targeted)[0][0]
     x_cd = xcd[index]  # Targeted cadmium concentration in the HgCdTe alloy
-    # Calculate the effective bandgap value at the temperature at which simulations are performed.
-    Eg = hgcdte_bandgap(x_cd, temperature)
 
     if not (0.2 <= x_cd <= 0.6):
         raise ValueError(
             "Hansen bangap expression used out of its nomimal application range. \
                 x_cd must be between 0.2 and 0.6"
         )
-    # Acceptor and donor doping concentrations
-    # n_acceptor = 1e18  # in atoms/cm3
-    # n_donor = 3e15  # in atoms/cm3
 
-    # Intrinsic carrier concentration
-    # Standard semiconductor expression can also be used
-    ni = (
-        (
-            5.585
-            - 3.820 * x_cd
-            + 1.753 * 1e-3 * temperature
-            - 1.364 * 1e-3 * temperature * x_cd
-        )
-        * 1e14
-        * Eg**0.75
-        * temperature**1.5
-        * np.exp(-Q * Eg / (2 * KB * temperature))
-    )
+    ni = ni_hansen(x_cd=x_cd, temperature=temperature)
 
     # Build in potential
-    vbi = KB * temperature / Q * np.log(n_acceptor * n_donor / ni**2)
+    vbi = (
+        const.k_B.value
+        * temperature
+        / const.e.value
+        * np.log(n_acceptor * n_donor / ni**2)
+    )
 
     # HgCdTe dielectric constant
     eps = 20.5 - 15.6 * x_cd + 5.7 * x_cd**2
 
     # Surface of the diode, assumed to be planar
-    # diode_diameter = 10  # in um
     Ad = (
         np.pi * (diode_diameter / 2.0 * 1e-6) ** 2
     )  # Surface of the diode, assumed to be circular
 
     # Initial value  of the diode capacitance
     co = Ad * np.sqrt(
-        (Q * eps * EPS0)
-        / (2 * (vbi - vbias))
+        (const.e.value * eps * const.eps0.value)
+        / (2 * (vbi - v_bias))
         * ((n_acceptor * 1e6 * n_donor * 1e6) / (n_acceptor * 1e6 + n_donor * 1e6))
     )
 
     non_linear_signal = (
         1
         / (2 * vbi)
-        * (Q * array_2d / co) ** 2
-        * (-1 + np.sqrt(1 + 4 * (co / (Q * array_2d)) ** 2 * vbi**2))
+        * (const.e.value * array_2d / co) ** 2
+        * (-1 + np.sqrt(1 + 4 * (co / (const.e.value * array_2d)) ** 2 * vbi**2))
     )
 
     return non_linear_signal
@@ -185,20 +173,22 @@ def simple_physical_non_linearity(
     diode_diameter: float,
     v_bias: float,
 ) -> None:
-    """
+    """Apply simple physical non-linearity.
 
     Parameters
     ----------
-    detector
-    cutoff
-    n_acceptor
-    n_donor
-    diode_diameter
-    v_bias
-
-    Returns
-    -------
-
+    detector: Detector
+        Pyxel detector object.
+    cutoff: float
+        Cutoff wavelength. unit: um
+    n_donor: float
+        Donor density. Unit: atoms/cm^3
+    n_acceptor: float
+        Acceptor density. Unit: atoms/cm^3
+    diode_diameter: float
+        Diode diameter. Unit: um
+    v_bias: float
+        Initial bias voltage. Unit: V.
     """
 
     if not (4 <= detector.environment.temperature <= 300):
@@ -211,7 +201,7 @@ def simple_physical_non_linearity(
     signal_non_linear = compute_simple_physical_non_linearity(
         array_2d=signal_mean_array,
         temperature=detector.environment.temperature,
-        vbias=v_bias,
+        v_bias=v_bias,
         cutoff=cutoff,
         n_acceptor=n_acceptor,
         n_donor=n_donor,
@@ -221,33 +211,41 @@ def simple_physical_non_linearity(
     detector.signal.array = signal_non_linear
 
 
-# ---------------------------------------------------------------------
 def compute_physical_non_linearity(
     array_2d: np.ndarray,
-    temperature: float,  # Detector operating temperature
-    fixed_capa: float,  # Additionnal fixed capacitance
-    vbias: float,
+    temperature: float,
+    fixed_capacitance: float,
+    v_bias: float,
     cutoff: float,
     n_acceptor: float,
     n_donor: float,
     diode_diameter: float,
 ) -> np.ndarray:
-    """
+    """Compute physical non-linear signal.
 
     Parameters
     ----------
-    array_2d
-    temperature
-    fixed_capa
-    vbias
-    cutoff
-    n_acceptor
-    n_donor
-    diode_diameter
+    array_2d: ndarray
+        Input array.
+    temperature:
+        Temperature. Unit: K.
+    fixed_capacitance: float
+        Additional fixed capacitance. Unit: F
+    v_bias: float
+        Initial bias voltage. Unit: V.
+    cutoff: float
+        Cutoff wavelength. unit: um
+    n_acceptor: float
+        Acceptor density. Unit: atoms/cm^3
+    n_donor: float
+        Donor density. Unit: atoms/cm^3
+    diode_diameter: float
+        Diode diameter. Unit: um
 
     Returns
     -------
-
+    non_linear_signal: ndarray
+        Output array.
     """
     # Derivation of Cd concentration in the alloy,  it depends on cutoff wavelength and targeted operating temperature
     # Here we are considering the case where the detector is operated at its nominal temperature,
@@ -268,57 +266,44 @@ def compute_physical_non_linearity(
         )
 
     # Calculate the effective band-gap value at the temperature at which simulations are performed.
-    Eg = hgcdte_bandgap(x_cd, temperature)
-
-    # Acceptor and donor doping concentrations
-    # n_acceptor = 1e18  # in atom/cm3
-    # n_donor = 3e15  # in atoms/cm3
-
-    # Intrinsic carrier concentration
-    # Standard semiconductor expression can also be used
-    ni = (
-        (
-            5.585
-            - 3.820 * x_cd
-            + 1.753 * 1e-3 * temperature
-            - 1.364 * 1e-3 * temperature * x_cd
-        )
-        * 1e14
-        * Eg**0.75
-        * temperature**1.5
-        * np.exp(-Q * Eg / (2 * KB * temperature))
-    )  # in carriers/cm3
+    ni = ni_hansen(x_cd=x_cd, temperature=temperature)
 
     # Build in potential
-    vbi = KB * temperature / Q * np.log(n_acceptor * n_donor / ni**2)  # in V
+    vbi = (
+        const.k_B.value
+        * temperature
+        / const.e.value
+        * np.log(n_acceptor * n_donor / ni**2)
+    )  # in V
 
     # HgCdTe dielectric constant
     eps = 20.5 - 15.6 * x_cd + 5.7 * x_cd**2  # without dimension
 
     # Surface of the diode, assumed to be planar
-    # diode_diameter = 10  # (in um)
     Ad = (
         np.pi * (diode_diameter / 2.0 * 1e-6) ** 2
     )  # Surface of the diode, assumed to be circular (in cm)
 
     # Initial value  of the diode capacitance
     co = Ad * np.sqrt(
-        (Q * eps * EPS0)
+        (const.e.value * eps * const.eps0.value)
         / (2 * vbi)
         * ((n_acceptor * 1e6 * n_donor * 1e6) / (n_acceptor * 1e6 + n_donor * 1e6))
     )
 
     # Resolution of 2nd order equation
-    b = -2.0 * co / fixed_capa
+    b = -2.0 * co / fixed_capacitance
     a = -1.0
     c = (
-        (1 - vbias / vbi)
-        + 2.0 * co / fixed_capa * np.sqrt(1.0 - vbias / vbi)
-        - array_2d * Q / (fixed_capa * vbi)
+        (1 - v_bias / vbi)
+        + 2.0 * co / fixed_capacitance * np.sqrt(1.0 - v_bias / vbi)
+        - array_2d * const.e.value / (fixed_capacitance * vbi)
     )
     discriminant = b**2 - 4.0 * c * a
     u1 = (-b - np.sqrt(discriminant)) / (2.0 * a)
-    v1 = (1.0 - u1**2) * vbi - vbias  # is substracted it only deals with offset level
+    v1 = (
+        1.0 - u1**2
+    ) * vbi - v_bias  # is substracted it only deals with offset level
 
     array = np.copy(v1)  # unit if V, voltage at the gate of the pixel SFD
     non_linear_signal = array.astype("float64")
@@ -335,21 +320,24 @@ def physical_non_linearity(
     v_bias: float,
     fixed_capacitance: float,
 ) -> None:
-    """
+    """Apply physical non-linearity.
 
     Parameters
     ----------
-    detector
-    cutoff
-    n_acceptor
-    n_donor
-    diode_diameter
-    v_bias
-    fixed_capacitance
-
-    Returns
-    -------
-
+    detector: Detector
+        Pyxel detector object.
+    cutoff: float
+        Cutoff wavelength. unit: um
+    n_donor: float
+        Donor density. Unit: atoms/cm^3
+    n_acceptor: float
+        Acceptor density. Unit: atoms/cm^3
+    diode_diameter: float
+        Diode diameter. Unit: um
+    v_bias: float
+        Initial bias voltage. Unit: V.
+    fixed_capacitance: float
+        Additional fixed capacitance. Unit: F
     """
     if not (4 <= detector.environment.temperature <= 300):
         raise ValueError(
@@ -361,17 +349,17 @@ def physical_non_linearity(
     signal_non_linear = compute_physical_non_linearity(
         array_2d=signal_mean_array,
         temperature=detector.environment.temperature,
-        fixed_capa=fixed_capacitance,  # =50.0 * 1e-15,
-        vbias=v_bias,
+        fixed_capacitance=fixed_capacitance,
+        v_bias=v_bias,
         cutoff=cutoff,
         n_acceptor=n_acceptor,
         n_donor=n_donor,
         diode_diameter=diode_diameter,
     )
+
     detector.signal.array = signal_non_linear
 
 
-# -----------------------------------------------------------------------
 def compute_physical_non_linearity_with_saturation(
     signal_array_2d: np.ndarray,
     photon_array_2d: np.ndarray,
@@ -389,29 +377,45 @@ def compute_physical_non_linearity_with_saturation(
     fixed_capacitance: float,
     euler_points: int,
 ) -> np.ndarray:
-    """
+    """Compute physical non-linear signal with saturation.
 
     Parameters
     ----------
-    signal_array_2d
-    photon_array_2d
+    signal_array_2d: ndarray
+        Input signal array.
+    photon_array_2d: ndarray
+        Input photon array.
     time_step
-    temperature
-    cutoff
-    n_donor
-    n_acceptor
-    phi_implant
-    d_implant
-    saturation_current
-    ideality_factor
-    v_reset
-    d_sub
-    fixed_capacitance
-    euler_points
+        Time step. Unit: s.
+    temperature: float
+        Temperature. Unit: K.
+    cutoff: float
+        Cutoff wavelength. unit: um.
+    n_donor: float
+        Donor density. Unit: atoms/cm^3.
+    n_acceptor: float
+        Acceptor density. Unit: atoms/cm^3.
+    phi_implant: float
+        Diameter of the implantation. Unit: um.
+    d_implant: float
+        Depth of the implamantation. Unit: um.
+    saturation_current: float
+        Saturation current: e-/s/pix..
+    ideality_factor: float
+        Ideality factor.
+    v_reset: float
+        VRESET. Unit: V.
+    d_sub: float
+        DSUB. Unit: V.
+    fixed_capacitance: float
+        Additional fixed capacitance. Unit: F.
+    euler_points: int
+        Number of points in the euler method.
 
     Returns
     -------
-
+    non_linear_signal: ndarray
+        Output array containing non-linear signal. Unit: V.
     """
     # Derivation of Cd concentration in the alloy,  it depends on cutoff wavelength and targeted operating temperature
     # Here we are considering the case where the detector is operated at its nominal temperature,
@@ -430,10 +434,10 @@ def compute_physical_non_linearity_with_saturation(
                 x_cd must be between 0.2 and 0.6"
         )
 
-    phi_implant = phi_implant * 1e-6  # in um
-    d_implant = d_implant * 1e-6  # in um
-
     row, col = signal_array_2d.shape
+
+    phi_implant = phi_implant * 1e-6  # in m
+    d_implant = d_implant * 1e-6  # in m
 
     if signal_array_2d[5, 5] == 0:
         signal_array_2d = v_reset * np.ones((row, col))
@@ -475,27 +479,34 @@ def physical_non_linearity_with_saturation(
     fixed_capacitance: float,
     euler_points: int,
 ) -> None:
-    """
+    """Apply physical non-linearity with saturation.
+
     Parameters
     ----------
     detector: Detector
         Pyxel detector object.
     cutoff: float
         Cutoff wavelength. unit: um
-    n_donor
-    n_acceptor
-    phi_implant
-    d_implant
-    saturation_current
-    ideality_factor
-    v_reset
-    d_sub
-    fixed_capacitance
-    euler_points
-
-    Returns
-    -------
-
+    n_donor: float
+        Donor density. Unit: atoms/cm^3
+    n_acceptor: float
+        Acceptor density. Unit: atoms/cm^3
+    phi_implant: float
+        Diameter of the implantation. Unit: um
+    d_implant: float
+        Depth of the implamantation. Unit: um
+    saturation_current: float
+        Saturation current: e-/s/pix.
+    ideality_factor: float
+        Ideality factor.
+    v_reset: float
+        VRESET. Unit: V.
+    d_sub: float
+        DSUB. Unit: V.
+    fixed_capacitance: float
+        Additional fixed capacitance. Unit: F.
+    euler_points: int
+        Number of points in the euler method.
     """
     if not (4 <= detector.environment.temperature <= 300):
         raise ValueError(
@@ -520,4 +531,5 @@ def physical_non_linearity_with_saturation(
         fixed_capacitance=fixed_capacitance,
         euler_points=euler_points,
     )
+
     detector.signal.array = signal_non_linear
