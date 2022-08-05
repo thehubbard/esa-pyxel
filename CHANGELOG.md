@@ -1,15 +1,11 @@
 # Changelog
 
 
-## UNRELEASED
-
-### Core
+## version 1.2.1 / 2022-08-05
 
 ### Documentation.
-
-### Models
-
-### Others
+* Fix issues with latest version of 'fsspec' (2022.7.1) and 'doc8' (1.0.0).
+  (See [!491](https://gitlab.com/esa/pyxel/-/merge_requests/491)).
 
 
 ## version 1.2.0 / 2022-07-12
@@ -29,8 +25,6 @@
   (See [!486](https://gitlab.com/esa/pyxel/-/merge_requests/486)).
 * Add more information about installation from 'conda' and 'pip'.
   (See [!488](https://gitlab.com/esa/pyxel/-/merge_requests/488)).
-* Fix issues with latest version of 'fsspec' (2022.7.1) and 'doc8' (1.0.0).
-  (See [!491](https://gitlab.com/esa/pyxel/-/merge_requests/491)).
 
 ### Models
 
