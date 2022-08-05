@@ -370,7 +370,6 @@ def euler(
             temperature=temperature,
         )
         # Calculate new bias
-        print(slope)
         yn = v[-1] + h * slope
         # Saved the old bias
         v.append(yn)
