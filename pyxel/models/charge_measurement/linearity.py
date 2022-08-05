@@ -36,9 +36,7 @@ def compute_poly_linearity(
     -------
     signal: np.ndarray
     """
-    polynomial_function = np.polynomial.polynomial.Polynomial(
-        [0, 1.6 * 1e-19 / 4.3e-14]
-    )
+    polynomial_function = np.polynomial.polynomial.Polynomial(coefficients)
 
     non_linear_signal = polynomial_function(array_2d)
 
@@ -65,7 +63,7 @@ def output_node_linearity_poly(
     if len(coefficients) == 0:
         raise ValueError("Length of coefficient list should be more than 0.")
 
-    signal_mean_array = detector.charge.array.astype("float64")
+    signal_mean_array = detector.signal.array.astype("float64")
     signal_non_linear = compute_poly_linearity(
         array_2d=signal_mean_array, coefficients=coefficients
     )
@@ -115,13 +113,13 @@ def compute_simple_physical_non_linearity(
     # Here we are considering the case where the detector is operated at its nominal temperature,
     # it might not be always the case
     # cutoff = 2.1
-    Eg_targeted = 1.24 / cutoff  # cutoff is um and Eg in eV
+    e_g_targeted = 1.24 / cutoff  # cutoff is um and Eg in eV
     xcd = np.linspace(0.2, 0.6, 1000)
     targeted_operating_temperature = temperature
-    Eg_calculated = hgcdte_bandgap(
+    e_g_calculated = hgcdte_bandgap(
         xcd, targeted_operating_temperature
     )  # Expected bandgap
-    index = np.where(Eg_calculated > Eg_targeted)[0][0]
+    index = np.where(e_g_calculated > e_g_targeted)[0][0]
     x_cd = xcd[index]  # Targeted cadmium concentration in the HgCdTe alloy
 
     if not (0.2 <= x_cd <= 0.6):
@@ -144,12 +142,12 @@ def compute_simple_physical_non_linearity(
     eps = 20.5 - 15.6 * x_cd + 5.7 * x_cd**2
 
     # Surface of the diode, assumed to be planar
-    Ad = (
+    surface = (
         np.pi * (diode_diameter / 2.0 * 1e-6) ** 2
     )  # Surface of the diode, assumed to be circular
 
     # Initial value  of the diode capacitance
-    co = Ad * np.sqrt(
+    co = surface * np.sqrt(
         (const.e.value * eps * const.eps0.value)
         / (2 * (vbi - v_bias))
         * ((n_acceptor * 1e6 * n_donor * 1e6) / (n_acceptor * 1e6 + n_donor * 1e6))
@@ -250,13 +248,13 @@ def compute_physical_non_linearity(
     # Derivation of Cd concentration in the alloy,  it depends on cutoff wavelength and targeted operating temperature
     # Here we are considering the case where the detector is operated at its nominal temperature,
     # it might not be always the case
-    Eg_targeted = 1.24 / cutoff  # cutoff is um and Eg in eV
+    e_g_targeted = 1.24 / cutoff  # cutoff is um and Eg in eV
     xcd = np.linspace(0.2, 0.6, 1000)
     targeted_operating_temperature = temperature
-    Eg_calculated = hgcdte_bandgap(
+    e_g_calculated = hgcdte_bandgap(
         xcd, targeted_operating_temperature
     )  # Expected band-gap
-    index = np.where(Eg_calculated > Eg_targeted)[0][0]
+    index = np.where(e_g_calculated > e_g_targeted)[0][0]
     x_cd = xcd[index]  # Targeted cadmium concentration in the HgCdTe alloy
 
     if not (0.2 <= x_cd <= 0.6):
@@ -280,12 +278,12 @@ def compute_physical_non_linearity(
     eps = 20.5 - 15.6 * x_cd + 5.7 * x_cd**2  # without dimension
 
     # Surface of the diode, assumed to be planar
-    Ad = (
+    surface = (
         np.pi * (diode_diameter / 2.0 * 1e-6) ** 2
     )  # Surface of the diode, assumed to be circular (in cm)
 
     # Initial value  of the diode capacitance
-    co = Ad * np.sqrt(
+    co = surface * np.sqrt(
         (const.e.value * eps * const.eps0.value)
         / (2 * vbi)
         * ((n_acceptor * 1e6 * n_donor * 1e6) / (n_acceptor * 1e6 + n_donor * 1e6))
@@ -420,11 +418,11 @@ def compute_physical_non_linearity_with_saturation(
     # Derivation of Cd concentration in the alloy,  it depends on cutoff wavelength and targeted operating temperature
     # Here we are considering the case where the detector is operated at its nominal temperature,
     # it might not be always the case
-    Eg_targeted = 1.24 / cutoff  # cutoff is um and Eg in eV
+    e_g_targeted = 1.24 / cutoff  # cutoff is um and Eg in eV
     xcd = np.linspace(0.2, 0.6, 1000)
     # targeted_operating_temperature = temperature
-    Eg_calculated = hgcdte_bandgap(xcd, temperature)  # Expected bandgap
-    index = np.where(Eg_calculated > Eg_targeted)[0][0]
+    e_g_calculated = hgcdte_bandgap(xcd, temperature)  # Expected bandgap
+    index = np.where(e_g_calculated > e_g_targeted)[0][0]
     x_cd = xcd[index]  # Targeted cadmium concentration in the HgCdTe alloy
     # Calculate the effective bandgap value at the temperature at which simulations are performed.
 

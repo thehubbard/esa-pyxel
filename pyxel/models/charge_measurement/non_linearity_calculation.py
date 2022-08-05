@@ -355,7 +355,7 @@ def euler(
     #           SOLVE THE DIFFERENTIAL EQUATION
     # ==============================
     # EULER Method to solve the differential equation
-    for i in range(1, nb_pts):
+    for _ in range(1, nb_pts):
         slope = dv_dt_cylindrical(
             v_bias=v[-1],
             photonic_current=photonic_current,
