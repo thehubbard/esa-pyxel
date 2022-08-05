@@ -54,7 +54,7 @@ def test_non_linearity_valid(ccd_5x5: CCD, coefficients: t.Sequence):
             [], ValueError, "Length of coefficient list should be more than 0."
         ),
         pytest.param(
-            [0, -10],
+            [0, -1],
             ValueError,
             "Signal array contains negative values after applying non-linearity model!",
         ),
