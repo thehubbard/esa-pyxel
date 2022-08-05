@@ -19,7 +19,7 @@ from .linearity import (
     output_node_linearity_poly,
     simple_physical_non_linearity,
     physical_non_linearity,
-    compute_physical_non_linearity_with_saturation,
+    physical_non_linearity_with_saturation,
 )
 from .offset import dc_offset, output_pixel_reset_voltage_apd
 from .reset_noise import ktc_noise
