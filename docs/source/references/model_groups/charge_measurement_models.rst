@@ -182,6 +182,88 @@ Example of the configuration file where a 10% non-linearity is introduced as a f
 
 .. autofunction:: pyxel.models.charge_measurement.output_node_linearity_poly
 
+.. _Simple physical non-linearity:
+
+Simple physical non-linearity
+=============================
+
+:guilabel:`Signal` 🠆 :guilabel:`Signal`
+
+With this model you can add non-linearity to :py:class:`~pyxel.data_structure.Signal` array.
+
+Example of the configuration file where a 10% non-linearity is introduced as a function of the signal square:
+
+.. code-block:: yaml
+
+    - name: simple_physical_non_linearity
+      func: pyxel.models.charge_measurement.simple_physical_non_linearity
+      enabled: true
+      arguments:
+        cutoff: 2.1
+        n_acceptor: 1.e+18
+        n_donor: 3.e+15
+        diode_diameter: 10.
+        v_bias: 0.1
+
+.. autofunction:: pyxel.models.charge_measurement.simple_physical_non_linearity
+
+.. _Physical non-linearity:
+
+Physical non-linearity
+======================
+
+:guilabel:`Signal` 🠆 :guilabel:`Signal`
+
+With this model you can add non-linearity to :py:class:`~pyxel.data_structure.Signal` array.
+
+Example of the configuration file where a 10% non-linearity is introduced as a function of the signal square:
+
+.. code-block:: yaml
+
+    - name: physical_non_linearity
+      func: pyxel.models.charge_measurement.physical_non_linearity
+      enabled: true
+      arguments:
+        cutoff: 2.1
+        n_acceptor: 1.e+18
+        n_donor: 3.e+15
+        diode_diameter: 10.
+        v_bias: 0.1
+        fixed_capacitance: 5.e-15
+
+.. autofunction:: pyxel.models.charge_measurement.physical_non_linearity
+
+.. _Physical non-linearity with saturation:
+
+Physical non-linearity with saturation
+======================================
+
+:guilabel:`Signal` 🠆 :guilabel:`Signal`
+
+With this model you can add non-linearity to :py:class:`~pyxel.data_structure.Signal` array.
+
+Example of the configuration file where a 10% non-linearity is introduced as a function of the signal square:
+
+.. code-block:: yaml
+
+    - name: physical_non_linearity_with_saturation
+      func: pyxel.models.charge_measurement.physical_non_linearity_with_saturation
+      enabled: true
+      arguments:
+        cutoff: 2.1
+        n_donor: 3.e+15
+        n_acceptor: 1.e+18
+        phi_implant: 6.e-6
+        d_implant: 1.e-6
+        saturation_current: 0.002
+        ideality_factor: 1.34
+        v_reset: 0.
+        d_sub: 0.220
+        fixed_capacitance: 5.e-15
+        euler_points: 100
+
+.. autofunction:: pyxel.models.charge_measurement.physical_non_linearity_with_saturation
+
 .. _HxRG noise generator:
 
 HxRG noise generator
