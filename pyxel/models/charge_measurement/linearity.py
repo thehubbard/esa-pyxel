@@ -11,7 +11,7 @@ import typing as t
 import numpy as np
 from astropy import constants as const
 
-from pyxel.detectors import Detector
+from pyxel.detectors import CMOS, Detector
 from pyxel.models.charge_measurement.non_linearity_calculation import (
     euler,
     hgcdte_bandgap,
@@ -195,6 +195,9 @@ def simple_physical_non_linearity(
                 temperature must be between 4K and 300K"
         )
 
+    if not isinstance(detector, CMOS):
+        raise TypeError("Expecting a 'CMOS' detector object.")
+
     signal_mean_array = detector.charge.array.astype("float64")
     signal_non_linear = compute_simple_physical_non_linearity(
         array_2d=signal_mean_array,
@@ -343,6 +346,9 @@ def physical_non_linearity(
                 temperature must be between 4K and 300K"
         )
 
+    if not isinstance(detector, CMOS):
+        raise TypeError("Expecting a 'CMOS' detector object.")
+
     signal_mean_array = detector.pixel.array.astype("float64")
     signal_non_linear = compute_physical_non_linearity(
         array_2d=signal_mean_array,
@@ -437,7 +443,7 @@ def compute_physical_non_linearity_with_saturation(
     phi_implant = phi_implant * 1e-6  # in m
     d_implant = d_implant * 1e-6  # in m
 
-    if signal_array_2d[5, 5] == 0:
+    if signal_array_2d[3, 3] == 0:
         signal_array_2d = v_reset * np.ones((row, col))
 
     # detector.signal.array should be expressed in unit of mV. It is the bias at the gate of the pixel SFD ????
@@ -511,6 +517,9 @@ def physical_non_linearity_with_saturation(
             "Hansen bangap expression used out of its nomimal application range. \
                 temperature must be between 4K and 300K"
         )
+
+    if not isinstance(detector, CMOS):
+        raise TypeError("Expecting a 'CMOS' detector object.")
 
     signal_non_linear = compute_physical_non_linearity_with_saturation(
         signal_array_2d=detector.signal.array,

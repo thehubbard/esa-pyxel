@@ -11,14 +11,28 @@ import typing as t
 import numpy as np
 import pytest
 
-from pyxel.detectors import CCD, CCDCharacteristics, CCDGeometry, Environment
-from pyxel.models.charge_measurement import output_node_linearity_poly
+from pyxel.detectors import (
+    CCD,
+    CMOS,
+    CCDCharacteristics,
+    CCDGeometry,
+    CMOSCharacteristics,
+    CMOSGeometry,
+    Environment,
+    ReadoutProperties
+)
+from pyxel.models.charge_measurement import (
+    output_node_linearity_poly,
+    physical_non_linearity,
+    physical_non_linearity_with_saturation,
+    simple_physical_non_linearity,
+)
 
 
 @pytest.fixture
 def ccd_5x5() -> CCD:
     """Create a valid CCD detector."""
-    return CCD(
+    detector = CCD(
         geometry=CCDGeometry(
             row=5,
             col=5,
@@ -26,9 +40,29 @@ def ccd_5x5() -> CCD:
             pixel_vert_size=10.0,
             pixel_horz_size=10.0,
         ),
-        environment=Environment(),
+        environment=Environment(temperature=80),
         characteristics=CCDCharacteristics(),
     )
+    detector._readout_properties = ReadoutProperties(num_steps=1)
+    return detector
+
+
+@pytest.fixture
+def cmos_5x5() -> CMOS:
+    """Create a valid CMOS detector."""
+    detector = CMOS(
+        geometry=CMOSGeometry(
+            row=5,
+            col=5,
+            total_thickness=40.0,
+            pixel_vert_size=10.0,
+            pixel_horz_size=10.0,
+        ),
+        environment=Environment(temperature=80),
+        characteristics=CMOSCharacteristics(),
+    )
+    detector._readout_properties = ReadoutProperties(num_steps=1)
+    return detector
 
 
 @pytest.mark.parametrize(
@@ -68,3 +102,104 @@ def test_non_linearity_invalid(
     detector.signal.array = np.ones(detector.signal.shape)
     with pytest.raises(exp_exc, match=exp_error):
         output_node_linearity_poly(detector=detector, coefficients=coefficients)
+
+
+def test_simple_physical_non_linearity_valid(cmos_5x5: CMOS):
+    """Test model 'simple_physical_non_linearity' with valid inputs."""
+    detector = cmos_5x5
+    detector.signal.array = np.ones(detector.signal.shape)
+    simple_physical_non_linearity(
+        detector=detector,
+        cutoff=2.0,
+        n_acceptor=1.0e18,
+        n_donor=1.0e15,
+        diode_diameter=5.0,
+        v_bias=0.1,
+    )
+
+
+def test_physical_non_linearity_valid(cmos_5x5: CMOS):
+    """Test model 'physical_non_linearity' with valid inputs."""
+    detector = cmos_5x5
+    detector.signal.array = np.ones(detector.signal.shape)
+    physical_non_linearity(
+        detector=detector,
+        cutoff=2.0,
+        n_acceptor=1.0e18,
+        n_donor=1.0e15,
+        diode_diameter=5.0,
+        v_bias=0.1,
+        fixed_capacitance=5.0e-15,
+    )
+
+
+def test_physical_non_linearity_with_saturation_valid(cmos_5x5: CMOS):
+    """Test model 'physical_non_linearity_with_saturation' with valid inputs."""
+    detector = cmos_5x5
+    detector.signal.array = np.ones(detector.signal.shape)
+    physical_non_linearity_with_saturation(
+        detector=detector,
+        cutoff=2.0,
+        n_acceptor=1.0e18,
+        n_donor=1.0e15,
+        phi_implant=5.,
+        d_implant=2.,
+        saturation_current=0.001,
+        ideality_factor=1.34,
+        v_reset=0.,
+        d_sub=0.220,
+        fixed_capacitance=5.0e-15,
+        euler_points=100,
+    )
+
+
+def test_simple_physical_non_linearity_with_ccd(ccd_5x5: CCD):
+    """Test model 'simple_physical_non_linearity' with a 'CCD'."""
+    detector = ccd_5x5
+
+    with pytest.raises(TypeError, match="Expecting a 'CMOS' detector object."):
+        simple_physical_non_linearity(
+            detector=detector,
+            cutoff=2.0,
+            n_acceptor=1.0e18,
+            n_donor=1.0e15,
+            diode_diameter=5.0,
+            v_bias=0.1,
+        )
+
+
+def test_physical_non_linearity_with_ccd(ccd_5x5: CCD):
+    """Test model 'physical_non_linearity' with a 'CCD'."""
+    detector = ccd_5x5
+
+    with pytest.raises(TypeError, match="Expecting a 'CMOS' detector object."):
+        physical_non_linearity(
+            detector=detector,
+            cutoff=2.0,
+            n_acceptor=1.0e18,
+            n_donor=1.0e15,
+            diode_diameter=5.0,
+            v_bias=0.1,
+            fixed_capacitance=5.0e-15,
+        )
+
+
+def test_physical_non_linearity_with_saturation_with_ccd(ccd_5x5: CCD):
+    """Test model 'physical_non_linearity_with_saturation' with a 'CCD'."""
+    detector = ccd_5x5
+
+    with pytest.raises(TypeError, match="Expecting a 'CMOS' detector object."):
+        physical_non_linearity_with_saturation(
+            detector=detector,
+            cutoff=2.0,
+            n_acceptor=1.0e18,
+            n_donor=1.0e15,
+            phi_implant=5.,
+            d_implant=2.,
+            saturation_current=0.001,
+            ideality_factor=1.34,
+            v_reset=0.,
+            d_sub=0.220,
+            fixed_capacitance=5.0e-15,
+            euler_points=100,
+        )
