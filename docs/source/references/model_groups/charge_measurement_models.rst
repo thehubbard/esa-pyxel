@@ -182,6 +182,158 @@ Example of the configuration file where a 10% non-linearity is introduced as a f
 
 .. autofunction:: pyxel.models.charge_measurement.output_node_linearity_poly
 
+.. _Simple physical non-linearity:
+
+Simple physical non-linearity
+=============================
+
+:guilabel:`Signal` 🠆 :guilabel:`Signal`
+
+With this model you can add non-linearity to :py:class:`~pyxel.data_structure.Signal` array.
+
+The model assumes a planar geometry of the diode and
+follows the description of the classical non-linearity model described in :cite:p:`Plazas_2017`.
+It does not take into account the additional fixed capacitance and the gain non-linearity
+and does not simulate saturation.
+
+Example of the configuration file:
+
+.. code-block:: yaml
+
+    - name: simple_physical_non_linearity
+      func: pyxel.models.charge_measurement.simple_physical_non_linearity
+      enabled: true
+      arguments:
+        cutoff: 2.1
+        n_acceptor: 1.e+18
+        n_donor: 3.e+15
+        diode_diameter: 10.
+        v_bias: 0.1
+
+.. autofunction:: pyxel.models.charge_measurement.simple_physical_non_linearity
+
+.. note:: This model is specific to the :term:`CMOS` detector.
+
+.. _Physical non-linearity:
+
+Physical non-linearity
+======================
+
+:guilabel:`Signal` 🠆 :guilabel:`Signal`
+
+With this model you can add non-linearity to :py:class:`~pyxel.data_structure.Signal` array.
+
+In this simplified analytical detector non-linearity model :cite:p:`pichon`
+which assumes the detector is working far from saturation,
+the current flowing in the diode is restricted to a photonic current:
+
+:math:`\frac{dV}{dt}=\frac{-I_{ph}}{C}`.
+
+The integrating capacitance can be written as a sum of fixed capacitance :math:`C_f` in the readout integrated circuit
+and diode capacitance:
+
+:math:`C=C_f+\frac{C_0}{1-\frac{V}{V_{bi}}}`,
+
+The diode capacitance at 0 bias :math:`C_0` is :cite:p:`sze`:
+
+:math:`C_0=A\sqrt{\frac{e\epsilon\epsilon_0}{2V_{bi}}(\frac{1}{N_a}+\frac{1}{N_d})}`.
+
+:math:`A` is the area of the circularly shaped diode, :math:`e` electron charge,
+:math:`\epsilon` dielectric constant of the material,
+and :math:`N_a` and :math:`N_d` are acceptor and donor concentrations.
+:math:`V_{bi}` is the built-in diode potential and is a function of :math:`N_a`, :math:`N_d`,
+temperature and intrinsic carrier concentration.
+By inserting second equation into first equation and integrating,
+one can express voltage on the detector after exposure as a solution of a quadratic equation.
+Different to the non-linearity model presented in Plazas et al. (2017) :cite:p:`Plazas_2017`,
+this model takes into account the additional fixed capacitance and the gain non-linearity.
+Still it is not a complete physical model and does not simulate the saturation of the detector.
+Additionally, it assumes a planar geometry of the diode instead of a cylindrical.
+
+Example of the configuration file:
+
+.. code-block:: yaml
+
+    - name: physical_non_linearity
+      func: pyxel.models.charge_measurement.physical_non_linearity
+      enabled: true
+      arguments:
+        cutoff: 2.1
+        n_acceptor: 1.e+18
+        n_donor: 3.e+15
+        diode_diameter: 10.
+        v_bias: 0.1
+        fixed_capacitance: 5.e-15
+
+.. autofunction:: pyxel.models.charge_measurement.physical_non_linearity
+
+.. note:: This model is specific to the :term:`CMOS` detector.
+
+.. _Physical non-linearity with saturation:
+
+Physical non-linearity with saturation
+======================================
+
+:guilabel:`Signal` 🠆 :guilabel:`Signal`
+
+With this model you can add non-linearity to :py:class:`~pyxel.data_structure.Signal` array.
+
+This model follows the description in :cite:p:`pichon` and gives the diode bias as a function of the time
+by solving the following differential equation using the Euler method:
+
+:math:`\frac{dV}{dt}=\frac{I(t)}{C(V)}`,
+
+where :math:`V` is the applied bias, :math:`C` the node capacitance, and
+
+:math:`I(t)=I_{sat}(exp(\frac{V}{nV_T})-1)-I_{ph}`.
+
+:math:`I_{sat}` is the saturation current of the diode, :math:`V_T` is the thermal velocity,
+:math:`n` is the ideality factor of the diode, and :math:`I_{ph}` is the photonic current.
+
+Considering a diode with a cylindrical geometry, one can write
+
+:math:`C(V)=C_f+\frac{a_0}{W_{dep}(V)}+b_0+c_0W_{dep}(V)`.
+
+For an abrupt junction and diode dimension parameters :math:`\Phi_{imp}` and :math:`d_{imp}`,
+following equations hold:
+
+:math:`W_{dep}(V)=W_0(1-\frac{V}{V_{bi}})^{-\frac{1}{2}}`
+
+:math:`a_0=(\frac{\Phi^2_{imp}}{4}+\Phi_{imp}d_{imp})\epsilon\pi`,
+
+:math:`b_0=(\Phi_{imp}+d_{imp})2\epsilon\pi`,
+
+:math:`c_0=3\epsilon\pi`.
+
+User also specifies detector parameters ``v_reset`` and ``d_sub``.
+This model assumes additional fixed capacitances,
+the gain non-linearity is taken into account, it simulates the detector saturation and
+assumes that the non-linearities observed mainly come from the PN junction diode.
+
+Example of the configuration file:
+
+.. code-block:: yaml
+
+    - name: physical_non_linearity_with_saturation
+      func: pyxel.models.charge_measurement.physical_non_linearity_with_saturation
+      enabled: true
+      arguments:
+        cutoff: 2.1
+        n_donor: 3.e+15
+        n_acceptor: 1.e+18
+        phi_implant: 6.e-6
+        d_implant: 1.e-6
+        saturation_current: 0.002
+        ideality_factor: 1.34
+        v_reset: 0.
+        d_sub: 0.220
+        fixed_capacitance: 5.e-15
+        euler_points: 100
+
+.. autofunction:: pyxel.models.charge_measurement.physical_non_linearity_with_saturation
+
+.. note:: This model is specific to the :term:`CMOS` detector.
+
 .. _HxRG noise generator:
 
 HxRG noise generator

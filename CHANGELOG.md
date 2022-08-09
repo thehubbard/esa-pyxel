@@ -8,6 +8,8 @@
 ### Documentation
 
 ### Models
+* Add physical models of non-linearity. Code provided by [Thibault Pichon](https://gitlab.com/tpichon).
+  (See [!483](https://gitlab.com/esa/pyxel/-/merge_requests/483)).
 
 ### Others
 
