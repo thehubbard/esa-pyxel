@@ -4,6 +4,11 @@
 Observation mode
 ================
 
+.. figure:: ../_static/observation.png
+    :scale: 50%
+    :alt: detector
+    :align: center
+
 The observation mode of Pyxel can automatically change the value of any
 detector or model parameter to simulate an observation or make a sensitivity analysis for any parameter.
 Iterating over different start times of exposures is also possible.

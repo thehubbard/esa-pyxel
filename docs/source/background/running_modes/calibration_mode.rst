@@ -4,6 +4,11 @@
 Calibration mode
 ================
 
+.. figure:: ../_static/calibration.png
+    :scale: 50%
+    :alt: detector
+    :align: center
+
 The purpose of the Calibration mode is to find the optimal input arguments
 of models or optimal detector attributes based on a
 target dataset the models or detector behaviour shall reproduce.

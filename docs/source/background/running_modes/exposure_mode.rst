@@ -4,6 +4,11 @@
 Exposure mode
 =============
 
+.. figure:: ../_static/exposure.png
+    :scale: 50%
+    :alt: detector
+    :align: center
+
 Single readout time
 -------------------
 

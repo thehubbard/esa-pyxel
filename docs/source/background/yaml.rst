@@ -7,7 +7,7 @@ Configuration files
 The framework uses a user-friendly, structured ``YAML`` configuration file as an
 input, which defines the running mode, the detector properties, detector effect models and
 their input arguments.
-The configuration file is loaded with the function :py:func:`~pyxel.load`
+The configuration file is loaded with the function :py:func:`~pyxel.load`.
 
 Structure
 =========
