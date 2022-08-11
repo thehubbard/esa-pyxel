@@ -6,6 +6,8 @@
 ### Core
 
 ### Documentation
+* Update documentation.
+  (See [!412](https://gitlab.com/esa/pyxel/-/merge_requests/412)).
 
 ### Models
 * Add physical models of non-linearity. Code provided by [Thibault Pichon](https://gitlab.com/tpichon).
