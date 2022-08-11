@@ -4,10 +4,17 @@
 Exposure mode
 =============
 
+Pipeline is run one or more times, depending on the number of configurable readout times.
+Useful for simple simulations, quick checks, and simulating time-dependent effects. Exposure mode cannot
+be run in parallel.
+
 .. figure:: ../_static/exposure.png
     :scale: 50%
     :alt: detector
     :align: center
+
+Example of a configuration file
+===============================
 
 Single readout time
 -------------------

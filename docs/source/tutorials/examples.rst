@@ -70,3 +70,20 @@ List of Examples
 
 - `Amplifier crosstalk <https://gitlab.com/esa/pyxel-data/-/blob/master/examples/models/amplifier%20crosstalk/crosstalk.ipynb>`_
 - `Inter-pixel capacitance <https://gitlab.com/esa/pyxel-data/-/blob/master/examples/models/inter-pixel%20capacitance/ipc.ipynb>`_
+
+Generic detector pipelines
+--------------------------
+
+The Pyxel model library contains models for various types of detectors.
+Not all models can be used with all of the detector types
+and some specific models are only to be used with a single type of detector.
+For this reason and to help new users and non-experts,
+generic configuration file templates for different detectors have been included in the Pyxel Data example repository,
+together with corresponding Jupyter notebooks.
+They include detector properties and pipelines with detector-appropriate sets of models,
+pre-filled with realistic model argument values.
+They provide a good starting point for simulations of specific detectors and later customization
+or iteration with detector engineers and experts.
+The generic pipelines are now available for the following types
+of detectors: generic :term:`CCD`, generic :term:`CMOS`, Teledyne HxRG,
+and Avalanche Photo Diode (:term:`APD`) array detector based on Leonardo’s Saphira detector.

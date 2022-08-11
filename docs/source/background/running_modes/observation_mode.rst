@@ -4,6 +4,10 @@
 Observation mode
 ================
 
+Multiple exposures looping over a range of model or detector parameters. Useful for parameter
+sensitivity analysis, checks of parameter space, simulating variable astronomical sources, etc. Parallelization
+is possible in observation mode.
+
 .. figure:: ../_static/observation.png
     :scale: 50%
     :alt: detector
@@ -20,8 +24,8 @@ a stack of different Detector objects and pipelines.
 At the end, the user can plot and analyze the data
 in function of the variable parameter.
 
-Different modes
-===============
+Examples of a configuration files for different modes
+=====================================================
 
 There are three different modes of defining parameters:
 

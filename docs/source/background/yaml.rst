@@ -9,23 +9,22 @@ input, which defines the running mode, the detector properties, detector effect 
 their input arguments.
 The configuration file is loaded with the function :py:func:`~pyxel.load`.
 
+Despite the configuration file being human-readable and easy to understand,
+it is still possible to make mistakes that result in errors during the simulation.
+Therefore a configuration file validation process based on JSON schema13 is currently in development,
+which will further improve the user experience.
+
 Structure
 =========
 
-After the framework loads and validates the ``YAML`` file (with .yaml ot .yml extension),
-it creates :py:class:`~pyxel.detectors.Detector` and
-:py:class:`~pyxel.pipelines.DetectionPipeline` object(s) based on
-the ``YAML`` file with all the information needed for the framework to run
-the simulation.
+The file consists of three separate parts, each representing a class in Pyxel architecture.
+They define the running mode, the detector properties, and the pipeline - the models the user wants to apply.
+When the YAML configuration file is loaded, the nested dictionaries, lists, numbers,
+and strings are used to directly initialize the Pyxel classes. See examples below.
 
 The ``YAML`` configuration file of Pyxel is structured
 similarly to the architecture, so the Pyxel class hierarchy can be
 recognized in the group hierarchy of ``YAML`` files.
-
-The groups and subgroups of the ``YAML`` file create objects from the
-classes defined with their *class* arguments. During this process,
-classes get all the parameters as input arguments defined within the group
-or subgroup.
 
 Running mode
 ------------
@@ -33,20 +32,57 @@ Running mode
 In the beginning of the configuration file, the user should define
 the running mode. This can be :ref:`exposure <exposure_mode>`,
 :ref:`observation <observation_mode>`, :ref:`calibration <calibration_mode>`.
-For details, see :ref:`running_modes`.
+For details, see :ref:`running_modes`. Example for exposure mode can be seen below.
+
+.. code-block:: yaml
+
+    exposure:
+
+      readout:
+        times: [1., 5., 7.]
+        non_destructive: false
+
+      outputs:
+        output_folder: "output"
+        save_data_to_file:
+          - detector.image.array: ["fits"]
+        save_exposure_data:
+          - dataset: ["nc"]
 
 Detector
 --------
 
 All arguments of Detector subclasses (:py:class:`~pyxel.detectors.Geometry`,
-:py:class:`~pyxel.detectors.Characteristics`, :py:class:`~pyxel.detectors.Environment`,
-:py:class:`~pyxel.detectors.Material` and :py:class:`~pyxel.detectors.Optics`) are defined here.
+:py:class:`~pyxel.detectors.Characteristics`, :py:class:`~pyxel.detectors.Environment`) are defined here.
 For details, see :ref:`detectors`.
+
+.. code-block:: yaml
+
+    ccd_detector:
+
+      geometry:
+
+        row: 512
+        col: 512
+        total_thickness: 40.
+        pixel_vert_size: 15.
+        pixel_horz_size: 15.
+
+      environment:
+        temperature: 80
+
+      characteristics:
+        quantum_efficiency: 1.
+        charge_to_volt_conversion: 5.e-6
+        pre_amplification: 5.
+        adc_bit_resolution: 16
+        adc_voltage_range: [0.,5.]
+        full_well_capacity: 90000
 
 Pipeline
 --------
 
-It contains the model levels as subgroups
+It contains the model functions grouped into model groups
 (*photon_generation*, *optics*, *charge_generation*, etc.).
 For details, see :ref:`pipeline`.
 
@@ -70,11 +106,40 @@ as the execution order is defined here!
 * **readout_electronics**
 
 
-Models need a *name* which defines the path to the model wrapper
-function. Models also have an *enabled* boolean switch, where the user
+Models need a ``name`` which defines the path to the model wrapper
+function. Models also have an ``enabled`` boolean switch, where the user
 can enable or disable the given model. The optional and compulsory
 arguments of the model functions have to be listed inside the
-*arguments*. For details, see :ref:`models`.
+``arguments``. For details, see :ref:`models`.
+
+.. code-block:: yaml
+
+    pipeline:
+
+      # -> photon
+      photon_generation:
+
+        - name: illumination
+          func: pyxel.models.photon_generation.illumination
+          enabled: true
+          arguments:
+              level: 100.
+              time_scale: 1.
+
+        - name: shot_noise
+          func: pyxel.models.photon_generation.shot_noise
+          enabled: true
+
+      # photon -> photon
+      optics:
+
+      # photon -> charge
+      charge_generation:
+        - name: photoelectrons
+          func: pyxel.models.charge_generation.simple_conversion
+          enabled: true
+
+   ...
 
 YAML basic syntax
 =================

@@ -4,24 +4,31 @@
 Calibration mode
 ================
 
+The purpose of the this mode is to find the optimal input arguments
+of models or optimal detector attributes based on a
+target dataset the models or detector behaviour shall reproduce.
+It is useful for calibrating models,
+optimizing instrument performance or retrieving detector physical properties from measurements.
+The optimization algorithm and optimised figure of merit are configurable.
+The built-in optimization algorithms are advanced genetic algorithms based on the Pygmo package :cite:p:`pygmo`
+ideal for wide/degenerate parameter space and non-linear problems.
+It must be run in parallel since the number of pipelines that are run each time is very high
+
 .. figure:: ../_static/calibration.png
     :scale: 50%
     :alt: detector
     :align: center
 
-The purpose of the Calibration mode is to find the optimal input arguments
-of models or optimal detector attributes based on a
-target dataset the models or detector behaviour shall reproduce.
+The architecture contains a data
+comparator function to compare simulated and measured data, then via a
+feedback loop, a function readjusts the model parameters (this function
+can be user defined).
+The Detection pipelines are re-run with the modified
+Detector objects. This iteration continues until reaching the convergence,
+i.e. we get a calibrated model fitted to the real, measured dataset.
 
-..
-    The architecture contains a data
-    comparator function to compare simulated and measured data, then via a
-    feedback loop, a function readjusts the model parameters (this function
-    can be user defined).
-    The Detection pipelines are re-run with the modified
-    Detector objects. This iteration continues until reaching the convergence,
-    i.e. we get a calibrated model fitted to the real, measured dataset.
-
+Example of a configuration file
+===============================
 
 .. code-block:: yaml
 
