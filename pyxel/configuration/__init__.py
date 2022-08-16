@@ -10,3 +10,4 @@
 
 # flake8: noqa
 from .configuration import load, loads, Configuration, save
+from .configuration import _build_configuration
