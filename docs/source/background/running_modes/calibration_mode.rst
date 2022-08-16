@@ -12,7 +12,7 @@ optimizing instrument performance or retrieving detector physical properties fro
 The optimization algorithm and optimised figure of merit are configurable.
 The built-in optimization algorithms are advanced genetic algorithms based on the Pygmo package :cite:p:`pygmo`
 ideal for wide/degenerate parameter space and non-linear problems.
-It must be run in parallel since the number of pipelines that are run each time is very high
+It must be run in parallel since the number of pipelines that are run each time is very high.
 
 .. figure:: ../_static/calibration.png
     :scale: 50%
