@@ -120,7 +120,7 @@ def load(yaml_file: t.Union[str, Path]) -> Configuration:
     with filename.open("r") as file_obj:
         dct = load_yaml(file_obj)
 
-    return build_configuration(dct)
+    return _build_configuration(dct)
 
 
 def loads(yaml_string: str) -> Configuration:
@@ -135,7 +135,7 @@ def loads(yaml_string: str) -> Configuration:
     configuration: Configuration
     """
     dct = load_yaml(yaml_string)
-    return build_configuration(dct)
+    return _build_configuration(dct)
 
 
 def load_yaml(stream: t.Union[str, t.IO]) -> t.Any:
@@ -581,7 +581,7 @@ def to_pipeline(dct: dict) -> DetectionPipeline:
     return DetectionPipeline(**dct)
 
 
-def build_configuration(dct: dict) -> Configuration:
+def _build_configuration(dct: dict) -> Configuration:
     """Create a Configuration class from a dictionary.
 
     Parameters
