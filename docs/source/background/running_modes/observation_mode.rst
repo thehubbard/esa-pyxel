@@ -24,8 +24,8 @@ a stack of different Detector objects and pipelines.
 At the end, the user can plot and analyze the data
 in function of the variable parameter.
 
-Examples of a configuration files for different modes
-=====================================================
+Examples of configuration files for different modes
+===================================================
 
 There are three different modes of defining parameters:
 
