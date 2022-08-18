@@ -83,7 +83,7 @@ Model reference in the YAML config file
       # Small comment on what it does
       _LOCATION:
         - name: _TEMPLATE
-          func: pyxel.models._LOCATION.model
+          func: pyxel.models._LOCATION._TEMPLATE.model
           enabled: true
           arguments:
             arg1: data/fits/Pleiades_HST.fits
