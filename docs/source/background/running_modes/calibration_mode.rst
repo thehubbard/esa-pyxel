@@ -4,7 +4,7 @@
 Calibration mode
 ================
 
-The purpose of the this mode is to find the optimal input arguments
+The purpose of calibration mode is to find the optimal input arguments
 of models or optimal detector attributes based on a
 target dataset the models or detector behaviour shall reproduce.
 It is useful for calibrating models,
