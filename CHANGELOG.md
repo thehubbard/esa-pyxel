@@ -15,6 +15,8 @@
 * Exposed configuration.build_configuration to the developer API as a private function.  
   First contribution by [Kieran Leschinski](https://gitlab.com/kdleschinski).
   (See [!494](https://gitlab.com/esa/pyxel/-/merge_requests/494)).
+* Function create model not working properly.
+  (See [!495](https://gitlab.com/esa/pyxel/-/merge_requests/495)).
 
 ## version 1.2.1 / 2022-08-05
 

@@ -44,7 +44,7 @@ def create_model(newmodel: str) -> None:
     )
 
     try:
-        os.mkdir(dest)
+        os.makedirs(dest, exist_ok=True)
         # Replacing all of template in filenames and directories by model_name
         for dirpath, subdirs, files in os.walk(src):
             for x in files:
@@ -73,13 +73,15 @@ def create_model(newmodel: str) -> None:
         print("Module " + model_name + " created in " + path + ".")
     except FileExistsError:
         logging.info(f"{dest} already exists, folder not created")
+        raise
     # Directories are the same
     except shutil.Error as e:
         logging.critical("Error while duplicating " + template_string + ": %s" % e)
+        raise
     # Any error saying that the directory doesn't exist
     except OSError as e:
         logging.critical(model_name + " not created. Error: %s" % e)
-    return None
+        raise
 
 
 def get_name_and_location(newmodel: str) -> t.Tuple[str, str]:
