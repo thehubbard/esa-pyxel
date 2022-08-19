@@ -8,7 +8,7 @@ The core algorithm of the architecture is the Detection pipeline allowing to
 host any type of :ref:`models <models_explanation>` in an arbitrary number.
 It is an instance of :py:class:`~pyxel.pipelines.DetectionPipeline` class.
 
-Inside the pipeline the :ref:`models <models_explanation>` are grouped into 7 different
+Inside the pipeline the :ref:`models <models_explanation>` are grouped into different
 levels per detector type imitating the working principle of the detector, for example
 in case of a :term:`CCD` the model levels are :ref:`photon generation <photon_generation>`,
 :ref:`optics <optical>`, :ref:`charge <charge_transfer>`, :ref:`generation <charge_generation>`,
@@ -23,8 +23,8 @@ and modify the same :py:class:`~pyxel.detectors.Detector` object one after anoth
 At the end, the pipeline returns the :py:class:`~pyxel.detectors.Detector` object
 as an output ready to generate output files from results.
 
-.. image:: _static/pyxel_ccd_pipeline.png
-    :scale: 20%
+.. image:: _static/pipeline.png
+    :scale: 50%
     :alt: ccd_pipeline
     :align: center
 
@@ -53,7 +53,7 @@ also used and modified further by the next models in the pipeline.
 Model groups
 ------------
 
-Models are grouped into 7 model levels per detector type according to
+Models are grouped into multiple model levels per detector type according to
 which object of the :py:class:`~pyxel.detectors.Detector` object is used or modified by
 the models. These levels correspond roughly to the detector fundamental
 functions.
@@ -78,24 +78,41 @@ or locally (on pixel level or only for a specific detector area).
     :alt: models
     :align: center
 
-All the 8 model levels, which are imitating the physical working principles of imaging detectors. They were
+All the model levels for :term:`CCD` and :term:`CMOS` detectors,
+which are imitating the physical working principles of imaging detectors. They were
 grouped according to which physics data storing objects are modified by them. Note that 2 out of the 8 levels are
 specific to a single detector type.
 
+Model functions
+---------------
 
-Model inputs
-------------
-
-Models functions have at least one compulsory input argument,
-which is either a general, a :py:class:`~pyxel.detectors.CCD` or
+A model function is a function that takes in the :py:class:`~pyxel.detectors.Detector` object as one of the arguments
+and edits the data stored in it.
+The :py:class:`~pyxel.detectors.Detector` object is the only compulsory input argument,
+and can be of different types,  for example a :py:class:`~pyxel.detectors.CCD` or
 a :py:class:`~pyxel.detectors.CMOS` type :py:class:`~pyxel.detectors.Detector` object,
-depending on what the model is supposed to simulate:
-a general (e.g. cosmic rays),
-a :term:`CCD` (e.g. :term:`CTI`) or a :term:`CMOS` (e.g. Alternating Column Noise) specific
-detector effect.
-
+depending on what the model is supposed to simulate.
 Any other (optional) input arguments can be defined for the model as well,
 which will be loaded from the :ref:`YAML <yaml>` file automatically.
+Users can change model parameters or enable/disable them by interacting with the configuration file.
+For example, a model function that multiplies the photon array with the input argument would look like this in the code:
+
+.. code-block:: python
+
+    from pyxel.detectors import Detector
+
+
+    def my_model_function(detector: Detector, arg: int = 0):
+        """This is my model that will multiply pixel array with the argument.
+
+        Parameters
+        ----------
+        detector
+        arg
+        """
+        detector.photon.array = detector.photon.array * arg
+        return None
+
 
 Adding a new model
 ------------------

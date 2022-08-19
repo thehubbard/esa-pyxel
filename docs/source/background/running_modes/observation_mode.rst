@@ -4,6 +4,15 @@
 Observation mode
 ================
 
+Multiple exposures looping over a range of model or detector parameters. Useful for parameter
+sensitivity analysis, checks of parameter space, simulating variable astronomical sources, etc. Parallelization
+is possible in observation mode.
+
+.. figure:: ../_static/observation.png
+    :scale: 50%
+    :alt: detector
+    :align: center
+
 The observation mode of Pyxel can automatically change the value of any
 detector or model parameter to simulate an observation or make a sensitivity analysis for any parameter.
 Iterating over different start times of exposures is also possible.
@@ -15,8 +24,8 @@ a stack of different Detector objects and pipelines.
 At the end, the user can plot and analyze the data
 in function of the variable parameter.
 
-Different modes
-===============
+Examples of configuration files for different modes
+===================================================
 
 There are three different modes of defining parameters:
 
@@ -31,12 +40,15 @@ Sequential
 
     mode: sequential
     parameters:
-      - key:      pipeline.charge_generation.tars.arguments.particle_number
+      - key:      pipeline.charge_generation.cosmix.arguments.particles_per_second
         values:   [1, 2, 3]
         enabled:  true
       - key:      pipeline.photon_generation.illumination.arguments.level
         values:   range(0, 300, 100)
         enabled:  true
+
+    outputs:
+      output_folder:  'outputs'
 
 | The yaml file will start 6 runs in this order:
 | number=1, number=2, number=3, level=0, level=100, level=200
@@ -55,12 +67,15 @@ Product
 
     mode: product
     parameters:
-      - key:      pipeline.charge_generation.tars.arguments.particle_number
+      - key:      pipeline.charge_generation.cosmix.arguments.particles_per_second
         values:   [1, 2, 3]
         enabled:  true
       - key:      pipeline.photon_generation.illumination.arguments.level
         values:   range(0, 300, 100)
         enabled:  true
+
+    outputs:
+      output_folder:  'outputs'
 
 | The yaml file will start 9 runs in this order:
 | (number=1, level=0), (number=1, level=100), (number=1, level=200),
@@ -96,6 +111,9 @@ Custom
       - key:      detector.environment.temperature
         values:   _
 
+    outputs:
+      output_folder:  'outputs'
+
 The parameter values (int, float or str) indicated with with '_' character,
 and all are read and changed in parallel from an ASCII file defined
 with ``from_file``.
@@ -103,6 +121,34 @@ with ``from_file``.
 Can be used for example to read results of calibration running mode
 containing the champion parameter set for each generation, and create one
 output fits image for each generation to see the evolution.
+
+Outputs
+=======
+
+User can save on disk contents of the detector (``pixel``,``signal``, and ``image`` arrays)
+for every run of the pipeline - every parameter combination.
+User can also save at the end of the simulation the ``dataset`` containing all the results,
+as well as ``logs`` and ``parameters`` in NetCDF format.
+
+.. code-block:: yaml
+
+  # YAML config file for Observation mode (product)
+
+  observation:
+
+    parameters:
+      - key:      pipeline.photon_generation.illumination.arguments.level
+        values:   range(0, 300, 100)
+        enabled:  true
+
+    outputs:
+      output_folder:  'outputs'
+      save_data_to_file:
+        - detector.image.array:   ['fits']  # saved for every pipeline/parameter
+      save_observation_data:  # saved at the end
+        - dataset: ['nc']  # NetCDF
+        - logs: ['nc']  # NetCDF
+        - parameters: ['nc']  # NetCDF
 
 Using parallel computing
 ========================

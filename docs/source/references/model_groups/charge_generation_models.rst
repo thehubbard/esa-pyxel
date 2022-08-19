@@ -152,7 +152,7 @@ Example of the configuration file:
         running_mode: "stepsize"
         particle_type: proton
         initial_energy: 100.          # MeV
-        particle_number: 100
+        particles_per_second: 100
         incident_angles:
         starting_position:
         spectrum_file: 'data/proton_L2_solarMax_11mm_Shielding.txt'

@@ -38,6 +38,9 @@ Available models
     * :ref:`Simple charge measurement`
     * :ref:`Output node noise CMOS`
     * :ref:`Non-linearity (polynomial)`
+    * :ref:`Simple physical non-linearity`
+    * :ref:`Physical non-linearity`
+    * :ref:`Physical non-linearity with saturation`
     * :ref:`HxRG noise generator`
 * Readout electronics:
     * :ref:`Simple ADC`

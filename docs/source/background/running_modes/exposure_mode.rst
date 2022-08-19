@@ -4,6 +4,18 @@
 Exposure mode
 =============
 
+Pipeline is run one or more times, depending on the number of configurable readout times.
+Useful for simple simulations, quick checks, and simulating time-dependent effects. Exposure mode cannot
+be run in parallel.
+
+.. figure:: ../_static/exposure.png
+    :scale: 50%
+    :alt: detector
+    :align: center
+
+Example of a configuration file
+===============================
+
 Single readout time
 -------------------
 
@@ -14,10 +26,9 @@ If multiple readout times are not specified, the default readout time is 1 secon
 .. code-block:: yaml
 
     exposure:
-      outputs:
-        output_folder: 'output'
 
-..
+      outputs:
+        output_folder: "output"
 
 Multiple readout times (time-domain simulation)
 -----------------------------------------------
@@ -40,3 +51,21 @@ and emptying the data at each iteration of the detector through the pipeline.
 
     outputs:
       output_folder: 'output'
+
+Outputs
+=======
+
+User can save on disk contents of the detector (``pixel``,``signal``, and ``image`` arrays)
+for every run of the pipeline - every readout time.
+User can also save at the end of the simulation the ``dataset`` containing all the results.
+
+.. code-block:: yaml
+
+    exposure:
+
+      outputs:
+        output_folder: "output"
+        save_data_to_file:
+          - detector.image.array:   ['fits', 'jpg', 'npy']
+        save_exposure_data:
+          - dataset: ['nc']  # NetCDF
