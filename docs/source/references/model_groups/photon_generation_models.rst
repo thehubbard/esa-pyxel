@@ -16,7 +16,7 @@ so number of photons per pixel area per second. Time scale of the incoming flux 
 Load image
 ----------
 
-:guilabel:`Photon` 🠆 :guilabel:`Photon`
+:guilabel:`Photon` → :guilabel:`Photon`
 
 With this model you can add photons to :py:class:`~pyxel.detectors.Detector` by loading an image from a file.
 Accepted file formats are ``.npy``, ``.fits``, ``.txt``, ``.data``, ``.jpg``, ``.jpeg``, ``.bmp``,
@@ -52,7 +52,7 @@ Example of the configuration file:
 Simple illumination
 -------------------
 
-:guilabel:`Photon` 🠆 :guilabel:`Photon`
+:guilabel:`Photon` → :guilabel:`Photon`
 
 With this model you can create different simple photon distributions: uniform, elliptical/circular
 or rectangular, by setting the argument ``type``. The calculated photon count will be added to the
@@ -84,7 +84,7 @@ Example of the configuration file for a circular object:
 Stripe pattern
 --------------
 
-:guilabel:`Photon` 🠆 :guilabel:`Photon`
+:guilabel:`Photon` → :guilabel:`Photon`
 
 With this model you can add a two-dimensional square signal - a stripe pattern
 to the :py:class:`~pyxel.data_structure.Photon` array. User can specify amplitude with argument ``level``,
@@ -112,7 +112,7 @@ Example of the configuration file:
 Shot noise
 ----------
 
-:guilabel:`Photon` 🠆 :guilabel:`Photon`
+:guilabel:`Photon` → :guilabel:`Photon`
 
 Use this model to add shot noise to the :py:class:`~pyxel.data_structure.Photon` array.
 By default (no arguments provided), the model uses the Poisson distribution (``numpy.random.poisson``).

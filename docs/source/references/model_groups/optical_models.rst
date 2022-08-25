@@ -12,7 +12,7 @@ Optical models
 Physical Optics Propagation in PYthon (POPPY)
 =============================================
 
-:guilabel:`Photon` 🠆 :guilabel:`Photon`
+:guilabel:`Photon` → :guilabel:`Photon`
 
 POPPY (Physical Optics Propagation in Python) model wrapper.
 
@@ -69,7 +69,7 @@ Example of the configuration file:
 Load PSF
 ========
 
-:guilabel:`Photon` 🠆 :guilabel:`Photon`
+:guilabel:`Photon` → :guilabel:`Photon`
 
 With this model you can load a Point Spread Function (:term:`PSF`) from a file.
 The model will convolve the :py:class:`~pyxel.data_structure.Photon` array

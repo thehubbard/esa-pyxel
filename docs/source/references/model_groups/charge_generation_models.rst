@@ -12,7 +12,7 @@ Charge Generation models
 Simple photoconversion
 ======================
 
-:guilabel:`Photon` 🠆 :guilabel:`Charge`
+:guilabel:`Photon` → :guilabel:`Charge`
 
 With this model you can create and add charge to :py:class:`~pyxel.detectors.Detector` via photoelectric effect
 by converting photons in charge.
@@ -41,7 +41,7 @@ Basic example of YAML configuration model:
 Conversion with custom QE map
 =============================
 
-:guilabel:`Photon` 🠆 :guilabel:`Charge`
+:guilabel:`Photon` → :guilabel:`Charge`
 
 With this model you can create and add charge to :py:class:`~pyxel.detectors.Detector` via photoelectric effect
 by converting photons in charge.
@@ -73,7 +73,7 @@ Basic example of YAML configuration model:
 Load charge
 ===========
 
-:guilabel:`Charge` 🠆 :guilabel:`Charge`
+:guilabel:`Charge` → :guilabel:`Charge`
 
 With this model you can add charge to :py:class:`~pyxel.detectors.Detector` by loading charge values from a file.
 Accepted file formats are ``.npy``, ``.fits``, ``.txt``, ``.data``, ``.jpg``, ``.jpeg``, ``.bmp``,
@@ -101,7 +101,7 @@ Basic example of YAML configuration model:
 Charge injection
 ================
 
-:guilabel:`Charge` 🠆 :guilabel:`Charge`
+:guilabel:`Charge` → :guilabel:`Charge`
 
 With this model you can inject arbitrary charge block into rows of a :py:class:`~pyxel.detectors.CCD` detector.
 Charge will be injected uniformly from row number `block_start` to row number `block_end`.
@@ -127,7 +127,7 @@ Example of YAML configuration model:
 CosmiX cosmic ray model
 =======================
 
-:guilabel:`Charge` 🠆 :guilabel:`Charge`
+:guilabel:`Charge` → :guilabel:`Charge`
 
 A cosmic ray event simulator was the first model added to Pyxel.
 Initially it was a simple, semi-analytical model in Fortran using the stopping
@@ -165,7 +165,7 @@ Example of the configuration file:
 Dark current
 ============
 
-:guilabel:`Charge` 🠆 :guilabel:`Charge`
+:guilabel:`Charge` → :guilabel:`Charge`
 
 With this model you can add a temperature dependent dark current to charge data,
 stored in the a :py:class:`~pyxel.detectors.Detector` object.
@@ -220,7 +220,7 @@ Example of the configuration file:
 Dark current rule07
 ===================
 
-:guilabel:`Charge` 🠆 :guilabel:`Charge`
+:guilabel:`Charge` → :guilabel:`Charge`
 
 With this model you can add dark current to :py:class:`~pyxel.data_structure.Charge` following the
 model described in :cite:p:`Tennant2008MBEHT`.
@@ -250,7 +250,7 @@ Example of the configuration file:
 Simple dark current
 ===================
 
-:guilabel:`Charge` 🠆 :guilabel:`Charge`
+:guilabel:`Charge` → :guilabel:`Charge`
 
 With this model you can add dark current to a :py:class:`~pyxel.detectors.Detector` object.
 
@@ -271,7 +271,7 @@ Example of the configuration file:
 APD gain
 ========
 
-:guilabel:`Charge` 🠆 :guilabel:`Charge`
+:guilabel:`Charge` → :guilabel:`Charge`
 
 With this model you can apply APD gain to the a :py:class:`~pyxel.detectors.APD` object.
 Model simply multiplies the values of charge with the avalanche gain,
@@ -294,7 +294,7 @@ Example of the configuration file:
 Dark current Saphira
 ====================
 
-:guilabel:`Charge` 🠆 :guilabel:`Charge`
+:guilabel:`Charge` → :guilabel:`Charge`
 
 With this empirical model you can add dark current to a :py:class:`~pyxel.detectors.APD` object.
 The model is an approximation the dark current vs. gain vs. temp plot in :cite:p:`2019:baker`, Fig. 3.
