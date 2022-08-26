@@ -33,6 +33,15 @@ Other arguments include ``max_electron_volume``, ``transfer_period``,
 ``charge injection`` for parallel mode and ``full_well_capacity`` to override the one set in
 detector :py:class:`~pyxel.detectors.Characteristics`.
 
+.. figure:: _static/cdm.png
+    :scale: 50%
+    :alt: Poppy
+    :align: center
+
+    CDM (Charge Distortion Model)
+
+
+
 Example of the configuration file.
 
 .. code-block:: yaml
