@@ -8,7 +8,7 @@ Introduction
 Python software framework designed
 to host and pipeline models (analytical, numerical, statistical) simulating
 different types of detector effects on images produced by Charge-Coupled
-Devices (:term:`CCD`), Monolithic, and Hybrid** :term:`CMOS` **imaging sensors.**
+Devices (** :term:`CCD` **), Monolithic, and Hybrid** :term:`CMOS` **imaging sensors.**
 
 Users can provide one or more input images to Pyxel, set the detector and
 model parameters via a user interface (configuration file)

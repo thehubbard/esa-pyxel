@@ -26,7 +26,7 @@ def load_image(
     time_scale: float = 1.0,
     bit_resolution: t.Optional[int] = None,
 ) -> None:
-    r"""Load FITS file as a numpy array and add to the detector as input image.
+    r"""Load :term:`FITS` file as a numpy array and add to the detector as input image.
 
     Parameters
     ----------

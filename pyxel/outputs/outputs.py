@@ -79,7 +79,7 @@ class Outputs:
         with_auto_suffix: bool = True,
         run_number: t.Optional[int] = None,
     ) -> Path:
-        """Write array to FITS file."""
+        """Write array to :term:`FITS` file."""
         name = str(name).replace(".", "_")
 
         if with_auto_suffix:
