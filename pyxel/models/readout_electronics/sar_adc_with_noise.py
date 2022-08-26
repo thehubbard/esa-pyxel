@@ -141,20 +141,23 @@ def sar_adc_with_noise(
     A potential sources of digitization issues can be modeled by adding
     voltage fluctuations to :math:`V_{REF}` at each stage of the process.
 
-    These fluctuations can be represented by the vectors :math:`strength` and :math:`noise`.
+    These fluctuations can be represented by the vectors :math:`\mathit{strength}` and :math:`\mathit{noise}`.
     For a 8-bits :term:`SAR` :term:`ADC`, we have
-    :math:`strength = \begin{pmatrix}strength_{bit7}\\ \vdots\\ strength_{bit0}\end{pmatrix}`
+    :math:`\mathit{strength} = \begin{pmatrix}\mathit{strength}_\mathit{bit7}\\ \vdots\\
+    \mathit{strength}_\mathit{bit0}\end{pmatrix}`
     and
-    :math:`noise = \begin{pmatrix}noise_{bit7}\\ \vdots\\ noise_{bit0}\end{pmatrix}`.
+    :math:`noise = \begin{pmatrix}\mathit{noise}_\mathit{bit7}\\ \vdots\\ \mathit{noise}_\mathit{bit0}\end{pmatrix}`.
 
     The fluctuations at each stage of the process (in this case 8 stages) are represented by
-    the vector :math:`V^{perturbated}_{REF}` with
+    the vector :math:`V^\mathit{perturbated}_\mathit{REF}` with
 
     .. math::
        \begin{matrix}
-       V^{perturbated}_{{REF}_{bit7}}  = V_{REF} \left(1+np.random.normal(strength_{bit7}, noise_{bit7})\right)\\
+       V^\mathit{perturbated}_{\mathit{REF}_\mathit{bit7}} = V_\mathit{REF}
+       \left(1 + \mathit{np.random.normal}(\mathit{strength}_\mathit{bit7}, \mathit{noise}_\mathit{bit7})\right)\\
        \cdots\\
-       V^{perturbated}_{{REF}_{bit0}}  = V_{REF} \left(1 + np.random.normal(strength_{bit0}, noise_{bit0})\right)
+       V^\mathit{perturbated}_{\mathit{REF}_\mathit{bit0}} = V_\mathit{REF}
+       \left(1 + \mathit{np.random.normal}(\mathit{strength}_\mathit{bit0}, \mathit{noise}_\mathit{bit0})\right)
        \end{matrix}
     """
     min_volt, max_volt = detector.characteristics.adc_voltage_range
