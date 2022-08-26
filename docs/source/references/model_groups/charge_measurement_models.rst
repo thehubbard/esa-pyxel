@@ -357,6 +357,19 @@ The model can simulate noise for HxRG detectors of
 Teledyne Imaging Sensors with and without the SIDECAR ASIC IR array
 controller.
 
+* Developed by: Bernard J. Rauscher, NASA
+* Developed for: James Webb Space Telescope
+* Site: https://jwst.nasa.gov/publications.html
+
+
+.. figure:: _static/nghxrg.png
+    :scale: 50%
+    :alt: nghxrg
+    :align: center
+
+    ngHxRG Noise Generator
+
+
 Example of the configuration file:
 
 .. code-block:: yaml
