@@ -140,6 +140,16 @@ With this model you can add the effect of cosmic rays to the :py:class:`~pyxel.d
 See the documentation below for descriptions of parameters.
 CosmiX model is described in detail in :cite:p:`2020:cosmix`.
 
+* Developed by: David Lucsanyi, ESA
+
+.. figure:: _static/cosmix.png
+    :scale: 50%
+    :alt: Poppy
+    :align: center
+
+    CosmiX cosmix ray model
+
+
 Example of the configuration file:
 
 .. code-block:: yaml
