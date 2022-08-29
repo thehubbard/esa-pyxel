@@ -35,6 +35,9 @@ List of Acronyms
     ESO
       European South Observatory.
 
+    FITS
+      Flexible Image Transport System.
+
     HDF5
       Hierarchical Data Format.
 

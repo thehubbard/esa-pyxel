@@ -23,3 +23,5 @@ which are grouped into different model groups, levels imitating the working prin
     :scale: 40%
     :alt: architecture
     :align: center
+
+    Detection :ref:`Pipeline <pipeline>` and :ref:`Detector object <detectors>` of Pyxel

@@ -17,7 +17,7 @@ A charge collection model is necessary to first convert from charge data stored 
 Simple collection
 =================
 
-:guilabel:`Charge` 🠆 :guilabel:`Pixel`
+:guilabel:`Charge` → :guilabel:`Pixel`
 
 Simple collection model is the simplest model of charge collection and
 necessary to fill up :py:class:`~pyxel.data_structure.Pixel` array when no other collection model is used.
@@ -42,7 +42,7 @@ Example of YAML configuration model:
 Simple full well
 ================
 
-:guilabel:`Pixel` 🠆 :guilabel:`Pixel`
+:guilabel:`Pixel` → :guilabel:`Pixel`
 
 This model can be used to limit the amount of charge in :py:class:`~pyxel.data_structure.Pixel` array
 due to full well capacity. Values will be clipped to the value of the full well capacity.
@@ -66,7 +66,7 @@ Example of the configuration file:
 Fixed pattern noise
 ===================
 
-:guilabel:`Pixel` 🠆 :guilabel:`Pixel`
+:guilabel:`Pixel` → :guilabel:`Pixel`
 
 With this model you can multiply :py:class:`~pyxel.data_structure.Pixel` array with
 fixed pattern noise caused by pixel non-uniformity during charge collection.
@@ -94,7 +94,7 @@ Basic example of the configuration file:
 Inter-pixel capacitance
 =======================
 
-:guilabel:`Pixel` 🠆 :guilabel:`Pixel`
+:guilabel:`Pixel` → :guilabel:`Pixel`
 
 This model can be used to apply inter-pixel capacitance to :py:class:`~pyxel.data_structure.Pixel` array.
 When there is IPC, the signal read out on any pixel is affected by the signal in neighboring pixels.
@@ -138,7 +138,7 @@ Example of the configuration file:
 Simple Persistence
 ==================
 
-:guilabel:`Pixel` 🠆 :guilabel:`Pixel`
+:guilabel:`Pixel` → :guilabel:`Pixel`
 
 With this model you can simulate the effect of persistence changing :py:class:`~pyxel.data_structure.Pixel` array.
 The simple model takes as input a list of trap time constants together with a list of trap densities
@@ -170,7 +170,7 @@ Example of the configuration file:
 Persistence
 ===========
 
-:guilabel:`Pixel` 🠆 :guilabel:`Pixel`
+:guilabel:`Pixel` → :guilabel:`Pixel`
 
 With this model you can simulate the effect of persistence changing :py:class:`~pyxel.data_structure.Pixel` array.
 The more advanced model takes as input a list of trap time constants together with a list of trap proportions.

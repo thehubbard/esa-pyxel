@@ -354,7 +354,7 @@ def calc_psf(
 
     Returns
     -------
-    Sequence of FITS and sequence of Wavefront
+    Sequence of :term:`FITS` and sequence of Wavefront
         Tuple of lists containing the psf and intermediate wavefronts.
     """
     if not WITH_POPPY:

@@ -6,9 +6,9 @@ Running modes
 
 There are three running modes in Pyxel:
 
-- **Exposure mode**: simulation of a single exposure, at a single or with incrementing readout times (quick look/ health check, simulation of non-destructive readout mode and time-dependent effects),
-- **Observation mode**: multiple exposure pipelines looping over a range of model or detector parameters (sensitivity analysis),
-- **Calibration mode**: optimize model or detector parameters to fit target data sets using a user-defined fitness function/figure of merit (model fitting, instrument optimization),
+- :ref:`exposure_mode`: simulation of a single exposure, at a single or with incrementing readout times (quick look/ health check, simulation of non-destructive readout mode and time-dependent effects),
+- :ref:`observation_mode`: multiple exposure pipelines looping over a range of model or detector parameters (sensitivity analysis),
+- :ref:`calibration_mode`: optimize model or detector parameters to fit target data sets using a user-defined fitness function/figure of merit (model fitting, instrument optimization),
 
 Results for all three running modes have the form of multidimensional datasets,
 provided by the Python library `Xarray <https://docs.xarray.dev/en/stable/>`_ :cite:p:`xarray`.

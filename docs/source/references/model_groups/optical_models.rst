@@ -12,17 +12,31 @@ Optical models
 Physical Optics Propagation in PYthon (POPPY)
 =============================================
 
-:guilabel:`Photon` 🠆 :guilabel:`Photon`
+:guilabel:`Photon` → :guilabel:`Photon`
 
-POPPY (Physical Optics Propagation in Python) model wrapper.
+POPPY (**P**\ hysical **O**\ ptics **P**\ ropagation in **PY**\ thon) model wrapper.
 
-It calculates the optical Point Spread Function of an optical system and applies the convolution.
+POPPY :cite:p:`10.1117/12.925230` simulated physical optical propagation including diffraction.
+It implements a flexible framework for modeling Fraunhofer and Fresnel diffraction and point spread function formation,
+particularly in the context of astronomical telescopes.
 
-Documentation:
-https://poppy-optics.readthedocs.io
+POPPY calculates the optical Point Spread Function of an optical system and applies the convolution.
+
+* Developed by: Marshall Perrin et al., STScI
+* Developed for: James Webb Space Telescope
+* Documentation: https://poppy-optics.readthedocs.io
+* Project link: https://github.com/spacetelescope/poppy
+
 
 See details about POPPY Optical Element classes:
 https://poppy-optics.readthedocs.io/en/stable/available_optics.html
+
+.. figure:: _static/poppy.png
+    :scale: 70%
+    :alt: Poppy
+    :align: center
+
+    POPPY (Physical Optics Propagation in Python), Credit: STScI
 
 Supported optical elements:
 
@@ -69,7 +83,7 @@ Example of the configuration file:
 Load PSF
 ========
 
-:guilabel:`Photon` 🠆 :guilabel:`Photon`
+:guilabel:`Photon` → :guilabel:`Photon`
 
 With this model you can load a Point Spread Function (:term:`PSF`) from a file.
 The model will convolve the :py:class:`~pyxel.data_structure.Photon` array

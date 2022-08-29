@@ -12,7 +12,7 @@ Charge Measurement models
 DC offset
 =========
 
-:guilabel:`Signal` 🠆 :guilabel:`Signal`
+:guilabel:`Signal` → :guilabel:`Signal`
 
 Add a DC offset to signal array of detector.
 
@@ -31,7 +31,7 @@ Add a DC offset to signal array of detector.
 Output pixel reset voltage APD
 ==============================
 
-:guilabel:`Signal` 🠆 :guilabel:`Signal`
+:guilabel:`Signal` → :guilabel:`Signal`
 
 Add output pixel reset voltage to the signal array of the :term:`APD` detector.
 
@@ -52,7 +52,7 @@ Add output pixel reset voltage to the signal array of the :term:`APD` detector.
 kTC reset noise
 ===============
 
-:guilabel:`Signal` 🠆 :guilabel:`Signal`
+:guilabel:`Signal` → :guilabel:`Signal`
 
 Add kTC reset noise to the signal array of the detector object.
 
@@ -73,7 +73,7 @@ Add kTC reset noise to the signal array of the detector object.
 Simple charge measurement
 =========================
 
-:guilabel:`Pixel` 🠆 :guilabel:`Signal`
+:guilabel:`Pixel` → :guilabel:`Signal`
 
 Convert the pixels array to the signal array.
 
@@ -95,7 +95,7 @@ Example of the configuration file:
 Output node noise
 =================
 
-:guilabel:`Signal` 🠆 :guilabel:`Signal`
+:guilabel:`Signal` → :guilabel:`Signal`
 
 Add noise to signal array of detector output node using normal random distribution.
 
@@ -116,7 +116,7 @@ Add noise to signal array of detector output node using normal random distributi
 Output node noise CMOS
 ======================
 
-:guilabel:`Signal` 🠆 :guilabel:`Signal`
+:guilabel:`Signal` → :guilabel:`Signal`
 
 Output node noise model for :term:`CMOS` detectors where readout is statistically independent for each pixel.
 
@@ -138,7 +138,7 @@ Output node noise model for :term:`CMOS` detectors where readout is statisticall
 Readout noise Saphira
 =====================
 
-:guilabel:`Signal` 🠆 :guilabel:`Signal`
+:guilabel:`Signal` → :guilabel:`Signal`
 
 Empirical noise for adding noise to the signal array of the :term:`APD` detector using normal random distribution.
 Additional noise factor for `roic_readout_noise` is computed from detector characteristic `avalanche gain` in the model.
@@ -162,7 +162,7 @@ Noise factor based on a figure from :cite:p:`2015:rauscher` for temperature of 9
 Non-linearity (polynomial)
 ==========================
 
-:guilabel:`Signal` 🠆 :guilabel:`Signal`
+:guilabel:`Signal` → :guilabel:`Signal`
 
 With this model you can add non-linearity to :py:class:`~pyxel.data_structure.Signal` array
 to simulate the non-linearity of the output node circuit.
@@ -187,7 +187,7 @@ Example of the configuration file where a 10% non-linearity is introduced as a f
 Simple physical non-linearity
 =============================
 
-:guilabel:`Signal` 🠆 :guilabel:`Signal`
+:guilabel:`Signal` → :guilabel:`Signal`
 
 With this model you can add non-linearity to :py:class:`~pyxel.data_structure.Signal` array.
 
@@ -219,7 +219,7 @@ Example of the configuration file:
 Physical non-linearity
 ======================
 
-:guilabel:`Signal` 🠆 :guilabel:`Signal`
+:guilabel:`Signal` → :guilabel:`Signal`
 
 With this model you can add non-linearity to :py:class:`~pyxel.data_structure.Signal` array.
 
@@ -274,7 +274,7 @@ Example of the configuration file:
 Physical non-linearity with saturation
 ======================================
 
-:guilabel:`Signal` 🠆 :guilabel:`Signal`
+:guilabel:`Signal` → :guilabel:`Signal`
 
 With this model you can add non-linearity to :py:class:`~pyxel.data_structure.Signal` array.
 
@@ -339,7 +339,7 @@ Example of the configuration file:
 HxRG noise generator
 ====================
 
-:guilabel:`Pixel` 🠆 :guilabel:`Pixel`
+:guilabel:`Pixel` → :guilabel:`Pixel`
 
 With this model you can add noise to :py:class:`~pyxel.data_structure.Pixel` array,
 before converting to :py:class:`~pyxel.data_structure.Signal` array in the charge measurement part of the pipeline.
@@ -356,6 +356,19 @@ stationary and non-stationary noise components.
 The model can simulate noise for HxRG detectors of
 Teledyne Imaging Sensors with and without the SIDECAR ASIC IR array
 controller.
+
+* Developed by: Bernard J. Rauscher, NASA
+* Developed for: James Webb Space Telescope
+* Site: https://jwst.nasa.gov/publications.html
+
+
+.. figure:: _static/nghxrg.png
+    :scale: 50%
+    :alt: nghxrg
+    :align: center
+
+    ngHxRG Noise Generator
+
 
 Example of the configuration file:
 

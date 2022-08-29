@@ -14,7 +14,7 @@ Charge Transfer models (CCD)
 Charge Distortion Model (CDM)
 =============================
 
-:guilabel:`Pixel` 🠆 :guilabel:`Pixel`
+:guilabel:`Pixel` → :guilabel:`Pixel`
 
 The Charge Distortion Model - CDM :cite:p:`2013:short` describes the effects of the radiation
 damage causing charge deferral and image shape distortion. The analytical
@@ -32,6 +32,15 @@ as lists for an arbitrary number of trap species. See below for descriptions.
 Other arguments include ``max_electron_volume``, ``transfer_period``,
 ``charge injection`` for parallel mode and ``full_well_capacity`` to override the one set in
 detector :py:class:`~pyxel.detectors.Characteristics`.
+
+.. figure:: _static/cdm.png
+    :scale: 50%
+    :alt: Poppy
+    :align: center
+
+    CDM (Charge Distortion Model)
+
+
 
 Example of the configuration file.
 
@@ -60,7 +69,7 @@ Example of the configuration file.
 Add CTI trails
 ==============
 
-:guilabel:`Pixel` 🠆 :guilabel:`Pixel`
+:guilabel:`Pixel` → :guilabel:`Pixel`
 
 Add image trails due to charge transfer inefficiency in :term:`CCD` detectors by modelling the
 trapping, releasing, and moving of charge along pixels.
@@ -93,7 +102,7 @@ Example of the configuration file:
 Remove CTI trails
 =================
 
-:guilabel:`Pixel` 🠆 :guilabel:`Pixel`
+:guilabel:`Pixel` → :guilabel:`Pixel`
 
 Remove :term:`CTI` trails is done by iteratively modelling the addition of :term:`CTI`, as described
 in :cite:p:`2010:massey` section 3.2 and Table 1.

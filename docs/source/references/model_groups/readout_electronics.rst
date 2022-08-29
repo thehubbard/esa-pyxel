@@ -13,7 +13,7 @@ Readout electronics models are used to add TBW.
 Simple ADC
 ==========
 
-:guilabel:`Signal` 🠆 :guilabel:`Image`
+:guilabel:`Signal` → :guilabel:`Image`
 
 With this model you can convert :py:class:`~pyxel.data_structure.Signal`
 array into :py:class:`~pyxel.data_structure.Image` mimicking an ideal Analog to Digital Converter (ADC).
@@ -38,7 +38,7 @@ Example of the configuration file:
 Simple amplification
 ====================
 
-:guilabel:`Signal` 🠆 :guilabel:`Signal`
+:guilabel:`Signal` → :guilabel:`Signal`
 
 Amplify signal using gain from the output amplifier (in V/V) and
 the signal processor (in V/V).
@@ -59,7 +59,7 @@ Example of the configuration file:
 DC crosstalk
 ============
 
-:guilabel:`Signal` 🠆 :guilabel:`Signal`
+:guilabel:`Signal` → :guilabel:`Signal`
 
 Apply DC crosstalk signal to detector signal.
 
@@ -82,7 +82,7 @@ Example of the configuration file:
 AC crosstalk
 ============
 
-:guilabel:`Signal` 🠆 :guilabel:`Signal`
+:guilabel:`Signal` → :guilabel:`Signal`
 
 Apply AC crosstalk signal to detector signal.
 
@@ -105,7 +105,7 @@ Example of the configuration file:
 Dead time filter
 ================
 
-:guilabel:`Phase` 🠆 :guilabel:`Phase`
+:guilabel:`Phase` → :guilabel:`Phase`
 
 This model only applies to the :py:class:`~pyxel.detectors.MKID` detector.
 
@@ -139,7 +139,7 @@ Example of the configuration file:
 SAR ADC
 =======
 
-:guilabel:`Signal` 🠆 :guilabel:`Image`
+:guilabel:`Signal` → :guilabel:`Image`
 
 Digitize signal array using SAR (Successive Approximation Register) :term:`ADC` logic.
 The parameters ``adc_bit_resolution`` and ``adc_voltage_range`` from detector
@@ -160,7 +160,7 @@ Example of the configuration file:
 SAR ADC with noise
 ==================
 
-:guilabel:`Signal` 🠆 :guilabel:`Image`
+:guilabel:`Signal` → :guilabel:`Image`
 
 Digitize signal array using :term:`SAR` (Successive Approximation Register) :term:`ADC`
 logic with noise.
@@ -184,7 +184,7 @@ Example of the configuration file for ``adc_bit_resolution`` equals to 8 bits:
 Simple phase conversion
 =======================
 
-:guilabel:`Phase` 🠆 :guilabel:`Image`
+:guilabel:`Phase` → :guilabel:`Image`
 
 With this model you can convert :py:class:`~pyxel.data_structure.Phase`
 array into :py:class:`~pyxel.data_structure.Image`, given a hard-coded multiplicative conversion factor.

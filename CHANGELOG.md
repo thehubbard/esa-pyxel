@@ -7,7 +7,8 @@
 
 ### Documentation
 * Update documentation.
-  (See [!412](https://gitlab.com/esa/pyxel/-/merge_requests/412)).
+  (See [!412](https://gitlab.com/esa/pyxel/-/merge_requests/412)
+  and [!496](https://gitlab.com/esa/pyxel/-/merge_requests/496)).
 
 ### Models
 * Add physical models of non-linearity. Code provided by [Thibault Pichon](https://gitlab.com/tpichon).

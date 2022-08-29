@@ -46,7 +46,7 @@ def simple_measurement(detector: Detector, gain: t.Optional[float] = None) -> No
     ----------
     detector : Detector
         Pyxel Detector object.
-    gain : float, optional.
+    gain : float, optional
         Gain to apply. By default, this is the sensitivity of charge readout. Unit: V/e-
     """
     if gain is None:

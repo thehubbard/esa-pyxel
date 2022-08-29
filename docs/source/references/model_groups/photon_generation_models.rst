@@ -16,7 +16,7 @@ so number of photons per pixel area per second. Time scale of the incoming flux 
 Load image
 ----------
 
-:guilabel:`Photon` 🠆 :guilabel:`Photon`
+:guilabel:`Photon` → :guilabel:`Photon`
 
 With this model you can add photons to :py:class:`~pyxel.detectors.Detector` by loading an image from a file.
 Accepted file formats are ``.npy``, ``.fits``, ``.txt``, ``.data``, ``.jpg``, ``.jpeg``, ``.bmp``,
@@ -29,8 +29,9 @@ and ``time_scale`` is to set the time scale of the incoming photons, default is 
 By setting ``convert_to_photons`` to ``true`` together with ``bit_resolution``,
 the model converts the values of loaded image array from ADU
 to photon numbers for each pixel using the Photon Transfer Function.
-:math:`PTF = quantum\_efficiency \cdot charge\_to\_voltage\_conversion \cdot pre\_amplification \cdot adc\_factor`.
-ADC conversion factor in this case is :math:`max(characteristics.voltage\_range)/2^{bit\_resolution}`.
+:math:`\mathit{PTF} = \mathit{quantum\_efficiency} \cdot \mathit{charge\_to\_voltage\_conversion} \cdot \mathit{pre\_amplification} \cdot \mathit{adc\_factor}`.
+
+ADC conversion factor in this case is :math:`\frac{\max(\mathit{characteristics} \cdot \mathit{voltage\_range})}{2^{\mathit{bit\_resolution}}}`.
 
 Example of the configuration file:
 
@@ -52,7 +53,7 @@ Example of the configuration file:
 Simple illumination
 -------------------
 
-:guilabel:`Photon` 🠆 :guilabel:`Photon`
+:guilabel:`Photon` → :guilabel:`Photon`
 
 With this model you can create different simple photon distributions: uniform, elliptical/circular
 or rectangular, by setting the argument ``type``. The calculated photon count will be added to the
@@ -84,7 +85,7 @@ Example of the configuration file for a circular object:
 Stripe pattern
 --------------
 
-:guilabel:`Photon` 🠆 :guilabel:`Photon`
+:guilabel:`Photon` → :guilabel:`Photon`
 
 With this model you can add a two-dimensional square signal - a stripe pattern
 to the :py:class:`~pyxel.data_structure.Photon` array. User can specify amplitude with argument ``level``,
@@ -112,7 +113,7 @@ Example of the configuration file:
 Shot noise
 ----------
 
-:guilabel:`Photon` 🠆 :guilabel:`Photon`
+:guilabel:`Photon` → :guilabel:`Photon`
 
 Use this model to add shot noise to the :py:class:`~pyxel.data_structure.Photon` array.
 By default (no arguments provided), the model uses the Poisson distribution (``numpy.random.poisson``).
