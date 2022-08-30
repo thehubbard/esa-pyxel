@@ -1,9 +1,7 @@
 # Changelog
 
 
-## UNRELEASED
-
-### Core
+## version 1.3 / 2022-08-30
 
 ### Documentation
 * Update documentation.
@@ -20,6 +18,7 @@
   (See [!494](https://gitlab.com/esa/pyxel/-/merge_requests/494)).
 * Function create model not working properly.
   (See [!495](https://gitlab.com/esa/pyxel/-/merge_requests/495)).
+
 
 ## version 1.2.1 / 2022-08-05
 
