@@ -1,7 +1,7 @@
 # Changelog
 
 
-## UNRELEASED
+## version 1.3.1 / 2022-09-07
 
 This release is a bugfix to resolve issues with command `pyxel create-model`.
 
