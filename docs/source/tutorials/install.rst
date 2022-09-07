@@ -83,6 +83,9 @@ And finally **you can install Pyxel** (in the current conda environment)
 .. warning::
     Conda 64-bit **must** be installed and not Conda 32-bit.
 
+Updating
+--------
+
 To update Pyxel with ``conda``, you can use the following command:
 
 .. code-block:: bash
@@ -149,14 +152,14 @@ To install all optional dependencies of Pyxel, you must run the command:
 
 .. code-block:: bash
 
-   pip install pyxel-sim[all]      # Install everything
-
+   pip install pyxel-sim[all]    # Install everything (only on Linux !)
 
 To install only the optional dependencies for the models, you can run:
 
 .. code-block:: bash
 
-   pip install pyxel-sim[model]    # Install all extra dependencies for models (poppy)
+   pip install pyxel-sim[model]  # Install all extra dependencies
+                                 # for models (poppy)
 
 
 .. warning::
@@ -165,6 +168,8 @@ To install only the optional dependencies for the models, you can run:
     If you want to use the calibration mode on Windows or MacOS, you must
     install Pyxel with ``conda``.
 
+Updating
+--------
 
 To update Pyxel with ``pip``, you can use the following command:
 
