@@ -3,9 +3,13 @@
 
 ## UNRELEASED
 
+This release is a bugfix to resolve issues with command `pyxel create-model`.
+
 ### Core
 
 ### Documentation
+* Clarify full installation in the documentation.
+  (See [!500](https://gitlab.com/esa/pyxel/-/merge_requests/500)).
 
 ### Models
 
