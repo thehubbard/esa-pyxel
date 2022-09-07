@@ -10,6 +10,8 @@
 ### Models
 
 ### Others
+* Command `pyxel create-model` is not working with Pyxel 1.3.
+  (See [!499](https://gitlab.com/esa/pyxel/-/merge_requests/499)).
 
 
 ## version 1.3 / 2022-08-30

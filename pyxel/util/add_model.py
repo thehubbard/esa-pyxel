@@ -31,7 +31,6 @@ def create_model(newmodel: str) -> None:
     location, model_name = get_name_and_location(newmodel)
 
     # Is not working on UNIX AND Windows if I do not use os.path.abspath
-    path = os.path.abspath(os.getcwd() + "/pyxel/models/" + location + "/")
     template_string = "_TEMPLATE"
     template_location = "_LOCATION"
 
@@ -43,11 +42,17 @@ def create_model(newmodel: str) -> None:
         os.path.dirname(pyxel.__file__) + "/models/" + location + "/"
     )
 
+    if not os.path.exists(src):
+        raise FileNotFoundError(f"Folder {src!r} does not exists !")
+
     try:
         os.makedirs(dest, exist_ok=True)
         # Replacing all of template in filenames and directories by model_name
         for dirpath, subdirs, files in os.walk(src):
             for x in files:
+                if x.startswith(".") or x.endswith(".pyc"):
+                    continue
+
                 pathtofile = os.path.join(dirpath, x)
                 new_pathtofile = os.path.join(
                     dest, x.replace(template_string, model_name)
@@ -61,16 +66,21 @@ def create_model(newmodel: str) -> None:
                     )
                     new_contents = new_contents.replace(template_location, location)
                     new_contents = new_contents.replace("%(date)", time.ctime())
+
                 with open(new_pathtofile, "w+") as file_tochange:
                     file_tochange.write(new_contents)
                 # Close the file other we can't rename it
                 file_tochange.close()
 
             for x in subdirs:
+                if x == "__pycache__":
+                    continue
+
                 pathtofile = os.path.join(dirpath, x)
                 os.mkdir(pathtofile.replace(template_string, model_name))
             logging.info("Module " + model_name + " created.")
-        print("Module " + model_name + " created in " + path + ".")
+        print(f"Module {model_name!r} created in {dest!r}.")
+
     except FileExistsError:
         logging.info(f"{dest} already exists, folder not created")
         raise
