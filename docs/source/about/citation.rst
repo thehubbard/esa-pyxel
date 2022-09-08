@@ -17,6 +17,27 @@ we would be grateful if you could start the repository and/or cite our work.
 
 For citation purposes, you can use the following BibTex entries:
 
+Pyxel 1.0: an open source Python framework for detector and end-to-end instrument simulation
+--------------------------------------------------------------------------------------------
+
+From SPIE Astronomical Telescopes + Instrumentation 2022::
+
+    @inproceedings{10.1117/12.2629241,
+        author = {Matej Arko and Thibaut Prod'homme and Fr{\'e}d{\'e}ric Lemmel and Benoit Serra and Elizabeth George and Bradley Kelman and Thibault Pichon and Enrico Biancalani and James Gilbert},
+        title = {{Pyxel 1.0: an open source Python framework for detector and end-to-end instrument simulation}},
+        volume = {12187},
+        booktitle = {Modeling, Systems Engineering, and Project Management for Astronomy X},
+        editor = {George Z. Angeli and Philippe Dierickx},
+        organization = {International Society for Optics and Photonics},
+        publisher = {SPIE},
+        pages = {1218705},
+        keywords = {Detector Simulation, Instrument Simulation, Imaging sensors, Modelling, Python, CCD, CMOS, Calibration},
+        year = {2022},
+        doi = {10.1117/12.2629241},
+        URL = {https://doi.org/10.1117/12.2629241}
+    }
+
+
 Pyxel: the collaborative detection simulation framework (2020)
 --------------------------------------------------------------
 
