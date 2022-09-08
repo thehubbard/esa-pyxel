@@ -1,15 +1,14 @@
 # Changelog
 
 
-## UNRELEASED
+## version 1.3.2 / 2022-09-08
 
-### Core
+This is a minor release to add a new reference about the latest SPIE paper.
 
 ### Documentation
-
-### Models
-
-### Others
+* Add a reference to new paper from SPIE presented 
+  at *SPIE Astronomical Telescopes & Instrumentation* conference.
+  (See [!502](https://gitlab.com/esa/pyxel/-/merge_requests/502)).
 
 
 ## version 1.3.1 / 2022-09-07
