@@ -1,17 +1,24 @@
 # Changelog
 
 
-## version 1.3.1 / 2022-09-07
-
-This release is a bugfix to resolve issues with command `pyxel create-model`.
+## UNRELEASED
 
 ### Core
 
 ### Documentation
-* Clarify full installation in the documentation.
-  (See [!500](https://gitlab.com/esa/pyxel/-/merge_requests/500)).
 
 ### Models
+
+### Others
+
+
+## version 1.3.1 / 2022-09-07
+
+This release is a bugfix to resolve issues with command `pyxel create-model`.
+
+### Documentation
+* Clarify full installation in the documentation.
+  (See [!500](https://gitlab.com/esa/pyxel/-/merge_requests/500)).
 
 ### Others
 * Command `pyxel create-model` is not working with Pyxel 1.3.
