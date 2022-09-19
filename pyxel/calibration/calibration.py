@@ -19,13 +19,12 @@ from pyxel.calibration import (
     CalibrationMode,
     DaskBFE,
     DaskIsland,
-    FittingCallable,
     Island,
     ModelFitting,
     MyArchipelago,
 )
 from pyxel.observation import ParameterValues
-from pyxel.pipelines import Processor, ResultType
+from pyxel.pipelines import FitnessFunction, Processor, ResultType
 
 try:
     import pygmo as pg
@@ -54,7 +53,7 @@ class Calibration:
         self,
         outputs: "CalibrationOutputs",
         target_data_path: t.Sequence[Path],
-        fitness_function: FittingCallable,
+        fitness_function: FitnessFunction,
         algorithm: Algorithm,
         parameters: t.Sequence[ParameterValues],
         readout: t.Optional["Readout"] = None,
@@ -112,7 +111,7 @@ class Calibration:
             target_fit_range if target_fit_range else []
         )  # type: t.Sequence[int]
 
-        self._fitness_function = fitness_function  # type: FittingCallable
+        self._fitness_function = fitness_function  # type: FitnessFunction
         self._algorithm = algorithm  # type: Algorithm
 
         self._parameters = (
@@ -203,12 +202,12 @@ class Calibration:
         self._target_fit_range = value
 
     @property
-    def fitness_function(self) -> FittingCallable:
+    def fitness_function(self) -> FitnessFunction:
         """TBW."""
         return self._fitness_function
 
     @fitness_function.setter
-    def fitness_function(self, value: FittingCallable) -> None:
+    def fitness_function(self, value: FitnessFunction) -> None:
         """TBW."""
         self._fitness_function = value
 
