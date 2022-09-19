@@ -107,7 +107,7 @@ class ModelFitting(ProblemSingleObjective):
         self,
         calibration_mode: CalibrationMode,
         simulation_output: ResultType,
-        fitness_func: t.Callable,
+        fitness_func: t.Callable[[np.ndarray, np.ndarray, np.ndarray], float],
         population_size: int,
         generations: int,
         file_path: t.Optional[Path],

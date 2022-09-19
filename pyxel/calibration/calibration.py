@@ -24,9 +24,7 @@ from pyxel.calibration import (
 )
 from pyxel.calibration.fitting import ModelFitting
 from pyxel.observation.parameter_values import ParameterValues
-from pyxel.pipelines import ModelFunction, Processor
-
-from ..pipelines.processor import ResultType
+from pyxel.pipelines import ModelFunction, Processor, ResultType
 
 try:
     import pygmo as pg
@@ -55,19 +53,16 @@ class Calibration:
         self,
         outputs: "CalibrationOutputs",
         readout: "Readout",
+        target_data_path: t.Sequence[Path],
+        fitness_function: t.Callable[[np.ndarray, np.ndarray, np.ndarray], float],
+        algorithm: Algorithm,
+        parameters: t.Sequence[ParameterValues],
         output_dir: t.Optional[Path] = None,
-        fitting: t.Optional[
-            ModelFitting
-        ] = None,  # Note: 'fitting' is set in '.run_calibration'
         mode: Literal["pipeline", "single_model"] = "pipeline",
         result_type: Literal["image", "signal", "pixel"] = "image",
         result_fit_range: t.Optional[t.Sequence[int]] = None,
         result_input_arguments: t.Optional[t.Sequence[ParameterValues]] = None,
-        target_data_path: t.Optional[t.Sequence[Path]] = None,
         target_fit_range: t.Optional[t.Sequence[int]] = None,
-        fitness_function: t.Optional[ModelFunction] = None,
-        algorithm: t.Optional[Algorithm] = None,
-        parameters: t.Optional[t.Sequence[ParameterValues]] = None,
         pygmo_seed: t.Optional[int] = None,
         pipeline_seed: t.Optional[int] = None,
         num_islands: int = 1,
@@ -99,7 +94,6 @@ class Calibration:
         self.readout = readout
 
         self._output_dir = output_dir  # type:t.Optional[Path]
-        self._fitting = fitting  # type: t.Optional[ModelFitting]
 
         self._calibration_mode = CalibrationMode(mode)
 
@@ -120,8 +114,10 @@ class Calibration:
             target_fit_range if target_fit_range else []
         )  # type: t.Sequence[int]
 
-        self._fitness_function = fitness_function  # type: t.Optional[ModelFunction]
-        self._algorithm = algorithm  # type: t.Optional[Algorithm]
+        self._fitness_function = (
+            fitness_function
+        )  # type: t.Callable[[np.ndarray,np.ndarray, np.ndarray], float]
+        self._algorithm = algorithm  # type: Algorithm
 
         self._parameters = (
             parameters if parameters else []
@@ -136,7 +132,7 @@ class Calibration:
         self._num_islands = num_islands  # type: int
         self._num_evolutions = num_evolutions  # type: int
         self._num_best_decisions = num_best_decisions  # type: t.Optional[int]
-        self._type_islands = Island(type_islands)  # type:Island
+        self._type_islands = Island(type_islands)  # type: Island
         self._pipeline_seed = pipeline_seed
         self._topology = (
             topology
@@ -162,19 +158,6 @@ class Calibration:
     def output_dir(self, value: Path) -> None:
         """TBW."""
         self._output_dir = value
-
-    @property
-    def fitting(self) -> ModelFitting:
-        """TBW."""
-        if not self._fitting:
-            raise RuntimeError("No 'fitting' defined !")
-
-        return self._fitting
-
-    @fitting.setter
-    def fitting(self, value: ModelFitting) -> None:
-        """TBW."""
-        self._fitting = value
 
     @property
     def calibration_mode(self) -> CalibrationMode:
@@ -237,24 +220,22 @@ class Calibration:
         self._target_fit_range = value
 
     @property
-    def fitness_function(self) -> ModelFunction:
+    def fitness_function(
+        self,
+    ) -> t.Callable[[np.ndarray, np.ndarray, np.ndarray], float]:
         """TBW."""
-        if not self._fitness_function:
-            raise RuntimeError("No 'fitness_function' defined !")
-
         return self._fitness_function
 
     @fitness_function.setter
-    def fitness_function(self, value: ModelFunction) -> None:
+    def fitness_function(
+        self, value: t.Callable[[np.ndarray, np.ndarray, np.ndarray], float]
+    ) -> None:
         """TBW."""
         self._fitness_function = value
 
     @property
     def algorithm(self) -> Algorithm:
         """TBW."""
-        if not self._algorithm:
-            raise RuntimeError("No 'algorithm' defined !")
-
         return self._algorithm
 
     @algorithm.setter
@@ -379,10 +360,11 @@ class Calibration:
 
         self.output_dir = output_dir
 
-        self.fitting = ModelFitting(
+        fitting = ModelFitting(
             processor=processor, variables=self.parameters, readout=self.readout
         )
-        self.fitting.configure(
+
+        fitting.configure(
             calibration_mode=self.calibration_mode,
             generations=self.algorithm.generations,
             population_size=self.algorithm.population_size,
@@ -417,7 +399,7 @@ class Calibration:
                 num_islands=self.num_islands,
                 udi=user_defined_island,
                 algorithm=self.algorithm,
-                problem=self.fitting,
+                problem=fitting,
                 pop_size=self.algorithm.population_size,
                 bfe=user_defined_bfe,
                 topology=topo,
@@ -433,7 +415,7 @@ class Calibration:
             )
 
             ds.attrs["topology"] = self.topology
-            ds.attrs["result_type"] = str(self.fitting.sim_output)
+            ds.attrs["result_type"] = str(fitting.sim_output)
 
         else:
             raise NotImplementedError("Not implemented for 1 island.")
