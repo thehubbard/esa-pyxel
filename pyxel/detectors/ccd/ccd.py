@@ -64,6 +64,7 @@ class CCD(Detector):
             },
             "data": {
                 "photon": None if self._photon is None else self._photon.array.copy(),
+                "scene": None if self._scene is None else self._scene.to_dict(),
                 "pixel": None if self._pixel is None else self._pixel.array.copy(),
                 "signal": None if self._signal is None else self._signal.array.copy(),
                 "image": None if self._image is None else self._image.array.copy(),
@@ -83,6 +84,7 @@ class CCD(Detector):
     def from_dict(cls, dct: t.Mapping) -> "CCD":
         """Create a new instance of `CCD` from a `dict`."""
         # TODO: This is a simplistic implementation. Improve this.
+        from pyxel.data_structure import Scene
         from pyxel.detectors import CCDCharacteristics, CCDGeometry, Environment
 
         if dct["type"] != "CCD":
@@ -106,6 +108,8 @@ class CCD(Detector):
 
         if "photon" in data:
             detector.photon.array = data["photon"]
+        if "scene" in data:
+            detector.scene = Scene.from_dict(data["scene"])
         if "pixel" in data:
             detector.pixel.array = data["pixel"]
         if "signal" in data:
