@@ -10,6 +10,10 @@
 import typing as t
 
 if t.TYPE_CHECKING:
+    import numpy as np
+    import pandas as pd
+    from astropy.io.fits import ImageHDU
+    from astropy.table import Table
     from scopesim import Source
 
 
@@ -20,7 +24,7 @@ class Scene:
         self._source = source  # type: Source
 
     def __eq__(self, other) -> bool:
-        raise NotImplementedError
+        return type(self) == type(other) and self.data == other.data
 
     @property
     def data(self) -> "Source":
@@ -29,9 +33,40 @@ class Scene:
 
     def to_dict(self) -> t.Mapping:
         """Convert an instance of `Scene` to a `dict`."""
-        raise NotImplementedError
+        meta = self._source.meta  # type: t.Mapping
+        table_fields = self._source.table_fields  # type: t.Sequence[Table]
+        image_fields = self._source.image_fields  # type: t.Sequence[ImageHDU]
+
+        # Create 'tables'
+        tables = [
+            table.to_pandas() for table in table_fields
+        ]  # type: t.Sequence[pd.DataFrame]
+        images = [
+            {"header": dict(image.header), "data": np.asarray(image.data)}
+            for image in image_fields
+        ]  # type: t.Sequence[t.Mapping[str, t.Union[t.Mapping, np.ndarray]]]
+
+        return {"meta": meta, "tables": tables, "images": images}
 
     @classmethod
     def from_dict(cls, dct: t.Mapping) -> "Scene":
         """Create a new instance of a `Scene` object from a `dict`."""
-        raise NotImplementedError
+        from astropy.io.fits import Header, ImageHDU
+        from astropy.table import Table
+        from scopesim import Source
+
+        meta = dct["meta"]  # type: t.Mapping
+        table_fields = [
+            Table.from_pandas(df) for df in dct["tables"]
+        ]  # type: t.Sequence[Table]
+
+        image_fields = [
+            ImageHDU(data=img["data"], header=Header(img["header"]))
+            for img in dct["images"]
+        ]  # type: t.Sequence[ImageHDU]
+
+        src = Source(
+            meta=meta, image_fields=image_fields, table_fields=table_fields
+        )  # type: Source
+
+        return cls(src)
