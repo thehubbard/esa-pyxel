@@ -6,9 +6,10 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """TBW."""
-import functools
 import inspect
 import typing as t
+
+from pyxel.evaluator import evaluate_reference
 
 if t.TYPE_CHECKING:
     from pyxel.detectors import Detector
@@ -120,9 +121,8 @@ class ModelFunction:
 
     Examples
     --------
-    >>> from pyxel.models.photon_generation.illumination import illumination
     >>> model_func = ModelFunction(
-    ...     func=illumination,
+    ...     func="pyxel.models.photon_generation.illumination",
     ...     name="illumination",
     ...     arguments={"level": 1, "option": "foo"},
     ... )
@@ -153,7 +153,7 @@ class ModelFunction:
 
     def __init__(
         self,
-        func: t.Callable,
+        func: str,
         name: str,
         arguments: t.Optional[dict] = None,
         enabled: bool = True,
@@ -161,7 +161,7 @@ class ModelFunction:
         if inspect.isclass(func):
             raise AttributeError("Cannot pass a class to ModelFunction.")
 
-        self._func = func  # type: t.Callable
+        self._func = evaluate_reference(func)  # type: t.Callable
         self._name = name
         self.enabled = enabled  # type: bool
 

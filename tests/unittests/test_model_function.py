@@ -9,7 +9,6 @@ from collections import abc
 
 import pytest
 
-from pyxel.models.photon_generation import illumination
 from pyxel.pipelines import Arguments, ModelFunction
 
 
@@ -18,7 +17,7 @@ def model_function() -> ModelFunction:
     """Create a valid `ModelFunction` instance."""
     return ModelFunction(
         name="illumination",
-        func=illumination,
+        func="pyxel.models.photon_generation.illumination",
         arguments={"level": 1, "option": "foo"},
     )
 

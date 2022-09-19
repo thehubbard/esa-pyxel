@@ -547,7 +547,6 @@ def to_model_function(dct: dict) -> ModelFunction:
     -------
     ModelFunction
     """
-    dct.update({"func": evaluate_reference(dct["func"])})
     return ModelFunction(**dct)
 
 
