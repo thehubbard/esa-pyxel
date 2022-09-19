@@ -84,8 +84,10 @@ def get_documentation(func: t.Callable) -> FuncDocumentation:
 
             parameter = signature.parameters[name]  # type: inspect.Parameter
 
-            if hasattr(parameter.annotation, "__name__"):
-                annotation = parameter.annotation.__name__  # type: str
+            if t.get_origin(parameter.annotation):
+                annotation = str(parameter.annotation)  # type: str
+            elif hasattr(parameter.annotation, "__name__"):
+                annotation = parameter.annotation.__name__
             else:
                 annotation = str(parameter.annotation)
 
@@ -223,13 +225,13 @@ def generate_model(
             if isinstance(param, ParamDefault):
                 yield f"        default={param.default!r},"
             yield "        metadata=schema("
-            yield f"            title={title!r},"
+            yield f"            title={title!r}"
 
             description_lst = textwrap.wrap(param.description)  # type: t.Sequence[str]
             if len(description_lst) == 1:
-                yield f"            description={description_lst[0]!r}"
+                yield f"            ,description={description_lst[0]!r}"
             elif len(description_lst) > 1:
-                yield "            description=("
+                yield "            ,description=("
                 for line in description_lst:
                     yield f"                    {line!r}"
                 yield "                )"
@@ -254,13 +256,13 @@ def generate_model(
     yield ""
     yield ""
     yield "@schema("
-    yield f"    title=\"Model '{func_name}'\","
+    yield f"    title=\"Model '{func_name}'\""
 
     description_lst = textwrap.wrap(doc.description)
     if len(description_lst) == 1:
-        yield f"    description={description_lst[0]!r}"
+        yield f"    ,description={description_lst[0]!r}"
     elif len(description_lst) > 1:
-        yield "    description=("
+        yield "    ,description=("
         for line in description_lst:
             yield f"        {line!r}"
         yield "    )"
@@ -679,7 +681,7 @@ def generate_all_models() -> t.Iterator[str]:
     yield "class ModelFunction:"
     yield "    name: str"
     yield "    func: str = field(metadata=schema(pattern='^(?!pyxel\\.models\\.)'))"
-    yield "    arguments: typing.Mapping[str, typing.Any] = field(default_factory=dict)"
+    yield "    arguments: typing.Optional[typing.Mapping[str, typing.Any]] = None"
     yield "    enabled: bool = True"
     yield ""
     yield ""
@@ -722,7 +724,7 @@ def generate_all_models() -> t.Iterator[str]:
     yield ""
     yield "    from apischema.json_schema import JsonSchemaVersion, deserialization_schema"
     yield "    dct_schema = deserialization_schema("
-    yield "        Configuration, version=JsonSchemaVersion.DRAFT_7"
+    yield "        Configuration, version=JsonSchemaVersion.DRAFT_7, all_refs=True,"
     yield "    )"
     yield ""
     yield "    print(json.dumps(dct_schema))"
