@@ -15,7 +15,6 @@
 
 import typing as t
 from dataclasses import dataclass
-from functools import partial
 from pathlib import Path
 from shutil import copy2
 
@@ -267,7 +266,7 @@ def to_calibration_outputs(dct: dict) -> CalibrationOutputs:
     return CalibrationOutputs(**dct)
 
 
-def to_algorithm(dct: t.Optional[dict]) -> t.Optional["Algorithm"]:
+def to_algorithm(dct: dict) -> "Algorithm":
     """Create an Algorithm class from a dictionary.
 
     Parameters
@@ -281,8 +280,6 @@ def to_algorithm(dct: t.Optional[dict]) -> t.Optional["Algorithm"]:
     # Late import to speedup start-up time
     from pyxel.calibration import Algorithm
 
-    if dct is None:
-        return None
     return Algorithm(**dct)
 
 
@@ -297,11 +294,8 @@ def to_callable(dct: dict) -> t.Callable:
     -------
     callable
     """
-    func = evaluate_reference(dct["func"])
-    arguments = dct["arguments"]
-    if arguments is None:
-        arguments = {}
-    return partial(func, **arguments)
+    func = evaluate_reference(dct["func"])  # type: t.Callable
+    return func
 
 
 def to_calibration(dct: dict) -> "Calibration":
@@ -329,8 +323,7 @@ def to_calibration(dct: dict) -> "Calibration":
     ]
     if "readout" in dct:
         dct.update({"readout": to_readout(dct["readout"])})
-    else:
-        dct.update({"readout": to_readout(None)})
+
     return Calibration(**dct)
 
 

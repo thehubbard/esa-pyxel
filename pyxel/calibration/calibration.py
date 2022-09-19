@@ -19,12 +19,13 @@ from pyxel.calibration import (
     CalibrationMode,
     DaskBFE,
     DaskIsland,
+    FittingCallable,
     Island,
+    ModelFitting,
     MyArchipelago,
 )
-from pyxel.calibration.fitting import ModelFitting
-from pyxel.observation.parameter_values import ParameterValues
-from pyxel.pipelines import ModelFunction, Processor, ResultType
+from pyxel.observation import ParameterValues
+from pyxel.pipelines import Processor, ResultType
 
 try:
     import pygmo as pg
@@ -52,12 +53,11 @@ class Calibration:
     def __init__(
         self,
         outputs: "CalibrationOutputs",
-        readout: "Readout",
         target_data_path: t.Sequence[Path],
-        fitness_function: t.Callable[[np.ndarray, np.ndarray, np.ndarray], float],
+        fitness_function: FittingCallable,
         algorithm: Algorithm,
         parameters: t.Sequence[ParameterValues],
-        output_dir: t.Optional[Path] = None,
+        readout: t.Optional["Readout"] = None,
         mode: Literal["pipeline", "single_model"] = "pipeline",
         result_type: Literal["image", "signal", "pixel"] = "image",
         result_fit_range: t.Optional[t.Sequence[int]] = None,
@@ -91,9 +91,7 @@ class Calibration:
         self._log = logging.getLogger(__name__)
 
         self.outputs = outputs
-        self.readout = readout
-
-        self._output_dir = output_dir  # type:t.Optional[Path]
+        self.readout = readout if readout else Readout()  # type: Readout
 
         self._calibration_mode = CalibrationMode(mode)
 
@@ -114,9 +112,7 @@ class Calibration:
             target_fit_range if target_fit_range else []
         )  # type: t.Sequence[int]
 
-        self._fitness_function = (
-            fitness_function
-        )  # type: t.Callable[[np.ndarray,np.ndarray, np.ndarray], float]
+        self._fitness_function = fitness_function  # type: FittingCallable
         self._algorithm = algorithm  # type: Algorithm
 
         self._parameters = (
@@ -145,19 +141,6 @@ class Calibration:
             weights_from_file
         )  # type: t.Optional[t.Sequence[Path]]
         self._weights = weights  # type: t.Optional[t.Sequence[float]]
-
-    @property
-    def output_dir(self) -> Path:
-        """TBW."""
-        if not self._output_dir:
-            raise RuntimeError("No 'output_dir' defined !")
-
-        return self._output_dir
-
-    @output_dir.setter
-    def output_dir(self, value: Path) -> None:
-        """TBW."""
-        self._output_dir = value
 
     @property
     def calibration_mode(self) -> CalibrationMode:
@@ -220,16 +203,12 @@ class Calibration:
         self._target_fit_range = value
 
     @property
-    def fitness_function(
-        self,
-    ) -> t.Callable[[np.ndarray, np.ndarray, np.ndarray], float]:
+    def fitness_function(self) -> FittingCallable:
         """TBW."""
         return self._fitness_function
 
     @fitness_function.setter
-    def fitness_function(
-        self, value: t.Callable[[np.ndarray, np.ndarray, np.ndarray], float]
-    ) -> None:
+    def fitness_function(self, value: FittingCallable) -> None:
         """TBW."""
         self._fitness_function = value
 
@@ -358,25 +337,25 @@ class Calibration:
         pg.set_global_rng_seed(seed=self.pygmo_seed)
         self._log.info("Pygmo seed: %d", self.pygmo_seed)
 
-        self.output_dir = output_dir
-
         fitting = ModelFitting(
-            processor=processor, variables=self.parameters, readout=self.readout
+            processor=processor,
+            variables=self.parameters,
+            readout=self.readout,
+            calibration_mode=CalibrationMode(self.calibration_mode),
+            simulation_output=ResultType(self.result_type),
+            generations=self.algorithm.generations,
+            population_size=self.algorithm.population_size,
+            fitness_func=self.fitness_function,
+            file_path=output_dir,
         )
 
         fitting.configure(
-            calibration_mode=self.calibration_mode,
-            generations=self.algorithm.generations,
-            population_size=self.algorithm.population_size,
-            simulation_output=self.result_type,
-            fitness_func=self.fitness_function,
             target_output=self.target_data_path,
             target_fit_range=self.target_fit_range,
             out_fit_range=self.result_fit_range,
             input_arguments=self.result_input_arguments,
             weights=self.weights,
             weights_from_file=self.weights_from_file,
-            file_path=output_dir,
         )
 
         if self.num_islands > 1:  # default

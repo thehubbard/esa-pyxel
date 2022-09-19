@@ -10,7 +10,7 @@
 # flake8: noqa
 from .algorithm import AlgorithmType, Algorithm
 from .user_defined import DaskBFE, DaskIsland
-from .protocols import IslandProtocol, ProblemSingleObjective
+from .protocols import IslandProtocol, ProblemSingleObjective, FittingCallable
 from .util import (
     CalibrationResult,
     CalibrationMode,
