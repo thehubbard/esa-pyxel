@@ -25,4 +25,3 @@ from ..pipelines.processor import ResultType
 from .archipelago import MyArchipelago
 from .calibration import Calibration, CalibrationMode
 from .fitness import sum_of_abs_residuals, sum_of_squared_residuals, reduced_chi_squared
-from .fitting import ModelFitting

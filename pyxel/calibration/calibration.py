@@ -20,9 +20,9 @@ from pyxel.calibration import (
     DaskBFE,
     DaskIsland,
     Island,
-    ModelFitting,
     MyArchipelago,
 )
+from pyxel.calibration.fitting import ModelFitting
 from pyxel.observation import ParameterValues
 from pyxel.pipelines import FitnessFunction, Processor, ResultType
 
