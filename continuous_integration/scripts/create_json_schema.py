@@ -353,11 +353,9 @@ def generate_group(model_groups_info: t.Sequence[ModelGroupInfo]) -> t.Iterator[
 
         all_model_class_names = ", ".join([*models_class_names, "ModelFunction"])
 
-        yield f"    {group_name}: typing.Sequence["
-        yield "        typing.Union["
-        yield f"            {all_model_class_names}"
-        yield "        ]"
-        yield f"    ] = field(default_factory=list, metadata=schema(title={group_name_title!r}))"
+        yield f"    {group_name}: typing.Optional["
+        yield f"        typing.Sequence[typing.Union[{all_model_class_names}]]"
+        yield f"    ] = field(default=None, metadata=schema(title={group_name_title!r}))"
 
 
 def get_model_group_info() -> t.Sequence[ModelGroupInfo]:
@@ -698,15 +696,15 @@ def generate_all_models() -> t.Iterator[str]:
     yield ""
     yield "@dataclass"
     yield "class DetectionPipeline:"
-    yield "    photon_generation: typing.Sequence[ModelFunction] = field(default_factory=list)"
-    yield "    optics: typing.Sequence[ModelFunction] = field(default_factory=list)"
-    yield "    phasing: typing.Sequence[ModelFunction] = field(default_factory=list)"
-    yield "    charge_generation: typing.Sequence[ModelFunction] = field(default_factory=list)"
-    yield "    charge_collection: typing.Sequence[ModelFunction] = field(default_factory=list)"
-    yield "    charge_measurement: typing.Sequence[ModelFunction] = field(default_factory=list)"
-    yield "    readout_electronics: typing.Sequence[ModelFunction] = field(default_factory=list)"
-    yield "    charge_transfer: typing.Sequence[ModelFunction] = field(default_factory=list)"
-    yield "    signal_transfer: typing.Sequence[ModelFunction] = field(default_factory=list)"
+    yield "    photon_generation: typing.Optional[typing.Sequence[ModelFunction]] = None"
+    yield "    optics: typing.Optional[typing.Sequence[ModelFunction]] = None"
+    yield "    phasing: typing.Optional[typing.Sequence[ModelFunction]] = None"
+    yield "    charge_generation: typing.Optional[typing.Sequence[ModelFunction]] = None"
+    yield "    charge_collection: typing.Optional[typing.Sequence[ModelFunction]] = None"
+    yield "    charge_measurement: typing.Optional[typing.Sequence[ModelFunction]] = None"
+    yield "    readout_electronics: typing.Optional[typing.Sequence[ModelFunction]] = None"
+    yield "    charge_transfer: typing.Optional[typing.Sequence[ModelFunction]] = None"
+    yield "    signal_transfer: typing.Optional[typing.Sequence[ModelFunction]] = None"
     yield ""
     yield ""
 
