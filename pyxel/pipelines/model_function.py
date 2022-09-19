@@ -191,18 +191,6 @@ class ModelFunction:
         return self._arguments
 
     def __call__(self, detector: "Detector") -> T:
-        """TBW."""
-        # func_ref = evaluate_reference(self.func)  # type: t.Callable
+        result = self._func(detector, **self.arguments)  # type: T
 
-        # if inspect.isclass(self._func):
-        #     # this is a class type, instantiate it using default arguments.
-        #     func_ref = self._func()
-        #     # TODO: should check whether or not it's callable.
-        #     raise NotImplementedError
-        #
-        # else:
-        #     func_ref = self._func
-
-        func = functools.partial(self._func, **self.arguments)
-
-        return func(detector)
+        return result
