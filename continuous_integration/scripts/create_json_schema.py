@@ -519,7 +519,7 @@ def generate_detectors() -> t.Iterator[str]:
     yield "class Observation:"
     yield "    outputs: ObservationOutputs"
     yield "    parameters: typing.Sequence[ParameterValues]"
-    yield "    readout: Readout"
+    yield "    readout: typing.Optional[Readout] = None"
     yield "    mode: str = 'product'"
     yield "    from_file: typing.Optional[str] = None"
     yield "    column_range: typing.Optional[typing.Tuple[int, int]] = None"
