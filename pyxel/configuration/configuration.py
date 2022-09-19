@@ -40,7 +40,7 @@ from pyxel.evaluator import evaluate_reference
 from pyxel.exposure import Exposure, Readout
 from pyxel.observation import Observation, ParameterValues
 from pyxel.outputs import CalibrationOutputs, ExposureOutputs, ObservationOutputs
-from pyxel.pipelines import DetectionPipeline, ModelFunction
+from pyxel.pipelines import DetectionPipeline, FitnessFunction, ModelFunction
 
 if t.TYPE_CHECKING:
     from pyxel.calibration import Algorithm, Calibration
@@ -283,7 +283,7 @@ def to_algorithm(dct: dict) -> "Algorithm":
     return Algorithm(**dct)
 
 
-def to_callable(dct: dict) -> t.Callable:
+def to_fitness_function(dct: dict) -> FitnessFunction:
     """Create a callable from a dictionary.
 
     Parameters
@@ -294,8 +294,7 @@ def to_callable(dct: dict) -> t.Callable:
     -------
     callable
     """
-    func = evaluate_reference(dct["func"])  # type: t.Callable
-    return func
+    return FitnessFunction(**dct)
 
 
 def to_calibration(dct: dict) -> "Calibration":
@@ -313,7 +312,7 @@ def to_calibration(dct: dict) -> "Calibration":
     from pyxel.calibration import Calibration
 
     dct.update({"outputs": to_calibration_outputs(dct["outputs"])})
-    dct.update({"fitness_function": to_callable(dct["fitness_function"])})
+    dct.update({"fitness_function": to_fitness_function(dct["fitness_function"])})
     dct.update({"algorithm": to_algorithm(dct["algorithm"])})
     dct.update(
         {"parameters": [to_parameters(param_dict) for param_dict in dct["parameters"]]}

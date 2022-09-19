@@ -8,7 +8,7 @@
 """The pipeline code for the different detector simulation routines."""
 
 # flake8: noqa
-from .model_function import ModelFunction, Arguments
+from .model_function import ModelFunction, Arguments, FitnessFunction
 from .model_group import ModelGroup
 from .pipeline import DetectionPipeline
 from .processor import Processor, ResultType, result_keys

@@ -12,6 +12,9 @@ import typing as t
 from pyxel.evaluator import evaluate_reference
 
 if t.TYPE_CHECKING:
+    import numpy as np
+
+    from pyxel.calibration import FittingCallable
     from pyxel.detectors import Detector
 
 
@@ -193,4 +196,17 @@ class ModelFunction:
     def __call__(self, detector: "Detector") -> T:
         result = self._func(detector, **self.arguments)  # type: T
 
+        return result
+
+
+class FitnessFunction:
+    def __init__(self, func: str):
+        self._func = evaluate_reference(func)  # type: FittingCallable
+
+    def __call__(
+        self, simulated: "np.ndarray", target: "np.ndarray", weighting: "np.ndarray"
+    ) -> float:
+        result = self._func(
+            simulated=simulated, target=target, weighting=weighting
+        )  # type: float
         return result
