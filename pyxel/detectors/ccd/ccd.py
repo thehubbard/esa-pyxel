@@ -108,8 +108,8 @@ class CCD(Detector):
 
         if "photon" in data:
             detector.photon.array = data["photon"]
-        if "scene" in data:
-            detector.scene = Scene.from_dict(data["scene"])
+        if (scene := data.get("scene")) is not None:
+            detector.scene = Scene.from_dict(scene)
         if "pixel" in data:
             detector.pixel.array = data["pixel"]
         if "signal" in data:

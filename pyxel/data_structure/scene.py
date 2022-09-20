@@ -11,7 +11,6 @@ import typing as t
 
 if t.TYPE_CHECKING:
     import numpy as np
-    import pandas as pd
     from astropy.io.fits import ImageHDU
     from astropy.table import Table
     from scopesim import Source
@@ -39,12 +38,21 @@ class Scene:
 
         # Create 'tables'
         tables = [
-            table.to_pandas() for table in table_fields
-        ]  # type: t.Sequence[pd.DataFrame]
+            {
+                "data": table.to_pandas(),
+                "units": {
+                    key.replace("_unit", ""): value
+                    for key, value in table.meta.items()
+                    if key.endswith("_unit")
+                },
+            }
+            for table in table_fields
+        ]  # type: t.Sequence[t.Mapping]
+
         images = [
             {"header": dict(image.header), "data": np.asarray(image.data)}
             for image in image_fields
-        ]  # type: t.Sequence[t.Mapping[str, t.Union[t.Mapping, np.ndarray]]]
+        ]  # type: t.Sequence[t.Mapping]
 
         return {"meta": meta, "tables": tables, "images": images}
 
@@ -56,17 +64,22 @@ class Scene:
         from scopesim import Source
 
         meta = dct["meta"]  # type: t.Mapping
+        tables = dct["tables"]  # type: t.Mapping
+        images = dct["images"]  # type: t.Mapping
+
         table_fields = [
-            Table.from_pandas(df) for df in dct["tables"]
+            Table.from_pandas(dataframe=table["data"], units=table["units"])
+            for table in tables
         ]  # type: t.Sequence[Table]
 
         image_fields = [
-            ImageHDU(data=img["data"], header=Header(img["header"]))
-            for img in dct["images"]
+            ImageHDU(data=img["data"], header=Header(img["header"])) for img in images
         ]  # type: t.Sequence[ImageHDU]
 
         src = Source(
-            meta=meta, image_fields=image_fields, table_fields=table_fields
+            meta=meta,
+            image_fields=image_fields,
+            table_fields=table_fields,
         )  # type: Source
 
         return cls(src)
