@@ -69,6 +69,17 @@ class Klass:
         return self.cls.__name__
 
 
+def get_annotation(annotation) -> str:
+    if t.get_origin(annotation):
+        annotation = str(annotation)  # type: str
+    elif hasattr(annotation, "__name__"):
+        annotation = annotation.__name__
+    else:
+        annotation = str(annotation)
+
+    return annotation
+
+
 def get_documentation(func: t.Callable) -> FuncDocumentation:
     assert func.__doc__
     doc = NumpyDocString(inspect.cleandoc(func.__doc__))
@@ -84,12 +95,7 @@ def get_documentation(func: t.Callable) -> FuncDocumentation:
 
             parameter = signature.parameters[name]  # type: inspect.Parameter
 
-            if t.get_origin(parameter.annotation):
-                annotation = str(parameter.annotation)  # type: str
-            elif hasattr(parameter.annotation, "__name__"):
-                annotation = parameter.annotation.__name__
-            else:
-                annotation = str(parameter.annotation)
+            annotation = get_annotation(parameter.annotation)  # type: str
 
             if parameter.default != inspect.Parameter.empty:
                 param = ParamDefault(
@@ -103,19 +109,14 @@ def get_documentation(func: t.Callable) -> FuncDocumentation:
             parameters[name.strip()] = param
     else:
         for name, parameter in signature.parameters.items():
-            if hasattr(parameter.annotation, "__name__"):
-                annotation = parameter.annotation.__name__  # type: str
-            else:
-                annotation = str(parameter.annotation)
-
             if parameter.default != inspect.Parameter.empty:
                 param = ParamDefault(
                     description="",
-                    annotation=annotation.replace("NoneType", "None"),
+                    annotation=parameter.annotation,
                     default=parameter.default,
                 )  # type: t.Union[ParamDefault, Param]
             else:
-                param = Param(description="", annotation=annotation)
+                param = Param(description="", annotation=parameter.annotation)
 
             parameters[name.strip()] = param
 
@@ -141,6 +142,7 @@ def get_doc_from_klass(klass: Klass) -> FuncDocumentation:
 
 
 def generate_class(klass: Klass) -> t.Iterator[str]:
+    assert isinstance(klass, Klass)
 
     doc = get_doc_from_klass(klass)
     klass_description_lst = textwrap.wrap(doc.description)  # type: t.Sequence[str]
@@ -159,7 +161,7 @@ def generate_class(klass: Klass) -> t.Iterator[str]:
         yield f"    title={klass.name!r}"
 
     yield ")"
-    yield "@dataclass"
+    yield "@dataclass(kw_only=True)  # Python 3.10+"
 
     if klass.base_cls is None:
         yield f"class {klass.cls.__name__}:"
@@ -170,7 +172,20 @@ def generate_class(klass: Klass) -> t.Iterator[str]:
         for name, param in doc.parameters.items():
             title = name
 
-            yield f"    {name}: {param.annotation} = field("
+            if (origin := t.get_origin(param.annotation)) is not None:
+                args = t.get_args(param.annotation)  # type: t.Sequence
+
+                if origin == t.Union:
+                    if len(args) != 2:
+                        raise NotImplementedError
+
+                    annotation = f"typing.Optional[{args[0].__name__}]"  # type: str
+                else:
+                    raise NotImplementedError
+            else:
+                annotation = str(param.annotation)
+
+            yield f"    {name}: {annotation} = field("
             if isinstance(param, ParamDefault):
                 yield f"        default={param.default!r},"
             yield "        metadata=schema("
@@ -392,12 +407,28 @@ def create_klass(cls: t.Union[t.Type, str]) -> Klass:
         return create_klass(cls_type)
 
     # Try to find a base class
-    _, *base_classes, _ = inspect.getmro(cls)  # type: tuple
+    if (origin := t.get_origin(cls)) is not None:
+        args = t.get_args(cls)  # type: t.Sequence
+
+        match origin:
+            case t.Union:
+                if len(args) != 2:
+                    raise NotImplementedError
+
+                # Optional type
+                klass = args[0]
+
+            case _:
+                raise NotImplementedError
+    else:
+        klass = cls
+
+    _, *base_classes, _ = inspect.getmro(klass)  # type: tuple
 
     if base_classes:
-        return Klass(cls, base_cls=base_classes[0])
+        return Klass(klass, base_cls=base_classes[0])
 
-    return Klass(cls)
+    return Klass(klass)
 
 
 def create_graph(cls: t.Type, graph: t.Mapping[Klass, t.Set[Klass]]) -> None:
@@ -430,7 +461,7 @@ def create_graph(cls: t.Type, graph: t.Mapping[Klass, t.Set[Klass]]) -> None:
 
 
 def generate_detectors() -> t.Iterator[str]:
-    from pyxel.detectors import APD, CCD, CMOS, MKID
+    from pyxel.detectors import APD, CCD, CMOS, MKID, Detector
 
     registered_detectors = (CCD, CMOS, MKID, APD)  # type: t.Sequence[t.Type[Detector]]
 
