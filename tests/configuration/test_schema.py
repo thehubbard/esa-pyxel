@@ -31,7 +31,8 @@ def schema() -> dict:
     "filename",
     [
         "tests/configuration/data/calibration.yaml",
-        "tests/configuration/data/exposure.yaml",
+        "tests/configuration/data/exposure1.yaml",
+        "tests/configuration/data/exposure2.yaml",
         "tests/configuration/data/observation_custom.yaml",
         "tests/configuration/data/observation_custom_parallel.yaml",
         "tests/configuration/data/observation_product.yaml",

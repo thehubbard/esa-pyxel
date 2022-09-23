@@ -482,7 +482,7 @@ def generate_detectors() -> t.Iterator[str]:
     yield "ValidName = typing.Literal["
     yield "    'detector.image.array', 'detector.signal.array', 'detector.pixel.array'"
     yield "]"
-    yield "ValidFormat = typing.Literal['fits', 'hdf', 'npy', 'txt', 'csv', 'png']"
+    yield "ValidFormat = typing.Literal['fits', 'hdf', 'npy', 'txt', 'csv', 'png', 'jpg', 'jpeg']"
     yield ""
     yield ""
     yield "@dataclass"
