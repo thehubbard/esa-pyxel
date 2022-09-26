@@ -42,7 +42,7 @@ class Scene:
 
         Raises
         ------
-        ImportError
+        RuntimeError
             If package 'scopesim' is not installed.
         TypeError
             If input parameter 'source' is not a ScopeSim `Source` object.
@@ -54,11 +54,11 @@ class Scene:
         """
         try:
             from scopesim import Source
-        except ImportError:
-            raise ImportError(
+        except ImportError as exc:
+            raise RuntimeError(
                 "Package 'scopesim' is not installed ! "
                 "Please run command 'pip install scopesim' from the command line."
-            )
+            ) from exc
 
         if not isinstance(source, Source):
             raise TypeError("Expecting a ScopeSim `Source` object for 'source'.")
@@ -76,14 +76,6 @@ class Scene:
         More information about ScopeSim `Source` objects at
         this link: https://scopesim.readthedocs.io/en/latest/reference/scopesim.source.source.html
         """
-        try:
-            from scopesim import Source
-        except ImportError:
-            raise ImportError(
-                "Package 'scopesim' is not installed ! "
-                "Please run command 'pip install scopesim' from the command line."
-            )
-
         return self._source
 
     def to_dict(self) -> t.Mapping:
