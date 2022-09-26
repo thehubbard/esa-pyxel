@@ -4,6 +4,8 @@
 ## UNRELEASED
 
 ### Core
+* Implement multi-wavelength photon descriptions in `Detector.scene`.
+  (See [!505](https://gitlab.com/esa/pyxel/-/merge_requests/505)).
 
 ### Documentation
 
