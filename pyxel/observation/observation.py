@@ -18,7 +18,7 @@ import numpy as np
 from tqdm.auto import tqdm
 from typing_extensions import Literal
 
-from pyxel.exposure import run_exposure_pipeline
+from pyxel.exposure import Readout, run_exposure_pipeline
 from pyxel.observation.parameter_values import ParameterType, ParameterValues
 from pyxel.pipelines import ResultType
 from pyxel.state import get_obj_att, get_value
@@ -26,7 +26,6 @@ from pyxel.state import get_obj_att, get_value
 if t.TYPE_CHECKING:
     import xarray as xr
 
-    from pyxel.exposure import Readout
     from pyxel.outputs import ObservationOutputs
     from pyxel.pipelines import Processor
 
@@ -54,7 +53,7 @@ class Observation:
         self,
         outputs: "ObservationOutputs",
         parameters: t.Sequence[ParameterValues],
-        readout: "Readout",
+        readout: t.Optional[Readout] = None,
         mode: str = "product",
         from_file: t.Optional[str] = None,
         column_range: t.Optional[t.Tuple[int, int]] = None,
@@ -63,7 +62,7 @@ class Observation:
         pipeline_seed: t.Optional[int] = None,
     ):
         self.outputs = outputs
-        self.readout = readout
+        self.readout = readout if readout else Readout()  # type: Readout
         self.parameter_mode = ParameterMode(mode)  # type: ParameterMode
         self._parameters = parameters
         self.file = from_file
