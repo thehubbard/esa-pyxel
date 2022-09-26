@@ -6,6 +6,7 @@
 ### Core
 * Implement multi-wavelength photon descriptions in `Detector.scene`.
   (See [!505](https://gitlab.com/esa/pyxel/-/merge_requests/505)).
+
 * Refactor and simplify `Calibration` and `Observation` classes.
   (See [!507](https://gitlab.com/esa/pyxel/-/merge_requests/507)
   and [!508](https://gitlab.com/esa/pyxel/-/merge_requests/508).
@@ -15,7 +16,8 @@
 ### Models
 
 ### Others
-
+* Improved JSON Schema.
+  (See [!509](https://gitlab.com/esa/pyxel/-/merge_requests/509)).
 
 ## version 1.3.2 / 2022-09-08
 
