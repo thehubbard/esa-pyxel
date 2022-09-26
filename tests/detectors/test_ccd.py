@@ -148,7 +148,7 @@ def comparison(dct, other_dct):
     assert (
         set(dct["data"])
         == set(other_dct["data"])
-        == {"photon", "pixel", "signal", "image", "charge"}
+        == {"photon", "scene", "pixel", "signal", "image", "charge"}
     )
     np.testing.assert_equal(dct["data"]["photon"], other_dct["data"]["photon"])
     np.testing.assert_equal(dct["data"]["pixel"], other_dct["data"]["pixel"])
@@ -201,6 +201,7 @@ def comparison(dct, other_dct):
                 },
                 "data": {
                     "photon": np.zeros(shape=(100, 120)),
+                    "scene": None,
                     "pixel": np.zeros(shape=(100, 120)),
                     "signal": np.zeros(shape=(100, 120)),
                     "image": np.zeros(shape=(100, 120)),
@@ -271,6 +272,7 @@ def comparison(dct, other_dct):
                 },
                 "data": {
                     "photon": np.zeros(shape=(100, 120)),
+                    "scene": None,
                     "pixel": np.zeros(shape=(100, 120)),
                     "signal": np.zeros(shape=(100, 120)),
                     "image": np.zeros(shape=(100, 120)),
@@ -366,6 +368,7 @@ def test_to_and_from_dict_with_arrays_no_frame(valid_ccd: CCD, klass):
         },
         "data": {
             "photon": photon_2d.copy(),
+            "scene": None,
             "pixel": pixel_2d.copy(),
             "signal": signal_2d.copy(),
             "image": image_2d.copy(),

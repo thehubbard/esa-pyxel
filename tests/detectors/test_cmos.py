@@ -147,7 +147,7 @@ def comparison(dct, other_dct):
     assert (
         set(dct["data"])
         == set(other_dct["data"])
-        == {"photon", "pixel", "signal", "image", "charge"}
+        == {"photon", "scene", "pixel", "signal", "image", "charge"}
     )
     np.testing.assert_equal(dct["data"]["photon"], other_dct["data"]["photon"])
     np.testing.assert_equal(dct["data"]["pixel"], other_dct["data"]["pixel"])
@@ -200,6 +200,7 @@ def comparison(dct, other_dct):
                 },
                 "data": {
                     "photon": np.zeros(shape=(100, 120)),
+                    "scene": None,
                     "pixel": np.zeros(shape=(100, 120)),
                     "signal": np.zeros(shape=(100, 120)),
                     "image": np.zeros(shape=(100, 120)),
@@ -270,6 +271,7 @@ def comparison(dct, other_dct):
                 },
                 "data": {
                     "photon": np.zeros(shape=(100, 120)),
+                    "scene": None,
                     "pixel": np.zeros(shape=(100, 120)),
                     "signal": np.zeros(shape=(100, 120)),
                     "image": np.zeros(shape=(100, 120)),

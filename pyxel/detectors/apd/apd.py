@@ -71,6 +71,7 @@ class APD(Detector):
             },
             "data": {
                 "photon": None if self._photon is None else self._photon.array.copy(),
+                "scene": None if self._scene is None else self._scene.to_dict(),
                 "pixel": None if self._pixel is None else self._pixel.array.copy(),
                 "signal": None if self._signal is None else self._signal.array.copy(),
                 "image": None if self._image is None else self._image.array.copy(),
@@ -90,6 +91,7 @@ class APD(Detector):
     def from_dict(cls, dct: t.Mapping) -> "APD":
         """Create a new instance of `APD` from a `dict`."""
         # TODO: This is a simplistic implementation. Improve this.
+        from pyxel.data_structure import Scene
         from pyxel.detectors import APDCharacteristics, APDGeometry, Environment
 
         if dct["type"] != "APD":
@@ -113,6 +115,11 @@ class APD(Detector):
 
         if "photon" in data:
             detector.photon.array = data["photon"]
+
+        scene = data.get("scene")  # type: t.Optional[t.Mapping]
+        if scene is not None:
+            detector.scene = Scene.from_dict(scene)
+
         if "pixel" in data:
             detector.pixel.array = data["pixel"]
         if "signal" in data:

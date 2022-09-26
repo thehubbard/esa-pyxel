@@ -19,6 +19,7 @@ from pyxel.data_structure import (
     Persistence,
     Photon,
     Pixel,
+    Scene,
     Signal,
     SimplePersistence,
 )
@@ -39,6 +40,7 @@ class Detector:
         self.header = collections.OrderedDict()  # type: t.Dict[str, object]
 
         self._photon = None  # type: t.Optional[Photon]
+        self._scene = None  # type: t.Optional[Scene]
         self._charge = None  # type: t.Optional[Charge]
         self._pixel = None  # type: t.Optional[Pixel]
         self._signal = None  # type: t.Optional[Signal]
@@ -61,6 +63,7 @@ class Detector:
         return (
             isinstance(other, Detector)
             and self._photon == other._photon
+            and self._scene == other._scene
             and self._charge == other._charge
             and self._pixel == other._pixel
             and self._signal == other._signal
@@ -87,6 +90,18 @@ class Detector:
     @photon.setter
     def photon(self, obj: Photon) -> None:
         self._photon = obj
+
+    @property
+    def scene(self) -> Scene:
+        """TBW."""
+        if not self._scene:
+            raise RuntimeError("Scene object is not initialized ! ")
+        return self._scene
+
+    @scene.setter
+    def scene(self, obj: Scene) -> None:
+        """TBW."""
+        self._scene = obj
 
     @property
     def charge(self) -> Charge:
@@ -123,6 +138,7 @@ class Detector:
     def reset(self) -> None:
         """TBW."""
         self._photon = Photon(geo=self.geometry)
+        self._scene = None
         self._charge = Charge(geo=self.geometry)
         self._pixel = Pixel(geo=self.geometry)
         self._signal = Signal(geo=self.geometry)
@@ -137,6 +153,9 @@ class Detector:
         """
         if self._photon:
             self.photon.array *= 0
+
+        self._scene = None
+
         if self._signal:
             self.signal.array *= 0
         if self._image:
@@ -352,6 +371,7 @@ class Detector:
         """
         attributes = [
             "_photon",
+            "_scene",
             "_charge",
             "_pixel",
             "_signal",
