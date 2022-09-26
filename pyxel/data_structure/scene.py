@@ -25,9 +25,65 @@ class Scene:
     def __eq__(self, other) -> bool:
         return type(self) == type(other) and self.data == other.data
 
+    # TODO: This method will be removed in the future.
+    #       If you want to have a `Source` object, you should use method '.to_scopesim'
     @property
     def data(self) -> "Source":
         """Get a multi-wavelength object."""
+        return self._source
+
+    def from_scopesim(self, source: "Source") -> None:
+        """Convert a ScopeSim `Source` object into a `Scene` object.
+
+        Parameters
+        ----------
+        source : scopesim.Source
+            Object to convert to a `Scene` object.
+
+        Raises
+        ------
+        ImportError
+            If package 'scopesim' is not installed.
+        TypeError
+            If input parameter 'source' is not a ScopeSim `Source` object.
+
+        Notes
+        -----
+        More information about ScopeSim `Source` objects at
+        this link: https://scopesim.readthedocs.io/en/latest/reference/scopesim.source.source.html
+        """
+        try:
+            from scopesim import Source
+        except ImportError:
+            raise ImportError(
+                "Package 'scopesim' is not installed ! "
+                "Please run command 'pip install scopesim' from the command line."
+            )
+
+        if not isinstance(source, Source):
+            raise TypeError("Expecting a ScopeSim `Source` object for 'source'.")
+
+    def to_scopesim(self) -> "Source":
+        """Convert this `Scene` object into a ScopeSim `Source` object.
+
+        Returns
+        -------
+        Source
+            A ScopeSim `Source` object.
+
+        Notes
+        -----
+        More information about ScopeSim `Source` objects at
+        this link: https://scopesim.readthedocs.io/en/latest/reference/scopesim.source.source.html
+        """
+        try:
+            from scopesim import Source
+        except ImportError:
+            raise ImportError(
+                "Package 'scopesim' is not installed ! "
+                "Please run command 'pip install scopesim' from the command line."
+            )
+
         return self._source
 
     def to_dict(self) -> t.Mapping:
