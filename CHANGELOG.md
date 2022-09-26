@@ -6,6 +6,8 @@
 ### Core
 * Implement multi-wavelength photon descriptions in `Detector.scene`.
   (See [!505](https://gitlab.com/esa/pyxel/-/merge_requests/505)).
+* Implement a function that converts from `scopesim.Source` object to `Scene` object.
+  (See [!506](https://gitlab.com/esa/pyxel/-/merge_requests/506)).
 
 * Refactor and simplify `Calibration` and `Observation` classes.
   (See [!507](https://gitlab.com/esa/pyxel/-/merge_requests/507)
