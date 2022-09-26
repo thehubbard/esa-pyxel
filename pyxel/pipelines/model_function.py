@@ -194,18 +194,22 @@ class ModelFunction:
         return self._arguments
 
     def __call__(self, detector: "Detector") -> T:
+        """TBW."""
         result = self._func(detector, **self.arguments)  # type: T
 
         return result
 
 
 class FitnessFunction:
+    """Fitness function for model fitting."""
+
     def __init__(self, func: str):
         self._func = evaluate_reference(func)  # type: FittingCallable
 
     def __call__(
         self, simulated: "np.ndarray", target: "np.ndarray", weighting: "np.ndarray"
     ) -> float:
+        """Compute fitness."""
         result = self._func(
             simulated=simulated, target=target, weighting=weighting
         )  # type: float

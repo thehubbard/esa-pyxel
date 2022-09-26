@@ -23,6 +23,7 @@ from pyxel.calibration import (
     MyArchipelago,
 )
 from pyxel.calibration.fitting import ModelFitting
+from pyxel.exposure import Readout
 from pyxel.observation import ParameterValues
 from pyxel.pipelines import FitnessFunction, Processor, ResultType
 
@@ -37,7 +38,6 @@ if t.TYPE_CHECKING:
     import pandas as pd
     import xarray as xr
 
-    from pyxel.exposure import Readout
     from pyxel.outputs import CalibrationOutputs
 
 

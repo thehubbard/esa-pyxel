@@ -60,4 +60,5 @@ class FittingCallable(Protocol):
     def __call__(
         self, simulated: np.ndarray, target: np.ndarray, weighting: np.ndarray
     ) -> float:
+        """Fitness function."""
         ...

@@ -119,6 +119,7 @@ class ModelFitting(ProblemSingleObjective):
         weights: t.Optional[t.Sequence[float]] = None,
         weights_from_file: t.Optional[t.Sequence[Path]] = None,
     ) -> None:
+        """TBW."""
         # if self.calibration_mode == 'single_model':           # TODO update
         #     self.single_model_calibration()
 

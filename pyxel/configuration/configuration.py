@@ -36,7 +36,6 @@ from pyxel.detectors import (
     MKIDCharacteristics,
     MKIDGeometry,
 )
-from pyxel.evaluator import evaluate_reference
 from pyxel.exposure import Exposure, Readout
 from pyxel.observation import Observation, ParameterValues
 from pyxel.outputs import CalibrationOutputs, ExposureOutputs, ObservationOutputs
@@ -294,7 +293,9 @@ def to_fitness_function(dct: dict) -> FitnessFunction:
     -------
     callable
     """
-    return FitnessFunction(**dct)
+    func = dct["func"]  # type: str
+
+    return FitnessFunction(func=func)
 
 
 def to_calibration(dct: dict) -> "Calibration":
