@@ -34,8 +34,10 @@ __all__ = ["Detector"]
 class Detector:
     """The detector class."""
 
-    def __init__(self, environment: Environment):
-        self.environment = environment  # type: Environment
+    def __init__(self, environment: t.Optional[Environment] = None):
+        self.environment = (
+            environment if environment else Environment()
+        )  # type: Environment
 
         self.header = collections.OrderedDict()  # type: t.Dict[str, object]
 

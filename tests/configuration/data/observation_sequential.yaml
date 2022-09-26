@@ -1,0 +1,113 @@
+# ########################################################### #
+# Pyxel detector simulation framework                         #
+#                                                             #
+# Example yaml configuration file                             #
+# CCD Photon Transfer Curve with parametric analysis mode     #
+# Created by D. Lucsanyi (ESA)                                #
+# ########################################################### #
+
+
+
+observation:
+
+  mode: sequential
+  parameters:
+    - key: pipeline.photon_generation.illumination.arguments.level
+      values: numpy.unique(numpy.logspace(0, 6, 10, dtype=int))
+    - key: detector.characteristics.quantum_efficiency
+      values: [0.1,0.2,0.3,0.4,0.5,0.6]
+    - key: pipeline.readout_electronics.ac_crosstalk.arguments.coupling_matrix
+      values: [[[1, 0.5, 0, 0], [0.5, 1, 0, 0], [0, 0, 1, 0.5], [0, 0, 0.5, 1]], [[1, 0.3, 0, 0], [0.3, 1, 0, 0], [0, 0, 1, 0.3], [0, 0, 0.3, 1]]]
+
+  outputs:
+    output_folder:  'outputs'
+    save_data_to_file:
+      - detector.image.array:   ['npy']
+    save_observation_data:
+
+
+ccd_detector:
+
+  geometry:
+
+    row:   100                          # pixel
+    col:   100                          # pixel
+    total_thickness: 10.                # um
+    pixel_vert_size: 10.                # um
+    pixel_horz_size: 10.                # um
+
+  environment:
+
+  characteristics:
+    quantum_efficiency: 0.5                  # -
+    charge_to_volt_conversion: 1.e-6        # V/e
+    pre_amplification: 80                    # V/V
+    adc_voltage_range: [0., 10.]
+    adc_bit_resolution: 16
+    full_well_capacity: 100000               # e
+
+pipeline:
+
+  # -> photon
+  photon_generation:
+    - name: illumination
+      func: pyxel.models.photon_generation.illumination
+      enabled: true
+      arguments:
+          level: 0
+    - name: shot_noise
+      func: pyxel.models.photon_generation.shot_noise
+      enabled: true
+
+  # photon -> photon
+  optics:
+
+  # photon -> charge
+  charge_generation:
+    - name: photoelectrons
+      func: pyxel.models.charge_generation.simple_conversion
+      enabled: true
+
+  # charge -> pixel
+  charge_collection:
+    - name: simple_collection
+      func: pyxel.models.charge_collection.simple_collection
+      enabled: true
+    - name: fixed_pattern_noise
+      func: pyxel.models.charge_collection.fix_pattern_noise
+      enabled: true
+      arguments:
+        filename: data/pixel_non_uniformity.npy
+    - name: full_well
+      func: pyxel.models.charge_collection.simple_full_well
+      enabled: true
+
+  # pixel -> pixel
+  charge_transfer:
+
+  # pixel -> signal
+  charge_measurement:
+    - name: simple_measurement
+      func: pyxel.models.charge_measurement.simple_measurement
+      enabled: true
+    - name: output_node_noise
+      func: pyxel.models.charge_measurement.output_node_noise
+      enabled: true
+      arguments:
+        std_deviation: 1.e-6   # Volt
+
+  # signal -> image
+  readout_electronics:
+    - name: simple_amplifier
+      func: pyxel.models.readout_electronics.simple_amplifier
+      enabled: true
+    - name: ac_crosstalk
+      func: pyxel.models.readout_electronics.ac_crosstalk
+      enabled: true
+      arguments:
+        coupling_matrix: [[1, 0.5, 0, 0], [0.5, 1, 0, 0], [0, 0, 1, 0.5], [0, 0, 0.5, 1]]
+        channel_matrix: [1,2,3,4]
+        readout_directions: [1,2,1,2]
+    - name: simple_adc
+      func: pyxel.models.readout_electronics.simple_adc
+      enabled: true

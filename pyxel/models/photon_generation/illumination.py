@@ -121,7 +121,7 @@ def elliptic(
 def calculate_illumination(
     shape: t.Tuple[int, int],
     level: float,
-    option: str = "uniform",
+    option: Literal["uniform", "rectangular", "elliptic"] = "uniform",
     object_size: t.Optional[t.Sequence[int]] = None,
     object_center: t.Optional[t.Sequence[int]] = None,
 ) -> np.ndarray:
@@ -178,7 +178,7 @@ def calculate_illumination(
 def illumination(
     detector: Detector,
     level: float,
-    option: Literal["uniform", "rectangular_hole", "elliptic_hole"] = "uniform",
+    option: Literal["uniform", "rectangular", "elliptic"] = "uniform",
     object_size: t.Optional[t.Sequence[int]] = None,
     object_center: t.Optional[t.Sequence[int]] = None,
     time_scale: float = 1.0,

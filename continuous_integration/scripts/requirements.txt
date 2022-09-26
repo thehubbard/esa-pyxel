@@ -4,3 +4,4 @@ requests
 boltons
 numpydoc
 tqdm
+apischema

@@ -69,6 +69,17 @@ class Klass:
         return self.cls.__name__
 
 
+def get_annotation(annotation) -> str:
+    if t.get_origin(annotation):
+        annotation = str(annotation)  # type: str
+    elif hasattr(annotation, "__name__"):
+        annotation = annotation.__name__
+    else:
+        annotation = str(annotation)
+
+    return annotation
+
+
 def get_documentation(func: t.Callable) -> FuncDocumentation:
     assert func.__doc__
     doc = NumpyDocString(inspect.cleandoc(func.__doc__))
@@ -84,10 +95,7 @@ def get_documentation(func: t.Callable) -> FuncDocumentation:
 
             parameter = signature.parameters[name]  # type: inspect.Parameter
 
-            if hasattr(parameter.annotation, "__name__"):
-                annotation = parameter.annotation.__name__  # type: str
-            else:
-                annotation = str(parameter.annotation)
+            annotation = get_annotation(parameter.annotation)  # type: str
 
             if parameter.default != inspect.Parameter.empty:
                 param = ParamDefault(
@@ -101,19 +109,14 @@ def get_documentation(func: t.Callable) -> FuncDocumentation:
             parameters[name.strip()] = param
     else:
         for name, parameter in signature.parameters.items():
-            if hasattr(parameter.annotation, "__name__"):
-                annotation = parameter.annotation.__name__  # type: str
-            else:
-                annotation = str(parameter.annotation)
-
             if parameter.default != inspect.Parameter.empty:
                 param = ParamDefault(
                     description="",
-                    annotation=annotation.replace("NoneType", "None"),
+                    annotation=parameter.annotation,
                     default=parameter.default,
                 )  # type: t.Union[ParamDefault, Param]
             else:
-                param = Param(description="", annotation=annotation)
+                param = Param(description="", annotation=parameter.annotation)
 
             parameters[name.strip()] = param
 
@@ -139,6 +142,7 @@ def get_doc_from_klass(klass: Klass) -> FuncDocumentation:
 
 
 def generate_class(klass: Klass) -> t.Iterator[str]:
+    assert isinstance(klass, Klass)
 
     doc = get_doc_from_klass(klass)
     klass_description_lst = textwrap.wrap(doc.description)  # type: t.Sequence[str]
@@ -157,7 +161,7 @@ def generate_class(klass: Klass) -> t.Iterator[str]:
         yield f"    title={klass.name!r}"
 
     yield ")"
-    yield "@dataclass"
+    yield "@dataclass(kw_only=True)  # Python 3.10+"
 
     if klass.base_cls is None:
         yield f"class {klass.cls.__name__}:"
@@ -168,7 +172,22 @@ def generate_class(klass: Klass) -> t.Iterator[str]:
         for name, param in doc.parameters.items():
             title = name
 
-            yield f"    {name}: {param.annotation} = field("
+            if (origin := t.get_origin(param.annotation)) is not None:
+                args = t.get_args(param.annotation)  # type: t.Sequence
+
+                if origin == t.Union:
+                    if len(args) != 2:
+                        raise NotImplementedError
+
+                    annotation = f"Optional[{args[0].__name__}]"  # type: str
+                else:
+                    raise NotImplementedError
+            else:
+                annotation = str(param.annotation)
+
+            annotation = annotation.replace("typing.", "")
+
+            yield f"    {name}: {annotation} = field("
             if isinstance(param, ParamDefault):
                 yield f"        default={param.default!r},"
             yield "        metadata=schema("
@@ -207,7 +226,7 @@ def generate_model(
 
     yield "@schema(title='Parameters')"
     yield "@dataclass"
-    yield f"class {model_name}Arguments(typing.Mapping[str, typing.Any]):"
+    yield f"class {model_name}Arguments(Mapping[str, Any]):"
 
     dct = {key: value for key, value in doc.parameters.items() if key != "detector"}
 
@@ -219,17 +238,19 @@ def generate_model(
         for name, param in dct.items():
             title = name
 
-            yield f"    {name}: {param.annotation} = field("
+            annotation = str(param.annotation).replace("typing.", "")
+
+            yield f"    {name}: {annotation} = field("
             if isinstance(param, ParamDefault):
                 yield f"        default={param.default!r},"
             yield "        metadata=schema("
-            yield f"            title={title!r},"
+            yield f"            title={title!r}"
 
             description_lst = textwrap.wrap(param.description)  # type: t.Sequence[str]
             if len(description_lst) == 1:
-                yield f"            description={description_lst[0]!r}"
+                yield f"            ,description={description_lst[0]!r}"
             elif len(description_lst) > 1:
-                yield "            description=("
+                yield "            ,description=("
                 for line in description_lst:
                     yield f"                    {line!r}"
                 yield "                )"
@@ -239,10 +260,10 @@ def generate_model(
     # else:
     #     yield "    pass"
 
-    yield "    def __iter__(self) -> typing.Iterator[str]:"
+    yield "    def __iter__(self) -> Iterator[str]:"
     yield f"        return iter({tuple(dct)!r})"
 
-    yield "    def __getitem__(self, item: typing.Any) -> typing.Any:"
+    yield "    def __getitem__(self, item: Any) -> Any:"
     yield "        if item in tuple(self):"
     yield "            return getattr(self, item)"
     yield "        else:"
@@ -254,13 +275,13 @@ def generate_model(
     yield ""
     yield ""
     yield "@schema("
-    yield f"    title=\"Model '{func_name}'\","
+    yield f"    title=\"Model '{func_name}'\""
 
     description_lst = textwrap.wrap(doc.description)
     if len(description_lst) == 1:
-        yield f"    description={description_lst[0]!r}"
+        yield f"    ,description={description_lst[0]!r}"
     elif len(description_lst) > 1:
-        yield "    description=("
+        yield "    ,description=("
         for line in description_lst:
             yield f"        {line!r}"
         yield "    )"
@@ -274,7 +295,7 @@ def generate_model(
         yield f"    arguments: {model_name}Arguments = field(default_factory={model_name}Arguments)"
     else:
         yield f"    arguments: {model_name}Arguments"
-    yield f"    func: typing.Literal[{func_fullname!r}] = {func_fullname!r}"
+    yield f"    func: Literal[{func_fullname!r}] = {func_fullname!r}"
     yield "    enabled: bool = True"
     yield ""
     yield ""
@@ -351,11 +372,9 @@ def generate_group(model_groups_info: t.Sequence[ModelGroupInfo]) -> t.Iterator[
 
         all_model_class_names = ", ".join([*models_class_names, "ModelFunction"])
 
-        yield f"    {group_name}: typing.Sequence["
-        yield "        typing.Union["
-        yield f"            {all_model_class_names}"
-        yield "        ]"
-        yield f"    ] = field(default_factory=list, metadata=schema(title={group_name_title!r}))"
+        yield f"    {group_name}: Optional["
+        yield f"        Sequence[Union[{all_model_class_names}]]"
+        yield f"    ] = field(default=None, metadata=schema(title={group_name_title!r}))"
 
 
 def get_model_group_info() -> t.Sequence[ModelGroupInfo]:
@@ -392,12 +411,28 @@ def create_klass(cls: t.Union[t.Type, str]) -> Klass:
         return create_klass(cls_type)
 
     # Try to find a base class
-    _, *base_classes, _ = inspect.getmro(cls)  # type: tuple
+    if (origin := t.get_origin(cls)) is not None:
+        args = t.get_args(cls)  # type: t.Sequence
+
+        match origin:
+            case t.Union:
+                if len(args) != 2:
+                    raise NotImplementedError
+
+                # Optional type
+                klass = args[0]
+
+            case _:
+                raise NotImplementedError
+    else:
+        klass = cls
+
+    _, *base_classes, _ = inspect.getmro(klass)  # type: tuple
 
     if base_classes:
-        return Klass(cls, base_cls=base_classes[0])
+        return Klass(klass, base_cls=base_classes[0])
 
-    return Klass(cls)
+    return Klass(klass)
 
 
 def create_graph(cls: t.Type, graph: t.Mapping[Klass, t.Set[Klass]]) -> None:
@@ -430,7 +465,7 @@ def create_graph(cls: t.Type, graph: t.Mapping[Klass, t.Set[Klass]]) -> None:
 
 
 def generate_detectors() -> t.Iterator[str]:
-    from pyxel.detectors import APD, CCD, CMOS, MKID
+    from pyxel.detectors import APD, CCD, CMOS, MKID, Detector
 
     registered_detectors = (CCD, CMOS, MKID, APD)  # type: t.Sequence[t.Type[Detector]]
 
@@ -448,17 +483,17 @@ def generate_detectors() -> t.Iterator[str]:
     yield "#"
     yield "# Outputs"
     yield "#"
-    yield "ValidName = typing.Literal["
+    yield "ValidName = Literal["
     yield "    'detector.image.array', 'detector.signal.array', 'detector.pixel.array'"
     yield "]"
-    yield "ValidFormat = typing.Literal['fits', 'hdf', 'npy', 'txt', 'csv', 'png']"
+    yield "ValidFormat = Literal['fits', 'hdf', 'npy', 'txt', 'csv', 'png', 'jpg', 'jpeg']"
     yield ""
     yield ""
     yield "@dataclass"
     yield "class Outputs:"
     yield "    output_folder: pathlib.Path"
-    yield "    save_data_to_file: typing.Optional["
-    yield "        typing.Sequence[typing.Mapping[ValidName, typing.Sequence[ValidFormat]]]"
+    yield "    save_data_to_file: Optional["
+    yield "        Sequence[Mapping[ValidName, Sequence[ValidFormat]]]"
     yield "    ] = None"
     yield ""
     yield ""
@@ -467,14 +502,14 @@ def generate_detectors() -> t.Iterator[str]:
     yield "#"
     yield "@dataclass"
     yield "class ExposureOutputs(Outputs):"
-    yield "    save_exposure_data: typing.Optional["
-    yield "        typing.Sequence[typing.Mapping[str, typing.Sequence[str]]]"
+    yield "    save_exposure_data: Optional["
+    yield "        Sequence[Mapping[str, Sequence[str]]]"
     yield "    ] = None"
 
     yield "@dataclass"
     yield "class Readout:"
-    yield "    times: typing.Optional[typing.Union[typing.Sequence, str]] = None"
-    yield "    times_from_file: typing.Optional[str] = None"
+    yield "    times: Optional[Union[Sequence, str]] = None"
+    yield "    times_from_file: Optional[str] = None"
     yield "    start_time: float = 0.0"
     yield "    non_destructive: bool = False"
     yield ""
@@ -484,8 +519,8 @@ def generate_detectors() -> t.Iterator[str]:
     yield "class Exposure:"
     yield "    outputs: ExposureOutputs"
     yield "    readout: Readout = field(default_factory=Readout)"
-    yield "    result_type: typing.Literal['image', 'signal', 'pixel', 'all'] = 'all'"
-    yield "    pipeline_seed: typing.Optional[int] = None"
+    yield "    result_type: Literal['image', 'signal', 'pixel', 'all'] = 'all'"
+    yield "    pipeline_seed: Optional[int] = None"
     yield ""
     yield ""
     yield "#"
@@ -495,21 +530,24 @@ def generate_detectors() -> t.Iterator[str]:
     yield ""
     yield "@dataclass"
     yield "class ObservationOutputs(Outputs):"
-    yield "    save_observation_data: typing.Optional["
-    yield "        typing.Sequence[typing.Mapping[str, typing.Sequence[str]]]"
+    yield "    save_observation_data: Optional["
+    yield "        Sequence[Mapping[str, Sequence[str]]]"
     yield "    ] = None"
     yield ""
     yield ""
     yield "@dataclass"
     yield "class ParameterValues:"
     yield "    key: str"
-    yield "    values: typing.Union["
-    yield "        typing.Literal['_'],"
-    yield "        typing.Sequence[typing.Literal['_']],"
-    yield "        typing.Sequence[typing.Union[int, float]],"
-    yield "        typing.Sequence[str],"
+    yield "    values: Union["
+    yield "        Literal['_'],"
+    yield "        Sequence[Literal['_']],"
+    yield "        Sequence[Union[int, float]],"
+    yield "        Sequence[Sequence[Union[int, float]]],"
+    yield "        Sequence[Sequence[Sequence[Union[int, float]]]],"
+    yield "        Sequence[str],"
+    yield "        str, # e.g. 'numpy.unique(...)'"
     yield "    ]"
-    yield "    boundaries: typing.Optional[typing.Tuple[float, float]] = None"
+    yield "    boundaries: Optional[Tuple[float, float]] = None"
     yield "    enabled: bool = True"
     yield "    logarithmic: bool = False"
     yield ""
@@ -518,14 +556,14 @@ def generate_detectors() -> t.Iterator[str]:
     yield "@dataclass"
     yield "class Observation:"
     yield "    outputs: ObservationOutputs"
-    yield "    parameters: typing.Sequence[ParameterValues]"
-    yield "    readout: Readout"
+    yield "    parameters: Sequence[ParameterValues]"
+    yield "    readout: Optional[Readout] = None"
     yield "    mode: str = 'product'"
-    yield "    from_file: typing.Optional[str] = None"
-    yield "    column_range: typing.Optional[typing.Tuple[int, int]] = None"
+    yield "    from_file: Optional[str] = None"
+    yield "    column_range: Optional[Tuple[int, int]] = None"
     yield "    with_dask: bool = False"
-    yield "    result_type: typing.Literal['image', 'signal', 'pixel', 'all'] = 'all'"
-    yield "    pipeline_seed: typing.Optional[int] = None"
+    yield "    result_type: Literal['image', 'signal', 'pixel', 'all'] = 'all'"
+    yield "    pipeline_seed: Optional[int] = None"
     yield ""
     yield ""
     yield "#"
@@ -533,14 +571,14 @@ def generate_detectors() -> t.Iterator[str]:
     yield "#"
     yield "@dataclass"
     yield "class CalibrationOutputs(Outputs):"
-    yield "    save_calibration_data: typing.Optional["
-    yield "        typing.Sequence[typing.Mapping[str, typing.Sequence[str]]]"
+    yield "    save_calibration_data: Optional["
+    yield "        Sequence[Mapping[str, Sequence[str]]]"
     yield "    ] = None"
     yield ""
     yield ""
     yield "@dataclass"
     yield "class Algorithm:"
-    yield "    type: typing.Literal['sade', 'sga', 'nlopt'] = 'sade'"
+    yield "    type: Literal['sade', 'sga', 'nlopt'] = 'sade'"
     yield "    generations: int = 1"
     yield "    population_size: int = 1"
 
@@ -557,12 +595,12 @@ def generate_detectors() -> t.Iterator[str]:
     yield "    m: float = 0.02"
     yield "    param_m: float = 1.0"
     yield "    param_s: int = 2"
-    yield "    crossover: typing.Literal['single', 'exponential', 'binominal', 'sbx'] = 'exponential'"
-    yield "    mutation: typing.Literal['uniform', 'gaussian', 'polynomial'] = 'polynomial'"
-    yield "    selection: typing.Literal['tournament', 'truncated'] = 'tournament'"
+    yield "    crossover: Literal['single', 'exponential', 'binominal', 'sbx'] = 'exponential'"
+    yield "    mutation: Literal['uniform', 'gaussian', 'polynomial'] = 'polynomial'"
+    yield "    selection: Literal['tournament', 'truncated'] = 'tournament'"
 
     yield "    # NLOPT #####"
-    yield "    nlopt_solver: typing.Literal["
+    yield "    nlopt_solver: Literal["
     yield "        'cobyla', 'bobyqa', 'newuoa', 'newuoa_bound', 'praxis', 'neldermead',"
     yield "        'sbplx', 'mma', 'ccsaq', 'slsqp', 'lbfgs', 'tnewton_precond_restart',"
     yield "        'tnewton_precond', 'tnewton_restart', 'tnewton', 'var2', 'var1', 'auglag',"
@@ -574,40 +612,45 @@ def generate_detectors() -> t.Iterator[str]:
     yield "    xtol_abs: float = 0.0"
     yield "    ftol_rel: float = 0.0"
     yield "    ftol_abs: float = 0.0"
-    yield "    stopval: typing.Optional[float] = None"
-    yield "    # local_optimizer: typing.Optional['pg.nlopt'] = None"
-    yield "    replacement: typing.Literal['best', 'worst', 'random'] = 'best'"
-    yield "    nlopt_selection: typing.Literal['best', 'worst', 'random'] = 'best'"
+    yield "    stopval: Optional[float] = None"
+    yield "    # local_optimizer: Optional['pg.nlopt'] = None"
+    yield "    replacement: Literal['best', 'worst', 'random'] = 'best'"
+    yield "    nlopt_selection: Literal['best', 'worst', 'random'] = 'best'"
+    yield ""
+    yield ""
+    yield "@schema(title='Fitness function')"
+    yield "@dataclass"
+    yield "class FitnessFunction:"
+    yield "    func: str"
     yield ""
     yield ""
     yield "@schema(title='Calibration')"
     yield "@dataclass"
     yield "class Calibration:"
     yield "    outputs: CalibrationOutputs"
-    yield "    readout: Readout = field(default_factory=Readout)"
-    yield "    output_dir: typing.Optional[pathlib.Path] = None"
-    yield "    # fitting: typing.Optional[ModelFitting] = None"
-    yield ""
-    yield "    mode: typing.Literal['pipeline', 'single_model'] = 'pipeline'"
-    yield "    result_type: typing.Literal['image', 'signal', 'pixel'] = 'image'"
-    yield "    result_fit_range: typing.Optional[typing.Sequence[int]] = None"
-    yield "    result_input_arguments: typing.Optional[typing.Sequence[ParameterValues]] = None"
-    yield "    target_data_path: typing.Optional[typing.Sequence[pathlib.Path]] = None"
-    yield "    target_fit_range: typing.Optional[typing.Sequence[int]] = None"
-    yield "    fitness_function: typing.Optional[ModelFunction] = None"
-    yield "    algorithm: typing.Optional[Algorithm] = None"
-    yield "    parameters: typing.Optional[typing.Sequence[ParameterValues]] = None"
-    yield "    pygmo_seed: typing.Optional[int] = None"
-    yield "    pipeline_seed: typing.Optional[int] = None"
+    yield "    target_data_path: Sequence[pathlib.Path]"
+    yield "    fitness_function: FitnessFunction"
+    yield "    algorithm: Algorithm"
+    yield "    parameters: Sequence[ParameterValues]"
+    yield "    readout: Optional[Readout] = None"
+    yield "    mode: Literal['pipeline', 'single_model'] = 'pipeline'"
+    yield "    result_type: Literal['image', 'signal', 'pixel'] = 'image'"
+    yield "    result_fit_range: Optional[Sequence[int]] = None"
+    yield "    result_input_arguments: Optional[Sequence[ParameterValues]] = None"
+    yield "    target_fit_range: Optional[Sequence[int]] = None"
+    yield "    pygmo_seed: Optional[int] = None"
+    yield "    pipeline_seed: Optional[int] = None"
     yield "    num_islands: int = 1"
     yield "    num_evolutions: int = 1"
-    yield "    num_best_decisions: typing.Optional[int] = None"
-    yield "    topology: typing.Literal['unconnected', 'ring', 'fully_connected'] = 'unconnected'"
-    yield "    type_islands: typing.Literal["
+    yield "    num_best_decisions: Optional[int] = None"
+    yield "    topology: Literal['unconnected', 'ring', 'fully_connected'] = 'unconnected'"
+    yield "    type_islands: Literal["
     yield "        'multiprocessing', 'multithreading', 'ipyparallel'"
     yield "    ] = 'multiprocessing'"
-    yield "    weights_from_file: typing.Optional[typing.Sequence[pathlib.Path]] = None"
-    yield "    weights: typing.Optional[typing.Sequence[float]] = None"
+    yield "    weights_from_file: Optional[Sequence[pathlib.Path]] = None"
+    yield "    weights: Optional[Sequence[float]] = None"
+
+    yield ""
     yield ""
     yield ""
 
@@ -637,18 +680,18 @@ def generate_detectors() -> t.Iterator[str]:
     yield "@dataclass"
     yield "class Configuration:"
     yield "    pipeline: DetailedDetectionPipeline"
-    # yield f"    # mode: typing.Union[{', '.join(wrapper_mode_classes)}]"
-    # yield f"    # detector: typing.Union[{', '.join(wrapper_detector_classes)}]"
+    # yield f"    # mode: Union[{', '.join(wrapper_mode_classes)}]"
+    # yield f"    # detector: Union[{', '.join(wrapper_detector_classes)}]"
 
     yield ""
     yield "    # Running modes"
     for klass_name in mode_classes:
-        yield f"    {klass_name.lower()}: typing.Optional[{klass_name}] = field(default=None, metadata=schema(title={klass_name!r}))"
+        yield f"    {klass_name.lower()}: Optional[{klass_name}] = field(default=None, metadata=schema(title={klass_name!r}))"
 
     yield ""
     yield "    # Detectors"
     for klass_name in detector_classes:
-        yield f"    {klass_name.lower()}_detector: typing.Optional[{klass_name}] = field(default=None, metadata=schema(title={klass_name!r}))"
+        yield f"    {klass_name.lower()}_detector: Optional[{klass_name}] = field(default=None, metadata=schema(title={klass_name!r}))"
 
 
 def generate_all_models() -> t.Iterator[str]:
@@ -667,11 +710,15 @@ def generate_all_models() -> t.Iterator[str]:
     yield ""
 
     yield "import pathlib"
-    yield "import typing"
+    yield "import sys"
+    yield "from typing import Optional, Mapping, Any, Sequence, Iterator, Literal, Union, Tuple"
     yield "from dataclasses import dataclass, field"
-    yield ""
     yield "import click"
     yield "from apischema import schema"
+    yield "import json"
+    yield "from pathlib import Path"
+    yield "from apischema.json_schema import JsonSchemaVersion, deserialization_schema"
+
     yield ""
     yield ""
 
@@ -679,27 +726,27 @@ def generate_all_models() -> t.Iterator[str]:
     yield "class ModelFunction:"
     yield "    name: str"
     yield "    func: str = field(metadata=schema(pattern='^(?!pyxel\\.models\\.)'))"
-    yield "    arguments: typing.Mapping[str, typing.Any] = field(default_factory=dict)"
+    yield "    arguments: Optional[Mapping[str, Any]] = None"
     yield "    enabled: bool = True"
     yield ""
     yield ""
     yield "@dataclass"
     yield "class ModelGroup:"
-    yield "    models: typing.Sequence[ModelFunction]"
+    yield "    models: Sequence[ModelFunction]"
     yield "    name: str"
     yield ""
     yield ""
     yield "@dataclass"
     yield "class DetectionPipeline:"
-    yield "    photon_generation: typing.Sequence[ModelFunction] = field(default_factory=list)"
-    yield "    optics: typing.Sequence[ModelFunction] = field(default_factory=list)"
-    yield "    phasing: typing.Sequence[ModelFunction] = field(default_factory=list)"
-    yield "    charge_generation: typing.Sequence[ModelFunction] = field(default_factory=list)"
-    yield "    charge_collection: typing.Sequence[ModelFunction] = field(default_factory=list)"
-    yield "    charge_measurement: typing.Sequence[ModelFunction] = field(default_factory=list)"
-    yield "    readout_electronics: typing.Sequence[ModelFunction] = field(default_factory=list)"
-    yield "    charge_transfer: typing.Sequence[ModelFunction] = field(default_factory=list)"
-    yield "    signal_transfer: typing.Sequence[ModelFunction] = field(default_factory=list)"
+    yield "    photon_generation: Optional[Sequence[ModelFunction]] = None"
+    yield "    optics: Optional[Sequence[ModelFunction]] = None"
+    yield "    phasing: Optional[Sequence[ModelFunction]] = None"
+    yield "    charge_generation: Optional[Sequence[ModelFunction]] = None"
+    yield "    charge_collection: Optional[Sequence[ModelFunction]] = None"
+    yield "    charge_measurement: Optional[Sequence[ModelFunction]] = None"
+    yield "    readout_electronics: Optional[Sequence[ModelFunction]] = None"
+    yield "    charge_transfer: Optional[Sequence[ModelFunction]] = None"
+    yield "    signal_transfer: Optional[Sequence[ModelFunction]] = None"
     yield ""
     yield ""
 
@@ -718,11 +765,14 @@ def generate_all_models() -> t.Iterator[str]:
     yield "    show_default=True,"
     yield ")"
     yield "def create_json_schema(filename: pathlib.Path):"
-    yield "    import json"
+    yield "    if sys.version_info < (3, 10):"
+    yield "        raise NotImplementedError('This script must run on Python 3.10+')"
     yield ""
-    yield "    from apischema.json_schema import JsonSchemaVersion, deserialization_schema"
+    yield "    # Manually define a 'format' for JSON Schema for 'Path'"
+    yield "    schema(format='uri')(Path)"
+    yield ""
     yield "    dct_schema = deserialization_schema("
-    yield "        Configuration, version=JsonSchemaVersion.DRAFT_7"
+    yield "        Configuration, version=JsonSchemaVersion.DRAFT_7, all_refs=True,"
     yield "    )"
     yield ""
     yield "    print(json.dumps(dct_schema))"
