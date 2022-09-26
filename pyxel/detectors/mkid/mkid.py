@@ -172,8 +172,11 @@ class MKID(Detector):
 
         if "photon" in data:
             detector.photon.array = data["photon"]
-        if (scene := data.get("scene")) is not None:
+
+        scene = data.get("scene")  # type: t.Optional[t.Mapping]
+        if scene is not None:
             detector.scene = Scene.from_dict(scene)
+
         if "pixel" in data:
             detector.pixel.array = data["pixel"]
         if "signal" in data:
