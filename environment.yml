@@ -24,7 +24,7 @@ channels:
   - defaults
 dependencies:
 # Python
-  - python>=3.7,<3.9
+  - python
   - pip
 # Scientific computing
   - numba

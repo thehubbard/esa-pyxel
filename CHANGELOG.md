@@ -6,6 +6,8 @@
 ### Core
 * Implement multi-wavelength photon descriptions in `Detector.scene`.
   (See [!505](https://gitlab.com/esa/pyxel/-/merge_requests/505)).
+* Refactor and simplify `Calibration` class.
+  (See [!507](https://gitlab.com/esa/pyxel/-/merge_requests/507)).
 
 ### Documentation
 

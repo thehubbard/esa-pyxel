@@ -14,7 +14,7 @@ from typing_extensions import Protocol
 if t.TYPE_CHECKING:
     import pygmo as pg
 
-__all__ = ["IslandProtocol", "ProblemSingleObjective"]
+__all__ = ["IslandProtocol", "ProblemSingleObjective", "FittingCallable"]
 
 
 class IslandProtocol(Protocol):
@@ -52,3 +52,13 @@ class ProblemSingleObjective(Protocol):
 
     # TODO: Add something about 'batch_fitness'
     #       (see https://esa.github.io/pygmo2/problem.html#pygmo.problem.batch_fitness)
+
+
+class FittingCallable(Protocol):
+    """Fitness function for model fitting."""
+
+    def __call__(
+        self, simulated: np.ndarray, target: np.ndarray, weighting: np.ndarray
+    ) -> float:
+        """Fitness function."""
+        ...

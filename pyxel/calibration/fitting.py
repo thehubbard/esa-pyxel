@@ -24,6 +24,7 @@ from typing_extensions import Literal
 
 from pyxel.calibration import (
     CalibrationMode,
+    FittingCallable,
     ProblemSingleObjective,
     check_ranges,
     list_to_3d_slice,
@@ -32,9 +33,8 @@ from pyxel.calibration import (
     read_datacubes,
 )
 from pyxel.exposure import run_exposure_pipeline
-from pyxel.observation.parameter_values import ParameterValues
-from pyxel.pipelines import Processor
-from pyxel.pipelines.processor import ResultType
+from pyxel.observation import ParameterValues
+from pyxel.pipelines import Processor, ResultType
 
 if t.TYPE_CHECKING:
     import xarray as xr
@@ -51,26 +51,33 @@ class ModelFitting(ProblemSingleObjective):
         processor: Processor,
         variables: t.Sequence[ParameterValues],
         readout: "Readout",
+        calibration_mode: CalibrationMode,
+        simulation_output: ResultType,
+        generations: int,
+        population_size: int,
+        fitness_func: FittingCallable,
+        file_path: Path,
+        pipeline_seed: t.Optional[int] = None,
     ):
         self.processor = processor  # type: Processor
         self.variables = variables  # type: t.Sequence[ParameterValues]
 
-        self.calibration_mode = None  # type: t.Optional[CalibrationMode]
+        self.calibration_mode = calibration_mode  # type: CalibrationMode
         self.original_processor = None  # type: t.Optional[Processor]
-        self.generations = None  # type: t.Optional[int]
-        self.pop = None  # type: t.Optional[int]
+        self.generations = generations  # type: int
+        self.pop = population_size  # type: int
         self.readout = readout  # type: Readout
 
         self.all_target_data = []  # type: t.List[np.ndarray]
         self.weighting = None  # type: t.Optional[np.ndarray]
         self.weighting_from_file = None  # type: t.Optional[t.Sequence[np.ndarray]]
-        self.fitness_func = None  # type: t.Optional[t.Callable]
-        self.sim_output = None  # type: t.Optional[ResultType]
+        self.fitness_func = fitness_func  # type: FittingCallable
+        self.sim_output = simulation_output  # type: ResultType
         # self.fitted_model = None            # type: t.Optional['ModelFunction']
         self.param_processor_list = []  # type: t.List[Processor]
 
-        self.file_path = None  # type: t.Optional[Path]
-        self.pipeline_seed = None  # type: t.Optional[int]
+        self.file_path = file_path  # type: Path
+        self.pipeline_seed = pipeline_seed  # type: t.Optional[int]
 
         self.fitness_array = None  # type: t.Optional[np.ndarray]
         self.population = None  # type: t.Optional[np.ndarray]
@@ -105,48 +112,14 @@ class ModelFitting(ProblemSingleObjective):
 
     def configure(
         self,
-        calibration_mode: CalibrationMode,
-        simulation_output: ResultType,
-        fitness_func: t.Callable,
-        population_size: int,
-        generations: int,
-        file_path: t.Optional[Path],
         target_fit_range: t.Sequence[int],
         out_fit_range: t.Sequence[int],
         target_output: t.Sequence[Path],
         input_arguments: t.Optional[t.Sequence[ParameterValues]] = None,
         weights: t.Optional[t.Sequence[float]] = None,
         weights_from_file: t.Optional[t.Sequence[Path]] = None,
-        pipeline_seed: t.Optional[int] = None,
     ) -> None:
-        """TBW.
-
-        Parameters
-        ----------
-        pipeline_seed
-        calibration_mode
-        simulation_output
-        fitness_func
-        population_size
-        generations
-        file_path
-        target_fit_range
-        out_fit_range
-        target_output
-        input_arguments
-        weights
-        weights_from_file
-        """
-        self.calibration_mode = CalibrationMode(calibration_mode)
-        self.sim_output = ResultType(simulation_output)
-        self.fitness_func = fitness_func
-        self.pop = population_size
-        self.generations = generations
-        self.pipeline_seed = pipeline_seed
-
-        # TODO: Remove 'assert'
-        # assert isinstance(self.pop, int)
-
+        """TBW."""
         # if self.calibration_mode == 'single_model':           # TODO update
         #     self.single_model_calibration()
 
@@ -187,7 +160,6 @@ class ModelFitting(ProblemSingleObjective):
             params += b
         self.champion_f_list = np.zeros((1, 1))
         self.champion_x_list = np.zeros((1, params))
-        self.file_path = file_path
 
         if self.readout.time_domain_simulation:
             target_list_3d = read_datacubes(
@@ -292,6 +264,10 @@ class ModelFitting(ProblemSingleObjective):
             simulated_data = processor.result["signal"][self.sim_fit_range]
         elif self.sim_output == ResultType.Pixel:
             simulated_data = processor.result["pixel"][self.sim_fit_range]
+        else:
+            raise NotImplementedError(
+                f"Simulation mode: {self.sim_output!r} not implemented"
+            )
 
         return simulated_data
 
@@ -309,9 +285,6 @@ class ModelFitting(ProblemSingleObjective):
         target_data
         weighting
         """
-        # TODO: Remove 'assert'
-        assert self.fitness_func is not None
-
         if weighting is not None:
             factor = weighting
         else:

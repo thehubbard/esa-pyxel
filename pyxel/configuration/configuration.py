@@ -15,7 +15,6 @@
 
 import typing as t
 from dataclasses import dataclass
-from functools import partial
 from pathlib import Path
 from shutil import copy2
 
@@ -37,11 +36,10 @@ from pyxel.detectors import (
     MKIDCharacteristics,
     MKIDGeometry,
 )
-from pyxel.evaluator import evaluate_reference
 from pyxel.exposure import Exposure, Readout
 from pyxel.observation import Observation, ParameterValues
 from pyxel.outputs import CalibrationOutputs, ExposureOutputs, ObservationOutputs
-from pyxel.pipelines import DetectionPipeline, ModelFunction
+from pyxel.pipelines import DetectionPipeline, FitnessFunction, ModelFunction
 
 if t.TYPE_CHECKING:
     from pyxel.calibration import Algorithm, Calibration
@@ -168,7 +166,7 @@ def to_exposure_outputs(dct: dict) -> ExposureOutputs:
     return ExposureOutputs(**dct)
 
 
-def to_readout(dct: t.Optional[dict]) -> Readout:
+def to_readout(dct: t.Optional[dict] = None) -> Readout:
     """Create a Readout class from a dictionary.
 
     Parameters
@@ -196,10 +194,8 @@ def to_exposure(dct: dict) -> Exposure:
     Single
     """
     dct.update({"outputs": to_exposure_outputs(dct["outputs"])})
-    if "readout" in dct:
-        dct.update({"readout": to_readout(dct["readout"])})
-    else:
-        dct.update({"readout": to_readout(None)})
+    dct.update({"readout": to_readout(dct.get("readout"))})
+
     return Exposure(**dct)
 
 
@@ -246,10 +242,8 @@ def to_observation(dct: dict) -> Observation:
         {"parameters": [to_parameters(param_dict) for param_dict in dct["parameters"]]}
     )
     dct.update({"outputs": to_observation_outputs(dct["outputs"])})
-    if "readout" in dct:
-        dct.update({"readout": to_readout(dct["readout"])})
-    else:
-        dct.update({"readout": to_readout(None)})
+    dct.update({"readout": to_readout(dct.get("readout"))})
+
     return Observation(**dct)
 
 
@@ -267,7 +261,7 @@ def to_calibration_outputs(dct: dict) -> CalibrationOutputs:
     return CalibrationOutputs(**dct)
 
 
-def to_algorithm(dct: t.Optional[dict]) -> t.Optional["Algorithm"]:
+def to_algorithm(dct: dict) -> "Algorithm":
     """Create an Algorithm class from a dictionary.
 
     Parameters
@@ -281,12 +275,10 @@ def to_algorithm(dct: t.Optional[dict]) -> t.Optional["Algorithm"]:
     # Late import to speedup start-up time
     from pyxel.calibration import Algorithm
 
-    if dct is None:
-        return None
     return Algorithm(**dct)
 
 
-def to_callable(dct: dict) -> t.Callable:
+def to_fitness_function(dct: dict) -> FitnessFunction:
     """Create a callable from a dictionary.
 
     Parameters
@@ -297,11 +289,9 @@ def to_callable(dct: dict) -> t.Callable:
     -------
     callable
     """
-    func = evaluate_reference(dct["func"])
-    arguments = dct["arguments"]
-    if arguments is None:
-        arguments = {}
-    return partial(func, **arguments)
+    func = dct["func"]  # type: str
+
+    return FitnessFunction(func=func)
 
 
 def to_calibration(dct: dict) -> "Calibration":
@@ -319,7 +309,7 @@ def to_calibration(dct: dict) -> "Calibration":
     from pyxel.calibration import Calibration
 
     dct.update({"outputs": to_calibration_outputs(dct["outputs"])})
-    dct.update({"fitness_function": to_callable(dct["fitness_function"])})
+    dct.update({"fitness_function": to_fitness_function(dct["fitness_function"])})
     dct.update({"algorithm": to_algorithm(dct["algorithm"])})
     dct.update(
         {"parameters": [to_parameters(param_dict) for param_dict in dct["parameters"]]}
@@ -327,10 +317,8 @@ def to_calibration(dct: dict) -> "Calibration":
     dct["result_input_arguments"] = [
         to_parameters(value) for value in dct.get("result_input_arguments", {})
     ]
-    if "readout" in dct:
-        dct.update({"readout": to_readout(dct["readout"])})
-    else:
-        dct.update({"readout": to_readout(None)})
+    dct.update({"readout": to_readout(dct.get("readout"))})
+
     return Calibration(**dct)
 
 
@@ -554,7 +542,6 @@ def to_model_function(dct: dict) -> ModelFunction:
     -------
     ModelFunction
     """
-    dct.update({"func": evaluate_reference(dct["func"])})
     return ModelFunction(**dct)
 
 

@@ -10,7 +10,7 @@
 # flake8: noqa
 from .algorithm import AlgorithmType, Algorithm
 from .user_defined import DaskBFE, DaskIsland
-from .protocols import IslandProtocol, ProblemSingleObjective
+from .protocols import IslandProtocol, ProblemSingleObjective, FittingCallable
 from .util import (
     CalibrationResult,
     CalibrationMode,
@@ -25,4 +25,3 @@ from ..pipelines.processor import ResultType
 from .archipelago import MyArchipelago
 from .calibration import Calibration, CalibrationMode
 from .fitness import sum_of_abs_residuals, sum_of_squared_residuals, reduced_chi_squared
-from .fitting import ModelFitting

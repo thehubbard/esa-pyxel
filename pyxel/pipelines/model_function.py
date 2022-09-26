@@ -6,11 +6,15 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """TBW."""
-import functools
 import inspect
 import typing as t
 
+from pyxel.evaluator import evaluate_reference
+
 if t.TYPE_CHECKING:
+    import numpy as np
+
+    from pyxel.calibration import FittingCallable
     from pyxel.detectors import Detector
 
 
@@ -120,9 +124,8 @@ class ModelFunction:
 
     Examples
     --------
-    >>> from pyxel.models.photon_generation.illumination import illumination
     >>> model_func = ModelFunction(
-    ...     func=illumination,
+    ...     func="pyxel.models.photon_generation.illumination",
     ...     name="illumination",
     ...     arguments={"level": 1, "option": "foo"},
     ... )
@@ -153,7 +156,7 @@ class ModelFunction:
 
     def __init__(
         self,
-        func: t.Callable,
+        func: str,
         name: str,
         arguments: t.Optional[dict] = None,
         enabled: bool = True,
@@ -161,7 +164,7 @@ class ModelFunction:
         if inspect.isclass(func):
             raise AttributeError("Cannot pass a class to ModelFunction.")
 
-        self._func = func  # type: t.Callable
+        self._func = evaluate_reference(func)  # type: t.Callable
         self._name = name
         self.enabled = enabled  # type: bool
 
@@ -192,17 +195,22 @@ class ModelFunction:
 
     def __call__(self, detector: "Detector") -> T:
         """TBW."""
-        # func_ref = evaluate_reference(self.func)  # type: t.Callable
+        result = self._func(detector, **self.arguments)  # type: T
 
-        # if inspect.isclass(self._func):
-        #     # this is a class type, instantiate it using default arguments.
-        #     func_ref = self._func()
-        #     # TODO: should check whether or not it's callable.
-        #     raise NotImplementedError
-        #
-        # else:
-        #     func_ref = self._func
+        return result
 
-        func = functools.partial(self._func, **self.arguments)
 
-        return func(detector)
+class FitnessFunction:
+    """Fitness function for model fitting."""
+
+    def __init__(self, func: str):
+        self._func = evaluate_reference(func)  # type: FittingCallable
+
+    def __call__(
+        self, simulated: "np.ndarray", target: "np.ndarray", weighting: "np.ndarray"
+    ) -> float:
+        """Compute fitness."""
+        result = self._func(
+            simulated=simulated, target=target, weighting=weighting
+        )  # type: float
+        return result

@@ -35,17 +35,11 @@ def configure(mf: ModelFitting, sim: pyxel.Configuration) -> None:
     np.random.seed(sim.calibration.pygmo_seed)
 
     mf.configure(
-        calibration_mode=sim.calibration.calibration_mode,
-        generations=sim.calibration.algorithm.generations,
-        population_size=sim.calibration.algorithm.population_size,
-        simulation_output=sim.calibration.result_type,
-        fitness_func=sim.calibration.fitness_function,
-        target_output=sim.calibration.target_data_path,
         target_fit_range=sim.calibration.target_fit_range,
         out_fit_range=sim.calibration.result_fit_range,
+        target_output=sim.calibration.target_data_path,
         weights_from_file=sim.calibration.weights_from_file,
         weights=sim.calibration.weights,
-        file_path=None,
     )
 
 
@@ -58,10 +52,17 @@ def test_configure_params(yaml_file):
     pipeline = cfg.pipeline
     processor = Processor(detector, pipeline)
     calibration = cfg.calibration
+
     mf = ModelFitting(
         processor=processor,
         variables=calibration.parameters,
         readout=calibration.readout,
+        calibration_mode=calibration.calibration_mode,
+        simulation_output=calibration.result_type,
+        generations=calibration.algorithm.generations,
+        population_size=calibration.algorithm.population_size,
+        fitness_func=calibration.fitness_function._func,
+        file_path=None,
     )
 
     if not isinstance(mf.processor, Processor):
@@ -92,6 +93,12 @@ def test_configure_fits_target(yaml):
         processor=processor,
         variables=calibration.parameters,
         readout=calibration.readout,
+        calibration_mode=calibration.calibration_mode,
+        simulation_output=calibration.result_type,
+        generations=calibration.algorithm.generations,
+        population_size=calibration.algorithm.population_size,
+        fitness_func=calibration.fitness_function._func,
+        file_path=None,
     )
     configure(mf, cfg)
     assert mf.sim_fit_range == (
@@ -129,6 +136,12 @@ def test_boundaries(yaml):
         processor=processor,
         variables=calibration.parameters,
         readout=calibration.readout,
+        calibration_mode=calibration.calibration_mode,
+        simulation_output=calibration.result_type,
+        generations=calibration.algorithm.generations,
+        population_size=calibration.algorithm.population_size,
+        fitness_func=calibration.fitness_function._func,
+        file_path=None,
     )
 
     configure(mf, cfg)
@@ -175,6 +188,12 @@ def test_calculate_fitness(simulated_data, target_data, expected_fitness):
         processor=processor,
         variables=calibration.parameters,
         readout=calibration.readout,
+        calibration_mode=calibration.calibration_mode,
+        simulation_output=calibration.result_type,
+        generations=calibration.algorithm.generations,
+        population_size=calibration.algorithm.population_size,
+        fitness_func=calibration.fitness_function._func,
+        file_path=None,
     )
     configure(mf, cfg)
     fitness = mf.calculate_fitness(simulated_data, target_data)
@@ -202,6 +221,12 @@ def test_weighting(yaml, factor, expected_fitness):
         processor=processor,
         variables=calibration.parameters,
         readout=calibration.readout,
+        calibration_mode=calibration.calibration_mode,
+        simulation_output=calibration.result_type,
+        generations=calibration.algorithm.generations,
+        population_size=calibration.algorithm.population_size,
+        fitness_func=calibration.fitness_function._func,
+        file_path=None,
     )
     configure(mf, cfg)
     fitness = mf.calculate_fitness(
@@ -263,6 +288,12 @@ def test_custom_fitness(yaml, simulated, target, weighting):
         processor=processor,
         variables=calibration.parameters,
         readout=calibration.readout,
+        calibration_mode=calibration.calibration_mode,
+        simulation_output=calibration.result_type,
+        generations=calibration.algorithm.generations,
+        population_size=calibration.algorithm.population_size,
+        fitness_func=calibration.fitness_function._func,
+        file_path=None,
     )
     configure(mf=mf, sim=cfg)
 
@@ -315,6 +346,12 @@ def test_fitness(yaml, parameter, expected_fitness):
         processor=processor,
         variables=calibration.parameters,
         readout=calibration.readout,
+        calibration_mode=calibration.calibration_mode,
+        simulation_output=calibration.result_type,
+        generations=calibration.algorithm.generations,
+        population_size=calibration.algorithm.population_size,
+        fitness_func=calibration.fitness_function._func,
+        file_path=None,
     )
 
     configure(mf, cfg)
@@ -369,6 +406,12 @@ def test_split_and_update(yaml, parameter, expected_array):
         processor=processor,
         variables=calibration.parameters,
         readout=calibration.readout,
+        calibration_mode=calibration.calibration_mode,
+        simulation_output=calibration.result_type,
+        generations=calibration.algorithm.generations,
+        population_size=calibration.algorithm.population_size,
+        fitness_func=calibration.fitness_function._func,
+        file_path=None,
     )
     configure(mf, cfg)
     array = mf.convert_to_parameters(parameter)
@@ -417,6 +460,12 @@ def test_detector_and_model_update(yaml: str, param_array: np.ndarray):
         processor=processor,
         variables=calibration.parameters,
         readout=calibration.readout,
+        calibration_mode=calibration.calibration_mode,
+        simulation_output=calibration.result_type,
+        generations=calibration.algorithm.generations,
+        population_size=calibration.algorithm.population_size,
+        fitness_func=calibration.fitness_function._func,
+        file_path=None,
     )
     configure(mf=mf, sim=cfg)
     mf.processor = mf.update_processor(param_array, processor)

@@ -42,15 +42,6 @@ Algorithm
     :show-inheritance:
     :exclude-members:
 
-ModelFitting
-------------
-.. autoclass:: ModelFitting
-    :members:
-    :inherited-members:
-    :undoc-members:
-    :show-inheritance:
-    :exclude-members:
-
 Fitness functions
 -----------------
 
