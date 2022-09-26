@@ -66,7 +66,7 @@ class Exposure:
         self._pipeline_seed = value
 
     def run_exposure(self, processor: "Processor") -> "xr.Dataset":
-        """Run a an observation pipeline.
+        """Run an observation pipeline.
 
         Parameters
         ----------
@@ -149,7 +149,7 @@ def run_exposure_pipeline(
     detector.empty()
 
     if progressbar:
-        pbar = tqdm(total=num_steps)
+        pbar = tqdm(total=num_steps, desc="Observation time: ")
 
     keys = result_keys(result_type)
 

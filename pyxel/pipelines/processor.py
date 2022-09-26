@@ -15,6 +15,7 @@ from numbers import Number
 
 import numpy as np
 
+from pyxel import __version__
 from pyxel.evaluator import eval_entry
 from pyxel.pipelines import DetectionPipeline, ModelGroup
 from pyxel.state import get_obj_att
@@ -253,9 +254,10 @@ class Processor:
 
         ds = xr.merge(lst)  # type: xr.Dataset
         ds["readout_time"].attrs.update({"units": "s", "standard_name": "Readout time"})
-        ds["image"].attrs.update({"units": "photon"})
-        ds["signal"].attrs.update({"units": "electron"})
-        ds["pixel"].attrs.update({"units": "adu"})
+        ds["image"].attrs.update({"units": "adu"})
+        ds["signal"].attrs.update({"units": "volt"})
+        ds["pixel"].attrs.update({"units": "electrons"})
+        ds.attrs.update({"pyxel version": __version__})
 
         return ds
 

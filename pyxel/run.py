@@ -146,7 +146,7 @@ def observation_mode(
 
     processor = Processor(detector=detector, pipeline=pipeline)
 
-    result = observation.run_observation(processor=processor)
+    result = observation.run_observation(processor=processor)  # type: ObservationResult
 
     if observation_outputs.save_observation_data:
         observation_outputs.save_observation_datasets(
