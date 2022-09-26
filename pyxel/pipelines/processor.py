@@ -231,7 +231,7 @@ class Processor:
     def result_to_dataset(
         self, y: range, x: range, times: np.ndarray, result_type: ResultType
     ) -> "xr.Dataset":
-        """Return the result in an xarray dataset."""
+        """Return the result in a xarray dataset."""
         # Late import to speedup start-up time
         import xarray as xr
 
@@ -251,7 +251,13 @@ class Processor:
 
             lst.append(da)
 
-        return xr.merge(lst)
+        ds = xr.merge(lst)  # type: xr.Dataset
+        ds["readout_time"].attrs.update({"units": "s", "standard_name": "Readout time"})
+        ds["image"].attrs.update({"units": "photon"})
+        ds["signal"].attrs.update({"units": "electron"})
+        ds["pixel"].attrs.update({"units": "adu"})
+
+        return ds
 
     @property
     def numbytes(self) -> int:
