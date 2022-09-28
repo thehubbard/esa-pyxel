@@ -110,7 +110,7 @@ def test_simple_conversion_valid(ccd_5x5: CCD, qe: float):
         pytest.param(1.5, ValueError, "Quantum efficiency not between 0 and 1."),
     ],
 )
-def test_simple_conversion_valid(
+def test_simple_conversion_valid2(
     ccd_5x5: CCD,
     qe: float,
     exp_exc,

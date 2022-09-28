@@ -18,10 +18,6 @@ if t.TYPE_CHECKING:
     from pyxel.detectors import Detector
 
 
-# Declare type variable
-T = t.TypeVar("T")
-
-
 class Arguments(t.MutableMapping):
     """Arguments class for usage in ModelFunction.
 
@@ -193,11 +189,9 @@ class ModelFunction:
         """TBW."""
         return self._arguments
 
-    def __call__(self, detector: "Detector") -> T:
+    def __call__(self, detector: "Detector") -> None:
         """TBW."""
-        result = self._func(detector, **self.arguments)  # type: T
-
-        return result
+        self._func(detector, **self.arguments)
 
 
 class FitnessFunction:

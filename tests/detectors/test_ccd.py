@@ -6,6 +6,7 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 from copy import deepcopy
+from typing import Tuple
 
 import numpy as np
 import pandas as pd
@@ -108,12 +109,12 @@ def test_is_equal_with_arrays(valid_ccd: CCD):
     assert valid_ccd._image is not other_detector._image
 
     # Generate random data
-    shape = valid_ccd.geometry.row, valid_ccd.geometry.col  # type: t.Tuple[int, int]
-    photon_2d = np.random.random(size=shape)
-    pixel_2d = np.random.random(size=shape)
-    signal_2d = np.random.random(size=shape)
-    image_2d = np.random.random(size=shape)
-    charge_2d = np.random.random(size=shape)
+    shape = valid_ccd.geometry.row, valid_ccd.geometry.col  # type: Tuple[int, int]
+    photon_2d = np.random.random(size=shape)  # type: np.ndarray
+    pixel_2d = np.random.random(size=shape)  # type: np.ndarray
+    signal_2d = np.random.random(size=shape)  # type: np.ndarray
+    image_2d = np.random.random(size=shape)  # type: np.ndarray
+    charge_2d = np.random.random(size=shape)  # type: np.ndarray
 
     # Apply the random data to 'valid_ccd' and 'other_detector'
     valid_ccd.photon.array = photon_2d.copy()
@@ -327,12 +328,12 @@ def test_to_and_from_dict(klass, obj, exp_dict):
 @pytest.mark.parametrize("klass", [CCD, Detector])
 def test_to_and_from_dict_with_arrays_no_frame(valid_ccd: CCD, klass):
     # Generate random data
-    shape = valid_ccd.geometry.row, valid_ccd.geometry.col  # type: t.Tuple[int, int]
-    photon_2d = np.random.random(size=shape)
-    pixel_2d = np.random.random(size=shape)
-    signal_2d = np.random.random(size=shape)
-    image_2d = np.random.random(size=shape)
-    charge_2d = np.random.random(size=shape)
+    shape = valid_ccd.geometry.row, valid_ccd.geometry.col  # type: Tuple[int, int]
+    photon_2d = np.random.random(size=shape)  # type: np.ndarray
+    pixel_2d = np.random.random(size=shape)  # type: np.ndarray
+    signal_2d = np.random.random(size=shape)  # type: np.ndarray
+    image_2d = np.random.random(size=shape)  # type: np.ndarray
+    charge_2d = np.random.random(size=shape)  # type: np.ndarray
 
     valid_ccd.photon.array = photon_2d.copy()
     valid_ccd.pixel.array = pixel_2d.copy()

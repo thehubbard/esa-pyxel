@@ -96,4 +96,4 @@ def test_ktc_noise_invalid(
     """Test model 'output_pixel_reset_voltage_apd' with valid inputs."""
     detector = ccd_5x5
     with pytest.raises(exp_exc, match=exp_error):
-        ktc_noise(detector=detector, node_capacitance=node_capacitance)
+        ktc_noise(detector=detector, node_capacitance=node_capacitance)  # type: ignore

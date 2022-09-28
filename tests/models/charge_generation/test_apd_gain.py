@@ -68,7 +68,7 @@ def test_apd_gain_invalid_detector(ccd_5x5: CCD):
     detector = ccd_5x5
 
     with pytest.raises(TypeError, match="Expecting a 'APD' detector object."):
-        apd_gain(detector=detector)
+        apd_gain(detector=detector)  # type: ignore
 
 
 def test_apd_gain(apd_5x5: APD):

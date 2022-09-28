@@ -6,6 +6,8 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 
+from typing import Union
+
 import pytest
 
 from pyxel.detectors import (
@@ -96,7 +98,7 @@ def test_output_node_noise(
 ):
     """Test model 'output_node_noise' with valid inputs."""
     if detector_type == "ccd":
-        detector = ccd_5x10
+        detector = ccd_5x10  # type: Union[CCD, CMOS]
     elif detector_type == "cmos":
         detector = cmos_5x10
     else:
@@ -109,7 +111,7 @@ def test_output_node_noise(
 def test_output_node_noise_bad_std(ccd_5x10: CCD, cmos_5x10: CMOS, detector_type: str):
     """Test model 'output_node_noise' with invalid input(s)."""
     if detector_type == "ccd":
-        detector = ccd_5x10
+        detector = ccd_5x10  # type: Union[CCD, CMOS]
     elif detector_type == "cmos":
         detector = cmos_5x10
     else:

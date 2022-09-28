@@ -86,7 +86,7 @@ def ccd_10x10() -> CCD:
 def test_illumination(
     ccd_10x10: CCD,
     level: float,
-    option: Literal["uniform", "rectangular_hole", "elliptic_hole"],
+    option: Literal["uniform", "rectangular", "elliptic"],
     object_size: t.Optional[t.Sequence[int]],
     object_center: t.Optional[t.Sequence[int]],
     time_scale: float,

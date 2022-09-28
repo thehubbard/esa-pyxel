@@ -454,8 +454,13 @@ def test_detector_and_model_update(yaml: str, param_array: np.ndarray):
     detector = cfg.ccd_detector
     pipeline = cfg.pipeline
 
+    assert isinstance(detector, CCD)
+    assert isinstance(pipeline, DetectionPipeline)
+
     processor = Processor(detector, pipeline)
     calibration = cfg.calibration
+    assert isinstance(calibration, Calibration)
+
     mf = ModelFitting(
         processor=processor,
         variables=calibration.parameters,
@@ -465,7 +470,7 @@ def test_detector_and_model_update(yaml: str, param_array: np.ndarray):
         generations=calibration.algorithm.generations,
         population_size=calibration.algorithm.population_size,
         fitness_func=calibration.fitness_function._func,
-        file_path=None,
+        file_path=Path(),
     )
     configure(mf=mf, sim=cfg)
     mf.processor = mf.update_processor(param_array, processor)
