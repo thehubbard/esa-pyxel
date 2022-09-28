@@ -99,7 +99,7 @@ def test_simple_conversion_valid(ccd_5x5: CCD, qe: float):
     detector.photon.array = array
     target = array * 0.5
 
-    simple_conversion(detector=detector, quantum_efficiency=qe)
+    simple_conversion(detector=detector, quantum_efficiency=qe, binomial_sampling=False)
 
     np.testing.assert_array_almost_equal(detector.charge.array, target)
 
