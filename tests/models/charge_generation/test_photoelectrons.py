@@ -99,7 +99,7 @@ def test_simple_conversion_valid(ccd_5x5: CCD, qe: float):
     detector.photon.array = array
     target = array * 0.5
 
-    simple_conversion(detector=detector, quantum_efficiency=qe)
+    simple_conversion(detector=detector, quantum_efficiency=qe, binomial_sampling=False)
 
     np.testing.assert_array_almost_equal(detector.charge.array, target)
 
@@ -110,7 +110,7 @@ def test_simple_conversion_valid(ccd_5x5: CCD, qe: float):
         pytest.param(1.5, ValueError, "Quantum efficiency not between 0 and 1."),
     ],
 )
-def test_simple_conversion_valid(
+def test_simple_conversion_valid2(
     ccd_5x5: CCD,
     qe: float,
     exp_exc,

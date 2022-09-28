@@ -77,11 +77,9 @@ def test_offset(
     """Test offset models 'dc_offset' and 'output_pixel_reset_voltage_apd' with valid inputs."""
 
     if detector_type == "ccd":
-        detector = ccd_5x5
-        dc_offset(detector=detector, offset=voltage)
+        dc_offset(detector=ccd_5x5, offset=voltage)
     elif detector_type == "apd":
-        detector = apd_5x5
-        output_pixel_reset_voltage_apd(detector=detector, roic_drop=voltage)
+        output_pixel_reset_voltage_apd(detector=apd_5x5, roic_drop=voltage)
     else:
         raise NotImplementedError
 
@@ -132,4 +130,4 @@ def test_output_pixel_reset_voltage_apd_invalid_with_ccd(ccd_5x5: CCD):
     detector = ccd_5x5
 
     with pytest.raises(TypeError, match="Expecting a 'APD' detector object."):
-        output_pixel_reset_voltage_apd(detector=detector, roic_drop=1.0)
+        output_pixel_reset_voltage_apd(detector=detector, roic_drop=1.0)  # type: ignore

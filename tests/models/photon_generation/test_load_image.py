@@ -34,7 +34,7 @@ from pyxel.models.photon_generation import load_image
 @pytest.fixture
 def valid_data2d(
     tmp_path: Path,
-) -> str:
+) -> Path:
     """Create valid 2D file on a temporary folder."""
     data_2d = np.ones((20, 20), dtype=np.uint16)
     final_path = f"{tmp_path}/img.npy"

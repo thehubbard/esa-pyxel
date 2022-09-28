@@ -6,9 +6,9 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 #
 #
-import typing as t
 
 import pytest
+from typing_extensions import Literal
 
 from pyxel.detectors import CCD, CCDCharacteristics, CCDGeometry, Environment
 from pyxel.models.readout_electronics import simple_adc
@@ -34,7 +34,9 @@ def ccd_3x3() -> CCD:
 
 
 @pytest.mark.parametrize("data_type", ["uint16", "uint32", "uint64", "uint"])
-def test_simple_adc(ccd_3x3: CCD, data_type: str):
+def test_simple_adc(
+    ccd_3x3: CCD, data_type: Literal["uint16", "uint32", "uint64", "uint"]
+):
     """Test model 'simple_adc'."""
     simple_adc(detector=ccd_3x3, data_type=data_type)
 
@@ -61,5 +63,5 @@ def test_simple_adc_wrong_data_type(
     with pytest.raises(exp_exc, match=exp_error):
         simple_adc(
             detector=ccd_3x3,
-            data_type=data_type,
+            data_type=data_type,  # type: ignore
         )

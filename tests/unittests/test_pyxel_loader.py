@@ -17,6 +17,8 @@ from yaml import SafeLoader
 
 def _expr_processor(loader: SafeLoader, node: yaml.ScalarNode):
     value = loader.construct_scalar(node)
+    assert value is not None
+    assert not isinstance(value, float)
 
     try:
         result = eval(value, {}, np.__dict__)

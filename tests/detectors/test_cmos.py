@@ -6,6 +6,7 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 from copy import deepcopy
+from typing import Tuple
 
 import numpy as np
 import pandas as pd
@@ -112,12 +113,12 @@ def test_is_equal_with_arrays(valid_cmos: CMOS):
     assert valid_cmos._signal is not other_detector._signal
     assert valid_cmos._image is not other_detector._image
 
-    shape = valid_cmos.geometry.row, valid_cmos.geometry.col  # type: t.Tuple[int, int]
-    photon = np.random.random(size=shape)
-    pixel = np.random.random(size=shape)
-    signal = np.random.random(size=shape)
-    image = np.random.random(size=shape)
-    charge = np.random.random(size=shape)
+    shape = valid_cmos.geometry.row, valid_cmos.geometry.col  # type: Tuple[int, int]
+    photon = np.random.random(size=shape)  # type: np.ndarray
+    pixel = np.random.random(size=shape)  # type: np.ndarray
+    signal = np.random.random(size=shape)  # type: np.ndarray
+    image = np.random.random(size=shape)  # type: np.ndarray
+    charge = np.random.random(size=shape)  # type: np.ndarray
 
     valid_cmos.photon.array = photon.copy()
     valid_cmos.pixel.array = pixel.copy()

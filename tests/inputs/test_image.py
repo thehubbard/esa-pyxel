@@ -43,6 +43,7 @@ def valid_pil_image() -> Image.Image:
     return pil_image
 
 
+@t.no_type_check
 @pytest.fixture
 def valid_data2d_http_hostname(
     tmp_path: Path,
@@ -116,9 +117,9 @@ def valid_data2d_http_hostname(
         # Put binary data in a fake HTTP server
         for filename, content_type in binary_filenames:
             with open(filename, "rb") as fh:
-                response_data = fh.read()  # type: str
+                response_data_bytes = fh.read()  # type: bytes
                 httpserver.expect_request(f"/{filename}").respond_with_data(
-                    response_data, content_type=content_type
+                    response_data_bytes, content_type=content_type
                 )
 
         # Extract an url (e.g. 'http://localhost:59226/)
@@ -134,7 +135,7 @@ def valid_data2d_http_hostname(
 
 
 @pytest.fixture
-def invalid_data2d_hostname(tmp_path: Path, httpserver: HTTPServer) -> str:
+def invalid_data2d_hostname(tmp_path: Path, httpserver: HTTPServer) -> str:  # type: ignore
     """Create invalid 2D files on a temporary folder and HTTP server."""
     # Get current folder
     current_folder = Path().cwd()  # type: Path
@@ -172,7 +173,7 @@ def invalid_data2d_hostname(tmp_path: Path, httpserver: HTTPServer) -> str:
 
 
 @pytest.fixture
-def valid_table_http_hostname(tmp_path: Path, httpserver: HTTPServer) -> str:
+def valid_table_http_hostname(tmp_path: Path, httpserver: HTTPServer) -> str:  # type: ignore
     """Create valid tables locally and on a temporary HTTP server."""
     # Get current folder
     current_folder = Path().cwd()  # type: Path
@@ -219,9 +220,9 @@ def valid_table_http_hostname(tmp_path: Path, httpserver: HTTPServer) -> str:
         # Put binary data in a fake HTTP server
         for filename, content_type in binary_filenames:
             with open(filename, "rb") as fh:
-                response_data = fh.read()  # type: str
+                response_data_bytes = fh.read()  # type: bytes
                 httpserver.expect_request(f"/{filename}").respond_with_data(
-                    response_data, content_type=content_type
+                    response_data_bytes, content_type=content_type
                 )
 
         # Extract an url (e.g. 'http://localhost:59226/)
@@ -237,7 +238,7 @@ def valid_table_http_hostname(tmp_path: Path, httpserver: HTTPServer) -> str:
 
 
 @pytest.fixture
-def invalid_table_http_hostname(tmp_path: Path, httpserver: HTTPServer) -> str:
+def invalid_table_http_hostname(tmp_path: Path, httpserver: HTTPServer) -> str:  # type: ignore
     """Create invalid tables on temporary folder and HTTP server."""
     # Get current folder
     current_folder = Path().cwd()  # type: Path
@@ -303,10 +304,12 @@ def test_invalid_filename(
 ):
     """Test invalid filenames."""
     if isinstance(filename, str):
-        filename = filename.format(host=invalid_data2d_hostname)  # type: str
+        new_filename = filename.format(host=invalid_data2d_hostname)  # type: str
+    else:
+        new_filename = filename
 
-    with pytest.raises(exp_error, match=exp_message):
-        _ = pyxel.load_image(filename)
+    with pytest.raises(exp_error, match=exp_message):  # type: ignore
+        _ = pyxel.load_image(new_filename)
 
 
 @pytest.mark.parametrize("with_caching", [False, True])
@@ -421,7 +424,7 @@ def test_load_table_invalid_filename(
     if isinstance(filename, str):
         filename = filename.format(host=invalid_table_http_hostname)
 
-    with pytest.raises(exp_error, match=exp_message):
+    with pytest.raises(exp_error, match=exp_message):  # type: ignore
         _ = pyxel.load_table(filename)
 
 

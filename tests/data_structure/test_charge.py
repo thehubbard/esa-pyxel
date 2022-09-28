@@ -11,6 +11,7 @@ from dataclasses import dataclass
 import numpy as np
 import pandas as pd
 import pytest
+from typing_extensions import Literal
 
 from pyxel.data_structure import Charge
 from pyxel.detectors import Geometry
@@ -136,7 +137,7 @@ class ChargeInfo:
     Only for testing.
     """
 
-    particle_type: str
+    particle_type: Literal["e", "h"]
     particles_per_cluster: np.ndarray
     init_energy: np.ndarray
     init_ver_position: np.ndarray
@@ -229,7 +230,7 @@ def test_invalid_add_charge(param_name: str, geo: Geometry, new_value, exp_error
 
 
 @pytest.mark.parametrize("particle_type", ["E", "H", "electron", "hole"])
-def test_invalid_particle_type(geo: Geometry, particle_type: str):
+def test_invalid_particle_type(geo: Geometry, particle_type: Literal["e", "h"]):
     """Test method `Charge.add_charge` with invalid 'particle_type."""
     charge = Charge(geo=geo)
 
