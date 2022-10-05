@@ -59,6 +59,7 @@ extensions = [
     "sphinx_inline_tabs",  # Add inline tabs
     "sphinx.ext.intersphinx",  # Link to other project's documentation
     "myst_nb",  # Parser '.ipynb' and '.md' files
+    "sphinx_copybutton",  # Add a 'copy' button to code blocks
 ]
 
 extlinks = {
