@@ -59,6 +59,7 @@ extensions = [
     "sphinx_inline_tabs",  # Add inline tabs
     "sphinx.ext.intersphinx",  # Link to other project's documentation
     "myst_nb",  # Parser '.ipynb' and '.md' files
+    "sphinx_copybutton",  # Add a 'copy' button to code blocks
 ]
 
 extlinks = {
@@ -246,7 +247,7 @@ intersphinx_mapping = {
     "dask": ("https://docs.dask.org/en/latest", None),
     # "cftime": ("https://unidata.github.io/cftime", None),
     # "rasterio": ("https://rasterio.readthedocs.io/en/latest", None),
-    "xarray": ("https://xarray.pydata.org/en/stable/", None),
+    "xarray": ("https://docs.xarray.dev/en/stable/", None),
     "holoviews": ("https://holoviews.org/", None),
 }
 

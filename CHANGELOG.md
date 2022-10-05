@@ -14,6 +14,8 @@
   and [!508](https://gitlab.com/esa/pyxel/-/merge_requests/508).
 
 ### Documentation
+* Add a 'copy' button in documentation to copy code blocks.
+  (See [!506](https://gitlab.com/esa/pyxel/-/merge_requests/506)).
 
 ### Models
 

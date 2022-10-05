@@ -10,3 +10,4 @@ ipython != 8.1; python_version < '3.9'
 ipython>=8.1; python_version >= '3.9'
 sphinx-inline-tabs
 myst-nb
+sphinx-copybutton
