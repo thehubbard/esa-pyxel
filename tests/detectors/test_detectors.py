@@ -177,3 +177,21 @@ def test_to_from_hdf5(detector: t.Union[CCD, CMOS, MKID, APD], tmp_path: Path):
     assert new_detector.characteristics == detector.characteristics
 
     assert new_detector == detector
+
+
+def test_to_from_asdf(detector: t.Union[CCD, CMOS, MKID, APD], tmp_path: Path):
+    """Test methods `Detector.to_asdf' and `Detector.from_asdf`."""
+    filename = tmp_path / f"{detector.__class__.__name__}.asdf"
+
+    # Save to 'asdf'
+    detector.to_asdf(filename)
+
+    # Load from 'asdf
+    new_detector = Detector.from_asdf(filename)
+
+    # Comparisons
+    assert new_detector.geometry == detector.geometry
+    assert new_detector.environment == detector.environment
+    assert new_detector.characteristics == detector.characteristics
+
+    assert new_detector == detector
