@@ -23,6 +23,8 @@
 ### Others
 * Improved JSON Schema.
   (See [!509](https://gitlab.com/esa/pyxel/-/merge_requests/509)).
+* Add more information in the output xarray.
+  (See [!515](https://gitlab.com/esa/pyxel/-/merge_requests/515)).
 
 ## version 1.3.2 / 2022-09-08
 
