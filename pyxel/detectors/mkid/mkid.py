@@ -148,6 +148,8 @@ class MKID(Detector):
     def from_dict(cls, dct: t.Mapping) -> "MKID":
         """Create a new instance of `MKID` from a `dict`."""
         # TODO: This is a simplistic implementation. Improve this.
+        import numpy as np
+
         from pyxel.data_structure import Scene
         from pyxel.detectors import Environment, MKIDCharacteristics, MKIDGeometry
 
@@ -171,23 +173,21 @@ class MKID(Detector):
         data = dct["data"]
 
         if "photon" in data:
-            detector.photon.array = data["photon"]
+            detector.photon.array = np.asarray(data["photon"])
 
         scene = data.get("scene")  # type: t.Optional[t.Mapping]
         if scene is not None:
             detector.scene = Scene.from_dict(scene)
 
         if "pixel" in data:
-            detector.pixel.array = data["pixel"]
+            detector.pixel.array = np.asarray(data["pixel"])
         if "signal" in data:
-            detector.signal.array = data["signal"]
+            detector.signal.array = np.asarray(data["signal"])
         if "image" in data:
-            detector.image.array = data["image"]
-        if "phase" in data and data["phase"] is not None:
-            detector.phase.array = data["phase"]
+            detector.image.array = np.asarray(data["image"])
         if "charge" in data and data["charge"] is not None:
             charge_dct = data["charge"]
-            detector.charge._array = charge_dct["array"]
+            detector.charge._array = np.asarray(charge_dct["array"])
 
             new_frame = charge_dct["frame"]  # type: pd.DataFrame
             previous_frame = detector.charge._frame  # type: pd.DataFrame

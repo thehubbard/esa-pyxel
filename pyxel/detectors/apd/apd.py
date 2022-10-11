@@ -12,16 +12,15 @@
 #  this file, may be copied, modified, propagated, or distributed except according to
 #  the terms contained in the file ‘LICENCE.txt’.
 
-""":term:`CMOS` detector modeling class."""
+""":term:`APD` detector modeling class."""
 import typing as t
 
 from pyxel.detectors import Detector
 
 if t.TYPE_CHECKING:
-    from pyxel.detectors import Environment
+    import pandas as pd
 
-    from .apd_characteristics import APDCharacteristics
-    from .apd_geometry import APDGeometry
+    from pyxel.detectors import APDCharacteristics, APDGeometry, Environment
 
 
 class APD(Detector):
@@ -91,6 +90,8 @@ class APD(Detector):
     def from_dict(cls, dct: t.Mapping) -> "APD":
         """Create a new instance of `APD` from a `dict`."""
         # TODO: This is a simplistic implementation. Improve this.
+        import numpy as np
+
         from pyxel.data_structure import Scene
         from pyxel.detectors import APDCharacteristics, APDGeometry, Environment
 
@@ -114,21 +115,24 @@ class APD(Detector):
         data = dct["data"]
 
         if "photon" in data:
-            detector.photon.array = data["photon"]
+            detector.photon.array = np.asarray(data["photon"])
 
         scene = data.get("scene")  # type: t.Optional[t.Mapping]
         if scene is not None:
             detector.scene = Scene.from_dict(scene)
 
         if "pixel" in data:
-            detector.pixel.array = data["pixel"]
+            detector.pixel.array = np.asarray(data["pixel"])
         if "signal" in data:
-            detector.signal.array = data["signal"]
+            detector.signal.array = np.asarray(data["signal"])
         if "image" in data:
-            detector.image.array = data["image"]
+            detector.image.array = np.asarray(data["image"])
         if "charge" in data and data["charge"] is not None:
             charge_dct = data["charge"]
-            detector.charge._array = charge_dct["array"]
-            detector.charge._frame = charge_dct["frame"]
+            detector.charge._array = np.asarray(charge_dct["array"])
+
+            new_frame = charge_dct["frame"]  # type: pd.DataFrame
+            previous_frame = detector.charge._frame  # type: pd.DataFrame
+            detector.charge._frame = new_frame[previous_frame.columns]
 
         return detector

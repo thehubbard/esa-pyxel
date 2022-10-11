@@ -471,9 +471,82 @@ class Detector:
         >>> detector
         CCD(...)
         """
-        dct = backends.from_hdf5(filename)  # type: t.Mapping[str, t.Any]
+        with backends.from_hdf5(filename) as dct:  # type: t.Mapping[str, t.Any]
+            obj = cls.from_dict(dct)  # type: Detector
+            return obj
 
-        obj = cls.from_dict(dct)  # type: Detector
+    def to_asdf(self, filename: t.Union[str, Path]) -> None:
+        """Write the detector content to a :term:`ASDF` file.
+
+        The ASDF file has the following structure:
+
+        .. code-block:: bash
+
+             root (AsdfObject)
+             ├─version (int): 1
+             ├─type (str): CCD
+             ├─properties (dict)
+             │ ├─geometry (dict)
+             │ │ ├─row (int): 4
+             │ │ ├─col (int): 5
+             │ │ ├─total_thickness (NoneType): None
+             │ │ ├─pixel_vert_size (NoneType): None
+             │ │ └─pixel_horz_size (NoneType): None
+             │ ├─environment (dict)
+             │ │ └─temperature (NoneType): None
+             │ └─characteristics (dict)
+             │   ├─quantum_efficiency (NoneType): None
+             │   ├─charge_to_volt_conversion (NoneType): None
+             │   └─4 not shown
+             └─data (dict)
+               ├─photon (ndarray): shape=(4, 5), dtype=float64
+               ├─scene (NoneType): None
+               ├─pixel (ndarray): shape=(4, 5), dtype=float64
+               ├─signal (ndarray): shape=(4, 5), dtype=float64
+               ├─image (ndarray): shape=(4, 5), dtype=uint64
+               └─charge (dict) ...
+
+        Parameters
+        ----------
+        filename : str or Path
+
+        Notes
+        -----
+        You can find more information in the 'how-to' guide section.
+
+        Examples
+        --------
+        >>> from pyxel.detectors import CCD
+        >>> detector = CCD(...)
+
+        >>> detector.to_asdf("ccd.asdf")
+
+        >>> import asdf
+        >>> af = asdf.open("ccd_asdf")
+        >>> af["type"]
+        'CCD'
+        >>> af.info()
+        """
+        dct = self.to_dict()  # type: t.Mapping
+        backends.to_asdf(filename=filename, dct=dct)
+
+    @classmethod
+    def from_asdf(cls, filename: t.Union[str, Path]) -> "Detector":
+        """Load a detector object from a :term:`ASDF` file.
+
+        Parameters
+        ----------
+        filename : str or Path
+
+        Examples
+        --------
+        >>> detector = Detector.from_asdf("ccd.asdf")
+        >>> detector
+        CCD(...)
+        """
+        with backends.from_asdf(filename) as dct:  # type: t.Mapping[str, t.Any]
+            obj = cls.from_dict(dct)  # type: Detector
+
         return obj
 
     def to_dict(self) -> t.Mapping:

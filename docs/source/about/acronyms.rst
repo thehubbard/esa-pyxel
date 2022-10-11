@@ -14,6 +14,9 @@ List of Acronyms
     APD
       Avalanche Photo Diode.
 
+    ASDF
+      Advanced Scientific Data Format.
+
     CCD
       Charge-Coupled Device.
 
