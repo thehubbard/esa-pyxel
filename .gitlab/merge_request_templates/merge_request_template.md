@@ -14,7 +14,7 @@ make it apparent that there's nothing to do.
  - [ ] Updated **documentation** for changed code
  - [ ] Documentation `.rst` files is written using [semantic newlines](https://sembr.org)
  - [ ] User visible changes (including notable bug fixes and possible deprecations) are 
-       documented in `CHANGELOG.rst`
+       documented in `CHANGELOG.md`
  - [ ] Passes in this order
    - [ ] isort .
    - [ ] black .
