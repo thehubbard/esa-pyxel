@@ -606,7 +606,7 @@ class Observation:
 
         ds = new_processor.result_to_dataset(
             x=x, y=y, times=times, result_type=self.result_type
-        )
+        )  # type: xr.Dataset
 
         # Can also be done outside dask in a loop
         ds = _add_product_parameters(
@@ -615,6 +615,8 @@ class Observation:
             indices=index,
             types=types,
         )
+
+        ds.attrs.update({"running mode": "Observation - Product"})
 
         return ds
 
@@ -646,13 +648,14 @@ class Observation:
 
         ds = new_processor.result_to_dataset(
             x=x, y=y, times=times, result_type=self.result_type
-        )
+        )  # type: xr.Dataset
 
         # Can also be done outside dask in a loop
         ds = _add_custom_parameters(
             ds=ds,
             index=index,
         )
+        ds.attrs.update({"running mode": "Observation - Custom"})
 
         return ds
 
@@ -687,7 +690,7 @@ class Observation:
 
         ds = new_processor.result_to_dataset(
             x=x, y=y, times=times, result_type=self.result_type
-        )
+        )  # type: xr.Dataset
 
         # Can also be done outside dask in a loop
         ds = _add_sequential_parameters(
@@ -697,6 +700,8 @@ class Observation:
             coordinate_name=coordinate,
             types=types,
         )
+
+        ds.attrs.update({"running mode": "Observation - Sequential"})
 
         return ds
 

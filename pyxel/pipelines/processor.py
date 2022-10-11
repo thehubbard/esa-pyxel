@@ -14,7 +14,9 @@ from enum import Enum
 from numbers import Number
 
 import numpy as np
+from typing_extensions import Literal
 
+from pyxel import __version__
 from pyxel.evaluator import eval_entry
 from pyxel.pipelines import DetectionPipeline, ModelGroup
 from pyxel.state import get_obj_att
@@ -35,7 +37,9 @@ class ResultType(Enum):
     All = "all"
 
 
-def result_keys(result_type: ResultType = ResultType.All) -> t.Sequence[str]:
+def result_keys(
+    result_type: ResultType = ResultType.All,
+) -> t.Sequence[Literal["image", "signal", "pixel"]]:
     """Return result keys based on result type.
 
     Parameters
@@ -231,27 +235,50 @@ class Processor:
     def result_to_dataset(
         self, y: range, x: range, times: np.ndarray, result_type: ResultType
     ) -> "xr.Dataset":
-        """Return the result in an xarray dataset."""
+        """Return the result in a xarray dataset."""
         # Late import to speedup start-up time
         import xarray as xr
 
         if not self._result:
             raise ValueError("No result saved in the processor.")
 
-        lst = []
+        readout_time = xr.DataArray(
+            times,
+            dims=("readout_time",),
+            attrs={"units": "s", "standard_name": "Readout time"},
+        )
 
-        for key in result_keys(result_type):
+        lst = []  # type: t.List[xr.DataArray]
+        for key in result_keys(
+            result_type
+        ):  # type: Literal['image', 'signal', 'pixel']
+
+            if key == "image":
+                standard_name = "Image"  # type: str
+                unit = "adu"  # type: str
+            elif key == "signal":
+                standard_name = "Signal"
+                unit = "volt"
+            elif key == "pixel":
+                standard_name = "Pixel"
+                unit = "electron"
+            else:
+                raise NotImplementedError
 
             da = xr.DataArray(
                 self.result[key],
                 dims=("readout_time", "y", "x"),
                 name=key,
-                coords={"readout_time": times, "y": y, "x": x},
+                coords={"readout_time": readout_time, "y": y, "x": x},
+                attrs={"units": unit, "standard_name": standard_name},
             )
 
             lst.append(da)
 
-        return xr.merge(lst)
+        ds = xr.merge(lst, combine_attrs="drop_conflicts")  # type: xr.Dataset
+        ds.attrs.update({"pyxel version": __version__})
+
+        return ds
 
     @property
     def numbytes(self) -> int:

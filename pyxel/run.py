@@ -89,7 +89,7 @@ def exposure_mode(
 
     processor = Processor(detector=detector, pipeline=pipeline)
 
-    result = exposure.run_exposure(processor=processor)
+    result = exposure.run_exposure(processor=processor)  # type: xr.Dataset
 
     if exposure_outputs.save_exposure_data:
         exposure_outputs.save_exposure_outputs(dataset=result)
@@ -146,7 +146,7 @@ def observation_mode(
 
     processor = Processor(detector=detector, pipeline=pipeline)
 
-    result = observation.run_observation(processor=processor)
+    result = observation.run_observation(processor=processor)  # type: ObservationResult
 
     if observation_outputs.save_observation_data:
         observation_outputs.save_observation_datasets(
