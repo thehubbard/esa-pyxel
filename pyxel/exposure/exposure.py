@@ -91,9 +91,16 @@ class Exposure:
             pipeline_seed=self.pipeline_seed,
         )
 
-        return processor.result_to_dataset(
-            x=x, y=y, times=times, result_type=self.result_type
-        )
+        ds = processor.result_to_dataset(
+            x=x,
+            y=y,
+            times=times,
+            result_type=self.result_type,
+        )  # type: xr.Dataset
+
+        ds.attrs.update({"running mode": "Exposure"})
+
+        return ds
 
 
 def run_exposure_pipeline(
