@@ -53,6 +53,7 @@ dependencies:
   - xlrd
   - openpyxl
   - netcdf4
+  - asdf
 # Others
   - click
   - tqdm
