@@ -471,10 +471,9 @@ class Detector:
         >>> detector
         CCD(...)
         """
-        dct = backends.from_hdf5(filename)  # type: t.Mapping[str, t.Any]
-
-        obj = cls.from_dict(dct)  # type: Detector
-        return obj
+        with backends.from_hdf5(filename) as dct:  # type: t.Mapping[str, t.Any]
+            obj = cls.from_dict(dct)  # type: Detector
+            return obj
 
     def to_asdf(self, filename: t.Union[str, Path]) -> None:
         """Write the detector content to a :term:`ASDF` file.
@@ -533,9 +532,21 @@ class Detector:
 
     @classmethod
     def from_asdf(cls, filename: t.Union[str, Path]) -> "Detector":
-        dct = backends.from_asdf(filename)  # type: t.Mapping[str, t.Any]
+        """Load a detector object from a :term:`ASDF` file.
 
-        obj = cls.from_dict(dct)  # type: Detector
+        Parameters
+        ----------
+        filename : str or Path
+
+        Examples
+        --------
+        >>> detector = Detector.from_asdf("ccd.asdf")
+        >>> detector
+        CCD(...)
+        """
+        with backends.from_asdf(filename) as dct:  # type: t.Mapping[str, t.Any]
+            obj = cls.from_dict(dct)  # type: Detector
+
         return obj
 
     def to_dict(self) -> t.Mapping:

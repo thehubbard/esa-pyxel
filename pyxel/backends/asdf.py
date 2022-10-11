@@ -8,45 +8,79 @@
 """Module to read/write ASDF files."""
 
 import typing as t
+from contextlib import contextmanager
 from pathlib import Path
 
-import asdf
+if t.TYPE_CHECKING:
+    import pandas as pd
 
 
 def to_asdf(filename: t.Union[str, Path], dct: t.Mapping[str, t.Any]) -> None:
     """Write data to a ASDF file."""
+    try:
+        import asdf
+    except ImportError as exc:
+        raise ImportError(
+            "Missing optional package 'asdf'.\n"
+            "Please install it with 'pip install pyxel-sim[io]' "
+            "or 'pip install pyxel-sim[all]'"
+        ) from exc
+
     if dct["version"] != 1:
         raise NotImplementedError
 
-    # TODO: Remove this
-    # TODO: Use .to_numpy() ?
-    dct["data"]["charge"]["frame"] = dct["data"]["charge"]["frame"].to_dict(
-        orient="list"
-    )
+    # Convert a 'DataFrame' into a `dict`
+    df = dct["data"]["charge"]["frame"]  # type: pd.DataFrame
+    frame_dct = df.to_dict(orient="list")  # type: t.Mapping[str, t.Sequence[float]]
 
-    af = asdf.AsdfFile(dct)
-    af.write_to(filename)
-    print("Hello World")
+    dct["data"]["charge"]["frame"] = frame_dct
+
+    with asdf.AsdfFile(dct) as af:
+        af.write_to(filename)
 
 
-def from_asdf(filename: t.Union[str, Path]) -> t.Mapping[str, t.Any]:
+@contextmanager
+def from_asdf(filename: t.Union[str, Path]) -> t.Iterator[t.Mapping[str, t.Any]]:
     """Read data from a HDF5 file."""
-    dct = {}
-    with asdf.open(filename, copy_arrays=True) as af:
+    import pandas as pd
 
+    try:
+        import asdf
+    except ImportError as exc:
+        raise ImportError(
+            "Missing optional package 'asdf'.\n"
+            "Please install it with 'pip install pyxel-sim[io]' "
+            "or 'pip install pyxel-sim[all]'"
+        ) from exc
+
+    dct = {}  # type: t.Dict[str, t.Any]
+
+    with asdf.open(filename, copy_arrays=True) as af:
         # TODO: Use a JSON schema to validate 'dct'
-        if "version" not in af or "type" not in af:
-            raise ValueError("Missing 'version' and/or 'type' !")
+        if "version" not in af:
+            raise ValueError("Missing 'version' !")
 
         version = af["version"]  # type: int
         if version != 1:
             raise NotImplementedError
 
         dct["version"] = version
+
+        if "type" not in af:
+            raise ValueError("Missing 'type' !")
+
         dct["type"] = af["type"]
 
         # Get properties
         dct["properties"] = af["properties"]
         dct["data"] = af["data"]
 
-        return dct
+        # Convert a 'dict' to a 'DataFrame'
+        frame_dct = dct["data"]["charge"][
+            "frame"
+        ]  # type: t.Mapping[str, t.Sequence[float]]
+        df = pd.DataFrame(frame_dct)
+
+        dct["data"]["charge"]["frame"] = df
+
+        yield dct

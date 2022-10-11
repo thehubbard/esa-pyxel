@@ -9,6 +9,7 @@
 
 import typing as t
 from collections import abc
+from contextlib import contextmanager
 from pathlib import Path
 
 import h5py as h5
@@ -152,7 +153,8 @@ def _load(
         raise NotImplementedError
 
 
-def from_hdf5(filename: t.Union[str, Path]) -> t.Mapping[str, t.Any]:
+@contextmanager
+def from_hdf5(filename: t.Union[str, Path]) -> t.Iterator[t.Mapping[str, t.Any]]:
     """Read data from a HDF5 file."""
     dct = {}
     with h5.File(filename, mode="r") as h5file:
@@ -181,4 +183,4 @@ def from_hdf5(filename: t.Union[str, Path]) -> t.Mapping[str, t.Any]:
 
         dct["data"] = data
 
-    return dct
+        yield dct
