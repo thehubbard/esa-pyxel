@@ -8,10 +8,11 @@
   (See [!505](https://gitlab.com/esa/pyxel/-/merge_requests/505)).
 * Implement a function that converts from `scopesim.Source` object to `Scene` object.
   (See [!506](https://gitlab.com/esa/pyxel/-/merge_requests/506)).
-
 * Refactor and simplify `Calibration` and `Observation` classes.
   (See [!507](https://gitlab.com/esa/pyxel/-/merge_requests/507)
   and [!508](https://gitlab.com/esa/pyxel/-/merge_requests/508).
+* Import/Export a Detector from/to an ASDF file.
+  (See [!513](https://gitlab.com/esa/pyxel/-/merge_requests/513)).
 
 ### Documentation
 * Add a 'copy' button in documentation to copy code blocks.
