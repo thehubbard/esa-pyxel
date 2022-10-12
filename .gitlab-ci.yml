@@ -96,7 +96,7 @@ coverage:
   stage: build
   needs: []
   script:
-    - tox -e py-extra_all-coverage
+    - tox -e pycov-extra_all
   coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
   artifacts:
     reports:
