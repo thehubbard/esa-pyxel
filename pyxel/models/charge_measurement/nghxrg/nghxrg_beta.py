@@ -13,7 +13,7 @@ Modification History:
   a suggestion from Chaz Shapiro (NASA/JPL) that would allow seamlessly adding
   more PCA-zero templates.
 - Implement a request form Chaz Shapiro (NASA/JPL) for status
-  reporting. This was done by adding the "verbose" arguement.
+  reporting. This was done by adding the "verbose" argument.
 - Implement a request from Pierre Ferruit (ESA/ESTEC) to generate
   3-dimensional data cubes.
 - Implement a request from Pierre Ferruit to treat :term:`ACN` as different 1/f
@@ -113,7 +113,7 @@ class HXRGNoise:
     """
 
     # These class variables are common to all HxRG detectors
-    NGHXRG_VERSION = 2.8  # Sofware version
+    NGHXRG_VERSION = 2.8  # Software version
 
     def __init__(
         self,

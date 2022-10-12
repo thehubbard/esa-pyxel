@@ -86,6 +86,16 @@ doc8:
     - if: '$FORCE_GITLAB_CI'
 
 
+codespell:
+  image: python:3
+  stage: test
+  script:
+    - tox -e codespell
+  rules:
+    # If `$FORCE_GITLAB_CI` is set, create a pipeline.
+    - if: '$FORCE_GITLAB_CI'
+
+
 # ###########################
 # Build stage
 # ###########################

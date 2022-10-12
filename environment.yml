@@ -75,6 +75,7 @@ dependencies:
   - tox
   - tryceratops
   - freezegun
+  - codespell
 # Pip packages
   - pip:
     - poppy>=1.0.2

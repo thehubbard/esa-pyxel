@@ -125,7 +125,7 @@ def compute_simple_physical_non_linearity(
 
     if not (0.2 <= x_cd <= 0.6):
         raise ValueError(
-            "Hansen bangap expression used out of its nomimal application range. \
+            "Hansen bangap expression used out of its nominal application range. \
                 x_cd must be between 0.2 and 0.6"
         )
 
@@ -192,7 +192,7 @@ def simple_physical_non_linearity(
 
     if not (4 <= detector.environment.temperature <= 300):
         raise ValueError(
-            "Hansen bangap expression used out of its nomimal application range. \
+            "Hansen bangap expression used out of its nominal application range. \
                 temperature must be between 4K and 300K"
         )
 
@@ -263,7 +263,7 @@ def compute_physical_non_linearity(
 
     if not (0.2 <= x_cd <= 0.6):
         raise ValueError(
-            "Hansen bangap expression used out of its nomimal application range. \
+            "Hansen bangap expression used out of its nominal application range. \
                 x_cd must be between 0.2 and 0.6"
         )
 
@@ -303,9 +303,7 @@ def compute_physical_non_linearity(
     )
     discriminant = b**2 - 4.0 * c * a
     u1 = (-b - np.sqrt(discriminant)) / (2.0 * a)
-    v1 = (
-        1.0 - u1**2
-    ) * vbi - v_bias  # is substracted it only deals with offset level
+    v1 = (1.0 - u1**2) * vbi - v_bias  # is subtracted it only deals with offset level
 
     array = np.copy(v1)  # unit if V, voltage at the gate of the pixel SFD
     non_linear_signal = array.astype("float64")
@@ -343,7 +341,7 @@ def physical_non_linearity(
     """
     if not (4 <= detector.environment.temperature <= 300):
         raise ValueError(
-            "Hansen bangap expression used out of its nomimal application range. \
+            "Hansen bangap expression used out of its nominal application range. \
                 temperature must be between 4K and 300K"
         )
 
@@ -435,7 +433,7 @@ def compute_physical_non_linearity_with_saturation(
 
     if not (0.2 <= x_cd <= 0.6):
         raise ValueError(
-            "Hansen bangap expression used out of its nomimal application range. \
+            "Hansen bangap expression used out of its nominal application range. \
                 x_cd must be between 0.2 and 0.6"
         )
 
@@ -515,7 +513,7 @@ def physical_non_linearity_with_saturation(
     """
     if not (4 <= detector.environment.temperature <= 300):
         raise ValueError(
-            "Hansen bangap expression used out of its nomimal application range. \
+            "Hansen bangap expression used out of its nominal application range. \
                 temperature must be between 4K and 300K"
         )
 

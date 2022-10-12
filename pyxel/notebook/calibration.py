@@ -539,7 +539,7 @@ def champion_heatmap(
         framewise=True,
         axiswise=True,
         colorbar_opts={"formatter": formatter},
-        clabel="Occurence",
+        clabel="Occurrence",
     )
 
     return plot

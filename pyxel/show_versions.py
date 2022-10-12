@@ -20,7 +20,7 @@ __all__ = ["show_versions"]
 
 
 def get_system_info() -> Mapping[str, Any]:
-    """Get extra informations."""
+    """Get extra information."""
     # Get git commit hash
     commit = get_versions()["full-revisionid"]  # type: Optional[str]
     version = get_versions()["version"]  # type: str

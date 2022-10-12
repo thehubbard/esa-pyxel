@@ -202,8 +202,8 @@ class Simulation:
             (df.type == p_type) & (df.energy == energy) & (df.thickness == distance)
         ]  # type: pd.DataFrame
 
-        serie = df_filtered["path"]  # type: pd.Series
-        filename = serie.values[0]  # type: Path
+        series = df_filtered["path"]  # type: pd.Series
+        filename = series.values[0]  # type: Path
 
         return filename
 
@@ -212,7 +212,7 @@ class Simulation:
 
         :param step_size_file:
         :return:
-        .. warning:: EXPERIMENTAL - NOT FINSHED YET
+        .. warning:: EXPERIMENTAL - NOT FINISHED YET
         """
         # # step size distribution in um
         self.step_size_dist = load_histogram_data(

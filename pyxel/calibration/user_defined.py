@@ -147,7 +147,7 @@ class DaskBFE:
 
 
 class DaskIsland:
-    """User Defined Island usind `Dask`."""
+    """User Defined Island using `Dask`."""
 
     def run_evolve(
         self, algo: "pg.algorithm", pop: "pg.population"

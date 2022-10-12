@@ -32,7 +32,7 @@ def _list_of_times_to_dataframe(times: list, model_names: list) -> pd.DataFrame:
     df: pd.DataFrame
     """
 
-    times_array = np.array(times) * 1000  # to miliseconds
+    times_array = np.array(times) * 1000  # to milliseconds
     times_sum = np.sum(times_array)
     percentages = times_array * 100 / times_sum
 

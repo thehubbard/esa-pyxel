@@ -1,4 +1,4 @@
-.. _MKID architecure:
+.. _MKID architecture:
 
 ####
 MKID

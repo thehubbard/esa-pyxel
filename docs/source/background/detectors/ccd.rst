@@ -1,4 +1,4 @@
-.. _CCD architecure:
+.. _CCD architecture:
 
 ###
 CCD

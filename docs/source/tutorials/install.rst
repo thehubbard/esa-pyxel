@@ -65,7 +65,7 @@ the base conda environment
 
     conda create -n <my-env>
 
-Once the conda enviroment (e.g. ``<my-env>`` is created, you must activate it
+Once the conda environment (e.g. ``<my-env>`` is created, you must activate it
 
 .. code-block:: bash
 

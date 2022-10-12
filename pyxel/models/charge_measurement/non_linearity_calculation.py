@@ -90,7 +90,7 @@ def w_dep(
 
     const = Constants()
 
-    # Calculation of build in potenial
+    # Calculation of build in potential
     v_bi = build_in_potential(
         temperature=temperature,
         n_acceptor=n_acceptor,
@@ -114,7 +114,7 @@ def hgcdte_bandgap(x_cd: float, temperature: float) -> float:
     """Band gap energy in HgCdTe.
 
     This expression of the Gap of HgCdTe is valid for a Cadmium concentration between 0.2 and 0.6.
-    Over a wide range of temperature beteween 4K and 300K
+    Over a wide range of temperature between 4K and 300K
 
     Ref : Hansen, G. L., Schmit, J. L., & Casselman, T. N. (1982).
           Energy gap versus alloy composition and temperature in Hg1− x Cd x Te.

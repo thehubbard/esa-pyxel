@@ -50,7 +50,7 @@ class Algorithm:
         m: float = 0.02,
         param_m: float = 1.0,
         param_s: int = 2,
-        crossover: Literal["single", "exponential", "binominal", "sbx"] = "exponential",
+        crossover: Literal["single", "exponential", "binomial", "sbx"] = "exponential",
         mutation: Literal["uniform", "gaussian", "polynomial"] = "polynomial",
         selection: Literal["tournament", "truncated"] = "tournament",
         # NLOPT #####
@@ -291,13 +291,13 @@ class Algorithm:
         self._param_s = value
 
     @property
-    def crossover(self) -> Literal["single", "exponential", "binominal", "sbx"]:
+    def crossover(self) -> Literal["single", "exponential", "binomial", "sbx"]:
         """TBW."""
         return self._crossover
 
     @crossover.setter
     def crossover(
-        self, value: Literal["single", "exponential", "binominal", "sbx"]
+        self, value: Literal["single", "exponential", "binomial", "sbx"]
     ) -> None:
         """TBW."""
         self._crossover = value

@@ -61,10 +61,10 @@ class CalibrationOutputs(Outputs):
 
         if self.save_data_to_file:
 
-            for _, serie in processors.iterrows():
-                id_island = serie["island"]  # type: int
-                id_processor = serie["id_processor"]  # type: int
-                processor = serie["processor"]  # type: Delayed
+            for _, series in processors.iterrows():
+                id_island = series["island"]  # type: int
+                id_processor = series["id_processor"]  # type: int
+                processor = series["processor"]  # type: Delayed
 
                 # TODO: Create folders ?
                 prefix = f"island{id_island:02d}_processor{id_processor:02d}"
