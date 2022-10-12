@@ -10,17 +10,17 @@ make it apparent that there's nothing to do.
 
  
  - [ ] Closes issue #xxxx
- - [ ] Added **tests** for change code
- - [ ] Updated **documentation** for changed code
+ - [ ] Added [**tests**](https://esa.gitlab.io/pyxel/doc/stable/references/contributing.html#running-the-test-suite) for change code
+ - [ ] Updated [**documentation**](https://esa.gitlab.io/pyxel/doc/stable/references/contributing.html#contributing-to-the-documentation) for changed code
  - [ ] Documentation `.rst` files is written using [semantic newlines](https://sembr.org)
  - [ ] User visible changes (including notable bug fixes and possible deprecations) are 
        documented in `CHANGELOG.md`
  - [ ] Passes in this order
-   - [ ] isort .
-   - [ ] black .
-   - [ ] blackdoc .
-   - [ ] mypy . 
-   - [ ] flake8 .
+   - [ ] `isort .` or `pre-commit run -a` (preferred way)
+   - [ ] `black .` or `pre-commit run -a` (preferred way)
+   - [ ] `blackdoc .` or `pre-commit run -a` (preferred way)
+   - [ ] `mypy .` or `tox -e mypy` (better way) or `tox -p` (preferred way)
+   - [ ] `flake8 .` or `tox -e flake8` (better way) or `tox -p` (preferred way)
 
 If you have *any* questions of the points above, just **submit and ask**!
 This checklist is here to *help* you, not to deter you from contributing !
