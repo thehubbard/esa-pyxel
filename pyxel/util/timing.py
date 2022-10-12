@@ -9,12 +9,12 @@
 """Timing functions."""
 
 import timeit
-import typing as t
+from typing import TYPE_CHECKING, Optional
 
 import numpy as np
 import pandas as pd
 
-if t.TYPE_CHECKING:
+if TYPE_CHECKING:
     from pyxel.detectors import Detector
     from pyxel.pipelines import DetectionPipeline, ModelFunction, ModelGroup
 
@@ -65,7 +65,7 @@ def time_pipeline(detector: "Detector", pipeline: "DetectionPipeline") -> pd.Dat
 
     for group_name in pipeline.model_group_names:
 
-        models_grp = getattr(pipeline, group_name)  # type: t.Optional[ModelGroup]
+        models_grp = getattr(pipeline, group_name)  # type: Optional[ModelGroup]
 
         if models_grp:
             for model in models_grp.models:  # type: ModelFunction

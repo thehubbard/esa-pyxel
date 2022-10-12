@@ -7,7 +7,8 @@
 #
 #
 """Reset noise models."""
-import typing as t
+
+from typing import Optional, Tuple
 
 import astropy.constants as const
 import numpy as np
@@ -17,7 +18,7 @@ from pyxel.util import temporary_random_state
 
 
 def compute_ktc_noise(
-    temperature: float, capacitance: float, shape: t.Tuple[int, int]
+    temperature: float, capacitance: float, shape: Tuple[int, int]
 ) -> np.ndarray:
     """Compute KTC noise array.
 
@@ -43,8 +44,8 @@ def compute_ktc_noise(
 @temporary_random_state
 def ktc_noise(
     detector: Detector,
-    node_capacitance: t.Optional[float] = None,
-    seed: t.Optional[int] = None,
+    node_capacitance: Optional[float] = None,
+    seed: Optional[int] = None,
 ) -> None:
     """Apply KTC reset noise to detector signal array.
 

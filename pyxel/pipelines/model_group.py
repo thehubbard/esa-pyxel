@@ -7,13 +7,13 @@
 
 """TBW."""
 import logging
-import typing as t  # noqa: F401
 from copy import deepcopy
+from typing import TYPE_CHECKING, Iterator, List, Mapping, Optional, Sequence
 
 from pyxel import util
 from pyxel.pipelines import ModelFunction
 
-if t.TYPE_CHECKING:
+if TYPE_CHECKING:
     from pyxel.detectors import Detector
     from pyxel.pipelines import DetectionPipeline
 
@@ -24,17 +24,17 @@ if t.TYPE_CHECKING:
 class ModelGroup:
     """TBW."""
 
-    def __init__(self, models: t.Sequence[ModelFunction], name: str):
+    def __init__(self, models: Sequence[ModelFunction], name: str):
         self._log = logging.getLogger(__name__)
         self._name = name
-        self.models = models  # type: t.Sequence[ModelFunction]
+        self.models = models  # type: Sequence[ModelFunction]
 
     def __repr__(self):
         cls_name = self.__class__.__name__  # type: str
 
         all_models = [
             model.name for model in self.models if model.name
-        ]  # type: t.List[str]
+        ]  # type: List[str]
 
         return f"{cls_name}<name={self._name!r}, models={all_models!r}>"
 
@@ -42,15 +42,15 @@ class ModelGroup:
         copied_models = deepcopy(self.models)
         return ModelGroup(models=copied_models, name=self._name)
 
-    def __iter__(self) -> t.Iterator[ModelFunction]:
+    def __iter__(self) -> Iterator[ModelFunction]:
         for model in self.models:
             if model.enabled:
                 yield model
 
-    def __getstate__(self) -> t.Mapping:
+    def __getstate__(self) -> Mapping:
         return {"models": tuple(self.models), "name": self._name}
 
-    def __setstate__(self, state: t.Mapping) -> None:
+    def __setstate__(self, state: Mapping) -> None:
         self.models = list(state["models"])
         self._name = state["name"]
 
@@ -69,7 +69,7 @@ class ModelGroup:
         self,
         detector: "Detector",
         pipeline: "DetectionPipeline",
-        abort_model: t.Optional[str] = None,
+        abort_model: Optional[str] = None,
     ) -> bool:
         """Execute each enabled model in this group.
 

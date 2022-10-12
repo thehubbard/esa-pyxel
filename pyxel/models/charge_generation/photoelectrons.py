@@ -6,8 +6,9 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """Simple model to convert photon into photo-electrons inside detector."""
-import typing as t
+
 from pathlib import Path
+from typing import Optional, Tuple, Union
 
 import numpy as np
 from typing_extensions import Literal
@@ -17,7 +18,7 @@ from pyxel.util import load_cropped_and_aligned_image, temporary_random_state
 
 
 def apply_qe(
-    array: np.ndarray, qe: t.Union[float, np.ndarray], binomial_sampling: bool = True
+    array: np.ndarray, qe: Union[float, np.ndarray], binomial_sampling: bool = True
 ) -> np.ndarray:
     """Apply quantum efficiency to an array.
 
@@ -43,8 +44,8 @@ def apply_qe(
 @temporary_random_state
 def simple_conversion(
     detector: Detector,
-    quantum_efficiency: t.Optional[float] = None,
-    seed: t.Optional[int] = None,
+    quantum_efficiency: Optional[float] = None,
+    seed: Optional[int] = None,
     binomial_sampling: bool = True,
 ) -> None:
     """Generate charge from incident photon via photoelectric effect, simple model.
@@ -75,12 +76,12 @@ def simple_conversion(
 @temporary_random_state
 def conversion_with_qe_map(
     detector: Detector,
-    filename: t.Union[str, Path],
-    position: t.Tuple[int, int] = (0, 0),
-    align: t.Optional[
+    filename: Union[str, Path],
+    position: Tuple[int, int] = (0, 0),
+    align: Optional[
         Literal["center", "top_left", "top_right", "bottom_left", "bottom_right"]
     ] = None,
-    seed: t.Optional[int] = None,
+    seed: Optional[int] = None,
     binomial_sampling: bool = True,
 ) -> None:
     """Generate charge from incident photon via photoelectric effect, simple model with custom :term:`QE` map.

@@ -7,9 +7,9 @@
 
 """Pyxel Scene class to track multi-wavelength photon."""
 
-import typing as t
+from typing import TYPE_CHECKING, Mapping, Sequence
 
-if t.TYPE_CHECKING:
+if TYPE_CHECKING:
     import numpy as np
     from astropy.io.fits import ImageHDU
     from astropy.table import Table
@@ -78,11 +78,11 @@ class Scene:
         """
         return self._source
 
-    def to_dict(self) -> t.Mapping:
+    def to_dict(self) -> Mapping:
         """Convert an instance of `Scene` to a `dict`."""
-        meta = self._source.meta  # type: t.Mapping
-        table_fields = self._source.table_fields  # type: t.Sequence[Table]
-        image_fields = self._source.image_fields  # type: t.Sequence[ImageHDU]
+        meta = self._source.meta  # type: Mapping
+        table_fields = self._source.table_fields  # type: Sequence[Table]
+        image_fields = self._source.image_fields  # type: Sequence[ImageHDU]
 
         # Create 'tables'
         tables = [
@@ -95,34 +95,34 @@ class Scene:
                 },
             }
             for table in table_fields
-        ]  # type: t.Sequence[t.Mapping]
+        ]  # type: Sequence[Mapping]
 
         images = [
             {"header": dict(image.header), "data": np.asarray(image.data)}
             for image in image_fields
-        ]  # type: t.Sequence[t.Mapping]
+        ]  # type: Sequence[Mapping]
 
         return {"meta": meta, "tables": tables, "images": images}
 
     @classmethod
-    def from_dict(cls, dct: t.Mapping) -> "Scene":
+    def from_dict(cls, dct: Mapping) -> "Scene":
         """Create a new instance of a `Scene` object from a `dict`."""
         from astropy.io.fits import Header, ImageHDU
         from astropy.table import Table
         from scopesim import Source
 
-        meta = dct["meta"]  # type: t.Mapping
-        tables = dct["tables"]  # type: t.Mapping
-        images = dct["images"]  # type: t.Mapping
+        meta = dct["meta"]  # type: Mapping
+        tables = dct["tables"]  # type: Mapping
+        images = dct["images"]  # type: Mapping
 
         table_fields = [
             Table.from_pandas(dataframe=table["data"], units=table["units"])
             for table in tables
-        ]  # type: t.Sequence[Table]
+        ]  # type: Sequence[Table]
 
         image_fields = [
             ImageHDU(data=img["data"], header=Header(img["header"])) for img in images
-        ]  # type: t.Sequence[ImageHDU]
+        ]  # type: Sequence[ImageHDU]
 
         src = Source(
             meta=meta,

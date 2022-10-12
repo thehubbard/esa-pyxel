@@ -12,8 +12,8 @@
 
 """TBW."""
 
-import typing as t
 from dataclasses import dataclass
+from typing import List, Mapping, Sequence
 
 import numpy as np
 
@@ -48,7 +48,7 @@ def compute_arctic_add(
     image_2d: np.ndarray,
     full_well_depth: float,
     well_fill_power: float,
-    parallel_traps: t.Sequence[Trap],
+    parallel_traps: Sequence[Trap],
     parallel_express: int,
 ) -> np.ndarray:
     """Create a new image with :term:`CTI` trails.
@@ -86,7 +86,7 @@ def compute_arctic_add(
             release_timescale=trap.release_timescale,
         )
         for trap in parallel_traps
-    ]  # type: t.Sequence[ac.TrapInstantCapture]
+    ]  # type: Sequence[ac.TrapInstantCapture]
 
     image_cti_added_2d = ac.add_cti(
         image=image_2d,
@@ -103,8 +103,8 @@ def compute_arctic_add(
 def arctic_add(
     detector: CCD,
     well_fill_power: float,
-    trap_densities: t.Sequence[float],
-    trap_release_timescales: t.Sequence[float],
+    trap_densities: Sequence[float],
+    trap_release_timescales: Sequence[float],
     express: int = 0,
 ) -> None:
     """Add :term:`CTI` trails to an image by trapping, releasing and moving electrons.
@@ -148,7 +148,7 @@ def arctic_add(
     traps = [
         Trap(density=density, release_timescale=release_timescale)
         for density, release_timescale in zip(trap_densities, trap_release_timescales)
-    ]  # type: t.Sequence[Trap]
+    ]  # type: Sequence[Trap]
 
     if not WITH_ARTICPY:
         raise RuntimeError(
@@ -171,7 +171,7 @@ def compute_arctic_remove(
     image_2d: np.ndarray,
     full_well_depth: float,
     well_fill_power: float,
-    parallel_traps: t.Sequence[Trap],
+    parallel_traps: Sequence[Trap],
     parallel_express: int,
     num_iterations: int,
 ) -> np.ndarray:
@@ -197,7 +197,7 @@ def compute_arctic_remove(
     roe = ac.ROE()
 
     # Build the traps
-    traps = []  # type: t.List[ac.Trap]
+    traps = []  # type: List[ac.Trap]
     for trap_info in parallel_traps:  # type: Trap
         trap = ac.Trap(
             density=trap_info.density, release_timescale=trap_info.release_timescale
@@ -220,7 +220,7 @@ def compute_arctic_remove(
 def arctic_remove(
     detector: CCD,
     well_fill_power: float,
-    instant_traps: t.Sequence[t.Mapping[str, float]],
+    instant_traps: Sequence[Mapping[str, float]],
     num_iterations: int,
     express: int = 0,
 ) -> None:
@@ -254,7 +254,7 @@ def arctic_remove(
         raise ValueError("Number of iterations must be > 1.")
 
     # Conversion
-    traps = []  # type: t.List[Trap]
+    traps = []  # type: List[Trap]
     for item in instant_traps:
         if "density" not in item:
             raise KeyError("Missing key 'density' in parameter 'instant_traps'.")

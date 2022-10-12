@@ -6,7 +6,8 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """Readout noise model."""
-import typing as t
+
+from typing import Optional, Tuple
 
 import numpy as np
 
@@ -66,7 +67,7 @@ def create_noise_cmos(
 def output_node_noise(
     detector: Detector,
     std_deviation: float,
-    seed: t.Optional[int] = None,
+    seed: Optional[int] = None,
 ) -> None:
     """Add noise to signal array of detector output node using normal random distribution.
 
@@ -100,7 +101,7 @@ def output_node_noise_cmos(
     detector: CMOS,
     readout_noise: float,
     readout_noise_std: float,
-    seed: t.Optional[int] = None,
+    seed: Optional[int] = None,
 ) -> None:
     """Output node noise model for :term:`CMOS` detectors where readout is statistically independent for each pixel.
 
@@ -141,7 +142,7 @@ def output_node_noise_cmos(
 def compute_readout_noise_saphira(
     roic_readout_noise: float,
     avalanche_gain: float,
-    shape: t.Tuple[int, int],
+    shape: Tuple[int, int],
     controller_noise: float = 0.0,
 ) -> np.ndarray:
     """Compute Saphira specific readout noise.
@@ -178,7 +179,7 @@ def readout_noise_saphira(
     detector: APD,
     roic_readout_noise: float,
     controller_noise: float = 0.0,
-    seed: t.Optional[int] = None,
+    seed: Optional[int] = None,
 ) -> None:
     """Apply Saphira specific readout noise to the APD detector.
 

@@ -7,8 +7,19 @@
 #
 #
 """TBW."""
-import typing as t
+
 from pathlib import Path
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Dict,
+    List,
+    Mapping,
+    Optional,
+    Protocol,
+    Sequence,
+    Union,
+)
 
 import pandas as pd
 from dask.delayed import Delayed, delayed
@@ -16,15 +27,13 @@ from typing_extensions import Literal
 
 from pyxel.outputs import Outputs
 
-if t.TYPE_CHECKING:
+if TYPE_CHECKING:
     import xarray as xr
 
-    class SaveToFile(t.Protocol):
+    class SaveToFile(Protocol):
         """TBW."""
 
-        def __call__(
-            self, data: t.Any, name: str, with_auto_suffix: bool = True
-        ) -> Path:
+        def __call__(self, data: Any, name: str, with_auto_suffix: bool = True) -> Path:
             """TBW."""
             ...
 
@@ -41,13 +50,11 @@ class CalibrationOutputs(Outputs):
 
     def __init__(
         self,
-        output_folder: t.Union[str, Path],
-        save_data_to_file: t.Optional[
-            t.Sequence[t.Mapping[ValidName, t.Sequence[ValidFormat]]]
+        output_folder: Union[str, Path],
+        save_data_to_file: Optional[
+            Sequence[Mapping[ValidName, Sequence[ValidFormat]]]
         ] = None,
-        save_calibration_data: t.Optional[
-            t.Sequence[t.Mapping[str, t.Sequence[str]]]
-        ] = None,
+        save_calibration_data: Optional[Sequence[Mapping[str, Sequence[str]]]] = None,
     ):
         super().__init__(
             output_folder=output_folder, save_data_to_file=save_data_to_file
@@ -56,11 +63,11 @@ class CalibrationOutputs(Outputs):
         # Parameter(s) specific for 'Calibration'
         self.save_calibration_data = (
             save_calibration_data
-        )  # type: t.Optional[t.Sequence[t.Mapping[str, t.Sequence[str]]]]
+        )  # type: Optional[Sequence[Mapping[str, Sequence[str]]]]
 
-    def save_processors(self, processors: pd.DataFrame) -> t.Sequence[Delayed]:
+    def save_processors(self, processors: pd.DataFrame) -> Sequence[Delayed]:
         """TBW."""
-        lst = []  # type: t.List[Delayed]
+        lst = []  # type: List[Delayed]
 
         if self.save_data_to_file:
 
@@ -90,13 +97,11 @@ class CalibrationOutputs(Outputs):
         logs: DataFrame
         """
 
-        save_methods = {"nc": self.save_to_netcdf}  # type: t.Dict[str, SaveToFile]
+        save_methods = {"nc": self.save_to_netcdf}  # type: Dict[str, SaveToFile]
 
         if self.save_calibration_data is not None:
 
-            for (
-                dct
-            ) in self.save_calibration_data:  # type: t.Mapping[str, t.Sequence[str]]
+            for dct in self.save_calibration_data:  # type: Mapping[str, Sequence[str]]
                 first_item, *_ = dct.items()
                 obj, format_list = first_item
 

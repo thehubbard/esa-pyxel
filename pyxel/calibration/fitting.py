@@ -12,10 +12,10 @@ https://esa.github.io/pagmo2/index.html
 import copy
 import logging
 import math
-import typing as t
 from copy import deepcopy
 from numbers import Number
 from pathlib import Path
+from typing import TYPE_CHECKING, Dict, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -36,7 +36,7 @@ from pyxel.exposure import run_exposure_pipeline
 from pyxel.observation import ParameterValues
 from pyxel.pipelines import Processor, ResultType
 
-if t.TYPE_CHECKING:
+if TYPE_CHECKING:
     import xarray as xr
     from numpy.typing import ArrayLike
 
@@ -49,7 +49,7 @@ class ModelFitting(ProblemSingleObjective):
     def __init__(
         self,
         processor: Processor,
-        variables: t.Sequence[ParameterValues],
+        variables: Sequence[ParameterValues],
         readout: "Readout",
         calibration_mode: CalibrationMode,
         simulation_output: ResultType,
@@ -57,49 +57,49 @@ class ModelFitting(ProblemSingleObjective):
         population_size: int,
         fitness_func: FittingCallable,
         file_path: Path,
-        pipeline_seed: t.Optional[int] = None,
+        pipeline_seed: Optional[int] = None,
     ):
         self.processor = processor  # type: Processor
-        self.variables = variables  # type: t.Sequence[ParameterValues]
+        self.variables = variables  # type: Sequence[ParameterValues]
 
         self.calibration_mode = calibration_mode  # type: CalibrationMode
-        self.original_processor = None  # type: t.Optional[Processor]
+        self.original_processor = None  # type: Optional[Processor]
         self.generations = generations  # type: int
         self.pop = population_size  # type: int
         self.readout = readout  # type: Readout
 
-        self.all_target_data = []  # type: t.List[np.ndarray]
-        self.weighting = None  # type: t.Optional[np.ndarray]
-        self.weighting_from_file = None  # type: t.Optional[t.Sequence[np.ndarray]]
+        self.all_target_data = []  # type: List[np.ndarray]
+        self.weighting = None  # type: Optional[np.ndarray]
+        self.weighting_from_file = None  # type: Optional[Sequence[np.ndarray]]
         self.fitness_func = fitness_func  # type: FittingCallable
         self.sim_output = simulation_output  # type: ResultType
-        # self.fitted_model = None            # type: t.Optional['ModelFunction']
-        self.param_processor_list = []  # type: t.List[Processor]
+        # self.fitted_model = None            # type: Optional['ModelFunction']
+        self.param_processor_list = []  # type: List[Processor]
 
         self.file_path = file_path  # type: Path
-        self.pipeline_seed = pipeline_seed  # type: t.Optional[int]
+        self.pipeline_seed = pipeline_seed  # type: Optional[int]
 
-        self.fitness_array = None  # type: t.Optional[np.ndarray]
-        self.population = None  # type: t.Optional[np.ndarray]
-        self.champion_f_list = None  # type: t.Optional[np.ndarray]
-        self.champion_x_list = None  # type: t.Optional[np.ndarray]
+        self.fitness_array = None  # type: Optional[np.ndarray]
+        self.population = None  # type: Optional[np.ndarray]
+        self.champion_f_list = None  # type: Optional[np.ndarray]
+        self.champion_x_list = None  # type: Optional[np.ndarray]
 
-        self.lbd = []  # type: t.Sequence[float]  # lower boundary
-        self.ubd = []  # type: t.Sequence[float]  # upper boundary
+        self.lbd = []  # type: Sequence[float]  # lower boundary
+        self.ubd = []  # type: Sequence[float]  # upper boundary
 
         self.sim_fit_range = (
             slice(None),
             slice(None),
             slice(None),
-        )  # type: t.Tuple[slice, slice, slice]
+        )  # type: Tuple[slice, slice, slice]
         self.targ_fit_range = (
             slice(None),
             slice(None),
-        )  # type: t.Union[t.Tuple[slice, slice], t.Tuple[slice, slice, slice]]
+        )  # type: Union[Tuple[slice, slice], Tuple[slice, slice, slice]]
 
-        self.match = {}  # type: t.Dict[int, t.List[str]]
+        self.match = {}  # type: Dict[int, List[str]]
 
-    def get_bounds(self) -> t.Tuple[t.Sequence[float], t.Sequence[float]]:
+    def get_bounds(self) -> Tuple[Sequence[float], Sequence[float]]:
         """Get the box bounds of the problem (lower_boundary, upper_boundary).
 
         It also implicitly defines the dimension of the problem.
@@ -112,12 +112,12 @@ class ModelFitting(ProblemSingleObjective):
 
     def configure(
         self,
-        target_fit_range: t.Sequence[int],
-        out_fit_range: t.Sequence[int],
-        target_output: t.Sequence[Path],
-        input_arguments: t.Optional[t.Sequence[ParameterValues]] = None,
-        weights: t.Optional[t.Sequence[float]] = None,
-        weights_from_file: t.Optional[t.Sequence[Path]] = None,
+        target_fit_range: Sequence[int],
+        out_fit_range: Sequence[int],
+        target_output: Sequence[Path],
+        input_arguments: Optional[Sequence[ParameterValues]] = None,
+        weights: Optional[Sequence[float]] = None,
+        weights_from_file: Optional[Sequence[Path]] = None,
     ) -> None:
         """TBW."""
         # if self.calibration_mode == 'single_model':           # TODO update
@@ -142,7 +142,7 @@ class ModelFitting(ProblemSingleObjective):
                 for step in input_arguments:  # type: ParameterValues
                     assert step.values != "_"
 
-                    value = step.values[i]  # type: t.Union[Literal['_'], str, Number]
+                    value = step.values[i]  # type: Union[Literal['_'], str, Number]
 
                     step.current = value
                     new_processor.set(key=step.key, value=step.current)
@@ -164,7 +164,7 @@ class ModelFitting(ProblemSingleObjective):
         if self.readout.time_domain_simulation:
             target_list_3d = read_datacubes(
                 filenames=target_output
-            )  # type: t.Sequence[np.ndarray]
+            )  # type: Sequence[np.ndarray]
             times, rows, cols = target_list_3d[0].shape
             check_ranges(
                 target_fit_range=target_fit_range,
@@ -181,7 +181,7 @@ class ModelFitting(ProblemSingleObjective):
         else:
             target_list_2d = read_data(
                 filenames=target_output
-            )  # type: t.Sequence[np.ndarray]
+            )  # type: Sequence[np.ndarray]
             rows, cols = target_list_2d[0].shape
             check_ranges(
                 target_fit_range=target_fit_range,
@@ -201,8 +201,8 @@ class ModelFitting(ProblemSingleObjective):
 
     def _configure_weights(
         self,
-        weights: t.Optional[t.Sequence[float]] = None,
-        weights_from_file: t.Optional[t.Sequence[Path]] = None,
+        weights: Optional[Sequence[float]] = None,
+        weights_from_file: Optional[Sequence[Path]] = None,
     ) -> None:
         """TBW.
 
@@ -235,7 +235,7 @@ class ModelFitting(ProblemSingleObjective):
         self.ubd = []
         for var in self.variables:  # type: ParameterValues
             assert var.boundaries
-            low_val, high_val = var.boundaries  # type: t.Tuple[float, float]
+            low_val, high_val = var.boundaries  # type: Tuple[float, float]
 
             if var.logarithmic:
                 low_val = math.log10(low_val)
@@ -275,7 +275,7 @@ class ModelFitting(ProblemSingleObjective):
         self,
         simulated_data: np.ndarray,
         target_data: np.ndarray,
-        weighting: t.Optional[np.ndarray] = None,
+        weighting: Optional[np.ndarray] = None,
     ) -> float:
         """TBW.
 
@@ -299,7 +299,7 @@ class ModelFitting(ProblemSingleObjective):
         return fitness
 
     # TODO: If possible, use 'numba' for this method
-    def fitness(self, decision_vector_1d: np.ndarray) -> t.Sequence[float]:
+    def fitness(self, decision_vector_1d: np.ndarray) -> Sequence[float]:
         """Call the fitness function, elements of parameter array could be logarithmic values.
 
         Parameters
@@ -325,7 +325,7 @@ class ModelFitting(ProblemSingleObjective):
 
             parameter_1d = self.convert_to_parameters(decision_vector_1d)
             # TODO: deepcopy is not needed. Check this
-            processor_list = self.param_processor_list  # type: t.Sequence[Processor]
+            processor_list = self.param_processor_list  # type: Sequence[Processor]
 
             overall_fitness = 0.0  # type: float
             for i, (processor, target_data) in enumerate(
@@ -353,7 +353,7 @@ class ModelFitting(ProblemSingleObjective):
 
                 simulated_data = self.get_simulated_data(processor=processor)
 
-                weighting = None  # type: t.Optional[np.ndarray]
+                weighting = None  # type: Optional[np.ndarray]
 
                 if self.weighting is not None:
                     weighting = self.weighting[i] * np.ones(

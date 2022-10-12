@@ -8,13 +8,13 @@
 """Subpackage containing user defined Island and Batch Fitness evaluator using Dask."""
 
 import logging
-import typing as t
+from typing import TYPE_CHECKING, Optional, Tuple
 
 import numpy as np
 from dask import array as da
 from dask.delayed import Delayed, delayed
 
-if t.TYPE_CHECKING:
+if TYPE_CHECKING:
     import pygmo as pg
 
 __all__ = ["DaskBFE", "DaskIsland"]
@@ -75,7 +75,7 @@ class DaskBFE:
     This class is a user-defined batch fitness evaluator based on 'Dask'.
     """
 
-    def __init__(self, chunk_size: t.Optional[int] = None):
+    def __init__(self, chunk_size: Optional[int] = None):
         self._chunk_size = chunk_size
 
     def __call__(self, prob: "pg.problem", dvs_1d: np.ndarray) -> da.Array:
@@ -151,7 +151,7 @@ class DaskIsland:
 
     def run_evolve(
         self, algo: "pg.algorithm", pop: "pg.population"
-    ) -> t.Tuple["pg.algorithm", "pg.population"]:
+    ) -> Tuple["pg.algorithm", "pg.population"]:
         """Run 'evolve' method from the input `algorithm` to evolve the input `population`.
 
         Once the evolution is finished, it will return the algorithm used for the
@@ -180,7 +180,7 @@ class DaskIsland:
         (
             new_algo,
             new_pop,
-        ) = new_delayed_pop.compute()  # type: t.Tuple[pg.algo, pg.population]
+        ) = new_delayed_pop.compute()  # type: Tuple[pg.algo, pg.population]
 
         return new_algo, new_pop
 

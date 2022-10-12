@@ -7,13 +7,13 @@
 
 """Pyxel CosmiX model to generate charge by ionization."""
 
-import typing as t
 from pathlib import Path
+from typing import TYPE_CHECKING, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
 
-if t.TYPE_CHECKING:
+if TYPE_CHECKING:
     from pyxel.models.charge_generation.cosmix.cosmix import Cosmix
 
 try:
@@ -120,7 +120,7 @@ class PlottingCosmix:
         plt.loglog(lin_energy_range, flux_dist)
         self.save_and_draw("flux_spectrum")
 
-    def plot_spectrum_hist(self, data: t.Optional[str] = None) -> None:
+    def plot_spectrum_hist(self, data: Optional[str] = None) -> None:
         """TBW."""
         plt.figure()
         plt.title("Proton flux spectrum sampled by CosmiX")
@@ -308,7 +308,7 @@ class PlottingCosmix:
         self.save_and_draw("trajectory_xz")
 
     def plot_track_histogram(
-        self, histogram_data: t.Union[str, np.ndarray], normalize: bool = False
+        self, histogram_data: Union[str, np.ndarray], normalize: bool = False
     ) -> None:
         """TBW."""
         hist_bins = 1000
@@ -606,12 +606,12 @@ class PlottingCosmix:
 
     def plot_electron_hist(
         self,
-        data1: t.Union[str, np.ndarray],
-        data2: t.Optional[np.ndarray] = None,
-        data3: t.Optional[np.ndarray] = None,
+        data1: Union[str, np.ndarray],
+        data2: Optional[np.ndarray] = None,
+        data3: Optional[np.ndarray] = None,
         title: str = "",
         hist_bins: int = 500,
-        hist_range: t.Tuple[int, int] = (0, 15000),
+        hist_range: Tuple[int, int] = (0, 15000),
         normalize: bool = False,
     ) -> None:
         """TBW."""
@@ -703,7 +703,7 @@ class PlottingCosmix:
         plt.legend(loc="upper right")
         self.save_and_draw("electron_hist")
 
-    def polar_angle_dist(self, theta: t.Union[str, np.ndarray]) -> None:
+    def polar_angle_dist(self, theta: Union[str, np.ndarray]) -> None:
         """TBW."""
         if isinstance(theta, str):
             if theta.endswith(".npy"):

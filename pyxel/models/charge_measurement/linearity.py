@@ -6,7 +6,8 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """Linearity models."""
-import typing as t
+
+from typing import Sequence
 
 import numpy as np
 from astropy import constants as const
@@ -21,7 +22,7 @@ from pyxel.models.charge_measurement.non_linearity_calculation import (
 
 def compute_poly_linearity(
     array_2d: np.ndarray,
-    coefficients: t.Sequence[float],
+    coefficients: Sequence[float],
 ) -> np.ndarray:
     """Add non-linearity to an array of values following a polynomial function.
 
@@ -45,7 +46,7 @@ def compute_poly_linearity(
 
 def output_node_linearity_poly(
     detector: Detector,
-    coefficients: t.Sequence[float],
+    coefficients: Sequence[float],
 ) -> None:
     """Add non-linearity to signal array to simulate the non-linearity of the output node circuit.
 

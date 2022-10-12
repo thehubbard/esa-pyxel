@@ -6,7 +6,8 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """Pyxel charge injection functions for CCDs."""
-import typing as t
+
+from typing import Optional, Tuple
 
 import numpy as np
 
@@ -14,10 +15,10 @@ from pyxel.detectors import CCD
 
 
 def compute_charge_blocks(
-    output_shape: t.Tuple[int, int],
+    output_shape: Tuple[int, int],
     charge_level: float,
     block_start: int = 0,
-    block_end: t.Optional[int] = None,
+    block_end: Optional[int] = None,
 ) -> np.ndarray:
     """Compute a block of charges to be injected in the detector.
 
@@ -50,7 +51,7 @@ def charge_blocks(
     detector: CCD,
     charge_level: float,
     block_start: int = 0,
-    block_end: t.Optional[int] = None,
+    block_end: Optional[int] = None,
 ) -> None:
     """Inject a block of charge into the :term:`CCD` detector.
 

@@ -6,12 +6,12 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """Subpackage containing ``typing.Protocol`` definition."""
-import typing as t
+
+from typing import TYPE_CHECKING, Protocol, Sequence, Tuple
 
 import numpy as np
-from typing_extensions import Protocol
 
-if t.TYPE_CHECKING:
+if TYPE_CHECKING:
     import pygmo as pg
 
 __all__ = ["IslandProtocol", "ProblemSingleObjective", "FittingCallable"]
@@ -22,7 +22,7 @@ class IslandProtocol(Protocol):
 
     def run_evolve(
         self, algo: "pg.algorithm", pop: "pg.population"
-    ) -> t.Tuple["pg.algorithm", "pg.population"]:
+    ) -> Tuple["pg.algorithm", "pg.population"]:
         """Run 'evolve' method."""
         ...
 
@@ -36,14 +36,14 @@ class ProblemSingleObjective(Protocol):
     See https://esa.github.io/pygmo2/problem.html#pygmo.problem.
     """
 
-    def fitness(self, parameter: np.ndarray) -> t.Sequence[float]:
+    def fitness(self, parameter: np.ndarray) -> Sequence[float]:
         """Return the fitness of the input decision vector.
 
         Concatenate the objectives, the equality and the inequality constraints.
         """
         ...
 
-    def get_bounds(self) -> t.Tuple[t.Sequence[float], t.Sequence[float]]:
+    def get_bounds(self) -> Tuple[Sequence[float], Sequence[float]]:
         """Get the box bounds of the problem (lower_boundary, upper_boundary).
 
         It also implicitly defines the dimension of the problem.

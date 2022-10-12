@@ -6,17 +6,17 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 """HTML display for Pyxel classes."""
 
-import typing as t
+from typing import TYPE_CHECKING, Callable, Union
 
 from jinja2 import Template
 
 from pyxel.pipelines import ModelFunction, ModelGroup
 
-if t.TYPE_CHECKING:
+if TYPE_CHECKING:
     from IPython.core.display import HTML
 
 
-def display_html(obj: t.Union[t.Callable, ModelFunction, ModelGroup]) -> "HTML":
+def display_html(obj: Union[Callable, ModelFunction, ModelGroup]) -> "HTML":
     """Display object attributes and their types in a HTML table.
 
     Parameters

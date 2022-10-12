@@ -7,7 +7,7 @@
 
 """Charge readout model."""
 
-import typing as t
+from typing import Optional
 
 import numpy as np
 
@@ -34,7 +34,7 @@ def apply_gain(pixel_2d: np.ndarray, gain: float) -> np.ndarray:
     return new_data_2d
 
 
-def simple_measurement(detector: Detector, gain: t.Optional[float] = None) -> None:
+def simple_measurement(detector: Detector, gain: Optional[float] = None) -> None:
     """Convert the pixel array into signal array.
 
     Notes

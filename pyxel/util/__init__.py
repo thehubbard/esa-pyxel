@@ -8,13 +8,13 @@
 """Utility functions."""
 
 import logging
-import typing as t
+
 
 import numpy as np
 
-# flake8: noqa
-# from pyxel.util.outputs import image, numpy_array, hist_plot, graph_plot, show_plots
+from typing import Optional
 
+# flake8: noqa
 from pyxel.util.memory import get_size, memory_usage_details
 from pyxel.util.examples import download_examples
 from pyxel.util.timing import time_pipeline
@@ -27,6 +27,8 @@ __all__ = [
     "round_convert_to_int",
     "PipelineAborted",
     "LogFilter",
+    "load_cropped_and_aligned_image",
+    "temporary_random_state",
 ]
 
 
@@ -35,7 +37,7 @@ class PipelineAborted(Exception):
 
     def __init__(
         self,
-        message: t.Optional[str] = None,
+        message: Optional[str] = None,
         # errors=None
     ):
         super().__init__(message)

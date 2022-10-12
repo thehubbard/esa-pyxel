@@ -7,14 +7,14 @@
 
 """Pyxel Photon class to generate and track photon."""
 
-import typing as t
 import warnings
+from typing import TYPE_CHECKING
 
 import numpy as np
 
 from pyxel.data_structure import Array
 
-if t.TYPE_CHECKING:
+if TYPE_CHECKING:
     from pyxel.detectors import Geometry
 
 

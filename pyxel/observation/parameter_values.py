@@ -6,10 +6,11 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """TBW."""
-import typing as t
+
 from collections import abc
 from enum import Enum
 from numbers import Number
+from typing import Iterator, Optional, Sequence, Tuple, Union
 
 from typing_extensions import Literal
 
@@ -32,10 +33,10 @@ class ParameterValues:
     def __init__(
         self,
         key: str,
-        values: t.Union[
-            Literal["_"], t.Sequence[Literal["_"]], t.Sequence[Number], t.Sequence[str]
+        values: Union[
+            Literal["_"], Sequence[Literal["_"]], Sequence[Number], Sequence[str]
         ],
-        boundaries: t.Optional[t.Tuple[float, float]] = None,
+        boundaries: Optional[Tuple[float, float]] = None,
         enabled: bool = True,
         logarithmic: bool = False,
     ):
@@ -64,16 +65,16 @@ class ParameterValues:
         self._key = key  # type: str
         self._values = (
             values
-        )  # type: t.Union[Literal["_"], t.Sequence[Literal["_"]], t.Sequence[Number], t.Sequence[str]]
+        )  # type: Union[Literal["_"], Sequence[Literal["_"]], Sequence[Number], Sequence[str]]
 
         # short  name identifier: 'row'
         self._short_name = key.split(".")[-1]
 
         self._enabled = enabled  # type: bool
         self._logarithmic = logarithmic  # type: bool
-        self._boundaries = boundaries  # type: t.Optional[t.Tuple[float, float]]
+        self._boundaries = boundaries  # type: Optional[Tuple[float, float]]
 
-        self._current = None  # type: t.Optional[t.Union[Literal['_'], Number, str]]
+        self._current = None  # type: Optional[Union[Literal['_'], Number, str]]
 
     def __repr__(self) -> str:
         cls_name = self.__class__.__name__  # type: str
@@ -81,11 +82,11 @@ class ParameterValues:
         return f"{cls_name}<key={self.key!r}, values={self.values!r}, enabled={self.enabled!r}>"
 
     def __len__(self) -> int:
-        values = eval_range(self.values)  # type: t.Sequence
+        values = eval_range(self.values)  # type: Sequence
         return len(values)
 
     # TODO: Is method '__contains__' needed ? If yes then this class will act as a `Collections.abc.Sequence`
-    def __iter__(self) -> t.Iterator[Number]:
+    def __iter__(self) -> Iterator[Number]:
         values = eval_range(self.values)
         for value in values:
             yield value
@@ -103,9 +104,7 @@ class ParameterValues:
     @property
     def values(
         self,
-    ) -> t.Union[
-        Literal["_"], t.Sequence[Literal["_"]], t.Sequence[Number], t.Sequence[str]
-    ]:
+    ) -> Union[Literal["_"], Sequence[Literal["_"]], Sequence[Number], Sequence[str]]:
         """TBW."""
         return self._values
 
@@ -115,12 +114,12 @@ class ParameterValues:
         return self._enabled
 
     @property
-    def current(self) -> t.Optional[t.Union[Literal["_"], Number, str]]:
+    def current(self) -> Optional[Union[Literal["_"], Number, str]]:
         """TBW."""
         return self._current
 
     @current.setter
-    def current(self, value: t.Union[Literal["_"], str, Number]) -> None:
+    def current(self, value: Union[Literal["_"], str, Number]) -> None:
         """TBW."""
         self._current = value
 
@@ -130,6 +129,6 @@ class ParameterValues:
         return self._logarithmic
 
     @property
-    def boundaries(self) -> t.Optional[t.Tuple[float, float]]:
+    def boundaries(self) -> Optional[Tuple[float, float]]:
         """TBW."""
         return self._boundaries

@@ -6,7 +6,8 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """Geometry class for detector."""
-import typing as t
+
+from typing import Mapping, Optional, Tuple
 
 import numpy as np
 
@@ -58,9 +59,9 @@ class Geometry:
         self,
         row: int,
         col: int,
-        total_thickness: t.Optional[float] = None,  # unit: um
-        pixel_vert_size: t.Optional[float] = None,  # unit: um
-        pixel_horz_size: t.Optional[float] = None,  # unit: um
+        total_thickness: Optional[float] = None,  # unit: um
+        pixel_vert_size: Optional[float] = None,  # unit: um
+        pixel_horz_size: Optional[float] = None,  # unit: um
     ):
         if row <= 0:
             raise ValueError("'row' must be strictly greater than 0.")
@@ -140,7 +141,7 @@ class Geometry:
         self._col = value
 
     @property
-    def shape(self) -> t.Tuple[int, int]:
+    def shape(self) -> Tuple[int, int]:
         """Return detector shape."""
         return self.row, self.col
 
@@ -242,7 +243,7 @@ class Geometry:
         self._numbytes = get_size(self)
         return self._numbytes
 
-    def to_dict(self) -> t.Mapping:
+    def to_dict(self) -> Mapping:
         """Get the attributes of this instance as a `dict`."""
         return {
             "row": self.row,
@@ -253,7 +254,7 @@ class Geometry:
         }
 
     @classmethod
-    def from_dict(cls, dct: t.Mapping):
+    def from_dict(cls, dct: Mapping):
         """Create a new instance of `Geometry` from a `dict`."""
         # TODO: This is a simplistic implementation. Improve this.
         return cls(**dct)

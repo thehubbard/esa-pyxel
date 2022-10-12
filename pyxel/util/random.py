@@ -8,9 +8,9 @@
 #
 """Util functions to handle random seeds."""
 
-import typing as t
 from contextlib import contextmanager
 from functools import wraps
+from typing import Callable
 
 import numpy as np
 
@@ -31,7 +31,7 @@ def change_random_state(seed: int):
         np.random.set_state(state)
 
 
-def temporary_random_state(func: t.Callable) -> t.Callable:
+def temporary_random_state(func: Callable) -> Callable:
     """Temporarily change numpy random seed within a function.
 
     Parameters

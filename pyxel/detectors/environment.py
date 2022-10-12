@@ -7,7 +7,7 @@
 
 """TBW."""
 
-import typing as t
+from typing import Mapping, Optional
 
 from pyxel.util.memory import get_size
 
@@ -21,7 +21,7 @@ class Environment:
         Temperature of the detector. Unit: K
     """
 
-    def __init__(self, temperature: t.Optional[float] = None):
+    def __init__(self, temperature: Optional[float] = None):
         if temperature and not (0.0 <= temperature <= 1000.0):
             raise ValueError("'temperature' must be between 0.0 and 1000.0.")
 
@@ -64,12 +64,12 @@ class Environment:
         self._numbytes = get_size(self)
         return self._numbytes
 
-    def to_dict(self) -> t.Mapping:
+    def to_dict(self) -> Mapping:
         """Get the attributes of this instance as a `dict`."""
         return {"temperature": self._temperature}
 
     @classmethod
-    def from_dict(cls, dct: t.Mapping):
+    def from_dict(cls, dct: Mapping):
         """Create a new instance of `Geometry` from a `dict`."""
         # TODO: This is a simplistic implementation. Improve this.
         return cls(**dct)

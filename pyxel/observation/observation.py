@@ -8,10 +8,23 @@
 """Parametric mode class and helper functions."""
 import itertools
 import logging
-import typing as t
 from copy import deepcopy
 from enum import Enum
 from functools import partial
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Callable,
+    Dict,
+    Generator,
+    Iterator,
+    List,
+    NamedTuple,
+    Optional,
+    Sequence,
+    Tuple,
+    Union,
+)
 
 import dask.bag as db
 import numpy as np
@@ -23,7 +36,7 @@ from pyxel.observation.parameter_values import ParameterType, ParameterValues
 from pyxel.pipelines import ResultType
 from pyxel.state import get_obj_att, get_value
 
-if t.TYPE_CHECKING:
+if TYPE_CHECKING:
     import xarray as xr
 
     from pyxel.outputs import ObservationOutputs
@@ -38,10 +51,10 @@ class ParameterMode(Enum):
     Custom = "custom"
 
 
-class ObservationResult(t.NamedTuple):
+class ObservationResult(NamedTuple):
     """Result class for observation class."""
 
-    dataset: t.Union["xr.Dataset", t.Dict[str, "xr.Dataset"]]
+    dataset: Union["xr.Dataset", Dict[str, "xr.Dataset"]]
     parameters: "xr.Dataset"
     logs: "xr.Dataset"
 
@@ -52,21 +65,21 @@ class Observation:
     def __init__(
         self,
         outputs: "ObservationOutputs",
-        parameters: t.Sequence[ParameterValues],
-        readout: t.Optional[Readout] = None,
+        parameters: Sequence[ParameterValues],
+        readout: Optional[Readout] = None,
         mode: str = "product",
-        from_file: t.Optional[str] = None,
-        column_range: t.Optional[t.Tuple[int, int]] = None,
+        from_file: Optional[str] = None,
+        column_range: Optional[Tuple[int, int]] = None,
         with_dask: bool = False,
         result_type: Literal["image", "signal", "pixel", "all"] = "all",
-        pipeline_seed: t.Optional[int] = None,
+        pipeline_seed: Optional[int] = None,
     ):
         self.outputs = outputs
         self.readout = readout if readout else Readout()  # type: Readout
         self.parameter_mode = ParameterMode(mode)  # type: ParameterMode
         self._parameters = parameters
         self.file = from_file
-        self.data = None  # type: t.Optional[np.ndarray]
+        self.data = None  # type: Optional[np.ndarray]
         if column_range:
             self.columns = slice(*column_range)
         self.with_dask = with_dask
@@ -92,7 +105,7 @@ class Observation:
         self._result_type = value
 
     @property
-    def pipeline_seed(self) -> t.Optional[int]:
+    def pipeline_seed(self) -> Optional[int]:
         """TBW."""
         return self._pipeline_seed
 
@@ -102,7 +115,7 @@ class Observation:
         self._pipeline_seed = value
 
     @property
-    def enabled_steps(self) -> t.Sequence[ParameterValues]:
+    def enabled_steps(self) -> Sequence[ParameterValues]:
         """Return a list of enabled ParameterValues.
 
         Returns
@@ -125,7 +138,7 @@ class Observation:
             raise ValueError("File for custom parametric mode not specified!")
         self.data = result
 
-    def _custom_parameters(self) -> t.Generator[t.Tuple[int, dict], None, None]:
+    def _custom_parameters(self) -> Generator[Tuple[int, dict], None, None]:
         """Generate custom mode parameters based on input file.
 
         Yields
@@ -141,7 +154,7 @@ class Observation:
                     key = step.key
 
                     # TODO: this is confusing code. Fix this.
-                    #       Furthermore 'step.values' should be a `t.List[int, float]` and not a `str`
+                    #       Furthermore 'step.values' should be a `List[int, float]` and not a `str`
                     if step.values == "_":
                         value = data_array[i]
                         i += 1
@@ -171,7 +184,7 @@ class Observation:
         else:
             raise TypeError("Custom parameters not loaded from file.")
 
-    def _sequential_parameters(self) -> t.Generator[t.Tuple[int, dict], None, None]:
+    def _sequential_parameters(self) -> Generator[Tuple[int, dict], None, None]:
         """Generate sequential mode parameters.
 
         Yields
@@ -185,7 +198,7 @@ class Observation:
                 parameter_dict = {key: value}
                 yield index, parameter_dict
 
-    def _product_indices(self) -> "t.Iterator[t.Tuple]":
+    def _product_indices(self) -> "Iterator[Tuple]":
         """Return an iterator of product parameter indices.
 
         Returns
@@ -200,7 +213,7 @@ class Observation:
 
     def _product_parameters(
         self,
-    ) -> t.Generator[t.Tuple[t.Tuple, t.Dict[str, t.Any]], None, None]:
+    ) -> Generator[Tuple[Tuple, Dict[str, Any]], None, None]:
         """Generate product mode parameters.
 
         Yields
@@ -218,7 +231,7 @@ class Observation:
                 parameter_dict.update({key: value})
             yield indices, parameter_dict
 
-    def _parameter_it(self) -> t.Callable:
+    def _parameter_it(self) -> Callable:
         """Return the method for generating parameters based on parametric mode.
 
         Returns
@@ -238,9 +251,7 @@ class Observation:
 
     def _processors_it(
         self, processor: "Processor"
-    ) -> t.Generator[
-        t.Tuple["Processor", t.Union[int, t.Tuple[int]], t.Dict], None, None
-    ]:
+    ) -> Generator[Tuple["Processor", Union[int, Tuple[int]], Dict], None, None]:
         """Generate processors with different product parameters.
 
         Parameters
@@ -275,7 +286,7 @@ class Observation:
 
     def run_debug_mode(
         self, processor: "Processor"
-    ) -> t.Tuple[t.List["Processor"], "xr.Dataset"]:
+    ) -> Tuple[List["Processor"], "xr.Dataset"]:
         """Run observation pipelines in debug mode and return list of processors and parameter logs.
 
         Parameters
@@ -291,7 +302,7 @@ class Observation:
         import xarray as xr
 
         processors = []
-        logs = []  # type: t.List[xr.Dataset]
+        logs = []  # type: List[xr.Dataset]
 
         for processor_id, (proc, _index, parameter_dict) in enumerate(
             tqdm(self._processors_it(processor))
@@ -402,7 +413,7 @@ class Observation:
             # prepare lists for to-be-merged datasets
             parameters = [
                 [] for _ in range(len(self.enabled_steps))
-            ]  # type: t.List[t.List[xr.Dataset]]
+            ]  # type: List[List[xr.Dataset]]
             logs = []
 
             for processor_id, (indices, parameter_dict, _) in enumerate(lst):
@@ -422,7 +433,7 @@ class Observation:
                     parameters[i].append(parameter_ds)
 
             # merging/combining the outputs
-            final_parameters_list = []  # type: t.List[xr.Dataset]
+            final_parameters_list = []  # type: List[xr.Dataset]
             for p in parameters:
                 # See issue #276
                 new_dataset = xr.combine_by_coords(p)
@@ -579,7 +590,7 @@ class Observation:
 
     def _apply_exposure_pipeline_product(
         self,
-        index_and_parameter: t.Tuple[t.Tuple, t.Dict, int],
+        index_and_parameter: Tuple[Tuple, Dict, int],
         processor: "Processor",
         x: range,
         y: range,
@@ -622,7 +633,7 @@ class Observation:
 
     def _apply_exposure_pipeline_custom(
         self,
-        index_and_parameter: t.Tuple[int, t.Dict, int],
+        index_and_parameter: Tuple[int, Dict, int],
         processor: "Processor",
         x: range,
         y: range,
@@ -661,7 +672,7 @@ class Observation:
 
     def _apply_exposure_pipeline_sequential(
         self,
-        index_and_parameter: t.Tuple[int, t.Dict, int],
+        index_and_parameter: Tuple[int, Dict, int],
         processor: "Processor",
         x: range,
         y: range,
@@ -887,7 +898,7 @@ def _add_sequential_parameters(
 
 
 def _add_product_parameters(
-    ds: "xr.Dataset", parameter_dict: dict, indices: t.Tuple, types: dict
+    ds: "xr.Dataset", parameter_dict: dict, indices: Tuple, types: dict
 ) -> "xr.Dataset":
     """Add true coordinates or index to product mode dataset.
 
@@ -924,7 +935,7 @@ def _add_product_parameters(
 
 def compute_final_sequential_dataset(
     list_of_index_and_parameter: list, list_of_datasets: list
-) -> t.Dict[str, "xr.Dataset"]:
+) -> Dict[str, "xr.Dataset"]:
     """Return a dictionary of result datasets where keys are different parameters.
 
     Parameters
@@ -939,7 +950,7 @@ def compute_final_sequential_dataset(
     # Late import to speedup start-up time
     import xarray as xr
 
-    final_dict = {}  # type: t.Dict[str, list]
+    final_dict = {}  # type: Dict[str, list]
 
     for _, parameter_dict, n in list_of_index_and_parameter:
         coordinate = str(list(parameter_dict)[0])
@@ -949,7 +960,7 @@ def compute_final_sequential_dataset(
         else:
             final_dict[short(coordinate)].append(list_of_datasets[n])
 
-    final_datasets = {}  # type: t.Dict[str, xr.Dataset]
+    final_datasets = {}  # type: Dict[str, xr.Dataset]
     for key, value in final_dict.items():
         ds = xr.combine_by_coords(value)
         # see issue #276

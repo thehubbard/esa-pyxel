@@ -13,7 +13,7 @@ import os
 import shutil
 import sys
 import time
-import typing as t
+from typing import Tuple
 
 
 def create_model(newmodel: str) -> None:
@@ -94,7 +94,7 @@ def create_model(newmodel: str) -> None:
         raise
 
 
-def get_name_and_location(newmodel: str) -> t.Tuple[str, str]:
+def get_name_and_location(newmodel: str) -> Tuple[str, str]:
     """Get name and location of new model from string modeltype/modelname.
 
     Parameters

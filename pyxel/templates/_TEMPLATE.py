@@ -101,7 +101,7 @@ https://sphinx-rtd-theme.readthedocs.io/en/latest/index.html
    Write the documentation for _TEMPLATE
 
 """
-import typing as t
+
 
 # One or the other
 from pyxel.detectors import CCD, CMOS

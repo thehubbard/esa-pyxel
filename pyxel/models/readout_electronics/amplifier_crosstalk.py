@@ -7,15 +7,15 @@
 
 """Amplifier crosstalk model: https://arxiv.org/abs/1808.00790."""
 
-import typing as t
 from pathlib import Path
+from typing import TYPE_CHECKING, Any, List, Sequence, Tuple, Union
 
 import numba
 import numpy as np
 
 from pyxel import load_table
 
-if t.TYPE_CHECKING:
+if TYPE_CHECKING:
     from pyxel.detectors import Detector
 
 
@@ -50,7 +50,7 @@ def flip_array(array: np.ndarray, direction: int) -> np.ndarray:
 @numba.njit
 def get_channel_slices(
     shape: tuple, channel_matrix: np.ndarray
-) -> t.List[t.List[t.Tuple[t.Any, t.Any]]]:
+) -> List[List[Tuple[Any, Any]]]:
     """Get pairs of slices that correspond to the given channel matrix in numerical order of channels.
 
     Parameters
@@ -89,7 +89,7 @@ def get_channel_slices(
     return slices
 
 
-def get_matrix(coupling_matrix: t.Union[str, Path, t.Sequence]) -> np.ndarray:
+def get_matrix(coupling_matrix: Union[str, Path, Sequence]) -> np.ndarray:
     """Get the coupling matrix either from configuration input or a file.
 
     Parameters
@@ -133,7 +133,7 @@ def crosstalk_signal_ac(
 
     slices = get_channel_slices(
         shape=array.shape, channel_matrix=channel_matrix
-    )  # type: t.List[t.List[t.Tuple[t.Any, t.Any]]]
+    )  # type: List[List[Tuple[Any, Any]]]
 
     array_copy = array.copy()
 
@@ -183,7 +183,7 @@ def crosstalk_signal_dc(
 
     slices = get_channel_slices(
         shape=array.shape, channel_matrix=channel_matrix
-    )  # type: t.List[t.List[t.Tuple[t.Any, t.Any]]]
+    )  # type: List[List[Tuple[Any, Any]]]
 
     array_copy = array.copy()
 
@@ -209,9 +209,9 @@ def crosstalk_signal_dc(
 
 def dc_crosstalk(
     detector: "Detector",
-    coupling_matrix: t.Union[str, Path, t.Sequence],
-    channel_matrix: t.Sequence,
-    readout_directions: t.Sequence,
+    coupling_matrix: Union[str, Path, Sequence],
+    channel_matrix: Sequence,
+    readout_directions: Sequence,
 ) -> None:
     """Apply DC crosstalk signal to detector signal.
 
@@ -270,9 +270,9 @@ def dc_crosstalk(
 
 def ac_crosstalk(
     detector: "Detector",
-    coupling_matrix: t.Union[str, Path, t.Sequence],
-    channel_matrix: t.Sequence,
-    readout_directions: t.Sequence,
+    coupling_matrix: Union[str, Path, Sequence],
+    channel_matrix: Sequence,
+    readout_directions: Sequence,
 ) -> None:
     """Apply AC crosstalk signal to detector signal.
 

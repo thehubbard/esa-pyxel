@@ -8,14 +8,13 @@
 #
 """Object memory consumption utilities."""
 
-import typing as t
-from typing import List
+from typing import Any, List
 
 import numpy as np
 from pympler.asizeof import asizeof  # type: ignore
 
 
-def get_size(obj: t.Any) -> int:
+def get_size(obj: Any) -> int:
     """Recursively calculates object size in bytes using Pympler library.
 
     Parameters
@@ -51,7 +50,7 @@ def print_human_readable_memory(usage: dict) -> None:
 
 
 def memory_usage_details(
-    obj: t.Any,
+    obj: Any,
     *attr_kw: List[str],
     print_result: bool = True,
     human_readable: bool = True,

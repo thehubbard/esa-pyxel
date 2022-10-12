@@ -7,8 +7,9 @@
 #
 #
 """Persistence classes."""
-import typing as t
+
 from dataclasses import dataclass
+from typing import Sequence, Tuple
 
 import numpy as np
 
@@ -27,9 +28,9 @@ class Persistence:
 
     def __init__(
         self,
-        trap_time_constants: t.Sequence[float],
-        trap_proportions: t.Sequence[float],
-        geometry: t.Tuple[int, ...],
+        trap_time_constants: Sequence[float],
+        trap_proportions: Sequence[float],
+        geometry: Tuple[int, ...],
     ):
         traps = []
         for time_constant, trap_proportion in sorted(
@@ -52,7 +53,7 @@ class Persistence:
         return f"{cls_name}<number_of_traps={len(self._trap_list)}>"
 
     @property
-    def trap_list(self) -> t.Sequence[Trap]:
+    def trap_list(self) -> Sequence[Trap]:
         """List of traps."""
         return self._trap_list
 
@@ -99,9 +100,9 @@ class SimplePersistence:
 
     def __init__(
         self,
-        trap_time_constants: t.Sequence[float],
-        trap_densities: t.Sequence[float],
-        geometry: t.Tuple[int, ...],
+        trap_time_constants: Sequence[float],
+        trap_densities: Sequence[float],
+        geometry: Tuple[int, ...],
     ):
         traps = []
         for time_constant, trap_density in sorted(
@@ -124,7 +125,7 @@ class SimplePersistence:
         return f"{cls_name}<number_of_traps={len(self._trap_list)}>"
 
     @property
-    def trap_list(self) -> t.Sequence[SimpleTrap]:
+    def trap_list(self) -> Sequence[SimpleTrap]:
         """Return a list of traps."""
         return self._trap_list
 

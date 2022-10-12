@@ -9,7 +9,7 @@
 """Tools for display of calibration IO in notebooks."""
 
 import os
-import typing as t
+from typing import TYPE_CHECKING, Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -17,7 +17,7 @@ from bokeh.models import PrintfTickFormatter
 
 from pyxel import load_image
 
-if t.TYPE_CHECKING:
+if TYPE_CHECKING:
     import holoviews as hv
     import xarray as xr
 
@@ -57,7 +57,7 @@ def display_calibration_inputs(
     input_columns = input_range[3] - input_range[2]
     target_columns = target_range[3] - target_range[2]
 
-    def get_data_input(data_id: int) -> t.Union["hv.Image", "hv.Curve"]:
+    def get_data_input(data_id: int) -> Union["hv.Image", "hv.Curve"]:
         """Get input data based on configuration file.
 
         Parameters
@@ -95,7 +95,7 @@ def display_calibration_inputs(
 
         return im
 
-    def get_data_target(data_id: int) -> t.Union["hv.Image", "hv.Curve"]:
+    def get_data_target(data_id: int) -> Union["hv.Image", "hv.Curve"]:
         """Get target data based on the configuration file.
 
         Parameters
@@ -398,9 +398,9 @@ def champion_heatmap(
     ds: "xr.Dataset",
     num_bins: int = 100,
     logx: bool = False,
-    parameter_range: t.Optional[list] = None,
-    island_range: t.Optional[list] = None,
-    ind_range: t.Optional[list] = None,
+    parameter_range: Optional[list] = None,
+    island_range: Optional[list] = None,
+    ind_range: Optional[list] = None,
 ) -> "hv.Points":
     """Plot a heatmap of champion parameters vs fitness.
 
@@ -511,7 +511,7 @@ def champion_heatmap(
         bins = [
             np.geomspace(0.9 * np.min(x), 1.1 * np.max(x), num_bins + 1),
             num_bins,
-        ]  # type: t.Union[list, int]
+        ]  # type: Union[list, int]
     else:
         bins = num_bins
 

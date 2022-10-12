@@ -7,16 +7,16 @@
 
 """TBW."""
 
-import typing as t
 from enum import Enum
 from pathlib import Path
+from typing import TYPE_CHECKING, NamedTuple, Optional, Sequence, Tuple, Union
 
 import numpy as np
 import pandas as pd
 
 from pyxel import load_datacube, load_image
 
-if t.TYPE_CHECKING:
+if TYPE_CHECKING:
     import xarray as xr
 
 #  from pyxel.pipelines import Processor
@@ -32,13 +32,13 @@ __all__ = [
 ]
 
 
-class CalibrationResult(t.NamedTuple):
+class CalibrationResult(NamedTuple):
     """Result class for calibration class."""
 
     dataset: "xr.Dataset"
     processors: pd.DataFrame
     logs: pd.DataFrame
-    filenames: t.Sequence
+    filenames: Sequence
 
 
 class CalibrationMode(Enum):
@@ -101,7 +101,7 @@ def read_single_datacube(filename: Path) -> np.ndarray:
     return data
 
 
-def read_datacubes(filenames: t.Sequence[Path]) -> t.Sequence[np.ndarray]:
+def read_datacubes(filenames: Sequence[Path]) -> Sequence[np.ndarray]:
     """Read numpy array(s) from several FITS or NPY files.
 
     :param filenames:
@@ -109,12 +109,12 @@ def read_datacubes(filenames: t.Sequence[Path]) -> t.Sequence[np.ndarray]:
     """
     output = [
         read_single_datacube(Path(filename)) for filename in filenames
-    ]  # type: t.Sequence[np.ndarray]
+    ]  # type: Sequence[np.ndarray]
 
     return output
 
 
-def read_data(filenames: t.Sequence[Path]) -> t.Sequence[np.ndarray]:
+def read_data(filenames: Sequence[Path]) -> Sequence[np.ndarray]:
     """Read numpy array(s) from several FITS or NPY files.
 
     :param filenames:
@@ -122,15 +122,15 @@ def read_data(filenames: t.Sequence[Path]) -> t.Sequence[np.ndarray]:
     """
     output = [
         read_single_data(Path(filename)) for filename in filenames
-    ]  # type: t.Sequence[np.ndarray]
+    ]  # type: Sequence[np.ndarray]
 
     return output
 
 
 # TODO: Refactor and add more unit tests. See #327
 def list_to_slice(
-    input_list: t.Optional[t.Sequence[int]] = None,
-) -> t.Union[t.Tuple[slice, slice], t.Tuple[slice, slice, slice]]:
+    input_list: Optional[Sequence[int]] = None,
+) -> Union[Tuple[slice, slice], Tuple[slice, slice, slice]]:
     """TBW.
 
     :return:
@@ -154,8 +154,8 @@ def list_to_slice(
 
 # TODO: Refactor and add more unit tests. See #327
 def list_to_3d_slice(
-    input_list: t.Optional[t.Sequence[int]] = None,
-) -> t.Tuple[slice, slice, slice]:
+    input_list: Optional[Sequence[int]] = None,
+) -> Tuple[slice, slice, slice]:
     """TBW.
 
     :return:
@@ -214,11 +214,11 @@ def slice_to_range(data: slice) -> range:
 
 # TODO: Refactor and add more unit tests. See #328
 def check_ranges(
-    target_fit_range: t.Sequence[int],
-    out_fit_range: t.Sequence[int],
+    target_fit_range: Sequence[int],
+    out_fit_range: Sequence[int],
     rows: int,
     cols: int,
-    readout_times: t.Optional[int] = None,
+    readout_times: Optional[int] = None,
 ) -> None:
     """TBW."""
     if target_fit_range:

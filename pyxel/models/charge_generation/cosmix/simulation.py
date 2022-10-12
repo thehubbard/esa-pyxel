@@ -8,9 +8,9 @@
 """Pyxel CosmiX model to generate charge by ionization."""
 
 import subprocess
-import typing as t  # noqa: F401
 from bisect import bisect
 from pathlib import Path
+from typing import List, Optional, Sequence, Union
 
 import numpy as np
 import pandas as pd
@@ -39,14 +39,14 @@ class Simulation:
         self.detector = detector
         self.simulation_mode = (
             None
-        )  # type: t.Optional[Literal["cosmic_ray", "cosmics","radioactive_decay", "snowflakes"]]
+        )  # type: Optional[Literal["cosmic_ray", "cosmics","radioactive_decay", "snowflakes"]]
 
-        self.flux_dist = None  # type: t.Optional[np.ndarray]
-        self.spectrum_cdf = None  # type: t.Optional[np.ndarray]
+        self.flux_dist = None  # type: Optional[np.ndarray]
+        self.spectrum_cdf = None  # type: Optional[np.ndarray]
 
         self.energy_loss_data = (
             None
-        )  # type: t.Optional[Literal['stopping', 'stepsize', 'geant4']]
+        )  # type: Optional[Literal['stopping', 'stepsize', 'geant4']]
 
         self.elec_number_dist = pd.DataFrame()
         self.elec_number_cdf = np.zeros((1, 2))
@@ -57,49 +57,49 @@ class Simulation:
 
         self.data_library = pd.DataFrame()
 
-        self.stopping_power = None  # type: t.Optional[np.ndarray]
+        self.stopping_power = None  # type: Optional[np.ndarray]
 
-        self.particle = None  # type: t.Optional[Particle]
+        self.particle = None  # type: Optional[Particle]
 
         self.particle_type = (
             None
-        )  # type: t.Optional[Literal["proton", "ion", "alpha", "beta", "electron", "gamma", "x-ray"]]
+        )  # type: Optional[Literal["proton", "ion", "alpha", "beta", "electron", "gamma", "x-ray"]]
         self.initial_energy = (
             None
-        )  # type: t.Optional[t.Union[int, float, Literal['random']]]
-        self.position_ver = None  # type: t.Optional[str]
-        self.position_hor = None  # type: t.Optional[str]
-        self.position_z = None  # type: t.Optional[str]
-        self.angle_alpha = None  # type: t.Optional[str]
-        self.angle_beta = None  # type: t.Optional[str]
+        )  # type: Optional[Union[int, float, Literal['random']]]
+        self.position_ver = None  # type: Optional[str]
+        self.position_hor = None  # type: Optional[str]
+        self.position_z = None  # type: Optional[str]
+        self.angle_alpha = None  # type: Optional[str]
+        self.angle_beta = None  # type: Optional[str]
         self.step_length = (
             1.0  # fix, all the other data/parameters should be adjusted to this
         )
         self.energy_cut = 1.0e-5  # MeV
         self.ionization_energy = 3.6
 
-        self.e_num_lst_per_step = []  # type: t.List[int]
-        self.e_energy_lst = []  # type: t.List[float]
-        self.e_pos0_lst = []  # type: t.List[float]
-        self.e_pos1_lst = []  # type: t.List[float]
-        self.e_pos2_lst = []  # type: t.List[float]
+        self.e_num_lst_per_step = []  # type: List[int]
+        self.e_energy_lst = []  # type: List[float]
+        self.e_pos0_lst = []  # type: List[float]
+        self.e_pos1_lst = []  # type: List[float]
+        self.e_pos2_lst = []  # type: List[float]
         self.e_vel0_lst = np.array([])  # type: np.ndarray
         self.e_vel1_lst = np.array([])  # type: np.ndarray
         self.e_vel2_lst = np.array([])  # type: np.ndarray
 
-        self.electron_number_from_eloss = []  # type: t.List[int]
-        self.secondaries_from_eloss = []  # type: t.List[int]
-        self.tertiaries_from_eloss = []  # type: t.List[int]
+        self.electron_number_from_eloss = []  # type: List[int]
+        self.secondaries_from_eloss = []  # type: List[int]
+        self.tertiaries_from_eloss = []  # type: List[int]
 
-        self.track_length_lst_per_event = []  # type: t.List[float]
-        self.e_num_lst_per_event = []  # type: t.List[int]
-        self.sec_lst_per_event = []  # type: t.List[int]
-        self.ter_lst_per_event = []  # type: t.List[int]
-        self.edep_per_step = []  # type: t.List[float]
-        self.total_edep_per_particle = []  # type: t.List[float]
-        self.p_energy_lst_per_event = []  # type: t.List[float]
-        self.alpha_lst_per_event = []  # type: t.List[float]
-        self.beta_lst_per_event = []  # type: t.List[float]
+        self.track_length_lst_per_event = []  # type: List[float]
+        self.e_num_lst_per_event = []  # type: List[int]
+        self.sec_lst_per_event = []  # type: List[int]
+        self.ter_lst_per_event = []  # type: List[int]
+        self.edep_per_step = []  # type: List[float]
+        self.total_edep_per_particle = []  # type: List[float]
+        self.p_energy_lst_per_event = []  # type: List[float]
+        self.alpha_lst_per_event = []  # type: List[float]
+        self.beta_lst_per_event = []  # type: List[float]
 
     def parameters(
         self,
@@ -107,7 +107,7 @@ class Simulation:
         part_type: Literal[
             "proton", "ion", "alpha", "beta", "electron", "gamma", "x-ray"
         ],
-        init_energy: t.Union[int, float, Literal["random"]],
+        init_energy: Union[int, float, Literal["random"]],
         pos_ver: str,
         pos_hor: str,
         pos_z: str,
@@ -146,7 +146,7 @@ class Simulation:
         """
         sorted_list = sorted(
             self.data_library[column].unique()
-        )  # type: t.Sequence[float]
+        )  # type: Sequence[float]
         index = bisect(sorted_list, value) - 1
         if index < 0:
             index = 0
@@ -159,7 +159,7 @@ class Simulation:
         """
         sorted_list = sorted(
             self.data_library[column].unique()
-        )  # type: t.Sequence[float]
+        )  # type: Sequence[float]
         index = bisect(sorted_list, value)
         if index > len(sorted_list) - 1:
             index = len(sorted_list) - 1
@@ -172,7 +172,7 @@ class Simulation:
         """
         sorted_list = sorted(
             self.data_library[column].unique()
-        )  # type: t.Sequence[float]
+        )  # type: Sequence[float]
         index_smaller = bisect(sorted_list, value) - 1
         index_larger = bisect(sorted_list, value)
 
@@ -460,10 +460,10 @@ class Simulation:
         ):  # alternative running mode, only all electron number without proton step size data
             electron_number_vector = [
                 g4data[0].astype(int)
-            ]  # type: t.Union[t.List, np.ndarray]
+            ]  # type: Union[List, np.ndarray]
             secondaries = g4data[1].astype(int)
             tertiaries = g4data[2].astype(int)
-            step_size_vector = [0]  # type: t.Union[t.List, np.ndarray]
+            step_size_vector = [0]  # type: Union[List, np.ndarray]
         elif g4data.shape == (0,):
             step_size_vector = []  # um
             electron_number_vector = []
