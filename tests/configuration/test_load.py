@@ -86,7 +86,7 @@ exposure:
     save_data_to_file:
       - detector.image.array:   ['fits']
       - detector.pixel.array: ['npy']
-      
+
 observation:
 
   parameters:

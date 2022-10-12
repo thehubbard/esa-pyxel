@@ -8,7 +8,6 @@
 import numpy as np
 import pytest
 
-from pyxel.data_structure import Phase
 from pyxel.detectors import (
     CCD,
     CMOS,

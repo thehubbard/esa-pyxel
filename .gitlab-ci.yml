@@ -46,17 +46,6 @@ python38:
     # If `$FORCE_GITLAB_CI` is set, create a pipeline.
     - if: '$FORCE_GITLAB_CI'
 
-# Run pytest for Python 3.8 without anaconda
-python38_numpy119:
-  image: python:3.8
-  stage: test
-  script:
-    - tox -e py38-numpy119-extra_all
-  rules:
-    # If `$FORCE_GITLAB_CI` is set, create a pipeline.
-    - if: '$FORCE_GITLAB_CI'
-
-
 # Run mypy
 mypy:
   image: python:3.9
@@ -97,26 +86,33 @@ doc8:
     - if: '$FORCE_GITLAB_CI'
 
 
+codespell:
+  image: python:3
+  stage: test
+  script:
+    - tox -e codespell
+  rules:
+    # If `$FORCE_GITLAB_CI` is set, create a pipeline.
+    - if: '$FORCE_GITLAB_CI'
+
+
 # ###########################
 # Build stage
 # ###########################
 
-# Run pytest + coverage and create html report (pytest_report.html)
+# Run pytest + coverage
 coverage:
   image: python:3.8
   stage: build
   needs: []
   script:
-    - pip install pytest pytest-cov pytest-html pytest-httpserver freezegun
-    - pip install -r requirements.txt
-    - pip install -e ".[all]"
-    - pytest --cov=pyxel --cov-report= --cov-report=html --html=pytest_report.html --self-contained-html --color=yes --full-trace --showlocals --verbose
-    - coverage report > coverage.out
+    - tox -e py-cov-extra_all
+  coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
   artifacts:
-    paths:
-      - htmlcov
-      - pytest_report.html
-      - coverage.out
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage.xml
   rules:
     # If `$FORCE_GITLAB_CI` is set, create a pipeline.
     - if: '$FORCE_GITLAB_CI'

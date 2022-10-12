@@ -7,7 +7,7 @@
 
 """Models to generate charge due to dark current process."""
 
-import typing as t
+from typing import Optional, Tuple
 
 import numpy as np
 from astropy import constants as const
@@ -115,7 +115,7 @@ def average_dark_current(
 
 
 def compute_dark_current(
-    shape: t.Tuple[int, int],
+    shape: Tuple[int, int],
     time_step: float,
     temperature: float,
     pixel_area: float,
@@ -183,9 +183,9 @@ def dark_current(
     detector: Detector,
     figure_of_merit: float,
     fixed_pattern_noise_factor: float,
-    band_gap: t.Optional[float] = None,
-    band_gap_room_temperature: t.Optional[float] = None,
-    seed: t.Optional[int] = None,
+    band_gap: Optional[float] = None,
+    band_gap_room_temperature: Optional[float] = None,
+    seed: Optional[int] = None,
 ) -> None:
     """Add dark current to the detector charge.
 
@@ -271,7 +271,7 @@ def calculate_simple_dark_current(
 
 @temporary_random_state
 def simple_dark_current(
-    detector: Detector, dark_rate: float, seed: t.Optional[int] = None
+    detector: Detector, dark_rate: float, seed: Optional[int] = None
 ) -> None:
     """Simulate dark current in a detector.
 
@@ -303,7 +303,7 @@ def simple_dark_current(
 def calculate_dark_current_saphira(
     temperature: float,
     avalanche_gain: float,
-    shape: t.Tuple[int, int],
+    shape: Tuple[int, int],
     exposure_time: float,
 ) -> np.ndarray:
     """Simulate dark current in a Saphira :term:`APD`.
@@ -350,7 +350,7 @@ def calculate_dark_current_saphira(
 
 
 @temporary_random_state
-def dark_current_saphira(detector: APD, seed: t.Optional[int] = None) -> None:
+def dark_current_saphira(detector: APD, seed: Optional[int] = None) -> None:
     """Simulate dark current in a Saphira APD detector.
 
     Reference: I. M. Baker et al., Linear-mode avalanche photodiode arrays in HgCdTe at Leonardo, UK: the

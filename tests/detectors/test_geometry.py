@@ -5,9 +5,9 @@
 #  this file, may be copied, modified, propagated, or distributed except according to
 #  the terms contained in the file ‘LICENCE.txt’.
 
-import typing as t
 from copy import deepcopy
 from dataclasses import dataclass
+from typing import Type
 
 import numpy as np
 import pytest
@@ -47,7 +47,7 @@ class Parameters:
     ],
 )
 def test_vertical_pixel_center_pos(
-    geometry_cls: t.Type[Geometry], parameters: Parameters, exp_values: np.ndarray
+    geometry_cls: Type[Geometry], parameters: Parameters, exp_values: np.ndarray
 ):
     """Test method '.vertical_pixel_center_pos_list'."""
     # Create the geometry object
@@ -87,7 +87,7 @@ def test_vertical_pixel_center_pos(
     ],
 )
 def test_horizontal_pixel_center_pos(
-    geometry_cls: t.Type[Geometry], parameters: Parameters, exp_values: np.ndarray
+    geometry_cls: Type[Geometry], parameters: Parameters, exp_values: np.ndarray
 ):
     """Test method '.horizontal_pixel_center_pos_list'."""
     # Create the geometry object

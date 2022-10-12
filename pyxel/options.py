@@ -6,8 +6,9 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """Subpackage to define options in Pyxel."""
-import typing as t
+
 from pathlib import Path
+from typing import Any, Mapping, Optional, Union
 
 import attr
 
@@ -23,12 +24,12 @@ class GlobalOptions:
         validator=attr.validators.instance_of(bool),
         default=False,
     )
-    cache_folder: t.Optional[t.Union[str, Path]] = attr.ib(
+    cache_folder: Optional[Union[str, Path]] = attr.ib(
         validator=attr.validators.optional(attr.validators.instance_of((str, Path))),
         default=None,
     )
 
-    def update(self, dct: t.Mapping) -> t.Mapping:
+    def update(self, dct: Mapping) -> Mapping:
         """Apply the option(s) in this container class.
 
         Parameters
@@ -60,7 +61,7 @@ class GlobalOptions:
 
         return previous_params
 
-    def validate_and_convert(self, dct: t.Mapping) -> t.Mapping:
+    def validate_and_convert(self, dct: Mapping) -> Mapping:
         """Validate and convert the input 'option(s)'.
 
         Parameters
@@ -123,16 +124,12 @@ class SetOptions:
     """
 
     def __init__(self, **kwargs):
-        valid_parameters = global_options.validate_and_convert(
-            kwargs
-        )  # type: t.Mapping
+        valid_parameters = global_options.validate_and_convert(kwargs)  # type: Mapping
 
-        self._previous_params = global_options.update(
-            valid_parameters
-        )  # type: t.Mapping
+        self._previous_params = global_options.update(valid_parameters)  # type: Mapping
 
     def __enter__(self) -> "SetOptions":
         return self
 
-    def __exit__(self, exc_type: t.Any, exc_value: t.Any, traceback: t.Any) -> None:
+    def __exit__(self, exc_type: Any, exc_value: Any, traceback: Any) -> None:
         _ = global_options.update(self._previous_params)

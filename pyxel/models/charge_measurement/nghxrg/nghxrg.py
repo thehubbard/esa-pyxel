@@ -8,8 +8,8 @@
 """Pyxel wrapper class for NGHXRG - Teledyne HxRG Noise Generator model."""
 
 import logging
-import typing as t
 from dataclasses import dataclass
+from typing import List, Mapping, Optional, Sequence, Tuple, Union
 
 import numpy as np
 from typing_extensions import Literal
@@ -65,7 +65,7 @@ class PCAZeroNoise:
 
 
 # Create an alias
-NoiseType = t.Union[
+NoiseType = Union[
     KTCBiasNoise,
     WhiteReadNoise,
     CorrPinkNoise,
@@ -79,10 +79,10 @@ NoiseType = t.Union[
 #       `pyxel.models.charge_measurement.nghxrg.nghxrg.HXRGNoise`
 def compute_nghxrg(
     pixel_2d: np.ndarray,
-    noise: t.Sequence[NoiseType],
-    detector_shape: t.Tuple[int, int],
-    window_pos: t.Tuple[int, int],
-    window_size: t.Tuple[int, int],
+    noise: Sequence[NoiseType],
+    detector_shape: Tuple[int, int],
+    window_pos: Tuple[int, int],
+    window_size: Tuple[int, int],
     num_outputs: int,
     time_step: int,
     num_rows_overhead: int,
@@ -189,8 +189,8 @@ def compute_nghxrg(
 @temporary_random_state
 def nghxrg(
     detector: CMOS,
-    noise: t.Sequence[
-        t.Mapping[
+    noise: Sequence[
+        Mapping[
             Literal[
                 "ktc_bias_noise",
                 "white_read_noise",
@@ -199,17 +199,17 @@ def nghxrg(
                 "acn_noise",
                 "pca_zero_noise",
             ],
-            t.Mapping[str, float],
+            Mapping[str, float],
         ]
     ],
-    window_position: t.Optional[t.Tuple[int, int]] = None,
-    window_size: t.Optional[t.Tuple[int, int]] = None,
+    window_position: Optional[Tuple[int, int]] = None,
+    window_size: Optional[Tuple[int, int]] = None,
     n_output: int = 1,
     n_row_overhead: int = 0,
     n_frame_overhead: int = 0,
     reverse_scan_direction: bool = False,
     reference_pixel_border_width: int = 4,
-    seed: t.Optional[int] = None,  # This parameter is used by '@temporary_random_state'
+    seed: Optional[int] = None,  # This parameter is used by '@temporary_random_state'
 ) -> None:
     """Generate fourier noise power spectrum on HXRG detector.
 
@@ -219,9 +219,9 @@ def nghxrg(
     ----------
     detector: Detector
     noise: list
-    window_position: t.Sequence, optional
+    window_position: Sequence, optional
         [x0 (columns), y0 (rows)].
-    window_size: t.Sequence, optional
+    window_size: Sequence, optional
         [x (columns), y (rows)].
     seed: int, optional
     n_output: int
@@ -252,10 +252,10 @@ def nghxrg(
         raise ValueError("'reference_pixel_border_width' must be between 0 and 32.")
 
     # Converter
-    params = []  # type: t.List[NoiseType]
+    params = []  # type: List[NoiseType]
     for item in noise:
         if "ktc_bias_noise" in item:
-            sub_item = item["ktc_bias_noise"]  # type: t.Mapping[str, float]
+            sub_item = item["ktc_bias_noise"]  # type: Mapping[str, float]
             param = KTCBiasNoise(
                 ktc_noise=sub_item["ktc_noise"],
                 bias_offset=sub_item["bias_offset"],
@@ -328,12 +328,12 @@ def nghxrg(
 # def display_noisepsd(
 #     array: np.ndarray,
 #     nb_output: int,
-#     dimensions: t.Tuple[int, int],
+#     dimensions: Tuple[int, int],
 #     noise_name: str,
 #     path: Path,
 #     step: int,
 #     # mode: Literal["plot"] = "plot",
-# ) -> t.Tuple[t.Any, np.ndarray]:
+# ) -> Tuple[Any, np.ndarray]:
 #     """Display noise PSD from the generated FITS file.
 #
 #     For power spectra, need to be careful of readout directions.

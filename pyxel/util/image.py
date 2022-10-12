@@ -7,10 +7,11 @@
 #
 #
 """Utility functions for images."""
-import typing as t
+
 from enum import Enum
 from functools import lru_cache
 from pathlib import Path
+from typing import Optional, Tuple, Union
 
 import numpy as np
 from typing_extensions import Literal
@@ -34,7 +35,7 @@ def _set_relative_position(
     output_x: int,
     output_y: int,
     alignment: Alignment,
-) -> t.Tuple[int, int]:
+) -> Tuple[int, int]:
     """Calculate relative position of (0, 0) pixels for two different array shapes based on desired alignment.
 
     Parameters
@@ -65,9 +66,9 @@ def _set_relative_position(
 
 def fit_into_array(
     array: np.ndarray,
-    output_shape: t.Tuple[int, ...],
-    relative_position: t.Tuple[int, int] = (0, 0),
-    align: t.Optional[
+    output_shape: Tuple[int, ...],
+    relative_position: Tuple[int, int] = (0, 0),
+    align: Optional[
         Literal["center", "top_left", "top_right", "bottom_left", "bottom_right"]
     ] = None,
     allow_smaller_array: bool = True,
@@ -151,11 +152,11 @@ def fit_into_array(
 
 @lru_cache(maxsize=128)  # One must add parameter 'maxsize' for Python 3.7
 def load_cropped_and_aligned_image(
-    shape: t.Tuple[int, ...],
-    filename: t.Union[str, Path],
+    shape: Tuple[int, ...],
+    filename: Union[str, Path],
     position_x: int = 0,
     position_y: int = 0,
-    align: t.Optional[
+    align: Optional[
         Literal["center", "top_left", "top_right", "bottom_left", "bottom_right"]
     ] = None,
     allow_smaller_array: bool = True,

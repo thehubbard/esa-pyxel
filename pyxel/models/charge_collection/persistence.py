@@ -76,8 +76,8 @@ TO DO:
 
 """
 
-import typing as t
 from pathlib import Path
+from typing import Optional, Sequence, Tuple, Union
 
 import numba
 import numpy as np
@@ -90,9 +90,9 @@ from pyxel.util import load_cropped_and_aligned_image
 
 def simple_persistence(
     detector: CMOS,
-    trap_time_constants: t.Sequence[float],
-    trap_densities: t.Sequence[float],
-    trap_capacities: t.Optional[t.Sequence[float]] = None,
+    trap_time_constants: Sequence[float],
+    trap_densities: Sequence[float],
+    trap_capacities: Optional[Sequence[float]] = None,
 ) -> None:
     """Apply simple persistence model.
 
@@ -162,8 +162,8 @@ def compute_simple_persistence(
     trap_densities: np.ndarray,
     trap_time_constants: np.ndarray,
     delta_t: float,
-    trap_capacities: t.Optional[np.ndarray] = None,
-) -> t.Tuple[np.ndarray, np.ndarray]:
+    trap_capacities: Optional[np.ndarray] = None,
+) -> Tuple[np.ndarray, np.ndarray]:
     """Compute simple persistence.
 
     Parameters
@@ -228,16 +228,16 @@ def compute_simple_persistence(
 
 def persistence(
     detector: CMOS,
-    trap_time_constants: t.Sequence[float],
-    trap_proportions: t.Sequence[float],
-    trap_densities_filename: t.Union[Path, str],
-    trap_capacities_filename: t.Optional[t.Union[Path, str]] = None,
-    trap_densities_position: t.Tuple[int, int] = (0, 0),
-    trap_densities_align: t.Optional[
+    trap_time_constants: Sequence[float],
+    trap_proportions: Sequence[float],
+    trap_densities_filename: Union[Path, str],
+    trap_capacities_filename: Optional[Union[Path, str]] = None,
+    trap_densities_position: Tuple[int, int] = (0, 0),
+    trap_densities_align: Optional[
         Literal["center", "top_left", "top_right", "bottom_left", "bottom_right"]
     ] = None,
-    trap_capacities_position: t.Tuple[int, int] = (0, 0),
-    trap_capacities_align: t.Optional[
+    trap_capacities_position: Tuple[int, int] = (0, 0),
+    trap_capacities_align: Optional[
         Literal["center", "top_left", "top_right", "bottom_left", "bottom_right"]
     ] = None,
 ) -> None:
@@ -351,8 +351,8 @@ def compute_persistence(
     trap_time_constants: np.ndarray,
     trap_densities_2d: np.ndarray,
     delta_t: float,
-    trap_capacities_2d: t.Optional[np.ndarray] = None,
-) -> t.Tuple[np.ndarray, np.ndarray]:
+    trap_capacities_2d: Optional[np.ndarray] = None,
+) -> Tuple[np.ndarray, np.ndarray]:
     """Compute persistence.
 
     Parameters
@@ -426,8 +426,8 @@ def clip_trapped_charge(
     pixel: np.ndarray,
     available_traps: np.ndarray,
     pixel_diff: np.ndarray,
-    trap_capacities: t.Optional[np.ndarray] = None,
-) -> t.Tuple[np.ndarray, np.ndarray]:
+    trap_capacities: Optional[np.ndarray] = None,
+) -> Tuple[np.ndarray, np.ndarray]:
     """Clip trapped charge between arrays of max and min value.
 
     Parameters

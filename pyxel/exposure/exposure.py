@@ -10,7 +10,7 @@
 
 import logging
 import operator
-import typing as t
+from typing import TYPE_CHECKING, Mapping, Optional, Tuple, Union
 
 import numpy as np
 from tqdm.auto import tqdm
@@ -19,7 +19,7 @@ from typing_extensions import Literal
 from pyxel.exposure import Readout
 from pyxel.pipelines import ResultType, result_keys
 
-if t.TYPE_CHECKING:
+if TYPE_CHECKING:
     import xarray as xr
 
     from pyxel.outputs import CalibrationOutputs, ExposureOutputs, ObservationOutputs
@@ -34,7 +34,7 @@ class Exposure:
         outputs: "ExposureOutputs",
         readout: "Readout",
         result_type: Literal["image", "signal", "pixel", "all"] = "all",
-        pipeline_seed: t.Optional[int] = None,
+        pipeline_seed: Optional[int] = None,
     ):
         self.outputs = outputs
         self.readout = readout
@@ -56,12 +56,12 @@ class Exposure:
         self._result_type = value
 
     @property
-    def pipeline_seed(self) -> t.Optional[int]:
+    def pipeline_seed(self) -> Optional[int]:
         """TBW."""
         return self._pipeline_seed
 
     @pipeline_seed.setter
-    def pipeline_seed(self, value: t.Optional[int]) -> None:
+    def pipeline_seed(self, value: Optional[int]) -> None:
         """TBW."""
         self._pipeline_seed = value
 
@@ -106,12 +106,12 @@ class Exposure:
 def run_exposure_pipeline(
     processor: "Processor",
     readout: "Readout",
-    outputs: t.Optional[
-        t.Union["CalibrationOutputs", "ObservationOutputs", "ExposureOutputs"]
+    outputs: Optional[
+        Union["CalibrationOutputs", "ObservationOutputs", "ExposureOutputs"]
     ] = None,
     progressbar: bool = False,
     result_type: ResultType = ResultType.All,
-    pipeline_seed: t.Optional[int] = None,
+    pipeline_seed: Optional[int] = None,
 ) -> "Processor":
     """Run standalone exposure pipeline.
 
@@ -160,11 +160,11 @@ def run_exposure_pipeline(
 
     keys = result_keys(result_type)
 
-    unstacked_result = {key: [] for key in keys}  # type: t.Mapping[str, list]
+    unstacked_result = {key: [] for key in keys}  # type: Mapping[str, list]
 
     for i, (time, step) in enumerate(
         time_step_it
-    ):  # type: t.Tuple[int, t.Tuple[float, float]]
+    ):  # type: Tuple[int, Tuple[float, float]]
 
         detector.time = time
         detector.time_step = step

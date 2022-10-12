@@ -8,7 +8,7 @@
 #
 """TBW."""
 
-import typing as t
+from typing import Any, Iterator, Optional, Sequence, Tuple, Union
 
 import numpy as np
 
@@ -29,8 +29,8 @@ class Readout:
 
     def __init__(
         self,
-        times: t.Optional[t.Union[t.Sequence, str]] = None,
-        times_from_file: t.Optional[str] = None,
+        times: Optional[Union[Sequence, str]] = None,
+        times_from_file: Optional[str] = None,
         start_time: float = 0.0,
         non_destructive: bool = False,
     ):
@@ -73,7 +73,7 @@ class Readout:
         self._times_linear = bool(np.all(self._steps == self._steps[0]))
         self._num_steps = len(self._times)
 
-    def time_step_it(self) -> t.Iterator[t.Tuple[float, float]]:
+    def time_step_it(self) -> Iterator[Tuple[float, float]]:
         """TBW."""
         return zip(self._times, self._steps)
 
@@ -91,12 +91,12 @@ class Readout:
         self._set_steps()
 
     @property
-    def times(self) -> t.Any:
+    def times(self) -> Any:
         """Get readout times."""
         return self._times
 
     @times.setter
-    def times(self, value: t.Union[t.Sequence, np.ndarray]) -> None:
+    def times(self, value: Union[Sequence, np.ndarray]) -> None:
         """Set readout times.
 
         Parameters
@@ -133,7 +133,7 @@ class Readout:
 
 def calculate_steps(
     times: np.ndarray, start_time: float
-) -> t.Tuple[np.ndarray, np.ndarray]:
+) -> Tuple[np.ndarray, np.ndarray]:
     """Calculate time differences for a given array and start time.
 
     Parameters

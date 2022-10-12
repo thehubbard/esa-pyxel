@@ -206,7 +206,7 @@ We'll now kick off a two-step process:
 .. code-block:: fish
 
    # Update 'conda' in your base environment
-   conda update -n base conda
+   $ conda update -n base conda
 
    # Create the new build environment (once)
    $ conda env create -f environment.yml

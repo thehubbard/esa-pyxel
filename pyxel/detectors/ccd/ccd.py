@@ -7,11 +7,11 @@
 
 """CCD detector modeling class."""
 
-import typing as t
+from typing import TYPE_CHECKING, Mapping, Optional
 
 from pyxel.detectors import Detector
 
-if t.TYPE_CHECKING:
+if TYPE_CHECKING:
     import pandas as pd
 
     from pyxel.detectors import CCDCharacteristics, CCDGeometry, Environment
@@ -52,7 +52,7 @@ class CCD(Detector):
         return self._characteristics
 
     # TODO: Refactor this
-    def to_dict(self) -> t.Mapping:
+    def to_dict(self) -> Mapping:
         """Convert an instance of `CCD` to a `dict`."""
         dct = {
             "version": 1,
@@ -81,7 +81,7 @@ class CCD(Detector):
 
     # TODO: Refactor this
     @classmethod
-    def from_dict(cls, dct: t.Mapping) -> "CCD":
+    def from_dict(cls, dct: Mapping) -> "CCD":
         """Create a new instance of `CCD` from a `dict`."""
         # TODO: This is a simplistic implementation. Improve this.
         import numpy as np
@@ -111,7 +111,7 @@ class CCD(Detector):
         if "photon" in data:
             detector.photon.array = np.asarray(data["photon"])
 
-        scene = data.get("scene")  # type: t.Optional[t.Mapping]
+        scene = data.get("scene")  # type: Optional[Mapping]
         if scene is not None:
             detector.scene = Scene.from_dict(scene)
 

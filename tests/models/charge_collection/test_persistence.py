@@ -6,8 +6,9 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 #
 #
-import typing as t
+
 from pathlib import Path
+from typing import Sequence
 
 import numpy as np
 import pytest
@@ -117,8 +118,8 @@ def invalid_density_map_path(
 )
 def test_persistence_valid(
     cmos_5x5: CMOS,
-    trap_time_constants: t.Sequence[float],
-    trap_proportions: t.Sequence[float],
+    trap_time_constants: Sequence[float],
+    trap_proportions: Sequence[float],
     valid_density_map_path: str,
     valid_capacity_map_path: str,
 ):
@@ -160,8 +161,8 @@ def test_persistence_valid(
 )
 def test_persistence_invalid(
     cmos_5x5: CMOS,
-    trap_time_constants: t.Sequence[float],
-    trap_proportions: t.Sequence[float],
+    trap_time_constants: Sequence[float],
+    trap_proportions: Sequence[float],
     valid_density_map_path: str,
     valid_capacity_map_path: str,
     exp_error,

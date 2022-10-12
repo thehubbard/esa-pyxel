@@ -13,10 +13,10 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 """Configuration loader."""
 
-import typing as t
 from dataclasses import dataclass
 from pathlib import Path
 from shutil import copy2
+from typing import IO, TYPE_CHECKING, Any, Dict, Iterator, Optional, Sequence, Union
 
 import yaml
 
@@ -41,7 +41,7 @@ from pyxel.observation import Observation, ParameterValues
 from pyxel.outputs import CalibrationOutputs, ExposureOutputs, ObservationOutputs
 from pyxel.pipelines import DetectionPipeline, FitnessFunction, ModelFunction
 
-if t.TYPE_CHECKING:
+if TYPE_CHECKING:
     from pyxel.calibration import Algorithm, Calibration
 
 
@@ -52,20 +52,20 @@ class Configuration:
     pipeline: DetectionPipeline
 
     # Running modes
-    exposure: t.Optional[Exposure] = None
-    observation: t.Optional[Observation] = None
-    calibration: t.Optional["Calibration"] = None
+    exposure: Optional[Exposure] = None
+    observation: Optional[Observation] = None
+    calibration: Optional["Calibration"] = None
 
     # Detectors
-    ccd_detector: t.Optional[CCD] = None
-    cmos_detector: t.Optional[CMOS] = None
-    mkid_detector: t.Optional[MKID] = None
-    apd_detector: t.Optional[APD] = None
+    ccd_detector: Optional[CCD] = None
+    cmos_detector: Optional[CMOS] = None
+    mkid_detector: Optional[MKID] = None
+    apd_detector: Optional[APD] = None
 
     def __post_init__(self):
         # Sanity checks
         running_modes = [self.exposure, self.observation, self.calibration]
-        num_running_modes = sum([el is not None for el in running_modes])  # type: int
+        num_running_modes = sum(el is not None for el in running_modes)  # type: int
 
         if num_running_modes != 1:
             raise ValueError(
@@ -79,7 +79,7 @@ class Configuration:
             self.mkid_detector,
             self.apd_detector,
         ]
-        num_detectors = sum([el is not None for el in detectors])
+        num_detectors = sum(el is not None for el in detectors)
 
         if num_detectors != 1:
             raise ValueError(
@@ -87,7 +87,7 @@ class Configuration:
             )
 
     @property
-    def detector(self) -> t.Union[CCD, CMOS, MKID, APD]:
+    def detector(self) -> Union[CCD, CMOS, MKID, APD]:
         """Get current detector."""
         if self.ccd_detector is not None:
             return self.ccd_detector
@@ -101,7 +101,7 @@ class Configuration:
             raise NotImplementedError
 
 
-def load(yaml_file: t.Union[str, Path]) -> Configuration:
+def load(yaml_file: Union[str, Path]) -> Configuration:
     """Load configuration from a ``YAML`` file.
 
     Parameters
@@ -136,7 +136,7 @@ def loads(yaml_string: str) -> Configuration:
     return _build_configuration(dct)
 
 
-def load_yaml(stream: t.Union[str, t.IO]) -> t.Any:
+def load_yaml(stream: Union[str, IO]) -> Any:
     """Load a ``YAML`` document.
 
     Parameters
@@ -166,7 +166,7 @@ def to_exposure_outputs(dct: dict) -> ExposureOutputs:
     return ExposureOutputs(**dct)
 
 
-def to_readout(dct: t.Optional[dict] = None) -> Readout:
+def to_readout(dct: Optional[dict] = None) -> Readout:
     """Create a Readout class from a dictionary.
 
     Parameters
@@ -379,7 +379,7 @@ def to_apd_geometry(dct: dict) -> APDGeometry:
     return APDGeometry(**dct)
 
 
-def to_environment(dct: t.Optional[dict]) -> Environment:
+def to_environment(dct: Optional[dict]) -> Environment:
     """Create an Environment class from a dictionary.
 
     Parameters
@@ -395,7 +395,7 @@ def to_environment(dct: t.Optional[dict]) -> Environment:
     return Environment(**dct)
 
 
-def to_ccd_characteristics(dct: t.Optional[dict]) -> CCDCharacteristics:
+def to_ccd_characteristics(dct: Optional[dict]) -> CCDCharacteristics:
     """Create a CCDCharacteristics class from a dictionary.
 
     Parameters
@@ -411,7 +411,7 @@ def to_ccd_characteristics(dct: t.Optional[dict]) -> CCDCharacteristics:
     return CCDCharacteristics(**dct)
 
 
-def to_cmos_characteristics(dct: t.Optional[dict]) -> CMOSCharacteristics:
+def to_cmos_characteristics(dct: Optional[dict]) -> CMOSCharacteristics:
     """Create a CMOSCharacteristics class from a dictionary.
 
     Parameters
@@ -427,7 +427,7 @@ def to_cmos_characteristics(dct: t.Optional[dict]) -> CMOSCharacteristics:
     return CMOSCharacteristics(**dct)
 
 
-def to_mkid_characteristics(dct: t.Optional[dict]) -> MKIDCharacteristics:
+def to_mkid_characteristics(dct: Optional[dict]) -> MKIDCharacteristics:
     """Create a MKIDCharacteristics class from a dictionary.
 
     Parameters
@@ -443,7 +443,7 @@ def to_mkid_characteristics(dct: t.Optional[dict]) -> MKIDCharacteristics:
     return MKIDCharacteristics(**dct)
 
 
-def to_apd_characteristics(dct: t.Optional[dict]) -> APDCharacteristics:
+def to_apd_characteristics(dct: Optional[dict]) -> APDCharacteristics:
     """Create a APDCharacteristics class from a dictionary.
 
     Parameters
@@ -557,10 +557,10 @@ def to_pipeline(dct: dict) -> DetectionPipeline:
     DetectionPipeline
     """
     for model_group_name in dct.keys():
-        models_list = dct[model_group_name]  # type: t.Optional[t.Sequence[dict]]
+        models_list = dct[model_group_name]  # type: Optional[Sequence[dict]]
 
         if models_list is None:
-            models = None  # type: t.Optional[t.Sequence[ModelFunction]]
+            models = None  # type: Optional[Sequence[ModelFunction]]
         else:
             models = [to_model_function(model_dict) for model_dict in models_list]
 
@@ -586,8 +586,8 @@ def _build_configuration(dct: dict) -> Configuration:
         "exposure",
         "observation",
         "calibration",
-    ]  # type: t.Sequence[str]
-    num_running_modes = sum([key in dct for key in keys_running_mode])  # type: int
+    ]  # type: Sequence[str]
+    num_running_modes = sum(key in dct for key in keys_running_mode)  # type: int
     if num_running_modes != 1:
         keys = ", ".join(map(repr, keys_running_mode))
         raise ValueError(f"Expecting only one running mode: {keys}")
@@ -597,15 +597,13 @@ def _build_configuration(dct: dict) -> Configuration:
         "cmos_detector",
         "mkid_detector",
         "apd_detector",
-    ]  # type: t.Sequence[str]
-    num_detector = sum([key in dct for key in keys_detectors])  # type: int
+    ]  # type: Sequence[str]
+    num_detector = sum(key in dct for key in keys_detectors)  # type: int
     if num_detector != 1:
         keys = ", ".join(map(repr, keys_detectors))
         raise ValueError(f"Expecting only one detector: {keys}")
 
-    running_mode = (
-        {}
-    )  # type: t.Dict[str, t.Union[Exposure, Observation, "Calibration"]]
+    running_mode = {}  # type: Dict[str, Union[Exposure, Observation, "Calibration"]]
     if "exposure" in dct:
         running_mode["exposure"] = to_exposure(dct["exposure"])
     elif "observation" in dct:
@@ -615,7 +613,7 @@ def _build_configuration(dct: dict) -> Configuration:
     else:
         raise ValueError("No mode configuration provided.")
 
-    detector = {}  # type: t.Dict[str, t.Union[CCD, CMOS, MKID, APD]]
+    detector = {}  # type: Dict[str, Union[CCD, CMOS, MKID, APD]]
     if "ccd_detector" in dct:
         detector["ccd_detector"] = to_ccd(dct["ccd_detector"])
     elif "cmos_detector" in dct:
@@ -636,7 +634,7 @@ def _build_configuration(dct: dict) -> Configuration:
     return configuration
 
 
-def save(input_filename: t.Union[str, Path], output_dir: Path) -> Path:
+def save(input_filename: Union[str, Path], output_dir: Path) -> Path:
     """Save a copy of the input ``YAML`` file to output directory.
 
     Parameters
@@ -653,7 +651,7 @@ def save(input_filename: t.Union[str, Path], output_dir: Path) -> Path:
     copy2(input_file, output_dir)
 
     # TODO: sort filenames ?
-    copied_input_file_it = output_dir.glob("*.yaml")  # type: t.Iterator[Path]
+    copied_input_file_it = output_dir.glob("*.yaml")  # type: Iterator[Path]
     copied_input_file = next(copied_input_file_it)  # type: Path
 
     with copied_input_file.open("a") as file:

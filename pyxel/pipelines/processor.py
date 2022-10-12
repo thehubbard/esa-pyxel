@@ -8,10 +8,10 @@
 """TBW."""
 import logging
 import operator
-import typing as t
 from copy import deepcopy
 from enum import Enum
 from numbers import Number
+from typing import TYPE_CHECKING, Callable, List, Optional, Sequence, Union
 
 import numpy as np
 from typing_extensions import Literal
@@ -22,7 +22,7 @@ from pyxel.pipelines import DetectionPipeline, ModelGroup
 from pyxel.state import get_obj_att
 from pyxel.util.memory import get_size
 
-if t.TYPE_CHECKING:
+if TYPE_CHECKING:
     import xarray as xr
 
     from pyxel.detectors import Detector
@@ -39,7 +39,7 @@ class ResultType(Enum):
 
 def result_keys(
     result_type: ResultType = ResultType.All,
-) -> t.Sequence[Literal["image", "signal", "pixel"]]:
+) -> Sequence[Literal["image", "signal", "pixel"]]:
     """Return result keys based on result type.
 
     Parameters
@@ -71,7 +71,7 @@ class Processor:
 
         self.detector = detector
         self.pipeline = pipeline
-        self._result = None  # type: t.Optional[dict]
+        self._result = None  # type: Optional[dict]
 
         self._numbytes = 0
 
@@ -124,7 +124,7 @@ class Processor:
         """
         # return get_value(self, key)
 
-        func = operator.attrgetter(key)  # type: t.Callable
+        func = operator.attrgetter(key)  # type: Callable
         result = func(self)
 
         return np.asarray(result, dtype=float)
@@ -133,9 +133,7 @@ class Processor:
     def set(
         self,
         key: str,
-        value: t.Union[
-            str, Number, np.ndarray, t.List[t.Union[str, Number, np.ndarray]]
-        ],
+        value: Union[str, Number, np.ndarray, List[Union[str, Number, np.ndarray]]],
         convert_value: bool = True,
     ) -> None:
         """TBW.
@@ -150,19 +148,19 @@ class Processor:
             # TODO: Refactor this
             # convert the string based value to a number
             if isinstance(value, list):
-                new_value_lst = []  # type: t.List[t.Union[str, Number, np.ndarray]]
-                for val in value:  # type: t.Union[str, Number, np.ndarray]
+                new_value_lst = []  # type: List[Union[str, Number, np.ndarray]]
+                for val in value:  # type: Union[str, Number, np.ndarray]
                     new_val = eval_entry(val) if val else val
                     new_value_lst.append(new_val)
 
                 new_value = (
                     new_value_lst
-                )  # type: t.Union[str, Number, np.ndarray, t.List[t.Union[str, Number, np.ndarray]]]
+                )  # type: Union[str, Number, np.ndarray, List[Union[str, Number, np.ndarray]]]
 
             else:
                 converted_value = eval_entry(
                     value
-                )  # type: t.Union[str, Number, np.ndarray]
+                )  # type: Union[str, Number, np.ndarray]
 
                 new_value = converted_value
         else:
@@ -176,7 +174,7 @@ class Processor:
             setattr(obj, att, new_value)
 
     # TODO: Create a method `DetectionPipeline.run`
-    def run_pipeline(self, abort_before: t.Optional[str] = None) -> "Processor":
+    def run_pipeline(self, abort_before: Optional[str] = None) -> "Processor":
         """Run a pipeline with all its models in the right order.
 
         Parameters
@@ -202,7 +200,7 @@ class Processor:
             # Get a group of models
             models_grp = getattr(
                 self.pipeline, group_name
-            )  # type: t.Optional[ModelGroup]
+            )  # type: Optional[ModelGroup]
 
             if models_grp:
                 self._log.info("Processing group: %r", group_name)
@@ -248,7 +246,7 @@ class Processor:
             attrs={"units": "s", "standard_name": "Readout time"},
         )
 
-        lst = []  # type: t.List[xr.DataArray]
+        lst = []  # type: List[xr.DataArray]
         for key in result_keys(
             result_type
         ):  # type: Literal['image', 'signal', 'pixel']

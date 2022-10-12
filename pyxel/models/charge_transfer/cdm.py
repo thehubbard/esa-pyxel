@@ -35,8 +35,8 @@ t: constant TDI period (parallel)
 st: constant TDI period (serial)
 """
 
-import typing
 from enum import Enum
+from typing import Optional, Sequence
 
 import astropy.constants as const
 import numba
@@ -57,10 +57,10 @@ def cdm(
     detector: CCD,
     direction: Literal["parallel", "serial"],
     beta: float,
-    trap_release_times: typing.Sequence[float],
-    trap_densities: typing.Sequence[float],
-    sigma: typing.Sequence[float],
-    full_well_capacity: typing.Optional[float] = None,
+    trap_release_times: Sequence[float],
+    trap_densities: Sequence[float],
+    sigma: Sequence[float],
+    full_well_capacity: Optional[float] = None,
     max_electron_volume: float = 0.0,
     transfer_period: float = 0.0,
     charge_injection: bool = False,
@@ -314,7 +314,7 @@ def run_cdm_serial(
 
 #
 # def plot_serial_profile(
-#     data: np.ndarray, row: int, data2: t.Optional[np.ndarray] = None
+#     data: np.ndarray, row: int, data2: Optional[np.ndarray] = None
 # ) -> None:
 #     """TBW.
 #
@@ -333,7 +333,7 @@ def run_cdm_serial(
 #
 #
 # def plot_parallel_profile(
-#     data: np.ndarray, col: int, data2: t.Optional[np.ndarray] = None
+#     data: np.ndarray, col: int, data2: Optional[np.ndarray] = None
 # ) -> None:
 #     """TBW.
 #
@@ -373,7 +373,7 @@ def run_cdm_serial(
 #     offset: int = 0,
 #     label: str = "",
 #     m: str = "-",
-#     col: t.Optional[str] = None,
+#     col: Optional[str] = None,
 # ) -> None:
 #     """TBW.
 #

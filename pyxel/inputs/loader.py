@@ -14,9 +14,9 @@
 
 """Subpackage to load images and tables."""
 
-import typing as t
 from io import BytesIO
 from pathlib import Path
+from typing import TYPE_CHECKING, Union
 
 import fsspec
 import numpy as np
@@ -24,11 +24,11 @@ from PIL import Image
 
 from pyxel.options import global_options
 
-if t.TYPE_CHECKING:
+if TYPE_CHECKING:
     import pandas as pd
 
 
-def load_image(filename: t.Union[str, Path]) -> np.ndarray:
+def load_image(filename: Union[str, Path]) -> np.ndarray:
     """Load a 2D image.
 
     Parameters
@@ -124,7 +124,7 @@ def load_image(filename: t.Union[str, Path]) -> np.ndarray:
     return data_2d
 
 
-def load_table(filename: t.Union[str, Path]) -> "pd.DataFrame":
+def load_table(filename: Union[str, Path]) -> "pd.DataFrame":
     """Load a table from a file and returns a pandas dataframe. No header is expected in xlsx.
 
     Parameters
@@ -212,7 +212,7 @@ def load_table(filename: t.Union[str, Path]) -> "pd.DataFrame":
     return table
 
 
-def load_datacube(filename: t.Union[str, Path]) -> np.ndarray:
+def load_datacube(filename: Union[str, Path]) -> np.ndarray:
     """Load a 3D datacube.
 
     Parameters

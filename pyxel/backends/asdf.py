@@ -7,15 +7,15 @@
 
 """Module to read/write ASDF files."""
 
-import typing as t
 from contextlib import contextmanager
 from pathlib import Path
+from typing import TYPE_CHECKING, Any, Dict, Iterator, Mapping, Sequence, Union
 
-if t.TYPE_CHECKING:
+if TYPE_CHECKING:
     import pandas as pd
 
 
-def to_asdf(filename: t.Union[str, Path], dct: t.Mapping[str, t.Any]) -> None:
+def to_asdf(filename: Union[str, Path], dct: Mapping[str, Any]) -> None:
     """Write data to a ASDF file."""
     try:
         import asdf
@@ -31,7 +31,7 @@ def to_asdf(filename: t.Union[str, Path], dct: t.Mapping[str, t.Any]) -> None:
 
     # Convert a 'DataFrame' into a `dict`
     df = dct["data"]["charge"]["frame"]  # type: pd.DataFrame
-    frame_dct = df.to_dict(orient="list")  # type: t.Mapping[str, t.Sequence[float]]
+    frame_dct = df.to_dict(orient="list")  # type: Mapping[str, Sequence[float]]
 
     dct["data"]["charge"]["frame"] = frame_dct
 
@@ -40,7 +40,7 @@ def to_asdf(filename: t.Union[str, Path], dct: t.Mapping[str, t.Any]) -> None:
 
 
 @contextmanager
-def from_asdf(filename: t.Union[str, Path]) -> t.Iterator[t.Mapping[str, t.Any]]:
+def from_asdf(filename: Union[str, Path]) -> Iterator[Mapping[str, Any]]:
     """Read data from a HDF5 file."""
     import pandas as pd
 
@@ -53,7 +53,7 @@ def from_asdf(filename: t.Union[str, Path]) -> t.Iterator[t.Mapping[str, t.Any]]
             "or 'pip install pyxel-sim[all]'"
         ) from exc
 
-    dct = {}  # type: t.Dict[str, t.Any]
+    dct = {}  # type: Dict[str, Any]
 
     with asdf.open(filename, copy_arrays=True) as af:
         # TODO: Use a JSON schema to validate 'dct'
@@ -78,7 +78,7 @@ def from_asdf(filename: t.Union[str, Path]) -> t.Iterator[t.Mapping[str, t.Any]]
         # Convert a 'dict' to a 'DataFrame'
         frame_dct = dct["data"]["charge"][
             "frame"
-        ]  # type: t.Mapping[str, t.Sequence[float]]
+        ]  # type: Mapping[str, Sequence[float]]
         df = pd.DataFrame(frame_dct)
 
         dct["data"]["charge"]["frame"] = df

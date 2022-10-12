@@ -1,4 +1,4 @@
-.. _CMOS architecure:
+.. _CMOS architecture:
 
 ####
 CMOS

@@ -28,9 +28,8 @@ current status, in Image Sensing Technologies: Materials, Devices, Systems, and 
 2019, vol. 10980, no. May, p. 20.
 """
 
-
 import math
-import typing as t
+from typing import Mapping, Optional, Tuple
 
 import numpy as np
 from toolz import dicttoolz
@@ -64,13 +63,13 @@ class APDCharacteristics:
     def __init__(
         self,
         roic_gain: float,  # unit: V
-        quantum_efficiency: t.Optional[float] = None,  # unit: NA
-        full_well_capacity: t.Optional[float] = None,  # unit: electron
-        adc_bit_resolution: t.Optional[int] = None,
-        adc_voltage_range: t.Optional[t.Tuple[float, float]] = None,  # unit: V
-        avalanche_gain: t.Optional[float] = None,  # unit: electron/electron
-        pixel_reset_voltage: t.Optional[float] = None,  # unit: V
-        common_voltage: t.Optional[float] = None,  # unit: V
+        quantum_efficiency: Optional[float] = None,  # unit: NA
+        full_well_capacity: Optional[float] = None,  # unit: electron
+        adc_bit_resolution: Optional[int] = None,
+        adc_voltage_range: Optional[Tuple[float, float]] = None,  # unit: V
+        avalanche_gain: Optional[float] = None,  # unit: electron/electron
+        pixel_reset_voltage: Optional[float] = None,  # unit: V
+        common_voltage: Optional[float] = None,  # unit: V
     ):
 
         self._avalanche_gain = avalanche_gain
@@ -244,7 +243,7 @@ class APDCharacteristics:
         self._adc_bit_resolution = value
 
     @property
-    def adc_voltage_range(self) -> t.Tuple[float, float]:
+    def adc_voltage_range(self) -> Tuple[float, float]:
         """Get voltage range of the Analog-Digital Converter."""
         if self._adc_voltage_range:
             return self._adc_voltage_range
@@ -254,7 +253,7 @@ class APDCharacteristics:
             )
 
     @adc_voltage_range.setter
-    def adc_voltage_range(self, value: t.Tuple[float, float]) -> None:
+    def adc_voltage_range(self, value: Tuple[float, float]) -> None:
         """Set voltage range of the Analog-Digital Converter."""
         self._adc_voltage_range = value
 
@@ -388,7 +387,7 @@ class APDCharacteristics:
 
         return roic_gain * (const.e.value / capacitance)
 
-    def to_dict(self) -> t.Mapping:
+    def to_dict(self) -> Mapping:
         """Get the attributes of this instance as a `dict`."""
         if self._avalanche_gain and self._pixel_reset_voltage:
             dct = {
@@ -422,10 +421,10 @@ class APDCharacteristics:
         return {**dct, **other_dct}
 
     @classmethod
-    def from_dict(cls, dct: t.Mapping):
+    def from_dict(cls, dct: Mapping):
         """Create a new instance from a `dict`."""
         if "adc_voltage_range" in dct:
-            new_dct = dicttoolz.dissoc(dct, "adc_voltage_range")  # type: t.Mapping
+            new_dct = dicttoolz.dissoc(dct, "adc_voltage_range")  # type: Mapping
             adc_voltage_range = dct["adc_voltage_range"]
 
             if adc_voltage_range is not None:

@@ -7,7 +7,7 @@
 
 """Pyxel Array class."""
 
-import typing as t  # noqa: F401
+from typing import Optional, Tuple, Type, Union
 
 import numpy as np
 
@@ -22,8 +22,8 @@ from pyxel.util.memory import get_size
 class Array:
     """Array class."""
 
-    EXP_TYPE = type(None)  # type: t.Union[t.Type, np.dtype]
-    TYPE_LIST = ()  # type: t.Tuple[np.dtype, ...]
+    EXP_TYPE = type(None)  # type: Union[Type, np.dtype]
+    TYPE_LIST = ()  # type: Tuple[np.dtype, ...]
 
     # TODO: Add units ?
     def __init__(self, value: np.ndarray):
@@ -34,7 +34,7 @@ class Array:
         self._numbytes = 0
 
         # TODO: is `self.type` needed ?
-        # self.type = None            # type: t.Optional[type]
+        # self.type = None            # type: Optional[type]
 
         # TODO: Implement a method to initialized 'self._array' ???
 
@@ -69,13 +69,13 @@ class Array:
         if value.shape != self._array.shape:
             raise ValueError(f"Expected {cls_name} array is {self._array.shape}.")
 
-    def __array__(self, dtype: t.Optional[np.dtype] = None):
+    def __array__(self, dtype: Optional[np.dtype] = None):
         if not isinstance(self._array, np.ndarray):
             raise TypeError("Array not initialized.")
         return np.asarray(self._array, dtype=dtype)
 
     @property
-    def shape(self) -> t.Tuple[int, ...]:
+    def shape(self) -> Tuple[int, ...]:
         """Return array shape."""
         return self._array.shape
 

@@ -6,7 +6,8 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """Pyxel photon generator models."""
-import typing as t
+
+from typing import Optional, Sequence, Tuple
 
 import numpy as np
 from typing_extensions import Literal
@@ -15,10 +16,10 @@ from pyxel.detectors import Detector
 
 
 def rectangular(
-    shape: t.Tuple[int, int],
+    shape: Tuple[int, int],
     level: float,
-    object_size: t.Optional[t.Sequence[int]] = None,
-    object_center: t.Optional[t.Sequence[int]] = None,
+    object_size: Optional[Sequence[int]] = None,
+    object_center: Optional[Sequence[int]] = None,
 ) -> np.ndarray:
     """Calculate an image of a rectangular object.
 
@@ -67,10 +68,10 @@ def rectangular(
 
 
 def elliptic(
-    shape: t.Tuple[int, int],
+    shape: Tuple[int, int],
     level: float,
-    object_size: t.Optional[t.Sequence[int]] = None,
-    object_center: t.Optional[t.Sequence[int]] = None,
+    object_size: Optional[Sequence[int]] = None,
+    object_center: Optional[Sequence[int]] = None,
 ) -> np.ndarray:
     """Calculate an image of an elliptic object.
 
@@ -119,11 +120,11 @@ def elliptic(
 
 
 def calculate_illumination(
-    shape: t.Tuple[int, int],
+    shape: Tuple[int, int],
     level: float,
     option: Literal["uniform", "rectangular", "elliptic"] = "uniform",
-    object_size: t.Optional[t.Sequence[int]] = None,
-    object_center: t.Optional[t.Sequence[int]] = None,
+    object_size: Optional[Sequence[int]] = None,
+    object_center: Optional[Sequence[int]] = None,
 ) -> np.ndarray:
     """Calculate the array of photons uniformly over the entire array or over a object.
 
@@ -179,8 +180,8 @@ def illumination(
     detector: Detector,
     level: float,
     option: Literal["uniform", "rectangular", "elliptic"] = "uniform",
-    object_size: t.Optional[t.Sequence[int]] = None,
-    object_center: t.Optional[t.Sequence[int]] = None,
+    object_size: Optional[Sequence[int]] = None,
+    object_center: Optional[Sequence[int]] = None,
     time_scale: float = 1.0,
 ) -> None:
     """Generate photon uniformly over the entire array or over an elliptic or rectangular object.

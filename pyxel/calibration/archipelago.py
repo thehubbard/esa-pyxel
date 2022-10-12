@@ -7,9 +7,18 @@
 
 """Sub-package to create 'archipelagos'."""
 import logging
-import typing as t
 from concurrent.futures.thread import ThreadPoolExecutor
 from timeit import default_timer as timer
+from typing import (
+    TYPE_CHECKING,
+    Callable,
+    List,
+    Mapping,
+    Optional,
+    Sequence,
+    Tuple,
+    Union,
+)
 
 import dask.array as da
 import numpy as np
@@ -27,7 +36,7 @@ try:
 except ImportError:
     pass
 
-if t.TYPE_CHECKING:
+if TYPE_CHECKING:
     from numpy.typing import ArrayLike
 
     from pyxel.exposure import Readout
@@ -68,7 +77,7 @@ class ArchipelagoLogs:
 
     def _from_archi(self, archi: "pg.archipelago") -> pd.DataFrame:
         """Get logging information from an archipelago."""
-        lst = []  # type: t.List[pd.DataFrame]
+        lst = []  # type: List[pd.DataFrame]
 
         for id_island, island in enumerate(archi):
             # Extract the Pygmo algorithm from an island
@@ -113,11 +122,11 @@ def extract_data_3d(
     readout_times: np.ndarray,
 ) -> xr.Dataset:
     """Extract 'image', 'signal' and 'pixel' arrays from several delayed dynamic results."""
-    lst = []  # type: t.List[xr.Dataset]
+    lst = []  # type: List[xr.Dataset]
     for _, row in df_results.iterrows():
         island = row["island"]  # type: int
         id_processor = row["id_processor"]  # type: int
-        result = row["processor"].result  # type: t.Mapping[str, Delayed]
+        result = row["processor"].result  # type: Mapping[str, Delayed]
 
         image_delayed = result["image"]  # type: Delayed
         signal_delayed = result["signal"]  # type: Delayed
@@ -155,7 +164,7 @@ def extract_data_3d(
         readout_time=readout_times,
         y=range(rows),
         x=range(cols),
-    )  # type: t.Union[xr.Dataset, xr.DataArray]
+    )  # type: Union[xr.Dataset, xr.DataArray]
 
     if not isinstance(ds, xr.Dataset):
         raise TypeError("Expected a Dataset.")
@@ -174,9 +183,9 @@ class MyArchipelago:
         algorithm: Algorithm,
         problem: ModelFitting,
         pop_size: int,
-        bfe: t.Optional[t.Callable] = None,
-        topology: t.Optional[t.Callable] = None,
-        pygmo_seed: t.Optional[int] = None,
+        bfe: Optional[Callable] = None,
+        topology: Optional[Callable] = None,
+        pygmo_seed: Optional[int] = None,
         parallel: bool = True,
         with_bar: bool = False,
     ):
@@ -217,7 +226,7 @@ class MyArchipelago:
         disable_bar = not self.with_bar  # type: bool
         start_time = timer()  # type: float
 
-        def create_island(seed: t.Optional[int] = None) -> pg.island:
+        def create_island(seed: Optional[int] = None) -> pg.island:
             """Create a new island."""
             return pg.island(
                 udi=self.udi,
@@ -230,7 +239,7 @@ class MyArchipelago:
 
         # Create a seed for each island
         if self.pygmo_seed is None:
-            seeds = [None] * self.num_islands  # type: t.Sequence[t.Optional[int]]
+            seeds = [None] * self.num_islands  # type: Sequence[Optional[int]]
         else:
             rng = np.random.default_rng(
                 seed=self.pygmo_seed
@@ -266,8 +275,8 @@ class MyArchipelago:
         self,
         readout: "Readout",
         num_evolutions: int = 1,
-        num_best_decisions: t.Optional[int] = None,
-    ) -> t.Tuple[xr.Dataset, pd.DataFrame, pd.DataFrame]:
+        num_best_decisions: Optional[int] = None,
+    ) -> Tuple[xr.Dataset, pd.DataFrame, pd.DataFrame]:
         """Run evolution(s) several time.
 
         Parameters
@@ -297,7 +306,7 @@ class MyArchipelago:
             disable=not self.with_bar,
         ) as progress:
 
-            champions_lst = []  # type: t.List[xr.Dataset]
+            champions_lst = []  # type: List[xr.Dataset]
             # Run an evolution im the archipelago several times
             for id_evolution in range(num_evolutions):
                 # If the evolution on this archipelago was already run before, then

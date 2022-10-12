@@ -8,8 +8,8 @@
 """Poppy model."""
 
 import logging
-import typing as t
 from dataclasses import dataclass
+from typing import Any, Mapping, Sequence, Tuple, Union
 
 import numpy as np
 from astropy.convolution import convolve_fft
@@ -156,7 +156,7 @@ class ZernikeWFE:
     """
 
     radius: float
-    coefficients: t.Sequence[float]
+    coefficients: Sequence[float]
     aperture_stop: float
 
 
@@ -177,7 +177,7 @@ class SineWaveWFE:
 
 
 # Define a type alias
-OpticalParameter = t.Union[
+OpticalParameter = Union[
     CircularAperture,
     ThinLens,
     SquareAperture,
@@ -190,7 +190,7 @@ OpticalParameter = t.Union[
 ]
 
 
-def create_optical_parameter(dct: t.Mapping) -> OpticalParameter:
+def create_optical_parameter(dct: Mapping) -> OpticalParameter:
     """Create a new ``OpticalParameter`` based on a dictionary.
 
     Parameters
@@ -250,8 +250,8 @@ def create_optical_parameter(dct: t.Mapping) -> OpticalParameter:
 
 
 def create_optical_parameters(
-    optical_system: t.Sequence[t.Mapping],
-) -> t.Sequence[OpticalParameter]:
+    optical_system: Sequence[Mapping],
+) -> Sequence[OpticalParameter]:
     """Create a list of ``OpticalParameters``.
 
     Parameters
@@ -336,8 +336,8 @@ def calc_psf(
     wavelength: float,
     fov_arcsec: float,
     pixelscale: float,
-    optical_parameters: t.Sequence[OpticalParameter],
-) -> t.Tuple[t.Sequence[fits.hdu.image.PrimaryHDU], t.Sequence["op.Wavefront"]]:
+    optical_parameters: Sequence[OpticalParameter],
+) -> Tuple[Sequence[fits.hdu.image.PrimaryHDU], Sequence["op.Wavefront"]]:
     """Calculate the point spread function for the given optical system.
 
     Parameters
@@ -385,7 +385,7 @@ def calc_psf(
         wavelength=wavelength,
         return_intermediates=True,
         normalize="last",
-    )  # type: t.Sequence[fits.hdu.image.PrimaryHDU], t.Sequence[op.Wavefront]
+    )  # type: Sequence[fits.hdu.image.PrimaryHDU], Sequence[op.Wavefront]
 
     return output_fits, wavefronts
 
@@ -422,7 +422,7 @@ def optical_psf(
     wavelength: float,
     fov_arcsec: float,
     pixelscale: float,
-    optical_system: t.Sequence[t.Mapping[str, t.Any]],
+    optical_system: Sequence[Mapping[str, Any]],
 ) -> None:
     """Model function for poppy optics model: convolve photon array with psf.
 
@@ -455,7 +455,7 @@ def optical_psf(
     # Convert 'optical_system' to 'optical_parameters'
     optical_parameters = [
         create_optical_parameter(dct) for dct in optical_system
-    ]  # type: t.Sequence[OpticalParameter]
+    ]  # type: Sequence[OpticalParameter]
 
     # Processing
     # Get a Point Spread Function

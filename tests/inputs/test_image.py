@@ -7,8 +7,8 @@
 
 import os
 import re
-import typing as t
 from pathlib import Path
+from typing import Optional, Union, no_type_check
 
 import numpy as np
 import pandas as pd
@@ -43,7 +43,7 @@ def valid_pil_image() -> Image.Image:
     return pil_image
 
 
-@t.no_type_check
+@no_type_check
 @pytest.fixture
 def valid_data2d_http_hostname(
     tmp_path: Path,
@@ -93,7 +93,7 @@ def valid_data2d_http_hostname(
 
         # Put text data in a fake HTTP server
         for filename in text_filenames:
-            with open(filename, "r") as fh:
+            with open(filename) as fh:
                 response_data = fh.read()  # type: str
                 httpserver.expect_request(f"/{filename}").respond_with_data(
                     response_data, content_type="text/plain"
@@ -154,7 +154,7 @@ def invalid_data2d_hostname(tmp_path: Path, httpserver: HTTPServer) -> str:  # t
 
         # Put text data in a fake HTTP server
         for filename in text_filenames:
-            with open(filename, "r") as fh:
+            with open(filename) as fh:
                 response_data = fh.read()  # type: str
                 httpserver.expect_request(f"/{filename}").respond_with_data(
                     response_data, content_type="text/plain"
@@ -206,7 +206,7 @@ def valid_table_http_hostname(tmp_path: Path, httpserver: HTTPServer) -> str:  #
 
         # Put text data in a fake HTTP server
         for filename in text_filenames:
-            with open(filename, "r") as fh:
+            with open(filename) as fh:
                 response_data = fh.read()  # type: str
                 httpserver.expect_request(f"/{filename}").respond_with_data(
                     response_data, content_type="text/plain"
@@ -262,7 +262,7 @@ def invalid_table_http_hostname(tmp_path: Path, httpserver: HTTPServer) -> str: 
 
         # Put text data in a fake HTTP server
         for filename in text_filenames:
-            with open(filename, "r") as fh:
+            with open(filename) as fh:
                 response_data = fh.read()  # type: str
                 httpserver.expect_request(f"/{filename}").respond_with_data(
                     response_data, content_type="text/plain"
@@ -300,7 +300,7 @@ def test_invalid_filename(
     invalid_data2d_hostname: str,
     filename,
     exp_error: TypeError,
-    exp_message: t.Optional[str],
+    exp_message: Optional[str],
 ):
     """Test invalid filenames."""
     if isinstance(filename, str):
@@ -372,7 +372,7 @@ def test_invalid_filename(
 def test_load_image(
     with_caching: bool,
     valid_data2d_http_hostname: str,
-    filename: t.Union[str, Path],
+    filename: Union[str, Path],
     exp_data: np.ndarray,
 ):
     """Test function 'load_image' with local and remote files."""
@@ -397,7 +397,7 @@ def test_load_image(
         (
             Path("unknown.txt"),
             FileNotFoundError,
-            f"^Input file (.*) can not be found\.$",
+            r"^Input file (.*) can not be found\.$",
         ),
         ("unknown.txt", FileNotFoundError, None),
         ("invalid_data/table_X.txt", ValueError, "Cannot find the separator"),
@@ -418,7 +418,7 @@ def test_load_table_invalid_filename(
     invalid_table_http_hostname: str,
     filename,
     exp_error: TypeError,
-    exp_message: t.Optional[str],
+    exp_message: Optional[str],
 ):
     """Test function 'load_table' with invalid filenames."""
     if isinstance(filename, str):

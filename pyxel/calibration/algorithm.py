@@ -7,8 +7,8 @@
 """TBW."""
 
 import math
-import typing as t
 from enum import Enum
+from typing import Optional, Union
 
 from typing_extensions import Literal
 
@@ -50,7 +50,7 @@ class Algorithm:
         m: float = 0.02,
         param_m: float = 1.0,
         param_s: int = 2,
-        crossover: Literal["single", "exponential", "binominal", "sbx"] = "exponential",
+        crossover: Literal["single", "exponential", "binomial", "sbx"] = "exponential",
         mutation: Literal["uniform", "gaussian", "polynomial"] = "polynomial",
         selection: Literal["tournament", "truncated"] = "tournament",
         # NLOPT #####
@@ -81,8 +81,8 @@ class Algorithm:
         xtol_abs: float = 0.0,
         ftol_rel: float = 0.0,
         ftol_abs: float = 0.0,
-        stopval: t.Optional[float] = None,
-        local_optimizer: t.Optional["pg.nlopt"] = None,
+        stopval: Optional[float] = None,
+        local_optimizer: Optional["pg.nlopt"] = None,
         replacement: Literal["best", "worst", "random"] = "best",
         nlopt_selection: Literal["best", "worst", "random"] = "best",
     ):
@@ -134,7 +134,7 @@ class Algorithm:
         self._ftol_rel = ftol_rel
         self._ftol_abs = ftol_abs
         self._stopval = -math.inf if stopval is None else stopval  # type: float
-        self._local_optimizer = local_optimizer  # type: t.Optional[pg.nlopt]
+        self._local_optimizer = local_optimizer  # type: Optional[pg.nlopt]
         self._replacement = replacement
         self._nlopt_selection = nlopt_selection
 
@@ -291,13 +291,13 @@ class Algorithm:
         self._param_s = value
 
     @property
-    def crossover(self) -> Literal["single", "exponential", "binominal", "sbx"]:
+    def crossover(self) -> Literal["single", "exponential", "binomial", "sbx"]:
         """TBW."""
         return self._crossover
 
     @crossover.setter
     def crossover(
-        self, value: Literal["single", "exponential", "binominal", "sbx"]
+        self, value: Literal["single", "exponential", "binomial", "sbx"]
     ) -> None:
         """TBW."""
         self._crossover = value
@@ -451,12 +451,12 @@ class Algorithm:
         self._stopval = value
 
     @property
-    def local_optimizer(self) -> t.Optional["pg.nlopt"]:
+    def local_optimizer(self) -> Optional["pg.nlopt"]:
         """TBW."""
         return self._local_optimizer
 
     @local_optimizer.setter
-    def local_optimizer(self, value: t.Optional["pg.nlopt"]) -> None:
+    def local_optimizer(self, value: Optional["pg.nlopt"]) -> None:
         """TBW."""
         self._local_optimizer = value
 
@@ -483,7 +483,7 @@ class Algorithm:
     # NLOPT #####
 
     # TODO: This could be refactored for each if-statement. See #334
-    def get_algorithm(self) -> t.Union["pg.sade", "pg.sga", "pg.nlopt"]:
+    def get_algorithm(self) -> Union["pg.sade", "pg.sga", "pg.nlopt"]:
         """TBW.
 
         :return:

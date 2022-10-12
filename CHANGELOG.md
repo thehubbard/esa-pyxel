@@ -17,6 +17,8 @@
 ### Documentation
 * Add a 'copy' button in documentation to copy code blocks.
   (See [!506](https://gitlab.com/esa/pyxel/-/merge_requests/506)).
+* Fix typos in the documentation.
+  (See [!517](https://gitlab.com/esa/pyxel/-/merge_requests/517)).
 
 ### Models
 

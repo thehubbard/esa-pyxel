@@ -13,11 +13,12 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """:term:`APD` detector modeling class."""
-import typing as t
+
+from typing import TYPE_CHECKING, Mapping, Optional
 
 from pyxel.detectors import Detector
 
-if t.TYPE_CHECKING:
+if TYPE_CHECKING:
     import pandas as pd
 
     from pyxel.detectors import APDCharacteristics, APDGeometry, Environment
@@ -58,7 +59,7 @@ class APD(Detector):
         return self._characteristics
 
     # TODO: Refactor this
-    def to_dict(self) -> t.Mapping:
+    def to_dict(self) -> Mapping:
         """Convert an instance of `APD` to a `dict`."""
         dct = {
             "version": 1,
@@ -87,7 +88,7 @@ class APD(Detector):
 
     # TODO: Refactor this
     @classmethod
-    def from_dict(cls, dct: t.Mapping) -> "APD":
+    def from_dict(cls, dct: Mapping) -> "APD":
         """Create a new instance of `APD` from a `dict`."""
         # TODO: This is a simplistic implementation. Improve this.
         import numpy as np
@@ -117,7 +118,7 @@ class APD(Detector):
         if "photon" in data:
             detector.photon.array = np.asarray(data["photon"])
 
-        scene = data.get("scene")  # type: t.Optional[t.Mapping]
+        scene = data.get("scene")  # type: Optional[Mapping]
         if scene is not None:
             detector.scene = Scene.from_dict(scene)
 

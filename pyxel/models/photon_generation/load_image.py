@@ -6,7 +6,8 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """Pyxel photon generator models."""
-import typing as t
+
+from typing import Optional, Tuple
 
 from typing_extensions import Literal
 
@@ -17,14 +18,14 @@ from pyxel.util import load_cropped_and_aligned_image
 def load_image(
     detector: Detector,
     image_file: str,
-    position: t.Tuple[int, int] = (0, 0),
-    align: t.Optional[
+    position: Tuple[int, int] = (0, 0),
+    align: Optional[
         Literal["center", "top_left", "top_right", "bottom_left", "bottom_right"]
     ] = None,
     convert_to_photons: bool = False,
     multiplier: float = 1.0,
     time_scale: float = 1.0,
-    bit_resolution: t.Optional[int] = None,
+    bit_resolution: Optional[int] = None,
 ) -> None:
     r"""Load :term:`FITS` file as a numpy array and add to the detector as input image.
 

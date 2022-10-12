@@ -12,17 +12,17 @@ import os
 import platform
 import struct
 import sys
-import typing as t
+from typing import Any, Mapping, Optional, Tuple
 
 from ._version import get_versions
 
 __all__ = ["show_versions"]
 
 
-def get_system_info() -> t.Mapping[str, t.Any]:
-    """Get extra informations."""
+def get_system_info() -> Mapping[str, Any]:
+    """Get extra information."""
     # Get git commit hash
-    commit = get_versions()["full-revisionid"]  # type: t.Optional[str]
+    commit = get_versions()["full-revisionid"]  # type: Optional[str]
     version = get_versions()["version"]  # type: str
 
     size_integer = struct.calcsize("P")  # type: int
@@ -91,7 +91,7 @@ def show_versions():
     pytest     : 6.0.1
     sphinx     : None
     """
-    system_info = get_system_info()  # type: t.Mapping[str, t.Any]
+    system_info = get_system_info()  # type: Mapping[str, Any]
 
     dependencies_lst = (
         "pyxel",
@@ -141,7 +141,7 @@ def show_versions():
         "tox",
         # Docs
         "sphinx",
-    )  # type: t.Tuple[str, ...]
+    )  # type: Tuple[str, ...]
 
     dependencies = {}  # type: dict
 

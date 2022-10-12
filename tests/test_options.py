@@ -5,8 +5,8 @@
 #  this file, may be copied, modified, propagated, or distributed except according to
 #  the terms contained in the file ‘LICENCE.txt’.
 
-import typing as t
 from pathlib import Path
+from typing import Optional, Type
 
 import pytest
 
@@ -52,7 +52,7 @@ def test_global():
     ],
 )
 def test_with_wrong_inputs(
-    dct: dict, exp_error: t.Type[TypeError], exp_msg: t.Optional[str]
+    dct: dict, exp_error: Type[TypeError], exp_msg: Optional[str]
 ):
     """Test with a bad input."""
     with pytest.raises(exp_error, match=exp_msg):

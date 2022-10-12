@@ -238,7 +238,7 @@ The diode capacitance at 0 bias :math:`C_0` is :cite:p:`sze`:
 
 :math:`C_0=A\sqrt{\frac{e\epsilon\epsilon_0}{2V_{bi}}(\frac{1}{N_a}+\frac{1}{N_d})}`.
 
-:math:`A` is the area of the circularly shaped diode, :math:`e` electron charge,
+:math:`A` is the area of the circular shaped diode, :math:`e` electron charge,
 :math:`\epsilon` dielectric constant of the material,
 and :math:`N_a` and :math:`N_d` are acceptor and donor concentrations.
 :math:`V_{bi}` is the built-in diode potential and is a function of :math:`N_a`, :math:`N_d`,

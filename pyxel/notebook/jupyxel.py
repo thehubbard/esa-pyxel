@@ -7,13 +7,13 @@
 
 """Tools for jupyter notebook visualization."""
 
-import typing as t
+from typing import TYPE_CHECKING, Any, Dict, Sequence, Union
 
 import numpy as np
 
 from pyxel.data_structure import Persistence, SimplePersistence
 
-if t.TYPE_CHECKING:
+if TYPE_CHECKING:
     import matplotlib.pyplot as plt
     from holoviews import Layout
 
@@ -94,7 +94,7 @@ def display_model(configuration: "Configuration", model_name: str) -> None:
 
 
 def change_modelparam(
-    processor: "Processor", model_name: str, argument: str, changed_value: t.Any
+    processor: "Processor", model_name: str, argument: str, changed_value: Any
 ) -> None:
     """Change model parameter.
 
@@ -158,7 +158,7 @@ def display_detector(detector: "Detector") -> "Layout":
         hv.extension("bokeh")
 
     # Container for detector data, leave out where there is none.
-    det = {}  # type: t.Dict[str, np.ndarray]
+    det = {}  # type: Dict[str, np.ndarray]
     if detector.input_image is not None:
         det["Input"] = detector.input_image
     if detector._photon is not None:
@@ -208,9 +208,7 @@ def display_detector(detector: "Detector") -> "Layout":
     return out
 
 
-def display_array(
-    data: np.ndarray, axes: t.Sequence["plt.axes"], **kwargs: str
-) -> None:
+def display_array(data: np.ndarray, axes: Sequence["plt.axes"], **kwargs: str) -> None:
     """For a pair of axes, display the image on the first one, the histogram on the second.
 
     Parameters
@@ -236,7 +234,7 @@ def display_array(
     cax1.yaxis.set_label_position("left")
     cax1.yaxis.set_ticks_position("left")
     if mini == maxi:
-        bins = 50  # type: t.Union[int, np.ndarray]
+        bins = 50  # type: Union[int, np.ndarray]
     else:
         bins = np.arange(start=mini, stop=maxi, step=(maxi - mini) / 50)
 
@@ -247,7 +245,7 @@ def display_array(
 
 
 # def display_detector(
-#     detector: "Detector", array: t.Union[None, Photon, Pixel, Signal, Image] = None
+#     detector: "Detector", array: Union[None, Photon, Pixel, Signal, Image] = None
 # ) -> None:
 #     """Display detector.
 #
@@ -278,7 +276,7 @@ def display_array(
 # These method are used to display the detector memory
 
 
-def display_persist(persistence: t.Union[Persistence, SimplePersistence]) -> None:
+def display_persist(persistence: Union[Persistence, SimplePersistence]) -> None:
     """Plot all trapped charges using the detector persistence.
 
     Parameters

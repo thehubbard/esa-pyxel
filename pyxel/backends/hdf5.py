@@ -7,10 +7,10 @@
 
 """TBW."""
 
-import typing as t
 from collections import abc
 from contextlib import contextmanager
 from pathlib import Path
+from typing import Any, Iterator, Mapping, Optional, Union
 
 import h5py as h5
 import numpy as np
@@ -24,14 +24,14 @@ ATTRIBUTES = {
     "pixel": {"name": "Pixel", "unit": "electron"},
     "signal": {"name": "Signal", "unit": "volt"},
     "image": {"name": "Image", "unit": "adu"},
-}  # type: t.Mapping[str, t.Mapping[str, str]]
+}  # type: Mapping[str, Mapping[str, str]]
 
 
 def _store(
     h5file: h5.File,
     name: str,
-    dct: t.Mapping[str, t.Union[int, float, pd.DataFrame, pd.Series, np.ndarray, dict]],
-    attributes: t.Optional[t.Mapping[str, t.Mapping[str, str]]] = None,
+    dct: Mapping[str, Union[int, float, pd.DataFrame, pd.Series, np.ndarray, dict]],
+    attributes: Optional[Mapping[str, Mapping[str, str]]] = None,
 ) -> None:
     """Write data into a new HDF5 group.
 
@@ -84,7 +84,7 @@ def _store(
             raise NotImplementedError
 
 
-def to_hdf5(filename: t.Union[str, Path], dct: t.Mapping[str, t.Any]) -> None:
+def to_hdf5(filename: Union[str, Path], dct: Mapping[str, Any]) -> None:
     """Write data to a HDF5 file."""
     if dct["version"] != 1:
         raise NotImplementedError
@@ -106,7 +106,7 @@ def to_hdf5(filename: t.Union[str, Path], dct: t.Mapping[str, t.Any]) -> None:
 
 def _load(
     h5file: h5.File, name: str
-) -> t.Union[None, int, float, t.Mapping[str, t.Any], np.ndarray, pd.DataFrame]:
+) -> Union[None, int, float, Mapping[str, Any], np.ndarray, pd.DataFrame]:
     """Write data from a HDF5 group.
 
     Parameters
@@ -121,7 +121,7 @@ def _load(
     dict
         Data to read from a HDF5 dataset.
     """
-    dataset = h5file[name]  # type: t.Union[h5.Dataset, h5.Group]
+    dataset = h5file[name]  # type: Union[h5.Dataset, h5.Group]
 
     if isinstance(dataset, h5.Group):
         dct = {}
@@ -154,7 +154,7 @@ def _load(
 
 
 @contextmanager
-def from_hdf5(filename: t.Union[str, Path]) -> t.Iterator[t.Mapping[str, t.Any]]:
+def from_hdf5(filename: Union[str, Path]) -> Iterator[Mapping[str, Any]]:
     """Read data from a HDF5 file."""
     dct = {}
     with h5.File(filename, mode="r") as h5file:

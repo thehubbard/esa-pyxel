@@ -6,7 +6,8 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 #
 #
-import typing as t
+
+from typing import Optional, Sequence
 
 import numpy as np
 import pytest
@@ -51,15 +52,15 @@ def input_array() -> np.ndarray:
 @pytest.mark.parametrize(
     """
     direction,
-    trap_release_times, 
-    trap_densities, 
-    sigma, 
-    beta, 
-    full_well_capacity, 
-    max_electron_volume, 
-    transfer_period, 
-    charge_injection, 
-    exp_err, 
+    trap_release_times,
+    trap_densities,
+    sigma,
+    beta,
+    full_well_capacity,
+    max_electron_volume,
+    transfer_period,
+    charge_injection,
+    exp_err,
     exp_exc
     """,
     [
@@ -153,10 +154,10 @@ def test_cdm_bad_inputs(
     ccd_5x5: CCD,
     direction: Literal["parallel", "serial"],
     beta: float,
-    trap_release_times: t.Sequence[float],
-    trap_densities: t.Sequence[float],
-    sigma: t.Sequence[float],
-    full_well_capacity: t.Optional[float],
+    trap_release_times: Sequence[float],
+    trap_densities: Sequence[float],
+    sigma: Sequence[float],
+    full_well_capacity: Optional[float],
     max_electron_volume: float,
     transfer_period: float,
     charge_injection: bool,
@@ -214,14 +215,14 @@ def test_cdm_with_cmos():
 @pytest.mark.parametrize(
     """
     direction,
-    trap_release_times, 
-    trap_densities, 
-    sigma, 
-    beta, 
-    full_well_capacity, 
-    max_electron_volume, 
-    transfer_period, 
-    charge_injection, 
+    trap_release_times,
+    trap_densities,
+    sigma,
+    beta,
+    full_well_capacity,
+    max_electron_volume,
+    transfer_period,
+    charge_injection,
     """,
     [
         pytest.param(
@@ -242,10 +243,10 @@ def test_cdm_parallel(
     input_array: np.ndarray,
     direction: Literal["parallel", "serial"],
     beta: float,
-    trap_release_times: t.Sequence[float],
-    trap_densities: t.Sequence[float],
-    sigma: t.Sequence[float],
-    full_well_capacity: t.Optional[float],
+    trap_release_times: Sequence[float],
+    trap_densities: Sequence[float],
+    sigma: Sequence[float],
+    full_well_capacity: Optional[float],
     max_electron_volume: float,
     transfer_period: float,
     charge_injection: bool,
@@ -282,14 +283,14 @@ def test_cdm_parallel(
 @pytest.mark.parametrize(
     """
     direction,
-    trap_release_times, 
-    trap_densities, 
-    sigma, 
-    beta, 
-    full_well_capacity, 
-    max_electron_volume, 
-    transfer_period, 
-    charge_injection, 
+    trap_release_times,
+    trap_densities,
+    sigma,
+    beta,
+    full_well_capacity,
+    max_electron_volume,
+    transfer_period,
+    charge_injection,
     """,
     [
         pytest.param(
@@ -310,10 +311,10 @@ def test_cdm_serial(
     input_array: np.ndarray,
     direction: Literal["parallel", "serial"],
     beta: float,
-    trap_release_times: t.Sequence[float],
-    trap_densities: t.Sequence[float],
-    sigma: t.Sequence[float],
-    full_well_capacity: t.Optional[float],
+    trap_release_times: Sequence[float],
+    trap_densities: Sequence[float],
+    sigma: Sequence[float],
+    full_well_capacity: Optional[float],
     max_electron_volume: float,
     transfer_period: float,
     charge_injection: bool,

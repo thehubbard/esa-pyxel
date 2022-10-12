@@ -7,18 +7,18 @@
 
 """TBW."""
 import inspect
-import typing as t
+from typing import TYPE_CHECKING, Callable, MutableMapping, Optional
 
 from pyxel.evaluator import evaluate_reference
 
-if t.TYPE_CHECKING:
+if TYPE_CHECKING:
     import numpy as np
 
     from pyxel.calibration import FittingCallable
     from pyxel.detectors import Detector
 
 
-class Arguments(t.MutableMapping):
+class Arguments(MutableMapping):
     """Arguments class for usage in ModelFunction.
 
     Class Arguments is initialized from a dictionary of model function arguments.
@@ -154,13 +154,13 @@ class ModelFunction:
         self,
         func: str,
         name: str,
-        arguments: t.Optional[dict] = None,
+        arguments: Optional[dict] = None,
         enabled: bool = True,
     ):
         if inspect.isclass(func):
             raise AttributeError("Cannot pass a class to ModelFunction.")
 
-        self._func = evaluate_reference(func)  # type: t.Callable
+        self._func = evaluate_reference(func)  # type: Callable
         self._name = name
         self.enabled = enabled  # type: bool
 

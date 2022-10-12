@@ -14,13 +14,13 @@
 
 """:term:`MKID`-array detector modeling class."""
 
-import typing as t
+from typing import TYPE_CHECKING, Mapping, Optional
 
 from pyxel.data_structure import Phase
 from pyxel.detectors import Detector
 from pyxel.util.memory import memory_usage_details
 
-if t.TYPE_CHECKING:
+if TYPE_CHECKING:
     import pandas as pd
 
     from pyxel.detectors import Environment, MKIDCharacteristics, MKIDGeometry
@@ -37,7 +37,7 @@ class MKID(Detector):
     ):
         self._geometry = geometry  # type: MKIDGeometry
         self._characteristics = characteristics  # type: MKIDCharacteristics
-        self._phase = None  # type: t.Optional[Phase]
+        self._phase = None  # type: Optional[Phase]
 
         super().__init__(environment=environment)
         self.reset()
@@ -115,7 +115,7 @@ class MKID(Detector):
         )
 
     # TODO: Refactor this
-    def to_dict(self) -> t.Mapping:
+    def to_dict(self) -> Mapping:
         """Convert an instance of `MKID` to a `dict`."""
         dct = {
             "version": 1,
@@ -145,7 +145,7 @@ class MKID(Detector):
 
     # TODO: Refactor this
     @classmethod
-    def from_dict(cls, dct: t.Mapping) -> "MKID":
+    def from_dict(cls, dct: Mapping) -> "MKID":
         """Create a new instance of `MKID` from a `dict`."""
         # TODO: This is a simplistic implementation. Improve this.
         import numpy as np
@@ -175,7 +175,7 @@ class MKID(Detector):
         if "photon" in data:
             detector.photon.array = np.asarray(data["photon"])
 
-        scene = data.get("scene")  # type: t.Optional[t.Mapping]
+        scene = data.get("scene")  # type: Optional[Mapping]
         if scene is not None:
             detector.scene = Scene.from_dict(scene)
 

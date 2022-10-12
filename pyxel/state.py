@@ -6,13 +6,13 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """TBW."""
-import typing as t
+from typing import Any, Dict, Mapping, Optional, Sequence, Tuple, Type
 
 __all__ = ["get_obj_att", "get_obj_by_type", "get_value", "get_state_ids", "copy_state"]
 
 
 # TODO: Remove this function ? See issue #230.
-def get_obj_by_type(obj: t.Any, key: str, obj_type: t.Optional[t.Type] = None) -> t.Any:
+def get_obj_by_type(obj: Any, key: str, obj_type: Optional[Type] = None) -> Any:
     """Get the object associated with the class type following the key chain.
 
     :param obj:
@@ -27,9 +27,7 @@ def get_obj_by_type(obj: t.Any, key: str, obj_type: t.Optional[t.Type] = None) -
 
 
 # TODO: Remove this function ? See issue #230.
-def get_obj_att(
-    obj: t.Any, key: str, obj_type: t.Optional[t.Type] = None
-) -> t.Tuple[t.Any, str]:
+def get_obj_att(obj: Any, key: str, obj_type: Optional[Type] = None) -> Tuple[Any, str]:
     """Get the object associated with the key.
 
     Example::
@@ -82,7 +80,7 @@ def get_obj_att(
 
 
 # TODO: Remove this function ? See issue #230.
-def get_state(obj: t.Any) -> t.Mapping[str, t.Any]:
+def get_state(obj: Any) -> Mapping[str, Any]:
     """Convert the config object to a embedded dict object.
 
     The returned value will be a dictionary tree that is JSON
@@ -107,10 +105,10 @@ def get_state(obj: t.Any) -> t.Mapping[str, t.Any]:
 
 # TODO: Remove this function ? See issue #230.
 def get_state_ids(
-    obj: t.Any,
-    parent_key_list: t.Optional[t.Sequence[str]] = None,
-    result: t.Optional[t.Dict[str, t.Any]] = None,
-) -> t.Any:
+    obj: Any,
+    parent_key_list: Optional[Sequence[str]] = None,
+    result: Optional[Dict[str, Any]] = None,
+) -> Any:
     """Retrieve a flat dictionary of the object attribute hierarchy.
 
     The dot-format is used as the key representation.
@@ -149,7 +147,7 @@ def get_state_ids(
 
 
 # TODO: Remove this function ? See issue #230.
-def get_value(obj: t.Any, key: str) -> t.Any:
+def get_value(obj: Any, key: str) -> Any:
     """Retrieve the attribute value of the object given the attribute dot formatted key chain.
 
     Example::
@@ -176,7 +174,7 @@ def get_value(obj: t.Any, key: str) -> t.Any:
 
 
 # TODO: Remove this function ? See issue #230.
-def copy_state(obj: t.Any) -> t.Mapping[str, t.Any]:
+def copy_state(obj: Any) -> Mapping[str, Any]:
     """Deep copy the object as a attribute name/value pairs dictionary.
 
     :param obj:

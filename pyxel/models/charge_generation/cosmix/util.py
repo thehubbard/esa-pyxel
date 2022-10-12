@@ -8,8 +8,8 @@
 """Pyxel CosmiX model to generate charge by ionization."""
 
 import bisect
-import typing as t
 from pathlib import Path
+from typing import Callable, Optional
 
 import numpy as np
 import pandas as pd
@@ -83,8 +83,8 @@ def get_yvalue_with_interpolation(function_array, x_value):
 def load_histogram_data(
     file_name: Path,
     hist_type: str,
-    skip_rows: t.Optional[int] = None,
-    read_rows: t.Optional[int] = None,
+    skip_rows: Optional[int] = None,
+    read_rows: Optional[int] = None,
 ) -> pd.DataFrame:
     """TBW.
 
@@ -134,7 +134,7 @@ def read_data(file_name: Path) -> np.ndarray:
     return data
 
 
-def interpolate_data(data: np.ndarray) -> t.Callable[[np.ndarray], np.ndarray]:
+def interpolate_data(data: np.ndarray) -> Callable[[np.ndarray], np.ndarray]:
     """TBW.
 
     :param data:
@@ -142,5 +142,5 @@ def interpolate_data(data: np.ndarray) -> t.Callable[[np.ndarray], np.ndarray]:
     """
     data_function = interpolate.interp1d(
         data[:, 0], data[:, 1], kind="linear"
-    )  # type: t.Callable[[np.ndarray], np.ndarray]
+    )  # type: Callable[[np.ndarray], np.ndarray]
     return data_function

@@ -9,8 +9,8 @@
 import logging
 import sys
 import time
-import typing as t
 from pathlib import Path
+from typing import TYPE_CHECKING, Optional, Sequence, Tuple, Union
 
 import click
 import dask
@@ -25,7 +25,7 @@ from pyxel.observation import Observation, ObservationResult
 from pyxel.pipelines import DetectionPipeline, Processor
 from pyxel.util import create_model, download_examples
 
-if t.TYPE_CHECKING:
+if TYPE_CHECKING:
     import xarray as xr
 
     from pyxel.calibration import Calibration
@@ -161,7 +161,7 @@ def calibration_mode(
     detector: Detector,
     pipeline: "DetectionPipeline",
     compute_and_save: bool = True,
-) -> t.Tuple["xr.Dataset", pd.DataFrame, pd.DataFrame, t.Sequence]:
+) -> Tuple["xr.Dataset", pd.DataFrame, pd.DataFrame, Sequence]:
     """Run a 'calibration' pipeline.
 
     For more information, see :ref:`calibration_mode`.
@@ -331,9 +331,7 @@ def output_directory(configuration: Configuration) -> Path:
     return output_dir
 
 
-def run(
-    input_filename: t.Union[str, Path], random_seed: t.Optional[int] = None
-) -> None:
+def run(input_filename: Union[str, Path], random_seed: Optional[int] = None) -> None:
     """Run a YAML configuration file.
 
     For more information, see :ref:`running_modes`.
@@ -367,7 +365,7 @@ def run(
     pipeline = configuration.pipeline  # type: DetectionPipeline
 
     if isinstance(configuration.ccd_detector, CCD):
-        detector = configuration.ccd_detector  # type: t.Union[CCD, CMOS, MKID, APD]
+        detector = configuration.ccd_detector  # type: Union[CCD, CMOS, MKID, APD]
     elif isinstance(configuration.cmos_detector, CMOS):
         detector = configuration.cmos_detector
     elif isinstance(configuration.mkid_detector, MKID):

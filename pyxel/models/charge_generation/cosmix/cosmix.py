@@ -9,8 +9,10 @@
 
 import logging
 import math
-import typing as t  # noqa: F401
+
+# noqa: F401
 from pathlib import Path
+from typing import Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -35,21 +37,21 @@ from pyxel.util import temporary_random_state
 @temporary_random_state
 def cosmix(
     detector: Detector,
-    simulation_mode: t.Optional[
+    simulation_mode: Optional[
         Literal["cosmic_ray", "cosmics", "radioactive_decay", "snowflakes"]
     ] = None,
-    running_mode: t.Optional[
+    running_mode: Optional[
         Literal["stopping", "stepsize", "geant4", "plotting"]
     ] = None,
-    particle_type: t.Optional[Literal["proton", "alpha", "ion"]] = None,
-    initial_energy: t.Optional[t.Union[int, float, Literal["random"]]] = None,
-    particles_per_second: t.Optional[float] = None,
-    incident_angles: t.Optional[t.Tuple[str, str]] = None,
-    starting_position: t.Optional[t.Tuple[str, str, str]] = None,
+    particle_type: Optional[Literal["proton", "alpha", "ion"]] = None,
+    initial_energy: Optional[Union[int, float, Literal["random"]]] = None,
+    particles_per_second: Optional[float] = None,
+    incident_angles: Optional[Tuple[str, str]] = None,
+    starting_position: Optional[Tuple[str, str, str]] = None,
     # step_size_file: str = None,
     # stopping_file: str = None,
-    spectrum_file: t.Optional[str] = None,
-    seed: t.Optional[int] = None,
+    spectrum_file: Optional[str] = None,
+    seed: Optional[int] = None,
     ionization_energy: float = 3.6,
     progressbar: bool = True,
 ) -> None:
@@ -270,7 +272,7 @@ class Cosmix:
         particle_type: Literal[
             "proton", "ion", "alpha", "beta", "electron", "gamma", "x-ray"
         ],
-        initial_energy: t.Union[int, float, Literal["random"]],
+        initial_energy: Union[int, float, Literal["random"]],
         particle_number: int,
         incident_angle_alpha: str,
         incident_angle_beta: str,
@@ -321,9 +323,7 @@ class Cosmix:
         self.part_type = particle_type
 
     # TODO: Is it still used ?
-    def set_initial_energy(
-        self, energy: t.Union[int, float, Literal["random"]]
-    ) -> None:
+    def set_initial_energy(self, energy: Union[int, float, Literal["random"]]) -> None:
         """TBW.
 
         :param energy:
@@ -339,7 +339,7 @@ class Cosmix:
         self.particle_number = number
 
     # TODO: Is it still used ?
-    def set_incident_angles(self, angles: t.Tuple[str, str]) -> None:
+    def set_incident_angles(self, angles: Tuple[str, str]) -> None:
         """TBW.
 
         :param angles:
@@ -349,7 +349,7 @@ class Cosmix:
         self.angle_beta = beta
 
     # TODO: Is it still used ?
-    def set_starting_position(self, start_position: t.Tuple[str, str, str]) -> None:
+    def set_starting_position(self, start_position: Tuple[str, str, str]) -> None:
         """TBW.
 
         :param start_position:
@@ -467,7 +467,7 @@ class Cosmix:
             disable=(not self._progressbar),
         ):
             # for k in range(0, self.particle_number):
-            err = None  # type: t.Optional[bool]
+            err = None  # type: Optional[bool]
             if self.sim_obj.energy_loss_data == "stepsize":  # TODO
                 err = self.sim_obj.event_generation()
             elif self.sim_obj.energy_loss_data == "geant4":

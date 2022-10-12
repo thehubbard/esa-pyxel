@@ -7,7 +7,7 @@
 
 """Pyxel CosmiX model to generate charge by ionization."""
 
-import typing as t
+from typing import List, Optional, Tuple, Union
 
 import numpy as np
 from typing_extensions import Literal
@@ -28,11 +28,11 @@ class Particle:
         particle_type: Literal[
             "proton", "ion", "alpha", "beta", "electron", "gamma", "x-ray"
         ],
-        input_energy: t.Union[int, float, Literal["random"]],
+        input_energy: Union[int, float, Literal["random"]],
         spectrum_cdf: np.ndarray,
-        starting_pos_ver: t.Union[str, np.ndarray],
-        starting_pos_hor: t.Union[str, np.ndarray],
-        starting_pos_z: t.Union[str, np.ndarray],
+        starting_pos_ver: Union[str, np.ndarray],
+        starting_pos_hor: Union[str, np.ndarray],
+        starting_pos_z: Union[str, np.ndarray],
         # input_alpha='random', input_beta='random'
     ):
         """Creation of a particle according to some parameters.
@@ -97,7 +97,7 @@ class Particle:
         # # update direction:
         # self.dir_ver, self.dir_hor, self.dir_z = get_direction_from_angles()
 
-        self.track_length = None  # type: t.Optional[float]
+        self.track_length = None  # type: Optional[float]
 
         self.dir_ver, self.dir_hor, self.dir_z = isotropic_direction()
 
@@ -173,7 +173,7 @@ class Particle:
             np.array([-1.0, 0.0, 0.0]),
             np.array([0.0, -1.0, 0.0]),
             np.array([1.0, 0.0, 0.0]),
-        ]  # type: t.List[np.ndarray]
+        ]  # type: List[np.ndarray]
 
         points = [
             np.array(
@@ -186,7 +186,7 @@ class Particle:
             np.array([geo.vert_dimension, 0.0, 0.0]),
             np.array([geo.vert_dimension, geo.horz_dimension, 0.0]),
             np.array([0.0, geo.horz_dimension, 0.0]),
-        ]  # type: t.List[np.ndarray]
+        ]  # type: List[np.ndarray]
 
         intersect_points = np.zeros((6, 3))
         track_direction = np.array([self.dir_ver, self.dir_hor, self.dir_z])
@@ -194,8 +194,8 @@ class Particle:
             [self.random_det_pt_vert, self.random_det_pt_horz, self.random_det_pt_z]
         )
 
-        surface_start_point = None  # type: t.Optional[np.ndarray]
-        surface_end_point = None  # type: t.Optional[np.ndarray]
+        surface_start_point = None  # type: Optional[np.ndarray]
+        surface_end_point = None  # type: Optional[np.ndarray]
         for i in range(6):
             intersect_points[i, :] = find_intersection(
                 n=norm_vectors[i], p0=points[i], ls=random_det_point, lv=track_direction
@@ -243,7 +243,7 @@ class Particle:
 
         return surface_start_point
 
-    def get_angles(self) -> t.Tuple[float, float]:
+    def get_angles(self) -> Tuple[float, float]:
         """TBW.
 
         :return:
@@ -327,7 +327,7 @@ class Particle:
 
 def find_intersection(
     n: np.ndarray, p0: np.ndarray, ls: np.ndarray, lv: np.ndarray
-) -> t.Optional[np.ndarray]:
+) -> Optional[np.ndarray]:
     """TBW.
 
     https://en.wikipedia.org/wiki/Line%E2%80%93plane_intersection
@@ -345,7 +345,7 @@ def find_intersection(
         return p
 
 
-def isotropic_direction() -> t.Tuple[float, float, float]:
+def isotropic_direction() -> Tuple[float, float, float]:
     """TBW.
 
     :param n:
@@ -359,7 +359,7 @@ def isotropic_direction() -> t.Tuple[float, float, float]:
     return u, v, w
 
 
-def non_isotropic_direction(n: int) -> t.Tuple[np.ndarray, np.ndarray, np.ndarray]:
+def non_isotropic_direction(n: int) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """TBW.
 
     :param n:

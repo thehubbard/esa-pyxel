@@ -6,7 +6,8 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """TBW."""
-import typing as t
+
+from typing import Iterable, Mapping, Optional, Tuple
 
 import numpy as np
 from toolz import dicttoolz
@@ -35,12 +36,12 @@ class Characteristics:
 
     def __init__(
         self,
-        quantum_efficiency: t.Optional[float] = None,  # unit: NA
-        charge_to_volt_conversion: t.Optional[float] = None,  # unit: volt/electron
-        pre_amplification: t.Optional[float] = None,  # unit: V/V
-        full_well_capacity: t.Optional[float] = None,  # unit: electron
-        adc_bit_resolution: t.Optional[int] = None,
-        adc_voltage_range: t.Optional[t.Tuple[float, float]] = None,  # unit: V
+        quantum_efficiency: Optional[float] = None,  # unit: NA
+        charge_to_volt_conversion: Optional[float] = None,  # unit: volt/electron
+        pre_amplification: Optional[float] = None,  # unit: V/V
+        full_well_capacity: Optional[float] = None,  # unit: electron
+        adc_bit_resolution: Optional[int] = None,
+        adc_voltage_range: Optional[Tuple[float, float]] = None,  # unit: V
     ):
         if quantum_efficiency and not (0.0 <= quantum_efficiency <= 1.0):
             raise ValueError("'quantum_efficiency' must be between 0.0 and 1.0.")
@@ -150,7 +151,7 @@ class Characteristics:
         self._adc_bit_resolution = value
 
     @property
-    def adc_voltage_range(self) -> t.Tuple[float, float]:
+    def adc_voltage_range(self) -> Tuple[float, float]:
         """Get voltage range of the Analog-Digital Converter."""
         if self._adc_voltage_range:
             return self._adc_voltage_range
@@ -160,7 +161,7 @@ class Characteristics:
             )
 
     @adc_voltage_range.setter
-    def adc_voltage_range(self, value: t.Tuple[float, float]) -> None:
+    def adc_voltage_range(self, value: Tuple[float, float]) -> None:
         """Set voltage range of the Analog-Digital Converter."""
         self._adc_voltage_range = value
 
@@ -204,7 +205,7 @@ class Characteristics:
         self._numbytes = get_size(self)
         return self._numbytes
 
-    def to_dict(self) -> t.Mapping:
+    def to_dict(self) -> Mapping:
         """Get the attributes of this instance as a `dict`."""
         return {
             "quantum_efficiency": self._quantum_efficiency,
@@ -216,16 +217,16 @@ class Characteristics:
         }
 
     @classmethod
-    def from_dict(cls, dct: t.Mapping):
+    def from_dict(cls, dct: Mapping):
         """Create a new instance from a `dict`."""
         # TODO: This is a simplistic implementation. Improve this.
 
         # Extract param 'adc_voltage_range'
-        param = dct.get("adc_voltage_range")  # type: t.Optional[t.Iterable[float]]
-        new_dct = dicttoolz.dissoc(dct, "adc_voltage_range")  # type: t.Mapping
+        param = dct.get("adc_voltage_range")  # type: Optional[Iterable[float]]
+        new_dct = dicttoolz.dissoc(dct, "adc_voltage_range")  # type: Mapping
 
         if param is None:
-            adc_voltage_range = None  # type: t.Optional[t.Tuple[float, float]]
+            adc_voltage_range = None  # type: Optional[Tuple[float, float]]
         else:
             adc_voltage_min, adc_voltage_max = tuple(param)
             adc_voltage_range = adc_voltage_min, adc_voltage_max

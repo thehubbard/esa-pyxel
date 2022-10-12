@@ -7,8 +7,9 @@
 #
 #
 """Model for loading PSF from file."""
-import typing as t
+
 from pathlib import Path
+from typing import Union
 
 import numpy as np
 from astropy.convolution import convolve_fft
@@ -50,7 +51,7 @@ def apply_psf(
 
 
 def load_psf(
-    detector: Detector, filename: t.Union[str, Path], normalize_kernel: bool = True
+    detector: Detector, filename: Union[str, Path], normalize_kernel: bool = True
 ) -> None:
     """Load a point spread function from file and convolve the photon array with the PSF.
 

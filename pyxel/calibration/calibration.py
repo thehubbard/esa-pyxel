@@ -7,8 +7,8 @@
 
 """TBW."""
 import logging
-import typing as t
 from pathlib import Path
+from typing import TYPE_CHECKING, Any, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
 from dask.delayed import Delayed
@@ -34,14 +34,14 @@ try:
 except ImportError:
     WITH_PYGMO = False
 
-if t.TYPE_CHECKING:
+if TYPE_CHECKING:
     import pandas as pd
     import xarray as xr
 
     from pyxel.outputs import CalibrationOutputs
 
 
-def to_path_list(values: t.Sequence[t.Union[str, Path]]) -> t.List[Path]:
+def to_path_list(values: Sequence[Union[str, Path]]) -> List[Path]:
     """TBW."""
     return [Path(obj).resolve() for obj in values]
 
@@ -52,27 +52,27 @@ class Calibration:
     def __init__(
         self,
         outputs: "CalibrationOutputs",
-        target_data_path: t.Sequence[Path],
+        target_data_path: Sequence[Path],
         fitness_function: FitnessFunction,
         algorithm: Algorithm,
-        parameters: t.Sequence[ParameterValues],
-        readout: t.Optional["Readout"] = None,
+        parameters: Sequence[ParameterValues],
+        readout: Optional["Readout"] = None,
         mode: Literal["pipeline", "single_model"] = "pipeline",
         result_type: Literal["image", "signal", "pixel"] = "image",
-        result_fit_range: t.Optional[t.Sequence[int]] = None,
-        result_input_arguments: t.Optional[t.Sequence[ParameterValues]] = None,
-        target_fit_range: t.Optional[t.Sequence[int]] = None,
-        pygmo_seed: t.Optional[int] = None,
-        pipeline_seed: t.Optional[int] = None,
+        result_fit_range: Optional[Sequence[int]] = None,
+        result_input_arguments: Optional[Sequence[ParameterValues]] = None,
+        target_fit_range: Optional[Sequence[int]] = None,
+        pygmo_seed: Optional[int] = None,
+        pipeline_seed: Optional[int] = None,
         num_islands: int = 1,
         num_evolutions: int = 1,
-        num_best_decisions: t.Optional[int] = None,
+        num_best_decisions: Optional[int] = None,
         topology: Literal["unconnected", "ring", "fully_connected"] = "unconnected",
         type_islands: Literal[
             "multiprocessing", "multithreading", "ipyparallel"
         ] = "multiprocessing",
-        weights_from_file: t.Optional[t.Sequence[Path]] = None,
-        weights: t.Optional[t.Sequence[float]] = None,
+        weights_from_file: Optional[Sequence[Path]] = None,
+        weights: Optional[Sequence[float]] = None,
     ):
         if not WITH_PYGMO:
             raise ImportError(
@@ -98,25 +98,25 @@ class Calibration:
 
         self._result_fit_range = (
             result_fit_range if result_fit_range else []
-        )  # type: t.Sequence[int]
+        )  # type: Sequence[int]
 
         self._result_input_arguments = (
             result_input_arguments if result_input_arguments else []
-        )  # type: t.Sequence[ParameterValues]
+        )  # type: Sequence[ParameterValues]
 
         self._target_data_path = (
             to_path_list(target_data_path) if target_data_path else []
-        )  # type: t.Sequence[Path]
+        )  # type: Sequence[Path]
         self._target_fit_range = (
             target_fit_range if target_fit_range else []
-        )  # type: t.Sequence[int]
+        )  # type: Sequence[int]
 
         self._fitness_function = fitness_function  # type: FitnessFunction
         self._algorithm = algorithm  # type: Algorithm
 
         self._parameters = (
             parameters if parameters else []
-        )  # type: t.Sequence[ParameterValues]
+        )  # type: Sequence[ParameterValues]
 
         if pygmo_seed is None:
             rng = np.random.default_rng()
@@ -126,20 +126,18 @@ class Calibration:
 
         self._num_islands = num_islands  # type: int
         self._num_evolutions = num_evolutions  # type: int
-        self._num_best_decisions = num_best_decisions  # type: t.Optional[int]
+        self._num_best_decisions = num_best_decisions  # type: Optional[int]
         self._type_islands = Island(type_islands)  # type: Island
         self._pipeline_seed = pipeline_seed
         self._topology = (
             topology
-        )  # type: t.Literal['unconnected', 'ring', 'fully_connected']
+        )  # type: Literal['unconnected', 'ring', 'fully_connected']
 
         if weights and weights_from_file:
             raise ValueError("Cannot define both weights and weights from file.")
 
-        self._weights_from_file = (
-            weights_from_file
-        )  # type: t.Optional[t.Sequence[Path]]
-        self._weights = weights  # type: t.Optional[t.Sequence[float]]
+        self._weights_from_file = weights_from_file  # type: Optional[Sequence[Path]]
+        self._weights = weights  # type: Optional[Sequence[float]]
 
     @property
     def calibration_mode(self) -> CalibrationMode:
@@ -162,42 +160,42 @@ class Calibration:
         self._result_type = value
 
     @property
-    def result_fit_range(self) -> t.Sequence[int]:
+    def result_fit_range(self) -> Sequence[int]:
         """TBW."""
         return self._result_fit_range
 
     @result_fit_range.setter
-    def result_fit_range(self, value: t.Sequence[int]) -> None:
+    def result_fit_range(self, value: Sequence[int]) -> None:
         """TBW."""
         self._result_fit_range = value
 
     @property
-    def result_input_arguments(self) -> t.Sequence[ParameterValues]:
+    def result_input_arguments(self) -> Sequence[ParameterValues]:
         """TBW."""
         return self._result_input_arguments
 
     @result_input_arguments.setter
-    def result_input_arguments(self, value: t.Sequence[ParameterValues]) -> None:
+    def result_input_arguments(self, value: Sequence[ParameterValues]) -> None:
         """TBW."""
         self._result_input_arguments = value
 
     @property
-    def target_data_path(self) -> t.Sequence[Path]:
+    def target_data_path(self) -> Sequence[Path]:
         """TBW."""
         return self._target_data_path
 
     @target_data_path.setter
-    def target_data_path(self, value: t.Sequence[Path]) -> None:
+    def target_data_path(self, value: Sequence[Path]) -> None:
         """TBW."""
         self._target_data_path = value
 
     @property
-    def target_fit_range(self) -> t.Sequence[int]:
+    def target_fit_range(self) -> Sequence[int]:
         """TBW."""
         return self._target_fit_range
 
     @target_fit_range.setter
-    def target_fit_range(self, value: t.Sequence[int]) -> None:
+    def target_fit_range(self, value: Sequence[int]) -> None:
         """TBW."""
         self._target_fit_range = value
 
@@ -222,12 +220,12 @@ class Calibration:
         self._algorithm = value
 
     @property
-    def parameters(self) -> t.Sequence[ParameterValues]:
+    def parameters(self) -> Sequence[ParameterValues]:
         """TBW."""
         return self._parameters
 
     @parameters.setter
-    def parameters(self, value: t.Sequence[ParameterValues]) -> None:
+    def parameters(self, value: Sequence[ParameterValues]) -> None:
         """TBW."""
         self._parameters = value
 
@@ -245,7 +243,7 @@ class Calibration:
         self._pygmo_seed = value
 
     @property
-    def pipeline_seed(self) -> t.Optional[int]:
+    def pipeline_seed(self) -> Optional[int]:
         """TBW."""
         return self._pipeline_seed
 
@@ -278,12 +276,12 @@ class Calibration:
         self._num_evolutions = value
 
     @property
-    def num_best_decisions(self) -> t.Optional[int]:
+    def num_best_decisions(self) -> Optional[int]:
         """TBW."""
         return self._num_best_decisions
 
     @num_best_decisions.setter
-    def num_best_decisions(self, value: t.Optional[int]) -> None:
+    def num_best_decisions(self, value: Optional[int]) -> None:
         """TBW."""
         if isinstance(value, int) and value < 0:
             raise ValueError(
@@ -298,7 +296,7 @@ class Calibration:
         return self._topology
 
     @topology.setter
-    def topology(self, value: t.Any) -> None:
+    def topology(self, value: Any) -> None:
         if value not in ["unconnected", "ring", "fully_connected"]:
             raise ValueError(
                 "Expecting value: 'unconnected', 'ring' or 'fully_connected'"
@@ -307,22 +305,22 @@ class Calibration:
         self._topology = value
 
     @property
-    def weights_from_file(self) -> t.Optional[t.Sequence[Path]]:
+    def weights_from_file(self) -> Optional[Sequence[Path]]:
         """TBW."""
         return self._weights_from_file
 
     @weights_from_file.setter
-    def weights_from_file(self, value: t.Sequence[Path]) -> None:
+    def weights_from_file(self, value: Sequence[Path]) -> None:
         """TBW."""
         self._weights_from_file = value
 
     @property
-    def weights(self) -> t.Optional[t.Sequence[float]]:
+    def weights(self) -> Optional[Sequence[float]]:
         """TBW."""
         return self._weights
 
     @weights.setter
-    def weights(self, value: t.Sequence[float]) -> None:
+    def weights(self, value: Sequence[float]) -> None:
         """TBW."""
         self._weights = value
 
@@ -331,7 +329,7 @@ class Calibration:
         processor: Processor,
         output_dir: Path,
         with_progress_bar: bool = True,
-    ) -> t.Tuple["xr.Dataset", "pd.DataFrame", "pd.DataFrame"]:
+    ) -> Tuple["xr.Dataset", "pd.DataFrame", "pd.DataFrame"]:
         """Run calibration pipeline."""
         pg.set_global_rng_seed(seed=self.pygmo_seed)
         self._log.info("Pygmo seed: %d", self.pygmo_seed)
@@ -406,11 +404,11 @@ class Calibration:
         ds: "xr.Dataset",
         df_processors: "pd.DataFrame",
         output: "CalibrationOutputs",
-    ) -> t.Sequence[Delayed]:
+    ) -> Sequence[Delayed]:
         """TBW."""
         filenames = output.save_processors(
             processors=df_processors
-        )  # type: t.Sequence[Delayed]
+        )  # type: Sequence[Delayed]
 
         # TODO: Use output.fitting_plot ?
         # TODO: Use output.fitting_plot_close ?

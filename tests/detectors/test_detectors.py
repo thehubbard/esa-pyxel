@@ -5,10 +5,9 @@
 #  this file, may be copied, modified, propagated, or distributed except according to
 #  the terms contained in the file ‘LICENCE.txt’.
 
-
 import copy
-import typing as t
 from pathlib import Path
+from typing import Union
 
 import pytest
 
@@ -42,7 +41,7 @@ from pyxel.detectors import (
         "apd_100x120",
     )
 )
-def detector(request) -> t.Union[CCD, CMOS, MKID, APD]:
+def detector(request) -> Union[CCD, CMOS, MKID, APD]:
     """Create a valid detector."""
     if request.param == "ccd_basic":
         return CCD(
@@ -145,7 +144,7 @@ def detector(request) -> t.Union[CCD, CMOS, MKID, APD]:
         raise NotImplementedError
 
 
-def test_equal(detector: t.Union[CCD, CMOS, MKID, APD]):
+def test_equal(detector: Union[CCD, CMOS, MKID, APD]):
     new_detector = copy.deepcopy(detector)
 
     assert new_detector.geometry is not detector.geometry
@@ -161,7 +160,7 @@ def test_equal(detector: t.Union[CCD, CMOS, MKID, APD]):
     assert new_detector == detector
 
 
-def test_to_from_hdf5(detector: t.Union[CCD, CMOS, MKID, APD], tmp_path: Path):
+def test_to_from_hdf5(detector: Union[CCD, CMOS, MKID, APD], tmp_path: Path):
     """Test methods `Detector.to_hdf5' and `Detector.from_hdf5`."""
     filename = tmp_path / f"{detector.__class__.__name__}.h5"
 
@@ -179,7 +178,7 @@ def test_to_from_hdf5(detector: t.Union[CCD, CMOS, MKID, APD], tmp_path: Path):
     assert new_detector == detector
 
 
-def test_to_from_asdf(detector: t.Union[CCD, CMOS, MKID, APD], tmp_path: Path):
+def test_to_from_asdf(detector: Union[CCD, CMOS, MKID, APD], tmp_path: Path):
     """Test methods `Detector.to_asdf' and `Detector.from_asdf`."""
     filename = tmp_path / f"{detector.__class__.__name__}.asdf"
 

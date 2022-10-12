@@ -7,8 +7,8 @@
 
 """Fix pattern noise model."""
 
-import typing as t
 from pathlib import Path
+from typing import Optional, Tuple, Union
 
 import numpy as np
 from typing_extensions import Literal
@@ -19,9 +19,9 @@ from pyxel.util import load_cropped_and_aligned_image
 
 def fix_pattern_noise(
     detector: Detector,
-    filename: t.Union[str, Path],
-    position: t.Tuple[int, int] = (0, 0),
-    align: t.Optional[
+    filename: Union[str, Path],
+    position: Tuple[int, int] = (0, 0),
+    align: Optional[
         Literal["center", "top_left", "top_right", "bottom_left", "bottom_right"]
     ] = None,
 ) -> None:

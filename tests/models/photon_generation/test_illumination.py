@@ -6,7 +6,8 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 #
 #
-import typing as t
+
+from typing import Optional, Sequence
 
 import pytest
 from typing_extensions import Literal
@@ -87,8 +88,8 @@ def test_illumination(
     ccd_10x10: CCD,
     level: float,
     option: Literal["uniform", "rectangular", "elliptic"],
-    object_size: t.Optional[t.Sequence[int]],
-    object_center: t.Optional[t.Sequence[int]],
+    object_size: Optional[Sequence[int]],
+    object_center: Optional[Sequence[int]],
     time_scale: float,
 ):
     """Test input parameters for function 'illumination'."""

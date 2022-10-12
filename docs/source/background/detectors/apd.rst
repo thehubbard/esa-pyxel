@@ -1,4 +1,4 @@
-.. _APD architecure:
+.. _APD architecture:
 
 ###
 APD

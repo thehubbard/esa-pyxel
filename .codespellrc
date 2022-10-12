@@ -1,0 +1,3 @@
+[codespell]
+ignore-words-list = acn,sade,te
+skip = pyxel/_version.py

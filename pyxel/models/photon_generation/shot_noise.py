@@ -6,7 +6,8 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """Pyxel photon generator models: photon shot noise."""
-import typing as t
+
+from typing import Optional
 
 import numpy as np
 from typing_extensions import Literal
@@ -78,7 +79,7 @@ def compute_noise(array: np.ndarray, type: str = "poisson") -> np.ndarray:
 def shot_noise(
     detector: Detector,
     type: Literal["poisson", "normal"] = "poisson",
-    seed: t.Optional[int] = None,
+    seed: Optional[int] = None,
 ) -> None:
     """Add shot noise to the flux of photon per pixel. It can be either Poisson noise or Gaussian.
 

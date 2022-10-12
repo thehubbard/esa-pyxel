@@ -6,7 +6,8 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 #
 #
-import typing as t
+
+from typing import Optional, Tuple
 
 import numpy as np
 import pytest
@@ -166,9 +167,9 @@ def array_1d_row() -> np.ndarray:
 )
 def test_fit_into_array_2d(
     array_2d,
-    output_shape: t.Tuple[int, int],
-    relative_position: t.Tuple[int, int],
-    align: t.Optional[
+    output_shape: Tuple[int, int],
+    relative_position: Tuple[int, int],
+    align: Optional[
         Literal["center", "top_left", "top_right", "bottom_left", "bottom_right"]
     ],
     allow_smaller_array: bool,
@@ -231,9 +232,9 @@ def test_fit_into_array_2d(
 )
 def test_fit_into_array_1d_col(
     array_1d_col,
-    output_shape: t.Tuple[int, int],
-    relative_position: t.Tuple[int, int],
-    align: t.Optional[
+    output_shape: Tuple[int, int],
+    relative_position: Tuple[int, int],
+    align: Optional[
         Literal["center", "top_left", "top_right", "bottom_left", "bottom_right"]
     ],
     allow_smaller_array: bool,
@@ -294,9 +295,9 @@ def test_fit_into_array_1d_col(
 )
 def test_fit_into_array_1d_row(
     array_1d_row,
-    output_shape: t.Tuple[int, int],
-    relative_position: t.Tuple[int, int],
-    align: t.Optional[
+    output_shape: Tuple[int, int],
+    relative_position: Tuple[int, int],
+    align: Optional[
         Literal["center", "top_left", "top_right", "bottom_left", "bottom_right"]
     ],
     allow_smaller_array: bool,
@@ -361,9 +362,9 @@ def test_fit_into_array_1d_row(
     ],
 )
 def test_fit_into_array_bad_inputs(
-    output_shape: t.Tuple[int, int],
-    relative_position: t.Tuple[int, int],
-    align: t.Optional[
+    output_shape: Tuple[int, int],
+    relative_position: Tuple[int, int],
+    align: Optional[
         Literal["center", "top_left", "top_right", "bottom_left", "bottom_right"]
     ],
     allow_smaller_array: bool,

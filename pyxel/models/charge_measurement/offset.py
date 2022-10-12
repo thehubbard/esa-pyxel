@@ -7,14 +7,15 @@
 #
 #
 """Voltage offset models."""
-import typing as t
+
+from typing import Tuple
 
 import numpy as np
 
 from pyxel.detectors import APD, Detector
 
 
-def compute_dc_offset(offset: float, shape: t.Tuple[int, int]) -> np.ndarray:
+def compute_dc_offset(offset: float, shape: Tuple[int, int]) -> np.ndarray:
     """Compute DC offset voltage array.
 
     Parameters
@@ -56,7 +57,7 @@ def compute_output_pixel_reset_voltage_apd(
     roic_drop: float,
     roic_gain: float,
     pixel_reset_voltage: float,
-    shape: t.Tuple[int, int],
+    shape: Tuple[int, int],
 ) -> np.ndarray:
     """Compute output pixel reset voltage.
 

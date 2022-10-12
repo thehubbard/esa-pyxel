@@ -10,34 +10,34 @@
 import logging
 import os
 import re
-import typing as t
 from glob import glob
 from pathlib import Path
 from time import strftime
+from typing import TYPE_CHECKING, Any, List, Mapping, Optional, Sequence, Tuple, Union
 
 import h5py as h5
 import numpy as np
 import pandas as pd
 from PIL import Image
-from typing_extensions import Literal
+from typing_extensions import Literal, Protocol
 
 from pyxel import __version__ as version
 
-if t.TYPE_CHECKING:
+if TYPE_CHECKING:
     import xarray as xr
 
     from pyxel.detectors import Detector
     from pyxel.pipelines import Processor
 
-    class SaveToFile(t.Protocol):
+    class SaveToFile(Protocol):
         """TBW."""
 
         def __call__(
             self,
-            data: t.Any,
+            data: Any,
             name: str,
             with_auto_suffix: bool = True,
-            run_number: t.Optional[int] = None,
+            run_number: Optional[int] = None,
         ) -> Path:
             """TBW."""
             ...
@@ -54,9 +54,9 @@ class Outputs:
 
     def __init__(
         self,
-        output_folder: t.Union[str, Path],
-        save_data_to_file: t.Optional[
-            t.Sequence[t.Mapping[ValidName, t.Sequence[ValidFormat]]]
+        output_folder: Union[str, Path],
+        save_data_to_file: Optional[
+            Sequence[Mapping[ValidName, Sequence[ValidFormat]]]
         ] = None,
     ):
         self._log = logging.getLogger(__name__)
@@ -66,7 +66,7 @@ class Outputs:
         # TODO: Not related to a plot. Use by 'single' and 'parametric' modes.
         self.save_data_to_file = (
             save_data_to_file
-        )  # type: t.Optional[t.Sequence[t.Mapping[ValidName, t.Sequence[ValidFormat]]]]
+        )  # type: Optional[Sequence[Mapping[ValidName, Sequence[ValidFormat]]]]
 
     def __repr__(self):
         cls_name = self.__class__.__name__  # type: str
@@ -77,7 +77,7 @@ class Outputs:
         data: np.ndarray,
         name: str,
         with_auto_suffix: bool = True,
-        run_number: t.Optional[int] = None,
+        run_number: Optional[int] = None,
     ) -> Path:
         """Write array to :term:`FITS` file."""
         name = str(name).replace(".", "_")
@@ -106,7 +106,7 @@ class Outputs:
         data: "Detector",
         name: str,
         with_auto_suffix: bool = True,
-        run_number: t.Optional[int] = None,
+        run_number: Optional[int] = None,
     ) -> Path:
         """Write detector object to HDF5 file."""
         name = str(name).replace(".", "_")
@@ -149,7 +149,7 @@ class Outputs:
         data: np.ndarray,
         name: str,
         with_auto_suffix: bool = True,
-        run_number: t.Optional[int] = None,
+        run_number: Optional[int] = None,
     ) -> Path:
         """Write data to txt file."""
         name = str(name).replace(".", "_")
@@ -172,7 +172,7 @@ class Outputs:
         data: pd.DataFrame,
         name: str,
         with_auto_suffix: bool = True,
-        run_number: t.Optional[int] = None,
+        run_number: Optional[int] = None,
     ) -> Path:
         """Write Pandas Dataframe or Numpy array to a CSV file."""
         name = str(name).replace(".", "_")
@@ -198,7 +198,7 @@ class Outputs:
         data: np.ndarray,
         name: str,
         with_auto_suffix: bool = True,
-        run_number: t.Optional[int] = None,
+        run_number: Optional[int] = None,
     ) -> Path:
         """Write Numpy array to Numpy binary npy file."""
         name = str(name).replace(".", "_")
@@ -224,7 +224,7 @@ class Outputs:
         data: np.ndarray,
         name: str,
         with_auto_suffix: bool = True,
-        run_number: t.Optional[int] = None,
+        run_number: Optional[int] = None,
     ) -> Path:
         """Write Numpy array to a PNG image file."""
         name = str(name).replace(".", "_")
@@ -252,7 +252,7 @@ class Outputs:
         data: np.ndarray,
         name: str,
         with_auto_suffix: bool = True,
-        run_number: t.Optional[int] = None,
+        run_number: Optional[int] = None,
     ) -> Path:
         """Write Numpy array to a JPEG image file."""
         name = str(name).replace(".", "_")
@@ -280,7 +280,7 @@ class Outputs:
         data: np.ndarray,
         name: str,
         with_auto_suffix: bool = True,
-        run_number: t.Optional[int] = None,
+        run_number: Optional[int] = None,
     ) -> Path:
         """Write Numpy array to a JPG image file."""
         name = str(name).replace(".", "_")
@@ -306,10 +306,10 @@ class Outputs:
     def save_to_file(
         self,
         processor: "Processor",
-        prefix: t.Optional[str] = None,
+        prefix: Optional[str] = None,
         with_auto_suffix: bool = True,
-        run_number: t.Optional[int] = None,
-    ) -> t.Sequence[Path]:
+        run_number: Optional[int] = None,
+    ) -> Sequence[Path]:
         """Save outputs into file(s).
 
         Parameters
@@ -333,20 +333,20 @@ class Outputs:
             "png": self.save_to_png,
             "jpg": self.save_to_jpg,
             "jpeg": self.save_to_jpeg,
-        }  # type: t.Mapping[ValidFormat, SaveToFile]
+        }  # type: Mapping[ValidFormat, SaveToFile]
 
-        filenames = []  # type: t.List[Path]
+        filenames = []  # type: List[Path]
 
-        dct: t.Mapping[ValidName, t.Sequence[ValidFormat]]
+        dct: Mapping[ValidName, Sequence[ValidFormat]]
         if self.save_data_to_file:
             for dct in self.save_data_to_file:
                 # TODO: Why looking at first entry ? Check this !
                 # Get first entry of `dict` 'item'
-                first_item: t.Tuple[ValidName, t.Sequence[ValidFormat]]
+                first_item: Tuple[ValidName, Sequence[ValidFormat]]
                 first_item, *_ = dct.items()
 
                 obj: ValidName
-                format_list: t.Sequence[ValidFormat]
+                format_list: Sequence[ValidFormat]
                 obj, format_list = first_item
 
                 data = processor.get(obj)  # type: np.ndarray
@@ -414,9 +414,7 @@ class Outputs:
 
 # TODO: Refactor this in 'def apply_run_number(folder, template_filename) -> Path'.
 #       See #332.
-def apply_run_number(
-    template_filename: Path, run_number: t.Optional[int] = None
-) -> Path:
+def apply_run_number(template_filename: Path, run_number: Optional[int] = None) -> Path:
     """Convert the file name numeric placeholder to a unique number.
 
     Parameters
@@ -444,7 +442,7 @@ def apply_run_number(
         else:
             path_str_for_glob = template_str.replace("?", "*")
             dir_list = glob(path_str_for_glob)
-            num_list = sorted([get_number(d) for d in dir_list])
+            num_list = sorted(get_number(d) for d in dir_list)
             if len(num_list):
                 next_num = num_list[-1] + 1
             else:
@@ -466,7 +464,7 @@ def save_log_file(output_dir: Path) -> None:
     log_file.rename(new_log_filename)
 
 
-def create_output_directory(output_folder: t.Union[str, Path]) -> Path:
+def create_output_directory(output_folder: Union[str, Path]) -> Path:
     """Create output directory in the output folder.
 
     Parameters

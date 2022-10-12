@@ -6,7 +6,8 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """Simple models to generate charge due to dark current process."""
-import typing as t
+
+from typing import Optional
 
 import numpy as np
 
@@ -81,7 +82,7 @@ def compute_mct_dark_rule07(pitch: float, temperature: float, cut_off: float) ->
 def dark_current_rule07(
     detector: CMOS,
     cutoff_wavelength: float = 2.5,  # unit: um
-    seed: t.Optional[int] = None,
+    seed: Optional[int] = None,
 ) -> None:
     """Generate charge from dark current process.
 

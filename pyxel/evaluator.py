@@ -8,17 +8,17 @@
 """TBW."""
 import importlib
 import logging
-import typing as t
 from ast import literal_eval
 from collections import abc
 from numbers import Number
+from typing import Callable, Sequence, Union
 
 import numpy as np
 
 __all__ = ["evaluate_reference", "eval_range", "eval_entry"]
 
 
-def evaluate_reference(reference_str: str) -> t.Callable:
+def evaluate_reference(reference_str: str) -> Callable:
     """Evaluate a module's class, function, or constant.
 
     :param str reference_str: the python expression to
@@ -39,7 +39,7 @@ def evaluate_reference(reference_str: str) -> t.Callable:
     try:
         module = importlib.import_module(module_str)
 
-        reference = getattr(module, function_str)  # type: t.Callable
+        reference = getattr(module, function_str)  # type: Callable
         assert callable(reference)
 
         # if isinstance(reference, type):
@@ -47,17 +47,17 @@ def evaluate_reference(reference_str: str) -> t.Callable:
         #     reference = reference()
     except ImportError as exc:
         raise ImportError(
-            "Cannot import module: %r. exc: %s" % (module_str, str(exc))
+            f"Cannot import module: {module_str!r}. exc: {str(exc)}"
         ) from exc
     except AttributeError as ex:
         raise ImportError(
-            "Module: %s, does not contain %s" % (module_str, function_str)
+            f"Module: {module_str}, does not contain {function_str}"
         ) from ex
 
     return reference
 
 
-def eval_range(values: t.Union[str, t.Sequence]) -> t.Sequence:
+def eval_range(values: Union[str, Sequence]) -> Sequence:
     """Evaluate a string representation of a list or numpy array.
 
     :param values:
@@ -98,9 +98,7 @@ def eval_range(values: t.Union[str, t.Sequence]) -> t.Sequence:
 
 
 # TODO: Use 'numexpr.evaluate' ? See #331
-def eval_entry(
-    value: t.Union[str, Number, np.ndarray]
-) -> t.Union[str, Number, np.ndarray]:
+def eval_entry(value: Union[str, Number, np.ndarray]) -> Union[str, Number, np.ndarray]:
     """TBW.
 
     :param value:

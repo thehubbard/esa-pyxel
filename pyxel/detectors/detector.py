@@ -7,8 +7,8 @@
 
 """Detector class."""
 import collections
-import typing as t
 from pathlib import Path
+from typing import Any, Dict, Mapping, Optional, Union
 
 import numpy as np
 
@@ -34,30 +34,30 @@ __all__ = ["Detector"]
 class Detector:
     """The detector class."""
 
-    def __init__(self, environment: t.Optional[Environment] = None):
+    def __init__(self, environment: Optional[Environment] = None):
         self.environment = (
             environment if environment else Environment()
         )  # type: Environment
 
-        self.header = collections.OrderedDict()  # type: t.Dict[str, object]
+        self.header = collections.OrderedDict()  # type: Dict[str, object]
 
-        self._photon = None  # type: t.Optional[Photon]
-        self._scene = None  # type: t.Optional[Scene]
-        self._charge = None  # type: t.Optional[Charge]
-        self._pixel = None  # type: t.Optional[Pixel]
-        self._signal = None  # type: t.Optional[Signal]
-        self._image = None  # type: t.Optional[Image]
+        self._photon = None  # type: Optional[Photon]
+        self._scene = None  # type: Optional[Scene]
+        self._charge = None  # type: Optional[Charge]
+        self._pixel = None  # type: Optional[Pixel]
+        self._signal = None  # type: Optional[Signal]
+        self._image = None  # type: Optional[Image]
 
         # This will be the memory of the detector where trapped charges will be saved
-        self._memory = dict()  # type: t.Dict
+        self._memory = dict()  # type: Dict
         self._persistence = (
             None
-        )  # type: t.Optional[t.Union[Persistence, SimplePersistence]]
+        )  # type: Optional[Union[Persistence, SimplePersistence]]
 
-        self.input_image = None  # type: t.Optional[np.ndarray]
-        self._output_dir = None  # type: t.Optional[Path]  # TODO: See #330
+        self.input_image = None  # type: Optional[np.ndarray]
+        self._output_dir = None  # type: Optional[Path]  # TODO: See #330
 
-        self._readout_properties = None  # type: t.Optional["ReadoutProperties"]
+        self._readout_properties = None  # type: Optional["ReadoutProperties"]
 
         self._numbytes = get_size(self)
 
@@ -169,7 +169,7 @@ class Detector:
                 self.pixel.array *= 0
 
     # TODO: Set an `Output` object ? Is it really needed ? See #330
-    def set_output_dir(self, path: t.Union[str, Path]) -> None:
+    def set_output_dir(self, path: Union[str, Path]) -> None:
         """Set output directory path."""
         self._output_dir = Path(path)
 
@@ -333,7 +333,7 @@ class Detector:
             return False
 
     @property
-    def persistence(self) -> t.Union[Persistence, SimplePersistence]:
+    def persistence(self) -> Union[Persistence, SimplePersistence]:
         """TBW."""
         if self._persistence is not None:
             return self._persistence
@@ -341,7 +341,7 @@ class Detector:
             raise RuntimeError("'persistence' not initialized.")
 
     @persistence.setter
-    def persistence(self, value: t.Union[Persistence, SimplePersistence]) -> None:
+    def persistence(self, value: Union[Persistence, SimplePersistence]) -> None:
         """TBW."""
         if not isinstance(value, (Persistence, SimplePersistence)):
             raise TypeError(
@@ -389,7 +389,7 @@ class Detector:
         )
 
     # TODO: Move this to another place. See #241
-    def to_hdf5(self, filename: t.Union[str, Path]) -> None:
+    def to_hdf5(self, filename: Union[str, Path]) -> None:
         """Write the detector content to a :term:`HDF5` file.
 
         The HDF5 file has the following structure:
@@ -454,11 +454,11 @@ class Detector:
 
         >>> detector.to_hdf5("ccd.h5")
         """
-        dct = self.to_dict()  # type: t.Mapping
+        dct = self.to_dict()  # type: Mapping
         backends.to_hdf5(filename=filename, dct=dct)
 
     @classmethod
-    def from_hdf5(cls, filename: t.Union[str, Path]) -> "Detector":
+    def from_hdf5(cls, filename: Union[str, Path]) -> "Detector":
         """Load a detector object from a :term:`HDF5` file.
 
         Parameters
@@ -471,11 +471,11 @@ class Detector:
         >>> detector
         CCD(...)
         """
-        with backends.from_hdf5(filename) as dct:  # type: t.Mapping[str, t.Any]
+        with backends.from_hdf5(filename) as dct:  # type: Mapping[str, Any]
             obj = cls.from_dict(dct)  # type: Detector
             return obj
 
-    def to_asdf(self, filename: t.Union[str, Path]) -> None:
+    def to_asdf(self, filename: Union[str, Path]) -> None:
         """Write the detector content to a :term:`ASDF` file.
 
         The ASDF file has the following structure:
@@ -527,11 +527,11 @@ class Detector:
         'CCD'
         >>> af.info()
         """
-        dct = self.to_dict()  # type: t.Mapping
+        dct = self.to_dict()  # type: Mapping
         backends.to_asdf(filename=filename, dct=dct)
 
     @classmethod
-    def from_asdf(cls, filename: t.Union[str, Path]) -> "Detector":
+    def from_asdf(cls, filename: Union[str, Path]) -> "Detector":
         """Load a detector object from a :term:`ASDF` file.
 
         Parameters
@@ -544,18 +544,18 @@ class Detector:
         >>> detector
         CCD(...)
         """
-        with backends.from_asdf(filename) as dct:  # type: t.Mapping[str, t.Any]
+        with backends.from_asdf(filename) as dct:  # type: Mapping[str, Any]
             obj = cls.from_dict(dct)  # type: Detector
 
         return obj
 
-    def to_dict(self) -> t.Mapping:
+    def to_dict(self) -> Mapping:
         """Convert a `Detector` to a `dict`."""
         raise NotImplementedError
 
-    # TODO: Replace `-> 'Detector'` by `t.Union[CCD, CMOS, MKID]`
+    # TODO: Replace `-> 'Detector'` by `Union[CCD, CMOS, MKID]`
     @classmethod
-    def from_dict(cls, dct: t.Mapping) -> "Detector":
+    def from_dict(cls, dct: Mapping) -> "Detector":
         """Create a new instance of a `Detector` from a `dict`."""
         # TODO: This is a simplistic implementation. Improve this.
         if dct["type"] == "CCD":

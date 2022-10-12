@@ -7,7 +7,7 @@
 
 """Pyxel Charge class to generate electrons or holes inside detector."""
 
-import typing as t
+from typing import TYPE_CHECKING, Mapping, Optional, Sequence, Tuple, Union
 
 import numpy as np
 import pandas as pd
@@ -18,7 +18,7 @@ from pyxel.detectors.geometry import (
     get_vertical_pixel_center_pos,
 )
 
-if t.TYPE_CHECKING:
+if TYPE_CHECKING:
     from pyxel.detectors import Geometry
 
 
@@ -54,7 +54,7 @@ class Charge:
             "velocity_ver",
             "velocity_hor",
             "velocity_z",
-        )  # type: t.Tuple[str, ...]
+        )  # type: Tuple[str, ...]
 
         self.EMPTY_FRAME = pd.DataFrame(
             columns=self.columns, dtype=float
@@ -160,7 +160,7 @@ class Charge:
             "velocity_ver": init_ver_velocity,
             "velocity_hor": init_hor_velocity,
             "velocity_z": init_z_velocity,
-        }  # type: t.Mapping[str, t.Union[t.Sequence, np.ndarray]]
+        }  # type: Mapping[str, Union[Sequence, np.ndarray]]
 
         return pd.DataFrame(new_charges)
 
@@ -372,7 +372,7 @@ class Charge:
             self._array = self.convert_df_to_array()
         return self._array
 
-    def __array__(self, dtype: t.Optional[np.dtype] = None):
+    def __array__(self, dtype: Optional[np.dtype] = None):
         if not isinstance(self._array, np.ndarray):
             raise TypeError("Array not initialized.")
         return np.asarray(self._array, dtype=dtype)
@@ -422,7 +422,7 @@ class Charge:
             raise ValueError(f"Expected {cls_name} array is {self._array.shape}.")
 
     def get_frame_values(
-        self, quantity: str, id_list: t.Optional[list] = None
+        self, quantity: str, id_list: Optional[list] = None
     ) -> np.ndarray:
         """Get quantity values of particles defined with id_list. By default it returns values of all particles.
 
@@ -447,7 +447,7 @@ class Charge:
         return array
 
     def set_frame_values(
-        self, quantity: str, new_value_list: list, id_list: t.Optional[list] = None
+        self, quantity: str, new_value_list: list, id_list: Optional[list] = None
     ) -> None:
         """Update quantity values of particles defined with id_list. By default it updates all.
 
@@ -463,7 +463,7 @@ class Charge:
         new_df = pd.DataFrame({quantity: new_value_list}, index=id_list)
         self._frame.update(new_df)
 
-    def remove_from_frame(self, id_list: t.Optional[list] = None) -> None:
+    def remove_from_frame(self, id_list: Optional[list] = None) -> None:
         """Remove particles defined with id_list. By default it removes all particles from DataFrame.
 
         Parameters
