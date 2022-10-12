@@ -46,17 +46,6 @@ python38:
     # If `$FORCE_GITLAB_CI` is set, create a pipeline.
     - if: '$FORCE_GITLAB_CI'
 
-# Run pytest for Python 3.8 without anaconda
-python38_numpy119:
-  image: python:3.8
-  stage: test
-  script:
-    - tox -e py38-numpy119-extra_all
-  rules:
-    # If `$FORCE_GITLAB_CI` is set, create a pipeline.
-    - if: '$FORCE_GITLAB_CI'
-
-
 # Run mypy
 mypy:
   image: python:3.9
