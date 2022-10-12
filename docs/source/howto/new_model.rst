@@ -25,7 +25,7 @@ A model function that multiplies the photon array with the input argument would 
     from pyxel.detectors import Detector
 
 
-    def my_model_function(detector: Detector, arg: int = 0):
+    def my_model_function(detector: Detector, arg: int = 0) -> None:
         """This is my model that will multiply pixel array with the argument.
 
         Parameters
@@ -112,7 +112,7 @@ So instead of this:
 .. code-block:: python
 
     # impure function
-    def my_model(detector: Detector, arg: int):
+    def my_model(detector: Detector, arg: int) -> None:
 
         input_array = detector.pixel.array
         # do computations with array
@@ -126,7 +126,7 @@ Do this:
 .. code-block:: python
 
     # pure function
-    def compute_model_effect(input_array: numpy.ndarray, arg: int):
+    def compute_model_effect(input_array: numpy.ndarray, arg: int) -> np.ndarray:
 
         # do computations with array
         output_array = arg * input_array
@@ -135,9 +135,9 @@ Do this:
 
 
     # impure function
-    def my_model(detector: Detector, arg: int):
+    def my_model(detector: Detector, arg: int) -> None:
 
-        input_array = detector.pixel.array
+        input_array = detector.pixel.array  # type: np.ndarray
 
         output_array = compute_model_effect(input_array=input_array, arg=arg)
 
