@@ -9,6 +9,13 @@
 #   $ pre-commit run --all-files
 
 repos:
+  - repo: https://github.com/asottile/pyupgrade
+    rev: v3.1.0
+    hooks:
+      - id: pyupgrade
+        args:
+          - --py37-plus
+
   # isort should run before black as black sometimes tweaks the isort output
   - repo: https://github.com/timothycrosley/isort
     rev: 5.10.1
@@ -17,11 +24,11 @@ repos:
 
   # https://github.com/python/black#version-control-integration
   - repo: https://github.com/python/black
-    rev: 22.6.0
+    rev: 22.10.0
     hooks:
       - id: black
 
   - repo: https://github.com/keewis/blackdoc
-    rev: v0.3.5
+    rev: v0.3.7
     hooks:
       - id: blackdoc

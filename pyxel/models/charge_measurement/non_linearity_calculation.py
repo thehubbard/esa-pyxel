@@ -16,7 +16,7 @@ spec = [
 
 
 @jitclass(spec)
-class Constants(object):
+class Constants:
     """Constants class."""
 
     def __init__(self):

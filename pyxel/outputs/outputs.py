@@ -442,7 +442,7 @@ def apply_run_number(template_filename: Path, run_number: Optional[int] = None) 
         else:
             path_str_for_glob = template_str.replace("?", "*")
             dir_list = glob(path_str_for_glob)
-            num_list = sorted([get_number(d) for d in dir_list])
+            num_list = sorted(get_number(d) for d in dir_list)
             if len(num_list):
                 next_num = num_list[-1] + 1
             else:

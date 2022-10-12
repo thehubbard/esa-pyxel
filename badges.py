@@ -49,7 +49,7 @@ def badges():
             colour = "brightgreen"
         else:
             colour = "lightgrey"
-        percent = "{:.2f}".format(opts.coverage)
+        percent = f"{opts.coverage:.2f}"
         process = (
             "wget -O coverage.svg https://img.shields.io/badge/coverage-"
             + percent

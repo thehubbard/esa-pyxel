@@ -47,11 +47,11 @@ def evaluate_reference(reference_str: str) -> Callable:
         #     reference = reference()
     except ImportError as exc:
         raise ImportError(
-            "Cannot import module: %r. exc: %s" % (module_str, str(exc))
+            f"Cannot import module: {module_str!r}. exc: {str(exc)}"
         ) from exc
     except AttributeError as ex:
         raise ImportError(
-            "Module: %s, does not contain %s" % (module_str, function_str)
+            f"Module: {module_str}, does not contain {function_str}"
         ) from ex
 
     return reference

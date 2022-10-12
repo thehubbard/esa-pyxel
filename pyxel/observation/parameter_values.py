@@ -88,8 +88,7 @@ class ParameterValues:
     # TODO: Is method '__contains__' needed ? If yes then this class will act as a `Collections.abc.Sequence`
     def __iter__(self) -> Iterator[Number]:
         values = eval_range(self.values)
-        for value in values:
-            yield value
+        yield from values
 
     @property
     def key(self) -> str:

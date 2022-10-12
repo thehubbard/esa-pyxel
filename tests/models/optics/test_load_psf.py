@@ -52,8 +52,8 @@ def ccd_10x10() -> CCD:
 def psf_10x10() -> np.ndarray:
     """Create a gaussian psf of 10x10."""
     shape = (10, 10)
-    ny, nx = [el / 2 for el in shape]
-    ay, ax = [np.arange(-el / 2.0 + 0.5, el / 2.0 + 0.5) for el in shape]
+    ny, nx = (el / 2 for el in shape)
+    ay, ax = (np.arange(-el / 2.0 + 0.5, el / 2.0 + 0.5) for el in shape)
     xx, yy = np.meshgrid(ax, ay, indexing="xy")
     r = ((xx / nx) ** 2 + (yy / ny) ** 2) ** 0.5
     out = np.ones(shape)

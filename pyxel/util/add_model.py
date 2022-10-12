@@ -59,7 +59,7 @@ def create_model(newmodel: str) -> None:
                 )
                 shutil.copy(pathtofile, new_pathtofile)
                 # Open file in the created copy
-                with open(new_pathtofile, "r") as file_tochange:
+                with open(new_pathtofile) as file_tochange:
                     # Replace any mention of template by model_name
                     new_contents = file_tochange.read().replace(
                         template_string, model_name

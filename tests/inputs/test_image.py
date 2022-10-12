@@ -93,7 +93,7 @@ def valid_data2d_http_hostname(
 
         # Put text data in a fake HTTP server
         for filename in text_filenames:
-            with open(filename, "r") as fh:
+            with open(filename) as fh:
                 response_data = fh.read()  # type: str
                 httpserver.expect_request(f"/{filename}").respond_with_data(
                     response_data, content_type="text/plain"
@@ -154,7 +154,7 @@ def invalid_data2d_hostname(tmp_path: Path, httpserver: HTTPServer) -> str:  # t
 
         # Put text data in a fake HTTP server
         for filename in text_filenames:
-            with open(filename, "r") as fh:
+            with open(filename) as fh:
                 response_data = fh.read()  # type: str
                 httpserver.expect_request(f"/{filename}").respond_with_data(
                     response_data, content_type="text/plain"
@@ -206,7 +206,7 @@ def valid_table_http_hostname(tmp_path: Path, httpserver: HTTPServer) -> str:  #
 
         # Put text data in a fake HTTP server
         for filename in text_filenames:
-            with open(filename, "r") as fh:
+            with open(filename) as fh:
                 response_data = fh.read()  # type: str
                 httpserver.expect_request(f"/{filename}").respond_with_data(
                     response_data, content_type="text/plain"
@@ -262,7 +262,7 @@ def invalid_table_http_hostname(tmp_path: Path, httpserver: HTTPServer) -> str: 
 
         # Put text data in a fake HTTP server
         for filename in text_filenames:
-            with open(filename, "r") as fh:
+            with open(filename) as fh:
                 response_data = fh.read()  # type: str
                 httpserver.expect_request(f"/{filename}").respond_with_data(
                     response_data, content_type="text/plain"
