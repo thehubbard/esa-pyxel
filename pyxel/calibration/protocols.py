@@ -7,9 +7,10 @@
 
 """Subpackage containing ``typing.Protocol`` definition."""
 
-from typing import TYPE_CHECKING, Protocol, Sequence, Tuple
+from typing import TYPE_CHECKING, Sequence, Tuple
 
 import numpy as np
+from typing_extensions import Protocol
 
 if TYPE_CHECKING:
     import pygmo as pg

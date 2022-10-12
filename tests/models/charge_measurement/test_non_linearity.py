@@ -6,7 +6,8 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 #
 #
-import typing as t
+
+from typing import Sequence
 
 import numpy as np
 import pytest
@@ -74,7 +75,7 @@ def cmos_5x5() -> CMOS:
         pytest.param([0, 3]),
     ],
 )
-def test_non_linearity_valid(ccd_5x5: CCD, coefficients: t.Sequence):
+def test_non_linearity_valid(ccd_5x5: CCD, coefficients: Sequence):
     """Test model 'non_linearity' with valid inputs."""
     detector = ccd_5x5
     detector.signal.array = np.ones(detector.signal.shape)
@@ -95,7 +96,7 @@ def test_non_linearity_valid(ccd_5x5: CCD, coefficients: t.Sequence):
     ],
 )
 def test_non_linearity_invalid(
-    ccd_5x5: CCD, coefficients: t.Sequence, exp_exc, exp_error
+    ccd_5x5: CCD, coefficients: Sequence, exp_exc, exp_error
 ):
     """Test model 'non_linearity' with valid inputs."""
     detector = ccd_5x5

@@ -13,23 +13,13 @@ import re
 from glob import glob
 from pathlib import Path
 from time import strftime
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    List,
-    Mapping,
-    Optional,
-    Protocol,
-    Sequence,
-    Tuple,
-    Union,
-)
+from typing import TYPE_CHECKING, Any, List, Mapping, Optional, Sequence, Tuple, Union
 
 import h5py as h5
 import numpy as np
 import pandas as pd
 from PIL import Image
-from typing_extensions import Literal
+from typing_extensions import Literal, Protocol
 
 from pyxel import __version__ as version
 

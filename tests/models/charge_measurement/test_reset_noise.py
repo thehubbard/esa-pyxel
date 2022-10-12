@@ -7,7 +7,8 @@
 #
 #
 """Reset noise model tests."""
-import typing as t
+
+from typing import Optional
 
 import pytest
 
@@ -91,7 +92,7 @@ def test_ktc_noise(
     ],
 )
 def test_ktc_noise_invalid(
-    ccd_5x5: CCD, node_capacitance: t.Optional[float], exp_exc, exp_error
+    ccd_5x5: CCD, node_capacitance: Optional[float], exp_exc, exp_error
 ):
     """Test model 'output_pixel_reset_voltage_apd' with valid inputs."""
     detector = ccd_5x5

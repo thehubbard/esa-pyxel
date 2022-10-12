@@ -5,7 +5,7 @@
 #  this file, may be copied, modified, propagated, or distributed except according to
 #  the terms contained in the file ‘LICENCE.txt’.
 
-import typing as t
+from typing import Mapping, Sequence
 
 import pytest
 
@@ -109,7 +109,7 @@ def ccd_3x3() -> CCD:
         ),
     ],
 )
-def test_create_optical_parameter(dct: t.Mapping, exp_parameter):
+def test_create_optical_parameter(dct: Mapping, exp_parameter):
     """Test function 'create_optical_parameter'."""
     parameter = create_optical_parameter(dct)
 
@@ -153,7 +153,7 @@ def test_optical_psf(
     wavelength: float,
     fov_arcsec: float,
     pixelscale: float,
-    optical_system: t.Sequence[t.Mapping],
+    optical_system: Sequence[Mapping],
 ):
     """Test input parameters for function 'optical_psf'."""
     optical_psf(

@@ -14,8 +14,9 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 #
 #
-import typing as t
+
 from pathlib import Path
+from typing import Optional, Tuple
 
 import numpy as np
 import pytest
@@ -81,8 +82,8 @@ def test_load_image(
     ccd_10x10: CCD,
     valid_data2d: str,
     image_file: str,
-    position: t.Tuple[int, int],
-    align: t.Optional[
+    position: Tuple[int, int],
+    align: Optional[
         Literal["center", "top_left", "top_right", "bottom_left", "bottom_right"]
     ],
     convert_to_photons: bool,
@@ -124,8 +125,8 @@ def test_load_image_with_invalid_params(
     ccd_10x10: CCD,
     valid_data2d: str,
     image_file: str,
-    position: t.Tuple[int, int],
-    align: t.Optional[
+    position: Tuple[int, int],
+    align: Optional[
         Literal["center", "top_left", "top_right", "bottom_left", "bottom_right"]
     ],
     convert_to_photons: bool,

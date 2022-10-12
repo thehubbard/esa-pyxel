@@ -6,18 +6,15 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 #
 #
-import typing as t
+
 from pathlib import Path
+from typing import Union
 
 import numpy as np
 import pytest
 
 from pyxel.detectors import CCD, CCDCharacteristics, CCDGeometry, Environment
-from pyxel.models.charge_generation import (
-    conversion_with_qe_map,
-    load_charge,
-    simple_conversion,
-)
+from pyxel.models.charge_generation import conversion_with_qe_map, simple_conversion
 
 
 @pytest.fixture
@@ -121,16 +118,14 @@ def test_simple_conversion_valid2(
         simple_conversion(detector=ccd_5x5, quantum_efficiency=qe)
 
 
-def test_conversion_with_qe_valid(ccd_5x5: CCD, valid_qe_map_path: t.Union[str, Path]):
+def test_conversion_with_qe_valid(ccd_5x5: CCD, valid_qe_map_path: Union[str, Path]):
 
     detector = ccd_5x5
 
     conversion_with_qe_map(detector=detector, filename=valid_qe_map_path)
 
 
-def test_simple_conversion_invalid(
-    ccd_5x5: CCD, invalid_qe_map_path: t.Union[str, Path]
-):
+def test_simple_conversion_invalid(ccd_5x5: CCD, invalid_qe_map_path: Union[str, Path]):
 
     with pytest.raises(
         ValueError, match="Quantum efficiency values not between 0 and 1."

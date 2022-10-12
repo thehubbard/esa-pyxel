@@ -1,5 +1,5 @@
-import typing as t
 from pathlib import Path
+from typing import Union
 
 import numpy as np
 import pytest
@@ -49,7 +49,7 @@ def valid_noise_path(
     return final_path
 
 
-def test_fix_pattern_noise_valid(ccd_5x5: CCD, valid_noise_path: t.Union[str, Path]):
+def test_fix_pattern_noise_valid(ccd_5x5: CCD, valid_noise_path: Union[str, Path]):
     """Test function fix_pattern_noise with valid inputs."""
 
     detector = ccd_5x5
