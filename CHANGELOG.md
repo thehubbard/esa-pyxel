@@ -21,7 +21,8 @@
   (See [!517](https://gitlab.com/esa/pyxel/-/merge_requests/517)).
 
 ### Models
-
+* Create a simple cosmic ray model based on stopping power curves.
+  (See [!339](https://gitlab.com/esa/pyxel/-/merge_requests/339)).
 ### Others
 * Improved JSON Schema.
   (See [!509](https://gitlab.com/esa/pyxel/-/merge_requests/509)).
