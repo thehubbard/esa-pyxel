@@ -10,18 +10,9 @@
 
 import operator
 from pathlib import Path
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Dict,
-    Mapping,
-    Optional,
-    Protocol,
-    Sequence,
-    Union,
-)
+from typing import TYPE_CHECKING, Any, Dict, Mapping, Optional, Sequence, Union
 
-from typing_extensions import Literal
+from typing_extensions import Literal, Protocol
 
 from pyxel.observation import ParameterMode
 from pyxel.outputs import Outputs
