@@ -18,6 +18,7 @@ from typing_extensions import Literal
 from pyxel.detectors import Detector
 from pyxel.data_structure import Charge
 from pyxel.util import temporary_random_state
+from pyxel.util import materials
 
 
 @temporary_random_state
@@ -46,9 +47,9 @@ def charge_deposition(
     step_size : float
         the size of the considered unitary step in unit length along which energy is deposited
     energy_mean : float
-        the mean energy of the incoming ionizing particles
+        the mean energy of the incoming ionizing particles in MeV
     energy_spread : float
-        the spread in energy of the incoming ionizing particles
+        the spread in energy of the incoming ionizing particles in MeV
     energy_spectrum: String
         the location of the file describing the energy spectrum of incident particles
         if no spectrum is provided energies are randomly drawn from a normal distribution
@@ -74,6 +75,81 @@ def charge_deposition(
         energy in MeV, stopping power in MeV cm2/g
     seed: int, optional
     """
+    tracks = simulate_charge_deposition(
+        flux=flux,
+        exposure=detector.time_step,
+        x_lim=detector.geometry.horz_dimension,
+        y_lim=detector.geometry.vert_dimension,
+        z_lim=detector.geometry.total_thickness,
+        step_size=step_size,
+        energy_mean=energy_mean,
+        energy_spread=energy_spread,
+        energy_spectrum=energy_spectrum,
+        energy_spectrum_sampling=energy_spectrum_sampling,
+        ehpair_creation=ehpair_creation,
+        material_density=material_density,
+        particle_direction=particle_direction,
+        stopping_power_curve=stopping_power_curve
+    )
+
+    detector.charge.add_charge_dataframe(tracks_to_charge(tracks))
+
+
+@temporary_random_state
+def charge_deposition_in_mct(
+    detector: Detector,
+    flux: float,
+    step_size: float = 1.,
+    energy_mean: float = 1.,
+    energy_spread: float = .1,
+    energy_spectrum: t.Union[str, Path, None] = None,
+    energy_spectrum_sampling: t.Optional[Literal["linear", "log", None]] = "log",
+    cutoff_wavelength: float = 2.5,
+    particle_direction: t.Optional[Literal["isotropic", "orthogonal", None]] = "isotropic",
+    stopping_power_curve: t.Union[str, Path, None] = None,
+    seed: t.Optional[int] = None
+) -> None:
+    """Simulate charge deposition by ionizing particles using a stopping power curve
+
+    Parameters
+    ----------
+    detector : Detector
+        the detector
+    flux : float
+        the flux of incoming particles in particle/s
+    step_size : float
+        the size of the considered unitary step in unit length along which energy is deposited
+    energy_mean : float
+        the mean energy of the incoming ionizing particles in MeV
+    energy_spread : float
+        the spread in energy of the incoming ionizing particles in MeV
+    energy_spectrum: String
+        the location of the file describing the energy spectrum of incident particles
+        if no spectrum is provided energies are randomly drawn from a normal distribution
+        with mean and spread defined above
+        note that the energy spectrum is assumed to be a txt file with two columns [energy, flux]
+        with the energy in MeV
+    energy_spectrum_sampling: String
+        "log" or None: the energy spectrum is sampled in log space
+        "linear" : the energy spectrum is sampled in linear space
+    cutoff_wavelength: float
+        the longest wavelength in micrometer at which the QE reaches 50% of its maximum,
+        used to compute the bandgap energy, and the corresponding fraction of cadmium
+    particle_direction: String
+        "isotropic" : particles are coming from all directions (outside of the sensor)
+        "orthogonal" : particles are coming from the top of the sensor (thickness = 0) and orthogonal to its surface
+    stopping_power_curve : String
+        the location of the file describing the total massive stopping power
+        energetic loss per mass of material and per unit path length versus particle energy
+        note that the the stopping power curve is assumed to be a csv file with two columns [energy, stopping power]
+        energy in MeV, stopping power in MeV cm2/g
+    seed: int, optional
+    """
+    lambdae = materials.lambda_e(cutoff_wavelength)
+    eg = 1.24/lambdae
+    ehpair_creation = 3*eg
+    x = materials.eg_hansen_inverse(eg, detector.environment.temperature)
+    material_density = materials.density(x)
     tracks = simulate_charge_deposition(
         flux=flux,
         exposure=detector.time_step,
@@ -189,6 +265,8 @@ def simulate_charge_deposition(
     # determine the total number of ionizing particles to simulate based on flux and exposure duration
     n_p = np.int64(flux * exposure)
 
+    assert n_p > 0
+
     # generate random energies for each particle
     if energy_spectrum is None:
         # from normal distribution
@@ -202,7 +280,7 @@ def simulate_charge_deposition(
                                            np.log10(np.max(energy_spectrum_data[:, 0])), n_samples)
             log_energy_pdf = np.interp(log_energy_range, energy_spectrum_data[:, 0], energy_spectrum_data[:, 1])
             log_energy_pdf /= np.sum(log_energy_pdf)
-            p_energies = np.random.choice(log_energy_range, n_p, p=log_energy_pdf)
+            p_energies = np.random.choice(log_energy_range, size=n_p, p=log_energy_pdf)
         else:
             lin_energy_range = np.linspace(np.min(energy_spectrum_data[:, 0]), np.max(energy_spectrum_data[:, 0]),
                                            n_samples)

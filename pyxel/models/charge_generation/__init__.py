@@ -15,3 +15,5 @@ from .photoelectrons import simple_conversion, conversion_with_qe_map
 from .cosmix.cosmix import cosmix
 from .dark_current import dark_current, simple_dark_current, dark_current_saphira
 from .apd_gain import apd_gain
+from .charge_deposition import charge_deposition
+from .charge_deposition import charge_deposition_in_mct
