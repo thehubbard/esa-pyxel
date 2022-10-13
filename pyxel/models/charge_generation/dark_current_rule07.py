@@ -12,7 +12,7 @@ from typing import Optional
 import numpy as np
 
 from pyxel.detectors import CMOS
-from pyxel.util import temporary_random_state
+from pyxel.util import set_random_seed
 
 
 def lambda_e(lambda_cutoff: float) -> float:
@@ -78,7 +78,6 @@ def compute_mct_dark_rule07(pitch: float, temperature: float, cut_off: float) ->
     return dc
 
 
-@temporary_random_state
 def dark_current_rule07(
     detector: CMOS,
     cutoff_wavelength: float = 2.5,  # unit: um
@@ -106,12 +105,13 @@ def dark_current_rule07(
     pitch = geo.pixel_vert_size  # assumes a square pitch
     temperature = detector.environment.temperature
 
-    dc = compute_mct_dark_rule07(
-        pitch=pitch, temperature=temperature, cut_off=cutoff_wavelength
-    )
-    ne = dc * detector.time_step
+    with set_random_seed(seed):
+        dc = compute_mct_dark_rule07(
+            pitch=pitch, temperature=temperature, cut_off=cutoff_wavelength
+        )
+        ne = dc * detector.time_step
 
-    # The number of charge generated with Poisson distribution using rule07 empiric law for lambda
-    charge_number = np.random.poisson(ne, size=(geo.row, geo.col)).astype(float)
+        # The number of charge generated with Poisson distribution using rule07 empiric law for lambda
+        charge_number = np.random.poisson(ne, size=(geo.row, geo.col)).astype(float)
 
     detector.charge.add_charge_array(charge_number)

@@ -16,10 +16,9 @@ from typing_extensions import Literal
 
 from pyxel.data_structure import Charge
 from pyxel.detectors import Detector
-from pyxel.util import materials, temporary_random_state
+from pyxel.util import materials, set_random_seed
 
 
-@temporary_random_state
 def charge_deposition(
     detector: Detector,
     flux: float,
@@ -75,27 +74,27 @@ def charge_deposition(
         energy in MeV, stopping power in MeV cm2/g
     seed: int, optional
     """
-    tracks = simulate_charge_deposition(
-        flux=flux,
-        exposure=detector.time_step,
-        x_lim=detector.geometry.horz_dimension,
-        y_lim=detector.geometry.vert_dimension,
-        z_lim=detector.geometry.total_thickness,
-        step_size=step_size,
-        energy_mean=energy_mean,
-        energy_spread=energy_spread,
-        energy_spectrum=energy_spectrum,
-        energy_spectrum_sampling=energy_spectrum_sampling,
-        ehpair_creation=ehpair_creation,
-        material_density=material_density,
-        particle_direction=particle_direction,
-        stopping_power_curve=stopping_power_curve,
-    )
+    with set_random_seed(seed):
+        tracks = simulate_charge_deposition(
+            flux=flux,
+            exposure=detector.time_step,
+            x_lim=detector.geometry.horz_dimension,
+            y_lim=detector.geometry.vert_dimension,
+            z_lim=detector.geometry.total_thickness,
+            step_size=step_size,
+            energy_mean=energy_mean,
+            energy_spread=energy_spread,
+            energy_spectrum=energy_spectrum,
+            energy_spectrum_sampling=energy_spectrum_sampling,
+            ehpair_creation=ehpair_creation,
+            material_density=material_density,
+            particle_direction=particle_direction,
+            stopping_power_curve=stopping_power_curve,
+        )
 
     detector.charge.add_charge_dataframe(tracks_to_charge(tracks))
 
 
-@temporary_random_state
 def charge_deposition_in_mct(
     detector: Detector,
     flux: float,
@@ -152,22 +151,24 @@ def charge_deposition_in_mct(
     ehpair_creation = 3 * eg
     x = materials.eg_hansen_inverse(eg, detector.environment.temperature)
     material_density = materials.density(x)
-    tracks = simulate_charge_deposition(
-        flux=flux,
-        exposure=detector.time_step,
-        x_lim=detector.geometry.horz_dimension,
-        y_lim=detector.geometry.vert_dimension,
-        z_lim=detector.geometry.total_thickness,
-        step_size=step_size,
-        energy_mean=energy_mean,
-        energy_spread=energy_spread,
-        energy_spectrum=energy_spectrum,
-        energy_spectrum_sampling=energy_spectrum_sampling,
-        ehpair_creation=ehpair_creation,
-        material_density=material_density,
-        particle_direction=particle_direction,
-        stopping_power_curve=stopping_power_curve,
-    )
+
+    with set_random_seed(seed):
+        tracks = simulate_charge_deposition(
+            flux=flux,
+            exposure=detector.time_step,
+            x_lim=detector.geometry.horz_dimension,
+            y_lim=detector.geometry.vert_dimension,
+            z_lim=detector.geometry.total_thickness,
+            step_size=step_size,
+            energy_mean=energy_mean,
+            energy_spread=energy_spread,
+            energy_spectrum=energy_spectrum,
+            energy_spectrum_sampling=energy_spectrum_sampling,
+            ehpair_creation=ehpair_creation,
+            material_density=material_density,
+            particle_direction=particle_direction,
+            stopping_power_curve=stopping_power_curve,
+        )
 
     detector.charge.add_charge_dataframe(tracks_to_charge(tracks))
 

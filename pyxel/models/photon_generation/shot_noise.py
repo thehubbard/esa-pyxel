@@ -13,7 +13,7 @@ import numpy as np
 from typing_extensions import Literal
 
 from pyxel.detectors import Detector
-from pyxel.util import temporary_random_state
+from pyxel.util import set_random_seed
 
 
 def compute_poisson_noise(array: np.ndarray) -> np.ndarray:
@@ -75,7 +75,6 @@ def compute_noise(array: np.ndarray, type: str = "poisson") -> np.ndarray:
         raise ValueError("Invalid noise type!")
 
 
-@temporary_random_state
 def shot_noise(
     detector: Detector,
     type: Literal["poisson", "normal"] = "poisson",
@@ -92,5 +91,7 @@ def shot_noise(
     seed: int, optional
         Random seed.
     """
-    noise_array = compute_noise(array=detector.photon.array, type=type)
+    with set_random_seed(seed):
+        noise_array = compute_noise(array=detector.photon.array, type=type)
+
     detector.photon.array = noise_array

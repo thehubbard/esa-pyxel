@@ -9,46 +9,30 @@
 """Util functions to handle random seeds."""
 
 from contextlib import contextmanager
-from functools import wraps
-from typing import Callable
+from typing import Optional
 
 import numpy as np
 
 
 @contextmanager
-def change_random_state(seed: int):
-    """TBW.
+def set_random_seed(seed: Optional[int] = None):
+    """Set temporary seed the random generator.
 
-    Parameters
-    ----------
-    seed: int
+    Examples
+    --------
+    import numpy as np
+
+    with set_random_seed(seed=...):
+        value = np.random.random()
     """
-    state = np.random.get_state()
-    np.random.seed(seed)
+    previous_state = np.random.get_state()
+
     try:
+        if seed is not None:
+            np.random.seed(seed)
+
         yield
+
     finally:
-        np.random.set_state(state)
-
-
-def temporary_random_state(func: Callable) -> Callable:
-    """Temporarily change numpy random seed within a function.
-
-    Parameters
-    ----------
-    func: callable
-
-    Returns
-    -------
-    inner: callable
-    """
-
-    @wraps(func)
-    def inner(*args, seed=None, **kwargs):
-        if seed is None:
-            return func(*args, seed=seed, **kwargs)
-        else:
-            with change_random_state(seed):
-                return func(*args, seed=seed, **kwargs)
-
-    return inner
+        if seed is not None:
+            np.random.set_state(previous_state)

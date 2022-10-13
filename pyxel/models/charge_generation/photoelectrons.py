@@ -14,7 +14,7 @@ import numpy as np
 from typing_extensions import Literal
 
 from pyxel.detectors import Detector
-from pyxel.util import load_cropped_and_aligned_image, temporary_random_state
+from pyxel.util import load_cropped_and_aligned_image, set_random_seed
 
 
 def apply_qe(
@@ -41,7 +41,6 @@ def apply_qe(
     return output
 
 
-@temporary_random_state
 def simple_conversion(
     detector: Detector,
     quantum_efficiency: Optional[float] = None,
@@ -67,13 +66,15 @@ def simple_conversion(
     if not 0 <= final_qe <= 1:
         raise ValueError("Quantum efficiency not between 0 and 1.")
 
-    detector_charge = apply_qe(
-        array=detector.photon.array, qe=final_qe, binomial_sampling=binomial_sampling
-    )
+    with set_random_seed(seed):
+        detector_charge = apply_qe(
+            array=detector.photon.array,
+            qe=final_qe,
+            binomial_sampling=binomial_sampling,
+        )
     detector.charge.add_charge_array(detector_charge)
 
 
-@temporary_random_state
 def conversion_with_qe_map(
     detector: Detector,
     filename: Union[str, Path],
@@ -115,9 +116,10 @@ def conversion_with_qe_map(
     if not np.all((0 <= qe) & (qe <= 1)):
         raise ValueError("Quantum efficiency values not between 0 and 1.")
 
-    detector_charge = apply_qe(
-        array=detector.photon.array, qe=qe, binomial_sampling=binomial_sampling
-    )
+    with set_random_seed(seed):
+        detector_charge = apply_qe(
+            array=detector.photon.array, qe=qe, binomial_sampling=binomial_sampling
+        )
     detector.charge.add_charge_array(detector_charge)
 
 

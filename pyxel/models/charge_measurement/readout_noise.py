@@ -12,7 +12,7 @@ from typing import Optional, Tuple
 import numpy as np
 
 from pyxel.detectors import APD, CMOS, Detector
-from pyxel.util import temporary_random_state
+from pyxel.util import set_random_seed
 
 
 def create_noise(signal_2d: np.ndarray, std_deviation: float) -> np.ndarray:
@@ -63,7 +63,6 @@ def create_noise_cmos(
     return noise_2d
 
 
-@temporary_random_state
 def output_node_noise(
     detector: Detector,
     std_deviation: float,
@@ -88,15 +87,15 @@ def output_node_noise(
     if std_deviation < 0.0:
         raise ValueError("'std_deviation' must be positive.")
 
-    noise_2d = create_noise(
-        signal_2d=np.asarray(detector.signal.array, dtype=np.float64),
-        std_deviation=std_deviation,
-    )  # type: np.ndarray
+    with set_random_seed(seed):
+        noise_2d = create_noise(
+            signal_2d=np.asarray(detector.signal.array, dtype=np.float64),
+            std_deviation=std_deviation,
+        )  # type: np.ndarray
 
     detector.signal.array = noise_2d
 
 
-@temporary_random_state
 def output_node_noise_cmos(
     detector: CMOS,
     readout_noise: float,
@@ -129,12 +128,13 @@ def output_node_noise_cmos(
     if readout_noise_std < 0.0:
         raise ValueError("'readout_noise_std' must be positive.")
 
-    noise_2d = create_noise_cmos(
-        signal_2d=np.asarray(detector.signal.array, dtype=np.float64),
-        readout_noise=readout_noise,
-        readout_noise_std=readout_noise_std,
-        charge_readout_sensitivity=detector.characteristics.charge_to_volt_conversion,
-    )  # type: np.ndarray
+    with set_random_seed(seed):
+        noise_2d = create_noise_cmos(
+            signal_2d=np.asarray(detector.signal.array, dtype=np.float64),
+            readout_noise=readout_noise,
+            readout_noise_std=readout_noise_std,
+            charge_readout_sensitivity=detector.characteristics.charge_to_volt_conversion,
+        )  # type: np.ndarray
 
     detector.signal.array = noise_2d
 
@@ -174,7 +174,6 @@ def compute_readout_noise_saphira(
     return total_noise
 
 
-@temporary_random_state
 def readout_noise_saphira(
     detector: APD,
     roic_readout_noise: float,
@@ -196,9 +195,10 @@ def readout_noise_saphira(
     if not isinstance(detector, APD):
         raise TypeError("Expecting a 'APD' detector object.")
 
-    detector.signal.array += compute_readout_noise_saphira(
-        roic_readout_noise=roic_readout_noise,
-        avalanche_gain=detector.characteristics.avalanche_gain,
-        shape=detector.geometry.shape,
-        controller_noise=controller_noise,
-    )
+    with set_random_seed(seed):
+        detector.signal.array += compute_readout_noise_saphira(
+            roic_readout_noise=roic_readout_noise,
+            avalanche_gain=detector.characteristics.avalanche_gain,
+            shape=detector.geometry.shape,
+            controller_noise=controller_noise,
+        )
