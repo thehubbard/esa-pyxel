@@ -145,116 +145,12 @@ def cosmix(
 
             plot_obj = PlottingCosmix(cosmix, save_plots=True, draw_plots=True)
 
-            # # # plot_obj.plot_flux_spectrum()
-
-            #
-            # # plot_obj.plot_step_dist()
-            # # plot_obj.plot_step_cdf()
-
-            # plot_obj.plot_tertiary_number_cdf()
-            # plot_obj.plot_tertiary_number_dist()
-
-            # plot_obj.plot_step_size_histograms(normalize=True)
-            # plot_obj.plot_secondary_spectra(normalize=True)
-            #
-            # # plot_obj.plot_edep_per_step()
-            # # plot_obj.plot_edep_per_particle()
-
-            # plot_obj.plot_charges_3d()
-
             plot_obj.plot_flux_spectrum()
-
-            # plot_obj.plot_gaia_bam_vs_sm_electron_hist(normalize=True)
-            # plot_obj.plot_old_tars_hist(normalize=True)
-
             plot_obj.plot_gaia_vs_gras_hist(normalize=True)
-
-            # plot_obj.plot_track_histogram(cosmix.sim_obj.track_length_list)
-            # plot_obj.plot_track_histogram(
-            #     r'C:\dev\work\pyxel\pyxel\models\charge_generation\cosmix\data\validation\G4_app_results_20180425\cosmix-track_length_lst_per_event.npy',
-            #     normalize=True)
-
-            # plot_obj.plot_electron_hist(cosmix.sim_obj.e_num_lst_per_event, normalize=True)
-
-            # plot_obj.plot_electron_hist(r'C:\dev\work\pyxel\pyxel\models\charge_generation\cosmix\data\validation\G4_app_results_20180420_2\cosmix-e_num_lst_per_step.npy',
-            # plot_obj.plot_electron_hist(r'C:\dev\work\pyxel\pyxel\models\charge_generation\cosmix\data\validation\G4_app_results_20180420_2\cosmix-p_energy_lst_per_event.npy',
-
-            # plot_obj.plot_electron_hist(r'C:\dev\work\pyxel\pyxel\models\charge_generation\cosmix\data\validation\G4_app_results_20180425\cosmix-e_num_lst_per_event.npy',
-            #                             title='all e per event', hist_bins=500, hist_range=(0, 15000))
-
-            # plot_obj.plot_electron_hist(r'C:\dev\work\pyxel\pyxel\models\charge_generation\cosmix\data\validation\G4_app_results_20180425\cosmix-sec_lst_per_event.npy',
-            #                             title='secondary e per event', hist_bins=500, hist_range=(0, 15000))
-            #
-            # plot_obj.plot_electron_hist(r'C:\dev\work\pyxel\pyxel\models\charge_generation\cosmix\data\validation\G4_app_results_20180425\cosmix-ter_lst_per_event.npy',
-            #                             title='tertiary e per event', hist_bins=500, hist_range=(0, 15000))
-
-            # plot_obj.plot_spectrum_hist(
-            #     r'C:\dev\work\pyxel\pyxel\models\charge_generation\cosmix\data\validation\G4_app_results_20180420_6\cosmix-p_energy_lst_per_event.npy')
-            # plot_obj.plot_spectrum_hist(r'C:\dev\work\pyxel\cosmix-p_energy_lst_per_event.npy')
-
-            # plot_obj.plot_electron_hist(r'C:\dev\work\pyxel\pyxel\models\charge_generation\cosmix\data\validation\G4_app_results_20180420\cosmix-e_num_lst_per_event.npy',
-            #                             title='all e per event', hist_bins=500, hist_range=(0, 15000))
-            #
-            # plot_obj.plot_electron_hist(r'C:\dev\work\pyxel\pyxel\models\charge_generation\cosmix\data\validation\G4_app_results_20180420\cosmix-sec_lst_per_event.npy',
-            #                             title='secondary e per event', hist_bins=400, hist_range=(0, 2000))
-            #
-            # plot_obj.plot_electron_hist(r'C:\dev\work\pyxel\pyxel\models\charge_generation\cosmix\data\validation\G4_app_results_20180420\cosmix-ter_lst_per_event.npy',
-            #                             title='tertiary e per event', hist_bins=500, hist_range=(0, 5000))
-
-            # plot_obj.plot_spectrum_hist(r'C:\dev\work\pyxel\pyxel\models\charge_generation\cosmix\data\validation\G4_app_results_20180420\cosmix-p_energy_lst_per_event.npy')
-
-            # plot_obj.polar_angle_dist(r'C:\dev\work\pyxel\pyxel\models\charge_generation\cosmix\data\validation\G4_app_results_20180420_6\cosmix-alpha_lst_per_event.npy')
-            # plot_obj.polar_angle_dist(r'C:\dev\work\pyxel\cosmix-alpha_lst_per_event.npy')
-
-            # plot_obj.polar_angle_dist(r'C:\dev\work\pyxel\pyxel\models\charge_generation\cosmix\data\validation\G4_app_results_20180420_6\cosmix-beta_lst_per_event.npy')
-
-            # plot_obj.polar_angle_dist(r'C:\dev\work\pyxel\cosmix-beta_lst_per_event.npy')
-            # plot_obj.polar_angle_dist(
-            #     r'C:\dev\work\pyxel\pyxel\models\charge_generation\cosmix\data\validation\Results-20180404T121902Z-001\
-            # Results\All primary protons from Geant4 Gaia H He GCR(16-08-2016_11h18)\Raw data\alpha.npy')
-            # plot_obj.polar_angle_dist(
-            #     r'C:\dev\work\pyxel\pyxel\models\charge_generation\cosmix\data\validation\Results-20180404T121902Z-001\
-            # Results\All primary protons from Geant4 Gaia H He GCR(16-08-2016_11h18)\Raw data\beta.npy')
-
-            # plot_obj.polar_angle_dist(
-            #     r'C:\dev\work\pyxel\pyxel\models\charge_generation\cosmix\data\validation\Results-20180404T121902Z-001\
-            # Results\All primary protons from Geant4 Gaia H He GCR(16-08-2016_11h18)(17-08-2016_13h51)\Raw data\alpha.npy')
-            # plot_obj.polar_angle_dist(
-            #     r'C:\dev\work\pyxel\pyxel\models\charge_generation\cosmix\data\validation\Results-20180404T121902Z-001\
-            # Results\All primary protons from Geant4 Gaia H He GCR(16-08-2016_11h18)(17-08-2016_13h51)\Raw data\beta.npy')
-
-            # plot_obj.polar_angle_dist(
-            #     r'C:\dev\work\pyxel\pyxel/models/charge_generation/cosmix/data/validation/Results-20180404T121902Z-001/
-            # Results/10000 events from random protons CREME96 (step=0.5)(16-08-2016_15h56)\Raw data\alpha.npy')
-            # plot_obj.polar_angle_dist(
-            #     r'C:\dev\work\pyxel\pyxel\models\charge_generation\cosmix\data\validation\Results-20180404T121902Z-001\
-            # Results\10000 events from random protons CREME96 (step=0.5)(16-08-2016_15h56)\Raw data\beta.npy')
-
-            # todo: not implemented yet:
-            # file_path = Path(__file__).parent.joinpath('data', 'inputs', 'all_elec_num_proton.ascii')
-            # g4_all_e_num_hist = load_histogram_data(file_path, hist_type='electron', skip_rows=4, read_rows=1000)
-            # plot_obj.plot_electron_hist(cosmix.sim_obj.e_num_lst_per_event, g4_all_e_num_hist, normalize=True)
-
-            # plot_obj.plot_electron_hist(cosmix.sim_obj.e_num_lst_per_event,
-            #                             cosmix.sim_obj.sec_lst_per_event,
-            #                             cosmix.sim_obj.ter_lst_per_event, normalize=True)
 
             plot_obj.show()
         else:
             raise ValueError
-        #
-        # np.save('cosmix-e_num_lst_per_event.npy', cosmix.sim_obj.e_num_lst_per_event)
-        # np.save('cosmix-sec_lst_per_event.npy', cosmix.sim_obj.sec_lst_per_event)
-        # np.save('cosmix-ter_lst_per_event.npy', cosmix.sim_obj.ter_lst_per_event)
-        # np.save('cosmix-track_length_lst_per_event.npy', cosmix.sim_obj.track_length_lst_per_event)
-        # np.save('cosmix-p_energy_lst_per_event.npy', cosmix.sim_obj.p_energy_lst_per_event)
-        # np.save('cosmix-alpha_lst_per_event.npy', cosmix.sim_obj.alpha_lst_per_event)
-        # np.save('cosmix-beta_lst_per_event.npy', cosmix.sim_obj.beta_lst_per_event)
-        # np.save('cosmix-e_num_lst_per_step.npy', cosmix.sim_obj.e_num_lst_per_step)
-
-        # plot_obj = PlottingTARS(cosmix, save_plots=True, draw_plots=True)
-        # plot_obj.plot_charges_3d()
-        # plot_obj.show()
 
 
 class Cosmix:
