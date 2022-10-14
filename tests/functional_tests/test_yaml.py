@@ -7,13 +7,6 @@
 
 import pytest
 
-try:
-    import pygmo as pg
-
-    WITH_PYGMO = True
-except ImportError:
-    WITH_PYGMO = False
-
 import pyxel
 from pyxel import Configuration
 from pyxel.calibration import Algorithm, Calibration, CalibrationMode
@@ -27,7 +20,6 @@ from pyxel.outputs.observation_outputs import ObservationOutputs
 from pyxel.pipelines import DetectionPipeline, ModelFunction, ModelGroup
 
 
-@pytest.mark.skipif(not WITH_PYGMO, reason="Package 'pygmo' is not installed.")
 @pytest.mark.parametrize(
     "yaml_file",
     [
