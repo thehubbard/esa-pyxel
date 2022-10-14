@@ -5,7 +5,6 @@
 #  this file, may be copied, modified, propagated, or distributed except according to
 #  the terms contained in the file ‘LICENCE.txt’.
 #
-#
 """Util functions to handle random seeds."""
 
 from contextlib import contextmanager
@@ -25,14 +24,13 @@ def set_random_seed(seed: Optional[int] = None):
     with set_random_seed(seed=...):
         value = np.random.random()
     """
-    previous_state = np.random.get_state()
-
-    try:
-        if seed is not None:
+    if seed is not None:
+        previous_state = np.random.get_state()
+        try:
             np.random.seed(seed)
-
-        yield
-
-    finally:
-        if seed is not None:
+            yield
+        finally:
             np.random.set_state(previous_state)
+    else:
+        # Do nothing
+        yield
