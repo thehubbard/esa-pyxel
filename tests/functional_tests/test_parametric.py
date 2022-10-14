@@ -7,16 +7,8 @@ import pyxel
 from pyxel import Configuration
 from pyxel.detectors import CCD
 from pyxel.exposure import run_exposure_pipeline
-from pyxel.observation.observation import Observation, ParameterMode
+from pyxel.observation import Observation, ParameterMode
 from pyxel.pipelines import DetectionPipeline, Processor
-
-try:
-    import pygmo as pg
-
-    WITH_PYGMO = True
-except ImportError:
-    WITH_PYGMO = False
-
 
 expected_sequential = [
     (0, [("level", 10), ("initial_energy", 100)]),
@@ -40,7 +32,6 @@ expected_product = [
 ]
 
 
-@pytest.mark.skipif(not WITH_PYGMO, reason="Package 'pygmo' is not installed.")
 @pytest.mark.parametrize(
     "mode, expected",
     [

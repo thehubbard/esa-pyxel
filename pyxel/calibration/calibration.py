@@ -74,13 +74,6 @@ class Calibration:
         weights_from_file: Optional[Sequence[Path]] = None,
         weights: Optional[Sequence[float]] = None,
     ):
-        if not WITH_PYGMO:
-            raise ImportError(
-                "Missing optional package 'pygmo'.\n"
-                "Please install it with 'pip install pyxel-sim[calibration]' "
-                "or 'pip install pyxel-sim[all]'"
-            )
-
         if pygmo_seed is not None and pygmo_seed not in range(100001):
             raise ValueError("'Pygmo seed' must be between 0 and 100000.")
 
@@ -331,6 +324,13 @@ class Calibration:
         with_progress_bar: bool = True,
     ) -> Tuple["xr.Dataset", "pd.DataFrame", "pd.DataFrame"]:
         """Run calibration pipeline."""
+        if not WITH_PYGMO:
+            raise ImportError(
+                "Missing optional package 'pygmo'.\n"
+                "Please install it with 'pip install pyxel-sim[calibration]' "
+                "or 'pip install pyxel-sim[all]'"
+            )
+
         pg.set_global_rng_seed(seed=self.pygmo_seed)
         self._log.info("Pygmo seed: %d", self.pygmo_seed)
 
