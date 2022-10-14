@@ -152,22 +152,23 @@ Using the numpy.random module in models
 
 If a model uses functions from ``numpy.random`` module,
 avoid resetting the global seed with ``numpy.random.seed()`` inside the model,
-instead wrap the model function with decorator ``temporary_random_state`` from ``pyxel.util``
+instead use the "with" statement function ``set_random_seed`` from ``pyxel.util``
 and provide an optional argument ``seed``.
-The function ``temporary_random_state`` will use this seed to temporary change the state of the random generator,
+The function ``set_random_seed`` will use this seed to temporary change the state of the random generator,
 or keep the same state (use the outer scope seed) if no specific seed is provided.
 
 Example:
 
 .. code-block:: python
 
-    from pyxel.util import temporary_random_state
+    from pyxel.util import set_random_seed
 
 
-    @temporary_random_state
     def my_model(detector, user_arg, seed=None):
-
         input_array = detector.pixel.array
-        # compute_model_effect uses functions from numpy.random module
-        output_array = compute_model_effect(input_array=input_array, arg=arg)
+
+        with set_random_seed(seed):
+            # compute_model_effect uses functions from numpy.random module
+            output_array = compute_model_effect(input_array=input_array, arg=arg)
+
         detector.pixel.array = output_array

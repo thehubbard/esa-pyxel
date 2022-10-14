@@ -23,11 +23,14 @@
 ### Models
 * Create a simple cosmic ray model based on stopping power curves.
   (See [!339](https://gitlab.com/esa/pyxel/-/merge_requests/339)).
+
 ### Others
 * Improved JSON Schema.
   (See [!509](https://gitlab.com/esa/pyxel/-/merge_requests/509)).
 * Add more information in the output xarray.
   (See [!515](https://gitlab.com/esa/pyxel/-/merge_requests/515)).
+* Remove decorator 'temporary_random_state'.
+  (See [!519](https://gitlab.com/esa/pyxel/-/merge_requests/519)).
 
 ## version 1.3.2 / 2022-09-08
 

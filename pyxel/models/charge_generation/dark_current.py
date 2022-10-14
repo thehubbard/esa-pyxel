@@ -13,7 +13,7 @@ import numpy as np
 from astropy import constants as const
 
 from pyxel.detectors import APD, Detector
-from pyxel.util import temporary_random_state
+from pyxel.util import set_random_seed
 
 
 def band_gap(band_gap_0: float, alpha: float, beta: float, temperature: float) -> float:
@@ -178,7 +178,6 @@ def compute_dark_current(
     return dark_current_2d
 
 
-@temporary_random_state
 def dark_current(
     detector: Detector,
     figure_of_merit: float,
@@ -225,16 +224,17 @@ def dark_current(
         final_band_gap = band_gap_silicon(temperature)
         final_band_gap_room_temperature = band_gap_silicon(temperature=300)
 
-    dark_current_array = compute_dark_current(
-        shape=geo.shape,
-        time_step=time_step,
-        temperature=temperature,
-        pixel_area=pixel_area,
-        figure_of_merit=figure_of_merit,
-        band_gap=final_band_gap,
-        band_gap_room_temperature=final_band_gap_room_temperature,
-        fixed_pattern_noise_factor=fixed_pattern_noise_factor,
-    )
+    with set_random_seed(seed):
+        dark_current_array = compute_dark_current(
+            shape=geo.shape,
+            time_step=time_step,
+            temperature=temperature,
+            pixel_area=pixel_area,
+            figure_of_merit=figure_of_merit,
+            band_gap=final_band_gap,
+            band_gap_room_temperature=final_band_gap_room_temperature,
+            fixed_pattern_noise_factor=fixed_pattern_noise_factor,
+        )
 
     detector.charge.add_charge_array(dark_current_array)
 
@@ -269,7 +269,6 @@ def calculate_simple_dark_current(
     return dark_im_array_2d
 
 
-@temporary_random_state
 def simple_dark_current(
     detector: Detector, dark_rate: float, seed: Optional[int] = None
 ) -> None:
@@ -288,14 +287,15 @@ def simple_dark_current(
     exposure_time = detector.time_step
     geo = detector.geometry
 
-    dark_current_array = calculate_simple_dark_current(
-        num_rows=geo.row,
-        num_cols=geo.col,
-        current=dark_rate,
-        exposure_time=exposure_time,
-    ).astype(
-        float
-    )  # type: np.ndarray
+    with set_random_seed(seed):
+        dark_current_array = calculate_simple_dark_current(
+            num_rows=geo.row,
+            num_cols=geo.col,
+            current=dark_rate,
+            exposure_time=exposure_time,
+        ).astype(
+            float
+        )  # type: np.ndarray
 
     detector.charge.add_charge_array(dark_current_array)
 
@@ -349,7 +349,6 @@ def calculate_dark_current_saphira(
     return dark_im_array_2d
 
 
-@temporary_random_state
 def dark_current_saphira(detector: APD, seed: Optional[int] = None) -> None:
     """Simulate dark current in a Saphira APD detector.
 
@@ -375,13 +374,14 @@ def dark_current_saphira(detector: APD, seed: Optional[int] = None) -> None:
 
     exposure_time = detector.time_step
 
-    dark_current_array = calculate_dark_current_saphira(
-        temperature=detector.environment.temperature,
-        avalanche_gain=detector.characteristics.avalanche_gain,
-        shape=detector.geometry.shape,
-        exposure_time=exposure_time,
-    ).astype(
-        float
-    )  # type: np.ndarray
+    with set_random_seed(seed):
+        dark_current_array = calculate_dark_current_saphira(
+            temperature=detector.environment.temperature,
+            avalanche_gain=detector.characteristics.avalanche_gain,
+            shape=detector.geometry.shape,
+            exposure_time=exposure_time,
+        ).astype(
+            float
+        )  # type: np.ndarray
 
     detector.charge.add_charge_array(dark_current_array)

@@ -14,7 +14,7 @@ import astropy.constants as const
 import numpy as np
 
 from pyxel.detectors import Detector
-from pyxel.util import temporary_random_state
+from pyxel.util import set_random_seed
 
 
 def compute_ktc_noise(
@@ -41,7 +41,6 @@ def compute_ktc_noise(
     return np.random.normal(0, rms, shape)
 
 
-@temporary_random_state
 def ktc_noise(
     detector: Detector,
     node_capacitance: Optional[float] = None,
@@ -58,30 +57,30 @@ def ktc_noise(
     seed: int, optional
         Random seed.
     """
+    with set_random_seed(seed):
+        if node_capacitance is not None:
 
-    if node_capacitance:
-
-        if node_capacitance <= 0:
-            raise ValueError("Node capacitance should be larger than 0!")
-
-        detector.signal.array += compute_ktc_noise(
-            temperature=detector.environment.temperature,
-            capacitance=node_capacitance,
-            shape=detector.geometry.shape,
-        )
-
-    else:
-        try:
-            capacitance = detector.characteristics.node_capacitance
+            if node_capacitance <= 0:
+                raise ValueError("Node capacitance should be larger than 0!")
 
             detector.signal.array += compute_ktc_noise(
                 temperature=detector.environment.temperature,
-                capacitance=capacitance,
+                capacitance=node_capacitance,
                 shape=detector.geometry.shape,
             )
 
-        except AttributeError as ex:
-            raise AttributeError(
-                "Characteristic node_capacitance not available for the detector used. "
-                "Please specify node_capacitance in the model argument!"
-            ) from ex
+        else:
+            try:
+                capacitance = detector.characteristics.node_capacitance
+
+                detector.signal.array += compute_ktc_noise(
+                    temperature=detector.environment.temperature,
+                    capacitance=capacitance,
+                    shape=detector.geometry.shape,
+                )
+
+            except AttributeError as ex:
+                raise AttributeError(
+                    "Characteristic node_capacitance not available for the detector used. "
+                    "Please specify node_capacitance in the model argument!"
+                ) from ex

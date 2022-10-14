@@ -15,12 +15,12 @@ import numpy as np
 from typing import Optional
 
 # flake8: noqa
-from pyxel.util.memory import get_size, memory_usage_details
-from pyxel.util.examples import download_examples
-from pyxel.util.timing import time_pipeline
-from pyxel.util.add_model import create_model
-from pyxel.util.random import temporary_random_state
-from pyxel.util.image import fit_into_array, load_cropped_and_aligned_image
+from .memory import get_size, memory_usage_details
+from .examples import download_examples
+from .timing import time_pipeline
+from .add_model import create_model
+from .random import set_random_seed
+from .image import fit_into_array, load_cropped_and_aligned_image
 
 __all__ = [
     "convert_to_int",
@@ -28,7 +28,7 @@ __all__ = [
     "PipelineAborted",
     "LogFilter",
     "load_cropped_and_aligned_image",
-    "temporary_random_state",
+    "set_random_seed",
 ]
 
 

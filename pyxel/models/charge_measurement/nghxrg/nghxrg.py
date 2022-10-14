@@ -16,7 +16,7 @@ from typing_extensions import Literal
 
 from pyxel.detectors import CMOS, CMOSGeometry
 from pyxel.models.charge_measurement.nghxrg.nghxrg_beta import HXRGNoise
-from pyxel.util import temporary_random_state
+from pyxel.util import set_random_seed
 
 
 @dataclass
@@ -186,7 +186,6 @@ def compute_nghxrg(
 
 
 # TODO: copyright
-@temporary_random_state
 def nghxrg(
     detector: CMOS,
     noise: Sequence[
@@ -209,7 +208,7 @@ def nghxrg(
     n_frame_overhead: int = 0,
     reverse_scan_direction: bool = False,
     reference_pixel_border_width: int = 4,
-    seed: Optional[int] = None,  # This parameter is used by '@temporary_random_state'
+    seed: Optional[int] = None,
 ) -> None:
     """Generate fourier noise power spectrum on HXRG detector.
 
@@ -305,20 +304,21 @@ def nghxrg(
     else:
         time_step = 1
 
-    # Compute new pixels
-    result_2d = compute_nghxrg(
-        pixel_2d=detector.pixel.array,
-        noise=params,
-        detector_shape=(geo.row, geo.col),
-        window_pos=window_position,
-        window_size=window_size,
-        num_outputs=n_output,
-        time_step=time_step,
-        num_rows_overhead=n_row_overhead,
-        num_frames_overhead=n_frame_overhead,
-        reverse_scan_direction=reverse_scan_direction,
-        reference_pixel_border_width=reference_pixel_border_width,
-    )  # type: np.ndarray
+    with set_random_seed(seed):
+        # Compute new pixels
+        result_2d = compute_nghxrg(
+            pixel_2d=detector.pixel.array,
+            noise=params,
+            detector_shape=(geo.row, geo.col),
+            window_pos=window_position,
+            window_size=window_size,
+            num_outputs=n_output,
+            time_step=time_step,
+            num_rows_overhead=n_row_overhead,
+            num_frames_overhead=n_frame_overhead,
+            reverse_scan_direction=reverse_scan_direction,
+            reference_pixel_border_width=reference_pixel_border_width,
+        )  # type: np.ndarray
 
     # Add the pixels
     detector.pixel.array += result_2d
