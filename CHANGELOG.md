@@ -31,6 +31,8 @@
   (See [!515](https://gitlab.com/esa/pyxel/-/merge_requests/515)).
 * Remove decorator 'temporary_random_state'.
   (See [!519](https://gitlab.com/esa/pyxel/-/merge_requests/519)).
+* Fix issue that runs two CI/CD pipeline.
+  (See [!520](https://gitlab.com/esa/pyxel/-/merge_requests/520)).
 
 ## version 1.3.2 / 2022-09-08
 

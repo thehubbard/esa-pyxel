@@ -22,6 +22,14 @@ cache:
   paths:
     - .cache/
 
+# Control when pipelines are created (only for Merge Requests)
+workflow:
+  rules:
+    - if: $CI_MERGE_REQUEST_IID     # Execute jobs in merge request context
+    - if: $CI_OPEN_MERGE_REQUESTS   # Do not execute jobs if pipeline has open merge request
+      when: never
+    - if: $CI_COMMIT_BRANCH         # Execute jobs if changes are pushed to any branch
+
 # ###########################
 # Test Stage
 # ###########################
@@ -32,9 +40,9 @@ python37:
   stage: test
   script:
     - tox -e py37-extra_all
-  rules:
+#  rules:
     # If `$FORCE_GITLAB_CI` is set, create a pipeline.
-    - if: '$FORCE_GITLAB_CI'
+#    - if: '$FORCE_GITLAB_CI'
 
 # Run pytest for Python 3.8 without anaconda
 python38:
@@ -42,9 +50,6 @@ python38:
   stage: test
   script:
     - tox -e py38-extra_all
-  rules:
-    # If `$FORCE_GITLAB_CI` is set, create a pipeline.
-    - if: '$FORCE_GITLAB_CI'
 
 # Run mypy
 mypy:
@@ -52,49 +57,30 @@ mypy:
   stage: test
   script:
     - tox -e mypy
-  rules:
-    # If `$FORCE_GITLAB_CI` is set, create a pipeline.
-    - if: '$FORCE_GITLAB_CI'
 
 flake8:
   image: python:3
   stage: test
   script:
     - tox -e flake8
-  rules:
-    # If `$FORCE_GITLAB_CI` is set, create a pipeline.
-    - if: '$FORCE_GITLAB_CI'
-
 
 pydocstyle:
   image: python:3
   stage: test
   script:
     - tox -e pydocstyle
-  rules:
-    # If `$FORCE_GITLAB_CI` is set, create a pipeline.
-    - if: '$FORCE_GITLAB_CI'
-
 
 doc8:
   image: python:3
   stage: test
   script:
     - tox -e doc8
-  rules:
-    # If `$FORCE_GITLAB_CI` is set, create a pipeline.
-    - if: '$FORCE_GITLAB_CI'
-
 
 codespell:
   image: python:3
   stage: test
   script:
     - tox -e codespell
-  rules:
-    # If `$FORCE_GITLAB_CI` is set, create a pipeline.
-    - if: '$FORCE_GITLAB_CI'
-
 
 # ###########################
 # Build stage
@@ -113,9 +99,6 @@ coverage:
       coverage_report:
         coverage_format: cobertura
         path: coverage.xml
-  rules:
-    # If `$FORCE_GITLAB_CI` is set, create a pipeline.
-    - if: '$FORCE_GITLAB_CI'
 
 # Scan sourcecode for licenses, copyrights & dependencies
 # experimental, latest version
@@ -128,10 +111,6 @@ licenses-latest:
   artifacts:
     paths:
       - license.html
-  rules:
-    # If `$FORCE_GITLAB_CI` is set, create a pipeline.
-    - if: '$FORCE_GITLAB_CI'
-
 
 # Generate the Sphinx documentation into 'doc/html'
 doc:
@@ -146,7 +125,8 @@ doc:
       - docs/html
       - documentation.svg
   rules:
-    - if: '$CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH && $CI_COMMIT_TAG != "" && $FORCE_GITLAB_CI'
+    - if: '$CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH && $CI_COMMIT_TAG != ""'
+#    - if: '$CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH && $CI_COMMIT_TAG != "" && $FORCE_GITLAB_CI'
 
 doc_development:
   image: python:3.8
