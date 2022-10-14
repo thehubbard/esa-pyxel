@@ -87,6 +87,18 @@ class Configuration:
             )
 
     @property
+    def running_mode(self) -> Union[Exposure, Observation, "Calibration"]:
+        """Get current running mode."""
+        if self.exposure is not None:
+            return self.exposure
+        elif self.observation is not None:
+            return self.observation
+        elif self.calibration is not None:
+            return self.calibration
+        else:
+            raise NotImplementedError
+
+    @property
     def detector(self) -> Union[CCD, CMOS, MKID, APD]:
         """Get current detector."""
         if self.ccd_detector is not None:
