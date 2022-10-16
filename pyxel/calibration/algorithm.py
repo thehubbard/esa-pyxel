@@ -8,14 +8,12 @@
 
 import math
 from enum import Enum
-from typing import Optional, Union
+from typing import TYPE_CHECKING, Optional, Union
 
 from typing_extensions import Literal
 
-try:
+if TYPE_CHECKING:
     import pygmo as pg
-except ImportError:
-    pass
 
 __all__ = ["Algorithm", "AlgorithmType"]
 
@@ -484,10 +482,16 @@ class Algorithm:
 
     # TODO: This could be refactored for each if-statement. See #334
     def get_algorithm(self) -> Union["pg.sade", "pg.sga", "pg.nlopt"]:
-        """TBW.
+        """TBW."""
+        try:
+            import pygmo as pg
+        except ImportError as exc:
+            raise ImportError(
+                "Missing optional package 'pygmo'.\n"
+                "Please install it with 'pip install pyxel-sim[calibration]' "
+                "or 'pip install pyxel-sim[all]'"
+            ) from exc
 
-        :return:
-        """
         if self.type is AlgorithmType.Sade:
             sade_algorithm: pg.sade = pg.sade(
                 gen=self.generations,

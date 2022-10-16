@@ -4,16 +4,10 @@
 #  is part of this Pyxel package. No part of the package, including
 #  this file, may be copied, modified, propagated, or distributed except according to
 #  the terms contained in the file ‘LICENCE.txt’.
-#
-#
-#
-#  This file is subject to the terms and conditions defined in file 'LICENCE.txt', which
-#  is part of this Pyxel package. No part of the package, including
-#  this file, may be copied, modified, propagated, or distributed except according to
-#  the terms contained in the file ‘LICENCE.txt’.
 
 """Subpackage to load images and tables."""
 
+from contextlib import suppress
 from io import BytesIO
 from pathlib import Path
 from typing import TYPE_CHECKING, Union
@@ -97,14 +91,12 @@ def load_image(filename: Union[str, Path]) -> np.ndarray:
         with fsspec.open(url_path, mode="rb", **extras) as file_handler:
             data_2d = np.load(file_handler)
 
-    elif suffix.startswith(".txt") or suffix.startswith(".data"):
-        for sep in ["\t", " ", ",", "|", ";"]:
-            try:
+    elif suffix.startswith((".txt", ".data")):
+        for sep in ("\t", " ", ",", "|", ";"):
+            with suppress(ValueError):
                 with fsspec.open(url_path, mode="r", **extras) as file_handler:
                     data_2d = np.loadtxt(file_handler, delimiter=sep, ndmin=2)
                 break
-            except ValueError:
-                pass
         else:
             raise ValueError(f"Cannot find the separator for filename '{url_path}'.")
 
@@ -180,29 +172,25 @@ def load_table(filename: Union[str, Path]) -> "pd.DataFrame":
             )
 
     elif suffix.startswith(".csv"):
-        for sep in ["\t", " ", ",", "|", ";"]:
-            try:
+        for sep in ("\t", " ", ",", "|", ";"):
+            with suppress(ValueError):
                 # numpy will return ValueError with a wrong delimiter
                 with fsspec.open(url_path, mode="r", **extras) as file_handler:
                     table = pd.read_csv(
                         file_handler, delimiter=sep, header=None, dtype="float"
                     )
                     break
-            except ValueError:
-                pass
         else:
             raise ValueError("Cannot find the separator.")
 
-    elif suffix.startswith(".txt") or suffix.startswith(".data"):
-        for sep in ["\t", " ", ",", "|", ";"]:
-            try:
+    elif suffix.startswith((".txt", ".data")):
+        for sep in ("\t", " ", ",", "|", ";"):
+            with suppress(ValueError):
                 with fsspec.open(url_path, mode="r", **extras) as file_handler:
                     table = pd.read_table(
                         file_handler, delimiter=sep, header=None, dtype="float"
                     )
                     break
-            except ValueError:
-                pass
         else:
             raise ValueError("Cannot find the separator.")
 

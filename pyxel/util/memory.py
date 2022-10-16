@@ -42,7 +42,7 @@ def print_human_readable_memory(usage: dict) -> None:
     None
     """
     for k, v in usage.items():
-        for unit in ["Bytes", "KB", "MB", "GB"]:
+        for unit in ("Bytes", "KB", "MB", "GB"):
             if v < 1024.0:
                 print(f"{k:<20}{np.round(v,decimals=1):<7}{unit}")
                 break

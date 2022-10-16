@@ -104,8 +104,8 @@ def get_matrix(coupling_matrix: Union[str, Path, Sequence]) -> np.ndarray:
     """
     if isinstance(coupling_matrix, (str, Path)):
         return np.array(load_table(coupling_matrix))
-    else:
-        return np.array(coupling_matrix)
+
+    return np.array(coupling_matrix)
 
 
 @numba.njit

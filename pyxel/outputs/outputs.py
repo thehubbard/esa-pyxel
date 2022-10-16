@@ -80,7 +80,7 @@ class Outputs:
         run_number: Optional[int] = None,
     ) -> Path:
         """Write array to :term:`FITS` file."""
-        name = str(name).replace(".", "_")
+        name = name.replace(".", "_")
 
         if with_auto_suffix:
             filename = apply_run_number(
@@ -96,7 +96,7 @@ class Outputs:
         from astropy.io import fits  # Late import to speed-up general import time
 
         hdu = fits.PrimaryHDU(data)
-        hdu.header["PYXEL_V"] = (str(version), "Pyxel version")
+        hdu.header["PYXEL_V"] = (version, "Pyxel version")
         hdu.writeto(full_filename, overwrite=False, output_verify="exception")
 
         return full_filename
@@ -109,7 +109,7 @@ class Outputs:
         run_number: Optional[int] = None,
     ) -> Path:
         """Write detector object to HDF5 file."""
-        name = str(name).replace(".", "_")
+        name = name.replace(".", "_")
 
         if with_auto_suffix:
             filename = apply_run_number(
@@ -122,7 +122,7 @@ class Outputs:
         full_filename: Path = filename.resolve()
 
         with h5.File(full_filename, "w") as h5file:
-            h5file.attrs["pyxel-version"] = str(version)
+            h5file.attrs["pyxel-version"] = version
             if name == "detector":
                 detector_grp = h5file.create_group("detector")
                 for array, name in zip(
@@ -152,7 +152,7 @@ class Outputs:
         run_number: Optional[int] = None,
     ) -> Path:
         """Write data to txt file."""
-        name = str(name).replace(".", "_")
+        name = name.replace(".", "_")
 
         if with_auto_suffix:
             filename = apply_run_number(
@@ -175,7 +175,7 @@ class Outputs:
         run_number: Optional[int] = None,
     ) -> Path:
         """Write Pandas Dataframe or Numpy array to a CSV file."""
-        name = str(name).replace(".", "_")
+        name = name.replace(".", "_")
 
         if with_auto_suffix:
             filename = apply_run_number(
@@ -201,7 +201,7 @@ class Outputs:
         run_number: Optional[int] = None,
     ) -> Path:
         """Write Numpy array to Numpy binary npy file."""
-        name = str(name).replace(".", "_")
+        name = name.replace(".", "_")
 
         if with_auto_suffix:
             filename = apply_run_number(
@@ -214,7 +214,7 @@ class Outputs:
         full_filename: Path = filename.resolve()
 
         if os.path.exists(full_filename):
-            raise FileExistsError(f"File {str(full_filename)} already exists!")
+            raise FileExistsError(f"File {full_filename} already exists!")
 
         np.save(file=full_filename, arr=data)
         return full_filename
@@ -227,7 +227,7 @@ class Outputs:
         run_number: Optional[int] = None,
     ) -> Path:
         """Write Numpy array to a PNG image file."""
-        name = str(name).replace(".", "_")
+        name = name.replace(".", "_")
 
         if with_auto_suffix:
             filename = apply_run_number(
@@ -240,7 +240,7 @@ class Outputs:
         full_filename: Path = filename.resolve()
 
         if os.path.exists(full_filename):
-            raise FileExistsError(f"File {str(full_filename)} already exists!")
+            raise FileExistsError(f"File {full_filename} already exists!")
 
         im = Image.fromarray(data)
         im.save(full_filename)
@@ -255,7 +255,7 @@ class Outputs:
         run_number: Optional[int] = None,
     ) -> Path:
         """Write Numpy array to a JPEG image file."""
-        name = str(name).replace(".", "_")
+        name = name.replace(".", "_")
 
         if with_auto_suffix:
             filename = apply_run_number(
@@ -268,7 +268,7 @@ class Outputs:
         full_filename: Path = filename.resolve()
 
         if os.path.exists(full_filename):
-            raise FileExistsError(f"File {str(full_filename)} already exists!")
+            raise FileExistsError(f"File {full_filename} already exists!")
 
         im = Image.fromarray(data)
         im.save(full_filename)
@@ -283,7 +283,7 @@ class Outputs:
         run_number: Optional[int] = None,
     ) -> Path:
         """Write Numpy array to a JPG image file."""
-        name = str(name).replace(".", "_")
+        name = name.replace(".", "_")
 
         if with_auto_suffix:
             filename = apply_run_number(
@@ -296,7 +296,7 @@ class Outputs:
         full_filename: Path = filename.resolve()
 
         if os.path.exists(full_filename):
-            raise FileExistsError(f"File {str(full_filename)} already exists!")
+            raise FileExistsError(f"File {full_filename} already exists!")
 
         im = Image.fromarray(data)
         im.save(full_filename)
@@ -360,7 +360,7 @@ class Outputs:
                 for out_format in format_list:
                     func: SaveToFile = save_methods[out_format]
 
-                    if out_format in ["png", "jpg", "jpeg"]:
+                    if out_format in ("png", "jpg", "jpeg"):
                         if obj != "detector.image.array":
                             raise ValueError(
                                 "Cannot save non-digitized data into image formats."
@@ -406,7 +406,7 @@ class Outputs:
         -------
         filename: Path
         """
-        name = str(name).replace(".", "_")
+        name = name.replace(".", "_")
         filename = self.output_dir.joinpath(name + ".nc")
         data.to_netcdf(filename)
         return filename
@@ -432,8 +432,8 @@ def apply_run_number(template_filename: Path, run_number: Optional[int] = None) 
         search = re.search(r"\d+$", string.split(".")[-2])
         if not search:
             return 0
-        else:
-            return int(search.group())
+
+        return int(search.group())
 
     if "?" in template_str:
         if run_number is not None:

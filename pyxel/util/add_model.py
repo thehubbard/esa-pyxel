@@ -13,6 +13,7 @@ import os
 import shutil
 import sys
 import time
+from pathlib import Path
 from typing import Tuple
 
 
@@ -67,8 +68,7 @@ def create_model(newmodel: str) -> None:
                     new_contents = new_contents.replace(template_location, location)
                     new_contents = new_contents.replace("%(date)", time.ctime())
 
-                with open(new_pathtofile, "w+") as file_tochange:
-                    file_tochange.write(new_contents)
+                Path(new_pathtofile).write_text(new_contents)
                 # Close the file other we can't rename it
                 file_tochange.close()
 

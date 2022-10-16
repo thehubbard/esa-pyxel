@@ -76,7 +76,7 @@ def compute_pattern(
         raise ValueError("Can not set a period smaller than 2 pixels.")
     elif (period % 2) != 0:
         raise ValueError("Period should be a multiple of 2.")
-    if start_with not in [0, 1]:
+    if start_with not in (0, 1):
         raise ValueError("")
 
     y, x = detector_shape

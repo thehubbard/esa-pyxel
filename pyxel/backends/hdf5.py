@@ -93,7 +93,7 @@ def to_hdf5(filename: Union[str, Path], dct: Mapping[str, Any]) -> None:
         # Write main attributes
         h5file.attrs["version"] = dct["version"]
         h5file.attrs["type"] = dct["type"]
-        h5file.attrs["pyxel-version"] = str(__version__)
+        h5file.attrs["pyxel-version"] = __version__
 
         _store(h5file, name="/geometry", dct=dct["properties"]["geometry"])
         _store(h5file, name="/environment", dct=dct["properties"]["environment"])

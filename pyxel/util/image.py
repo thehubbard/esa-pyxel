@@ -125,7 +125,7 @@ def fit_into_array(
     overlap_y = np.intersect1d(array_y_coordinates, output_y_coordinates)
     overlap_x = np.intersect1d(array_x_coordinates, output_x_coordinates)
 
-    if overlap_y.size == 0 and overlap_x.size == 0:
+    if overlap_y.size == overlap_x.size == 0:
         raise ValueError("No overlap of array and target in Y and X dimension.")
     elif overlap_y.size == 0:
         raise ValueError("No overlap of array and target in Y dimension.")

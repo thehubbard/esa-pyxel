@@ -76,5 +76,5 @@ class LogFilter(logging.Filter):
         """Filter or modify record."""
         if record.threadName == "MainThread" or record.threadName.endswith("-0"):
             return True
-        else:
-            return False
+
+        return False

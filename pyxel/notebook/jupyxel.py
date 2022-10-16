@@ -40,7 +40,7 @@ def display_config(configuration: "Configuration", only: str = "all") -> None:
     for key in cfg:
         if cfg[key] is None:
             pass
-        elif (only not in cfg.keys()) & (only != "all"):
+        elif (only not in cfg) & (only != "all"):
             error = "Config file only contains following keys: " + str(cfg.keys())
             display(Markdown(f"<font color=red> {error} </font>"))
             break
@@ -194,7 +194,7 @@ def display_detector(detector: "Detector") -> "Layout":
 
     array_names = [key for key in det.keys()]
 
-    if len(array_names) == 0:
+    if array_names:
         raise ValueError("No data in the detector.")
 
     dmap = hv.DynamicMap(get_image, kdims=["Array"]).redim.values(Array=array_names)

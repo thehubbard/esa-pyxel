@@ -129,7 +129,7 @@ class Observation:
         pipeline_seed: Optional[int] = None,
     ):
         self.outputs = outputs
-        self.readout: Readout = readout if readout else Readout()
+        self.readout: Readout = readout or Readout()
         self.parameter_mode: ParameterMode = ParameterMode(mode)
         self._parameters = parameters
         self.file = from_file
@@ -368,7 +368,6 @@ class Observation:
                 processor=proc,
                 readout=self.readout,
                 outputs=self.outputs,
-                progressbar=False,
                 pipeline_seed=self.pipeline_seed,
             )
             processors.append(processor)
@@ -677,7 +676,6 @@ class Observation:
         _ = run_exposure_pipeline(
             processor=new_processor,
             readout=self.readout,
-            progressbar=False,
             result_type=self.result_type,
             pipeline_seed=self.pipeline_seed,
         )
@@ -730,7 +728,6 @@ class Observation:
         _ = run_exposure_pipeline(
             processor=new_processor,
             readout=self.readout,
-            progressbar=False,
             result_type=self.result_type,
             pipeline_seed=self.pipeline_seed,
         )
@@ -780,7 +777,6 @@ class Observation:
         _ = run_exposure_pipeline(
             processor=new_processor,
             readout=self.readout,
-            progressbar=False,
             result_type=self.result_type,
             pipeline_seed=self.pipeline_seed,
         )

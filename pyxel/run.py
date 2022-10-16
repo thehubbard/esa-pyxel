@@ -361,9 +361,7 @@ def run(input_filename: Union[str, Path], random_seed: Optional[int] = None) -> 
 
     pipeline: DetectionPipeline = configuration.pipeline
     detector: Union[CCD, CMOS, MKID, APD] = configuration.detector
-    running_mode: Union[Exposure, Observation, Calibration] = (
-        configuration.running_mode
-    )
+    running_mode: Union[Exposure, Observation, Calibration] = configuration.running_mode
 
     if isinstance(running_mode, Exposure):
         exposure_mode(

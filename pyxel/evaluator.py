@@ -45,9 +45,7 @@ def evaluate_reference(reference_str: str) -> Callable:
         #     # this is a class type, instantiate it using default arguments.
         #     reference = reference()
     except ImportError as exc:
-        raise ImportError(
-            f"Cannot import module: {module_str!r}. exc: {str(exc)}"
-        ) from exc
+        raise ImportError(f"Cannot import module: {module_str!r}. exc: {exc}") from exc
     except AttributeError as ex:
         raise ImportError(
             f"Module: {module_str}, does not contain {function_str}"
@@ -112,7 +110,7 @@ def eval_entry(value: Union[str, Number, np.ndarray]) -> Union[str, Number, np.n
             first_char = value[0]
             last_char = value[-1]
 
-            if first_char != last_char or first_char not in ["'", '"']:
+            if first_char != last_char or first_char not in ("'", '"'):
                 value = '"' + value + '"'
 
         value = literal_eval(value)
