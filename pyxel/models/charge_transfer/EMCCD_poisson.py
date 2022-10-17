@@ -17,9 +17,7 @@ def multiplication_register_poisson(
         total_gain: int,
         gain_elements: int,
 ) -> None:
-
-    image_cube = np.asarray(detector.pixel.array, dtype=float)
-    image_cube = image_cube
+    image_cube = np.asarray(detector.pixel.array, dtype=float),
     new_image_cube = np.zeros_like(image_cube)
     new_image_cube = new_image_cube.astype(np.int32)
 
@@ -31,7 +29,7 @@ def multiplication_register_poisson(
 
             while x != gain_elements:
                 if x == 0:
-                    electron_gain = np.random.poisson(lam, int(image_cube[j, i]))
+                    electron_gain = np.random.poisson(lam, image_cube[j, i])
                     electron_counter = Counter(electron_gain)  # Counts how many electrons have been gained
                     new_image_cube[j, i] = np.round(image_cube[j, i] + np.sum(electron_gain), 0)
 
