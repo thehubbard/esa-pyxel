@@ -123,11 +123,14 @@ Example of YAML configuration model:
 .. autofunction:: charge_blocks
 
 .. _Charge deposition model:
+
 Charge deposition model
 =======================
+
 :guilabel:`Charge` → :guilabel:`Charge`
+
 With this model it is possible to simulate the deposition of charge in the detector by ionized particles using user-provided stopping power curves.
-It is possible to simulate mono-energetic beams (with a certain spread in energy) or provide an energy distribution (e.g., representative of the radiation environement).
+It is possible to simulate mono-energetic beams (with a certain spread in energy) or provide an energy distribution (e.g., representative of the radiation environment).
 Stopping power curves for protons in silicon and for protons in MCT alloy are provided. Similarly, the proton energy distribution at L2 with and without 11-mm aluminium shielding is provided within Pyxel.
 This model is not as realistic as CosmiX but it is faster and easier to apply to a wide range of material and particles.
 In particular due to its simplistic nature, it fails at reproducing the deposition of only a small amount of charge.
@@ -156,10 +159,14 @@ Example of the configuration file:
 
 
 .. _Charge deposition model:
+
 Charge deposition model in MCT
 =======================
+
 :guilabel:`Charge` → :guilabel:`Charge`
-This model is the same as charge deposition model but is specific to MCT material. It computes the e-h pair creation (assuming it is 3 times the bandgap) and the alloy density based on the detector temperature and cut-off wavelength
+
+This model is the same as charge deposition model but is specific to MCT material. It computes the e-h pair creation (assuming it is 3 times the bandgap) and the alloy density based on the detector temperature and cut-off wavelength.
+
 Example of the configuration file:
 
 .. code-block:: yaml
