@@ -220,7 +220,7 @@ class Processor:
 
     @property
     def result(self) -> dict:
-        """Return exposure pipeline final result in a dicitonary."""
+        """Return exposure pipeline final result in a dictionary."""
         if not self._result:
             raise ValueError("No result saved in the processor.")
         return self._result
