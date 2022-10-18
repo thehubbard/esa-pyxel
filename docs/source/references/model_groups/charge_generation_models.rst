@@ -189,6 +189,7 @@ Example of the configuration file:
 .. autofunction:: pyxel.models.charge_generation.charge_deposition_in_mct
 
 .. _CosmiX cosmic ray model:
+
 CosmiX cosmic ray model
 =======================
 
