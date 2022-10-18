@@ -137,8 +137,9 @@ In particular due to its simplistic nature, it fails at reproducing the depositi
 
 Example of the configuration file:
 
+
 .. code-block:: yaml
- 
+
     - name: charge_deposition
       func: pyxel.models.charge_generation.charge_deposition_in_mct
       enabled: true
@@ -154,14 +155,13 @@ Example of the configuration file:
         particle_direction: isotropic
         stopping_power_curve: data/protons-in-silicon_stopping-power.csv
 
-
 .. autofunction:: pyxel.models.charge_generation.charge_deposition
 
 
-.. _Charge deposition model:
+.. _Charge deposition model in MCT:
 
 Charge deposition model in MCT
-=======================
+==============================
 
 :guilabel:`Charge` → :guilabel:`Charge`
 
@@ -169,8 +169,10 @@ This model is the same as charge deposition model but is specific to MCT materia
 
 Example of the configuration file:
 
+
 .. code-block:: yaml
-     - name: charge_deposition
+
+    - name: charge_deposition
       func: pyxel.models.charge_generation.charge_deposition_in_mct
       enabled: true
       arguments:
