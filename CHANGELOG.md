@@ -35,6 +35,8 @@
   (See [!520](https://gitlab.com/esa/pyxel/-/merge_requests/520)).
 * Enable creating a 'Calibration' configuration without installing pygmo.
   (See [!521](https://gitlab.com/esa/pyxel/-/merge_requests/521)).
+* Add unit tests for 'Observation' mode.
+  (See [!523](https://gitlab.com/esa/pyxel/-/merge_requests/523)).
 
 ## version 1.3.2 / 2022-09-08
 
