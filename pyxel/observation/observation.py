@@ -62,31 +62,30 @@ class ObservationResult(NamedTuple):
     logs: "xr.Dataset"
 
 
-def _get_short_name(name: str, param_type: ParameterType) -> str:
-    if param_type == ParameterType.Simple:
-        return short(name)
-    elif param_type == ParameterType.Multi:
-        return short(_id(name))
-
-    raise NotImplementedError
-
-
-def _get_short_name_with_model(name: str, param_type: ParameterType) -> str:
+def _get_short_name_with_model(name: str) -> str:
     _, _, model_name, _, param_name = name.split(".")
-    if param_type == ParameterType.Simple:
-        return f"{model_name}.{param_name}"
-    elif param_type == ParameterType.Multi:
-        return f"{model_name}.{param_name}_id"
 
-    raise NotImplementedError
+    return f"{model_name}.{param_name}"
+
+
+def _get_final_short_name(name: str, param_type: ParameterType) -> str:
+    if param_type == ParameterType.Simple:
+        return name
+    elif param_type == ParameterType.Multi:
+        return _id(name)
+    else:
+        raise NotImplementedError
 
 
 def _get_short_dimension_names(types: Mapping[str, ParameterType]) -> Mapping[str, str]:
     # Create potential names for the dimensions
-    potential_dim_names = {
-        param_name: _get_short_name(param_name, param_type=param_type)
-        for param_name, param_type in types.items()
-    }  # type: Mapping[str,str]
+    potential_dim_names = {}  # type: Dict[str, str]
+    for param_name, param_type in types.items():
+        short_name = short(param_name)  # type: str
+
+        potential_dim_names[param_name] = _get_final_short_name(
+            name=short_name, param_type=param_type
+        )
 
     # Find possible duplicates
     count_dim_names = Counter(potential_dim_names.values())  # type: Mapping[str, int]
@@ -98,12 +97,14 @@ def _get_short_dimension_names(types: Mapping[str, ParameterType]) -> Mapping[st
     if duplicate_dim_names:
         dim_names = {}  # type: Dict[str, str]
         for param_name, param_type in types.items():
-            short_name = potential_dim_names[param_name]  # type: str
+            short_name = potential_dim_names[param_name]
 
             if short_name in duplicate_dim_names:
-                dim_names[param_name] = _get_short_name_with_model(
-                    param_name, param_type=param_type
+                new_short_name = _get_short_name_with_model(param_name)  # type: str
+                dim_names[param_name] = _get_final_short_name(
+                    name=new_short_name, param_type=param_type
                 )
+
             else:
                 dim_names[param_name] = short_name
 
@@ -449,6 +450,7 @@ class Observation:
 
             apply_pipeline = partial(
                 self._apply_exposure_pipeline_product,
+                dimension_names=dim_names,
                 x=x,
                 y=y,
                 processor=processor,
@@ -482,6 +484,7 @@ class Observation:
                 for i, coordinate in enumerate(parameter_dict):
                     parameter_ds = parameter_to_dataset(
                         parameter_dict=parameter_dict,
+                        dimension_names=dim_names,
                         index=indices[i],
                         coordinate_name=coordinate,
                     )
@@ -563,6 +566,7 @@ class Observation:
                 # save sequential parameter with appropriate index
                 parameter_ds = parameter_to_dataset(
                     parameter_dict=parameter_dict,
+                    dimension_names=dim_names,
                     index=index,
                     coordinate_name=coordinate,
                 )
@@ -653,6 +657,7 @@ class Observation:
             ],
             int,
         ],
+        dimension_names: Mapping[str, str],
         processor: "Processor",
         x: range,
         y: range,
@@ -688,6 +693,7 @@ class Observation:
         ds = _add_product_parameters(
             ds=ds,
             parameter_dict=parameter_dict,
+            dimension_names=dimension_names,
             indices=index,
             types=types,
         )
@@ -900,13 +906,17 @@ def log_parameters(processor_id: int, parameter_dict: dict) -> "xr.Dataset":
 
 
 def parameter_to_dataset(
-    parameter_dict: dict, index: int, coordinate_name: str
+    parameter_dict: dict,
+    dimension_names: Mapping[str, str],
+    index: int,
+    coordinate_name: str,
 ) -> "xr.Dataset":
     """Return a specific parameter dataset from a parameter dictionary.
 
     Parameters
     ----------
     parameter_dict: dict
+    dimension_names
     index: int
     coordinate_name: str
 
@@ -919,9 +929,20 @@ def parameter_to_dataset(
 
     parameter_ds = xr.Dataset()
     parameter = xr.DataArray(parameter_dict[coordinate_name])
-    parameter = parameter.assign_coords({short(_id(coordinate_name)): index})
-    parameter = parameter.expand_dims(dim=short(_id(coordinate_name)))
-    parameter_ds[short(coordinate_name)] = parameter
+
+    # TODO: Dirty hack. Fix this !
+    short_name = dimension_names[coordinate_name]  # type: str
+
+    if short_name.endswith("_id"):
+        short_coord_name = short_name[:-3]
+        short_coord_name_id = short_name
+    else:
+        short_coord_name = short_name
+        short_coord_name_id = f"{short_name}_id"
+
+    parameter = parameter.assign_coords({short_coord_name_id: index})
+    parameter = parameter.expand_dims(dim=short_coord_name_id)
+    parameter_ds[short_coord_name] = parameter
 
     return parameter_ds
 
@@ -988,6 +1009,7 @@ def _add_product_parameters(
     parameter_dict: Mapping[
         str, Union[str, Number, np.ndarray, List[Union[str, Number, np.ndarray]]]
     ],
+    dimension_names: Mapping[str, str],
     indices: Tuple[int, ...],
     types: Mapping[str, ParameterType],
 ) -> "xr.Dataset":
@@ -1005,19 +1027,18 @@ def _add_product_parameters(
     ds: Dataset
     """
     # TODO: Implement for coordinate 'multi'
+    for i, (coordinate, param_value) in enumerate(parameter_dict.items()):
 
-    for i, coordinate in enumerate(parameter_dict):
+        short_name = dimension_names[coordinate]  # type: str
 
         #  assigning the right coordinates based on type
         if types[coordinate] == ParameterType.Simple:
-            ds = ds.assign_coords(
-                coords={short(coordinate): parameter_dict[coordinate]}
-            )
-            ds = ds.expand_dims(dim=short(coordinate))
+            ds = ds.assign_coords(coords={short_name: param_value})
+            ds = ds.expand_dims(dim=short_name)
 
         elif types[coordinate] == ParameterType.Multi:
-            ds = ds.assign_coords({short(_id(coordinate)): indices[i]})
-            ds = ds.expand_dims(dim=short(_id(coordinate)))
+            ds = ds.assign_coords({short_name: indices[i]})
+            ds = ds.expand_dims(dim=short_name)
 
         else:
             raise NotImplementedError
