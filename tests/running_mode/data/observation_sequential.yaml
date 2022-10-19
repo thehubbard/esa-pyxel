@@ -2,10 +2,13 @@ observation:
 
   with_dask: false
 
-  mode: product
+  mode: sequential
   parameters:
     - key: pipeline.photon_generation.illumination_uniform.arguments.level
       values: [10, 20, 30]
+      enabled: true
+    - key: pipeline.photon_generation.illumination_elliptic.arguments.level
+      values: [100, 200, 300]
       enabled: true
     - key: pipeline.charge_generation.simple_conversion.arguments.quantum_efficiency
       values: [0.5, 0.8, 0.9]
