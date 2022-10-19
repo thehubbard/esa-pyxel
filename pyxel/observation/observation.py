@@ -524,6 +524,7 @@ class Observation:
 
             apply_pipeline = partial(
                 self._apply_exposure_pipeline_sequential,
+                dimension_names=dim_names,
                 x=x,
                 y=y,
                 processor=processor,
@@ -579,7 +580,9 @@ class Observation:
                 raise TypeError("Expecting 'Dataset'.")
 
             final_datasets = compute_final_sequential_dataset(
-                list_of_index_and_parameter=lst, list_of_datasets=dataset_list
+                list_of_index_and_parameter=lst,
+                list_of_datasets=dataset_list,
+                dimension_names=dim_names,
             )
 
             final_parameters_list = []
@@ -758,6 +761,7 @@ class Observation:
             ],
             int,
         ],
+        dimension_names: Mapping[str, str],
         processor: "Processor",
         x: range,
         y: range,
@@ -792,6 +796,7 @@ class Observation:
         ds = _add_sequential_parameters(
             ds=ds,
             parameter_dict=parameter_dict,
+            dimension_names=dimension_names,
             index=index,
             coordinate_name=coordinate,
             types=types,
@@ -971,6 +976,7 @@ def _add_sequential_parameters(
     parameter_dict: Mapping[
         str, Union[str, Number, np.ndarray, List[Union[str, Number, np.ndarray]]]
     ],
+    dimension_names: Mapping[str, str],
     index: int,
     coordinate_name: str,
     types: Mapping[str, ParameterType],
@@ -982,6 +988,7 @@ def _add_sequential_parameters(
     ds: Dataset
     parameter_dict: dict
     index: int
+    dimension_names
     coordinate_name: str
     types: dict
 
@@ -991,15 +998,15 @@ def _add_sequential_parameters(
     """
 
     #  assigning the right coordinates based on type
+    short_name = dimension_names[coordinate_name]  # type: str
+
     if types[coordinate_name] == ParameterType.Simple:
-        ds = ds.assign_coords(
-            coords={short(coordinate_name): parameter_dict[coordinate_name]}
-        )
-        ds = ds.expand_dims(dim=short(coordinate_name))
+        ds = ds.assign_coords(coords={short_name: parameter_dict[coordinate_name]})
+        ds = ds.expand_dims(dim=short_name)
 
     elif types[coordinate_name] == ParameterType.Multi:
-        ds = ds.assign_coords({short(_id(coordinate_name)): index})
-        ds = ds.expand_dims(dim=short(_id(coordinate_name)))
+        ds = ds.assign_coords({short_name: index})
+        ds = ds.expand_dims(dim=short_name)
 
     return ds
 
@@ -1027,16 +1034,16 @@ def _add_product_parameters(
     ds: Dataset
     """
     # TODO: Implement for coordinate 'multi'
-    for i, (coordinate, param_value) in enumerate(parameter_dict.items()):
+    for i, (coordinate_name, param_value) in enumerate(parameter_dict.items()):
 
-        short_name = dimension_names[coordinate]  # type: str
+        short_name = dimension_names[coordinate_name]  # type: str
 
         #  assigning the right coordinates based on type
-        if types[coordinate] == ParameterType.Simple:
+        if types[coordinate_name] == ParameterType.Simple:
             ds = ds.assign_coords(coords={short_name: param_value})
             ds = ds.expand_dims(dim=short_name)
 
-        elif types[coordinate] == ParameterType.Multi:
+        elif types[coordinate_name] == ParameterType.Multi:
             ds = ds.assign_coords({short_name: indices[i]})
             ds = ds.expand_dims(dim=short_name)
 
@@ -1047,7 +1054,9 @@ def _add_product_parameters(
 
 
 def compute_final_sequential_dataset(
-    list_of_index_and_parameter: list, list_of_datasets: list
+    list_of_index_and_parameter: list,
+    list_of_datasets: list,
+    dimension_names: Mapping[str, str],
 ) -> Dict[str, "xr.Dataset"]:
     """Return a dictionary of result datasets where keys are different parameters.
 
@@ -1055,6 +1064,7 @@ def compute_final_sequential_dataset(
     ----------
     list_of_index_and_parameter: list
     list_of_datasets: list
+    dimension_names
 
     Returns
     -------
@@ -1063,15 +1073,17 @@ def compute_final_sequential_dataset(
     # Late import to speedup start-up time
     import xarray as xr
 
-    final_dict = {}  # type: Dict[str, list]
+    final_dict = {}  # type: Dict[str, Mapping[Dataset]]
 
     for _, parameter_dict, n in list_of_index_and_parameter:
         coordinate = str(list(parameter_dict)[0])
+        coordinate_short = dimension_names[coordinate]  # type: str
+
         if short(coordinate) not in final_dict.keys():
-            final_dict.update({short(coordinate): []})
-            final_dict[short(coordinate)].append(list_of_datasets[n])
+            final_dict.update({coordinate_short: []})
+            final_dict[coordinate_short].append(list_of_datasets[n])
         else:
-            final_dict[short(coordinate)].append(list_of_datasets[n])
+            final_dict[coordinate_short].append(list_of_datasets[n])
 
     final_datasets = {}  # type: Dict[str, xr.Dataset]
     for key, value in final_dict.items():
