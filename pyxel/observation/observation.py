@@ -8,6 +8,7 @@
 """Parametric mode class and helper functions."""
 import itertools
 import logging
+from collections import Counter
 from copy import deepcopy
 from enum import Enum
 from functools import partial
@@ -61,6 +62,56 @@ class ObservationResult(NamedTuple):
     logs: "xr.Dataset"
 
 
+def _get_short_name(name: str, param_type: ParameterType) -> str:
+    if param_type == ParameterType.Simple:
+        return short(name)
+    elif param_type == ParameterType.Multi:
+        return short(_id(name))
+
+    raise NotImplementedError
+
+
+def _get_short_name_with_model(name: str, param_type: ParameterType) -> str:
+    _, _, model_name, _, param_name = name.split(".")
+    if param_type == ParameterType.Simple:
+        return f"{model_name}.{param_name}"
+    elif param_type == ParameterType.Multi:
+        return f"{model_name}.{param_name}_id"
+
+    raise NotImplementedError
+
+
+def _get_short_dimension_names(types: Mapping[str, ParameterType]) -> Mapping[str, str]:
+    # Create potential names for the dimensions
+    potential_dim_names = {
+        param_name: _get_short_name(param_name, param_type=param_type)
+        for param_name, param_type in types.items()
+    }  # type: Mapping[str,str]
+
+    # Find possible duplicates
+    count_dim_names = Counter(potential_dim_names.values())  # type: Mapping[str, int]
+
+    duplicate_dim_names = [
+        name for name, freq in count_dim_names.items() if freq > 1
+    ]  # type: Sequence[str]
+
+    if duplicate_dim_names:
+        dim_names = {}  # type: Dict[str, str]
+        for param_name, param_type in types.items():
+            short_name = potential_dim_names[param_name]  # type: str
+
+            if short_name in duplicate_dim_names:
+                dim_names[param_name] = _get_short_name_with_model(
+                    param_name, param_type=param_type
+                )
+            else:
+                dim_names[param_name] = short_name
+
+        return dim_names
+
+    return potential_dim_names
+
+
 class Observation:
     """Observation class."""
 
@@ -85,7 +136,7 @@ class Observation:
         if column_range:
             self.columns = slice(*column_range)
         self.with_dask = with_dask
-        self.parameter_types = {}  # type: dict
+        self.parameter_types = {}  # type: Dict[str, ParameterType]
         self._result_type = ResultType(result_type)
         self._pipeline_seed = pipeline_seed
 
@@ -275,7 +326,7 @@ class Observation:
             )
             yield new_processor, index, parameter_dict
 
-    def _get_parameter_types(self) -> dict:
+    def _get_parameter_types(self) -> Mapping[str, ParameterType]:
         """Check for each step if parameters can be used as dataset coordinates (1D, simple) or not (multi).
 
         Returns
@@ -386,7 +437,9 @@ class Observation:
         # validation
         self._check_steps(processor)
 
-        types = self._get_parameter_types()
+        types = self._get_parameter_types()  # type: Mapping[str, ParameterType]
+
+        dim_names = _get_short_dimension_names(types)  # type: Mapping[str, str]
 
         y = range(processor.detector.geometry.row)
         x = range(processor.detector.geometry.col)
