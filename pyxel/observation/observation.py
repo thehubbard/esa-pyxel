@@ -11,6 +11,7 @@ import logging
 from copy import deepcopy
 from enum import Enum
 from functools import partial
+from numbers import Number
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -19,6 +20,7 @@ from typing import (
     Generator,
     Iterator,
     List,
+    Mapping,
     NamedTuple,
     Optional,
     Sequence,
@@ -590,12 +592,19 @@ class Observation:
 
     def _apply_exposure_pipeline_product(
         self,
-        index_and_parameter: Tuple[Tuple, Dict, int],
+        index_and_parameter: Tuple[
+            Tuple[int, ...],
+            Mapping[
+                str,
+                Union[str, Number, np.ndarray, List[Union[str, Number, np.ndarray]]],
+            ],
+            int,
+        ],
         processor: "Processor",
         x: range,
         y: range,
         times: np.ndarray,
-        types: dict,
+        types: Mapping[str, ParameterType],
     ):
 
         index, parameter_dict, n = index_and_parameter
@@ -616,7 +625,10 @@ class Observation:
         _ = self.outputs.save_to_file(processor=new_processor, run_number=n)
 
         ds = new_processor.result_to_dataset(
-            x=x, y=y, times=times, result_type=self.result_type
+            x=x,
+            y=y,
+            times=times,
+            result_type=self.result_type,
         )  # type: xr.Dataset
 
         # Can also be done outside dask in a loop
@@ -633,7 +645,14 @@ class Observation:
 
     def _apply_exposure_pipeline_custom(
         self,
-        index_and_parameter: Tuple[int, Dict, int],
+        index_and_parameter: Tuple[
+            int,
+            Mapping[
+                str,
+                Union[str, Number, np.ndarray, List[Union[str, Number, np.ndarray]]],
+            ],
+            int,
+        ],
         processor: "Processor",
         x: range,
         y: range,
@@ -672,12 +691,19 @@ class Observation:
 
     def _apply_exposure_pipeline_sequential(
         self,
-        index_and_parameter: Tuple[int, Dict, int],
+        index_and_parameter: Tuple[
+            int,
+            Mapping[
+                str,
+                Union[str, Number, np.ndarray, List[Union[str, Number, np.ndarray]]],
+            ],
+            int,
+        ],
         processor: "Processor",
         x: range,
         y: range,
         times: np.ndarray,
-        types: dict,
+        types: Mapping[str, ParameterType],
     ):
 
         index, parameter_dict, n = index_and_parameter
@@ -740,7 +766,12 @@ class Observation:
         return result
 
 
-def create_new_processor(processor: "Processor", parameter_dict: dict) -> "Processor":
+def create_new_processor(
+    processor: "Processor",
+    parameter_dict: Mapping[
+        str, Union[str, Number, np.ndarray, List[Union[str, Number, np.ndarray]]]
+    ],
+) -> "Processor":
     """Create a copy of processor and set new attributes from a dictionary before returning it.
 
     Parameters
@@ -863,10 +894,12 @@ def _add_custom_parameters(ds: "xr.Dataset", index: int) -> "xr.Dataset":
 
 def _add_sequential_parameters(
     ds: "xr.Dataset",
-    parameter_dict: dict,
+    parameter_dict: Mapping[
+        str, Union[str, Number, np.ndarray, List[Union[str, Number, np.ndarray]]]
+    ],
     index: int,
     coordinate_name: str,
-    types: dict,
+    types: Mapping[str, ParameterType],
 ) -> "xr.Dataset":
     """Add true coordinates or index to sequential mode dataset.
 
@@ -898,7 +931,12 @@ def _add_sequential_parameters(
 
 
 def _add_product_parameters(
-    ds: "xr.Dataset", parameter_dict: dict, indices: Tuple, types: dict
+    ds: "xr.Dataset",
+    parameter_dict: Mapping[
+        str, Union[str, Number, np.ndarray, List[Union[str, Number, np.ndarray]]]
+    ],
+    indices: Tuple[int, ...],
+    types: Mapping[str, ParameterType],
 ) -> "xr.Dataset":
     """Add true coordinates or index to product mode dataset.
 
@@ -913,6 +951,7 @@ def _add_product_parameters(
     -------
     ds: Dataset
     """
+    # TODO: Implement for coordinate 'multi'
 
     for i, coordinate in enumerate(parameter_dict):
 
