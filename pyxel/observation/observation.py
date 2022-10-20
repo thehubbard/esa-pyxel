@@ -1073,7 +1073,7 @@ def compute_final_sequential_dataset(
     # Late import to speedup start-up time
     import xarray as xr
 
-    final_dict = {}  # type: Dict[str, Mapping[Dataset]]
+    final_dict = {}  # type: Dict[str, List[xr.Dataset]]
 
     for _, parameter_dict, n in list_of_index_and_parameter:
         coordinate = str(list(parameter_dict)[0])
