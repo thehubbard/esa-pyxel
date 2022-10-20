@@ -13,6 +13,8 @@
   and [!508](https://gitlab.com/esa/pyxel/-/merge_requests/508).
 * Import/Export a Detector from/to an ASDF file.
   (See [!513](https://gitlab.com/esa/pyxel/-/merge_requests/513)).
+* Identical argument names for different models crashes observation mode.
+  (See [!524](https://gitlab.com/esa/pyxel/-/merge_requests/524)).
 
 ### Documentation
 * Add a 'copy' button in documentation to copy code blocks.
