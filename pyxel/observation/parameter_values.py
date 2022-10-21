@@ -82,7 +82,12 @@ class ParameterValues:
         return f"{cls_name}<key={self.key!r}, values={self.values!r}, enabled={self.enabled!r}>"
 
     def __len__(self) -> int:
-        values = eval_range(self.values)  # type: Sequence
+
+        try:
+            values = eval_range(self.values)  # type: Sequence
+        except Exception as exc:
+            raise NameError(f"Wrong value: {self.values!r} for key: {self.key!r}. Error: {exc}") from exc
+
         return len(values)
 
     # TODO: Is method '__contains__' needed ? If yes then this class will act as a `Collections.abc.Sequence`
