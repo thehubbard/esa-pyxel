@@ -86,7 +86,9 @@ class ParameterValues:
         try:
             values = eval_range(self.values)  # type: Sequence
         except Exception as exc:
-            raise NameError(f"Wrong value: {self.values!r} for key: {self.key!r}. Error: {exc}") from exc
+            raise NameError(
+                f"Wrong value: {self.values!r} for key: {self.key!r}. Error: {exc}"
+            ) from exc
 
         return len(values)
 
