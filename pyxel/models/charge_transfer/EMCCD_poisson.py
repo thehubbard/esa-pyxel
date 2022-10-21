@@ -8,16 +8,53 @@
 """Model for replicating the gain register in an EMCCD"""
 
 import numpy as np
-from collections import Counter
 from pyxel.detectors import CCD
+import numba
 
 
-def multiplication_register_poisson(
+def multiplication_register(
         detector: CCD,
         total_gain: int,
         gain_elements: int,
 ) -> None:
-    image_cube = np.asarray(detector.pixel.array, dtype=float),
+    detector.pixel.array = multiplication_register_poisson(
+        detector.pixel.array,
+        total_gain,
+        gain_elements).astype(np.float)
+
+@numba.njit
+def poisson_register(lam,
+                     image_cube_pix,
+                     new_image_cube_pix,
+                     gain_elements):
+    x=0
+    while x != gain_elements:
+        if x == 0:
+
+            electron_gain = np.random.poisson(lam, int(image_cube_pix))
+
+            new_image_cube_pix = np.round(
+                image_cube_pix + np.sum((electron_gain), 0
+            ))
+
+        else:  # subsequent elements continue adding to the counter instead
+
+            electron_gain = np.random.poisson(lam, int(new_image_cube_pix))
+
+            new_image_cube_pix = np.round(
+                new_image_cube_pix + np.sum(electron_gain), 0
+            )
+        x += 1
+    return new_image_cube_pix
+
+
+@numba.njit
+def multiplication_register_poisson(
+        image_cube: np.ndarray,
+        total_gain: int,
+        gain_elements: int,
+) -> None:
+
     new_image_cube = np.zeros_like(image_cube)
     new_image_cube = new_image_cube.astype(np.int32)
 
@@ -25,19 +62,11 @@ def multiplication_register_poisson(
 
     for j in range(0, image_cube.shape[0]):
         for i in range(0, image_cube.shape[1]):
-            x = 0
 
-            while x != gain_elements:
-                if x == 0:
-                    electron_gain = np.random.poisson(lam, image_cube[j, i])
-                    electron_counter = Counter(electron_gain)  # Counts how many electrons have been gained
-                    new_image_cube[j, i] = np.round(image_cube[j, i] + np.sum(electron_gain), 0)
+            if image_cube[j, i] < 0:
+                new_image_cube[j, i] = poisson_register(lam, 0, new_image_cube[j, i], gain_elements)
+            else:
+                new_image_cube[j, i] = poisson_register(lam, image_cube[j, i], new_image_cube[j, i], gain_elements)
 
-            else:  # subsequent elements continue adding to the counter instead
+    return new_image_cube
 
-                electron_gain = np.random.poisson(lam, new_image_cube[j, i])
-                electron_counter = Counter(electron_gain) + Counter(electron_counter)
-                new_image_cube[j, i] = np.round(new_image_cube[j, i] + np.sum(electron_gain), 0)
-                x = x + 1
-
-    detector.pixel.array = new_image_cube
