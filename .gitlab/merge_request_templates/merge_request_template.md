@@ -19,8 +19,8 @@ make it apparent that there's nothing to do.
    - [ ] `isort .` or `pre-commit run -a` (preferred way)
    - [ ] `black .` or `pre-commit run -a` (preferred way)
    - [ ] `blackdoc .` or `pre-commit run -a` (preferred way)
-   - [ ] `mypy .` or `tox -e mypy` (better way) or `tox -p` (preferred way)
-   - [ ] `flake8 .` or `tox -e flake8` (better way) or `tox -p` (preferred way)
+   - [ ] `mypy .` or `tox -e mypy` or `tox -p` (preferred way)
+   - [ ] `flake8 .` or `tox -e flake8` or `tox -p` (preferred way)
 
 If you have *any* questions of the points above, just **submit and ask**!
 This checklist is here to *help* you, not to deter you from contributing !

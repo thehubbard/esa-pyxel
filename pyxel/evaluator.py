@@ -7,7 +7,6 @@
 
 """TBW."""
 import importlib
-import logging
 from ast import literal_eval
 from collections import abc
 from numbers import Number
@@ -76,15 +75,14 @@ def eval_range(values: Union[str, Sequence]) -> Sequence:
             elif values_array.dtype == int:
                 values_lst = [int(value) for value in values_array]
             else:
-                logging.warning(
-                    "numpy data type is not a float or int: %r", values_array
+                raise NotImplementedError(
+                    f"numpy data type is not a float or int: {values_array!r}"
                 )
-                raise NotImplementedError
         # Preventing any problems with evaluating _ as a variable in outer scope.
         elif values == "_":
             values_lst = ["_"]
         else:
-            obj = eval(values)
+            obj = eval(values, {}, {})
             values_lst = list(obj)
 
     elif isinstance(values, abc.Sequence):

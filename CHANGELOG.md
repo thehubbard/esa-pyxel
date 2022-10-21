@@ -39,6 +39,8 @@
   (See [!521](https://gitlab.com/esa/pyxel/-/merge_requests/521)).
 * Add unit tests for 'Observation' mode.
   (See [!523](https://gitlab.com/esa/pyxel/-/merge_requests/523)).
+* Fix bug in observation mode when using bad value.
+  (See [!525](https://gitlab.com/esa/pyxel/-/merge_requests/525)).
 
 ## version 1.3.2 / 2022-09-08
 
