@@ -76,10 +76,7 @@ def eval_range(values: Union[str, Sequence]) -> Sequence:
             elif values_array.dtype == int:
                 values_lst = [int(value) for value in values_array]
             else:
-                logging.warning(
-                    "numpy data type is not a float or int: %r", values_array
-                )
-                raise NotImplementedError
+                raise NotImplementedError(f"numpy data type is not a float or int: {values_array!r}")
         # Preventing any problems with evaluating _ as a variable in outer scope.
         elif values == "_":
             values_lst = ["_"]
