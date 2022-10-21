@@ -7,7 +7,6 @@
 
 """TBW."""
 import importlib
-import logging
 from ast import literal_eval
 from collections import abc
 from numbers import Number
