@@ -84,7 +84,7 @@ def eval_range(values: Union[str, Sequence]) -> Sequence:
         elif values == "_":
             values_lst = ["_"]
         else:
-            obj = eval(values)
+            obj = eval(values, {}, {})
             values_lst = list(obj)
 
     elif isinstance(values, abc.Sequence):
