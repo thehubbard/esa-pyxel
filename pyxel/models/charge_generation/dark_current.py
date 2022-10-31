@@ -6,7 +6,7 @@
 #   the terms contained in the file ‘LICENCE.txt’.
 
 """Models to generate charge due to dark current process."""
-
+import warnings
 from typing import Optional, Tuple
 
 import numpy as np
@@ -155,6 +155,7 @@ def compute_dark_current(
     dark_current_2d: ndarray
         Dark current values. Unit: e-
     """
+    global warning
     avg_dark_current = average_dark_current(
         temperature=temperature,
         pixel_area=pixel_area,
@@ -174,6 +175,13 @@ def compute_dark_current(
     dark_current_2d = dark_current_shot_noise_2d * (
         1 + np.random.lognormal(sigma=dark_current_fpn_sigma, size=shape)
     )
+
+    if np.isinf(dark_current_2d).any():
+        warnings.warn(
+            f"Unphysical high value for dark_current_fpn_sigma. "
+            f"It will result in inf values for dark_current. Enable a FWC model to ensure a physical limit.",
+            RuntimeWarning,
+        )
 
     return dark_current_2d
 
