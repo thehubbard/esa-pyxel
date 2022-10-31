@@ -25,6 +25,8 @@
 ### Models
 * Create a simple cosmic ray model based on stopping power curves.
   (See [!339](https://gitlab.com/esa/pyxel/-/merge_requests/339)).
+* Check correct range for dark_current.
+  (See [!522](https://gitlab.com/esa/pyxel/-/merge_requests/522)).
 
 ### Others
 * Improved JSON Schema.
