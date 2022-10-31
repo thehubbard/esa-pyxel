@@ -178,8 +178,8 @@ def compute_dark_current(
 
     if np.isinf(dark_current_2d).any():
         warnings.warn(
-            f"Unphysical high value for dark_current_fpn_sigma. "
-            f"It will result in inf values for dark_current. Enable a FWC model to ensure a physical limit.",
+            "Unphysical high value for dark_current_fpn_sigma. "
+            "It will result in inf values for dark_current. Enable a FWC model to ensure a physical limit.",
             RuntimeWarning,
         )
 
