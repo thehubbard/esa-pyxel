@@ -5,7 +5,7 @@ Tutorials and examples
 ======================
 
 We recommend you to start with the tutorial available in the form of Jupyter notebooks.
-It covers covering all the basics, the four running modes and adding a new model. Apart from the tutorial,
+It covers all the basics, the four running modes and adding a new model. Apart from the tutorial,
 more examples on running modes and different models are also available. See below for a full list.
 
 All of the tutorials and examples can be found in a separate public repository
