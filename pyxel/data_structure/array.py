@@ -7,11 +7,15 @@
 
 """Pyxel Array class."""
 
-from typing import Optional, Tuple, Type, Union
+from typing import TYPE_CHECKING, Optional, Tuple, Type, Union
 
 import numpy as np
 
 from pyxel.util.memory import get_size
+
+if TYPE_CHECKING:
+    import matplotlib.pyplot as plt
+    import xarray as xr
 
 
 # TODO: Is it possible to move this to `data_structure/__init__.py' ?
@@ -24,6 +28,8 @@ class Array:
 
     EXP_TYPE = type(None)  # type: Union[Type, np.dtype]
     TYPE_LIST = ()  # type: Tuple[np.dtype, ...]
+    NAME = ""  # type: str
+    UNIT = ""  # type: str
 
     # TODO: Add units ?
     def __init__(self, value: np.ndarray):
@@ -91,7 +97,7 @@ class Array:
 
     @property
     def array(self) -> np.ndarray:
-        """Two dimensional numpy array storing the data.
+        """Two-dimensional numpy array storing the data.
 
         Only accepts an array with the right type and shape.
         """
@@ -102,7 +108,7 @@ class Array:
 
     @array.setter
     def array(self, value: np.ndarray) -> None:
-        """Overwrite the two dimensional numpy array storing the data.
+        """Overwrite the two-dimensional numpy array storing the data.
 
         Only accepts an array with the right type and shape.
         """
@@ -123,3 +129,35 @@ class Array:
         """
         self._numbytes = get_size(self)
         return self._numbytes
+
+    def to_xarray(self) -> "xr.DataArray":
+        """Convert into a `DataArray` object."""
+        import xarray as xr
+
+        num_rows, num_cols = self.shape
+        return xr.DataArray(
+            self.array,
+            dims=["y", "x"],
+            coords={"y": range(num_rows), "x": range(num_cols)},
+            attrs={"units": self.UNIT, "long_name": self.NAME},
+        )
+
+    def plot(self, robust: bool = True) -> None:
+        """Plot the array using Matplotlib.
+
+        Parameters
+        ----------
+        robust : bool, optional
+            If True, the colormap is computed with 2nd and 98th percentile
+            instead of the extreme values.
+
+        Returns
+        -------
+
+        """
+        import matplotlib.pyplot as plt
+
+        arr = self.to_xarray()  # type: xr.DataArray
+
+        arr.plot(robust=robust)
+        plt.title(self.NAME)

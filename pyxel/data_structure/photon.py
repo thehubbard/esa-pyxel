@@ -32,6 +32,8 @@ class Photon(Array):
         np.dtype(np.float32),
         np.dtype(np.float64),
     )
+    NAME = "Photon"
+    UNIT = "Ph"
 
     def __init__(self, geo: "Geometry"):
         new_array = np.zeros((geo.row, geo.col), dtype=self.EXP_TYPE)
@@ -40,7 +42,7 @@ class Photon(Array):
 
     @property
     def array(self) -> np.ndarray:
-        """Two dimensional numpy array storing the data.
+        """Two-dimensional numpy array storing the data.
 
         Only accepts an array with the right type and shape.
         """
@@ -48,7 +50,7 @@ class Photon(Array):
 
     @array.setter
     def array(self, value: np.ndarray) -> None:
-        """Overwrite the two dimensional numpy array storing the data.
+        """Overwrite the two-dimensional numpy array storing the data.
 
         Only accepts an array with the right type and shape.
         """

@@ -33,6 +33,8 @@ class Image(Array):
         np.dtype(np.float32),
         np.dtype(np.float64),
     )
+    NAME = "Image"
+    UNIT = "adu"
 
     def __init__(self, geo: "Geometry"):
         new_array = np.zeros((geo.row, geo.col), dtype=self.EXP_TYPE)
