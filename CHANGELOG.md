@@ -15,6 +15,8 @@
   (See [!513](https://gitlab.com/esa/pyxel/-/merge_requests/513)).
 * Identical argument names for different models crashes observation mode.
   (See [!524](https://gitlab.com/esa/pyxel/-/merge_requests/524)).
+* Add methods '.plot()' and '.to_xarray' for 'Pixel', 'Photon', 'Signal', 'Image' and 'Phase'.
+  (See [!528](https://gitlab.com/esa/pyxel/-/merge_requests/528)).
 
 ### Documentation
 * Add a 'copy' button in documentation to copy code blocks.

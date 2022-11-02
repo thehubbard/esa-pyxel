@@ -30,6 +30,8 @@ class Pixel(Array):
         np.dtype(np.float32),
         np.dtype(np.float64),
     )
+    NAME = "Pixel"
+    UNIT = "$e^{-1}$"
 
     def __init__(self, geo: "Geometry"):
         new_array = np.zeros((geo.row, geo.col), dtype=self.EXP_TYPE)
