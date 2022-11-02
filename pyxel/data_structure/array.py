@@ -14,7 +14,6 @@ import numpy as np
 from pyxel.util.memory import get_size
 
 if TYPE_CHECKING:
-    import matplotlib.pyplot as plt
     import xarray as xr
 
 
@@ -150,10 +149,6 @@ class Array:
         robust : bool, optional
             If True, the colormap is computed with 2nd and 98th percentile
             instead of the extreme values.
-
-        Returns
-        -------
-
         """
         import matplotlib.pyplot as plt
 
