@@ -123,6 +123,7 @@ def compute_dark_current(
     band_gap: float,
     fixed_pattern_noise_factor: float,
     band_gap_room_temperature: float,
+    temporal_noise: bool,
 ) -> np.ndarray:
     """Compute dark current.
 
@@ -149,6 +150,8 @@ def compute_dark_current(
         Fixed pattern noise factor.
     band_gap_room_temperature: float
         Semiconductor band gap at 300K. If none, the one for silicon is used. Unit: eV
+    temporal_noise: bool
+        Shot noise.
 
     Returns
     -------
@@ -164,22 +167,29 @@ def compute_dark_current(
         band_gap_room_temperature=band_gap_room_temperature,
     )
 
-    dark_signal_2d = np.ones(shape) * avg_dark_current * time_step
-    dark_current_shot_noise_2d = np.random.poisson(
-        dark_signal_2d
-    )  # dark current shot noise
-    dark_current_fpn_sigma = (
-        time_step * avg_dark_current * fixed_pattern_noise_factor
-    )  # sigma of fpn distribution
+    if temporal_noise == True:
+        dark_signal_2d = np.ones(shape) * avg_dark_current * time_step
+        dark_current_shot_noise_2d = np.random.poisson(
+            dark_signal_2d
+        )  # dark current shot noise
+        dark_current_2d = dark_current_shot_noise_2d
+    else:
+        dark_signal_2d = np.ones(shape) * avg_dark_current * time_step
+        dark_current_2d = dark_signal_2d
 
-    dark_current_2d = dark_current_shot_noise_2d * (
-        1 + np.random.lognormal(sigma=dark_current_fpn_sigma, size=shape)
-    )
+    if fixed_pattern_noise_factor is not None:
+        dark_current_fpn_sigma = (
+            time_step * avg_dark_current * fixed_pattern_noise_factor
+        )  # sigma of fpn distribution
+
+        dark_current_2d = dark_current_2d * (
+            1 + np.random.lognormal(sigma=dark_current_fpn_sigma, size=shape)
+        )
 
     if np.isinf(dark_current_2d).any():
         warnings.warn(
-            "Unphysical high value for dark_current_fpn_sigma. "
-            "It will result in inf values for dark_current. Enable a FWC model to ensure a physical limit.",
+            "Unphysical high value for dark current from fixed pattern noise distribution"
+            " will result in inf values. Enable a FWC model to ensure a physical limit.",
             RuntimeWarning,
         )
 
@@ -189,10 +199,11 @@ def compute_dark_current(
 def dark_current(
     detector: Detector,
     figure_of_merit: float,
-    fixed_pattern_noise_factor: float,
+    fixed_pattern_noise_factor: Optional[float] = None,
     band_gap: Optional[float] = None,
     band_gap_room_temperature: Optional[float] = None,
     seed: Optional[int] = None,
+    temporal_noise: Optional[bool] = True,
 ) -> None:
     """Add dark current to the detector charge.
 
@@ -215,6 +226,8 @@ def dark_current(
         Semiconductor band gap at 300K. If none, the one for silicon is used. Unit: eV
     seed: int, optional
         Random seed.
+    temporal_noise: bool, optional
+        Shot noise.
     """
     geo = detector.geometry
     pixel_area = geo.pixel_vert_size * 1e-4 * geo.pixel_horz_size * 1e-4  # in cm^2
@@ -242,6 +255,7 @@ def dark_current(
             band_gap=final_band_gap,
             band_gap_room_temperature=final_band_gap_room_temperature,
             fixed_pattern_noise_factor=fixed_pattern_noise_factor,
+            temporal_noise=temporal_noise,
         )
 
     detector.charge.add_charge_array(dark_current_array)
