@@ -288,6 +288,7 @@ Example of the configuration file:
         fixed_pattern_noise_factor: 0.01
         band_gap: 1.2  # eV, optional
         band_gap_room_temperature: 1.2  # eV, optional
+        temporal_noise: false
 
 .. autofunction:: pyxel.models.charge_generation.dark_current
 
@@ -316,6 +317,8 @@ Example of the configuration file:
       enabled: true
       arguments:
         cutoff_wavelength: 2.5
+        fixed_pattern_noise_factor: 0.01
+        temporal_noise: true
 
 .. note:: This model is specific for the :term:`MCT` and :term:`CMOS` detector.
 
