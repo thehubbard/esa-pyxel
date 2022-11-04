@@ -6,8 +6,8 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """Simple models to generate charge due to dark current process."""
-
-from typing import Optional
+import warnings
+from typing import Optional, Tuple
 
 import numpy as np
 
@@ -41,7 +41,11 @@ def lambda_e(lambda_cutoff: float) -> float:
     return le
 
 
-def compute_mct_dark_rule07(pitch: float, temperature: float, cut_off: float) -> float:
+def average_dark_current_rule07(
+    pitch: float,
+    temperature: float,
+    cut_off: float,
+) -> float:
     """Compute dark current.
 
     Parameters
@@ -55,8 +59,8 @@ def compute_mct_dark_rule07(pitch: float, temperature: float, cut_off: float) ->
 
     Returns
     -------
-    dark_current: float
-        In e-/pixel/s.
+    dark_current_rule07: float
+        Dark current values. Unit: e-/pixel/s.
     """
     c = 1.16  # activation energy factor
     q = 1.602e-19  # Charge of one electron, unit= A.s
@@ -73,15 +77,87 @@ def compute_mct_dark_rule07(pitch: float, temperature: float, cut_off: float) ->
     amp_to_eps = 6.242e18  # e-/s
     um2_to_cm2 = 1.0e-8
     factor = amp_to_eps * pitch * pitch * um2_to_cm2  # to convert Amp/cm2 in e/pixel/s
-    dc = rule07 * factor
+    avg_dark_current_rule07 = rule07 * factor
 
-    return dc
+    return avg_dark_current_rule07
+
+
+def compute_mct_dark_rule07(
+    shape: Tuple[int, int],
+    pitch: float,
+    time_step: float,
+    temperature: float,
+    cut_off: float,
+    fixed_pattern_noise_factor: Optional[float] = None,
+    temporal_noise: bool = True,
+) -> np.ndarray:
+    """Compute dark current.
+
+    Parameters
+    ----------
+    shape: tuple
+        Output array shape.
+    pitch: float
+        the x and y dimension of the pixel in micrometer
+    time_step: float
+        Time step. Unit: s
+    temperature: float
+        the devices temperature
+    cut_off: float
+        the detector wavelength cut-off in micrometer
+    fixed_pattern_noise_factor: float
+        Fixed pattern noise factor.
+    temporal_noise: bool
+        Shot noise.
+
+    Returns
+    -------
+    dark_current_2d_rule07: ndarray
+        Dark current values. Unit: e-
+    """
+
+    avg_dark_current_rule07 = average_dark_current_rule07(
+        pitch=pitch,
+        temperature=temperature,
+        cut_off=cut_off,
+    )
+
+    if temporal_noise:
+        dark_signal_2d_rule07 = np.ones(shape) * avg_dark_current_rule07 * time_step
+        dark_current_shot_noise_2d_rule07 = np.random.poisson(
+            dark_signal_2d_rule07
+        )  # dark current shot noise
+        dark_current_2d_rule07 = dark_current_shot_noise_2d_rule07.astype(float)
+    else:
+        # The number of charge generated with Poisson distribution using rule07 empiric law for lambda
+        dark_signal_2d_rule07 = np.ones(shape) * avg_dark_current_rule07 * time_step
+        dark_current_2d_rule07 = dark_signal_2d_rule07
+
+    if fixed_pattern_noise_factor is not None:
+        dark_current_fpn_sigma_rule07 = (
+            time_step * avg_dark_current_rule07 * fixed_pattern_noise_factor
+        )  # sigma of fpn distribution
+
+        dark_current_2d_rule07 = dark_current_2d_rule07 * (
+            1 + np.random.lognormal(sigma=dark_current_fpn_sigma_rule07, size=shape)
+        )
+
+    if np.isinf(dark_current_2d_rule07).any():
+        warnings.warn(
+            "Unphysical high value for dark current from fixed pattern noise distribution"
+            " will result in inf values. Enable a FWC model to ensure a physical limit.",
+            RuntimeWarning,
+        )
+
+    return dark_current_2d_rule07
 
 
 def dark_current_rule07(
     detector: CMOS,
     cutoff_wavelength: float = 2.5,  # unit: um
+    fixed_pattern_noise_factor: Optional[float] = None,
     seed: Optional[int] = None,
+    temporal_noise: bool = True,
 ) -> None:
     """Generate charge from dark current process.
 
@@ -92,7 +168,11 @@ def dark_current_rule07(
     detector: Detector
     cutoff_wavelength: float
         Cutoff wavelength. Unit: um
+    fixed_pattern_noise_factor: float
+        Fixed pattern noise factor.
     seed: int, optional
+    temporal_noise: bool, optional
+        Shot noise.
     """
     # TODO: investigate on the knee of rule07 for higher 1/le*T values
     if not isinstance(detector, CMOS):
@@ -104,14 +184,17 @@ def dark_current_rule07(
 
     pitch = geo.pixel_vert_size  # assumes a square pitch
     temperature = detector.environment.temperature
+    time_step = detector.time_step
 
     with set_random_seed(seed):
-        dc = compute_mct_dark_rule07(
-            pitch=pitch, temperature=temperature, cut_off=cutoff_wavelength
+        dark_current_array_rule07 = compute_mct_dark_rule07(
+            pitch=pitch,
+            temperature=temperature,
+            cut_off=cutoff_wavelength,
+            shape=geo.shape,
+            time_step=time_step,
+            fixed_pattern_noise_factor=fixed_pattern_noise_factor,
+            temporal_noise=temporal_noise,
         )
-        ne = dc * detector.time_step
 
-        # The number of charge generated with Poisson distribution using rule07 empiric law for lambda
-        charge_number = np.random.poisson(ne, size=(geo.row, geo.col)).astype(float)
-
-    detector.charge.add_charge_array(charge_number)
+    detector.charge.add_charge_array(dark_current_array_rule07)

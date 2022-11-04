@@ -16,7 +16,9 @@ from pyxel.detectors import APD, Detector
 from pyxel.util import set_random_seed
 
 
-def band_gap(band_gap_0: float, alpha: float, beta: float, temperature: float) -> float:
+def calculate_band_gap(
+    band_gap_0: float, alpha: float, beta: float, temperature: float
+) -> float:
     """Return band gap based on Varshni empirical expression.
 
     Parameters
@@ -59,7 +61,7 @@ def band_gap_silicon(temperature: float) -> float:
     alpha = 7.021e-4  # ev/K
     beta = 1108.0  # K
 
-    return band_gap(
+    return calculate_band_gap(
         band_gap_0=band_gap_0, alpha=alpha, beta=beta, temperature=temperature
     )
 
@@ -121,8 +123,9 @@ def compute_dark_current(
     pixel_area: float,
     figure_of_merit: float,
     band_gap: float,
-    fixed_pattern_noise_factor: float,
     band_gap_room_temperature: float,
+    fixed_pattern_noise_factor: Optional[float] = None,
+    temporal_noise: bool = True,
 ) -> np.ndarray:
     """Compute dark current.
 
@@ -145,17 +148,19 @@ def compute_dark_current(
         Dark current figure of merit. Unit: nA/cm^2
     band_gap: float
         Semiconductor band_gap. Unit: eV
-    fixed_pattern_noise_factor: float
-        Fixed pattern noise factor.
     band_gap_room_temperature: float
         Semiconductor band gap at 300K. If none, the one for silicon is used. Unit: eV
+    fixed_pattern_noise_factor: float
+        Fixed pattern noise factor.
+    temporal_noise: bool
+        Shot noise.
 
     Returns
     -------
     dark_current_2d: ndarray
         Dark current values. Unit: e-
     """
-    global warning
+
     avg_dark_current = average_dark_current(
         temperature=temperature,
         pixel_area=pixel_area,
@@ -164,22 +169,29 @@ def compute_dark_current(
         band_gap_room_temperature=band_gap_room_temperature,
     )
 
-    dark_signal_2d = np.ones(shape) * avg_dark_current * time_step
-    dark_current_shot_noise_2d = np.random.poisson(
-        dark_signal_2d
-    )  # dark current shot noise
-    dark_current_fpn_sigma = (
-        time_step * avg_dark_current * fixed_pattern_noise_factor
-    )  # sigma of fpn distribution
+    if temporal_noise:
+        dark_signal_2d = np.ones(shape) * avg_dark_current * time_step
+        dark_current_shot_noise_2d = np.random.poisson(
+            dark_signal_2d
+        )  # dark current shot noise
+        dark_current_2d = dark_current_shot_noise_2d.astype(float)
+    else:
+        dark_signal_2d = np.ones(shape) * avg_dark_current * time_step
+        dark_current_2d = dark_signal_2d
 
-    dark_current_2d = dark_current_shot_noise_2d * (
-        1 + np.random.lognormal(sigma=dark_current_fpn_sigma, size=shape)
-    )
+    if fixed_pattern_noise_factor is not None:
+        dark_current_fpn_sigma = (
+            time_step * avg_dark_current * fixed_pattern_noise_factor
+        )  # sigma of fpn distribution
+
+        dark_current_2d = dark_current_2d * (
+            1 + np.random.lognormal(sigma=dark_current_fpn_sigma, size=shape)
+        )
 
     if np.isinf(dark_current_2d).any():
         warnings.warn(
-            "Unphysical high value for dark_current_fpn_sigma. "
-            "It will result in inf values for dark_current. Enable a FWC model to ensure a physical limit.",
+            "Unphysical high value for dark current from fixed pattern noise distribution"
+            " will result in inf values. Enable a FWC model to ensure a physical limit.",
             RuntimeWarning,
         )
 
@@ -189,10 +201,11 @@ def compute_dark_current(
 def dark_current(
     detector: Detector,
     figure_of_merit: float,
-    fixed_pattern_noise_factor: float,
+    fixed_pattern_noise_factor: Optional[float] = None,
     band_gap: Optional[float] = None,
     band_gap_room_temperature: Optional[float] = None,
     seed: Optional[int] = None,
+    temporal_noise: bool = True,
 ) -> None:
     """Add dark current to the detector charge.
 
@@ -215,6 +228,8 @@ def dark_current(
         Semiconductor band gap at 300K. If none, the one for silicon is used. Unit: eV
     seed: int, optional
         Random seed.
+    temporal_noise: bool, optional
+        Shot noise.
     """
     geo = detector.geometry
     pixel_area = geo.pixel_vert_size * 1e-4 * geo.pixel_horz_size * 1e-4  # in cm^2
@@ -242,6 +257,7 @@ def dark_current(
             band_gap=final_band_gap,
             band_gap_room_temperature=final_band_gap_room_temperature,
             fixed_pattern_noise_factor=fixed_pattern_noise_factor,
+            temporal_noise=temporal_noise,
         )
 
     detector.charge.add_charge_array(dark_current_array)
