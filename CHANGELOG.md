@@ -29,6 +29,8 @@
   (See [!339](https://gitlab.com/esa/pyxel/-/merge_requests/339)).
 * Check correct range for dark_current.
   (See [!522](https://gitlab.com/esa/pyxel/-/merge_requests/522)).
+* Add option for dark current non uniformity.
+  (See [!425](https://gitlab.com/esa/pyxel/-/merge_requests/425)).
 
 ### Others
 * Improved JSON Schema.
