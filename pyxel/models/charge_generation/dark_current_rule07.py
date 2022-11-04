@@ -88,8 +88,8 @@ def compute_mct_dark_rule07(
     time_step: float,
     temperature: float,
     cut_off: float,
-    fixed_pattern_noise_factor: float,
-    temporal_noise: bool,
+    fixed_pattern_noise_factor: Optional[float] = None,
+    temporal_noise: bool = True,
 ) -> np.ndarray:
     """Compute dark current.
 
@@ -122,12 +122,12 @@ def compute_mct_dark_rule07(
         cut_off=cut_off,
     )
 
-    if temporal_noise == True:
+    if temporal_noise:
         dark_signal_2d_rule07 = np.ones(shape) * avg_dark_current_rule07 * time_step
         dark_current_shot_noise_2d_rule07 = np.random.poisson(
             dark_signal_2d_rule07
         )  # dark current shot noise
-        dark_current_2d_rule07 = dark_current_shot_noise_2d_rule07
+        dark_current_2d_rule07 = dark_current_shot_noise_2d_rule07.astype(float)
     else:
         # The number of charge generated with Poisson distribution using rule07 empiric law for lambda
         dark_signal_2d_rule07 = np.ones(shape) * avg_dark_current_rule07 * time_step
@@ -157,7 +157,7 @@ def dark_current_rule07(
     cutoff_wavelength: float = 2.5,  # unit: um
     fixed_pattern_noise_factor: Optional[float] = None,
     seed: Optional[int] = None,
-    temporal_noise: Optional[bool] = True,
+    temporal_noise: bool = True,
 ) -> None:
     """Generate charge from dark current process.
 
