@@ -36,7 +36,7 @@ Multiple readout times (time-domain simulation)
 The purpose of having multiple readout times is to execute the same pipeline
 on the same detector object several times. In that case, time evolution of images is available as well.
 Readout times have to be specified in the ``YAML`` file like shown below.
-Users can also set the readout to non-destructive or destructive, set start time or upload times from a file.
+Users can also set the readout to non-destructive or destructive (non-destructive: false), set start time or upload times from a file.
 
 The `non-destructive` mode is used to avoid resetting the detector object
 and emptying the data at each iteration of the detector through the pipeline.
@@ -47,6 +47,16 @@ and emptying the data at each iteration of the detector through the pipeline.
 
     readout:
       times: numpy.linspace(1, 20, 50)
+      non_destructive:  true
+
+    outputs:
+      output_folder: 'output'
+.. code-block:: yaml
+
+  exposure:
+
+    readout:
+      times_from_file: "data/exposure_times.npy"
       non_destructive:  true
 
     outputs:
