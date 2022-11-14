@@ -24,7 +24,7 @@
 * Fix typos in the documentation.
   (See [!517](https://gitlab.com/esa/pyxel/-/merge_requests/517)).
 * Update doc for reading in files in exposure mode
-  (See [!499](https://gitlab.com/esa/pyxel/-/merge_requests/499)).
+  (See [!534](https://gitlab.com/esa/pyxel/-/merge_requests/534)).
 
 ### Models
 * Create a simple cosmic ray model based on stopping power curves.
