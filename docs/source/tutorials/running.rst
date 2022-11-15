@@ -68,6 +68,10 @@ An example of running Pyxel as a library:
 
     pyxel.exposure_mode(exposure=exposure, detector=detector, pipeline=pipeline)
 
+.. Note::
+   You need install a Jupyter Server yourself (e.g. Jupyter Notebook, Jupyter Lab, Jupyter Hub...).
+
+
 Running Pyxel from a Docker container
 =====================================
 

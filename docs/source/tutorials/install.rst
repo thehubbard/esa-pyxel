@@ -83,6 +83,22 @@ And finally **you can install Pyxel** (in the current conda environment)
 .. warning::
     Conda 64-bit **must** be installed and not Conda 32-bit.
 
+
+It is recommended to also install JupyterLab (for example).
+In this case you must run the command:
+
+.. code-block:: bash
+
+    conda install -c conda-forge jupyterlab
+
+
+You can also install Pyxel and JupyterLab at the same time (recommended):
+
+.. code-block:: bash
+
+    conda install -c conda-forge pyxel-sim jupyterlab
+
+
 Updating
 --------
 
@@ -143,6 +159,20 @@ By default, Pyxel is installed without its optional dependencies with the comman
 
     ``pygmo2`` is needed for the calibration mode.
     ``poppy`` is needed for 'optical_psf' model.
+
+It is recommended to also install JupyterLab (for example).
+In this case you must run the command:
+
+.. code-block:: bash
+
+    pip install jupyterlab
+
+
+You can also install Pyxel and JupyterLab at the same time (recommended):
+
+.. code-block:: bash
+
+    pip install pyxel-sim jupyterlab
 
 
 Full installation
