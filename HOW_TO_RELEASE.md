@@ -63,7 +63,17 @@ upstream	https://gitlab.com/esa/pyxel.git (push)
    ```
    :interrobang: This could be done directly inside Gitlab
 
-10. Send the new release 'pyxel-sim' to the Python Package Index (PyPI) repository with
+10. Create a new 'wheel' package for the new release:
+    ```fish
+    # Remove previous build(s)
+    $ rm -rf dist
+    
+    # Create a wheel and a source package
+    $ tox -e build
+    $ ls dist
+    ``` 
+
+11. Send the new release 'pyxel-sim' to the Python Package Index (PyPI) repository with
     the following commands:
        ```fish
        # Send the package to https://test.pypi.org (only for testing)
@@ -73,7 +83,7 @@ upstream	https://gitlab.com/esa/pyxel.git (push)
        $ tox -e release
        ```
    
-11. Send the new release 'pyxel-sim' to the Conda forge channel (after sending the 
+12. Send the new release 'pyxel-sim' to the Conda forge channel (after sending the 
     package to PyPi)
    
     1. Create a new recipe based on the current version of `pyxel-sim` from the PyPi
@@ -114,7 +124,7 @@ upstream	https://gitlab.com/esa/pyxel.git (push)
        6. Propose the change as a pull request to branch 'master' in https://github.com/conda-forge/pyxel-sim-feedstock
        7. Once the recSubmit a pull request to Conda Forge
 
-12. Add a section for the next release {X:Y+1} to `CHANGELOG.md`
+13. Add a section for the next release {X:Y+1} to `CHANGELOG.md`
 
      ```fish
      version {X:Y+1} / 2020-MM-DD
@@ -127,13 +137,13 @@ upstream	https://gitlab.com/esa/pyxel.git (push)
      ~~~~~~~~~~~~~
      ```
 
-13. Commit you changes and push to master again:
+14. Commit you changes and push to master again:
      ```fish
      $ git commit -am "New Changelog section"
      $ git push upstream master
      ```
 
-14. Issue the release on GitLab.
+15. Issue the release on GitLab.
     Click on https://gitlab.com/esa/pyxel/-/releases . Type in the version number and paste the release summary in the notes.
 
-15. Issue the release announcement to the mailing list pyxel-dev@googlegroups.com and to the Pyxel blog.
+16. Issue the release announcement to the mailing list pyxel-dev@googlegroups.com and to the Pyxel blog.
