@@ -26,7 +26,7 @@ upstream	https://gitlab.com/esa/pyxel.git (push)
 
 4. Open a merge request linked to the new release branch with the release summary and changes.
 
-5. Update release notes in `CHANGELOG.rst` in the branch and add release summary at the top.
+5. Update release notes in `CHANGELOG.md` in the branch and add release summary at the top.
 
 6. After merging, again ensure your master branch is synced to upstream:
 
@@ -54,7 +54,7 @@ upstream	https://gitlab.com/esa/pyxel.git (push)
 
    d. In the field 'Message', enter `{X.Y}`
 
-   e. In the field 'Release notes', enter the content of `CHANGELOG.rst` only for this release.
+   e. In the field 'Release notes', enter the content of `CHANGELOG.md` only for this release.
 
 9. Push your changes to master:
    ```fish
@@ -114,7 +114,7 @@ upstream	https://gitlab.com/esa/pyxel.git (push)
        6. Propose the change as a pull request to branch 'master' in https://github.com/conda-forge/pyxel-sim-feedstock
        7. Once the recSubmit a pull request to Conda Forge
 
-12. Add a section for the next release {X:Y+1} to `CHANGELOG.rst`
+12. Add a section for the next release {X:Y+1} to `CHANGELOG.md`
 
      ```fish
      version {X:Y+1} / 2020-MM-DD
