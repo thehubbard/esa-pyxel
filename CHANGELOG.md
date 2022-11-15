@@ -1,7 +1,12 @@
 # Changelog
 
 
-## UNRELEASED
+## 1.4 / 2022-11-15
+
+This release brings a number of bugfixes and documentation improvements.
+A new 'charge_deposition_in_mct' model is added in the 'Charge Generation' group
+and it's now possible to import/export a Detector object to/from an ASDF file.
+
 
 ### Core
 * Implement multi-wavelength photon descriptions in `Detector.scene`.
