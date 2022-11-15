@@ -51,6 +51,8 @@
   (See [!525](https://gitlab.com/esa/pyxel/-/merge_requests/525)).
 * Remove used unit tests 'test_pyxel_loader'.
   (See [!531](https://gitlab.com/esa/pyxel/-/merge_requests/531)).
+* 'JupyterLab' as an optional dependency of Pyxel.
+  (See [!532](https://gitlab.com/esa/pyxel/-/merge_requests/532)).
 
 ## version 1.3.2 / 2022-09-08
 
