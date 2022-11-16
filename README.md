@@ -2,7 +2,7 @@ Pyxel detector simulation framework
 ===================================
 
 [![pipeline status](https://gitlab.com/esa/pyxel/badges/master/pipeline.svg)](https://gitlab.com/esa/pyxel/-/pipelines)
-[![License](https://img.shields.io/badge/license-MIT-green.svg)](https://gitlab.com/esa/pyxel/blob/master/LICENSE)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](https://gitlab.com/esa/pyxel/blob/master/LICENSE.txt)
 [![docs](https://esa.gitlab.io/pyxel/documentation.svg)](https://esa.gitlab.io/pyxel/doc)
 [![gitter](https://badges.gitter.im/pyxel-framework/community.svg)](https://gitter.im/pyxel-framework/community)
 [![Google Group](https://img.shields.io/badge/Google%20Group-Pyxel%20Detector%20Framework-blue.svg)](https://groups.google.com/g/pyxel-detector-framework)
@@ -22,7 +22,7 @@ made by CCD or CMOS-based detectors.
 *Pyxel* is tested on Python 3.7+.
 
 If you'd like to contribute to *Pyxel* you're most welcome.
-Please read [the little guide](https://esa.gitlab.io/pyxel/doc/stable/contributing.html) to get you started.
+Please read [the little guide](https://esa.gitlab.io/pyxel/doc/stable/references/contributing.html) to get you started.
 
 ## Documentation
 
@@ -42,12 +42,12 @@ Example notebooks of Pyxel can be found in a separate public repository [Pyxel D
 
 
 * Report bugs, suggest features or view the source code on [GitLab](https://gitlab.com/esa/pyxel).
-* For less well defined questions or ideas, or to announce other projets of interest to Pyxel users, use the *Pyxel* [mailing list](https://rssd-mgw.estec.esa.int:81/mailman/listinfo/pyxel).
+* For less well defined questions or ideas, or to announce other projets of interest to Pyxel users, use the *Pyxel* [mailing list](https://groups.google.com/g/pyxel-detector-framework).
 
 ## Discussion and Development
 
 Most development discussion is taking place on GitLab in this repo.
-Further, the *Pyxel* [mailing list](https://rssd-mgw.estec.esa.int:81/mailman/listinfo/pyxel) can also be used for specialized discussions or design issues, and a [Gitter channel](https://gitter.im/pyxel-framework/community) is available for quick development related questions.
+Further, the *Pyxel* [mailing list](https://groups.google.com/g/pyxel-detector-framework) can also be used for specialized discussions or design issues, and a [Gitter channel](https://gitter.im/pyxel-framework/community) is available for quick development related questions.
 
 
 ## Contributing to *Pyxel*
@@ -55,7 +55,7 @@ Further, the *Pyxel* [mailing list](https://rssd-mgw.estec.esa.int:81/mailman/li
 All contributions, bug reports, bug fixes, documentation improvements, enhancements and ideas are welcome.
 
 A detailed overview on how to contribute to *Pyxel* can be found in the
-**[contributing guide](https://esa.gitlab.io/pyxel/doc/stable/contributing.html)**.
+[**contributing guide**](https://esa.gitlab.io/pyxel/doc/stable/references/contributing.html).
 There is also an [overview](.gitlab/CONTRIBUTING.md) on GitLab.
 
 If you are simply looking to start working with the *Pyxel* codebase, navigate to the
@@ -64,7 +64,7 @@ There are a number of issues listed under [Docs](https://gitlab.com/esa/pyxel/is
 
 Or maybe through using *Pyxel* you have an idea of your own or are looking for something in the documentation and thinking 'this can be improved'... you can do something about it !
 
-Feel free to ask questions on the [mailing list](https://rssd-mgw.estec.esa.int:81/mailman/listinfo/pyxel) or on [Gitter](https://gitter.im/pyxel-framework/community).
+Feel free to ask questions on the [mailing list](https://groups.google.com/g/pyxel-detector-framework) or on [Gitter](https://gitter.im/pyxel-framework/community).
 
 
 ## Changelog
@@ -74,4 +74,4 @@ The [detailed changelog](https://esa.gitlab.io/pyxel/doc/stable/references/chang
 
 ## License
 
-*Pyxel* is released under [MIT license](https://esa.gitlab.io/pyxel/doc/stable/license.html).
+*Pyxel* is released under [MIT license](https://gitlab.com/esa/pyxel/blob/master/LICENSE.txt).
