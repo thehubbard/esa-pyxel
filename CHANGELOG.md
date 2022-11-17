@@ -9,6 +9,12 @@
 ### Models
 
 ### Others
+* The minimum version of 'holoview'
+  (See [!540](https://gitlab.com/esa/pyxel/-/merge_requests/540)) was changed:
+
+  | Package   | Old   | New        |
+  | --------- |-------| ---------- |
+  | holoviews | undef | **1.15**   |
 
 
 ## 1.4 / 2022-11-15
