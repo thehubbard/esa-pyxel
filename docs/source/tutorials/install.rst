@@ -80,6 +80,16 @@ And finally **you can install Pyxel** (in the current conda environment)
 
     conda install -c conda-forge pyxel-sim
 
+For now, it's not possible to install a recent version of [``poppy``](https://poppy-optics.readthedocs.io/en/latest/)
+for all platforms directly from ``conda``.
+The user **must** install ``poppy`` manually (in the current conda environment) with the command ``pip``:
+
+.. code-block:: bash
+
+    conda install -c conda-forge pyxel-sim   # First
+    pip install poppy
+
+
 .. warning::
     Conda 64-bit **must** be installed and not Conda 32-bit.
 
