@@ -253,7 +253,7 @@ Pyxel has the following **mandatory** dependencies:
 * `pandas <https://pandas.pydata.org>`_
 * `numba <https://numba.pydata.org>`_
 * `tqdm <https://tqdm.github.io>`_
-* `holoviews <https://holoviews.org>`_ 1.14.2 or later
+* `holoviews <https://holoviews.org>`_ 1.15 or later
 * `matplotlib <https://matplotlib.org>`_
 * `h5py <https://www.h5py.org>`_
 
