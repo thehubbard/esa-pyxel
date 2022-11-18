@@ -5,6 +5,8 @@
 ### Core
 
 ### Documentation
+* Add more information about installation of 'poppy'.
+  (See [!541](https://gitlab.com/esa/pyxel/-/merge_requests/541)).
 
 ### Models
 
