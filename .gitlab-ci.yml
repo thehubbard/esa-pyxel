@@ -139,6 +139,7 @@ doc_development:
     - tox -e docs
     - mv docs/html latest
     - (test -f static/pyxel_schema.json && cp static/pyxel_schema.json latest) || echo "No file 'pyxel_schema.json'"
+    - (cp static/*.yaml latest) || echo "No file(s) '*.yaml'"
   artifacts:
     paths:
       - latest
@@ -156,6 +157,7 @@ doc_production:
     - tox -e docs
     - mv docs/html stable
     - (test -f static/pyxel_schema.json && cp static/pyxel_schema.json stable) || echo "No file 'pyxel_schema.json'"
+    - (cp static/*.yaml stable) || echo "No file(s) '*.yaml'"
   artifacts:
     paths:
       - stable

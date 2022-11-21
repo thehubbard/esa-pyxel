@@ -19,6 +19,8 @@
   | Package   | Old   | New        |
   | --------- |-------| ---------- |
   | holoviews | undef | **1.15**   |
+* Create a new Conda Environment file to install 'pyxel' version 1.4.
+  (See [!546](https://gitlab.com/esa/pyxel/-/merge_requests/546)).
 
 
 ## 1.4 / 2022-11-15

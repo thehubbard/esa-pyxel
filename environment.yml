@@ -20,8 +20,6 @@
 name: pyxel-dev
 channels:
   - conda-forge
-  - numba
-  - defaults
 dependencies:
 # Python
   - python
@@ -42,9 +40,7 @@ dependencies:
   - dask-labextension
 # Jupyter notebook
   - ipywidgets>=7.5
-  - notebook>=6
   - jupyterlab
-  - nodejs
 # Input/Output
   - astropy>=4.3
   - fsspec>=2021
@@ -66,6 +62,15 @@ dependencies:
   - black>=20
   - isort>=5
   - jupyterlab_code_formatter
+# Documentation
+  - doc8
+  - sphinx
+  - sphinx-book-theme
+  - sphinxcontrib-bibtex
+  - sphinx-panels
+  - sphinx-inline-tabs
+  - myst-nb
+  - sphinx-copybutton
 # Development
   - flake8
   - mypy
