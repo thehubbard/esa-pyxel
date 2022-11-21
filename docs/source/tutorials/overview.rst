@@ -72,19 +72,20 @@ commands in the terminal:
     then you can replace command ``conda`` by ``mamba``.
 
 
-.. tab:: Windows (Powershell)
-
-    .. code-block:: bash
-
-        Invoke-WebRequest https://esa.gitlab.io/pyxel/doc/stable/pyxel-1.4-environment.yaml
-        conda env create -f pyxel-1.4-environment.yaml
-
 .. tab:: Linux, MacOS, Windows (WSL)
 
     .. code-block:: bash
 
-        curl -O https://esa.gitlab.io/pyxel/doc/stable/pyxel-1.4-environment.yaml
+        curl -O https://esa.gitlab.io/pyxel/doc/latest/pyxel-1.4-environment.yaml
         conda env create -f pyxel-1.4-environment.yaml
+
+.. tab:: Windows (Powershell)
+
+    .. code-block:: bash
+
+        wget https://esa.gitlab.io/pyxel/doc/latest/pyxel-1.4-environment.yaml -outfile "pyxel-1.4-environment.yaml"
+        conda env create -f pyxel-1.4-environment.yaml
+
 
 Once the conda environment has been created you can active it using:
 
@@ -93,7 +94,7 @@ Once the conda environment has been created you can active it using:
     conda activate pyxel-1.4
 
 You can now proceed to download the Pyxel tutorial notebooks.
-The total size to download is ~100 MB.
+The total size to download is ~200 MB.
 
 Select the location where you want to install the tutorials and datasets and
 proceed with the following command to download them in folder ``pyxel-examples``:
