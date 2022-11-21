@@ -125,7 +125,7 @@ def get_documentation(func: t.Callable) -> FuncDocumentation:
     )
 
 
-@functools.cache
+@functools.lru_cache(maxsize=None)
 def get_doc_from_klass(klass: Klass) -> FuncDocumentation:
     if klass.base_cls is None:
         doc = get_documentation(klass.cls)  # type: FuncDocumentation
@@ -402,7 +402,7 @@ def get_model_group_info() -> t.Sequence[ModelGroupInfo]:
     return lst
 
 
-@functools.cache
+@functools.lru_cache(maxsize=None)
 def create_klass(cls: t.Union[t.Type, str]) -> Klass:
     import pyxel.detectors
 
@@ -414,16 +414,15 @@ def create_klass(cls: t.Union[t.Type, str]) -> Klass:
     if (origin := t.get_origin(cls)) is not None:
         args = t.get_args(cls)  # type: t.Sequence
 
-        match origin:
-            case t.Union:
-                if len(args) != 2:
-                    raise NotImplementedError
-
-                # Optional type
-                klass = args[0]
-
-            case _:
+        if origin == t.Union:
+            if len(args) != 2:
                 raise NotImplementedError
+
+            # Optional type
+            klass = args[0]
+
+        else:
+            raise NotImplementedError
     else:
         klass = cls
 
