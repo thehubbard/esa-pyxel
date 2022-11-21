@@ -12,7 +12,7 @@ Pyxel can be run either from command line or used as a library, for example in J
 
        pyxel download-examples
 
-    These examples will be saved in a new sub-folder `pyxel-examples`.
+    These examples will be saved in a new sub-folder ``pyxel-examples``.
     You can find more information in :doc:`examples`.
 
 

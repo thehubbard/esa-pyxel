@@ -47,12 +47,77 @@ and avoid duplication of work. For instance, detector models
 developed for a certain project could be reused by
 other projects as well, making knowledge transfer easier.
 
-Get started
-===========
+Quickstart Setup
+================
+
+The best way to get started and learn Pyxel are the :doc:`examples`.
+
+For convenience we provide a pre-defined conda environment file,
+so you can get additional useful packages together with Pyxel in a virtual isolated environment.
+
+First install `Miniconda <https://docs.conda.io/en/latest/miniconda.html>`_ and then just execute the following
+commands in the terminal:
+
+.. tip::
+
+    Alternatively, you can use `Mamba <https://mamba.readthedocs.io>`_.
+    Mamba is an alternative package manager that support most of conda’s command but
+    offers higher installation speed and more reliable environment solutions.
+    To install ``mamba`` in the Conda base environment:
+
+    .. code-block:: bash
+
+        conda install mamba -n base -c conda-forge
+
+    then you can replace command ``conda`` by ``mamba``.
+
+
+.. tab:: Windows (Powershell)
+
+    .. code-block:: bash
+
+        Invoke-WebRequest https://esa.gitlab.io/pyxel/doc/stable/pyxel-1.4-environment.yaml
+        conda env create -f pyxel-1.4-environment.yaml
+
+.. tab:: Linux, MacOS, Windows (WSL)
+
+    .. code-block:: bash
+
+        curl -O https://esa.gitlab.io/pyxel/doc/stable/pyxel-1.4-environment.yaml
+        conda env create -f pyxel-1.4-environment.yaml
+
+Once the conda environment has been created you can active it using:
+
+.. code-block:: bash
+
+    conda activate pyxel-1.4
+
+You can now proceed to download the Pyxel tutorial notebooks.
+The total size to download is ~100 MB.
+
+Select the location where you want to install the tutorials and datasets and
+proceed with the following command to download them in folder ``pyxel-examples``:
+
+.. code-block:: bash
+
+    pyxel download-examples
+
+Finally start a notebook server by executing:
+
+.. code-block:: bash
+
+    cd pyxel-examples
+    jupyter lab
+
+Now, you can skip the installation guide :doc:`install` and go directly to the tutorials and
+explore the examples in :doc:`examples` to learn how to use Pyxel.
+
+Getting started
+===============
 
 Are you new to Pyxel ? This is the place to start !
 
 1. Start with installation guide in :doc:`install`.
 2. Once ready you can learn how to run Pyxel in :doc:`running`.
 3. Don't forget to take a look at :doc:`get_help` page.
-4. Follow the tutorial and explore the examples in :doc:`examples` to learn how to use Pyxel.
+4. Follow the tutorials and explore the examples in :doc:`examples` to learn how to use Pyxel.
