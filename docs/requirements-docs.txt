@@ -3,6 +3,7 @@
 doc8<1.0.0
 sphinx
 sphinx-book-theme
+sphinxcontrib-bibtex
 sphinx-panels
 ipython != 8.1; python_version < '3.9'
 ipython>=8.1; python_version >= '3.9'
