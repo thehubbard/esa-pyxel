@@ -28,15 +28,15 @@ upstream	https://gitlab.com/esa/pyxel.git (push)
 
 5. Update release notes in `CHANGELOG.md` in the branch and add release summary at the top.
 
-6. After merging, again ensure your master branch is synced to upstream:
+6. Create a new file `continuous_integration/pyxel-{X}.{Y}-environment.yaml` with updated links
+
+7. Update version `{X}.{Y}` in files: `docs/source/tutorials/overview.rst`
+
+8. After merging, again ensure your master branch is synced to upstream:
 
    ```fish
    $ git pull upstream master
    ```
-
-7. Create a new file `continuous_integration/pyxel-{X}.{Y}-environment.yaml` with updated links
-
-8. Update version `{X}.{Y}` in files: `docs/tutorials/overview.rst`
 
 9. If you have any doubts, run the full test suite one final time !
 
@@ -131,14 +131,15 @@ upstream	https://gitlab.com/esa/pyxel.git (push)
 15. Add a section for the next release {X:Y+1} to `CHANGELOG.md`
 
      ```fish
-     version {X:Y+1} / 2020-MM-DD
-     ----------------------------
+     ## UNRELEASED
 
-     Core
-     ~~~~
+     ### Core
 
-     Documentation
-     ~~~~~~~~~~~~~
+     ### Documentation
+    
+     ### Models
+    
+     ### Others
      ```
 
 16. Commit you changes and push to master again:
