@@ -1,8 +1,8 @@
 # Changelog
 
-## UNRELEASED
+## 1.5 / 2022-11-21
 
-### Core
+This is a minor release that brings documentation improvements.
 
 ### Documentation
 * Add more information about installation of 'poppy'.
@@ -11,8 +11,6 @@
   (See [!542](https://gitlab.com/esa/pyxel/-/merge_requests/542)).
 * Add more installation documentation.
   (See [!547](https://gitlab.com/esa/pyxel/-/merge_requests/547)).
-
-### Models
 
 ### Others
 * The minimum version of 'holoview'
