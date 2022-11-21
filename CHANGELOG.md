@@ -1,5 +1,15 @@
 # Changelog
 
+## UNRELEASED
+
+### Core
+
+### Documentation
+
+### Models
+
+### Others
+
 ## 1.5 / 2022-11-21
 
 This is a minor release that brings documentation improvements.
