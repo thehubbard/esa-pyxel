@@ -4,185 +4,130 @@
 Installation
 ============
 
-Pyxel can be installed with `conda <https://docs.conda.io/>`_,
-`pip <https://pip.pypa.io/>`_ or from source.
+There are many ways to install Pyxel. On this page we list the most common ones.
+In general **we recommend to use virtual environments** when using Pyxel.
+This ways you have full control over addition packages that you may use in your analysis
+and your work with well defined computing environments.
 
-If you want to have a full installation of Pyxel, then the recommended installation
-method is to use `conda <https://docs.conda.io/>`__ into a conda environment.
+If you want to learn about using virtual environments see :ref:`Virtual Environments <virtualenvs>`.
+You can also install :ref:`Pyxel for development <contributing.gitlab>`.
 
-The following instructions are valid for MacOS, Windows and Linux.
+..
+    Pyxel can be installed with `conda <https://docs.conda.io/>`_,
+    `pip <https://pip.pypa.io/>`_ or from source.
 
+    If you want to have a full installation of Pyxel, then the recommended installation
+    method is to use `conda <https://docs.conda.io/>`__ into a conda environment.
 
-.. important::
-    Because of its optional and required dependencies, Pyxel is not compatible with
-    all versions of Python.
-
-    You can install Pyxel with `pygmo <https://esa.github.io/pygmo2/>`_ only for
-    **Python 3.7** and **Python 3.8** (not Python 3.9+).
-
-    If you don't use `pygmo <https://esa.github.io/pygmo2/>`_ then you can Pyxel with
-    **Python 3.7**, **Python 3.8** and **Python 3.9** (not Python 3.10+).
+    The following instructions are valid for MacOS, Windows and Linux.
 
 
-.. warning::
-    It is **strongly** encouraged to install optional package
-    `pygmo <https://esa.github.io/pygmo2/>`_ with ``conda`` rather than ``pip``.
-    See `here <https://esa.github.io/pygmo2/install.html#pip>`_ for more information.
+    .. important::
+        Because of its optional and required dependencies, Pyxel is not compatible with
+        all versions of Python.
 
-    Moreover, only the binaries of ``pygmo`` for Linux (not MacOS or Windows)
-    are available on ``pip``.
-    The binaries of ``pygmo`` for MacOS, Windows and Linux are only available
-    on Conda 64bit (**not 32bit**).
+        You can install Pyxel with `pygmo <https://esa.github.io/pygmo2/>`_ only for
+        **Python 3.7** and **Python 3.8** (not Python 3.9+).
+
+        If you don't use `pygmo <https://esa.github.io/pygmo2/>`_ then you can Pyxel with
+        **Python 3.7**, **Python 3.8** and **Python 3.9** (not Python 3.10+).
 
 
-Conda
-=====
+    .. warning::
+        It is **strongly** encouraged to install optional package
+        `pygmo <https://esa.github.io/pygmo2/>`_ with ``conda`` rather than ``pip``.
+        See `here <https://esa.github.io/pygmo2/install.html#pip>`_ for more information.
 
-The easiest way to install Pyxel is using `conda <https://docs.conda.io/>`_.
-The packages are available for Linux, MacOS and Windows from the
+        Moreover, only the binaries of ``pygmo`` for Linux (not MacOS or Windows)
+        are available on ``pip``.
+        The binaries of ``pygmo`` for MacOS, Windows and Linux are only available
+        on Conda 64bit (**not 32bit**).
+
+
+Using Anaconda / Miniconda
+==========================
+
+The easiest way to install Pyxel for Linux, MacOS and Windows is
+to install `Anaconda <https://www.anaconda.com/download>`_
+or `Miniconda <https://docs.conda.io/en/latest/miniconda.html>`_ Python distribution.
+The packages are available from the
 `conda-forge <https://anaconda.org/conda-forge/pyxel-sim>`_.
 
-Conda environment
------------------
+.. note::
 
-It is recommended to create a fresh new `Conda environment <https://docs.conda.io/projects/conda/en/latest/user-guide/concepts/environments.html>`_
-for each installation of Pyxel via ``conda``.
+    It is **strongly** encouraged to install Pyxel with ``conda`` (or ``mamba``) rather than ``pip`` because
+    of the optional dependency `pygmo <https://esa.github.io/pygmo2/>`_.
+    `pygmo <https://esa.github.io/pygmo2/>`_ is exclusively used for the calibration mode.
+    See `here <https://esa.github.io/pygmo2/install.html#pip>`_ for more information.
 
-For more information about Package Management with Conda see
-`this link <https://the-turing-way.netlify.app/reproducible-research/renv/renv-package.html>`_
-from the Turing Way (https://the-turing-way.netlify.app)
+.. important::
 
-First make sure you have a recent version of ``conda`` in your base environment (this is optional):
+    You **must** install a 64-bit version of `Anaconda <https://www.anaconda.com/download>`_
+    or `Miniconda <https://docs.conda.io/en/latest/miniconda.html>`_
 
-.. code-block:: bash
 
-    conda update -n base conda
-
-Then, as a best practice, use a conda environment (e.g. ``<my-env>``) rather than installing in
-the base conda environment
-
-.. code-block:: bash
-
-    conda create -n <my-env>
-
-Once the conda environment (e.g. ``<my-env>`` is created, you must activate it
-
-.. code-block:: bash
-
-    conda activate <my-env>
-
-Full installation
------------------
-
-And finally **you can install Pyxel** (in the current conda environment)
+To install the latest stable version of Pyxel, execute this command in a terminal:
 
 .. code-block:: bash
 
     conda install -c conda-forge pyxel-sim
 
-For now, it's not possible to install a recent version of [``poppy``](https://poppy-optics.readthedocs.io/en/latest/)
-for all platforms directly from ``conda``.
-The user **must** install ``poppy`` manually (in the current conda environment) with the command ``pip``:
+To update an existing installation you can use:
 
 .. code-block:: bash
 
-    conda install -c conda-forge pyxel-sim   # First
-    pip install poppy
+    conda update pyxel-sim
+
+.. note::
+
+    For now, it's not possible to install a recent version of `poppy <https://poppy-optics.readthedocs.io>`__
+    for all platforms directly from ``conda`` or ``mamba``.
+    The user **must** install ``poppy`` manually (in the current conda environment) with the command ``pip``:
+
+    .. code-block:: bash
+
+        pip install poppy
 
 
-.. warning::
-    Conda 64-bit **must** be installed and not Conda 32-bit.
+Using Mamba
+===========
 
-
-It is recommended to also install JupyterLab (for example).
-In this case you must run the command:
-
-.. code-block:: bash
-
-    conda install -c conda-forge jupyterlab
-
-
-You can also install Pyxel and JupyterLab at the same time (recommended):
-
-.. code-block:: bash
-
-    conda install -c conda-forge pyxel-sim jupyterlab
-
-
-Updating
---------
-
-To update Pyxel with ``conda``, you can use the following command:
+Alternatively, you can use `Mamba <https://mamba.readthedocs.io/>`_ for the installation.
+Mamba is an alternative package manager that support most of conda's command but offers
+higher installation speed and more reliable environment solutions.
+To install ``mamba`` in the Conda base environment:
 
 .. code-block:: bash
 
-   conda update pyxel-dev
+    conda install mamba -n base -c conda-forge
+
+then:
+
+.. code-block:: bash
+
+    mamba install -c conda-forge pyxel-sim
+
+Mamba supports of the commands that are available for conda.
+So updating and installing specific versions works the same way
+as above except for replacing the ``conda`` with the ``mamba`` command.
+
+.. note::
+
+    For now, it's not possible to install a recent version of `poppy <https://poppy-optics.readthedocs.io>`__
+    for all platforms directly from ``conda`` or ``mamba``.
+    The user **must** install ``poppy`` manually (in the current conda environment) with the command ``pip``:
+
+    .. code-block:: bash
+
+        pip install poppy
 
 Pip
 ===
 
-Pyxel is available from `PyPi <https://pypi.org/project/pyxel-sim>`_  via ``pip``.
+To install the latest Pyxel **stable** version
+(see `Pyxel page on PyPi <https://pypi.org/project/pyxel-sim>`_)
+using `pip <https://pip.pypa.io>`_:
 
-Virtual environment
--------------------
-
-When using pip, it's good practice to use a virtual environment.
-See `this guide <https://dev.to/bowmanjd/python-tools-for-managing-virtual-environments-3bko#howto>`_
-for details on using virtual environments.
-
-First create a new Python virtual environment in the folder `.venv`
-with module `venv <https://docs.python.org/3/library/venv.html>`_
-
-.. code-block:: bash
-
-   python -m venv .venv
-
-
-Then activate this new virtual environment from folder `.venv` before to install Pyxel.
-
-.. tab:: Windows
-
-    .. code-block:: bash
-
-       # Activate virtual environment '.venv' on Windows
-       .venv\scripts\activate
-
-.. tab:: Linux and MacOS
-
-    .. code-block:: bash
-
-       # Activate virtual environment '.venv' on Linux or MacOS
-       source .venv\bin\activate
-
-Default installation
---------------------
-
-By default, Pyxel is installed without its optional dependencies with the command:
-
-.. code-block:: bash
-
-   pip install pyxel-sim           # Install without 'pygmo2' and 'poppy'
-
-.. note::
-    The libraries ``pygmo2`` and ``poppy`` are not installed with these
-    compulsory requirements.
-
-    ``pygmo2`` is needed for the calibration mode.
-    ``poppy`` is needed for 'optical_psf' model.
-
-It is recommended to also install JupyterLab (for example).
-In this case you must run the command:
-
-.. code-block:: bash
-
-    pip install jupyterlab
-
-
-You can also install Pyxel and JupyterLab at the same time (recommended):
-
-.. code-block:: bash
-
-    pip install pyxel-sim jupyterlab
 
 
 Full installation

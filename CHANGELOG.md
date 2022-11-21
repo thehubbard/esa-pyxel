@@ -9,6 +9,8 @@
   (See [!541](https://gitlab.com/esa/pyxel/-/merge_requests/541)).
 * Add more information about 'wheel' file in the contribution guide.
   (See [!542](https://gitlab.com/esa/pyxel/-/merge_requests/542)).
+* Add more installation documentation.
+  (See [!547](https://gitlab.com/esa/pyxel/-/merge_requests/547)).
 
 ### Models
 

@@ -4,7 +4,7 @@
 # Deactivate: conda deactivate
 
 # Upgrade:    conda update -f pyxel-1.4-environment.yaml
-# Remove:     conda remove -n pyxel-1.4-environment.yaml
+# Remove:     conda remove -n pyxel-1.4
 
 name: pyxel-1.4
 
@@ -12,7 +12,7 @@ channels:
   - conda-forge
 
 dependencies:
-  - pyxel=1.4
+  - pyxel-sim=1.4
   - pip
 # Optional packages
   - jupyterlab          # Install JupyterLab

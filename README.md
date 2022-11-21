@@ -29,7 +29,15 @@ Please read [the little guide](https://esa.gitlab.io/pyxel/doc/stable/references
 
 Learn more about *Pyxel* in its offical [blog](https://esa.gitlab.io/pyxel) and its official documentation at [https://esa.gitlab.io/pyxel/doc](https://esa.gitlab.io/pyxel/doc).
 
+## Quickstart Setup
 
+The best way to get started and learn Pyxel are the [Tutorials and Examples](https://esa.gitlab.io/pyxel/doc/stable/tutorials/examples.html).
+
+For convenience we provide a pre-defined conda environment file,
+so you can get additional useful packages together with Pyxel in a virtual isolated environment.
+
+For more information check the [Quickstart Setup](https://esa.gitlab.io/pyxel/doc/stable/tutorials/overview.html#quickstart-setup) instructions.
+ 
 ## Installation
 
 [Installation instructions](https://esa.gitlab.io/pyxel/doc/stable/tutorials/install.html) can be found in the tutorials.
@@ -43,7 +51,7 @@ Example notebooks of Pyxel can be found in a separate public repository [Pyxel D
 
 
 * Report bugs, suggest features or view the source code on [GitLab](https://gitlab.com/esa/pyxel).
-* For less well defined questions or ideas, or to announce other projets of interest to Pyxel users, use the *Pyxel* [mailing list](https://groups.google.com/g/pyxel-detector-framework).
+* For less well-defined questions or ideas, or to announce other projets of interest to Pyxel users, use the *Pyxel* [mailing list](https://groups.google.com/g/pyxel-detector-framework).
 
 ## Discussion and Development
 
