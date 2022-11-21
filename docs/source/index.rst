@@ -114,6 +114,7 @@ to look for certain things:
    howto/overview.rst
    howto/new_model.rst
    howto/detector_import_export.ipynb
+   howto/json_schema.md
 
 .. toctree::
    :caption: Background / Explanations
