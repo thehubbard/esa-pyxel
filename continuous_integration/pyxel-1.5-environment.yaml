@@ -17,6 +17,7 @@ dependencies:
 # Optional packages
   - jupyterlab          # Install JupyterLab
   - dask-labextension   # Install an extension for JupyterLab
+  - ipympl              # Interactive Matplotlib in Jupyter
 # Pip packages
   - pip:
     - poppy>=1.0.2
