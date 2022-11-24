@@ -214,12 +214,10 @@ def simulate_charge_deposition(
     energy_mean: float = 1.0,
     energy_spread: float = 0.1,
     energy_spectrum: t.Union[str, Path, None] = None,
-    energy_spectrum_sampling: t.Optional[Literal["linear", "log", None]] = "log",
+    energy_spectrum_sampling: t.Optional[Literal["linear", "log"]] = "log",
     ehpair_creation: float = 3.65,
     material_density: float = 2.3290,
-    particle_direction: t.Optional[
-        Literal["isotropic", "orthogonal", None]
-    ] = "isotropic",
+    particle_direction: t.Optional[Literal["isotropic", "orthogonal"]] = "isotropic",
     stopping_power_curve: t.Union[str, Path, None] = None,
 ) -> list:
     """Simulate charge deposition of incident ionizing particles inside a detector.
@@ -270,7 +268,11 @@ def simulate_charge_deposition(
     # determine the total number of ionizing particles to simulate based on flux and exposure duration
     n_p = np.int64(flux * exposure)
 
-    assert n_p > 0
+    if n_p <= 0:
+        raise ValueError("The number of particles generated has to be greater than 0.")
+
+    if x_lim <= 0 or y_lim <= 0 or z_lim <= 0:
+        raise ValueError("Detector dimension is negative or 0.")
 
     # generate random energies for each particle
     if energy_spectrum is None:
@@ -305,7 +307,9 @@ def simulate_charge_deposition(
     p_energies *= 1.0e6  # from MeV to eV
 
     # extract stopping power data convert to correct units and compute initial deposited energy
-    assert stopping_power_curve is not None
+    if stopping_power_curve is None:
+        raise ValueError("No stopping power curve has been parsed.")
+
     stopping_power_data = np.genfromtxt(
         stopping_power_curve, skip_header=1, delimiter=","
     )
