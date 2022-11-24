@@ -262,7 +262,6 @@ def arctic_remove(
         raise ValueError("Number of iterations must be > 1.")
 
     # Conversion
-    traps = []  # type: List[Trap]
     traps = [
         Trap(density=density, release_timescale=release_timescale)
         for density, release_timescale in zip(trap_densities, trap_release_timescales)

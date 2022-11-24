@@ -22,8 +22,10 @@ def multiplication_register(
         raise ValueError("Wrong input parameter")
 
     detector.pixel.array = multiplication_register_poisson(
-        detector.pixel.array, total_gain, gain_elements
-    ).astype(np.float)
+        image_cube=detector.pixel.array,
+        total_gain=total_gain,
+        gain_elements=gain_elements,
+    ).astype(float)
 
 
 @numba.njit
@@ -42,7 +44,7 @@ def multiplication_register_poisson(
     image_cube: np.ndarray,
     total_gain: int,
     gain_elements: int,
-) -> None:
+) -> np.ndarray:
     new_image_cube = np.zeros_like(image_cube, dtype=np.int32)
 
     lam = total_gain ** (1 / gain_elements) - 1
