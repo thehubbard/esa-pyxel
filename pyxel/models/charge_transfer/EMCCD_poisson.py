@@ -7,26 +7,27 @@
 
 """Model for replicating the gain register in an EMCCD"""
 
-import numpy as np
-from pyxel.detectors import CCD
 import numba
+import numpy as np
+
+from pyxel.detectors import CCD
 
 
 def multiplication_register(
-        detector: CCD,
-        total_gain: int,
-        gain_elements: int,
+    detector: CCD,
+    total_gain: int,
+    gain_elements: int,
 ) -> None:
+    if total_gain < 0 or gain_elements < 0:
+        raise ValueError("Wrong input parameter")
+
     detector.pixel.array = multiplication_register_poisson(
-        detector.pixel.array,
-        total_gain,
-        gain_elements).astype(np.float)
+        detector.pixel.array, total_gain, gain_elements
+    ).astype(np.float)
 
 
 @numba.njit
-def poisson_register(lam,
-                     image_cube_pix,
-                     gain_elements):
+def poisson_register(lam, image_cube_pix, gain_elements):
     new_image_cube_pix = image_cube_pix
 
     for _ in range(gain_elements):
@@ -38,9 +39,9 @@ def poisson_register(lam,
 
 @numba.njit
 def multiplication_register_poisson(
-        image_cube: np.ndarray,
-        total_gain: int,
-        gain_elements: int,
+    image_cube: np.ndarray,
+    total_gain: int,
+    gain_elements: int,
 ) -> None:
     new_image_cube = np.zeros_like(image_cube, dtype=np.int32)
 
@@ -51,14 +52,14 @@ def multiplication_register_poisson(
         for i in range(0, xshape):
 
             if image_cube[j, i] < 0:
-                new_image_cube[j, i] = poisson_register(lam=lam,
-                                                        image_cube_pix=0,
-                                                        gain_elements=gain_elements
-                                                        )
+                new_image_cube[j, i] = poisson_register(
+                    lam=lam, image_cube_pix=0, gain_elements=gain_elements
+                )
             else:
-                new_image_cube[j, i] = poisson_register(lam=lam,
-                                                        image_cube_pix=image_cube[j, i],
-                                                        gain_elements=gain_elements
-                                                        )
+                new_image_cube[j, i] = poisson_register(
+                    lam=lam,
+                    image_cube_pix=image_cube[j, i],
+                    gain_elements=gain_elements,
+                )
 
     return new_image_cube
