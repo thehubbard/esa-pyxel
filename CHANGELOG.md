@@ -2,13 +2,15 @@
 
 ## UNRELEASED
 
-### Core
+### Core 
 
 ### Documentation
 
 ### Models
 
 ### Others
+* Add unit tests to charge deposition in MCT model.
+  (See [!553](https://gitlab.com/esa/pyxel/-/merge_requests/553)).
 
 ## 1.5 / 2022-11-21
 
