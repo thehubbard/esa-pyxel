@@ -1,20 +1,13 @@
 import pytest
 
 from pyxel.detectors import (
-    APD,
     CCD,
-    APDCharacteristics,
-    APDGeometry,
     CCDCharacteristics,
     CCDGeometry,
     Environment,
     ReadoutProperties,
 )
-from pyxel.models.charge_generation import (
-    dark_current,
-    dark_current_saphira,
-    simple_dark_current,
-)
+
 from pyxel.models.charge_transfer.EMCCD_poisson import multiplication_register
 
 
