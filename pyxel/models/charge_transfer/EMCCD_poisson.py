@@ -5,22 +5,25 @@
 #  this file, may be copied, modified, propagated, or distributed except according to
 #  the terms contained in the file ‘LICENCE.txt’.
 
-"""Model for replicating the gain register in an EMCCD"""
+"""Model for replicating the gain register in an EMCCD."""
 
 import numba
 import numpy as np
 
 from pyxel.detectors import CCD
 
-"""Main multiplication register that takes in CCD detector along with the gain and the total elements of the EMCCD 
-multiplication register """
-
 
 def multiplication_register(
-        detector: CCD,
-        total_gain: int,
-        gain_elements: int,
+    detector: CCD,
+    total_gain: int,
+    gain_elements: int,
 ) -> None:
+    """Calculate total gain of image with EMCCD multiplication register.
+
+    Takes in CCD detector along with the gain and the total elements of the EMCCD
+    multiplication register.
+    """
+
     if total_gain < 0 or gain_elements < 0:
         raise ValueError("Wrong input parameter")
 
@@ -31,12 +34,13 @@ def multiplication_register(
     ).astype(float)
 
 
-"""This function cycles through each pixel within the image provided, calculates the signal gain from the 
-multiplication register and once all pixels have been cycles through returns a final image with signal added """
-
-
 @numba.njit
 def poisson_register(lam, image_cube_pix, gain_elements):
+    """Calculate total gain of image from EMCCD register.
+
+    Cycles through each pixel within the image provided. Returns a final image with signal added.
+    """
+
     new_image_cube_pix = image_cube_pix
 
     for _ in range(gain_elements):
@@ -46,17 +50,19 @@ def poisson_register(lam, image_cube_pix, gain_elements):
     return new_image_cube_pix
 
 
-"""The function that does the signal gain calculation through the use of poissonian statistics. A single pixel is 
-inputted and is iterated through the total number of gain elements provided with the result being the resultant signal 
-from the pixel going through the multiplication process """
-
-
 @numba.njit
 def multiplication_register_poisson(
-        image_cube: np.ndarray,
-        total_gain: int,
-        gain_elements: int,
+    image_cube: np.ndarray,
+    total_gain: int,
+    gain_elements: int,
 ) -> np.ndarray:
+    """Calculate the total gain of a single pixel from EMCCD register elements.
+
+    A single pixel is
+    inputted and is iterated through the total number of gain elements provided with the result being the resultant
+    signal from the pixel going through the multiplication process.
+    """
+
     new_image_cube = np.zeros_like(image_cube, dtype=np.int32)
 
     lam = total_gain ** (1 / gain_elements) - 1
