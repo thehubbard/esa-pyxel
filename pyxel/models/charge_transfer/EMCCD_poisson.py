@@ -12,11 +12,14 @@ import numpy as np
 
 from pyxel.detectors import CCD
 
+"""Main multiplication register that takes in CCD detector along with the gain and the total elements of the EMCCD 
+multiplication register """
+
 
 def multiplication_register(
-    detector: CCD,
-    total_gain: int,
-    gain_elements: int,
+        detector: CCD,
+        total_gain: int,
+        gain_elements: int,
 ) -> None:
     if total_gain < 0 or gain_elements < 0:
         raise ValueError("Wrong input parameter")
@@ -26,6 +29,10 @@ def multiplication_register(
         total_gain=total_gain,
         gain_elements=gain_elements,
     ).astype(float)
+
+
+"""This function cycles through each pixel within the image provided, calculates the signal gain from the 
+multiplication register and once all pixels have been cycles through returns a final image with signal added """
 
 
 @numba.njit
@@ -39,11 +46,16 @@ def poisson_register(lam, image_cube_pix, gain_elements):
     return new_image_cube_pix
 
 
+"""The function that does the signal gain calculation through the use of poissonian statistics. A single pixel is 
+inputted and is iterated through the total number of gain elements provided with the result being the resultant signal 
+from the pixel going through the multiplication process """
+
+
 @numba.njit
 def multiplication_register_poisson(
-    image_cube: np.ndarray,
-    total_gain: int,
-    gain_elements: int,
+        image_cube: np.ndarray,
+        total_gain: int,
+        gain_elements: int,
 ) -> np.ndarray:
     new_image_cube = np.zeros_like(image_cube, dtype=np.int32)
 
