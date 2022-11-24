@@ -14,9 +14,9 @@ from pyxel.detectors import CCD
 
 
 def multiplication_register(
-    detector: CCD,
-    total_gain: int,
-    gain_elements: int,
+        detector: CCD,
+        total_gain: int,
+        gain_elements: int,
 ) -> None:
     """Calculate total gain of image with EMCCD multiplication register.
 
@@ -36,9 +36,11 @@ def multiplication_register(
 
 @numba.njit
 def poisson_register(lam, image_cube_pix, gain_elements):
-    """Calculate total gain of image from EMCCD register.
+    """Calculate the total gain of a single pixel from EMCCD register elements.
 
-    Cycles through each pixel within the image provided. Returns a final image with signal added.
+    A single pixel is
+    inputted and is iterated through the total number of gain elements provided with the result being the resultant
+    signal from the pixel going through the multiplication process.
     """
 
     new_image_cube_pix = image_cube_pix
@@ -52,15 +54,13 @@ def poisson_register(lam, image_cube_pix, gain_elements):
 
 @numba.njit
 def multiplication_register_poisson(
-    image_cube: np.ndarray,
-    total_gain: int,
-    gain_elements: int,
+        image_cube: np.ndarray,
+        total_gain: int,
+        gain_elements: int,
 ) -> np.ndarray:
-    """Calculate the total gain of a single pixel from EMCCD register elements.
+    """Calculate total gain of image from EMCCD register.
 
-    A single pixel is
-    inputted and is iterated through the total number of gain elements provided with the result being the resultant
-    signal from the pixel going through the multiplication process.
+    Cycles through each pixel within the image provided. Returns a final image with signal added.
     """
 
     new_image_cube = np.zeros_like(image_cube, dtype=np.int32)
