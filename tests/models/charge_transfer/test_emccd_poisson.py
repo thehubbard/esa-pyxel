@@ -1,32 +1,9 @@
 import pytest
 
 from pyxel.detectors import (
-    CCD,
-    CCDCharacteristics,
-    CCDGeometry,
-    Environment,
-    ReadoutProperties,
+    CCD
 )
-
 from pyxel.models.charge_transfer.EMCCD_poisson import multiplication_register
-
-
-@pytest.fixture
-def ccd_10x10() -> CCD:
-    """Create a valid CCD detector."""
-    detector = CCD(
-        geometry=CCDGeometry(
-            row=10,
-            col=10,
-            total_thickness=40.0,
-            pixel_vert_size=10.0,
-            pixel_horz_size=10.0,
-        ),
-        environment=Environment(temperature=200.0),
-        characteristics=CCDCharacteristics(),
-    )
-    detector._readout_properties = ReadoutProperties(num_steps=1)
-    return detector
 
 
 def test_multiplication_register(ccd_10x10: CCD):
