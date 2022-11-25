@@ -125,3 +125,10 @@ Example of the configuration file:
 
 
 .. autofunction:: arctic_remove
+
+EMCCD Model
+===========
+
+:guilabel:`Pixel` → :guilabel:`Pixel`
+
+TBW.

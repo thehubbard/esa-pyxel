@@ -13,7 +13,7 @@
 """TBW."""
 
 from dataclasses import dataclass
-from typing import List, Mapping, Sequence
+from typing import Sequence
 
 import numpy as np
 
@@ -197,17 +197,18 @@ def compute_arctic_remove(
     roe = ac.ROE()
 
     # Build the traps
-    traps = []  # type: List[ac.Trap]
-    for trap_info in parallel_traps:  # type: Trap
-        trap = ac.Trap(
-            density=trap_info.density, release_timescale=trap_info.release_timescale
+    traps = [
+        ac.TrapInstantCapture(
+            density=trap.density,
+            release_timescale=trap.release_timescale,
         )
-        traps.append(trap)
+        for trap in parallel_traps
+    ]  # type: Sequence[ac.TrapInstantCapture]
 
     # Remove CTI
     image_2d_cti_removed = ac.remove_cti(
         image=image_2d,
-        iterations=num_iterations,
+        n_iterations=num_iterations,
         parallel_traps=traps,
         parallel_ccd=ccd,
         parallel_roe=roe,
@@ -220,7 +221,8 @@ def compute_arctic_remove(
 def arctic_remove(
     detector: CCD,
     well_fill_power: float,
-    instant_traps: Sequence[Mapping[str, float]],
+    trap_densities: Sequence[float],
+    trap_release_timescales: Sequence[float],
     num_iterations: int,
     express: int = 0,
 ) -> None:
@@ -250,25 +252,20 @@ def arctic_remove(
         Default ``express = 0`` is a convenient input for automatic ``express = N``.
     """
     # Validation
-    if num_iterations > 0:
+    if len(trap_densities) != len(trap_release_timescales):
+        raise ValueError(
+            "Expecting same number of 'trap_densities' and 'trap_release_timescales'"
+        )
+    if len(trap_densities) == 0:
+        raise ValueError("Expecting at least one 'trap_density'.")
+    if num_iterations <= 0:
         raise ValueError("Number of iterations must be > 1.")
 
     # Conversion
-    traps = []  # type: List[Trap]
-    for item in instant_traps:
-        if "density" not in item:
-            raise KeyError("Missing key 'density' in parameter 'instant_traps'.")
-        if "release_timescale" not in item:
-            raise KeyError(
-                "Missing key 'release_timescale' in parameter 'instant_traps'."
-            )
-
-        trap = Trap(
-            density=float(item["density"]),
-            release_timescale=float(item["release_timescale"]),
-        )
-
-        traps.append(trap)
+    traps = [
+        Trap(density=density, release_timescale=release_timescale)
+        for density, release_timescale in zip(trap_densities, trap_release_timescales)
+    ]  # type: Sequence[Trap]
 
     if not WITH_ARTICPY:
         raise RuntimeError(
