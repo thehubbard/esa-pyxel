@@ -36,7 +36,7 @@ def display_config(configuration: "Configuration", only: str = "all") -> None:
     # Late import to speedup start-up time
     from IPython.display import Markdown, display
 
-    cfg = configuration.__dict__  # type: dict
+    cfg: dict = configuration.__dict__
     for key in cfg:
         if cfg[key] is None:
             pass
@@ -86,8 +86,8 @@ def display_model(configuration: "Configuration", model_name: str) -> None:
     # Late import to speedup start-up time
     from IPython.display import Markdown, display
 
-    pipeline = configuration.pipeline  # type: DetectionPipeline
-    model = pipeline.get_model(name=model_name)  # type: ModelFunction
+    pipeline: DetectionPipeline = configuration.pipeline
+    model: ModelFunction = pipeline.get_model(name=model_name)
     display(Markdown(f"## <font color=blue> {model_name} </font>"))
     display(Markdown(f"Model {model_name} enabled? {model.enabled}"))
     display_dict(dict(model.arguments))
@@ -109,7 +109,7 @@ def change_modelparam(
     from IPython.display import Markdown, display
 
     display(Markdown(f"## <font color=blue> {model_name} </font>"))
-    model = processor.pipeline.get_model(name=model_name)  # type: ModelFunction
+    model: ModelFunction = processor.pipeline.get_model(name=model_name)
     model.arguments[argument] = changed_value
     display(Markdown(f"Changed {argument} to {changed_value}."))
 
@@ -127,7 +127,7 @@ def set_modelstate(processor: "Processor", model_name: str, state: bool = True) 
     from IPython.display import Markdown, display
 
     display(Markdown(f"## <font color=blue> {model_name} </font>"))
-    model = processor.pipeline.get_model(name=model_name)  # type: ModelFunction
+    model: ModelFunction = processor.pipeline.get_model(name=model_name)
     model.enabled = state
     display(Markdown(f"Model {model_name} enabled? {model.enabled}"))
 
@@ -158,7 +158,7 @@ def display_detector(detector: "Detector") -> "Layout":
         hv.extension("bokeh")
 
     # Container for detector data, leave out where there is none.
-    det = {}  # type: Dict[str, np.ndarray]
+    det: Dict[str, np.ndarray] = {}
     if detector.input_image is not None:
         det["Input"] = detector.input_image
     if detector._photon is not None:
@@ -172,7 +172,7 @@ def display_detector(detector: "Detector") -> "Layout":
 
     def get_image(name):
 
-        data = det[name]  # type: np.ndarray
+        data: np.ndarray = det[name]
 
         if detector.geometry.row == 1:
             im = hv.Curve((range(len(data[0, :])), data[0, :])).opts(
@@ -234,7 +234,7 @@ def display_array(data: np.ndarray, axes: Sequence["plt.axes"], **kwargs: str) -
     cax1.yaxis.set_label_position("left")
     cax1.yaxis.set_ticks_position("left")
     if mini == maxi:
-        bins = 50  # type: Union[int, np.ndarray]
+        bins: Union[int, np.ndarray] = 50
     else:
         bins = np.arange(start=mini, stop=maxi, step=(maxi - mini) / 50)
 

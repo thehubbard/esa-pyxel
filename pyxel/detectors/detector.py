@@ -35,29 +35,25 @@ class Detector:
     """The detector class."""
 
     def __init__(self, environment: Optional[Environment] = None):
-        self.environment = (
-            environment if environment else Environment()
-        )  # type: Environment
+        self.environment: Environment = environment if environment else Environment()
 
-        self.header = collections.OrderedDict()  # type: Dict[str, object]
+        self.header: Dict[str, object] = collections.OrderedDict()
 
-        self._photon = None  # type: Optional[Photon]
-        self._scene = None  # type: Optional[Scene]
-        self._charge = None  # type: Optional[Charge]
-        self._pixel = None  # type: Optional[Pixel]
-        self._signal = None  # type: Optional[Signal]
-        self._image = None  # type: Optional[Image]
+        self._photon: Optional[Photon] = None
+        self._scene: Optional[Scene] = None
+        self._charge: Optional[Charge] = None
+        self._pixel: Optional[Pixel] = None
+        self._signal: Optional[Signal] = None
+        self._image: Optional[Image] = None
 
         # This will be the memory of the detector where trapped charges will be saved
-        self._memory = dict()  # type: Dict
-        self._persistence = (
-            None
-        )  # type: Optional[Union[Persistence, SimplePersistence]]
+        self._memory: Dict = dict()
+        self._persistence: Optional[Union[Persistence, SimplePersistence]] = None
 
-        self.input_image = None  # type: Optional[np.ndarray]
-        self._output_dir = None  # type: Optional[Path]  # TODO: See #330
+        self.input_image: Optional[np.ndarray] = None
+        self._output_dir: Optional[Path] = None  # TODO: See #330
 
-        self._readout_properties = None  # type: Optional["ReadoutProperties"]
+        self._readout_properties: Optional["ReadoutProperties"] = None
 
         self._numbytes = get_size(self)
 
@@ -472,7 +468,7 @@ class Detector:
         CCD(...)
         """
         with backends.from_hdf5(filename) as dct:  # type: Mapping[str, Any]
-            obj = cls.from_dict(dct)  # type: Detector
+            obj: Detector = cls.from_dict(dct)
             return obj
 
     def to_asdf(self, filename: Union[str, Path]) -> None:
@@ -527,7 +523,7 @@ class Detector:
         'CCD'
         >>> af.info()
         """
-        dct = self.to_dict()  # type: Mapping
+        dct: Mapping = self.to_dict()
         backends.to_asdf(filename=filename, dct=dct)
 
     @classmethod
@@ -544,10 +540,10 @@ class Detector:
         >>> detector
         CCD(...)
         """
-        with backends.from_asdf(filename) as dct:  # type: Mapping[str, Any]
-            obj = cls.from_dict(dct)  # type: Detector
+        with backends.from_asdf(filename) as dct:
+            detector: Detector = cls.from_dict(dct)
 
-        return obj
+        return detector
 
     def to_dict(self) -> Mapping:
         """Convert a `Detector` to a `dict`."""

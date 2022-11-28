@@ -32,59 +32,59 @@ class DetectionPipeline:
         self._is_running = False
         self.doc = doc
 
-        self._photon_generation = (
+        self._photon_generation: Optional[ModelGroup] = (
             ModelGroup(photon_generation, name="photon_generation")
             if photon_generation
             else None
-        )  # type: Optional[ModelGroup]
+        )
 
-        self._optics = (
+        self._optics: Optional[ModelGroup] = (
             ModelGroup(optics, name="optics") if optics else None
-        )  # type: Optional[ModelGroup]
+        )
 
-        self._phasing = (
+        self._phasing: Optional[ModelGroup] = (
             ModelGroup(phasing, name="phasing") if phasing else None
-        )  # type: Optional[ModelGroup] # MKID-array
+        )  # MKID-array
 
-        self._charge_generation = (
+        self._charge_generation: Optional[ModelGroup] = (
             ModelGroup(charge_generation, name="charge_generation")
             if charge_generation
             else None
-        )  # type: Optional[ModelGroup]
+        )
 
-        self._charge_collection = (
+        self._charge_collection: Optional[ModelGroup] = (
             ModelGroup(charge_collection, name="charge_collection")
             if charge_collection
             else None
-        )  # type: Optional[ModelGroup]
+        )
 
-        self._charge_measurement = (
+        self._charge_measurement: Optional[ModelGroup] = (
             ModelGroup(charge_measurement, name="charge_measurement")
             if charge_measurement
             else None
-        )  # type: Optional[ModelGroup]
+        )
 
-        self._readout_electronics = (
+        self._readout_electronics: Optional[ModelGroup] = (
             ModelGroup(readout_electronics, name="readout_electronics")
             if readout_electronics
             else None
-        )  # type: Optional[ModelGroup]
+        )
 
-        self._charge_transfer = (
+        self._charge_transfer: Optional[ModelGroup] = (
             ModelGroup(charge_transfer, name="charge_transfer")
             if charge_transfer
             else None
-        )  # type: Optional[ModelGroup]  # CCD
+        )  # CCD
 
-        self._signal_transfer = (
+        self._signal_transfer: Optional[ModelGroup] = (
             ModelGroup(signal_transfer, name="signal_transfer")
             if signal_transfer
             else None
-        )  # type: Optional[ModelGroup]  # CMOS
+        )  # CMOS
 
         # TODO: this defines the order of steps in the pipeline.
         #       The ModelGroupList could do this. Is it really needed?
-        self.MODEL_GROUPS = (
+        self.MODEL_GROUPS: Tuple[str, ...] = (
             "photon_generation",
             "optics",
             "phasing",
@@ -94,15 +94,15 @@ class DetectionPipeline:
             "charge_measurement",
             "signal_transfer",
             "readout_electronics",
-        )  # type: Tuple[str, ...]
+        )
 
     def __repr__(self) -> str:
-        cls_name = self.__class__.__name__  # type: str
+        cls_name: str = self.__class__.__name__
         return f"{cls_name}<is_running={self._is_running!r}, doc={self.doc!r}>"
 
     def __iter__(self) -> Iterable[ModelFunction]:
         for model in self.MODEL_GROUPS:
-            models_grp = getattr(self, model)  # type: Optional[ModelGroup]
+            models_grp: Optional[ModelGroup] = getattr(self, model)
             if models_grp:
                 yield from models_grp
 
@@ -183,10 +183,13 @@ class DetectionPipeline:
         AttributeError
             If model with the specified name is not found.
         """
-        for group_name in self.model_group_names:  # type: str
-            model_group = getattr(self, group_name)  # type: ModelGroup
+        group_name: str
+        for group_name in self.model_group_names:
+            model_group: ModelGroup = getattr(self, group_name)
             if model_group:
-                for model in model_group.models:  # type: ModelFunction
+
+                model: ModelFunction
+                for model in model_group.models:
                     if name == model.name:
                         return model
         raise AttributeError("Model has not been found.")

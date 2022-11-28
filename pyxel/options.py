@@ -124,9 +124,9 @@ class SetOptions:
     """
 
     def __init__(self, **kwargs):
-        valid_parameters = global_options.validate_and_convert(kwargs)  # type: Mapping
+        valid_parameters: Mapping = global_options.validate_and_convert(kwargs)
 
-        self._previous_params = global_options.update(valid_parameters)  # type: Mapping
+        self._previous_params: Mapping = global_options.update(valid_parameters)
 
     def __enter__(self) -> "SetOptions":
         return self

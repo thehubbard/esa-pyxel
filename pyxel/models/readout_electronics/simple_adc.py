@@ -61,7 +61,7 @@ def simple_adc(
     voltage_range = detector.characteristics.adc_voltage_range
 
     try:
-        d_type = np.dtype(data_type)  # type: np.dtype
+        d_type: np.dtype = np.dtype(data_type)
     except TypeError as ex:
         raise TypeError(
             "Can not locate the type defined as `data_type` argument in yaml file."

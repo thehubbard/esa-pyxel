@@ -34,7 +34,7 @@ def flip_array(array: np.ndarray, direction: int) -> np.ndarray:
     ndarray
     """
     if direction == 1:
-        result = array  # type: np.ndarray
+        result: np.ndarray = array
     elif direction == 2:
         result = np.fliplr(array)
     elif direction == 3:
@@ -131,9 +131,9 @@ def crosstalk_signal_ac(
     """
     amp_number = channel_matrix.size  # number of amplifiers
 
-    slices = get_channel_slices(
+    slices: List[List[Tuple[Any, Any]]] = get_channel_slices(
         shape=array.shape, channel_matrix=channel_matrix
-    )  # type: List[List[Tuple[Any, Any]]]
+    )
 
     array_copy = array.copy()
 
@@ -181,9 +181,9 @@ def crosstalk_signal_dc(
     """
     amp_number = channel_matrix.size  # number of amplifiers
 
-    slices = get_channel_slices(
+    slices: List[List[Tuple[Any, Any]]] = get_channel_slices(
         shape=array.shape, channel_matrix=channel_matrix
-    )  # type: List[List[Tuple[Any, Any]]]
+    )
 
     array_copy = array.copy()
 
@@ -229,9 +229,9 @@ def dc_crosstalk(
         'readout_directions' does not have the right shape.
     """
     # Validation and conversion
-    cpl_matrix_2d = get_matrix(coupling_matrix)  # type: np.ndarray
-    ch_matrix = np.array(channel_matrix)  # type: np.ndarray
-    directions = np.array(readout_directions)  # type: np.ndarray
+    cpl_matrix_2d: np.ndarray = get_matrix(coupling_matrix)
+    ch_matrix: np.ndarray = np.array(channel_matrix)
+    directions: np.ndarray = np.array(readout_directions)
 
     if cpl_matrix_2d.ndim != 2:
         raise ValueError("Expecting 2D 'coupling_matrix'.")
@@ -290,9 +290,9 @@ def ac_crosstalk(
         'readout_directions' does not have the right shape.
     """
     # Validation and conversion
-    cpl_matrix_2d = get_matrix(coupling_matrix)  # type: np.ndarray
-    ch_matrix = np.array(channel_matrix)  # type: np.ndarray
-    directions = np.array(readout_directions)  # type: np.ndarray
+    cpl_matrix_2d: np.ndarray = get_matrix(coupling_matrix)
+    ch_matrix: np.ndarray = np.array(channel_matrix)
+    directions: np.ndarray = np.array(readout_directions)
 
     if cpl_matrix_2d.ndim != 2:
         raise ValueError("Expecting 2D 'coupling_matrix'.")

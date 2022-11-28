@@ -367,11 +367,12 @@ def calc_psf(
     # Create the optical element(s)
     osys = op.OpticalSystem(npix=1000)  # default: 1024
 
-    for param in optical_parameters:  # type: OpticalParameter
-        element = create_optical_item(
+    param: OpticalParameter
+    for param in optical_parameters:
+        element: op.OpticalElement = create_optical_item(
             param=param,
             wavelength=wavelength,
-        )  # type: op.OpticalElement
+        )
 
         osys.add_pupil(element)
 
@@ -453,9 +454,9 @@ def optical_psf(
         )
 
     # Convert 'optical_system' to 'optical_parameters'
-    optical_parameters = [
+    optical_parameters: Sequence[OpticalParameter] = [
         create_optical_parameter(dct) for dct in optical_system
-    ]  # type: Sequence[OpticalParameter]
+    ]
 
     # Processing
     # Get a Point Spread Function
@@ -470,9 +471,9 @@ def optical_psf(
     first_image, *other_images = images
 
     # Convolution
-    new_array_2d = apply_convolution(
+    new_array_2d: np.ndarray = apply_convolution(
         data_2d=detector.photon.array,
         kernel_2d=first_image.data,
-    )  # type: np.ndarray
+    )
 
     detector.photon.array = new_array_2d

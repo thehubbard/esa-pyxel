@@ -79,28 +79,28 @@ def _get_final_short_name(name: str, param_type: ParameterType) -> str:
 
 def _get_short_dimension_names(types: Mapping[str, ParameterType]) -> Mapping[str, str]:
     # Create potential names for the dimensions
-    potential_dim_names = {}  # type: Dict[str, str]
+    potential_dim_names: Dict[str, str] = {}
     for param_name, param_type in types.items():
-        short_name = short(param_name)  # type: str
+        short_name: str = short(param_name)
 
         potential_dim_names[param_name] = _get_final_short_name(
             name=short_name, param_type=param_type
         )
 
     # Find possible duplicates
-    count_dim_names = Counter(potential_dim_names.values())  # type: Mapping[str, int]
+    count_dim_names: Mapping[str, int] = Counter(potential_dim_names.values())
 
-    duplicate_dim_names = [
+    duplicate_dim_names: Sequence[str] = [
         name for name, freq in count_dim_names.items() if freq > 1
-    ]  # type: Sequence[str]
+    ]
 
     if duplicate_dim_names:
-        dim_names = {}  # type: Dict[str, str]
+        dim_names: Dict[str, str] = {}
         for param_name, param_type in types.items():
             short_name = potential_dim_names[param_name]
 
             if short_name in duplicate_dim_names:
-                new_short_name = _get_short_name_with_model(param_name)  # type: str
+                new_short_name: str = _get_short_name_with_model(param_name)
                 dim_names[param_name] = _get_final_short_name(
                     name=new_short_name, param_type=param_type
                 )
@@ -129,15 +129,15 @@ class Observation:
         pipeline_seed: Optional[int] = None,
     ):
         self.outputs = outputs
-        self.readout = readout if readout else Readout()  # type: Readout
-        self.parameter_mode = ParameterMode(mode)  # type: ParameterMode
+        self.readout: Readout = readout if readout else Readout()
+        self.parameter_mode: ParameterMode = ParameterMode(mode)
         self._parameters = parameters
         self.file = from_file
-        self.data = None  # type: Optional[np.ndarray]
+        self.data: Optional[np.ndarray] = None
         if column_range:
             self.columns = slice(*column_range)
         self.with_dask = with_dask
-        self.parameter_types = {}  # type: Dict[str, ParameterType]
+        self.parameter_types: Dict[str, ParameterType] = {}
         self._result_type = ResultType(result_type)
         self._pipeline_seed = pipeline_seed
 
@@ -145,7 +145,7 @@ class Observation:
             self._load_custom_parameters()
 
     def __repr__(self):
-        cls_name = self.__class__.__name__  # type: str
+        cls_name: str = self.__class__.__name__
         return f"{cls_name}<mode={self.parameter_mode!s}>"
 
     @property
@@ -185,9 +185,7 @@ class Observation:
         from pyxel import load_table
 
         if self.file is not None:
-            result = load_table(self.file).to_numpy()[
-                :, self.columns
-            ]  # type: np.ndarray
+            result: np.ndarray = load_table(self.file).to_numpy()[:, self.columns]
         else:
             raise ValueError("File for custom parametric mode not specified!")
         self.data = result
@@ -216,8 +214,8 @@ class Observation:
 
                     elif isinstance(step.values, list):
 
-                        values = np.asarray(deepcopy(step.values))  # type: np.ndarray
-                        sh = values.shape  # type: tuple
+                        values: np.ndarray = np.asarray(deepcopy(step.values))
+                        sh: tuple = values.shape
                         values_flattened = values.flatten()
 
                         # TODO: find a way to remove the ignore
@@ -246,7 +244,8 @@ class Observation:
         index: int
         parameter_dict: dict
         """
-        for step in self.enabled_steps:  # type: ParameterValues
+        step: ParameterValues
+        for step in self.enabled_steps:
             key = step.key  # type : str
             for index, value in enumerate(step):
                 parameter_dict = {key: value}
@@ -356,14 +355,14 @@ class Observation:
         import xarray as xr
 
         processors = []
-        logs = []  # type: List[xr.Dataset]
+        logs: List[xr.Dataset] = []
 
         for processor_id, (proc, _index, parameter_dict) in enumerate(
             tqdm(self._processors_it(processor))
         ):
-            log = log_parameters(
+            log: xr.Dataset = log_parameters(
                 processor_id=processor_id, parameter_dict=parameter_dict
-            )  # type: xr.Dataset
+            )
             logs.append(log)
             _ = run_exposure_pipeline(
                 processor=proc,
@@ -392,10 +391,10 @@ class Observation:
         -------
         None
         """
+        step: ParameterValues
+        for step in self.enabled_steps:
 
-        for step in self.enabled_steps:  # type: ParameterValues
-
-            key = step.key  # type: str
+            key: str = step.key
             assert processor.has(key)
 
             # TODO: the string literal expressions are difficult to maintain.
@@ -404,8 +403,8 @@ class Observation:
             # Proposed API:
             # value = operator.attrgetter(step.key)(processor)
             if "pipeline." in step.key:
-                model_name = step.key[: step.key.find(".arguments")]  # type: str
-                model_enabled = model_name + ".enabled"  # type: str
+                model_name: str = step.key[: step.key.find(".arguments")]
+                model_enabled: str = model_name + ".enabled"
                 if not processor.get(model_enabled):
                     raise ValueError(
                         f"The '{model_name}' model referenced in parametric configuration"
@@ -438,9 +437,9 @@ class Observation:
         # validation
         self._check_steps(processor)
 
-        types = self._get_parameter_types()  # type: Mapping[str, ParameterType]
+        types: Mapping[str, ParameterType] = self._get_parameter_types()
 
-        dim_names = _get_short_dimension_names(types)  # type: Mapping[str, str]
+        dim_names: Mapping[str, str] = _get_short_dimension_names(types)
 
         y = range(processor.detector.geometry.row)
         x = range(processor.detector.geometry.col)
@@ -468,9 +467,9 @@ class Observation:
                 dataset_list = list(map(apply_pipeline, tqdm(lst)))
 
             # prepare lists for to-be-merged datasets
-            parameters = [
+            parameters: List[List[xr.Dataset]] = [
                 [] for _ in range(len(self.enabled_steps))
-            ]  # type: List[List[xr.Dataset]]
+            ]
             logs = []
 
             for processor_id, (indices, parameter_dict, _) in enumerate(lst):
@@ -491,7 +490,7 @@ class Observation:
                     parameters[i].append(parameter_ds)
 
             # merging/combining the outputs
-            final_parameters_list = []  # type: List[xr.Dataset]
+            final_parameters_list: List[xr.Dataset] = []
             for p in parameters:
                 # See issue #276
                 new_dataset = xr.combine_by_coords(p)
@@ -685,12 +684,12 @@ class Observation:
 
         _ = self.outputs.save_to_file(processor=new_processor, run_number=n)
 
-        ds = new_processor.result_to_dataset(
+        ds: xr.Dataset = new_processor.result_to_dataset(
             x=x,
             y=y,
             times=times,
             result_type=self.result_type,
-        )  # type: xr.Dataset
+        )
 
         # Can also be done outside dask in a loop
         ds = _add_product_parameters(
@@ -788,9 +787,9 @@ class Observation:
 
         _ = self.outputs.save_to_file(processor=new_processor, run_number=n)
 
-        ds = new_processor.result_to_dataset(
+        ds: xr.Dataset = new_processor.result_to_dataset(
             x=x, y=y, times=times, result_type=self.result_type
-        )  # type: xr.Dataset
+        )
 
         # Can also be done outside dask in a loop
         ds = _add_sequential_parameters(
@@ -998,7 +997,7 @@ def _add_sequential_parameters(
     """
 
     #  assigning the right coordinates based on type
-    short_name = dimension_names[coordinate_name]  # type: str
+    short_name: str = dimension_names[coordinate_name]
 
     if types[coordinate_name] == ParameterType.Simple:
         ds = ds.assign_coords(coords={short_name: parameter_dict[coordinate_name]})
@@ -1073,11 +1072,11 @@ def compute_final_sequential_dataset(
     # Late import to speedup start-up time
     import xarray as xr
 
-    final_dict = {}  # type: Dict[str, List[xr.Dataset]]
+    final_dict: Dict[str, List[xr.Dataset]] = {}
 
     for _, parameter_dict, n in list_of_index_and_parameter:
         coordinate = str(list(parameter_dict)[0])
-        coordinate_short = dimension_names[coordinate]  # type: str
+        coordinate_short: str = dimension_names[coordinate]
 
         if short(coordinate) not in final_dict.keys():
             final_dict.update({coordinate_short: []})
@@ -1085,7 +1084,7 @@ def compute_final_sequential_dataset(
         else:
             final_dict[coordinate_short].append(list_of_datasets[n])
 
-    final_datasets = {}  # type: Dict[str, xr.Dataset]
+    final_datasets: Dict[str, xr.Dataset] = {}
     for key, value in final_dict.items():
         ds = xr.combine_by_coords(value)
         # see issue #276

@@ -96,7 +96,7 @@ def white_noise(nstep: int) -> np.ndarray:
         nstep - Length of vector returned
 
     """
-    distribution = np.random.standard_normal(nstep)  # type: np.ndarray
+    distribution: np.ndarray = np.random.standard_normal(nstep)
     return distribution
 
 
@@ -231,7 +231,7 @@ class HXRGNoise:
         # ======================================================================
 
         # Configure Subarray (JML)
-        self.wind_mode = wind_mode  # type: Literal["FULL", "WINDOW"]
+        self.wind_mode: Literal["FULL", "WINDOW"] = wind_mode
         self.det_size_x = det_size_x
         self.det_size_y = det_size_y
         self.wind_x0 = wind_x0
@@ -418,7 +418,7 @@ class HXRGNoise:
         # Apply the pinkening filter.
         thefft = np.fft.rfft(mynoise)
         thefft = np.multiply(thefft, p_filter)
-        result = np.fft.irfft(thefft)  # type: np.ndarray
+        result: np.ndarray = np.fft.irfft(thefft)
         result = result[: nstep // 2]  # Keep 1st half of nstep
 
         # Restore the mean and standard deviation

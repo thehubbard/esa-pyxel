@@ -59,45 +59,45 @@ class ModelFitting(ProblemSingleObjective):
         file_path: Path,
         pipeline_seed: Optional[int] = None,
     ):
-        self.processor = processor  # type: Processor
-        self.variables = variables  # type: Sequence[ParameterValues]
+        self.processor: Processor = processor
+        self.variables: Sequence[ParameterValues] = variables
 
-        self.calibration_mode = calibration_mode  # type: CalibrationMode
-        self.original_processor = None  # type: Optional[Processor]
-        self.generations = generations  # type: int
-        self.pop = population_size  # type: int
-        self.readout = readout  # type: Readout
+        self.calibration_mode: CalibrationMode = calibration_mode
+        self.original_processor: Optional[Processor] = None
+        self.generations: int = generations
+        self.pop: int = population_size
+        self.readout: Readout = readout
 
-        self.all_target_data = []  # type: List[np.ndarray]
-        self.weighting = None  # type: Optional[np.ndarray]
-        self.weighting_from_file = None  # type: Optional[Sequence[np.ndarray]]
-        self.fitness_func = fitness_func  # type: FittingCallable
-        self.sim_output = simulation_output  # type: ResultType
+        self.all_target_data: List[np.ndarray] = []
+        self.weighting: Optional[np.ndarray] = None
+        self.weighting_from_file: Optional[Sequence[np.ndarray]] = None
+        self.fitness_func: FittingCallable = fitness_func
+        self.sim_output: ResultType = simulation_output
         # self.fitted_model = None            # type: Optional['ModelFunction']
-        self.param_processor_list = []  # type: List[Processor]
+        self.param_processor_list: List[Processor] = []
 
-        self.file_path = file_path  # type: Path
-        self.pipeline_seed = pipeline_seed  # type: Optional[int]
+        self.file_path: Path = file_path
+        self.pipeline_seed: Optional[int] = pipeline_seed
 
-        self.fitness_array = None  # type: Optional[np.ndarray]
-        self.population = None  # type: Optional[np.ndarray]
-        self.champion_f_list = None  # type: Optional[np.ndarray]
-        self.champion_x_list = None  # type: Optional[np.ndarray]
+        self.fitness_array: Optional[np.ndarray] = None
+        self.population: Optional[np.ndarray] = None
+        self.champion_f_list: Optional[np.ndarray] = None
+        self.champion_x_list: Optional[np.ndarray] = None
 
-        self.lbd = []  # type: Sequence[float]  # lower boundary
-        self.ubd = []  # type: Sequence[float]  # upper boundary
+        self.lbd: Sequence[float] = []  # lower boundary
+        self.ubd: Sequence[float] = []  # upper boundary
 
-        self.sim_fit_range = (
+        self.sim_fit_range: Tuple[slice, slice, slice] = (
             slice(None),
             slice(None),
             slice(None),
-        )  # type: Tuple[slice, slice, slice]
-        self.targ_fit_range = (
+        )
+        self.targ_fit_range: Union[Tuple[slice, slice], Tuple[slice, slice, slice]] = (
             slice(None),
             slice(None),
-        )  # type: Union[Tuple[slice, slice], Tuple[slice, slice, slice]]
+        )
 
-        self.match = {}  # type: Dict[int, List[str]]
+        self.match: Dict[int, List[str]] = {}
 
     def get_bounds(self) -> Tuple[Sequence[float], Sequence[float]]:
         """Get the box bounds of the problem (lower_boundary, upper_boundary).
@@ -138,11 +138,13 @@ class ModelFitting(ProblemSingleObjective):
                     "Some values will be ignored."
                 )
             for i in range(min_val):
-                new_processor = deepcopy(self.processor)  # type: Processor
-                for step in input_arguments:  # type: ParameterValues
+                new_processor: Processor = deepcopy(self.processor)
+
+                step: ParameterValues
+                for step in input_arguments:
                     assert step.values != "_"
 
-                    value = step.values[i]  # type: Union[Literal['_'], str, Number]
+                    value: Union[Literal["_"], str, Number] = step.values[i]
 
                     step.current = value
                     new_processor.set(key=step.key, value=step.current)
@@ -150,8 +152,10 @@ class ModelFitting(ProblemSingleObjective):
         else:
             self.param_processor_list = [deepcopy(self.processor)]
 
-        params = 0  # type: int
-        for var in self.variables:  # type: ParameterValues
+        params: int = 0
+
+        var: ParameterValues
+        for var in self.variables:
             if isinstance(var.values, list):
                 b = len(var.values)
             else:
@@ -162,9 +166,9 @@ class ModelFitting(ProblemSingleObjective):
         self.champion_x_list = np.zeros((1, params))
 
         if self.readout.time_domain_simulation:
-            target_list_3d = read_datacubes(
+            target_list_3d: Sequence[np.ndarray] = read_datacubes(
                 filenames=target_output
-            )  # type: Sequence[np.ndarray]
+            )
             times, rows, cols = target_list_3d[0].shape
             check_ranges(
                 target_fit_range=target_fit_range,
@@ -175,13 +179,14 @@ class ModelFitting(ProblemSingleObjective):
             )
             self.targ_fit_range = list_to_slice(target_fit_range)
             self.sim_fit_range = list_to_3d_slice(out_fit_range)
-            for target_3d in target_list_3d:  # type: np.ndarray
+
+            target_3d: np.ndarray
+            for target_3d in target_list_3d:
                 self.all_target_data += [target_3d[self.targ_fit_range]]
 
         else:
-            target_list_2d = read_data(
-                filenames=target_output
-            )  # type: Sequence[np.ndarray]
+            target_list_2d: Sequence[np.ndarray] = read_data(filenames=target_output)
+
             rows, cols = target_list_2d[0].shape
             check_ranges(
                 target_fit_range=target_fit_range,
@@ -192,7 +197,9 @@ class ModelFitting(ProblemSingleObjective):
             self.targ_fit_range = list_to_slice(target_fit_range)
             out_fit_range = [None, None] + out_fit_range  # type: ignore
             self.sim_fit_range = list_to_3d_slice(out_fit_range)
-            for target_2d in target_list_2d:  # type: np.ndarray
+
+            target_2d: np.ndarray
+            for target_2d in target_list_2d:
                 self.all_target_data += [target_2d[self.targ_fit_range]]
 
             self._configure_weights(
@@ -233,7 +240,9 @@ class ModelFitting(ProblemSingleObjective):
         """TBW."""
         self.lbd = []
         self.ubd = []
-        for var in self.variables:  # type: ParameterValues
+
+        var: ParameterValues
+        for var in self.variables:
             assert var.boundaries
             low_val, high_val = var.boundaries  # type: Tuple[float, float]
 
@@ -256,9 +265,7 @@ class ModelFitting(ProblemSingleObjective):
     def get_simulated_data(self, processor: Processor) -> np.ndarray:
         """Extract 2D data from a processor."""
         if self.sim_output == ResultType.Image:
-            simulated_data = processor.result["image"][
-                self.sim_fit_range
-            ]  # type: np.ndarray
+            simulated_data: np.ndarray = processor.result["image"][self.sim_fit_range]
 
         elif self.sim_output == ResultType.Signal:
             simulated_data = processor.result["signal"][self.sim_fit_range]
@@ -290,11 +297,11 @@ class ModelFitting(ProblemSingleObjective):
         else:
             factor = np.ones(np.shape(target_data))
 
-        fitness = self.fitness_func(
+        fitness: float = self.fitness_func(
             simulated=simulated_data.astype(np.float64),
             target=target_data.astype(np.float64),
             weighting=factor.astype(np.float64),
-        )  # type: float
+        )
 
         return fitness
 
@@ -325,9 +332,9 @@ class ModelFitting(ProblemSingleObjective):
 
             parameter_1d = self.convert_to_parameters(decision_vector_1d)
             # TODO: deepcopy is not needed. Check this
-            processor_list = self.param_processor_list  # type: Sequence[Processor]
+            processor_list: Sequence[Processor] = self.param_processor_list
 
-            overall_fitness = 0.0  # type: float
+            overall_fitness: float = 0.0
             for i, (processor, target_data) in enumerate(
                 zip(processor_list, self.all_target_data)
             ):
@@ -353,7 +360,7 @@ class ModelFitting(ProblemSingleObjective):
 
                 simulated_data = self.get_simulated_data(processor=processor)
 
-                weighting = None  # type: Optional[np.ndarray]
+                weighting: Optional[np.ndarray] = None
 
                 if self.weighting is not None:
                     weighting = self.weighting[i] * np.ones(
@@ -433,7 +440,7 @@ class ModelFitting(ProblemSingleObjective):
             delayed_processor = delayed(processor)
 
             for idx_island, params_array in parameters.groupby("island"):
-                params = params_array.data  # type: np.ndarray
+                params: np.ndarray = params_array.data  # type
 
                 result_processor = delayed(self.apply_parameters)(
                     processor=delayed_processor, parameter=params

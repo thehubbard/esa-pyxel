@@ -42,7 +42,7 @@ class Exposure:
         self._pipeline_seed = pipeline_seed
 
     def __repr__(self) -> str:
-        cls_name = self.__class__.__name__  # type: str
+        cls_name: str = self.__class__.__name__
         return f"{cls_name}<outputs={self.outputs!r}>"
 
     @property
@@ -91,12 +91,12 @@ class Exposure:
             pipeline_seed=self.pipeline_seed,
         )
 
-        ds = processor.result_to_dataset(
+        ds: xr.Dataset = processor.result_to_dataset(
             x=x,
             y=y,
             times=times,
             result_type=self.result_type,
-        )  # type: xr.Dataset
+        )
 
         ds.attrs.update({"running mode": "Exposure"})
 
@@ -160,7 +160,7 @@ def run_exposure_pipeline(
 
     keys = result_keys(result_type)
 
-    unstacked_result = {key: [] for key in keys}  # type: Mapping[str, list]
+    unstacked_result: Mapping[str, list] = {key: [] for key in keys}
 
     for i, (time, step) in enumerate(
         time_step_it

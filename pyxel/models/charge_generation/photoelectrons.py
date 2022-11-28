@@ -105,13 +105,13 @@ def conversion_with_qe_map(
     position_y, position_x = position
 
     # Load charge profile as numpy array.
-    qe = load_cropped_and_aligned_image(
+    qe: np.ndarray = load_cropped_and_aligned_image(
         shape=(geo.row, geo.col),
         filename=filename,
         position_x=position_x,
         position_y=position_y,
         align=align,
-    )  # type: np.ndarray
+    )
 
     if not np.all((0 <= qe) & (qe <= 1)):
         raise ValueError("Quantum efficiency values not between 0 and 1.")

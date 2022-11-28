@@ -312,14 +312,12 @@ def simple_dark_current(
     geo = detector.geometry
 
     with set_random_seed(seed):
-        dark_current_array = calculate_simple_dark_current(
+        dark_current_array: np.ndarray = calculate_simple_dark_current(
             num_rows=geo.row,
             num_cols=geo.col,
             current=dark_rate,
             exposure_time=exposure_time,
-        ).astype(
-            float
-        )  # type: np.ndarray
+        ).astype(float)
 
     detector.charge.add_charge_array(dark_current_array)
 
@@ -399,13 +397,11 @@ def dark_current_saphira(detector: APD, seed: Optional[int] = None) -> None:
     exposure_time = detector.time_step
 
     with set_random_seed(seed):
-        dark_current_array = calculate_dark_current_saphira(
+        dark_current_array: np.ndarray = calculate_dark_current_saphira(
             temperature=detector.environment.temperature,
             avalanche_gain=detector.characteristics.avalanche_gain,
             shape=detector.geometry.shape,
             exposure_time=exposure_time,
-        ).astype(
-            float
-        )  # type: np.ndarray
+        ).astype(float)
 
     detector.charge.add_charge_array(dark_current_array)

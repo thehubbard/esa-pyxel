@@ -59,7 +59,7 @@ def main(
     r.raise_for_status()
 
     rsp = r.json()
-    environment_id = rsp[0]["id"]  # type: int
+    environment_id: int = rsp[0]["id"]
 
     # Get a specific environment
     # GET /projects/:id/environments/:environment_id
@@ -69,10 +69,10 @@ def main(
     r.raise_for_status()
 
     rsp = r.json()
-    deployable_dct = rsp["last_deployment"]["deployable"]  # type: t.Mapping
-    job_id = deployable_dct["id"]  # type: int
+    deployable_dct: t.Mapping = rsp["last_deployment"]["deployable"]
+    job_id: int = deployable_dct["id"]
     # artifact_filename = deployable_dct["artifacts_file"]["filename"]  # type: str
-    artifact_filename = "artifacts.zip"  # type: str
+    artifact_filename: int = "artifacts.zip"
 
     # Download artifact
     url_download = f"{addr}/jobs/{job_id}/artifacts"

@@ -115,13 +115,13 @@ def compute_nghxrg(
     window_y_size, window_x_size = window_size
 
     if window_pos == (0, 0) and window_size == detector_shape:
-        window_mode = "FULL"  # type: Literal["FULL", "WINDOW"]
+        window_mode: Literal["FULL", "WINDOW"] = "FULL"
     else:
         window_mode = "WINDOW"
 
-    data_hxrg_2d = np.asarray(pixel_2d.copy(), dtype=float)  # type: np.ndarray
+    data_hxrg_2d: np.ndarray = np.asarray(pixel_2d.copy(), dtype=float)
 
-    ng = HXRGNoise(
+    ng: HXRGNoise = HXRGNoise(
         n_out=num_outputs,
         time_step=time_step,
         nroh=num_rows_overhead,
@@ -137,17 +137,18 @@ def compute_nghxrg(
         wind_x0=window_x_start,
         wind_y0=window_y_start,
         verbose=True,
-    )  # type: HXRGNoise
+    )
 
     final_data_2d = np.zeros(shape=window_size)
 
-    for item in noise:  # type: NoiseType
+    item: NoiseType
+    for item in noise:
         if isinstance(item, KTCBiasNoise):
-            data = ng.add_ktc_bias_noise(
+            data: np.ndarray = ng.add_ktc_bias_noise(
                 ktc_noise=item.ktc_noise,
                 bias_offset=item.bias_offset,
                 bias_amp=item.bias_amp,
-            )  # type: np.ndarray
+            )
 
         elif isinstance(item, WhiteReadNoise):
             data = ng.add_white_read_noise(
@@ -170,13 +171,13 @@ def compute_nghxrg(
         else:
             raise TypeError(f"Unknown item: {item!r} !")
 
-        data_2d = ng.format_result(data)  # type: np.ndarray
+        data_2d: np.ndarray = ng.format_result(data)
         if data_2d.any():
             if window_mode == "FULL":
                 final_data_2d += data_2d
             elif window_mode == "WINDOW":
-                window_y_end = window_y_start + window_y_size  # type: int
-                window_x_end = window_x_start + window_x_size  # type: int
+                window_y_end: int = window_y_start + window_y_size
+                window_x_end: int = window_x_start + window_x_size
 
                 final_data_2d[
                     window_y_start:window_y_end, window_x_start:window_x_end
@@ -251,15 +252,15 @@ def nghxrg(
         raise ValueError("'reference_pixel_border_width' must be between 0 and 32.")
 
     # Converter
-    params = []  # type: List[NoiseType]
+    params: List[NoiseType] = []
     for item in noise:
         if "ktc_bias_noise" in item:
-            sub_item = item["ktc_bias_noise"]  # type: Mapping[str, float]
-            param = KTCBiasNoise(
+            sub_item: Mapping[str, float] = item["ktc_bias_noise"]
+            param: NoiseType = KTCBiasNoise(
                 ktc_noise=sub_item["ktc_noise"],
                 bias_offset=sub_item["bias_offset"],
                 bias_amp=sub_item["bias_amp"],
-            )  # type: NoiseType
+            )
 
         elif "white_read_noise" in item:
             sub_item = item["white_read_noise"]
@@ -292,7 +293,7 @@ def nghxrg(
     logging.getLogger("nghxrg").setLevel(logging.WARNING)
 
     # Prepare the parameters
-    geo = detector.geometry  # type: CMOSGeometry
+    geo: CMOSGeometry = detector.geometry
 
     if window_position is None:
         window_position = (0, 0)
@@ -300,13 +301,13 @@ def nghxrg(
         window_size = (geo.row, geo.col)
 
     if detector.is_dynamic:
-        time_step = int(detector.time / detector.time_step)  # type: int
+        time_step: int = int(detector.time / detector.time_step)
     else:
         time_step = 1
 
     with set_random_seed(seed):
         # Compute new pixels
-        result_2d = compute_nghxrg(
+        result_2d: np.ndarray = compute_nghxrg(
             pixel_2d=detector.pixel.array,
             noise=params,
             detector_shape=(geo.row, geo.col),
@@ -318,7 +319,7 @@ def nghxrg(
             num_frames_overhead=n_frame_overhead,
             reverse_scan_direction=reverse_scan_direction,
             reference_pixel_border_width=reference_pixel_border_width,
-        )  # type: np.ndarray
+        )  # type
 
     # Add the pixels
     detector.pixel.array += result_2d

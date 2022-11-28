@@ -319,7 +319,7 @@ class PlottingCosmix:
 
         if isinstance(histogram_data, str):
             if histogram_data.endswith(".npy"):
-                data = np.load(histogram_data)  # type: np.ndarray
+                data: np.ndarray = np.load(histogram_data)
             else:
                 raise NotImplementedError
         else:
@@ -707,7 +707,7 @@ class PlottingCosmix:
         """TBW."""
         if isinstance(theta, str):
             if theta.endswith(".npy"):
-                theta_data = np.load(theta)  # type: np.ndarray
+                theta_data: np.ndarray = np.load(theta)
             else:
                 raise NotImplementedError
         else:

@@ -97,7 +97,7 @@ class Particle:
         # # update direction:
         # self.dir_ver, self.dir_hor, self.dir_z = get_direction_from_angles()
 
-        self.track_length = None  # type: Optional[float]
+        self.track_length: Optional[float] = None
 
         self.dir_ver, self.dir_hor, self.dir_z = isotropic_direction()
 
@@ -129,14 +129,14 @@ class Particle:
         self.trajectory = np.copy(self.starting_position)
 
         if input_energy == "random":
-            self.energy = sampling_distribution(spectrum_cdf)  # type: float
+            self.energy: float = sampling_distribution(spectrum_cdf)
         elif isinstance(input_energy, int) or isinstance(input_energy, float):
             self.energy = input_energy
         else:
             raise ValueError("Given particle energy could not be read")
 
-        self.deposited_energy = 0.0  # type: float
-        self.total_edep = 0.0  # type: float
+        self.deposited_energy: float = 0.0
+        self.total_edep: float = 0.0
 
         self.type = particle_type
         ionizing_particles = ("proton", "ion", "alpha", "beta", "electron")
@@ -162,7 +162,7 @@ class Particle:
         """
         geo = self.detector.geometry
 
-        norm_vectors = [
+        norm_vectors: List[np.ndarray] = [
             np.array(
                 [0.0, 0.0, -1.0]
             ),  # top plane (usually particle enters vol. via this)
@@ -173,9 +173,9 @@ class Particle:
             np.array([-1.0, 0.0, 0.0]),
             np.array([0.0, -1.0, 0.0]),
             np.array([1.0, 0.0, 0.0]),
-        ]  # type: List[np.ndarray]
+        ]
 
-        points = [
+        points: List[np.ndarray] = [
             np.array(
                 [0.0, 0.0, 0.0]
             ),  # top plane (usually particle enters vol. via this)
@@ -186,7 +186,7 @@ class Particle:
             np.array([geo.vert_dimension, 0.0, 0.0]),
             np.array([geo.vert_dimension, geo.horz_dimension, 0.0]),
             np.array([0.0, geo.horz_dimension, 0.0]),
-        ]  # type: List[np.ndarray]
+        ]
 
         intersect_points = np.zeros((6, 3))
         track_direction = np.array([self.dir_ver, self.dir_hor, self.dir_z])
@@ -194,8 +194,8 @@ class Particle:
             [self.random_det_pt_vert, self.random_det_pt_horz, self.random_det_pt_z]
         )
 
-        surface_start_point = None  # type: Optional[np.ndarray]
-        surface_end_point = None  # type: Optional[np.ndarray]
+        surface_start_point: Optional[np.ndarray] = None  #
+        surface_end_point: Optional[np.ndarray] = None
         for i in range(6):
             intersect_points[i, :] = find_intersection(
                 n=norm_vectors[i], p0=points[i], ls=random_det_point, lv=track_direction
@@ -231,7 +231,7 @@ class Particle:
                 "'surface_start_point' and/or 'surface_end_point' are not defined."
             )
 
-        surface_1d = surface_end_point - surface_start_point  # type: np.ndarray
+        surface_1d: np.ndarray = surface_end_point - surface_start_point
         self.track_length = float(np.linalg.norm(x=surface_1d))
 
         if np.all(surface_start_point == surface_end_point):
@@ -341,7 +341,7 @@ def find_intersection(
         return None
     else:
         d = np.dot((p0 - ls), n) / np.dot(lv, n)
-        p = d * lv + ls  # type: np.ndarray
+        p: np.ndarray = d * lv + ls
         return p
 
 

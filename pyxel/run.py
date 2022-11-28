@@ -83,13 +83,12 @@ def exposure_mode(
 
     logging.info("Mode: Exposure")
 
-    exposure_outputs = exposure.outputs  # type: ExposureOutputs
-
+    exposure_outputs: ExposureOutputs = exposure.outputs
     detector.set_output_dir(exposure_outputs.output_dir)  # TODO: Remove this
 
     processor = Processor(detector=detector, pipeline=pipeline)
 
-    result = exposure.run_exposure(processor=processor)  # type: xr.Dataset
+    result: xr.Dataset = exposure.run_exposure(processor=processor)
 
     if exposure_outputs.save_exposure_data:
         exposure_outputs.save_exposure_outputs(dataset=result)
@@ -138,7 +137,7 @@ def observation_mode(
     """
     logging.info("Mode: Observation")
 
-    observation_outputs = observation.outputs  # type: ObservationOutputs
+    observation_outputs: ObservationOutputs = observation.outputs
     detector.set_output_dir(observation_outputs.output_dir)  # TODO: Remove this
 
     # TODO: This should be done during initializing of object `Configuration`
@@ -146,7 +145,7 @@ def observation_mode(
 
     processor = Processor(detector=detector, pipeline=pipeline)
 
-    result = observation.run_observation(processor=processor)  # type: ObservationResult
+    result: ObservationResult = observation.run_observation(processor=processor)
 
     if observation_outputs.save_observation_data:
         observation_outputs.save_observation_datasets(
@@ -248,7 +247,7 @@ def calibration_mode(
 
     logging.info("Mode: Calibration")
 
-    calibration_outputs = calibration.outputs  # type: CalibrationOutputs
+    calibration_outputs: CalibrationOutputs = calibration.outputs
     detector.set_output_dir(calibration_outputs.output_dir)  # TODO: Remove this
 
     processor = Processor(detector=detector, pipeline=pipeline)
@@ -354,18 +353,16 @@ def run(input_filename: Union[str, Path], random_seed: Optional[int] = None) -> 
 
     start_time = time.time()
 
-    configuration = load(
-        Path(input_filename).expanduser().resolve()
-    )  # type: Configuration
+    configuration: Configuration = load(Path(input_filename).expanduser().resolve())
 
     output_dir = output_directory(configuration)
 
     save(input_filename=input_filename, output_dir=output_dir)
 
-    pipeline = configuration.pipeline  # type: DetectionPipeline
+    pipeline: DetectionPipeline = configuration.pipeline
 
     if isinstance(configuration.ccd_detector, CCD):
-        detector = configuration.ccd_detector  # type: Union[CCD, CMOS, MKID, APD]
+        detector: Union[CCD, CMOS, MKID, APD] = configuration.ccd_detector
     elif isinstance(configuration.cmos_detector, CMOS):
         detector = configuration.cmos_detector
     elif isinstance(configuration.mkid_detector, MKID):
@@ -376,7 +373,7 @@ def run(input_filename: Union[str, Path], random_seed: Optional[int] = None) -> 
         raise NotImplementedError("Detector is not defined in YAML config. file!")
 
     if isinstance(configuration.exposure, Exposure):
-        exposure = configuration.exposure  # type: Exposure
+        exposure: Exposure = configuration.exposure
         exposure_mode(
             exposure=exposure,
             detector=detector,
@@ -385,7 +382,7 @@ def run(input_filename: Union[str, Path], random_seed: Optional[int] = None) -> 
 
     elif isinstance(configuration.calibration, Calibration):
 
-        calibration = configuration.calibration  # type: Calibration
+        calibration: Calibration = configuration.calibration
         _ = calibration_mode(
             calibration=calibration,
             detector=detector,
@@ -393,7 +390,7 @@ def run(input_filename: Union[str, Path], random_seed: Optional[int] = None) -> 
         )
 
     elif isinstance(configuration.observation, Observation):
-        observation = configuration.observation  # type: Observation
+        observation: Observation = configuration.observation
         observation_mode(
             observation=observation,
             detector=detector,

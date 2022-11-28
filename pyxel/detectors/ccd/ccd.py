@@ -26,8 +26,8 @@ class CCD(Detector):
         environment: "Environment",
         characteristics: "CCDCharacteristics",
     ):
-        self._geometry = geometry  # type: CCDGeometry
-        self._characteristics = characteristics  # type: CCDCharacteristics
+        self._geometry: CCDGeometry = geometry
+        self._characteristics: CCDCharacteristics = characteristics
 
         super().__init__(environment=environment)
         super().reset()
@@ -111,7 +111,7 @@ class CCD(Detector):
         if "photon" in data:
             detector.photon.array = np.asarray(data["photon"])
 
-        scene = data.get("scene")  # type: Optional[Mapping]
+        scene: Optional[Mapping] = data.get("scene")
         if scene is not None:
             detector.scene = Scene.from_dict(scene)
 
@@ -125,8 +125,8 @@ class CCD(Detector):
             charge_dct = data["charge"]
             detector.charge._array = np.asarray(charge_dct["array"])
 
-            new_frame = charge_dct["frame"]  # type: pd.DataFrame
-            previous_frame = detector.charge._frame  # type: pd.DataFrame
+            new_frame: pd.DataFrame = charge_dct["frame"]
+            previous_frame: pd.DataFrame = detector.charge._frame
             detector.charge._frame = new_frame[previous_frame.columns]
 
         return detector

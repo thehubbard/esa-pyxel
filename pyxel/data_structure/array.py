@@ -25,16 +25,16 @@ if TYPE_CHECKING:
 class Array:
     """Array class."""
 
-    EXP_TYPE = type(None)  # type: Union[Type, np.dtype]
-    TYPE_LIST = ()  # type: Tuple[np.dtype, ...]
-    NAME = ""  # type: str
-    UNIT = ""  # type: str
+    EXP_TYPE: Union[Type, np.dtype] = type(None)
+    TYPE_LIST: Tuple[np.dtype, ...] = ()
+    NAME: str = ""
+    UNIT: str = ""
 
     # TODO: Add units ?
     def __init__(self, value: np.ndarray):
         self.validate_type(value)
 
-        self._array = value  # type: np.ndarray
+        self._array: np.ndarray = value
 
         self._numbytes = 0
 
@@ -58,18 +58,18 @@ class Array:
         ----------
         value
         """
-        cls_name = self.__class__.__name__  # type: str
+        cls_name: str = self.__class__.__name__
 
         if not isinstance(value, np.ndarray):
             raise TypeError(f"{cls_name} array should be a numpy.ndarray")
 
         if value.dtype not in self.TYPE_LIST:
-            exp_type_name = str(self.EXP_TYPE)  # type: str
+            exp_type_name: str = str(self.EXP_TYPE)
             raise TypeError(f"Expected type of {cls_name} array is {exp_type_name}.")
 
     def validate_shape(self, value: np.ndarray) -> None:
         """TBW."""
-        cls_name = self.__class__.__name__  # type: str
+        cls_name: str = self.__class__.__name__
 
         if value.shape != self._array.shape:
             raise ValueError(f"Expected {cls_name} array is {self._array.shape}.")
@@ -152,7 +152,7 @@ class Array:
         """
         import matplotlib.pyplot as plt
 
-        arr = self.to_xarray()  # type: xr.DataArray
+        arr: xr.DataArray = self.to_xarray()
 
         arr.plot(robust=robust)
         plt.title(self.NAME)

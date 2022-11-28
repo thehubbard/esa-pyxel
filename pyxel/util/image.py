@@ -185,12 +185,12 @@ def load_cropped_and_aligned_image(
     #                         larger in dimensions than detector imaging area)
     image = load_image(filename)
 
-    cropped_and_aligned_image = fit_into_array(
+    cropped_and_aligned_image: np.ndarray = fit_into_array(
         array=image,
         output_shape=shape,
         relative_position=(position_y, position_x),
         align=align,
         allow_smaller_array=allow_smaller_array,
-    )  # type: np.ndarray
+    )
 
     return cropped_and_aligned_image

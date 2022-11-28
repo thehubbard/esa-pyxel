@@ -71,7 +71,7 @@ class Klass:
 
 def get_annotation(annotation) -> str:
     if t.get_origin(annotation):
-        annotation = str(annotation)  # type: str
+        annotation: str = str(annotation)
     elif hasattr(annotation, "__name__"):
         annotation = annotation.__name__
     else:

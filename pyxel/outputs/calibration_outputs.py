@@ -47,31 +47,32 @@ class CalibrationOutputs(Outputs):
         save_calibration_data: Optional[Sequence[Mapping[str, Sequence[str]]]] = None,
     ):
         super().__init__(
-            output_folder=output_folder, save_data_to_file=save_data_to_file
+            output_folder=output_folder,
+            save_data_to_file=save_data_to_file,
         )
 
         # Parameter(s) specific for 'Calibration'
-        self.save_calibration_data = (
-            save_calibration_data
-        )  # type: Optional[Sequence[Mapping[str, Sequence[str]]]]
+        self.save_calibration_data: Optional[
+            Sequence[Mapping[str, Sequence[str]]]
+        ] = save_calibration_data
 
     def save_processors(self, processors: pd.DataFrame) -> Sequence[Delayed]:
         """TBW."""
-        lst = []  # type: List[Delayed]
+        lst: List[Delayed] = []
 
         if self.save_data_to_file:
 
             for _, series in processors.iterrows():
-                id_island = series["island"]  # type: int
-                id_processor = series["id_processor"]  # type: int
-                processor = series["processor"]  # type: Delayed
+                id_island: int = series["island"]
+                id_processor: int = series["id_processor"]
+                processor: Delayed = series["processor"]
 
                 # TODO: Create folders ?
                 prefix = f"island{id_island:02d}_processor{id_processor:02d}"
 
-                output_filenames = delayed(self.save_to_file)(
+                output_filenames: Delayed = delayed(self.save_to_file)(
                     processor=processor, prefix=prefix, with_auto_suffix=False
-                )  # type: Delayed
+                )
                 lst.append(output_filenames)
 
         return lst
@@ -87,11 +88,12 @@ class CalibrationOutputs(Outputs):
         logs: DataFrame
         """
 
-        save_methods = {"nc": self.save_to_netcdf}  # type: Dict[str, SaveToFile]
+        save_methods: Dict[str, SaveToFile] = {"nc": self.save_to_netcdf}
 
         if self.save_calibration_data is not None:
 
-            for dct in self.save_calibration_data:  # type: Mapping[str, Sequence[str]]
+            dct: Mapping[str, Sequence[str]]
+            for dct in self.save_calibration_data:
                 first_item, *_ = dct.items()
                 obj, format_list = first_item
 

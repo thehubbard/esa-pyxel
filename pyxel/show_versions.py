@@ -22,10 +22,10 @@ __all__ = ["show_versions"]
 def get_system_info() -> Mapping[str, Any]:
     """Get extra information."""
     # Get git commit hash
-    commit = get_versions()["full-revisionid"]  # type: Optional[str]
-    version = get_versions()["version"]  # type: str
+    commit: Optional[str] = get_versions()["full-revisionid"]
+    version: str = get_versions()["version"]
 
-    size_integer = struct.calcsize("P")  # type: int
+    size_integer: int = struct.calcsize("P")
     language_code, encoding = locale.getlocale()
 
     return {
@@ -91,9 +91,9 @@ def show_versions():
     pytest     : 6.0.1
     sphinx     : None
     """
-    system_info = get_system_info()  # type: Mapping[str, Any]
+    system_info: Mapping[str, Any] = get_system_info()
 
-    dependencies_lst = (
+    dependencies_lst: Tuple[str, ...] = (
         "pyxel",
         # required
         "astropy",
@@ -141,9 +141,9 @@ def show_versions():
         "tox",
         # Docs
         "sphinx",
-    )  # type: Tuple[str, ...]
+    )
 
-    dependencies = {}  # type: dict
+    dependencies: dict = {}
 
     for module_name in dependencies_lst:
         try:

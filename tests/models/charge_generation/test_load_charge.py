@@ -112,7 +112,7 @@ def profile_10x3_txt_filename(profile_10x3: np.ndarray, tmp_path: Path) -> Path:
 
 def test_charge_profile_10x1(ccd_10x1: CCD, profile_10x1_txt_filename: Path) -> None:
     """Test function 'charge_profile'."""
-    detector = ccd_10x1  # type: Detector
+    detector: Detector = ccd_10x1
 
     # Check initial detector object
     assert detector.geometry.row == 10
@@ -134,7 +134,7 @@ def test_charge_profile_10x1(ccd_10x1: CCD, profile_10x1_txt_filename: Path) -> 
 
 def test_charge_profile_10x3(ccd_10x3: CCD, profile_10x3_txt_filename: Path) -> None:
     """Test function 'charge_profile'."""
-    detector = ccd_10x3  # type: Detector
+    detector: Detector = ccd_10x3
 
     # Check initial detector object
     assert detector.geometry.row == 10

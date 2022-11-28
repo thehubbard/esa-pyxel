@@ -34,13 +34,11 @@ class Charge:
 
     def __init__(self, geo: "Geometry"):
 
-        self._array = np.zeros(
-            (geo.row, geo.col), dtype=self.EXP_TYPE
-        )  # type: np.ndarray
+        self._array: np.ndarray = np.zeros((geo.row, geo.col), dtype=self.EXP_TYPE)
         self._geo = geo
-        self.nextid = 0  # type: int
+        self.nextid: int = 0
 
-        self.columns = (
+        self.columns: Tuple[str, ...] = (
             "charge",
             "number",
             "init_energy",
@@ -54,12 +52,10 @@ class Charge:
             "velocity_ver",
             "velocity_hor",
             "velocity_z",
-        )  # type: Tuple[str, ...]
+        )
 
-        self.EMPTY_FRAME = pd.DataFrame(
-            columns=self.columns, dtype=float
-        )  # type: pd.DataFrame
-        self._frame = self.EMPTY_FRAME.copy()  # type: pd.DataFrame
+        self.EMPTY_FRAME: pd.DataFrame = pd.DataFrame(columns=self.columns, dtype=float)
+        self._frame: pd.DataFrame = self.EMPTY_FRAME.copy()
 
     def __eq__(self, other) -> bool:
         return (
@@ -146,7 +142,7 @@ class Charge:
         #     random_direction(1.0)
 
         # Create new charges as a `dict`
-        new_charges = {
+        new_charges: Mapping[str, Union[Sequence, np.ndarray]] = {
             "charge": charge,
             "number": particles_per_cluster,
             "init_energy": init_energy,
@@ -160,7 +156,7 @@ class Charge:
             "velocity_ver": init_ver_velocity,
             "velocity_hor": init_hor_velocity,
             "velocity_z": init_z_velocity,
-        }  # type: Mapping[str, Union[Sequence, np.ndarray]]
+        }
 
         return pd.DataFrame(new_charges)
 
@@ -238,7 +234,7 @@ class Charge:
         charge_number = array.flatten()
         where_non_zero = np.where(charge_number > 0.0)
         charge_number = charge_number[where_non_zero]
-        size = charge_number.size  # type: int
+        size: int = charge_number.size
 
         vertical_pixel_center_pos_1d = get_vertical_pixel_center_pos(
             num_rows=num_rows,
@@ -277,7 +273,7 @@ class Charge:
             Charges as a `DataFrame`
         """
         if set(new_charges.columns) != set(self.columns):
-            expected_columns = ", ".join(map(repr, self.columns))  # type: str
+            expected_columns: str = ", ".join(map(repr, self.columns))
             raise ValueError(f"Expected columns: {expected_columns}")
 
         if self._frame.empty:
@@ -327,7 +323,7 @@ class Charge:
         init_z_velocity : array
         """
         # Create charge(s)
-        new_charges = Charge.create_charges(
+        new_charges: pd.DataFrame = Charge.create_charges(
             particle_type=particle_type,
             particles_per_cluster=particles_per_cluster,
             init_energy=init_energy,
@@ -337,7 +333,7 @@ class Charge:
             init_ver_velocity=init_ver_velocity,
             init_hor_velocity=init_hor_velocity,
             init_z_velocity=init_z_velocity,
-        )  # type: pd.DataFrame
+        )
 
         # Add charge(s)
         self.add_charge_dataframe(new_charges=new_charges)
@@ -405,18 +401,18 @@ class Charge:
         ----------
         value
         """
-        cls_name = self.__class__.__name__  # type: str
+        cls_name: str = self.__class__.__name__
 
         if not isinstance(value, np.ndarray):
             raise TypeError(f"{cls_name} array should be a numpy.ndarray")
 
         if value.dtype not in self.TYPE_LIST:
-            exp_type_name = str(self.EXP_TYPE)  # type: str
+            exp_type_name: str = str(self.EXP_TYPE)
             raise TypeError(f"Expected type of {cls_name} array is {exp_type_name}.")
 
     def validate_shape(self, value: np.ndarray) -> None:
         """TBW."""
-        cls_name = self.__class__.__name__  # type: str
+        cls_name: str = self.__class__.__name__
 
         if value.shape != self._array.shape:
             raise ValueError(f"Expected {cls_name} array is {self._array.shape}.")
@@ -438,11 +434,11 @@ class Charge:
         array
         """
         if id_list:
-            df = self._frame.query("index in %s" % id_list)  # type: pd.DataFrame
+            df: pd.DataFrame = self._frame.query("index in %s" % id_list)
         else:
             df = self._frame
 
-        array = df[quantity].values  # type: np.ndarray
+        array: np.ndarray = df[quantity].values
 
         return array
 

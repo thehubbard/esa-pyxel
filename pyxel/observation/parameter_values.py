@@ -62,29 +62,29 @@ class ParameterValues:
             key = "detector.sampling_properties.start_time"
 
         # unique identifier to the step. example: 'detector.geometry.row'
-        self._key = key  # type: str
-        self._values = (
-            values
-        )  # type: Union[Literal["_"], Sequence[Literal["_"]], Sequence[Number], Sequence[str]]
+        self._key: str = key
+        self._values: Union[
+            Literal["_"], Sequence[Literal["_"]], Sequence[Number], Sequence[str]
+        ] = values
 
         # short  name identifier: 'row'
         self._short_name = key.split(".")[-1]
 
-        self._enabled = enabled  # type: bool
-        self._logarithmic = logarithmic  # type: bool
-        self._boundaries = boundaries  # type: Optional[Tuple[float, float]]
+        self._enabled: bool = enabled
+        self._logarithmic: bool = logarithmic
+        self._boundaries: Optional[Tuple[float, float]] = boundaries
 
-        self._current = None  # type: Optional[Union[Literal['_'], Number, str]]
+        self._current: Optional[Union[Literal["_"], Number, str]] = None
 
     def __repr__(self) -> str:
-        cls_name = self.__class__.__name__  # type: str
+        cls_name: str = self.__class__.__name__
 
         return f"{cls_name}<key={self.key!r}, values={self.values!r}, enabled={self.enabled!r}>"
 
     def __len__(self) -> int:
 
         try:
-            values = eval_range(self.values)  # type: Sequence
+            values: Sequence = eval_range(self.values)
         except Exception as exc:
             raise NameError(
                 f"Wrong value: {self.values!r} for key: {self.key!r}. Error: {exc}"

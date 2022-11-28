@@ -460,8 +460,8 @@ def champion_heatmap(
         {"param_id": range(len(ds.param_id))}
     )
 
-    x = np.array([])  # type: np.ndarray
-    y = np.array([])  # type: np.ndarray
+    x: np.ndarray = np.array([])
+    y: np.ndarray = np.array([])
 
     for parameter in output_champions.param_id[parameter_slice]:
         for island in output_champions.island[island_slice]:
@@ -508,10 +508,10 @@ def champion_heatmap(
     # x=x[x>1e-7]
 
     if logx is True:
-        bins = [
+        bins: Union[list, int] = [
             np.geomspace(0.9 * np.min(x), 1.1 * np.max(x), num_bins + 1),
             num_bins,
-        ]  # type: Union[list, int]
+        ]
     else:
         bins = num_bins
 

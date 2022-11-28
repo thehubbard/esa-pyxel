@@ -30,7 +30,7 @@ class Environment:
         self._numbytes = 0
 
     def __repr__(self) -> str:
-        cls_name = self.__class__.__name__  # type: str
+        cls_name: str = self.__class__.__name__
         return f"{cls_name}(temperature={self._temperature!r})"
 
     def __eq__(self, other) -> bool:

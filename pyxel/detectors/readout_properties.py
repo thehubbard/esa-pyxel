@@ -30,17 +30,17 @@ class ReadoutProperties:
         times_linear: bool = True,
     ):
         # Fixed at beginning
-        self._num_steps = num_steps  # type: int
-        self._start_time = start_time  # type: float
-        self._end_time = end_time  # type: float
-        self._non_destructive = ndreadout  # type: bool
-        self._times_linear = times_linear  # type: bool
+        self._num_steps: int = num_steps
+        self._start_time: float = start_time
+        self._end_time: float = end_time
+        self._non_destructive: bool = ndreadout
+        self._times_linear: bool = times_linear
 
         # Changing
-        self._time = 0.0  # type: float
-        self._time_step = 1.0  # type: float
-        self._read_out = True  # type: bool
-        self._pipeline_count = 0  # type: int
+        self._time: float = 0.0
+        self._time_step: float = 1.0
+        self._read_out: bool = True
+        self._pipeline_count: int = 0
 
     @property
     def num_steps(self) -> int:
