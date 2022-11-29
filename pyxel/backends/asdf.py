@@ -30,8 +30,8 @@ def to_asdf(filename: Union[str, Path], dct: Mapping[str, Any]) -> None:
         raise NotImplementedError
 
     # Convert a 'DataFrame' into a `dict`
-    df = dct["data"]["charge"]["frame"]  # type: pd.DataFrame
-    frame_dct = df.to_dict(orient="list")  # type: Mapping[str, Sequence[float]]
+    df: pd.DataFrame = dct["data"]["charge"]["frame"]
+    frame_dct: Mapping[str, Sequence[float]] = df.to_dict(orient="list")
 
     dct["data"]["charge"]["frame"] = frame_dct
 
@@ -53,14 +53,14 @@ def from_asdf(filename: Union[str, Path]) -> Iterator[Mapping[str, Any]]:
             "or 'pip install pyxel-sim[all]'"
         ) from exc
 
-    dct = {}  # type: Dict[str, Any]
+    dct: Dict[str, Any] = {}
 
     with asdf.open(filename, copy_arrays=True) as af:
         # TODO: Use a JSON schema to validate 'dct'
         if "version" not in af:
             raise ValueError("Missing 'version' !")
 
-        version = af["version"]  # type: int
+        version: int = af["version"]
         if version != 1:
             raise NotImplementedError
 
@@ -76,9 +76,7 @@ def from_asdf(filename: Union[str, Path]) -> Iterator[Mapping[str, Any]]:
         dct["data"] = af["data"]
 
         # Convert a 'dict' to a 'DataFrame'
-        frame_dct = dct["data"]["charge"][
-            "frame"
-        ]  # type: Mapping[str, Sequence[float]]
+        frame_dct: Mapping[str, Sequence[float]] = dct["data"]["charge"]["frame"]
         df = pd.DataFrame(frame_dct)
 
         dct["data"]["charge"]["frame"] = df

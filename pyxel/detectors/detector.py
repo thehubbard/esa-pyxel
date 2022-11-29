@@ -450,7 +450,7 @@ class Detector:
 
         >>> detector.to_hdf5("ccd.h5")
         """
-        dct = self.to_dict()  # type: Mapping
+        dct: Mapping = self.to_dict()
         backends.to_hdf5(filename=filename, dct=dct)
 
     @classmethod
@@ -467,7 +467,8 @@ class Detector:
         >>> detector
         CCD(...)
         """
-        with backends.from_hdf5(filename) as dct:  # type: Mapping[str, Any]
+        dct: Mapping[str, Any]
+        with backends.from_hdf5(filename) as dct:
             obj: Detector = cls.from_dict(dct)
             return obj
 

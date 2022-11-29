@@ -177,10 +177,12 @@ class DaskIsland:
         # Run 'algo.evolve' with `Dask`
         new_delayed_pop: Delayed = delayed(algo_pickable.evolve, nout=2)(pop)
 
+        new_algo: pg.algo
+        new_pop: pg.population
         (
             new_algo,
             new_pop,
-        ) = new_delayed_pop.compute()  # type: Tuple[pg.algo, pg.population]
+        ) = new_delayed_pop.compute()
 
         return new_algo, new_pop
 

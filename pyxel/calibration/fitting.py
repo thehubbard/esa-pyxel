@@ -244,7 +244,10 @@ class ModelFitting(ProblemSingleObjective):
         var: ParameterValues
         for var in self.variables:
             assert var.boundaries
-            low_val, high_val = var.boundaries  # type: Tuple[float, float]
+
+            low_val: float
+            high_val: float
+            low_val, high_val = var.boundaries
 
             if var.logarithmic:
                 low_val = math.log10(low_val)

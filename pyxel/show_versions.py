@@ -12,7 +12,7 @@ import os
 import platform
 import struct
 import sys
-from typing import Any, Mapping, Optional, Tuple
+from typing import Any, Dict, Mapping, Optional, Tuple
 
 from ._version import get_versions
 
@@ -143,7 +143,7 @@ def show_versions():
         "sphinx",
     )
 
-    dependencies: dict = {}
+    dependencies: Dict[str, Optional[str]] = {}
 
     for module_name in dependencies_lst:
         try:
@@ -154,7 +154,7 @@ def show_versions():
         else:
             try:
                 # Try to get a version
-                version = module.__version__  # type: ignore
+                version = module.__version__
                 dependencies[module_name] = version
             except Exception:
                 dependencies[module_name] = "installed"

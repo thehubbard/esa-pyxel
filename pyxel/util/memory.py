@@ -11,7 +11,7 @@
 from typing import Any, List
 
 import numpy as np
-from pympler.asizeof import asizeof  # type: ignore
+from pympler.asizeof import asizeof
 
 
 def get_size(obj: Any) -> int:

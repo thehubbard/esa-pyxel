@@ -10,7 +10,7 @@
 
 import logging
 import operator
-from typing import TYPE_CHECKING, Mapping, Optional, Tuple, Union
+from typing import TYPE_CHECKING, Mapping, Optional, Union
 
 import numpy as np
 from tqdm.auto import tqdm
@@ -162,9 +162,10 @@ def run_exposure_pipeline(
 
     unstacked_result: Mapping[str, list] = {key: [] for key in keys}
 
-    for i, (time, step) in enumerate(
-        time_step_it
-    ):  # type: Tuple[int, Tuple[float, float]]
+    i: int
+    time: float
+    step: float
+    for i, (time, step) in enumerate(time_step_it):
 
         detector.time = time
         detector.time_step = step

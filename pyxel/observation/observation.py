@@ -737,9 +737,9 @@ class Observation:
 
         _ = self.outputs.save_to_file(processor=new_processor, run_number=n)
 
-        ds = new_processor.result_to_dataset(
+        ds: xr.Dataset = new_processor.result_to_dataset(
             x=x, y=y, times=times, result_type=self.result_type
-        )  # type: xr.Dataset
+        )
 
         # Can also be done outside dask in a loop
         ds = _add_custom_parameters(
@@ -935,7 +935,7 @@ def parameter_to_dataset(
     parameter = xr.DataArray(parameter_dict[coordinate_name])
 
     # TODO: Dirty hack. Fix this !
-    short_name = dimension_names[coordinate_name]  # type: str
+    short_name: str = dimension_names[coordinate_name]
 
     if short_name.endswith("_id"):
         short_coord_name = short_name[:-3]
@@ -1035,7 +1035,7 @@ def _add_product_parameters(
     # TODO: Implement for coordinate 'multi'
     for i, (coordinate_name, param_value) in enumerate(parameter_dict.items()):
 
-        short_name = dimension_names[coordinate_name]  # type: str
+        short_name: str = dimension_names[coordinate_name]
 
         #  assigning the right coordinates based on type
         if types[coordinate_name] == ParameterType.Simple:

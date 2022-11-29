@@ -36,7 +36,7 @@ class MKID(Detector):
         characteristics: "MKIDCharacteristics",
     ):
         self._geometry: MKIDGeometry = geometry
-        self._characteristics: MKIDCharacteristics = cha  # type
+        self._characteristics: MKIDCharacteristics = characteristics
 
         super().__init__(environment=environment)
         self.reset()

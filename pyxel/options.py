@@ -61,7 +61,7 @@ class GlobalOptions:
 
         return previous_params
 
-    def validate_and_convert(self, dct: Mapping) -> Mapping:
+    def validate_and_convert(self, dct: Mapping[str, Any]) -> Mapping[str, Any]:
         """Validate and convert the input 'option(s)'.
 
         Parameters
@@ -124,9 +124,13 @@ class SetOptions:
     """
 
     def __init__(self, **kwargs):
-        valid_parameters: Mapping = global_options.validate_and_convert(kwargs)
+        valid_parameters: Mapping[str, Any] = global_options.validate_and_convert(
+            kwargs
+        )
 
-        self._previous_params: Mapping = global_options.update(valid_parameters)
+        self._previous_params: Mapping[str, Any] = global_options.update(
+            valid_parameters
+        )
 
     def __enter__(self) -> "SetOptions":
         return self

@@ -579,7 +579,7 @@ def _build_configuration(dct: dict) -> Configuration:
     -------
     Configuration
     """
-    pipeline = to_pipeline(dct["pipeline"])  # type: DetectionPipeline
+    pipeline: DetectionPipeline = to_pipeline(dct["pipeline"])
 
     # Sanity checks
     keys_running_mode: Sequence[str] = [

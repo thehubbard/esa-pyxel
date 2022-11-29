@@ -382,11 +382,13 @@ def calc_psf(
     )
 
     # Calculate a monochromatic PSF
+    output_fits: Sequence[fits.hdu.image.PrimaryHDU]
+    wavefronts: Sequence[op.Wavefront]
     output_fits, wavefronts = osys.calc_psf(
         wavelength=wavelength,
         return_intermediates=True,
         normalize="last",
-    )  # type: Sequence[fits.hdu.image.PrimaryHDU], Sequence[op.Wavefront]
+    )
 
     return output_fits, wavefronts
 
