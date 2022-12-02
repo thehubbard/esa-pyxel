@@ -17,9 +17,11 @@ from pyxel.detectors import Detector, Geometry
 from pyxel.util import load_cropped_and_aligned_image
 
 
-def fix_pattern_noise(
+def fixed_pattern_noise(
     detector: Detector,
-    filename: Optional[str, Path] = None,
+    filename: Optional[
+        Path
+    ] = None,  # path or string but with optional not possible to define
     fixed_pattern_noise_factor: Optional[float] = None,
     position: Tuple[int, int] = (0, 0),
     align: Optional[

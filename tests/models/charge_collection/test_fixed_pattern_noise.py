@@ -5,7 +5,7 @@ import numpy as np
 import pytest
 
 from pyxel.detectors import CCD, CCDCharacteristics, CCDGeometry, Environment
-from pyxel.models.charge_collection import fix_pattern_noise
+from pyxel.models.charge_collection import fixed_pattern_noise
 
 
 @pytest.fixture
@@ -49,8 +49,8 @@ def valid_noise_path(
     return final_path
 
 
-def test_fix_pattern_noise_valid(ccd_5x5: CCD, valid_noise_path: Union[str, Path]):
-    """Test function fix_pattern_noise with valid inputs."""
+def test_fixed_pattern_noise_valid(ccd_5x5: CCD, valid_noise_path: Union[str, Path]):
+    """Test function fixed_pattern_noise with valid inputs."""
 
     detector = ccd_5x5
 
@@ -58,6 +58,6 @@ def test_fix_pattern_noise_valid(ccd_5x5: CCD, valid_noise_path: Union[str, Path
     detector.pixel.array = array
     target = array * 0.5
 
-    fix_pattern_noise(detector=detector, filename=valid_noise_path)
+    fixed_pattern_noise(detector=detector, filename=valid_noise_path)
 
     np.testing.assert_array_almost_equal(detector.pixel.array, target)
