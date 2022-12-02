@@ -121,24 +121,26 @@ Fixed pattern noise
 
 With this model you can multiply :py:class:`~pyxel.data_structure.Pixel` array with
 fixed pattern noise caused by pixel non-uniformity during charge collection.
-User has to provide ``filename`` to model arguments.
+User has to provide a ``filename`` or a fixed-pattern nise factor to model arguments.
 Accepted file formats for the noise are ``.npy``, ``.fits``, ``.txt``, ``.data``, ``.jpg``, ``.jpeg``, ``.bmp``,
 ``.png`` and ``.tiff``. Use argument ``position`` to set the offset from (0,0) pixel
 and set where the noise is placed onto detector. You can set preset positions with argument ``align``.
 Values outside of detector shape will be cropped.
 Read more about placement in the documentation of function :py:func:`~pyxel.util.fit_into_array`.
+If the user provides a value for the ``fixed_pattern_noise_factor`` instead of a path to a filename as a string,
+the value will be multiplied with the quantum_efficiency given by the detector properties and the lognormal distribution is applied to the pixel array.
 
 Basic example of the configuration file:
 
 .. code-block:: yaml
 
-    - name: fix_pattern_noise
-      func: pyxel.models.charge_collection.fix_pattern_noise
+    - name: fixed_pattern_noise
+      func: pyxel.models.charge_collection.fixed_pattern_noise
       enabled: true
       arguments:
           filename: "noise.fits"
 
-.. autofunction:: fix_pattern_noise
+.. autofunction:: fixed_pattern_noise
 
 .. _Inter pixel capacitance:
 
