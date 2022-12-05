@@ -214,6 +214,11 @@ pages:
     - mv documentation.svg public
     - cp docs/_static/redirect.html public/doc/index.html
 
+    # Copy JSON Schema files
+#    - (test -f stable/pyxel_schema.json && cp stable/pyxel_schema.json public/pyxel_schema.json) || echo "No file 'stable/pyxel_schema.json'"
+    - (test -f latest/pyxel_schema.json && cp latest/pyxel_schema.json public/pyxel_schema.json) || echo "No file 'stable/pyxel_schema.json'"
+    - (test -f latest/pyxel_schema.json && cp latest/pyxel_schema.json public/pyxel_schema_latest.json) || echo "No file 'latest/pyxel_schema.json'"
+
     - ls public
 
   artifacts:
