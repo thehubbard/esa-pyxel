@@ -7,8 +7,8 @@
 
 """Simple models to simulate charge deposition by ionizing particles (e.g. cosmic rays)."""
 
-import typing as t
 from pathlib import Path
+from typing import Optional, Sequence, Union
 
 import numpy as np
 import pandas as pd
@@ -25,15 +25,15 @@ def charge_deposition(
     step_size: float = 1.0,
     energy_mean: float = 1.0,
     energy_spread: float = 0.1,
-    energy_spectrum: t.Union[str, Path, None] = None,
-    energy_spectrum_sampling: t.Optional[Literal["linear", "log", None]] = "log",
+    energy_spectrum: Union[str, Path, None] = None,
+    energy_spectrum_sampling: Optional[Literal["linear", "log", None]] = "log",
     ehpair_creation: float = 3.65,
     material_density: float = 2.3290,
-    particle_direction: t.Optional[
+    particle_direction: Optional[
         Literal["isotropic", "orthogonal", None]
     ] = "isotropic",
-    stopping_power_curve: t.Union[str, Path, None] = None,
-    seed: t.Optional[int] = None,
+    stopping_power_curve: Union[str, Path, None] = None,
+    seed: Optional[int] = None,
 ) -> None:
     """Simulate charge deposition by ionizing particles using a stopping power curve.
 
@@ -49,30 +49,30 @@ def charge_deposition(
         the mean energy of the incoming ionizing particles in MeV
     energy_spread : float
         the spread in energy of the incoming ionizing particles in MeV
-    energy_spectrum: String
+    energy_spectrum : str
         the location of the file describing the energy spectrum of incident particles
         if no spectrum is provided energies are randomly drawn from a normal distribution
         with mean and spread defined above
         note that the energy spectrum is assumed to be a txt file with two columns [energy, flux]
         with the energy in MeV
-    energy_spectrum_sampling: String
+    energy_spectrum_sampling : str
         "log" or None: the energy spectrum is sampled in log space
         "linear" : the energy spectrum is sampled in linear space
-    ehpair_creation: float
+    ehpair_creation : float
         the energy required to generate a electron-hole pair in eV
         by default the Si value at room temperature is parsed i.e. 3.65 eV
-    material_density: float
+    material_density : float
         the material density in g/cm3
         by default he Si value at room temperature is parsed i.e. 2.3290 g/cm3
-    particle_direction: string
+    particle_direction : str
         "isotropic" : particles are coming from all directions (outside of the sensor)
         "orthogonal" : particles are coming from the top of the sensor (thickness = 0) and orthogonal to its surface
-    stopping_power_curve : String
+    stopping_power_curve : str
         the location of the file describing the total massive stopping power
         energetic loss per mass of material and per unit path length versus particle energy
         note that the the stopping power curve is assumed to be a csv file with two columns [energy, stopping power]
         energy in MeV, stopping power in MeV cm2/g
-    seed: int, optional
+    seed : int, optional
     """
     with set_random_seed(seed):
         tracks = simulate_charge_deposition(
@@ -101,14 +101,14 @@ def charge_deposition_in_mct(
     step_size: float = 1.0,
     energy_mean: float = 1.0,
     energy_spread: float = 0.1,
-    energy_spectrum: t.Union[str, Path, None] = None,
-    energy_spectrum_sampling: t.Optional[Literal["linear", "log", None]] = "log",
+    energy_spectrum: Union[str, Path, None] = None,
+    energy_spectrum_sampling: Optional[Literal["linear", "log", None]] = "log",
     cutoff_wavelength: float = 2.5,
-    particle_direction: t.Optional[
+    particle_direction: Optional[
         Literal["isotropic", "orthogonal", None]
     ] = "isotropic",
-    stopping_power_curve: t.Union[str, Path, None] = None,
-    seed: t.Optional[int] = None,
+    stopping_power_curve: Union[str, Path, None] = None,
+    seed: Optional[int] = None,
 ) -> None:
     """Simulate charge deposition by ionizing particles using a stopping power curve.
 
@@ -124,27 +124,27 @@ def charge_deposition_in_mct(
         the mean energy of the incoming ionizing particles in MeV
     energy_spread : float
         the spread in energy of the incoming ionizing particles in MeV
-    energy_spectrum: String
+    energy_spectrum : str
         the location of the file describing the energy spectrum of incident particles
         if no spectrum is provided energies are randomly drawn from a normal distribution
         with mean and spread defined above
         note that the energy spectrum is assumed to be a txt file with two columns [energy, flux]
         with the energy in MeV
-    energy_spectrum_sampling: String
+    energy_spectrum_sampling : str
         "log" or None: the energy spectrum is sampled in log space
         "linear" : the energy spectrum is sampled in linear space
-    cutoff_wavelength: float
+    cutoff_wavelength : float
         the longest wavelength in micrometer at which the QE reaches 50% of its maximum,
         used to compute the bandgap energy, and the corresponding fraction of cadmium
-    particle_direction: String
+    particle_direction : str
         "isotropic" : particles are coming from all directions (outside of the sensor)
         "orthogonal" : particles are coming from the top of the sensor (thickness = 0) and orthogonal to its surface
-    stopping_power_curve : String
+    stopping_power_curve : str
         the location of the file describing the total massive stopping power
         energetic loss per mass of material and per unit path length versus particle energy
         note that the the stopping power curve is assumed to be a csv file with two columns [energy, stopping power]
         energy in MeV, stopping power in MeV cm2/g
-    seed: int, optional
+    seed : int, optional
     """
     lambdae = materials.lambda_e(cutoff_wavelength)
     eg = 1.24 / lambdae
@@ -173,7 +173,7 @@ def charge_deposition_in_mct(
     detector.charge.add_charge_dataframe(tracks_to_charge(tracks))
 
 
-def tracks_to_charge(tracks: t.Sequence[float]) -> pd.DataFrame:
+def tracks_to_charge(tracks: Sequence[float]) -> pd.DataFrame:
     """Convert tracks into a panda dataframe compatible with a detector charge object.
 
     Parameters
@@ -213,12 +213,12 @@ def simulate_charge_deposition(
     step_size: float = 1.0,
     energy_mean: float = 1.0,
     energy_spread: float = 0.1,
-    energy_spectrum: t.Union[str, Path, None] = None,
-    energy_spectrum_sampling: t.Optional[Literal["linear", "log"]] = "log",
+    energy_spectrum: Union[str, Path, None] = None,
+    energy_spectrum_sampling: Optional[Literal["linear", "log"]] = "log",
     ehpair_creation: float = 3.65,
     material_density: float = 2.3290,
-    particle_direction: t.Optional[Literal["isotropic", "orthogonal"]] = "isotropic",
-    stopping_power_curve: t.Union[str, Path, None] = None,
+    particle_direction: Optional[Literal["isotropic", "orthogonal"]] = "isotropic",
+    stopping_power_curve: Union[str, Path, None] = None,
 ) -> list:
     """Simulate charge deposition of incident ionizing particles inside a detector.
 
@@ -240,25 +240,25 @@ def simulate_charge_deposition(
         the mean energy of the incoming ionizing particles
     energy_spread : float
         the spread in energy of the incoming ionizing particles
-    energy_spectrum: String
+    energy_spectrum : str
         the location of the file describing the energy spectrum of incident particles
         if no spectrum is provided energies are randomly drawn from a normal distribution
         with mean and spread defined above
         note that the energy spectrum is assumed to be a txt file with two columns [energy, flux]
         with the energy in MeV
-    energy_spectrum_sampling: String
+    energy_spectrum_sampling : str
         "log" or None: the energy spectrum is sampled in log space
         "linear" : the energy spectrum is sampled in linear space
-    ehpair_creation: float
+    ehpair_creation : float
         the energy required to generate a electron-hole pair in eV
         by default the Si value at room temperature is parsed i.e. 3.65 eV
-    material_density: float
+    material_density : float
         the material density in g/cm3
         by default he Si value at room temperature is parsed i.e. 2.3290 g/cm3
-    particle_direction: string
+    particle_direction : str
         "isotropic" : particles are coming from all directions (outside of the sensor)
         "orthogonal" : particles are coming from the top of the sensor (thickness = 0) and orthogonal to its surface
-    stopping_power_curve : String
+    stopping_power_curve : str
         the location of the file describing the total massive stopping power
         energetic loss per mass of material and per unit path length versus particle energy
         note that the the stopping power curve is assumed to be a csv file with two columns [energy, stopping power]

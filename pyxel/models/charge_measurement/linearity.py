@@ -28,14 +28,15 @@ def compute_poly_linearity(
 
     Parameters
     ----------
-    array_2d: ndarray
+    array_2d : ndarray
         Input array.
-    coefficients: list of float
+    coefficients : list of float
         Coefficients of the polynomial function.
 
     Returns
     -------
-    signal: np.ndarray
+    np.ndarray
+        Signal.
     """
     polynomial_function = np.polynomial.polynomial.Polynomial(coefficients)
 
@@ -56,9 +57,9 @@ def output_node_linearity_poly(
 
     Parameters
     ----------
-    detector: Detector
+    detector : Detector
         Pyxel Detector object.
-    coefficients: list of float
+    coefficients : list of float
         Coefficient of the polynomial function.
     """
     if len(coefficients) == 0:
@@ -90,24 +91,24 @@ def compute_simple_physical_non_linearity(
 
     Parameters
     ----------
-    array_2d: ndarray
+    array_2d : ndarray
         Input array.
-    temperature:
+    temperature
         Temperature. Unit: K.
-    v_bias: float
+    v_bias : float
         Initial bias voltage. Unit: V.
-    cutoff: float
+    cutoff : float
         Cutoff wavelength. unit: um
-    n_acceptor: float
+    n_acceptor : float
         Acceptor density. Unit: atoms/cm^3
-    n_donor: float
+    n_donor : float
         Donor density. Unit: atoms/cm^3
-    diode_diameter: float
+    diode_diameter : float
         Diode diameter. Unit: um
 
     Returns
     -------
-    non_linear_signal: ndarray
+    ndarray
         Output array.
     """
     # Derivation of Cd concentration in the alloy,  it depends on cutoff wavelength and targeted operating temperature
@@ -176,17 +177,17 @@ def simple_physical_non_linearity(
 
     Parameters
     ----------
-    detector: Detector
+    detector : Detector
         Pyxel detector object.
-    cutoff: float
+    cutoff : float
         Cutoff wavelength. unit: um
-    n_donor: float
+    n_donor : float
         Donor density. Unit: atoms/cm^3
-    n_acceptor: float
+    n_acceptor : float
         Acceptor density. Unit: atoms/cm^3
-    diode_diameter: float
+    diode_diameter : float
         Diode diameter. Unit: um
-    v_bias: float
+    v_bias : float
         Initial bias voltage. Unit: V.
     """
 
@@ -227,26 +228,26 @@ def compute_physical_non_linearity(
 
     Parameters
     ----------
-    array_2d: ndarray
+    array_2d : ndarray
         Input array.
-    temperature:
+    temperature
         Temperature. Unit: K.
-    fixed_capacitance: float
+    fixed_capacitance : float
         Additional fixed capacitance. Unit: F
-    v_bias: float
+    v_bias : float
         Initial bias voltage. Unit: V.
-    cutoff: float
+    cutoff : float
         Cutoff wavelength. unit: um
-    n_acceptor: float
+    n_acceptor : float
         Acceptor density. Unit: atoms/cm^3
-    n_donor: float
+    n_donor : float
         Donor density. Unit: atoms/cm^3
-    diode_diameter: float
+    diode_diameter : float
         Diode diameter. Unit: um
 
     Returns
     -------
-    non_linear_signal: ndarray
+    ndarray
         Output array.
     """
     # Derivation of Cd concentration in the alloy,  it depends on cutoff wavelength and targeted operating temperature
@@ -324,19 +325,19 @@ def physical_non_linearity(
 
     Parameters
     ----------
-    detector: Detector
+    detector : Detector
         Pyxel detector object.
-    cutoff: float
+    cutoff : float
         Cutoff wavelength. unit: um
-    n_donor: float
+    n_donor : float
         Donor density. Unit: atoms/cm^3
-    n_acceptor: float
+    n_acceptor : float
         Acceptor density. Unit: atoms/cm^3
-    diode_diameter: float
+    diode_diameter : float
         Diode diameter. Unit: um
-    v_bias: float
+    v_bias : float
         Initial bias voltage. Unit: V.
-    fixed_capacitance: float
+    fixed_capacitance : float
         Additional fixed capacitance. Unit: F
     """
     if not (4 <= detector.environment.temperature <= 300):
@@ -384,40 +385,40 @@ def compute_physical_non_linearity_with_saturation(
 
     Parameters
     ----------
-    signal_array_2d: ndarray
+    signal_array_2d : ndarray
         Input signal array.
-    photon_array_2d: ndarray
+    photon_array_2d : ndarray
         Input photon array.
     time_step
         Time step. Unit: s.
-    temperature: float
+    temperature : float
         Temperature. Unit: K.
-    cutoff: float
+    cutoff : float
         Cutoff wavelength. unit: um.
-    n_donor: float
+    n_donor : float
         Donor density. Unit: atoms/cm^3.
-    n_acceptor: float
+    n_acceptor : float
         Acceptor density. Unit: atoms/cm^3.
-    phi_implant: float
+    phi_implant : float
         Diameter of the implantation. Unit: um.
-    d_implant: float
+    d_implant : float
         Depth of the implamantation. Unit: um.
-    saturation_current: float
+    saturation_current : float
         Saturation current: e-/s/pix..
-    ideality_factor: float
+    ideality_factor : float
         Ideality factor.
-    v_reset: float
+    v_reset : float
         VRESET. Unit: V.
-    d_sub: float
+    d_sub : float
         DSUB. Unit: V.
-    fixed_capacitance: float
+    fixed_capacitance : float
         Additional fixed capacitance. Unit: F.
-    euler_points: int
+    euler_points : int
         Number of points in the euler method.
 
     Returns
     -------
-    non_linear_signal: ndarray
+    ndarray
         Output array containing non-linear signal. Unit: V.
     """
     # Derivation of Cd concentration in the alloy,  it depends on cutoff wavelength and targeted operating temperature
@@ -486,29 +487,29 @@ def physical_non_linearity_with_saturation(
 
     Parameters
     ----------
-    detector: Detector
+    detector : Detector
         Pyxel detector object.
-    cutoff: float
+    cutoff : float
         Cutoff wavelength. unit: um
-    n_donor: float
+    n_donor : float
         Donor density. Unit: atoms/cm^3
-    n_acceptor: float
+    n_acceptor : float
         Acceptor density. Unit: atoms/cm^3
-    phi_implant: float
+    phi_implant : float
         Diameter of the implantation. Unit: um
-    d_implant: float
+    d_implant : float
         Depth of the implamantation. Unit: um
-    saturation_current: float
+    saturation_current : float
         Saturation current: e-/s/pix.
-    ideality_factor: float
+    ideality_factor : float
         Ideality factor.
-    v_reset: float
+    v_reset : float
         VRESET. Unit: V.
-    d_sub: float
+    d_sub : float
         DSUB. Unit: V.
-    fixed_capacitance: float
+    fixed_capacitance : float
         Additional fixed capacitance. Unit: F.
-    euler_points: int
+    euler_points : int
         Number of points in the euler method.
     """
     if not (4 <= detector.environment.temperature <= 300):

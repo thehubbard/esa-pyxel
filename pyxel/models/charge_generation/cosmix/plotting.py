@@ -41,10 +41,6 @@ class PlottingCosmix:
         self.file_format = file_format
 
     def save_and_draw(self, fig_name: str) -> None:
-        """TBW.
-
-        :param fig_name:
-        """
         file_name = fig_name + "." + self.file_format
         if self.save_plots:
             plt.savefig(file_name)
@@ -52,18 +48,15 @@ class PlottingCosmix:
             plt.draw()
 
     def show(self) -> None:
-        """TBW."""
         plt.show()
 
     def save_edep(self) -> None:
-        """TBW."""
         np.save("orig2_edep_per_step_10k", self.cosmix.sim_obj.edep_per_step)
         np.save(
             "orig2_edep_per_particle_10k", self.cosmix.sim_obj.total_edep_per_particle
         )
 
     def plot_edep_per_step(self) -> tuple:
-        """TBW."""
         plt.figure()
         n, bins, patches = plt.hist(
             self.cosmix.sim_obj.edep_per_step, 300, facecolor="b"
@@ -77,7 +70,6 @@ class PlottingCosmix:
         return n, bins, patches
 
     def plot_edep_per_particle(self) -> tuple:
-        """TBW."""
         plt.figure()
         n, bins, patches = plt.hist(
             self.cosmix.sim_obj.total_edep_per_particle, 200, facecolor="g"
@@ -91,7 +83,6 @@ class PlottingCosmix:
         return n, bins, patches
 
     def plot_spectrum_cdf(self) -> None:
-        """TBW."""
         sim_obj = self.cosmix.sim_obj
         assert sim_obj.spectrum_cdf is not None
         assert sim_obj.flux_dist is not None
@@ -106,7 +97,6 @@ class PlottingCosmix:
         self.save_and_draw("spectrum_cdf")
 
     def plot_flux_spectrum(self) -> None:
-        """TBW."""
         sim_obj = self.cosmix.sim_obj
         assert sim_obj.spectrum_cdf is not None
         assert sim_obj.flux_dist is not None
@@ -121,7 +111,6 @@ class PlottingCosmix:
         self.save_and_draw("flux_spectrum")
 
     def plot_spectrum_hist(self, data: Optional[str] = None) -> None:
-        """TBW."""
         plt.figure()
         plt.title("Proton flux spectrum sampled by CosmiX")
         plt.xlabel("Energy (MeV)")
@@ -142,7 +131,6 @@ class PlottingCosmix:
         self.save_and_draw("tars_spectrum")
 
     def plot_charges_3d(self) -> None:
-        """TBW."""
         geo = self.cosmix.sim_obj.detector.geometry
 
         # set up a figure twice as wide as it is tall
@@ -222,7 +210,6 @@ class PlottingCosmix:
     #     self.save_and_draw('let_cdf')
 
     def plot_step_cdf(self) -> None:
-        """TBW."""
         plt.figure()
         plt.title("Step size CDF")
         plt.plot(
@@ -231,7 +218,6 @@ class PlottingCosmix:
         self.save_and_draw("step_cdf")
 
     def plot_step_dist(self) -> None:
-        """TBW."""
         plt.figure()
         plt.title("Step size distribution")
         plt.xlabel("step size (um)")
@@ -244,7 +230,6 @@ class PlottingCosmix:
         self.save_and_draw("step_dist")
 
     def plot_tertiary_number_cdf(self) -> None:
-        """TBW."""
         plt.figure()
         plt.title("Tertiary electron number CDF")
         plt.plot(
@@ -255,7 +240,6 @@ class PlottingCosmix:
         self.save_and_draw("elec_number_cdf")
 
     def plot_tertiary_number_dist(self) -> None:
-        """TBW."""
         plt.figure()
         plt.title("Tertiary electron number distribution")
         plt.plot(
@@ -273,7 +257,6 @@ class PlottingCosmix:
     #     self.save_and_draw('let_dist')
 
     def plot_trajectory_xy(self) -> None:
-        """TBW."""
         plt.figure()
         geo = self.cosmix.sim_obj.detector.geometry
 
@@ -291,7 +274,6 @@ class PlottingCosmix:
         self.save_and_draw("trajectory_xy")
 
     def plot_trajectory_xz(self) -> None:
-        """TBW."""
         plt.figure()
         geo = self.cosmix.sim_obj.detector.geometry
         particle = self.cosmix.sim_obj.particle
@@ -310,7 +292,6 @@ class PlottingCosmix:
     def plot_track_histogram(
         self, histogram_data: Union[str, np.ndarray], normalize: bool = False
     ) -> None:
-        """TBW."""
         hist_bins = 1000
         hist_range = (0, 1000)
 
@@ -341,7 +322,6 @@ class PlottingCosmix:
         self.save_and_draw("track_length")
 
     def plot_step_size_histograms(self, normalize: bool = False) -> None:
-        """TBW."""
         energies = ["100MeV"]
         thicknesses = ["40um", "50um", "60um", "70um", "100um"]
         p_types = ["proton"]
@@ -427,7 +407,6 @@ class PlottingCosmix:
     #     self.save_and_draw('secondary_spectra')
 
     def plot_gaia_vs_gras_hist(self, normalize: bool = False) -> None:
-        """TBW."""
         # GRAS simulation results (by Marco) + GAIA BAM data - Perfect overlap in case of normalization!
         path = Path(__file__).parent.joinpath(
             "data",
@@ -497,7 +476,6 @@ class PlottingCosmix:
         self.save_and_draw("gaia_vs_gras_electron_hist")
 
     def plot_old_tars_hist(self, normalize: bool = False) -> None:
-        """TBW."""
         # earlier TARS results of Lionel
         folder_path = Path(__file__).parent.joinpath(
             "data", "validation", "Results-20180404T121902Z-001", "Results"
@@ -556,7 +534,6 @@ class PlottingCosmix:
         self.save_and_draw("old_tars_electron_hist")
 
     def plot_gaia_bam_vs_sm_electron_hist(self, normalize: bool = False) -> None:
-        """TBW."""
         path = Path(__file__).parent.joinpath("data", "validation")
         hist_names = [
             # 'Gaia_bam_ccd_events(13259).npy', NEM JOOOOO
@@ -614,7 +591,6 @@ class PlottingCosmix:
         hist_range: Tuple[int, int] = (0, 15000),
         normalize: bool = False,
     ) -> None:
-        """TBW."""
         labels = [
             "TARS (David), 40um"
             # 'secondary e-',
@@ -704,7 +680,6 @@ class PlottingCosmix:
         self.save_and_draw("electron_hist")
 
     def polar_angle_dist(self, theta: Union[str, np.ndarray]) -> None:
-        """TBW."""
         if isinstance(theta, str):
             if theta.endswith(".npy"):
                 theta_data: np.ndarray = np.load(theta)

@@ -40,7 +40,7 @@ def simple_amplifier(detector: Detector) -> None:
 
     Parameters
     ----------
-    detector: Detector
+    detector : Detector
         Pyxel Detector object.
     """
     char = detector.characteristics

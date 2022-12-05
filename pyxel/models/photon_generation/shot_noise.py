@@ -21,12 +21,12 @@ def compute_poisson_noise(array: np.ndarray) -> np.ndarray:
 
     Parameters
     ----------
-    array: ndarray
+    array : ndarray
         Input array.
 
     Returns
     -------
-    output: ndarray
+    ndarray
         Output array.
     """
     output = np.random.poisson(lam=array).astype(array.dtype)
@@ -38,7 +38,7 @@ def compute_gaussian_noise(array: np.ndarray) -> np.ndarray:
 
     Parameters
     ----------
-    array: ndarray
+    array : ndarray
         Input array.
 
     Returns
@@ -55,9 +55,9 @@ def compute_noise(array: np.ndarray, type: str = "poisson") -> np.ndarray:
 
     Parameters
     ----------
-    array: ndarray
+    array : ndarray
         Input array.
-    type: str, optional
+    type : str, optional
         Choose either 'poisson' or 'normal'. Default is Poisson noise.
 
     Returns
@@ -84,11 +84,11 @@ def shot_noise(
 
     Parameters
     ----------
-    detector: Detector
+    detector : Detector
         Pyxel Detector object.
-    type: str, optional
+    type : str, optional
         Choose either 'poisson' or 'normal'. Default is Poisson noise.
-    seed: int, optional
+    seed : int, optional
         Random seed.
     """
     with set_random_seed(seed):

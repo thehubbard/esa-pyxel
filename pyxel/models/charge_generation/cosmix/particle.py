@@ -37,14 +37,16 @@ class Particle:
     ):
         """Creation of a particle according to some parameters.
 
-        :param detector:
-        :param simulation_mode:
-        :param particle_type:
-        :param input_energy:
-        :param spectrum_cdf:
-        :param starting_pos_ver:
-        :param starting_pos_hor:
-        :param starting_pos_z:
+        Parameters
+        ----------
+        detector
+        simulation_mode
+        particle_type
+        input_energy
+        spectrum_cdf
+        starting_pos_ver
+        starting_pos_hor
+        starting_pos_z
         """
         self.detector = detector
         geo = self.detector.geometry
@@ -156,10 +158,6 @@ class Particle:
             raise ValueError("Given particle type can not be simulated")
 
     def get_surface_point(self) -> np.ndarray:
-        """TBW.
-
-        :return:
-        """
         geo = self.detector.geometry
 
         norm_vectors: List[np.ndarray] = [
@@ -244,10 +242,6 @@ class Particle:
         return surface_start_point
 
     def get_angles(self) -> Tuple[float, float]:
-        """TBW.
-
-        :return:
-        """
         beta = np.arccos(
             np.dot(np.array([1.0, 0.0]), np.array([self.dir_ver, self.dir_hor]))
         )
@@ -302,11 +296,6 @@ class Particle:
 
     # TODO: warning this method modify input parameter 'array' !!!
     def intersection_correction(self, array: np.ndarray) -> np.ndarray:
-        """TBW.
-
-        :param array:
-        :return:
-        """
         eps = 1e-8
         geo = self.detector.geometry
         if abs(array[0] - geo.vert_dimension) < eps:
@@ -346,11 +335,6 @@ def find_intersection(
 
 
 def isotropic_direction() -> Tuple[float, float, float]:
-    """TBW.
-
-    :param n:
-    :return:
-    """
     u = 2 * np.random.random() - 1
     r = np.sqrt(1 - u**2)
     kszi = np.random.random()
@@ -360,11 +344,6 @@ def isotropic_direction() -> Tuple[float, float, float]:
 
 
 def non_isotropic_direction(n: int) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
-    """TBW.
-
-    :param n:
-    :return:
-    """
     alpha = 2 * np.pi * np.random.random(n)
     beta = 2 * np.pi * np.random.random(n)
     x = np.cos(alpha) * np.sin(beta)

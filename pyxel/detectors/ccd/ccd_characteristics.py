@@ -14,16 +14,16 @@ class CCDCharacteristics(Characteristics):
 
     Parameters
     ----------
-    quantum_efficiency: float, optional
+    quantum_efficiency : float, optional
         Quantum efficiency.
-    charge_to_volt_conversion: float, optional
+    charge_to_volt_conversion : float, optional
         Sensitivity of charge readout. Unit: V/e-
-    pre_amplification: float, optional
+    pre_amplification : float, optional
         Gain of pre-amplifier. Unit: V/V
-    full_well_capacity: float
+    full_well_capacity : float
         Full well capacity. Unit: e-
-    adc_voltage_range: tuple of floats, optional
+    adc_voltage_range : tuple of floats, optional
         ADC voltage range. Unit: V
-    adc_bit_resolution: int, optional
+    adc_bit_resolution : int, optional
         ADC bit resolution.
     """

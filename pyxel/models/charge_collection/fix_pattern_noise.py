@@ -33,9 +33,9 @@ def fix_pattern_noise(
         Pyxel Detector object.
     filename : str or Path
         Path to a file with an array or an image.
-    position: tuple
+    position : tuple
         Indices of starting row and column, used when fitting noise to detector.
-    align: Literal
+    align : Literal
         Keyword to align the noise to detector. Can be any from:
         ("center", "top_left", "top_right", "bottom_left", "bottom_right")
     """

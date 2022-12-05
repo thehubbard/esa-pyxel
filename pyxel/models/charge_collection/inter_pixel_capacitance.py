@@ -21,13 +21,14 @@ def ipc_kernel(
 
     Parameters
     ----------
-    coupling: float
-    diagonal_coupling: float
-    anisotropic_coupling: float
+    coupling : float
+    diagonal_coupling : float
+    anisotropic_coupling : float
 
     Returns
     -------
-    kernel: np.ndarray
+    np.ndarray
+        Kernel.
     """
 
     if not diagonal_coupling < coupling:
@@ -63,14 +64,14 @@ def compute_ipc_convolution(
 
     Parameters
     ----------
-    input: ndarray
-    coupling: float
-    diagonal_coupling: float
-    anisotropic_coupling: float
+    input : ndarray
+    coupling : float
+    diagonal_coupling : float
+    anisotropic_coupling : float
 
     Returns
     -------
-    array: ndarray
+    ndarray
     """
     kernel = ipc_kernel(
         coupling=coupling,
@@ -95,14 +96,10 @@ def simple_ipc(
 
     Parameters
     ----------
-    detector: CMOS
-    coupling: float
-    diagonal_coupling: float
-    anisotropic_coupling: float
-
-    Returns
-    -------
-    None
+    detector : CMOS
+    coupling : float
+    diagonal_coupling : float
+    anisotropic_coupling : float
     """
     if not isinstance(detector, CMOS):
         raise TypeError("Expecting a CMOS object for detector.")

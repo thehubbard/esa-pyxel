@@ -181,6 +181,12 @@
                 "$ref": "#/definitions/ModelChargeGenerationChargeBlocks"
               },
               {
+                "$ref": "#/definitions/ModelChargeGenerationChargeDeposition"
+              },
+              {
+                "$ref": "#/definitions/ModelChargeGenerationChargeDepositionInMct"
+              },
+              {
                 "$ref": "#/definitions/ModelChargeGenerationConversionWithQeMap"
               },
               {
@@ -955,6 +961,274 @@
       "title": "Model 'charge_blocks'",
       "description": "Inject a block of charge into the :term:`CCD` detector."
     },
+    "ModelChargeGenerationChargeDeposition": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "flux": {
+              "type": "number",
+              "title": "flux",
+              "description": "the flux of incoming particles in particle/s"
+            },
+            "step_size": {
+              "type": "number",
+              "title": "step_size",
+              "description": "the size of the considered unitary step in unit length along whichenergy is deposited",
+              "default": 1.0
+            },
+            "energy_mean": {
+              "type": "number",
+              "title": "energy_mean",
+              "description": "the mean energy of the incoming ionizing particles in MeV",
+              "default": 1.0
+            },
+            "energy_spread": {
+              "type": "number",
+              "title": "energy_spread",
+              "description": "the spread in energy of the incoming ionizing particles in MeV",
+              "default": 0.1
+            },
+            "energy_spectrum": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "string",
+                  "format": "uri"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "energy_spectrum",
+              "description": "the location of the file describing the energy spectrum of incidentparticles if no spectrum is provided energies are randomly drawn froma normal distribution with mean and spread defined above note that theenergy spectrum is assumed to be a txt file with two columns [energy,flux] with the energy in MeV",
+              "default": null
+            },
+            "energy_spectrum_sampling": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "enum": [
+                "linear",
+                "log",
+                null
+              ],
+              "title": "energy_spectrum_sampling",
+              "description": "\"log\" or None: the energy spectrum is sampled in log space \"linear\" :the energy spectrum is sampled in linear space"
+            },
+            "ehpair_creation": {
+              "type": "number",
+              "title": "ehpair_creation",
+              "description": "the energy required to generate a electron-hole pair in eV by defaultthe Si value at room temperature is parsed i.e. 3.65 eV",
+              "default": 3.65
+            },
+            "material_density": {
+              "type": "number",
+              "title": "material_density",
+              "description": "the material density in g/cm3 by default he Si value at roomtemperature is parsed i.e. 2.3290 g/cm3",
+              "default": 2.329
+            },
+            "particle_direction": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "enum": [
+                "isotropic",
+                "orthogonal",
+                null
+              ],
+              "title": "particle_direction",
+              "description": "\"isotropic\" : particles are coming from all directions (outside of thesensor) \"orthogonal\" : particles are coming from the top of the sensor(thickness = 0) and orthogonal to its surface"
+            },
+            "stopping_power_curve": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "string",
+                  "format": "uri"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "stopping_power_curve",
+              "description": "the location of the file describing the total massive stopping powerenergetic loss per mass of material and per unit path length versusparticle energy note that the the stopping power curve is assumed tobe a csv file with two columns [energy, stopping power] energy in MeV,stopping power in MeV cm2/g",
+              "default": null
+            },
+            "seed": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "title": "seed",
+              "default": null
+            }
+          },
+          "required": [
+            "flux"
+          ],
+          "additionalProperties": false,
+          "title": "Parameters"
+        },
+        "func": {
+          "type": "string",
+          "const": "pyxel.models.charge_generation.charge_deposition",
+          "default": "pyxel.models.charge_generation.charge_deposition"
+        },
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "required": [
+        "name",
+        "arguments"
+      ],
+      "additionalProperties": false,
+      "title": "Model 'charge_deposition'",
+      "description": "Simulate charge deposition by ionizing particles using a stoppingpower curve."
+    },
+    "ModelChargeGenerationChargeDepositionInMct": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "flux": {
+              "type": "number",
+              "title": "flux",
+              "description": "the flux of incoming particles in particle/s"
+            },
+            "step_size": {
+              "type": "number",
+              "title": "step_size",
+              "description": "the size of the considered unitary step in unit length along whichenergy is deposited",
+              "default": 1.0
+            },
+            "energy_mean": {
+              "type": "number",
+              "title": "energy_mean",
+              "description": "the mean energy of the incoming ionizing particles in MeV",
+              "default": 1.0
+            },
+            "energy_spread": {
+              "type": "number",
+              "title": "energy_spread",
+              "description": "the spread in energy of the incoming ionizing particles in MeV",
+              "default": 0.1
+            },
+            "energy_spectrum": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "string",
+                  "format": "uri"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "energy_spectrum",
+              "description": "the location of the file describing the energy spectrum of incidentparticles if no spectrum is provided energies are randomly drawn froma normal distribution with mean and spread defined above note that theenergy spectrum is assumed to be a txt file with two columns [energy,flux] with the energy in MeV",
+              "default": null
+            },
+            "energy_spectrum_sampling": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "enum": [
+                "linear",
+                "log",
+                null
+              ],
+              "title": "energy_spectrum_sampling",
+              "description": "\"log\" or None: the energy spectrum is sampled in log space \"linear\" :the energy spectrum is sampled in linear space"
+            },
+            "cutoff_wavelength": {
+              "type": "number",
+              "title": "cutoff_wavelength",
+              "description": "the longest wavelength in micrometer at which the QE reaches 50% ofits maximum, used to compute the bandgap energy, and the correspondingfraction of cadmium",
+              "default": 2.5
+            },
+            "particle_direction": {
+              "type": [
+                "null",
+                "string"
+              ],
+              "enum": [
+                "isotropic",
+                "orthogonal",
+                null
+              ],
+              "title": "particle_direction",
+              "description": "\"isotropic\" : particles are coming from all directions (outside of thesensor) \"orthogonal\" : particles are coming from the top of the sensor(thickness = 0) and orthogonal to its surface"
+            },
+            "stopping_power_curve": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "string",
+                  "format": "uri"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "stopping_power_curve",
+              "description": "the location of the file describing the total massive stopping powerenergetic loss per mass of material and per unit path length versusparticle energy note that the the stopping power curve is assumed tobe a csv file with two columns [energy, stopping power] energy in MeV,stopping power in MeV cm2/g",
+              "default": null
+            },
+            "seed": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "title": "seed",
+              "default": null
+            }
+          },
+          "required": [
+            "flux"
+          ],
+          "additionalProperties": false,
+          "title": "Parameters"
+        },
+        "func": {
+          "type": "string",
+          "const": "pyxel.models.charge_generation.charge_deposition_in_mct",
+          "default": "pyxel.models.charge_generation.charge_deposition_in_mct"
+        },
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "required": [
+        "name",
+        "arguments"
+      ],
+      "additionalProperties": false,
+      "title": "Model 'charge_deposition_in_mct'",
+      "description": "Simulate charge deposition by ionizing particles using a stoppingpower curve."
+    },
     "ModelChargeGenerationConversionWithQeMap": {
       "type": "object",
       "properties": {
@@ -1019,6 +1293,14 @@
               ],
               "title": "align",
               "description": "Keyword to align the :term:`QE` map to detector. Can be any from:(\"center\", \"top_left\", \"top_right\", \"bottom_left\", \"bottom_right\")"
+            },
+            "seed": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "title": "seed",
+              "default": null
             },
             "binomial_sampling": {
               "type": "boolean",
@@ -1257,9 +1539,13 @@
               "description": "Dark current figure of merit. Unit: nA/cm^2"
             },
             "fixed_pattern_noise_factor": {
-              "type": "number",
+              "type": [
+                "number",
+                "null"
+              ],
               "title": "fixed_pattern_noise_factor",
-              "description": "Fixed pattern noise factor."
+              "description": "Fixed pattern noise factor.",
+              "default": null
             },
             "band_gap": {
               "type": [
@@ -1287,11 +1573,16 @@
               "title": "seed",
               "description": "Random seed.",
               "default": null
+            },
+            "temporal_noise": {
+              "type": "boolean",
+              "title": "temporal_noise",
+              "description": "Shot noise.",
+              "default": true
             }
           },
           "required": [
-            "figure_of_merit",
-            "fixed_pattern_noise_factor"
+            "figure_of_merit"
           ],
           "additionalProperties": false,
           "title": "Parameters"
@@ -1329,6 +1620,15 @@
               "description": "Cutoff wavelength. Unit: um",
               "default": 2.5
             },
+            "fixed_pattern_noise_factor": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "title": "fixed_pattern_noise_factor",
+              "description": "Fixed pattern noise factor.",
+              "default": null
+            },
             "seed": {
               "type": [
                 "integer",
@@ -1336,13 +1636,21 @@
               ],
               "title": "seed",
               "default": null
+            },
+            "temporal_noise": {
+              "type": "boolean",
+              "title": "temporal_noise",
+              "description": "Shot noise.",
+              "default": true
             }
           },
           "additionalProperties": false,
           "title": "Parameters",
           "default": {
             "cutoff_wavelength": 2.5,
-            "seed": null
+            "fixed_pattern_noise_factor": null,
+            "seed": null,
+            "temporal_noise": true
           }
         },
         "func": {
@@ -1517,6 +1825,14 @@
               "description": "Quantum efficiency.",
               "default": null
             },
+            "seed": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "title": "seed",
+              "default": null
+            },
             "binomial_sampling": {
               "type": "boolean",
               "title": "binomial_sampling",
@@ -1528,6 +1844,7 @@
           "title": "Parameters",
           "default": {
             "quantum_efficiency": null,
+            "seed": null,
             "binomial_sampling": true
           }
         },
@@ -2636,6 +2953,14 @@
               "title": "controller_noise",
               "description": "Controller noise in volts RMS. Unit: V",
               "default": 0.0
+            },
+            "seed": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "title": "seed",
+              "default": null
             }
           },
           "required": [
@@ -3241,16 +3566,19 @@
               "type": "number",
               "title": "well_fill_power"
             },
-            "instant_traps": {
+            "trap_densities": {
               "type": "array",
               "items": {
-                "type": "object",
-                "additionalProperties": {
-                  "type": "number"
-                }
+                "type": "number"
               },
-              "title": "instant_traps",
-              "description": "A sequence of all trap species for parallel clocking."
+              "title": "trap_densities"
+            },
+            "trap_release_timescales": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "title": "trap_release_timescales"
             },
             "num_iterations": {
               "type": "integer",
@@ -3266,7 +3594,8 @@
           },
           "required": [
             "well_fill_power",
-            "instant_traps",
+            "trap_densities",
+            "trap_release_timescales",
             "num_iterations"
           ],
           "additionalProperties": false,

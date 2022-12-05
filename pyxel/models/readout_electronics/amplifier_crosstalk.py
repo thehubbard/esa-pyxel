@@ -26,8 +26,8 @@ def flip_array(array: np.ndarray, direction: int) -> np.ndarray:
 
     Parameters
     ----------
-    array: ndarray
-    direction: int
+    array : ndarray
+    direction : int
 
     Returns
     -------
@@ -55,8 +55,8 @@ def get_channel_slices(
 
     Parameters
     ----------
-    shape: tuple
-    channel_matrix: ndarray
+    shape : tuple
+    channel_matrix : ndarray
 
     Returns
     -------
@@ -119,11 +119,11 @@ def crosstalk_signal_ac(
 
     Parameters
     ----------
-    array: ndarray
-    coupling_matrix: ndarray
+    array : ndarray
+    coupling_matrix : ndarray
         2D array.
-    channel_matrix: ndarray
-    readout_directions: ndarray
+    channel_matrix : ndarray
+    readout_directions : ndarray
 
     Returns
     -------
@@ -170,10 +170,10 @@ def crosstalk_signal_dc(
 
     Parameters
     ----------
-    array: ndarray
-    coupling_matrix: ndarray
-    channel_matrix: ndarray
-    readout_directions: ndarray
+    array : ndarray
+    coupling_matrix : ndarray
+    channel_matrix : ndarray
+    readout_directions : ndarray
 
     Returns
     -------
@@ -217,10 +217,10 @@ def dc_crosstalk(
 
     Parameters
     ----------
-    detector: Detector
-    coupling_matrix: ndarray
-    channel_matrix: ndarray
-    readout_directions: ndarray
+    detector : Detector
+    coupling_matrix : ndarray
+    channel_matrix : ndarray
+    readout_directions : ndarray
 
     Raises
     ------
@@ -278,10 +278,10 @@ def ac_crosstalk(
 
     Parameters
     ----------
-    detector: Detector
-    coupling_matrix: ndarray
-    channel_matrix: ndarray
-    readout_directions: ndarray
+    detector : Detector
+    coupling_matrix : ndarray
+    channel_matrix : ndarray
+    readout_directions : ndarray
 
     Raises
     ------

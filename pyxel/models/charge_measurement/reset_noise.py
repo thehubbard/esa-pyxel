@@ -24,11 +24,11 @@ def compute_ktc_noise(
 
     Parameters
     ----------
-    temperature: float
+    temperature : float
         Temperature. Unit: K
-    capacitance: float
+    capacitance : float
         Node capacitance. Unit: F
-    shape: tuple
+    shape : tuple
         Shape of the output array.
 
     Returns
@@ -52,9 +52,9 @@ def ktc_noise(
     ----------
     detector : Detector
         Pyxel detector object.
-    node_capacitance: float, optional
+    node_capacitance : float, optional
         Node capacitance. Unit: F
-    seed: int, optional
+    seed : int, optional
         Random seed.
     """
     with set_random_seed(seed):

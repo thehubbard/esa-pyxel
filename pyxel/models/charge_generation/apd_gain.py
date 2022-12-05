@@ -29,7 +29,7 @@ def apd_gain(detector: APD) -> None:
 
     Parameters
     ----------
-    detector: APD
+    detector : APD
         Pyxel APD detector object.
     """
 

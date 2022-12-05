@@ -70,27 +70,27 @@ def cdm(
 
     Parameters
     ----------
-    detector: CCD
+    detector : CCD
         Pyxel CCD detector object.
-    direction: literal
+    direction : literal
         Set ``"parallel"`` for :term:`CTI` in parallel direction or ``"serial"`` for :term:`CTI` in serial register.
-    beta: float
+    beta : float
         Electron cloud expansion coefficient :math:`\beta`.
-    trap_release_times: sequence of float
+    trap_release_times : sequence of float
         Trap release time constants :math:`\tau_r`. Unit: :math:`s`.
-    trap_densities: sequence of float
+    trap_densities : sequence of float
         Absolute trap densities :math:`n_t`. Unit: :math:`cm^{-3}`.
-    sigma: sequence of float
+    sigma : sequence of float
         Trap capture cross section :math:`\sigma`. Unit: :math:`cm^2`.
-    full_well_capacity: float
+    full_well_capacity : float
         Full well capacity :math:`FWC`. Unit: :math:`e^-`.
-    max_electron_volume: float
+    max_electron_volume : float
         Maximum geometrical volume :math:`V_g` that electrons can occupy within a pixel. Unit: :math:`cm^3`.
-    transfer_period: float
+    transfer_period : float
         Transfer period :math:`t` (TDI period). Unit: :math:`s`.
-    charge_injection: bool
+    charge_injection : bool
         Enable charge injection (only used in ``"parallel"`` mode).
-    electron_effective_mass: float
+    electron_effective_mass : float
         Electron effective mass in the semiconductor lattice. Unit: 1 electron mass
     """
 

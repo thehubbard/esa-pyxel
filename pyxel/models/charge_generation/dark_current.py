@@ -23,18 +23,18 @@ def calculate_band_gap(
 
     Parameters
     ----------
-    band_gap_0: float
+    band_gap_0 : float
         Parameter E_0. Unit: eV
-    alpha: float
+    alpha : float
         Alpha parameter. Unit: eV/K
-    beta: float
+    beta : float
         Beta parameter. Unit: K
-    temperature:
+    temperature :
         Temperature. Unit K
 
     Returns
     -------
-    gap: float
+    float
         Band gap value. Unit: eV
     """
 
@@ -48,7 +48,7 @@ def band_gap_silicon(temperature: float) -> float:
 
     Parameters
     ----------
-    temperature: float
+    temperature : float
         Temperature. Unit: K
 
     Returns
@@ -77,20 +77,20 @@ def average_dark_current(
 
     Parameters
     ----------
-    temperature: float
+    temperature : float
         Temperature. Unit: K
-    pixel_area:
+    pixel_area
         Pixel area. Unit: cm^2
-    figure_of_merit: float
+    figure_of_merit : float
         Dark current figure of merit. Unit: nA/cm^2
-    band_gap: float
+    band_gap : float
         Semiconductor band_gap. Unit: eV
-    band_gap_room_temperature: float
+    band_gap_room_temperature : float
         Semiconductor band gap at 300K. If none, the one for silicon is used. Unit: eV
 
     Returns
     -------
-    avg_dark_current: float
+    float
         Average dark current. Unit: e-/pixel/s
     """
 
@@ -136,28 +136,28 @@ def compute_dark_current(
 
     Parameters
     ----------
-    shape: tuple
+    shape : tuple
         Output array shape.
-    time_step: float
+    time_step : float
         Time step. Unit: s
-    temperature: float
+    temperature : float
         Temperature. Unit: K
-    pixel_area:
+    pixel_area
         Pixel area. Unit: cm^2
-    figure_of_merit: float
+    figure_of_merit : float
         Dark current figure of merit. Unit: nA/cm^2
-    band_gap: float
+    band_gap : float
         Semiconductor band_gap. Unit: eV
-    band_gap_room_temperature: float
+    band_gap_room_temperature : float
         Semiconductor band gap at 300K. If none, the one for silicon is used. Unit: eV
-    fixed_pattern_noise_factor: float
+    fixed_pattern_noise_factor : float
         Fixed pattern noise factor.
-    temporal_noise: bool
+    temporal_noise : bool
         Shot noise.
 
     Returns
     -------
-    dark_current_2d: ndarray
+    ndarray
         Dark current values. Unit: e-
     """
 
@@ -216,19 +216,19 @@ def dark_current(
 
     Parameters
     ----------
-    detector: Detector
+    detector : Detector
         Pyxel detector object.
-    figure_of_merit: float
+    figure_of_merit : float
         Dark current figure of merit. Unit: nA/cm^2
-    fixed_pattern_noise_factor: float
+    fixed_pattern_noise_factor : float
         Fixed pattern noise factor.
-    band_gap: float, optional
+    band_gap : float, optional
         Semiconductor band_gap. If none, the one for silicon is used. Unit: eV
-    band_gap_room_temperature: float, optional
+    band_gap_room_temperature : float, optional
         Semiconductor band gap at 300K. If none, the one for silicon is used. Unit: eV
-    seed: int, optional
+    seed : int, optional
         Random seed.
-    temporal_noise: bool, optional
+    temporal_noise : bool, optional
         Shot noise.
     """
     geo = detector.geometry
@@ -281,7 +281,7 @@ def calculate_simple_dark_current(
 
     Returns
     -------
-    dark_im_array_2d: ndarray
+    ndarray
         An array the same shape and dtype as the input containing dark counts
         in units of charge (e-).
     """
@@ -305,7 +305,7 @@ def simple_dark_current(
     dark_rate : float
         Dark current, in electrons/pixel/second, which is the way
         manufacturers typically report it.
-    seed: int, optional
+    seed : int, optional
     """
 
     exposure_time = detector.time_step
@@ -344,7 +344,7 @@ def calculate_dark_current_saphira(
 
     Returns
     -------
-    dark_im_array_2d: ndarray
+    ndarray
         An array the same shape and dtype as the input containing dark counts
         in units of charge (e-).
     """
@@ -382,7 +382,7 @@ def dark_current_saphira(detector: APD, seed: Optional[int] = None) -> None:
     ----------
     detector : APD
         An APD detector object.
-    seed: int, optional
+    seed : int, optional
     """
 
     if not isinstance(detector, APD):

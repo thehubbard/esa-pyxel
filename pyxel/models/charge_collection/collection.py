@@ -15,7 +15,7 @@ def simple_collection(detector: Detector) -> None:
 
     Parameters
     ----------
-    detector: Detector
+    detector : Detector
         Pyxel Detector object.
     """
     detector.pixel.array += detector.charge.array

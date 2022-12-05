@@ -72,11 +72,11 @@ def output_node_noise(
 
     Parameters
     ----------
-    detector: Detector
+    detector : Detector
         Pyxel detector object.
-    std_deviation: float
+    std_deviation : float
         Standard deviation. Unit: V
-    seed: int, optional
+    seed : int, optional
         Random seed.
 
     Raises
@@ -106,13 +106,13 @@ def output_node_noise_cmos(
 
     Parameters
     ----------
-    detector: CMOS
+    detector : CMOS
         Pyxel :term:`CMOS` object.
-    readout_noise: float
+    readout_noise : float
         Mean readout noise for the array in units of electrons. Unit: electron
-    readout_noise_std: float
+    readout_noise_std : float
         Readout noise standard deviation in units of electrons. Unit: electron
-    seed: int, optional
+    seed : int, optional
         Random seed.
 
     Raises
@@ -149,18 +149,18 @@ def compute_readout_noise_saphira(
 
     Parameters
     ----------
-    roic_readout_noise: float
+    roic_readout_noise : float
         Readout integrated circuit noise in volts RMS. Unit: V
-    avalanche_gain: float
+    avalanche_gain : float
         Avalanche gain.
-    shape: tuple
+    shape : tuple
         Shape of the output array.
-    controller_noise: float
+    controller_noise : float
         Controller noise in volts RMS. Unit: V
 
     Returns
     -------
-    total_noise: ndarray
+    ndarray
     """
 
     noise_factor = (((1.2 - 1.0) / np.log10(1000)) * np.log10(avalanche_gain)) + 1.0
@@ -184,12 +184,13 @@ def readout_noise_saphira(
 
     Parameters
     ----------
-    detector: APD
+    detector : APD
         Pyxel APD object.
-    roic_readout_noise: float
+    roic_readout_noise : float
         Readout integrated circuit noise in volts RMS. Unit: V
-    controller_noise: float
+    controller_noise : float
         Controller noise in volts RMS. Unit: V
+    seed : int, optional
     """
 
     if not isinstance(detector, APD):

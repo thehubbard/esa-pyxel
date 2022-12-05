@@ -20,7 +20,7 @@ def lambda_e(lambda_cutoff: float) -> float:
 
     Parameters
     ----------
-    lambda_cutoff: int
+    lambda_cutoff : int
         Cut-off wavelength of the detector.
 
     Returns
@@ -50,16 +50,16 @@ def average_dark_current_rule07(
 
     Parameters
     ----------
-    pitch: float
+    pitch : float
         the x and y dimension of the pixel in micrometer
-    temperature: float
+    temperature : float
         the devices temperature
-    cut_off: float
+    cut_off : float
         the detector wavelength cut-off in micrometer
 
     Returns
     -------
-    dark_current_rule07: float
+    float
         Dark current values. Unit: e-/pixel/s.
     """
     c = 1.16  # activation energy factor
@@ -95,24 +95,24 @@ def compute_mct_dark_rule07(
 
     Parameters
     ----------
-    shape: tuple
+    shape : tuple
         Output array shape.
-    pitch: float
+    pitch : float
         the x and y dimension of the pixel in micrometer
-    time_step: float
+    time_step : float
         Time step. Unit: s
-    temperature: float
+    temperature : float
         the devices temperature
-    cut_off: float
+    cut_off : float
         the detector wavelength cut-off in micrometer
-    fixed_pattern_noise_factor: float
+    fixed_pattern_noise_factor : float
         Fixed pattern noise factor.
-    temporal_noise: bool
+    temporal_noise : bool
         Shot noise.
 
     Returns
     -------
-    dark_current_2d_rule07: ndarray
+    ndarray
         Dark current values. Unit: e-
     """
 
@@ -165,13 +165,13 @@ def dark_current_rule07(
 
     Parameters
     ----------
-    detector: Detector
-    cutoff_wavelength: float
+    detector : Detector
+    cutoff_wavelength : float
         Cutoff wavelength. Unit: um
-    fixed_pattern_noise_factor: float
+    fixed_pattern_noise_factor : float
         Fixed pattern noise factor.
-    seed: int, optional
-    temporal_noise: bool, optional
+    seed : int, optional
+    temporal_noise : bool, optional
         Shot noise.
     """
     # TODO: investigate on the knee of rule07 for higher 1/le*T values
