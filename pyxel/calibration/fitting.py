@@ -73,7 +73,6 @@ class ModelFitting(ProblemSingleObjective):
         self.weighting_from_file: Optional[Sequence[np.ndarray]] = None
         self.fitness_func: FittingCallable = fitness_func
         self.sim_output: ResultType = simulation_output
-        # self.fitted_model = None            # type: Optional['ModelFunction']
         self.param_processor_list: List[Processor] = []
 
         self.file_path: Path = file_path

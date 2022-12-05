@@ -38,9 +38,6 @@ class Array:
 
         self._numbytes = 0
 
-        # TODO: is `self.type` needed ?
-        # self.type = None            # type: Optional[type]
-
         # TODO: Implement a method to initialized 'self._array' ???
 
     def __repr__(self) -> str:

@@ -109,7 +109,7 @@ def test_is_equal_with_arrays(valid_ccd: CCD):
     assert valid_ccd._image is not other_detector._image
 
     # Generate random data
-    shape: Tuple[int, int] = valid_ccd.geometry.row, valid_ccd.geometry.col
+    shape = valid_ccd.geometry.row, valid_ccd.geometry.col
     photon_2d: np.ndarray = np.random.random(size=shape)
     pixel_2d: np.ndarray = np.random.random(size=shape)
     signal_2d: np.ndarray = np.random.random(size=shape)

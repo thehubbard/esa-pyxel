@@ -344,7 +344,6 @@ class MyArchipelago:
         df_all_logs: pd.DataFrame = logs.get_full_total()
 
         # Get the champions in a `Dataset`
-        # champions = self._get_champions()  # type: # xr.Dataset
         last_champions = champions.isel(evolution=-1)
 
         # Get the processor(s) in a `DataFrame`
