@@ -12,6 +12,7 @@ Pyxel detector simulation framework
 [![PyPI version](https://badge.fury.io/py/pyxel-sim.svg)](https://badge.fury.io/py/pyxel-sim)
 [![conda](https://img.shields.io/conda/vn/conda-forge/pyxel-sim.svg)](https://anaconda.org/conda-forge/pyxel-sim)
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gl/esa%2Fpyxel-data/HEAD?urlpath=lab)
+[![JSON Schema](https://img.shields.io/badge/JSON%20Schema-draft--07-green)](https://esa.gitlab.io/pyxel/pyxel_schema.json)
 
 ## What is it?
 
