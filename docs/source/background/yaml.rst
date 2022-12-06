@@ -11,8 +11,8 @@ The configuration file is loaded with the function :py:func:`~pyxel.load`.
 
 Despite the configuration file being human-readable and easy to understand,
 it is still possible to make mistakes that result in errors during the simulation.
-Therefore a configuration file validation process based on JSON schema13 is currently in development,
-which will further improve the user experience.
+Therefore a configuration file validation process based on JSON schema can be used
+to will further improve the user experience. More information here: :ref:`json_schema`.
 
 Structure
 =========
