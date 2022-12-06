@@ -53,7 +53,7 @@ def valid_data2d_http_hostname(
 ) -> str:
     """Create valid 2D files on a temporary folder and HTTP server."""
     # Get current folder
-    current_folder: Path = Path().cwd()  # type
+    current_folder: Path = Path().cwd()
 
     try:
         os.chdir(tmp_path)
@@ -94,7 +94,7 @@ def valid_data2d_http_hostname(
         # Put text data in a fake HTTP server
         for filename in text_filenames:
             with open(filename) as fh:
-                response_data = fh.read()  # type: str
+                response_data: str = fh.read()
                 httpserver.expect_request(f"/{filename}").respond_with_data(
                     response_data, content_type="text/plain"
                 )
@@ -135,7 +135,7 @@ def valid_data2d_http_hostname(
 
 
 @pytest.fixture
-def invalid_data2d_hostname(tmp_path: Path, httpserver: HTTPServer) -> str:  # type: ignore
+def invalid_data2d_hostname(tmp_path: Path, httpserver: HTTPServer) -> str:
     """Create invalid 2D files on a temporary folder and HTTP server."""
     # Get current folder
     current_folder: Path = Path().cwd()
@@ -173,7 +173,7 @@ def invalid_data2d_hostname(tmp_path: Path, httpserver: HTTPServer) -> str:  # t
 
 
 @pytest.fixture
-def valid_table_http_hostname(tmp_path: Path, httpserver: HTTPServer) -> str:  # type: ignore
+def valid_table_http_hostname(tmp_path: Path, httpserver: HTTPServer) -> str:
     """Create valid tables locally and on a temporary HTTP server."""
     # Get current folder
     current_folder: Path = Path().cwd()
@@ -238,7 +238,7 @@ def valid_table_http_hostname(tmp_path: Path, httpserver: HTTPServer) -> str:  #
 
 
 @pytest.fixture
-def invalid_table_http_hostname(tmp_path: Path, httpserver: HTTPServer) -> str:  # type: ignore
+def invalid_table_http_hostname(tmp_path: Path, httpserver: HTTPServer) -> str:
     """Create invalid tables on temporary folder and HTTP server."""
     # Get current folder
     current_folder: Path = Path().cwd()
@@ -308,7 +308,7 @@ def test_invalid_filename(
     else:
         new_filename = filename
 
-    with pytest.raises(exp_error, match=exp_message):  # type: ignore
+    with pytest.raises(exp_error, match=exp_message):
         _ = pyxel.load_image(new_filename)
 
 
@@ -424,7 +424,7 @@ def test_load_table_invalid_filename(
     if isinstance(filename, str):
         filename = filename.format(host=invalid_table_http_hostname)
 
-    with pytest.raises(exp_error, match=exp_message):  # type: ignore
+    with pytest.raises(exp_error, match=exp_message):
         _ = pyxel.load_table(filename)
 
 

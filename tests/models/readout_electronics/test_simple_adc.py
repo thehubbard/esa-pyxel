@@ -63,5 +63,5 @@ def test_simple_adc_wrong_data_type(
     with pytest.raises(exp_exc, match=exp_error):
         simple_adc(
             detector=ccd_3x3,
-            data_type=data_type,  # type: ignore
+            data_type=data_type,
         )

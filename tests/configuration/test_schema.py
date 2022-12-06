@@ -45,7 +45,7 @@ def test_validate_configuration_file(filename: str, schema: dict):
     full_filename = Path(filename).resolve()
     assert full_filename.exists()
 
-    content = full_filename.read_text()  # type: str
+    content: str = full_filename.read_text()
 
     data = safe_load(content)
 

@@ -246,7 +246,7 @@ class Observation:
         """
         step: ParameterValues
         for step in self.enabled_steps:
-            key = step.key  # type : str
+            key: str = step.key
             for index, value in enumerate(step):
                 parameter_dict = {key: value}
                 yield index, parameter_dict

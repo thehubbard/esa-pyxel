@@ -113,12 +113,12 @@ def test_is_equal_with_arrays(valid_cmos: CMOS):
     assert valid_cmos._signal is not other_detector._signal
     assert valid_cmos._image is not other_detector._image
 
-    shape = valid_cmos.geometry.row, valid_cmos.geometry.col  # type: Tuple[int, int]
-    photon = np.random.random(size=shape)  # type: np.ndarray
-    pixel = np.random.random(size=shape)  # type: np.ndarray
-    signal = np.random.random(size=shape)  # type: np.ndarray
-    image = np.random.random(size=shape)  # type: np.ndarray
-    charge = np.random.random(size=shape)  # type: np.ndarray
+    shape: Tuple[int, int] = valid_cmos.geometry.row, valid_cmos.geometry.col
+    photon: np.ndarray = np.random.random(size=shape)
+    pixel: np.ndarray = np.random.random(size=shape)
+    signal: np.ndarray = np.random.random(size=shape)
+    image: np.ndarray = np.random.random(size=shape)
+    charge: np.ndarray = np.random.random(size=shape)
 
     valid_cmos.photon.array = photon.copy()
     valid_cmos.pixel.array = pixel.copy()

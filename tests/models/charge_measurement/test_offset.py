@@ -130,4 +130,4 @@ def test_output_pixel_reset_voltage_apd_invalid_with_ccd(ccd_5x5: CCD):
     detector = ccd_5x5
 
     with pytest.raises(TypeError, match="Expecting a 'APD' detector object."):
-        output_pixel_reset_voltage_apd(detector=detector, roic_drop=1.0)  # type: ignore
+        output_pixel_reset_voltage_apd(detector=detector, roic_drop=1.0)

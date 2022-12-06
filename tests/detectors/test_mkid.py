@@ -112,13 +112,13 @@ def test_is_equal_with_arrays(valid_mkid: MKID):
     assert valid_mkid._image is not other_detector._image
     assert valid_mkid._phase is not other_detector._phase
 
-    shape = valid_mkid.geometry.row, valid_mkid.geometry.col  # type: Tuple[int, int]
-    photon = np.random.random(size=shape)  # type: np.ndarray
-    pixel = np.random.random(size=shape)  # type: np.ndarray
-    signal = np.random.random(size=shape)  # type: np.ndarray
-    image = np.random.random(size=shape)  # type: np.ndarray
-    charge = np.random.random(size=shape)  # type: np.ndarray
-    phase = np.random.random(size=shape)  # type: np.ndarray
+    shape: Tuple[int, int] = valid_mkid.geometry.row, valid_mkid.geometry.col
+    photon: np.ndarray = np.random.random(size=shape)
+    pixel: np.ndarray = np.random.random(size=shape)
+    signal: np.ndarray = np.random.random(size=shape)
+    image: np.ndarray = np.random.random(size=shape)
+    charge: np.ndarray = np.random.random(size=shape)
+    phase: np.ndarray = np.random.random(size=shape)
 
     valid_mkid.photon.array = photon.copy()
     valid_mkid.pixel.array = pixel.copy()

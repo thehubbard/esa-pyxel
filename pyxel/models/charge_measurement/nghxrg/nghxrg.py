@@ -319,7 +319,7 @@ def nghxrg(
             num_frames_overhead=n_frame_overhead,
             reverse_scan_direction=reverse_scan_direction,
             reference_pixel_border_width=reference_pixel_border_width,
-        )  # type
+        )
 
     # Add the pixels
     detector.pixel.array += result_2d
