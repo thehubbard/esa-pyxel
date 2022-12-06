@@ -88,7 +88,7 @@ def compute_mct_dark_rule07(
     time_step: float,
     temperature: float,
     cut_off: float,
-    fixed_pattern_noise_factor: Optional[float] = None,
+    spatial_noise_factor: Optional[float] = None,
     temporal_noise: bool = True,
 ) -> np.ndarray:
     """Compute dark current.
@@ -105,9 +105,9 @@ def compute_mct_dark_rule07(
         the devices temperature
     cut_off : float
         the detector wavelength cut-off in micrometer
-    fixed_pattern_noise_factor : float
-        Fixed pattern noise factor.
-    temporal_noise : bool
+    spatial_noise_factor : float
+        Dark current fixed pattern noise factor.
+    temporal_noise: bool
         Shot noise.
 
     Returns
@@ -133,9 +133,9 @@ def compute_mct_dark_rule07(
         dark_signal_2d_rule07 = np.ones(shape) * avg_dark_current_rule07 * time_step
         dark_current_2d_rule07 = dark_signal_2d_rule07
 
-    if fixed_pattern_noise_factor is not None:
+    if spatial_noise_factor is not None:
         dark_current_fpn_sigma_rule07 = (
-            time_step * avg_dark_current_rule07 * fixed_pattern_noise_factor
+            time_step * avg_dark_current_rule07 * spatial_noise_factor
         )  # sigma of fpn distribution
 
         dark_current_2d_rule07 = dark_current_2d_rule07 * (
@@ -155,7 +155,7 @@ def compute_mct_dark_rule07(
 def dark_current_rule07(
     detector: CMOS,
     cutoff_wavelength: float = 2.5,  # unit: um
-    fixed_pattern_noise_factor: Optional[float] = None,
+    spatial_noise_factor: Optional[float] = None,
     seed: Optional[int] = None,
     temporal_noise: bool = True,
 ) -> None:
@@ -168,8 +168,8 @@ def dark_current_rule07(
     detector : Detector
     cutoff_wavelength : float
         Cutoff wavelength. Unit: um
-    fixed_pattern_noise_factor : float
-        Fixed pattern noise factor.
+    spatial_noise_factor : float
+        Dark current fixed pattern noise factor.
     seed : int, optional
     temporal_noise : bool, optional
         Shot noise.
@@ -193,7 +193,7 @@ def dark_current_rule07(
             cut_off=cutoff_wavelength,
             shape=geo.shape,
             time_step=time_step,
-            fixed_pattern_noise_factor=fixed_pattern_noise_factor,
+            spatial_noise_factor=spatial_noise_factor,
             temporal_noise=temporal_noise,
         )
 
