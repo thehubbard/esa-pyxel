@@ -77,9 +77,7 @@ def test_simple_dark_current_valid(ccd_10x10: CCD):
 
 def test_dark_current_valid(ccd_10x10: CCD):
     """Test model 'dark_current' with valid inputs."""
-    dark_current(
-        detector=ccd_10x10, figure_of_merit=1.0, fixed_pattern_noise_factor=0.01
-    )
+    dark_current(detector=ccd_10x10, figure_of_merit=1.0, spatial_noise_factor=0.01)
 
 
 def test_dark_current_warning(ccd_10x10: CCD):
@@ -89,12 +87,12 @@ def test_dark_current_warning(ccd_10x10: CCD):
 
     with pytest.warns(RuntimeWarning, match="Unphysical high value"):
         dark_current(
-            detector=detector, figure_of_merit=100.0, fixed_pattern_noise_factor=0.01
+            detector=detector, figure_of_merit=100.0, spatial_noise_factor=0.01
         )
 
 
 @pytest.mark.parametrize(
-    "figure_of_merit, fixed_pattern_noise_factor, band_gap, band_gap_room_temperature, exp_exc, exp_error",
+    "figure_of_merit, spatial_noise_factor, band_gap, band_gap_room_temperature, exp_exc, exp_error",
     [
         pytest.param(
             1.0,
@@ -117,7 +115,7 @@ def test_dark_current_warning(ccd_10x10: CCD):
 def test_dark_current_invalid(
     ccd_10x10: CCD,
     figure_of_merit: float,
-    fixed_pattern_noise_factor: float,
+    spatial_noise_factor: float,
     band_gap: float,
     band_gap_room_temperature: float,
     exp_exc,
@@ -128,7 +126,7 @@ def test_dark_current_invalid(
         dark_current(
             detector=ccd_10x10,
             figure_of_merit=figure_of_merit,
-            fixed_pattern_noise_factor=fixed_pattern_noise_factor,
+            spatial_noise_factor=spatial_noise_factor,
             band_gap=band_gap,
             band_gap_room_temperature=band_gap_room_temperature,
         )

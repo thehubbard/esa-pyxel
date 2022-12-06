@@ -150,9 +150,9 @@ def compute_dark_current(
         Semiconductor band_gap. Unit: eV
     band_gap_room_temperature : float
         Semiconductor band gap at 300K. If none, the one for silicon is used. Unit: eV
-    spatial_noise_factor : float
-        FDark current fixed pattern noise factor.
-    temporal_noise : bool
+    spatial_noise_factor: float
+        Dark current fixed pattern noise factor.
+    temporal_noise: bool
         Shot noise.
 
     Returns
