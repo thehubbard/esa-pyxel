@@ -23,6 +23,8 @@ https://esa.gitlab.io/pyxel/pyxel_schema.json and https://esa.gitlab.io/pyxel/py
   (See [!557](https://gitlab.com/esa/pyxel/-/merge_requests/557)).
 * Fix issue when generating the JSON Schema file.
   (See [!558](https://gitlab.com/esa/pyxel/-/merge_requests/558)).
+* Add a CI/CD pipeline to generate/check the JSON Schema file.
+  (See [!535](https://gitlab.com/esa/pyxel/-/merge_requests/535)).
 
 
 ## 1.5 / 2022-11-21

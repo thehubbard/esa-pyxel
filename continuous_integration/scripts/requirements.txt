@@ -5,3 +5,5 @@ boltons
 numpydoc
 tqdm
 apischema
+graphlib-backport;python_version<'3.9'
+deepdiff
