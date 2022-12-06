@@ -36,8 +36,8 @@ def square_signal(n: int, lw: int, start_with: int = 0) -> List[int]:
     """
     if lw > n // 2:
         raise ValueError("Line too wide.")
-    start = [start_with] * lw  # type: List[int]
-    second = [1 - start_with] * lw  # type: List[int]
+    start: List[int] = [start_with] * lw
+    second: List[int] = [1 - start_with] * lw
     pair = start + second
     num = n // len(pair)
     out = pair * num
@@ -87,10 +87,8 @@ def compute_pattern(
     sx = slice(n // 2 - y // 2, n // 2 + y // 2)
     sy = slice(m // 2 - x // 2, m // 2 + x // 2)
 
-    signal_lst = square_signal(
-        n=n, lw=period // 2, start_with=start_with
-    )  # type: List[int]
-    new_signal_lst = signal_lst + ([1] * (n - len(signal_lst)))  # type: List[int]
+    signal_lst: List[int] = square_signal(n=n, lw=period // 2, start_with=start_with)
+    new_signal_lst: List[int] = signal_lst + ([1] * (n - len(signal_lst)))
     signal = np.array(new_signal_lst)[::-1]
 
     out = np.ones((n, m))

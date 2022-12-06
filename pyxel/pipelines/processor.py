@@ -71,12 +71,12 @@ class Processor:
 
         self.detector = detector
         self.pipeline = pipeline
-        self._result = None  # type: Optional[dict]
+        self._result: Optional[dict] = None
 
         self._numbytes = 0
 
     def __repr__(self) -> str:
-        cls_name = self.__class__.__name__  # type: str
+        cls_name: str = self.__class__.__name__
         return f"{cls_name}<detector={self.detector!r}, pipeline={self.pipeline!r}>"
 
     def __deepcopy__(self, memodict: dict) -> "Processor":
@@ -124,7 +124,7 @@ class Processor:
         """
         # return get_value(self, key)
 
-        func = operator.attrgetter(key)  # type: Callable
+        func: Callable = operator.attrgetter(key)
         result = func(self)
 
         return np.asarray(result, dtype=float)
@@ -148,19 +148,19 @@ class Processor:
             # TODO: Refactor this
             # convert the string based value to a number
             if isinstance(value, list):
-                new_value_lst = []  # type: List[Union[str, Number, np.ndarray]]
-                for val in value:  # type: Union[str, Number, np.ndarray]
+                new_value_lst: List[Union[str, Number, np.ndarray]] = []
+
+                val: Union[str, Number, np.ndarray]
+                for val in value:
                     new_val = eval_entry(val) if val else val
                     new_value_lst.append(new_val)
 
-                new_value = (
-                    new_value_lst
-                )  # type: Union[str, Number, np.ndarray, List[Union[str, Number, np.ndarray]]]
+                new_value: Union[
+                    str, Number, np.ndarray, List[Union[str, Number, np.ndarray]]
+                ] = new_value_lst
 
             else:
-                converted_value = eval_entry(
-                    value
-                )  # type: Union[str, Number, np.ndarray]
+                converted_value: Union[str, Number, np.ndarray] = eval_entry(value)
 
                 new_value = converted_value
         else:
@@ -198,9 +198,7 @@ class Processor:
 
         for group_name in self.pipeline.model_group_names:
             # Get a group of models
-            models_grp = getattr(
-                self.pipeline, group_name
-            )  # type: Optional[ModelGroup]
+            models_grp: Optional[ModelGroup] = getattr(self.pipeline, group_name)
 
             if models_grp:
                 self._log.info("Processing group: %r", group_name)
@@ -246,14 +244,14 @@ class Processor:
             attrs={"units": "s", "standard_name": "Readout time"},
         )
 
-        lst = []  # type: List[xr.DataArray]
-        for key in result_keys(
-            result_type
-        ):  # type: Literal['image', 'signal', 'pixel']
+        lst: List[xr.DataArray] = []
+
+        key: Literal["image", "signal", "pixel"]
+        for key in result_keys(result_type):
 
             if key == "image":
-                standard_name = "Image"  # type: str
-                unit = "adu"  # type: str
+                standard_name: str = "Image"
+                unit: str = "adu"
             elif key == "signal":
                 standard_name = "Signal"
                 unit = "volt"
@@ -273,7 +271,7 @@ class Processor:
 
             lst.append(da)
 
-        ds = xr.merge(lst, combine_attrs="drop_conflicts")  # type: xr.Dataset
+        ds: xr.Dataset = xr.merge(lst, combine_attrs="drop_conflicts")
         ds.attrs.update({"pyxel version": __version__})
 
         return ds

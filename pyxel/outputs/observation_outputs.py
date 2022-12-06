@@ -49,9 +49,9 @@ class ObservationOutputs(Outputs):
             output_folder=output_folder, save_data_to_file=save_data_to_file
         )
 
-        self.save_observation_data = (
-            save_observation_data
-        )  # type: Optional[Sequence[Mapping[str, Sequence[str]]]]
+        self.save_observation_data: Optional[
+            Sequence[Mapping[str, Sequence[str]]]
+        ] = save_observation_data
 
     def save_observation_datasets(
         self, result: "ObservationResult", mode: "ParameterMode"
@@ -70,11 +70,12 @@ class ObservationOutputs(Outputs):
 
         dataset_names = ("dataset", "parameters", "logs")
 
-        save_methods = {"nc": self.save_to_netcdf}  # type: Dict[str, SaveToFile]
+        save_methods: Dict[str, SaveToFile] = {"nc": self.save_to_netcdf}
 
         if self.save_observation_data is not None:
 
-            for dct in self.save_observation_data:  # type: Mapping[str, Sequence[str]]
+            dct: Mapping[str, Sequence[str]]
+            for dct in self.save_observation_data:
                 first_item, *_ = dct.items()
                 obj, format_list = first_item
 

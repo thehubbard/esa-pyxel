@@ -134,7 +134,7 @@ def test_persistence_with_ccd(ccd_5x5: CCD):
         detector = ccd_5x5
 
         simple_persistence(
-            detector=detector,  # type: ignore
+            detector=detector,
             trap_time_constants=[1.0, 10.0],
             trap_densities=[0.1, 0.1],
         )

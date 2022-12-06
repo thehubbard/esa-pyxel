@@ -133,8 +133,8 @@ class Algorithm:
         self._xtol_abs = xtol_abs
         self._ftol_rel = ftol_rel
         self._ftol_abs = ftol_abs
-        self._stopval = -math.inf if stopval is None else stopval  # type: float
-        self._local_optimizer = local_optimizer  # type: Optional[pg.nlopt]
+        self._stopval: float = -math.inf if stopval is None else stopval
+        self._local_optimizer: Optional[pg.nlopt] = local_optimizer
         self._replacement = replacement
         self._nlopt_selection = nlopt_selection
 
@@ -489,20 +489,20 @@ class Algorithm:
         :return:
         """
         if self.type is AlgorithmType.Sade:
-            sade_algorithm = pg.sade(
+            sade_algorithm: pg.sade = pg.sade(
                 gen=self.generations,
                 variant=self.variant,
                 variant_adptv=self.variant_adptv,
                 ftol=self.ftol,
                 xtol=self.xtol,
                 memory=self.memory,
-            )  # type: pg.sade
+            )
 
             return sade_algorithm
 
         elif self.type is AlgorithmType.Sga:
             # mutation parameter
-            sga_algorithm = pg.sga(
+            sga_algorithm: pg.sga = pg.sga(
                 gen=self.generations,
                 cr=self.cr,  # crossover probability
                 crossover=self.crossover,  # single, exponential, binomial, sbx
@@ -512,12 +512,12 @@ class Algorithm:
                 selection=self.selection,  # tournament, truncated
                 eta_c=self.eta_c,  # distribution index for sbx crossover
                 param_m=self.param_m,
-            )  # type: pg.sga
+            )
 
             return sga_algorithm
 
         elif self.type is AlgorithmType.Nlopt:
-            opt_algorithm = pg.nlopt(self.nlopt_solver)  # type: pg.nlopt
+            opt_algorithm: pg.nlopt = pg.nlopt(self.nlopt_solver)
             opt_algorithm.maxtime = (
                 self.maxtime
             )  # stop when the optimization time (in seconds) exceeds maxtime

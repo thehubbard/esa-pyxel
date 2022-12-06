@@ -45,9 +45,9 @@ def simple_amplifier(detector: Detector) -> None:
     """
     char = detector.characteristics
 
-    amplified_signal_2d = apply_amplify(
+    amplified_signal_2d: np.ndarray = apply_amplify(
         signal_2d=detector.signal.array,
         amplifier_gain=char.pre_amplification,
-    )  # type: np.ndarray
+    )
 
     detector.signal.array = amplified_signal_2d

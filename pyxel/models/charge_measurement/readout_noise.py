@@ -88,10 +88,10 @@ def output_node_noise(
         raise ValueError("'std_deviation' must be positive.")
 
     with set_random_seed(seed):
-        noise_2d = create_noise(
+        noise_2d: np.ndarray = create_noise(
             signal_2d=np.asarray(detector.signal.array, dtype=np.float64),
             std_deviation=std_deviation,
-        )  # type: np.ndarray
+        )
 
     detector.signal.array = noise_2d
 
@@ -129,12 +129,12 @@ def output_node_noise_cmos(
         raise ValueError("'readout_noise_std' must be positive.")
 
     with set_random_seed(seed):
-        noise_2d = create_noise_cmos(
+        noise_2d: np.ndarray = create_noise_cmos(
             signal_2d=np.asarray(detector.signal.array, dtype=np.float64),
             readout_noise=readout_noise,
             readout_noise_std=readout_noise_std,
             charge_readout_sensitivity=detector.characteristics.charge_to_volt_conversion,
-        )  # type: np.ndarray
+        )
 
     detector.signal.array = noise_2d
 

@@ -109,13 +109,13 @@ class APDCharacteristics:
         self._full_well_capacity = full_well_capacity
         self._adc_voltage_range = adc_voltage_range
         self._adc_bit_resolution = adc_bit_resolution
-        self._node_capacitance = self.bias_to_node_capacitance_saphira(
+        self._node_capacitance: float = self.bias_to_node_capacitance_saphira(
             self.avalanche_bias
-        )  # type: float
+        )
         self._roic_gain = roic_gain
-        self._charge_to_volt_conversion = self.detector_gain_saphira(
+        self._charge_to_volt_conversion: float = self.detector_gain_saphira(
             capacitance=self.node_capacitance, roic_gain=self.roic_gain
-        )  # type: float
+        )
         self._numbytes = 0
 
     def __eq__(self, other) -> bool:
@@ -424,7 +424,7 @@ class APDCharacteristics:
     def from_dict(cls, dct: Mapping):
         """Create a new instance from a `dict`."""
         if "adc_voltage_range" in dct:
-            new_dct = dicttoolz.dissoc(dct, "adc_voltage_range")  # type: Mapping
+            new_dct: Mapping = dicttoolz.dissoc(dct, "adc_voltage_range")
             adc_voltage_range = dct["adc_voltage_range"]
 
             if adc_voltage_range is not None:

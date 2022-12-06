@@ -222,11 +222,11 @@ class Characteristics:
         # TODO: This is a simplistic implementation. Improve this.
 
         # Extract param 'adc_voltage_range'
-        param = dct.get("adc_voltage_range")  # type: Optional[Iterable[float]]
-        new_dct = dicttoolz.dissoc(dct, "adc_voltage_range")  # type: Mapping
+        param: Optional[Iterable[float]] = dct.get("adc_voltage_range")
+        new_dct: Mapping = dicttoolz.dissoc(dct, "adc_voltage_range")
 
         if param is None:
-            adc_voltage_range = None  # type: Optional[Tuple[float, float]]
+            adc_voltage_range: Optional[Tuple[float, float]] = None
         else:
             adc_voltage_min, adc_voltage_max = tuple(param)
             adc_voltage_range = adc_voltage_min, adc_voltage_max

@@ -107,9 +107,9 @@ def read_datacubes(filenames: Sequence[Path]) -> Sequence[np.ndarray]:
     :param filenames:
     :return:
     """
-    output = [
+    output: Sequence[np.ndarray] = [
         read_single_datacube(Path(filename)) for filename in filenames
-    ]  # type: Sequence[np.ndarray]
+    ]
 
     return output
 
@@ -120,9 +120,9 @@ def read_data(filenames: Sequence[Path]) -> Sequence[np.ndarray]:
     :param filenames:
     :return:
     """
-    output = [
+    output: Sequence[np.ndarray] = [
         read_single_data(Path(filename)) for filename in filenames
-    ]  # type: Sequence[np.ndarray]
+    ]
 
     return output
 

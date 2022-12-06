@@ -20,7 +20,7 @@ class Scene:
     """Scene class defining and storing information of all multi-wavelength photon."""
 
     def __init__(self, source: "Source"):
-        self._source = source  # type: Source
+        self._source: Source = source
 
     def __eq__(self, other) -> bool:
         return type(self) == type(other) and self.data == other.data
@@ -80,12 +80,12 @@ class Scene:
 
     def to_dict(self) -> Mapping:
         """Convert an instance of `Scene` to a `dict`."""
-        meta = self._source.meta  # type: Mapping
-        table_fields = self._source.table_fields  # type: Sequence[Table]
-        image_fields = self._source.image_fields  # type: Sequence[ImageHDU]
+        meta: Mapping = self._source.meta
+        table_fields: Sequence[Table] = self._source.table_fields
+        image_fields: Sequence[ImageHDU] = self._source.image_fields
 
         # Create 'tables'
-        tables = [
+        tables: Sequence[Mapping] = [
             {
                 "data": table.to_pandas(),
                 "units": {
@@ -95,12 +95,12 @@ class Scene:
                 },
             }
             for table in table_fields
-        ]  # type: Sequence[Mapping]
+        ]
 
-        images = [
+        images: Sequence[Mapping] = [
             {"header": dict(image.header), "data": np.asarray(image.data)}
             for image in image_fields
-        ]  # type: Sequence[Mapping]
+        ]
 
         return {"meta": meta, "tables": tables, "images": images}
 
@@ -111,23 +111,23 @@ class Scene:
         from astropy.table import Table
         from scopesim import Source
 
-        meta = dct["meta"]  # type: Mapping
-        tables = dct["tables"]  # type: Mapping
-        images = dct["images"]  # type: Mapping
+        meta: Mapping = dct["meta"]
+        tables: Mapping = dct["tables"]
+        images: Mapping = dct["images"]
 
-        table_fields = [
+        table_fields: Sequence[Table] = [
             Table.from_pandas(dataframe=table["data"], units=table["units"])
             for table in tables
-        ]  # type: Sequence[Table]
+        ]
 
-        image_fields = [
+        image_fields: Sequence[ImageHDU] = [
             ImageHDU(data=img["data"], header=Header(img["header"])) for img in images
-        ]  # type: Sequence[ImageHDU]
+        ]
 
-        src = Source(
+        src: Source = Source(
             meta=meta,
             image_fields=image_fields,
             table_fields=table_fields,
-        )  # type: Source
+        )
 
         return cls(src)

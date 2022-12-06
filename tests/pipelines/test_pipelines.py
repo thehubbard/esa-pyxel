@@ -21,7 +21,7 @@ def pipeline_single() -> DetectionPipeline:
     assert filename_single.exists()
 
     cfg = pyxel.load(filename_single)
-    pipeline = cfg.pipeline  # type: DetectionPipeline
+    pipeline: DetectionPipeline = cfg.pipeline
 
     return pipeline
 

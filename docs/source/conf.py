@@ -28,12 +28,12 @@ logging.getLogger("sphinx.ext.extlinks").setLevel(40)
 
 # Read 'setup.cfg' file
 parent_folder = Path(__file__).parent
-setup_cfg_filename = parent_folder.joinpath("../../setup.cfg").resolve(
+setup_cfg_filename: Path = parent_folder.joinpath("../../setup.cfg").resolve(
     strict=True
-)  # type: Path
-metadata = read_configuration(setup_cfg_filename)["metadata"]  # type: dict
+)
+metadata: dict = read_configuration(setup_cfg_filename)["metadata"]
 
-now_dt = datetime.now()  # type: datetime
+now_dt: datetime = datetime.now()
 
 # -- General configuration ------------------------------------------------
 

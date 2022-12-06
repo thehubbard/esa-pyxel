@@ -57,14 +57,14 @@ class Readout:
 
         self._non_destructive = non_destructive
 
-        self._times_linear = True  # type: bool
-        self._start_time = start_time  # type:float
-        self._steps = np.array([])  # type: np.ndarray
-        self._num_steps = 0  # type: int
+        self._times_linear: bool = True
+        self._start_time: float = start_time
+        self._steps: np.ndarray = np.array([])
+        self._num_steps: int = 0
         self._set_steps()
 
     def __repr__(self) -> str:
-        cls_name = self.__class__.__name__  # type: str
+        cls_name: str = self.__class__.__name__
         return f"{cls_name}<num_steps={self._num_steps}>"
 
     def _set_steps(self) -> None:

@@ -61,15 +61,15 @@ class Outputs:
     ):
         self._log = logging.getLogger(__name__)
 
-        self.output_dir = create_output_directory(output_folder)  # type: Path
+        self.output_dir: Path = create_output_directory(output_folder)
 
         # TODO: Not related to a plot. Use by 'single' and 'parametric' modes.
-        self.save_data_to_file = (
-            save_data_to_file
-        )  # type: Optional[Sequence[Mapping[ValidName, Sequence[ValidFormat]]]]
+        self.save_data_to_file: Optional[
+            Sequence[Mapping[ValidName, Sequence[ValidFormat]]]
+        ] = save_data_to_file
 
     def __repr__(self):
-        cls_name = self.__class__.__name__  # type: str
+        cls_name: str = self.__class__.__name__
         return f"{cls_name}<output_dir={self.output_dir!r}>"
 
     def save_to_fits(
@@ -90,7 +90,7 @@ class Outputs:
         else:
             filename = self.output_dir / f"{name}.fits"
 
-        full_filename = filename.resolve()  # type: Path
+        full_filename: Path = filename.resolve()
         self._log.info("Save to FITS - filename: '%s'", full_filename)
 
         from astropy.io import fits  # Late import to speed-up general import time
@@ -119,7 +119,7 @@ class Outputs:
         else:
             filename = self.output_dir / f"{name}.h5"
 
-        full_filename = filename.resolve()  # type: Path
+        full_filename: Path = filename.resolve()
 
         with h5.File(full_filename, "w") as h5file:
             h5file.attrs["pyxel-version"] = str(version)
@@ -162,7 +162,7 @@ class Outputs:
         else:
             filename = self.output_dir / f"{name}.txt"
 
-        full_filename = filename.resolve()  # type: Path
+        full_filename: Path = filename.resolve()
         np.savetxt(full_filename, data, delimiter=" | ", fmt="%.8e")
 
         return full_filename
@@ -211,7 +211,7 @@ class Outputs:
         else:
             filename = self.output_dir / f"{name}.npy"
 
-        full_filename = filename.resolve()  # type: Path
+        full_filename: Path = filename.resolve()
 
         if os.path.exists(full_filename):
             raise FileExistsError(f"File {str(full_filename)} already exists!")
@@ -237,7 +237,7 @@ class Outputs:
         else:
             filename = self.output_dir / f"{name}.png"
 
-        full_filename = filename.resolve()  # type: Path
+        full_filename: Path = filename.resolve()
 
         if os.path.exists(full_filename):
             raise FileExistsError(f"File {str(full_filename)} already exists!")
@@ -265,7 +265,7 @@ class Outputs:
         else:
             filename = self.output_dir / f"{name}.jpeg"
 
-        full_filename = filename.resolve()  # type: Path
+        full_filename: Path = filename.resolve()
 
         if os.path.exists(full_filename):
             raise FileExistsError(f"File {str(full_filename)} already exists!")
@@ -293,7 +293,7 @@ class Outputs:
         else:
             filename = self.output_dir / f"{name}.jpg"
 
-        full_filename = filename.resolve()  # type: Path
+        full_filename: Path = filename.resolve()
 
         if os.path.exists(full_filename):
             raise FileExistsError(f"File {str(full_filename)} already exists!")
@@ -324,7 +324,7 @@ class Outputs:
         list of Path
             TBW.
         """
-        save_methods = {
+        save_methods: Mapping[ValidFormat, SaveToFile] = {
             "fits": self.save_to_fits,
             "hdf": self.save_to_hdf,
             "npy": self.save_to_npy,
@@ -333,9 +333,9 @@ class Outputs:
             "png": self.save_to_png,
             "jpg": self.save_to_jpg,
             "jpeg": self.save_to_jpeg,
-        }  # type: Mapping[ValidFormat, SaveToFile]
+        }
 
-        filenames = []  # type: List[Path]
+        filenames: List[Path] = []
 
         dct: Mapping[ValidName, Sequence[ValidFormat]]
         if self.save_data_to_file:
@@ -349,16 +349,16 @@ class Outputs:
                 format_list: Sequence[ValidFormat]
                 obj, format_list = first_item
 
-                data = processor.get(obj)  # type: np.ndarray
+                data: np.ndarray = processor.get(obj)
 
                 if prefix:
-                    name = f"{prefix}_{obj}"  # type: str
+                    name: str = f"{prefix}_{obj}"
                 else:
                     name = obj
 
                 out_format: ValidFormat
                 for out_format in format_list:
-                    func = save_methods[out_format]  # type: SaveToFile
+                    func: SaveToFile = save_methods[out_format]
 
                     if out_format in ["png", "jpg", "jpeg"]:
                         if obj != "detector.image.array":
@@ -371,22 +371,22 @@ class Outputs:
                         )
                         rescaled_data = (255.0 / maximum * data).astype(np.uint8)
 
-                        image_filename = func(
+                        image_filename: Path = func(
                             data=rescaled_data,
                             name=name,
                             with_auto_suffix=with_auto_suffix,
                             run_number=run_number,
-                        )  # type: Path
+                        )
 
                         filenames.append(image_filename)
 
                     else:
-                        filename = func(
+                        filename: Path = func(
                             data=data,
                             name=name,
                             with_auto_suffix=with_auto_suffix,
                             run_number=run_number,
-                        )  # type: Path
+                        )
 
                         filenames.append(filename)
 
@@ -458,7 +458,7 @@ def apply_run_number(template_filename: Path, run_number: Optional[int] = None) 
 # TODO: the log file should directly write in 'output_dir'
 def save_log_file(output_dir: Path) -> None:
     """Move log file to the outputs directory of the simulation."""
-    log_file = Path("pyxel.log").resolve(strict=True)  # type: Path
+    log_file: Path = Path("pyxel.log").resolve(strict=True)
 
     new_log_filename = output_dir.joinpath(log_file.name)
     log_file.rename(new_log_filename)
@@ -481,11 +481,11 @@ def create_output_directory(output_folder: Union[str, Path]) -> Path:
 
     while True:
         try:
-            output_dir = (
+            output_dir: Path = (
                 Path(output_folder)
                 .joinpath("run_" + strftime("%Y%m%d_%H%M%S") + add)
                 .resolve()
-            )  # type: Path
+            )
 
             output_dir.mkdir(parents=True, exist_ok=False)
 

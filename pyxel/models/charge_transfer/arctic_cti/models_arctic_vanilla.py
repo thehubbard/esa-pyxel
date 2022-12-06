@@ -80,13 +80,13 @@ def compute_arctic_add(
     roe = ac.ROE()
 
     # Create the trap(s)
-    traps = [
+    traps: Sequence[ac.TrapInstantCapture] = [
         ac.TrapInstantCapture(
             density=trap.density,
             release_timescale=trap.release_timescale,
         )
         for trap in parallel_traps
-    ]  # type: Sequence[ac.TrapInstantCapture]
+    ]
 
     image_cti_added_2d = ac.add_cti(
         image=image_2d,
@@ -145,10 +145,10 @@ def arctic_add(
         raise ValueError("Expecting at least one 'trap_density'.")
 
     # Conversion - Create a list of `Trap`
-    traps = [
+    traps: Sequence[Trap] = [
         Trap(density=density, release_timescale=release_timescale)
         for density, release_timescale in zip(trap_densities, trap_release_timescales)
-    ]  # type: Sequence[Trap]
+    ]
 
     if not WITH_ARTICPY:
         raise RuntimeError(
@@ -197,13 +197,13 @@ def compute_arctic_remove(
     roe = ac.ROE()
 
     # Build the traps
-    traps = [
+    traps: Sequence[ac.TrapInstantCapture] = [
         ac.TrapInstantCapture(
             density=trap.density,
             release_timescale=trap.release_timescale,
         )
         for trap in parallel_traps
-    ]  # type: Sequence[ac.TrapInstantCapture]
+    ]
 
     # Remove CTI
     image_2d_cti_removed = ac.remove_cti(
@@ -262,10 +262,10 @@ def arctic_remove(
         raise ValueError("Number of iterations must be > 1.")
 
     # Conversion
-    traps = [
+    traps: Sequence[Trap] = [
         Trap(density=density, release_timescale=release_timescale)
         for density, release_timescale in zip(trap_densities, trap_release_timescales)
-    ]  # type: Sequence[Trap]
+    ]
 
     if not WITH_ARTICPY:
         raise RuntimeError(

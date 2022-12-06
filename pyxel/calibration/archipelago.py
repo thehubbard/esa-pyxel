@@ -68,7 +68,7 @@ class ArchipelagoLogs:
         """Get logging information from an algorithm."""
         # Extract the Pygmo algorithm and its logging information
         algo_extracted = algo.extract(self._algo_to_extract)
-        logs = algo_extracted.get_log()  # type: list
+        logs: list = algo_extracted.get_log()
 
         # Put the logging information from pygmo into a `DataFrame`
         df = pd.DataFrame(logs, columns=self._columns)
@@ -77,7 +77,7 @@ class ArchipelagoLogs:
 
     def _from_archi(self, archi: "pg.archipelago") -> pd.DataFrame:
         """Get logging information from an archipelago."""
-        lst = []  # type: List[pd.DataFrame]
+        lst: List[pd.DataFrame] = []
 
         for id_island, island in enumerate(archi):
             # Extract the Pygmo algorithm from an island
@@ -92,7 +92,7 @@ class ArchipelagoLogs:
     # TODO: Remove parameter 'id_evolution' ?
     def append(self, archi: "pg.archipelago", id_evolution: int) -> None:
         """Collect logging information from a archipelago for specified evolution id."""
-        partial_df = self._from_archi(archi=archi)  # type: pd.DataFrame
+        partial_df: pd.DataFrame = self._from_archi(archi=archi)
         partial_df["id_evolution"] = id_evolution
 
         self._df = pd.concat([self._df, partial_df])
@@ -108,7 +108,7 @@ class ArchipelagoLogs:
 
     def get_total(self) -> pd.DataFrame:
         """TBW."""
-        df = self.get_full_total()  # type: pd.DataFrame
+        df: pd.DataFrame = self.get_full_total()
         return df[
             ["id_evolution", "id_island", "global_num_generations", "best_fitness"]
         ]
@@ -122,15 +122,15 @@ def extract_data_3d(
     readout_times: np.ndarray,
 ) -> xr.Dataset:
     """Extract 'image', 'signal' and 'pixel' arrays from several delayed dynamic results."""
-    lst = []  # type: List[xr.Dataset]
+    lst: List[xr.Dataset] = []
     for _, row in df_results.iterrows():
-        island = row["island"]  # type: int
-        id_processor = row["id_processor"]  # type: int
-        result = row["processor"].result  # type: Mapping[str, Delayed]
+        island: int = row["island"]
+        id_processor: int = row["id_processor"]
+        result: Mapping[str, Delayed] = row["processor"].result
 
-        image_delayed = result["image"]  # type: Delayed
-        signal_delayed = result["signal"]  # type: Delayed
-        pixel_delayed = result["pixel"]  # type: Delayed
+        image_delayed: Delayed = result["image"]
+        signal_delayed: Delayed = result["signal"]
+        pixel_delayed: Delayed = result["pixel"]
 
         image_3d = da.from_delayed(
             image_delayed, shape=(times, rows, cols), dtype=float
@@ -160,11 +160,11 @@ def extract_data_3d(
             ).expand_dims(["island", "id_processor"])
         )
 
-    ds = xr.combine_by_coords(lst).assign_coords(
+    ds: Union[xr.Dataset, xr.DataArray] = xr.combine_by_coords(lst).assign_coords(
         readout_time=readout_times,
         y=range(rows),
         x=range(cols),
-    )  # type: Union[xr.Dataset, xr.DataArray]
+    )
 
     if not isinstance(ds, xr.Dataset):
         raise TypeError("Expected a Dataset.")
@@ -193,8 +193,8 @@ class MyArchipelago:
 
         self.num_islands = num_islands
         self.udi = udi
-        self.algorithm = algorithm  # type: Algorithm
-        self.problem = problem  # type: ModelFitting
+        self.algorithm: Algorithm = algorithm
+        self.problem: ModelFitting = problem
         self.pop_size = pop_size
         self.bfe = bfe
         self.topology = topology
@@ -206,16 +206,14 @@ class MyArchipelago:
         self._pygmo_archi = pg.archipelago(t=self.topology)
 
         # Create a Pygmo algorithm
-        verbosity_level = max(1, self.algorithm.population_size // 100)  # type: int
+        verbosity_level: int = max(1, self.algorithm.population_size // 100)
 
-        self._pygmo_algo = pg.algorithm(
-            self.algorithm.get_algorithm()
-        )  # type: pg.algorithm
+        self._pygmo_algo: pg.algorithm = pg.algorithm(self.algorithm.get_algorithm())
         self._pygmo_algo.set_verbosity(verbosity_level)
         self._log.info(self._pygmo_algo)
 
         # Create a Pygmo problem
-        self._pygmo_prob = pg.problem(self.problem)  # type: pg.problem
+        self._pygmo_prob: pg.problem = pg.problem(self.problem)
         self._log.info(self._pygmo_prob)
 
         # Build the archipelago
@@ -223,8 +221,8 @@ class MyArchipelago:
 
     def _build(self) -> None:
         """Build the island(s) and populate them."""
-        disable_bar = not self.with_bar  # type: bool
-        start_time = timer()  # type: float
+        disable_bar: bool = not self.with_bar
+        start_time: float = timer()
 
         def create_island(seed: Optional[int] = None) -> pg.island:
             """Create a new island."""
@@ -239,12 +237,10 @@ class MyArchipelago:
 
         # Create a seed for each island
         if self.pygmo_seed is None:
-            seeds = [None] * self.num_islands  # type: Sequence[Optional[int]]
+            seeds: Sequence[Optional[int]] = [None] * self.num_islands
         else:
-            rng = np.random.default_rng(
-                seed=self.pygmo_seed
-            )  # type: np.random.Generator
-            max_value = np.iinfo(np.uint32).max  # type: int
+            rng: np.random.Generator = np.random.default_rng(seed=self.pygmo_seed)
+            max_value: int = np.iinfo(np.uint32).max
             seeds = [int(rng.integers(0, max_value)) for _ in range(self.num_islands)]
 
         # Create the islands and add them to this archipelago
@@ -306,7 +302,7 @@ class MyArchipelago:
             disable=not self.with_bar,
         ) as progress:
 
-            champions_lst = []  # type: List[xr.Dataset]
+            champions_lst: List[xr.Dataset] = []
             # Run an evolution im the archipelago several times
             for id_evolution in range(num_evolutions):
                 # If the evolution on this archipelago was already run before, then
@@ -326,13 +322,13 @@ class MyArchipelago:
                 progress.update(self.algorithm.generations)
 
                 # Get partial champions for this evolution
-                partial_champions = self._get_champions()  # type: xr.Dataset
+                partial_champions: xr.Dataset = self._get_champions()
 
                 # Get best population from the islands
                 if num_best_decisions:
-                    best_individuals = self.get_best_individuals(
+                    best_individuals: xr.Dataset = self.get_best_individuals(
                         num_best_decisions=num_best_decisions
-                    )  # type: xr.Dataset
+                    )
 
                     all_champions = xr.merge([partial_champions, best_individuals])
                 else:
@@ -342,19 +338,18 @@ class MyArchipelago:
                     all_champions.assign_coords(evolution=id_evolution)
                 )
 
-        champions = xr.concat(champions_lst, dim="evolution")  # type: xr.Dataset
+        champions: xr.Dataset = xr.concat(champions_lst, dim="evolution")
 
         # Get logging information
-        df_all_logs = logs.get_full_total()  # type: pd.DataFrame
+        df_all_logs: pd.DataFrame = logs.get_full_total()
 
         # Get the champions in a `Dataset`
-        # champions = self._get_champions()  # type: # xr.Dataset
         last_champions = champions.isel(evolution=-1)
 
         # Get the processor(s) in a `DataFrame`
-        df_results = self.problem.apply_parameters_to_processors(
+        df_results: pd.DataFrame = self.problem.apply_parameters_to_processors(
             parameters=last_champions["champion_parameters"],
-        )  # type: pd.DataFrame
+        )
 
         assert isinstance(self.problem.sim_fit_range, tuple)
         slice_times, slice_rows, slice_cols = self.problem.sim_fit_range
@@ -397,7 +392,7 @@ class MyArchipelago:
                 },
             )
 
-        ds = xr.merge([champions, all_data_fit_range])  # type: xr.Dataset
+        ds: xr.Dataset = xr.merge([champions, all_data_fit_range])
 
         ds.attrs["num_islands"] = self.num_islands
         ds.attrs["population_size"] = self.algorithm.population_size
@@ -428,9 +423,9 @@ class MyArchipelago:
             champion_parameters  (island, param_id) float64 0.1526 -1.977 ... 8.568
         """
         # Get fitness and decision vectors of the num_islands' champions
-        champions_1d_fitness = self._pygmo_archi.get_champions_f()  # type: ArrayLike
+        champions_1d_fitness: ArrayLike = self._pygmo_archi.get_champions_f()
 
-        champions_1d_decision = self._pygmo_archi.get_champions_x()  # type: ArrayLike
+        champions_1d_decision: ArrayLike = self._pygmo_archi.get_champions_x()
 
         # Get the champions as a Dataset
         champions = xr.Dataset()
@@ -488,19 +483,19 @@ class MyArchipelago:
 
         lst = []
         for island_idx, island in enumerate(self._pygmo_archi):
-            population = island.get_population()  # type: pg.population
+            population: pg.population = island.get_population()
 
             # Get the decision vectors: num_individuals x size_decision_vector
-            decision_vectors_2d = population.get_x()  # type: np.ndarray
+            decision_vectors_2d: np.ndarray = population.get_x()
 
             # Get the fitness vectors: num_individuals x 1
-            fitness_vectors_2d = population.get_f()  # type: np.ndarray
+            fitness_vectors_2d: np.ndarray = population.get_f()
 
             # Convert the decision vectors to parameters:
             #   num_individuals x size_decision_vector
             parameters_2d = self.problem.convert_to_parameters(decision_vectors_2d)
 
-            # Add the vectors into an Dataset
+            # Add the vectors into a Dataset
             island_population = xr.Dataset()
             island_population["best_decision"] = xr.DataArray(
                 decision_vectors_2d, dims=["individual", "param_id"]
@@ -530,9 +525,9 @@ class MyArchipelago:
 
         # Add coordinates
         num_individuals = len(best_individuals_no_coordinates["individual"])
-        best_individuals = best_individuals_no_coordinates.assign_coords(
+        best_individuals: xr.Dataset = best_individuals_no_coordinates.assign_coords(
             individual=range(num_individuals),
             island=range(len(self._pygmo_archi)),
-        )  # type: xr.Dataset
+        )
 
         return best_individuals

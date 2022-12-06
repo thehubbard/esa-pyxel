@@ -65,14 +65,14 @@ def load_image(filename: Union[str, Path]) -> np.ndarray:
     array([[234, 211, ...]])
     """
     # Extract suffix (e.g. '.txt', '.fits'...)
-    suffix = Path(filename).suffix.lower()  # type: str
+    suffix: str = Path(filename).suffix.lower()
 
     if isinstance(filename, Path):
-        full_filename = filename.expanduser().resolve()  # type: Path
+        full_filename: Path = filename.expanduser().resolve()
         if not full_filename.exists():
             raise FileNotFoundError(f"Input file '{full_filename}' can not be found.")
 
-        url_path = str(full_filename)  # type: str
+        url_path: str = str(full_filename)
 
     else:
         url_path = filename
@@ -91,7 +91,7 @@ def load_image(filename: Union[str, Path]) -> np.ndarray:
             from astropy.io import fits  # Late import to speed-up general import time
 
             with BytesIO(file_handler.read()) as content:
-                data_2d = fits.getdata(content)  # type: np.ndarray
+                data_2d: np.ndarray = fits.getdata(content)
 
     elif suffix.startswith(".npy"):
         with fsspec.open(url_path, mode="rb", **extras) as file_handler:
@@ -148,14 +148,14 @@ def load_table(filename: Union[str, Path]) -> "pd.DataFrame":
     # Late import to speedup start-up time
     import pandas as pd
 
-    suffix = Path(filename).suffix.lower()  # type: str
+    suffix: str = Path(filename).suffix.lower()
 
     if isinstance(filename, Path):
         full_filename = Path(filename).expanduser().resolve()
         if not full_filename.exists():
             raise FileNotFoundError(f"Input file '{full_filename}' can not be found.")
 
-        url_path = str(full_filename)  # type: str
+        url_path: str = str(full_filename)
     else:
         url_path = filename
 
@@ -234,14 +234,14 @@ def load_datacube(filename: Union[str, Path]) -> np.ndarray:
         When the extension of the filename is unknown or separator is not found.
     """
     # Extract suffix (e.g. '.txt', '.fits'...)
-    suffix = Path(filename).suffix.lower()  # type: str
+    suffix: str = Path(filename).suffix.lower()
 
     if isinstance(filename, Path):
-        full_filename = filename.expanduser().resolve()  # type: Path
+        full_filename: Path = filename.expanduser().resolve()
         if not full_filename.exists():
             raise FileNotFoundError(f"Input file '{full_filename}' can not be found.")
 
-        url_path = str(full_filename)  # type: str
+        url_path: str = str(full_filename)
 
     else:
         url_path = filename
@@ -256,7 +256,7 @@ def load_datacube(filename: Union[str, Path]) -> np.ndarray:
 
     if suffix.startswith(".npy"):
         with fsspec.open(url_path, mode="rb", **extras) as file_handler:
-            data_3d = np.load(file_handler)  # type: np.ndarray
+            data_3d: np.ndarray = np.load(file_handler)
         if np.ndim(data_3d) != 3:
             raise ValueError("Input datacube is not 3-dimensional!")
 

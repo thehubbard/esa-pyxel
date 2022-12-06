@@ -72,7 +72,7 @@ def psf_10x10_npy_filename(psf_10x10: np.ndarray, tmp_path: Path) -> Path:
 
 def test_load_psf(ccd_10x10: CCD, psf_10x10_npy_filename: Path) -> None:
     """Test function 'load_psf'."""
-    detector = ccd_10x10  # type: Detector
+    detector: Detector = ccd_10x10
 
     # Run model
     load_psf(

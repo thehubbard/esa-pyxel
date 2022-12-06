@@ -87,7 +87,7 @@ class Geometry:
         self._numbytes = 0
 
     def __repr__(self) -> str:
-        cls_name = self.__class__.__name__  # type: str
+        cls_name: str = self.__class__.__name__
         return (
             f"{cls_name}(row={self._row!r}, col={self._col!r}, "
             f"total_thickness={self._total_thickness!r}, "

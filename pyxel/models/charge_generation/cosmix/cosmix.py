@@ -360,7 +360,7 @@ class Cosmix:
             disable=(not self._progressbar),
         ):
             # for k in range(0, self.particle_number):
-            err = None  # type: Optional[bool]
+            err: Optional[bool] = None
             if self.sim_obj.energy_loss_data == "stepsize":  # TODO
                 err = self.sim_obj.event_generation()
             elif self.sim_obj.energy_loss_data == "geant4":

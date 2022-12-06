@@ -38,7 +38,7 @@ def evaluate_reference(reference_str: str) -> Callable:
     try:
         module = importlib.import_module(module_str)
 
-        reference = getattr(module, function_str)  # type: Callable
+        reference: Callable = getattr(module, function_str)
         assert callable(reference)
 
         # if isinstance(reference, type):
@@ -66,12 +66,12 @@ def eval_range(values: Union[str, Sequence]) -> Sequence:
         if "numpy" in values:
             locals_dict = {"numpy": importlib.import_module("numpy")}
             globals_dict = None
-            values_array = eval(values, globals_dict, locals_dict)  # type: np.ndarray
+            values_array: np.ndarray = eval(values, globals_dict, locals_dict)
 
             # NOTE: the following casting is to ensure JSON serialization works
             # JSON does not accept numpy.int* or numpy.float* types.
             if values_array.dtype == float:
-                values_lst = [float(value) for value in values_array]  # type: list
+                values_lst: list = [float(value) for value in values_array]
             elif values_array.dtype == int:
                 values_lst = [int(value) for value in values_array]
             else:

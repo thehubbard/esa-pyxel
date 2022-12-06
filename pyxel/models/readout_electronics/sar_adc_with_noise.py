@@ -55,12 +55,12 @@ def apply_sar_adc_with_noise(
         noise = noises[i]
 
         # digital value associated with this step
-        digital_value = 2 ** (adc_bits - (i + 1))  # type: int
+        digital_value: int = 2 ** (adc_bits - (i + 1))
 
         ref_2d += np.random.normal(loc=strength, scale=noise, size=(num_rows, num_cols))
 
         # All data that is higher than the ref is equal to the dig. value
-        mask_2d = signal_normalized_2d >= ref_2d  # type: np.ndarray
+        mask_2d: np.ndarray = signal_normalized_2d >= ref_2d
         data_digitized_2d += digital_value * mask_2d
 
         # Subtract ref value from the data
@@ -173,7 +173,7 @@ def sar_adc_with_noise(
             f"Expecting a sequence of {adc_bits} elements for parameter 'noises'."
         )
 
-    image_2d = apply_sar_adc_with_noise(
+    image_2d: np.ndarray = apply_sar_adc_with_noise(
         signal_2d=detector.signal.array,
         num_rows=detector.geometry.row,
         num_cols=detector.geometry.col,
@@ -181,6 +181,6 @@ def sar_adc_with_noise(
         noises=np.asarray(noises, dtype=float),
         max_volt=max_volt,
         adc_bits=adc_bits,
-    )  # type: np.ndarray
+    )
 
     detector.image.array = image_2d

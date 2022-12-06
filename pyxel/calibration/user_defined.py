@@ -92,11 +92,11 @@ class DaskBFE:
             A 1d array with the fitness parameters.
         """
         try:
-            ndims_dvs = prob.get_nx()  # type: int
-            num_fitness = prob.get_nf()  # type: int
+            ndims_dvs: int = prob.get_nx()
+            num_fitness: int = prob.get_nf()
 
             if self._chunk_size is None:
-                chunk_size = max(1, num_fitness // 10)  # type: int
+                chunk_size: int = max(1, num_fitness // 10)
             else:
                 chunk_size = self._chunk_size
 
@@ -108,10 +108,10 @@ class DaskBFE:
             #  [dvs_m_1, ..., dvs_m_n]]
 
             # Convert 1D Decision Vectors to 2D `dask.Array`
-            dvs_2d = da.from_array(
+            dvs_2d: da.Array = da.from_array(
                 dvs_1d.reshape((-1, ndims_dvs)),
                 chunks=(chunk_size, ndims_dvs),
-            )  # type: da.Array
+            )
 
             logging.info("DaskBFE: %i, %i, %r", len(dvs_1d), ndims_dvs, dvs_2d.shape)
 
@@ -127,8 +127,8 @@ class DaskBFE:
                 vectorize=True,
             )
 
-            fitness_2d = fitness_func(dvs_2d)  # type: da.Array
-            fitness_1d = fitness_2d.ravel()  # type: da.Array
+            fitness_2d: da.Array = fitness_func(dvs_2d)
+            fitness_1d: da.Array = fitness_2d.ravel()
 
         except Exception:
             logging.exception("Caught an exception in 'fitness' for ModelFitting.")
@@ -175,12 +175,14 @@ class DaskIsland:
         algo_pickable = AlgoSerializable(algo)
 
         # Run 'algo.evolve' with `Dask`
-        new_delayed_pop = delayed(algo_pickable.evolve, nout=2)(pop)  # type: Delayed
+        new_delayed_pop: Delayed = delayed(algo_pickable.evolve, nout=2)(pop)
 
+        new_algo: pg.algo
+        new_pop: pg.population
         (
             new_algo,
             new_pop,
-        ) = new_delayed_pop.compute()  # type: Tuple[pg.algo, pg.population]
+        ) = new_delayed_pop.compute()
 
         return new_algo, new_pop
 

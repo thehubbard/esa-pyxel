@@ -39,7 +39,7 @@ def apply_sar_adc(
     signal_normalized_2d = signal_2d.copy()
 
     # Set the reference voltage of the ADC to half the max
-    ref = max_volt / 2.0  # type: float
+    ref: float = max_volt / 2.0
 
     # For each bits, compare the value of the ref to the capacitance value
     for i in np.arange(adc_bits):
@@ -73,13 +73,13 @@ def sar_adc(
     min_volt, max_volt = detector.characteristics.adc_voltage_range
     adc_bits = detector.characteristics.adc_bit_resolution
 
-    image_2d = apply_sar_adc(
+    image_2d: np.ndarray = apply_sar_adc(
         signal_2d=detector.signal.array,
         num_rows=detector.geometry.row,
         num_cols=detector.geometry.col,
         min_volt=min_volt,
         max_volt=max_volt,
         adc_bits=adc_bits,
-    )  # type: np.ndarray
+    )
 
     detector.image.array = image_2d

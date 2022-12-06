@@ -79,33 +79,33 @@ def dead_time_filter(
     boltzmann_cst: float = const.k_B.to(u.eV / u.K).value
 
     # Compute superconducting gap energy
-    delta = 1.76 * boltzmann_cst * t_c  # type: float
+    delta: float = 1.76 * boltzmann_cst * t_c
 
     # Compute number of quasiparticles in a superconducting volume V
     # TODO: check that T << (delta / boltzmann_cst)
-    n_qp = (
+    n_qp: float = (
         2.0
         * v
         * n_0
         * np.sqrt(2.0 * np.pi * boltzmann_cst * t_op * delta)
         * np.exp(-delta / (boltzmann_cst * t_op))
-    )  # type: float
+    )
 
     # Compute recombination constant
-    recombination_cst = (
+    recombination_cst: float = (
         tau_0 * n_0 * (boltzmann_cst * t_c) ** 3 / (2.0 * delta**2)
-    )  # type: float
+    )
 
     # Compute intrinsic quasiparticle lifetime with respect to recombination
-    tau_qp = v / (recombination_cst * n_qp)  # type: float
+    tau_qp: float = v / (recombination_cst * n_qp)
 
     # Compute apparent quasi-particle lifetime, without saturation lifetime
     # tau_apparent = 1. / (2. / (tau_qp * (1. + (char.tau_esc / char.tau_pb))))
 
     # Compute apparent quasi-particle lifetime, including saturation lifetime
-    tau_apparent_sat = 1.0 / (
+    tau_apparent_sat: float = 1.0 / (
         2.0 / (tau_qp * (1.0 + (tau_esc / tau_pb))) + (1.0 / tau_sat)
-    )  # type: float
+    )
 
     dead_time = tau_apparent_sat
 

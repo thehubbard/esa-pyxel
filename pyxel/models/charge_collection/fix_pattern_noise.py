@@ -39,16 +39,16 @@ def fix_pattern_noise(
         Keyword to align the noise to detector. Can be any from:
         ("center", "top_left", "top_right", "bottom_left", "bottom_right")
     """
-    geo = detector.geometry  # type: Geometry
+    geo: Geometry = detector.geometry
     position_y, position_x = position
 
     # Load charge profile as numpy array.
-    pnu_2d = load_cropped_and_aligned_image(
+    pnu_2d: np.ndarray = load_cropped_and_aligned_image(
         shape=(geo.row, geo.col),
         filename=filename,
         position_x=position_x,
         position_y=position_y,
         align=align,
-    )  # type: np.ndarray
+    )
 
     detector.pixel.array *= pnu_2d

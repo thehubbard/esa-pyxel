@@ -160,9 +160,9 @@ class ModelFunction:
         if inspect.isclass(func):
             raise AttributeError("Cannot pass a class to ModelFunction.")
 
-        self._func = evaluate_reference(func)  # type: Callable
+        self._func: Callable = evaluate_reference(func)
         self._name = name
-        self.enabled = enabled  # type: bool
+        self.enabled: bool = enabled
 
         if arguments is None:
             arguments = {}
@@ -171,7 +171,7 @@ class ModelFunction:
         # self.group = None               # TODO
 
     def __repr__(self) -> str:
-        cls_name = self.__class__.__name__  # type: str
+        cls_name: str = self.__class__.__name__
         func_name = self._func.__module__ + "." + self._func.__name__
 
         return (
@@ -198,13 +198,16 @@ class FitnessFunction:
     """Fitness function for model fitting."""
 
     def __init__(self, func: str):
-        self._func = evaluate_reference(func)  # type: FittingCallable
+        self._func: FittingCallable = evaluate_reference(func)
 
     def __call__(
-        self, simulated: "np.ndarray", target: "np.ndarray", weighting: "np.ndarray"
+        self,
+        simulated: "np.ndarray",
+        target: "np.ndarray",
+        weighting: "np.ndarray",
     ) -> float:
         """Compute fitness."""
-        result = self._func(
+        result: float = self._func(
             simulated=simulated, target=target, weighting=weighting
-        )  # type: float
+        )
         return result

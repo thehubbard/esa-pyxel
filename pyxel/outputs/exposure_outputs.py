@@ -47,9 +47,9 @@ class ExposureOutputs(Outputs):
             output_folder=output_folder, save_data_to_file=save_data_to_file
         )
 
-        self.save_exposure_data = (
-            save_exposure_data
-        )  # type: Optional[Sequence[Mapping[str, Sequence[str]]]]
+        self.save_exposure_data: Optional[
+            Sequence[Mapping[str, Sequence[str]]]
+        ] = save_exposure_data
 
     def save_exposure_outputs(self, dataset: "xr.Dataset") -> None:
         """Save the observation outputs such as the dataset.
@@ -59,11 +59,12 @@ class ExposureOutputs(Outputs):
         dataset: Dataset
         """
 
-        save_methods = {"nc": self.save_to_netcdf}  # type: Dict[str, SaveToFile]
+        save_methods: Dict[str, SaveToFile] = {"nc": self.save_to_netcdf}
 
         if self.save_exposure_data is not None:
 
-            for dct in self.save_exposure_data:  # type: Mapping[str, Sequence[str]]
+            dct: Mapping[str, Sequence[str]]
+            for dct in self.save_exposure_data:
 
                 first_item, *_ = dct.items()
                 obj, format_list = first_item

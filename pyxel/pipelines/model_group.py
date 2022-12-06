@@ -27,14 +27,12 @@ class ModelGroup:
     def __init__(self, models: Sequence[ModelFunction], name: str):
         self._log = logging.getLogger(__name__)
         self._name = name
-        self.models = models  # type: Sequence[ModelFunction]
+        self.models: Sequence[ModelFunction] = models
 
     def __repr__(self):
-        cls_name = self.__class__.__name__  # type: str
+        cls_name: str = self.__class__.__name__
 
-        all_models = [
-            model.name for model in self.models if model.name
-        ]  # type: List[str]
+        all_models: List[str] = [model.name for model in self.models if model.name]
 
         return f"{cls_name}<name={self._name!r}, models={all_models!r}>"
 
@@ -84,7 +82,8 @@ class ModelGroup:
         bool
             TBW.
         """
-        for model in self.models:  # type: ModelFunction
+        model: ModelFunction
+        for model in self.models:
             if model.name == abort_model:
                 return True
             if not pipeline.is_running:

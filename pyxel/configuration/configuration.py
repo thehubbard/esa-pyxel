@@ -65,7 +65,7 @@ class Configuration:
     def __post_init__(self):
         # Sanity checks
         running_modes = [self.exposure, self.observation, self.calibration]
-        num_running_modes = sum(el is not None for el in running_modes)  # type: int
+        num_running_modes: int = sum(el is not None for el in running_modes)
 
         if num_running_modes != 1:
             raise ValueError(
@@ -289,7 +289,7 @@ def to_fitness_function(dct: dict) -> FitnessFunction:
     -------
     callable
     """
-    func = dct["func"]  # type: str
+    func: str = dct["func"]
 
     return FitnessFunction(func=func)
 
@@ -557,10 +557,10 @@ def to_pipeline(dct: dict) -> DetectionPipeline:
     DetectionPipeline
     """
     for model_group_name in dct.keys():
-        models_list = dct[model_group_name]  # type: Optional[Sequence[dict]]
+        models_list: Optional[Sequence[dict]] = dct[model_group_name]
 
         if models_list is None:
-            models = None  # type: Optional[Sequence[ModelFunction]]
+            models: Optional[Sequence[ModelFunction]] = None
         else:
             models = [to_model_function(model_dict) for model_dict in models_list]
 
@@ -579,31 +579,31 @@ def _build_configuration(dct: dict) -> Configuration:
     -------
     Configuration
     """
-    pipeline = to_pipeline(dct["pipeline"])  # type: DetectionPipeline
+    pipeline: DetectionPipeline = to_pipeline(dct["pipeline"])
 
     # Sanity checks
-    keys_running_mode = [
+    keys_running_mode: Sequence[str] = [
         "exposure",
         "observation",
         "calibration",
-    ]  # type: Sequence[str]
-    num_running_modes = sum(key in dct for key in keys_running_mode)  # type: int
+    ]
+    num_running_modes: int = sum(key in dct for key in keys_running_mode)
     if num_running_modes != 1:
         keys = ", ".join(map(repr, keys_running_mode))
         raise ValueError(f"Expecting only one running mode: {keys}")
 
-    keys_detectors = [
+    keys_detectors: Sequence[str] = [
         "ccd_detector",
         "cmos_detector",
         "mkid_detector",
         "apd_detector",
-    ]  # type: Sequence[str]
-    num_detector = sum(key in dct for key in keys_detectors)  # type: int
+    ]
+    num_detector: int = sum(key in dct for key in keys_detectors)
     if num_detector != 1:
         keys = ", ".join(map(repr, keys_detectors))
         raise ValueError(f"Expecting only one detector: {keys}")
 
-    running_mode = {}  # type: Dict[str, Union[Exposure, Observation, "Calibration"]]
+    running_mode: Dict[str, Union[Exposure, Observation, "Calibration"]] = {}
     if "exposure" in dct:
         running_mode["exposure"] = to_exposure(dct["exposure"])
     elif "observation" in dct:
@@ -613,7 +613,7 @@ def _build_configuration(dct: dict) -> Configuration:
     else:
         raise ValueError("No mode configuration provided.")
 
-    detector = {}  # type: Dict[str, Union[CCD, CMOS, MKID, APD]]
+    detector: Dict[str, Union[CCD, CMOS, MKID, APD]] = {}
     if "ccd_detector" in dct:
         detector["ccd_detector"] = to_ccd(dct["ccd_detector"])
     elif "cmos_detector" in dct:
@@ -625,11 +625,11 @@ def _build_configuration(dct: dict) -> Configuration:
     else:
         raise ValueError("No detector configuration provided.")
 
-    configuration = Configuration(
+    configuration: Configuration = Configuration(
         pipeline=pipeline,
         **running_mode,  # type: ignore
         **detector,  # type: ignore
-    )  # type: Configuration
+    )
 
     return configuration
 
@@ -651,8 +651,8 @@ def save(input_filename: Union[str, Path], output_dir: Path) -> Path:
     copy2(input_file, output_dir)
 
     # TODO: sort filenames ?
-    copied_input_file_it = output_dir.glob("*.yaml")  # type: Iterator[Path]
-    copied_input_file = next(copied_input_file_it)  # type: Path
+    copied_input_file_it: Iterator[Path] = output_dir.glob("*.yaml")
+    copied_input_file: Path = next(copied_input_file_it)
 
     with copied_input_file.open("a") as file:
         file.write("\n#########")

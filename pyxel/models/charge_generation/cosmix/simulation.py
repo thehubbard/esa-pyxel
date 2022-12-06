@@ -37,16 +37,16 @@ class Simulation:
 
     def __init__(self, detector: Detector) -> None:
         self.detector = detector
-        self.simulation_mode = (
-            None
-        )  # type: Optional[Literal["cosmic_ray", "cosmics","radioactive_decay", "snowflakes"]]
+        self.simulation_mode: Optional[
+            Literal["cosmic_ray", "cosmics", "radioactive_decay", "snowflakes"]
+        ] = None
 
-        self.flux_dist = None  # type: Optional[np.ndarray]
-        self.spectrum_cdf = None  # type: Optional[np.ndarray]
+        self.flux_dist: Optional[np.ndarray] = None
+        self.spectrum_cdf: Optional[np.ndarray] = None
 
-        self.energy_loss_data = (
-            None
-        )  # type: Optional[Literal['stopping', 'stepsize', 'geant4']]
+        self.energy_loss_data: Optional[
+            Literal["stopping", "stepsize", "geant4"]
+        ] = None
 
         self.elec_number_dist = pd.DataFrame()
         self.elec_number_cdf = np.zeros((1, 2))
@@ -57,49 +57,47 @@ class Simulation:
 
         self.data_library = pd.DataFrame()
 
-        self.stopping_power = None  # type: Optional[np.ndarray]
+        self.stopping_power: Optional[np.ndarray] = None
 
-        self.particle = None  # type: Optional[Particle]
+        self.particle: Optional[Particle] = None
 
-        self.particle_type = (
-            None
-        )  # type: Optional[Literal["proton", "ion", "alpha", "beta", "electron", "gamma", "x-ray"]]
-        self.initial_energy = (
-            None
-        )  # type: Optional[Union[int, float, Literal['random']]]
-        self.position_ver = None  # type: Optional[str]
-        self.position_hor = None  # type: Optional[str]
-        self.position_z = None  # type: Optional[str]
-        self.angle_alpha = None  # type: Optional[str]
-        self.angle_beta = None  # type: Optional[str]
+        self.particle_type: Optional[
+            Literal["proton", "ion", "alpha", "beta", "electron", "gamma", "x-ray"]
+        ] = None
+        self.initial_energy: Optional[Union[int, float, Literal["random"]]] = None
+        self.position_ver: Optional[str] = None
+        self.position_hor: Optional[str] = None
+        self.position_z: Optional[str] = None
+        self.angle_alpha: Optional[str] = None
+        self.angle_beta: Optional[str] = None
         self.step_length = (
             1.0  # fix, all the other data/parameters should be adjusted to this
         )
         self.energy_cut = 1.0e-5  # MeV
         self.ionization_energy = 3.6
 
-        self.e_num_lst_per_step = []  # type: List[int]
-        self.e_energy_lst = []  # type: List[float]
-        self.e_pos0_lst = []  # type: List[float]
-        self.e_pos1_lst = []  # type: List[float]
-        self.e_pos2_lst = []  # type: List[float]
-        self.e_vel0_lst = np.array([])  # type: np.ndarray
-        self.e_vel1_lst = np.array([])  # type: np.ndarray
-        self.e_vel2_lst = np.array([])  # type: np.ndarray
+        self.e_num_lst_per_step: List[int] = []
+        self.e_energy_lst: List[float] = []
+        self.e_pos0_lst: List[float] = []
+        self.e_pos1_lst: List[float] = []
+        self.e_pos2_lst: List[float] = []
+        self.e_vel0_lst: np.ndarray = np.array([])
+        self.e_vel1_lst: np.ndarray = np.array([])
+        self.e_vel2_lst: np.ndarray = np.array([])
 
-        self.electron_number_from_eloss = []  # type: List[int]
-        self.secondaries_from_eloss = []  # type: List[int]
-        self.tertiaries_from_eloss = []  # type: List[int]
+        self.electron_number_from_eloss: List[int] = []
+        self.secondaries_from_eloss: List[int] = []
+        self.tertiaries_from_eloss: List[int] = []
 
-        self.track_length_lst_per_event = []  # type: List[float]
-        self.e_num_lst_per_event = []  # type: List[int]
-        self.sec_lst_per_event = []  # type: List[int]
-        self.ter_lst_per_event = []  # type: List[int]
-        self.edep_per_step = []  # type: List[float]
-        self.total_edep_per_particle = []  # type: List[float]
-        self.p_energy_lst_per_event = []  # type: List[float]
-        self.alpha_lst_per_event = []  # type: List[float]
-        self.beta_lst_per_event = []  # type: List[float]
+        self.track_length_lst_per_event: List[float] = []
+        self.e_num_lst_per_event: List[int] = []
+        self.sec_lst_per_event: List[int] = []
+        self.ter_lst_per_event: List[int] = []
+        self.edep_per_step: List[float] = []
+        self.total_edep_per_particle: List[float] = []
+        self.p_energy_lst_per_event: List[float] = []
+        self.alpha_lst_per_event: List[float] = []
+        self.beta_lst_per_event: List[float] = []
 
     def parameters(
         self,
@@ -144,9 +142,7 @@ class Simulation:
 
         :return:
         """
-        sorted_list = sorted(
-            self.data_library[column].unique()
-        )  # type: Sequence[float]
+        sorted_list: Sequence[float] = sorted(self.data_library[column].unique())
         index = bisect(sorted_list, value) - 1
         if index < 0:
             index = 0
@@ -157,9 +153,7 @@ class Simulation:
 
         :return:
         """
-        sorted_list = sorted(
-            self.data_library[column].unique()
-        )  # type: Sequence[float]
+        sorted_list: Sequence[float] = sorted(self.data_library[column].unique())
         index = bisect(sorted_list, value)
         if index > len(sorted_list) - 1:
             index = len(sorted_list) - 1
@@ -170,9 +164,7 @@ class Simulation:
 
         :return:
         """
-        sorted_list = sorted(
-            self.data_library[column].unique()
-        )  # type: Sequence[float]
+        sorted_list: Sequence[float] = sorted(self.data_library[column].unique())
         index_smaller = bisect(sorted_list, value) - 1
         index_larger = bisect(sorted_list, value)
 
@@ -198,12 +190,12 @@ class Simulation:
         distance = self.find_larger_neighbor(column="thickness", value=p_track_length)
         energy = self.find_closest_neighbor(column="energy", value=p_energy)
 
-        df_filtered = df[
+        df_filtered: pd.DataFrame = df[
             (df.type == p_type) & (df.energy == energy) & (df.thickness == distance)
-        ]  # type: pd.DataFrame
+        ]
 
-        series = df_filtered["path"]  # type: pd.Series
-        filename = series.values[0]  # type: Path
+        series: pd.Series = df_filtered["path"]
+        filename: Path = series.values[0]
 
         return filename
 
@@ -216,7 +208,10 @@ class Simulation:
         """
         # # step size distribution in um
         self.step_size_dist = load_histogram_data(
-            step_size_file, hist_type="step_size", skip_rows=4, read_rows=10000
+            step_size_file,
+            hist_type="step_size",
+            skip_rows=4,
+            read_rows=10000,
         )
 
         cum_sum = np.cumsum(self.step_size_dist["counts"])
@@ -225,7 +220,10 @@ class Simulation:
 
         # # tertiary electron numbers created by secondary electrons
         self.elec_number_dist = load_histogram_data(
-            step_size_file, hist_type="electron", skip_rows=10008, read_rows=10000
+            step_size_file,
+            hist_type="electron",
+            skip_rows=10008,
+            read_rows=10000,
         )
 
         cum_sum_2 = np.cumsum(self.elec_number_dist["counts"])
@@ -458,12 +456,10 @@ class Simulation:
         if g4data.shape == (
             3,
         ):  # alternative running mode, only all electron number without proton step size data
-            electron_number_vector = [
-                g4data[0].astype(int)
-            ]  # type: Union[List, np.ndarray]
+            electron_number_vector: Union[List, np.ndarray] = [g4data[0].astype(int)]
             secondaries = g4data[1].astype(int)
             tertiaries = g4data[2].astype(int)
-            step_size_vector = [0]  # type: Union[List, np.ndarray]
+            step_size_vector: Union[List, np.ndarray] = [0]
         elif g4data.shape == (0,):
             step_size_vector = []  # um
             electron_number_vector = []

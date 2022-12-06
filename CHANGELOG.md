@@ -2,6 +2,11 @@
 
 ## UNRELEASED
 
+This release brings a number of bugfixes and documentation improvements.
+
+The JSON Schema files for the 'stable' and 'latest' are respectively located in 
+https://esa.gitlab.io/pyxel/pyxel_schema.json and https://esa.gitlab.io/pyxel/pyxel_schema_latest.json.
+
 ### Core 
 
 ### Documentation
@@ -11,6 +16,11 @@
 ### Others
 * Add unit tests to charge deposition in MCT model.
   (See [!553](https://gitlab.com/esa/pyxel/-/merge_requests/553)).
+* Move JSON Schema files to https://esa.gitlab.io/pyxel
+  (See [!555](https://gitlab.com/esa/pyxel/-/merge_requests/555)
+  and [!556](https://gitlab.com/esa/pyxel/-/merge_requests/556)).
+* Remove old Python 2.x type annotations.
+  (See [!557](https://gitlab.com/esa/pyxel/-/merge_requests/557)).
 
 ## 1.5 / 2022-11-21
 

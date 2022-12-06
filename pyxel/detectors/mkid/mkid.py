@@ -35,9 +35,8 @@ class MKID(Detector):
         environment: "Environment",
         characteristics: "MKIDCharacteristics",
     ):
-        self._geometry = geometry  # type: MKIDGeometry
-        self._characteristics = characteristics  # type: MKIDCharacteristics
-        self._phase = None  # type: Optional[Phase]
+        self._geometry: MKIDGeometry = geometry
+        self._characteristics: MKIDCharacteristics = characteristics
 
         super().__init__(environment=environment)
         self.reset()
@@ -175,7 +174,7 @@ class MKID(Detector):
         if "photon" in data:
             detector.photon.array = np.asarray(data["photon"])
 
-        scene = data.get("scene")  # type: Optional[Mapping]
+        scene: Optional[Mapping] = data.get("scene")
         if scene is not None:
             detector.scene = Scene.from_dict(scene)
 
@@ -189,8 +188,8 @@ class MKID(Detector):
             charge_dct = data["charge"]
             detector.charge._array = np.asarray(charge_dct["array"])
 
-            new_frame = charge_dct["frame"]  # type: pd.DataFrame
-            previous_frame = detector.charge._frame  # type: pd.DataFrame
+            new_frame: pd.DataFrame = charge_dct["frame"]
+            previous_frame: pd.DataFrame = detector.charge._frame
             detector.charge._frame = new_frame[previous_frame.columns]
 
         return detector

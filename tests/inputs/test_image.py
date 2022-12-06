@@ -53,7 +53,7 @@ def valid_data2d_http_hostname(
 ) -> str:
     """Create valid 2D files on a temporary folder and HTTP server."""
     # Get current folder
-    current_folder = Path().cwd()  # type: Path
+    current_folder: Path = Path().cwd()
 
     try:
         os.chdir(tmp_path)
@@ -94,7 +94,7 @@ def valid_data2d_http_hostname(
         # Put text data in a fake HTTP server
         for filename in text_filenames:
             with open(filename) as fh:
-                response_data = fh.read()  # type: str
+                response_data: str = fh.read()
                 httpserver.expect_request(f"/{filename}").respond_with_data(
                     response_data, content_type="text/plain"
                 )
@@ -117,16 +117,16 @@ def valid_data2d_http_hostname(
         # Put binary data in a fake HTTP server
         for filename, content_type in binary_filenames:
             with open(filename, "rb") as fh:
-                response_data_bytes = fh.read()  # type: bytes
+                response_data_bytes: bytes = fh.read()
                 httpserver.expect_request(f"/{filename}").respond_with_data(
                     response_data_bytes, content_type=content_type
                 )
 
         # Extract an url (e.g. 'http://localhost:59226/)
-        url = httpserver.url_for("")  # type: str
+        url: str = httpserver.url_for("")
 
         # Extract the hostname (e.g. 'localhost:59226')
-        hostname = re.findall("http://(.*)/", url)[0]  # type: str
+        hostname: str = re.findall("http://(.*)/", url)[0]
 
         yield hostname
 
@@ -135,10 +135,10 @@ def valid_data2d_http_hostname(
 
 
 @pytest.fixture
-def invalid_data2d_hostname(tmp_path: Path, httpserver: HTTPServer) -> str:  # type: ignore
+def invalid_data2d_hostname(tmp_path: Path, httpserver: HTTPServer) -> str:
     """Create invalid 2D files on a temporary folder and HTTP server."""
     # Get current folder
-    current_folder = Path().cwd()  # type: Path
+    current_folder: Path = Path().cwd()
 
     try:
         os.chdir(tmp_path)
@@ -155,16 +155,16 @@ def invalid_data2d_hostname(tmp_path: Path, httpserver: HTTPServer) -> str:  # t
         # Put text data in a fake HTTP server
         for filename in text_filenames:
             with open(filename) as fh:
-                response_data = fh.read()  # type: str
+                response_data: str = fh.read()
                 httpserver.expect_request(f"/{filename}").respond_with_data(
                     response_data, content_type="text/plain"
                 )
 
         # Extract an url (e.g. 'http://localhost:59226/)
-        url = httpserver.url_for("")  # type: str
+        url: str = httpserver.url_for("")
 
         # Extract the hostname (e.g. 'localhost:59226')
-        hostname = re.findall("http://(.*)/", url)[0]  # type: str
+        hostname: str = re.findall("http://(.*)/", url)[0]
 
         yield hostname
 
@@ -173,10 +173,10 @@ def invalid_data2d_hostname(tmp_path: Path, httpserver: HTTPServer) -> str:  # t
 
 
 @pytest.fixture
-def valid_table_http_hostname(tmp_path: Path, httpserver: HTTPServer) -> str:  # type: ignore
+def valid_table_http_hostname(tmp_path: Path, httpserver: HTTPServer) -> str:
     """Create valid tables locally and on a temporary HTTP server."""
     # Get current folder
-    current_folder = Path().cwd()  # type: Path
+    current_folder: Path = Path().cwd()
 
     try:
         os.chdir(tmp_path)
@@ -207,7 +207,7 @@ def valid_table_http_hostname(tmp_path: Path, httpserver: HTTPServer) -> str:  #
         # Put text data in a fake HTTP server
         for filename in text_filenames:
             with open(filename) as fh:
-                response_data = fh.read()  # type: str
+                response_data: str = fh.read()
                 httpserver.expect_request(f"/{filename}").respond_with_data(
                     response_data, content_type="text/plain"
                 )
@@ -220,16 +220,16 @@ def valid_table_http_hostname(tmp_path: Path, httpserver: HTTPServer) -> str:  #
         # Put binary data in a fake HTTP server
         for filename, content_type in binary_filenames:
             with open(filename, "rb") as fh:
-                response_data_bytes = fh.read()  # type: bytes
+                response_data_bytes: bytes = fh.read()
                 httpserver.expect_request(f"/{filename}").respond_with_data(
                     response_data_bytes, content_type=content_type
                 )
 
         # Extract an url (e.g. 'http://localhost:59226/)
-        url = httpserver.url_for("")  # type: str
+        url: str = httpserver.url_for("")
 
         # Extract the hostname (e.g. 'localhost:59226')
-        hostname = re.findall("http://(.*)/", url)[0]  # type: str
+        hostname: str = re.findall("http://(.*)/", url)[0]
 
         yield hostname
 
@@ -238,10 +238,10 @@ def valid_table_http_hostname(tmp_path: Path, httpserver: HTTPServer) -> str:  #
 
 
 @pytest.fixture
-def invalid_table_http_hostname(tmp_path: Path, httpserver: HTTPServer) -> str:  # type: ignore
+def invalid_table_http_hostname(tmp_path: Path, httpserver: HTTPServer) -> str:
     """Create invalid tables on temporary folder and HTTP server."""
     # Get current folder
-    current_folder = Path().cwd()  # type: Path
+    current_folder: Path = Path().cwd()
 
     try:
         os.chdir(tmp_path)
@@ -263,16 +263,16 @@ def invalid_table_http_hostname(tmp_path: Path, httpserver: HTTPServer) -> str: 
         # Put text data in a fake HTTP server
         for filename in text_filenames:
             with open(filename) as fh:
-                response_data = fh.read()  # type: str
+                response_data: str = fh.read()
                 httpserver.expect_request(f"/{filename}").respond_with_data(
                     response_data, content_type="text/plain"
                 )
 
         # Extract an url (e.g. 'http://localhost:59226/)
-        url = httpserver.url_for("")  # type: str
+        url: str = httpserver.url_for("")
 
         # Extract the hostname (e.g. 'localhost:59226')
-        hostname = re.findall("http://(.*)/", url)[0]  # type: str
+        hostname: str = re.findall("http://(.*)/", url)[0]
 
         yield hostname
 
@@ -304,11 +304,11 @@ def test_invalid_filename(
 ):
     """Test invalid filenames."""
     if isinstance(filename, str):
-        new_filename = filename.format(host=invalid_data2d_hostname)  # type: str
+        new_filename: str = filename.format(host=invalid_data2d_hostname)
     else:
         new_filename = filename
 
-    with pytest.raises(exp_error, match=exp_message):  # type: ignore
+    with pytest.raises(exp_error, match=exp_message):
         _ = pyxel.load_image(new_filename)
 
 
@@ -381,7 +381,7 @@ def test_load_image(
             # Load data
             data_2d = pyxel.load_image(filename)
         else:
-            full_url = filename.format(host=valid_data2d_http_hostname)  # type: str
+            full_url: str = filename.format(host=valid_data2d_http_hostname)
 
             # Load data
             data_2d = pyxel.load_image(full_url)
@@ -424,7 +424,7 @@ def test_load_table_invalid_filename(
     if isinstance(filename, str):
         filename = filename.format(host=invalid_table_http_hostname)
 
-    with pytest.raises(exp_error, match=exp_message):  # type: ignore
+    with pytest.raises(exp_error, match=exp_message):
         _ = pyxel.load_table(filename)
 
 
@@ -462,7 +462,7 @@ def test_load_table(with_caching: bool, valid_table_http_hostname: str, filename
             # Load data
             table = pyxel.load_table(filename)
         else:
-            full_url = filename.format(host=valid_table_http_hostname)  # type: str
+            full_url: str = filename.format(host=valid_table_http_hostname)
 
             # Load data
             table = pyxel.load_table(full_url)
@@ -474,7 +474,7 @@ def test_load_table(with_caching: bool, valid_table_http_hostname: str, filename
 @pytest.mark.parametrize("filename", ["dummy.foo"])
 def test_load_table_invalid_format(tmp_path: Path, filename: str):
     # Create an empty file
-    full_filename = tmp_path.joinpath(filename)  # type: Path
+    full_filename: Path = tmp_path.joinpath(filename)
     full_filename.touch()
 
     with pytest.raises(ValueError):

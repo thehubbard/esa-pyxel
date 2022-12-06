@@ -10,7 +10,7 @@
 # flake8: noqa
 from ._version import get_versions
 
-__version__ = get_versions()["version"]  # type: str
+__version__: str = get_versions()["version"]
 del get_versions
 
 from .options import SetOptions as set_options

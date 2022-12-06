@@ -18,13 +18,13 @@ import pandas as pd
 
 from pyxel import __version__
 
-ATTRIBUTES = {
+ATTRIBUTES: Mapping[str, Mapping[str, str]] = {
     "photon": {"name": "Photon", "unit": "photon/s"},
     "charge": {"name": "Charge", "unit": "electron"},
     "pixel": {"name": "Pixel", "unit": "electron"},
     "signal": {"name": "Signal", "unit": "volt"},
     "image": {"name": "Image", "unit": "adu"},
-}  # type: Mapping[str, Mapping[str, str]]
+}
 
 
 def _store(
@@ -53,15 +53,15 @@ def _store(
             if value is None:
                 value = np.nan
 
-            dataset = h5file.create_dataset(
+            dataset: h5.Dataset = h5file.create_dataset(
                 name=new_name, data=value, shape=()
-            )  # type: h5.Dataset
+            )
 
             if attributes is not None and key in attributes:
                 dataset.attrs.update(attributes[key])
 
         elif isinstance(value, pd.DataFrame):
-            new_group = h5file.create_group(name=new_name)  # type: h5.Group
+            new_group: h5.Group = h5file.create_group(name=new_name)
             new_group.attrs["type"] = "DataFrame"
 
             _store(h5file, name=new_name, dct=value.to_dict(orient="series"))
@@ -121,7 +121,7 @@ def _load(
     dict
         Data to read from a HDF5 dataset.
     """
-    dataset = h5file[name]  # type: Union[h5.Dataset, h5.Group]
+    dataset: Union[h5.Dataset, h5.Group] = h5file[name]
 
     if isinstance(dataset, h5.Group):
         dct = {}
@@ -165,13 +165,15 @@ def from_hdf5(filename: Union[str, Path]) -> Iterator[Mapping[str, Any]]:
         if "version" not in dct or "type" not in dct:
             raise ValueError("Missing 'version' and/or 'type' !")
 
-        version = dct["version"]  # type: int
+        version: int = dct["version"]
         if version != 1:
             raise NotImplementedError
 
         # Get properties
         properties = {}
-        for name in ["geometry", "environment", "characteristics"]:  # type: str
+
+        name: str
+        for name in ["geometry", "environment", "characteristics"]:
             properties[name] = _load(h5file, name=f"/{name}")
 
         dct["properties"] = properties

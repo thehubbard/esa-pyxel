@@ -83,54 +83,50 @@ class Calibration:
         self._log = logging.getLogger(__name__)
 
         self.outputs = outputs
-        self.readout = readout if readout else Readout()  # type: Readout
+        self.readout: Readout = readout if readout else Readout()
 
         self._calibration_mode = CalibrationMode(mode)
 
-        self._result_type = ResultType(result_type)  # type: ResultType
+        self._result_type: ResultType = ResultType(result_type)
 
-        self._result_fit_range = (
+        self._result_fit_range: Sequence[int] = (
             result_fit_range if result_fit_range else []
-        )  # type: Sequence[int]
+        )
 
-        self._result_input_arguments = (
+        self._result_input_arguments: Sequence[ParameterValues] = (
             result_input_arguments if result_input_arguments else []
-        )  # type: Sequence[ParameterValues]
+        )
 
-        self._target_data_path = (
+        self._target_data_path: Sequence[Path] = (
             to_path_list(target_data_path) if target_data_path else []
-        )  # type: Sequence[Path]
-        self._target_fit_range = (
+        )
+        self._target_fit_range: Sequence[int] = (
             target_fit_range if target_fit_range else []
-        )  # type: Sequence[int]
+        )
 
-        self._fitness_function = fitness_function  # type: FitnessFunction
-        self._algorithm = algorithm  # type: Algorithm
+        self._fitness_function: FitnessFunction = fitness_function
+        self._algorithm: Algorithm = algorithm
 
-        self._parameters = (
-            parameters if parameters else []
-        )  # type: Sequence[ParameterValues]
+        self._parameters: Sequence[ParameterValues] = parameters if parameters else []
 
         if pygmo_seed is None:
             rng = np.random.default_rng()
-            self._pygmo_seed = rng.integers(100000)  # type: int
+            self._pygmo_seed: int = rng.integers(100000)
         else:
             self._pygmo_seed = pygmo_seed
 
-        self._num_islands = num_islands  # type: int
-        self._num_evolutions = num_evolutions  # type: int
-        self._num_best_decisions = num_best_decisions  # type: Optional[int]
-        self._type_islands = Island(type_islands)  # type: Island
+        self._num_islands: int = num_islands
+        self._num_evolutions: int = num_evolutions
+        self._num_best_decisions: Optional[int] = num_best_decisions
+        self._type_islands: Island = Island(type_islands)
         self._pipeline_seed = pipeline_seed
-        self._topology = (
-            topology
-        )  # type: Literal['unconnected', 'ring', 'fully_connected']
+        self._topology: Literal["unconnected", "ring", "fully_connected"] = topology
 
         if weights and weights_from_file:
             raise ValueError("Cannot define both weights and weights from file.")
 
-        self._weights_from_file = weights_from_file  # type: Optional[Sequence[Path]]
-        self._weights = weights  # type: Optional[Sequence[float]]
+        self._weights_from_file: Optional[Sequence[Path]] = weights_from_file
+        self._weights: Optional[Sequence[float]] = weights
 
     @property
     def calibration_mode(self) -> CalibrationMode:
@@ -406,9 +402,7 @@ class Calibration:
         output: "CalibrationOutputs",
     ) -> Sequence[Delayed]:
         """TBW."""
-        filenames = output.save_processors(
-            processors=df_processors
-        )  # type: Sequence[Delayed]
+        filenames: Sequence[Delayed] = output.save_processors(processors=df_processors)
 
         # TODO: Use output.fitting_plot ?
         # TODO: Use output.fitting_plot_close ?

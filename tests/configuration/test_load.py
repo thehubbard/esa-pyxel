@@ -283,7 +283,7 @@ def test_load_2_times():
     filename = "tests/data/dummy_simple.yaml"
 
     # Get full filename
-    full_filename = Path(filename)  # type: Path
+    full_filename: Path = Path(filename)
     assert full_filename.exists()
 
     # Load the configuration file for the first time

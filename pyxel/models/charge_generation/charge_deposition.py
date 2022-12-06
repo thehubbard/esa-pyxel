@@ -346,7 +346,7 @@ def simulate_charge_deposition(
 
         # the particle is coming from outside the sensor: top or bottom, depending on travel direction (i.e. dz sign)
         if dz >= 0:
-            z = 0.0  # type: float
+            z: float = 0.0
         else:
             z = z_lim
 

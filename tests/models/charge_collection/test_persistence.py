@@ -189,7 +189,7 @@ def test_persistence_with_ccd(
         detector = ccd_5x5
 
         persistence(
-            detector=detector,  # type: ignore
+            detector=detector,
             trap_time_constants=[1.0, 10.0],
             trap_proportions=[0.4, 0.6],
             trap_densities_filename=valid_density_map_path,
