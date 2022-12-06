@@ -64,7 +64,7 @@ pipeline:
       func: pyxel.models.charge_collection.simple_collection
       enabled: true
     - name: fixed_pattern_noise
-      func: pyxel.models.charge_collection.fix_pattern_noise
+      func: pyxel.models.charge_collection.fixed_pattern_noise
       enabled: true
       arguments:
         filename: data/pixel_non_uniformity.npy
