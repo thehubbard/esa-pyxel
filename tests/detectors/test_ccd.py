@@ -328,7 +328,7 @@ def test_to_and_from_dict(klass, obj, exp_dict):
 @pytest.mark.parametrize("klass", [CCD, Detector])
 def test_to_and_from_dict_with_arrays_no_frame(valid_ccd: CCD, klass):
     # Generate random data
-    shape: Tuple[int, int] = valid_ccd.geometry.row, valid_ccd.geometry.col
+    shape = valid_ccd.geometry.row, valid_ccd.geometry.col
     photon_2d: np.ndarray = np.random.random(size=shape)
     pixel_2d: np.ndarray = np.random.random(size=shape)
     signal_2d: np.ndarray = np.random.random(size=shape)
