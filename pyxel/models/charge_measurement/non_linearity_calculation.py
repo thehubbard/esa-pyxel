@@ -37,13 +37,13 @@ def build_in_potential(
 
     Parameters
     ----------
-    temperature: float
+    temperature : float
         Temperature.
-    n_acceptor:
+    n_acceptor
         Acceptor concentration.
-    n_donor:
+    n_donor
         Donor concentration.
-    n_intrinsic: float
+    n_intrinsic : float
         Intrinsic carrier concentration.
 
     Returns
@@ -74,17 +74,17 @@ def w_dep(
 
     Parameters
     ----------
-    v_bias: ndarray
+    v_bias : ndarray
         Bias voltage.
-    epsilon: float
+    epsilon : float
         Dielectric constant of the material.
-    n_acceptor: float
+    n_acceptor : float
         Acceptor concentration.
-    n_donor: float
+    n_donor : float
         Donor concentration.
-    x_cd:
+    x_cd
         Cadmium composition between 0 and 1.
-    temperature: float
+    temperature : float
         Temperature.
     """
 
@@ -122,9 +122,9 @@ def hgcdte_bandgap(x_cd: float, temperature: float) -> float:
 
     Parameters
     ----------
-    x_cd: float
+    x_cd : float
         Cadmium composition between 0 and 1
-    temperature: float
+    temperature : float
         Temperature.
 
     Returns
@@ -150,9 +150,9 @@ def ni_hansen(x_cd: float, temperature: float) -> float:
 
     Parameters
     ----------
-    x_cd: float
+    x_cd : float
         Cadmium composition between 0 and 1
-    temperature: float
+    temperature : float
         Temperature.
 
     Returns
@@ -193,13 +193,13 @@ def capa_pn_junction_cylindrical(
 
     Parameters
     ----------
-    v_bias: ndarray
-    phi_implant: float
-    d_implant: float
-    n_acceptor: float
-    n_donor: float
-    x_cd: float
-    temperature: float
+    v_bias : ndarray
+    phi_implant : float
+    d_implant : float
+    n_acceptor : float
+    n_donor : float
+    x_cd : float
+    temperature : float
 
     Returns
     -------
@@ -315,7 +315,7 @@ def euler(
 
     Parameters
     ----------
-    time_step: float
+    time_step : float
         Time step.
     nb_pts : float
         Number of points.

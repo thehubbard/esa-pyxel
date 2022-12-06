@@ -43,15 +43,15 @@ class Geometry:
 
     Parameters
     ----------
-    row: int
+    row : int
         Number of pixel rows.
-    col: int
+    col : int
         Number of pixel columns.
-    total_thickness: float, optional
+    total_thickness : float, optional
         Thickness of detector. Unit: um
-    pixel_vert_size: float, optional
+    pixel_vert_size : float, optional
         Vertical dimension of pixel. Unit: um
-    pixel_horz_size: float, optional
+    pixel_horz_size : float, optional
         Horizontal dimension of pixel. Unit: um
     """
 

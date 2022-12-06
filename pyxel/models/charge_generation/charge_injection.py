@@ -24,18 +24,19 @@ def compute_charge_blocks(
 
     Parameters
     ----------
-    output_shape: tuple
+    output_shape : tuple
         Output shape of the array.
-    charge_level: int
+    charge_level : int
         Value of charges.
-    block_start: int
+    block_start : int
         Starting row of the injected charge.
-    block_end: int
+    block_end : int
         Ending row for the injected charge.
 
     Returns
     -------
-    charge: ndarray
+    ndarray
+        Charges.
     """
     if block_end is None:
         block_end = output_shape[0]  # number of rows
@@ -57,13 +58,13 @@ def charge_blocks(
 
     Parameters
     ----------
-    detector: Detector
+    detector : Detector
         Pyxel Detector object.
-    charge_level: int
+    charge_level : int
         Value of charges.
-    block_start: int
+    block_start : int
         Starting row of the injected charge.
-    block_end: int
+    block_end : int
         Ending row for the injected charge.
     """
     if not isinstance(detector, CCD):

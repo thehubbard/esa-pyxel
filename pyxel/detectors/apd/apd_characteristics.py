@@ -42,21 +42,21 @@ class APDCharacteristics:
 
     Parameters
     ----------
-    roic_gain:
+    roic_gain
         Gain of the read-out integrated circuit. Unit: V/V
-    quantum_efficiency: float, optional
+    quantum_efficiency : float, optional
         Quantum efficiency.
-    full_well_capacity: float, optional
+    full_well_capacity : float, optional
         Full well capacity. Unit: e-
-    adc_bit_resolution: int, optional
+    adc_bit_resolution : int, optional
         ADC bit resolution.
-    adc_voltage_range: tuple of floats, optional
+    adc_voltage_range : tuple of floats, optional
         ADC voltage range. Unit: V
-    avalanche_gain: float, optional
+    avalanche_gain : float, optional
         APD gain. Unit: electron/electron
-    pixel_reset_voltage: float
+    pixel_reset_voltage : float
         DC voltage going into the detector, not the voltage of a reset pixel. Unit: V
-    common_voltage: float
+    common_voltage : float
         Common voltage. Unit: V
     """
 

@@ -55,29 +55,29 @@ def cosmix(
 
     Parameters
     ----------
-    detector: Detector
+    detector : Detector
         Pyxel Detector object.
-    simulation_mode: literal
+    simulation_mode : literal
         Simulation mode: ``cosmic_rays``, ``radioactive_decay``.
-    running_mode: literal
+    running_mode : literal
         Mode: ``stopping``, ``stepsize``, ``geant4``, ``plotting``.
-    particle_type:
+    particle_type
         Type of particle: ``proton``, ``alpha``, ``ion``.
-    initial_energy: int or float or literal
+    initial_energy : int or float or literal
         Kinetic energy of particle, set `random` for random.
-    particles_per_second: float
+    particles_per_second : float
         Number of particles per second.
-    incident_angles: tuple of str
+    incident_angles : tuple of str
         Incident angles: ``(α, β)``.
-    starting_position: tuple of str
+    starting_position : tuple of str
         Starting position: ``(x, y, z)``.
-    spectrum_file: str
+    spectrum_file : str
         Path to input spectrum
-    seed: int, optional
+    seed : int, optional
         Random seed.
-    ionization_energy: float
+    ionization_energy : float
         Mean ionization energy of the semiconductor lattice.
-    progressbar: bool
+    progressbar : bool
         Progressbar.
     """
     if simulation_mode is None:
@@ -196,10 +196,6 @@ class Cosmix:
         self,
         sim_mode: Literal["cosmic_ray", "cosmics", "radioactive_decay", "snowflakes"],
     ) -> None:
-        """TBW.
-
-        :param sim_mode:
-        """
         self.simulation_mode = sim_mode
 
     # TODO: Is it still used ?
@@ -209,44 +205,24 @@ class Cosmix:
             "proton", "ion", "alpha", "beta", "electron", "gamma", "x-ray"
         ],
     ) -> None:
-        """TBW.
-
-        :param particle_type:
-        """
         self.part_type = particle_type
 
     # TODO: Is it still used ?
     def set_initial_energy(self, energy: Union[int, float, Literal["random"]]) -> None:
-        """TBW.
-
-        :param energy:
-        """
         self.init_energy = energy
 
     # TODO: Is it still used ?
     def set_particle_number(self, number: int) -> None:
-        """TBW.
-
-        :param number:
-        """
         self.particle_number = number
 
     # TODO: Is it still used ?
     def set_incident_angles(self, angles: Tuple[str, str]) -> None:
-        """TBW.
-
-        :param angles:
-        """
         alpha, beta = angles
         self.angle_alpha = alpha
         self.angle_beta = beta
 
     # TODO: Is it still used ?
     def set_starting_position(self, start_position: Tuple[str, str, str]) -> None:
-        """TBW.
-
-        :param start_position:
-        """
         position_vertical, position_horizontal, position_z = start_position
         self.position_ver = position_vertical
         self.position_hor = position_horizontal
@@ -255,7 +231,10 @@ class Cosmix:
     def set_particle_spectrum(self, file_name: Path) -> None:
         """Set up the particle specs according to a spectrum.
 
-        :param string file_name: path of the file containing the spectrum
+        Parameters
+        ----------
+        file_name : Path
+            Path of the file containing the spectrum.
         """
         spectrum = read_data(file_name)  # nuc/m2*s*sr*MeV
         geo = self.sim_obj.detector.geometry
@@ -275,24 +254,17 @@ class Cosmix:
         self.sim_obj.spectrum_cdf = np.stack((lin_energy_range, cum_sum), axis=1)
 
     def set_stopping_power(self, stopping_file: Path) -> None:
-        """TBW.
-
-        :param stopping_file:
-        """
         self.sim_obj.energy_loss_data = "stopping"
         self.sim_obj.stopping_power = read_data(stopping_file)
 
     def set_stepsize(self) -> None:
-        """TBW."""
         self.sim_obj.energy_loss_data = "stepsize"
         self.create_data_library()
 
     def set_geant4(self) -> None:
-        """TBW."""
         self.sim_obj.energy_loss_data = "geant4"
 
     def create_data_library(self) -> None:
-        """TBW."""
         self.sim_obj.data_library = pd.DataFrame(
             columns=["type", "energy", "thickness", "path"]
         )
@@ -332,7 +304,6 @@ class Cosmix:
                     i += 1
 
     def run(self) -> None:
-        """TBW."""
         # print("CosmiX - simulation processing...\n")
 
         self.sim_obj.parameters(
@@ -437,7 +408,6 @@ class Cosmix:
         )
 
     def run_mod(self) -> None:
-        """TBW."""
         # TODO: Use `logging`
         print("CosmiX - adding previous cosmic ray signals to image ...\n")
 

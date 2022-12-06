@@ -23,16 +23,16 @@ def apply_simple_adc(
 
     Parameters
     ----------
-    signal: np.ndarray
+    signal : np.ndarray
         Input signal.
-    bit_resolution: int
+    bit_resolution : int
         ADC bit resolution.
-    voltage_range: tuple of floats
+    voltage_range : tuple of floats
         ADC voltage range.
 
     Returns
     -------
-    output: ndarray
+    ndarray
     """
     bins = np.linspace(
         start=voltage_range[0], stop=voltage_range[1], num=2**bit_resolution - 1
@@ -49,7 +49,7 @@ def simple_adc(
 
     Parameters
     ----------
-    detector: Detector
+    detector : Detector
         Pyxel Detector object.
     data_type : str
         The desired data-type for the Image array. The data-type must be an unsigned integer.

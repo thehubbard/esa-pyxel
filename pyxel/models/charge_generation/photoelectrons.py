@@ -24,10 +24,10 @@ def apply_qe(
 
     Parameters
     ----------
-    array: np.ndarray
-    qe: ndarray or float
+    array : np.ndarray
+    qe : ndarray or float
         Quantum efficiency.
-    binomial_sampling: bool
+    binomial_sampling : bool
         Binomial sampling. Default is True.
 
     Returns
@@ -53,9 +53,10 @@ def simple_conversion(
     ----------
     detector : Detector
         Pyxel Detector object.
-    quantum_efficiency: float, optional
+    quantum_efficiency : float, optional
         Quantum efficiency.
-    binomial_sampling: bool
+    seed : int, optional
+    binomial_sampling : bool
         Binomial sampling. Default is True.
     """
     if quantum_efficiency is None:
@@ -93,12 +94,13 @@ def conversion_with_qe_map(
         Pyxel Detector object.
     filename : str or Path
         File path.
-    position: tuple
+    position : tuple
         Indices of starting row and column, used when fitting :term:`QE` map to detector.
-    align: Literal
+    align : Literal
         Keyword to align the :term:`QE` map to detector. Can be any from:
         ("center", "top_left", "top_right", "bottom_left", "bottom_right")
-    binomial_sampling: bool
+    seed : int, optional
+    binomial_sampling : bool
         Binomial sampling. Default is True.
     """
     geo = detector.geometry

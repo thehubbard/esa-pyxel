@@ -21,6 +21,9 @@ https://esa.gitlab.io/pyxel/pyxel_schema.json and https://esa.gitlab.io/pyxel/py
   and [!556](https://gitlab.com/esa/pyxel/-/merge_requests/556)).
 * Remove old Python 2.x type annotations.
   (See [!557](https://gitlab.com/esa/pyxel/-/merge_requests/557)).
+* Fix issue when generating the JSON Schema file.
+  (See [!558](https://gitlab.com/esa/pyxel/-/merge_requests/558)).
+
 
 ## 1.5 / 2022-11-21
 

@@ -233,8 +233,8 @@ def arctic_remove(
     detector : CCD
         Pyxel :term:`CCD` Detector object.
     well_fill_power : float
-    instant_traps : sequence of mapping
-        A sequence of all trap species for parallel clocking.
+    trap_densities
+    trap_release_timescales
     num_iterations : int
         Number of iterations for the forward modelling.
         More iterations provide higher accuracy at the cost of longer runtime.

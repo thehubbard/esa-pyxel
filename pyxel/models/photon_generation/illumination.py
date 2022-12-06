@@ -188,11 +188,11 @@ def illumination(
 
     Parameters
     ----------
-    detector: Detector
+    detector : Detector
         Pyxel Detector object.
-    level: float
+    level : float
         Flux of photon per pixel.
-    option: str
+    option : str
         A string indicating the type of illumination:
         - ``uniform``
         Uniformly fill the entire array with photon. (Default)
@@ -200,13 +200,13 @@ def illumination(
         Mask with elliptic object.
         - ``rectangular``
         Mask with rectangular object.
-    object_size: list or tuple, optional
+    object_size : list or tuple, optional
         List or tuple of length 2, integers defining the diameters of the elliptic or rectangular object
         in vertical and horizontal directions.
-    object_center: list or tuple, optional
+    object_center : list or tuple, optional
         List or tuple of length 2, two integers (row and column number),
         defining the coordinates of the center of the elliptic or rectangular object.
-    time_scale: float
+    time_scale : float
         Time scale of the photon flux, default is 1 second. 0.001 would be ms.
     """
     shape = (detector.geometry.row, detector.geometry.col)

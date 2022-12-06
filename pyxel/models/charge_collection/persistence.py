@@ -98,13 +98,13 @@ def simple_persistence(
 
     Parameters
     ----------
-    detector: CMOS
+    detector : CMOS
         Pyxel CMOS object.
-    trap_time_constants: sequence of floats
+    trap_time_constants : sequence of floats
         List of trap time constants.
-    trap_densities: sequence of floats
+    trap_densities : sequence of floats
         List of trap densities.
-    trap_capacities: sequence of floats, optional
+    trap_capacities : sequence of floats, optional
         List of trap capacities.
     """
 
@@ -168,12 +168,12 @@ def compute_simple_persistence(
 
     Parameters
     ----------
-    pixel_array: ndarray
-    all_trapped_charge: ndarray
-    trap_densities: ndarray
-    trap_time_constants: ndarray
-    trap_capacities: ndarray, optional
-    delta_t: float
+    pixel_array : ndarray
+    all_trapped_charge : ndarray
+    trap_densities : ndarray
+    trap_time_constants : ndarray
+    trap_capacities : ndarray, optional
+    delta_t : float
 
     Returns
     -------
@@ -245,24 +245,24 @@ def persistence(
 
     Parameters
     ----------
-    detector: CMOS
+    detector : CMOS
         Pyxel CMOS object.
-    trap_time_constants: sequence of floats
+    trap_time_constants : sequence of floats
         A list of trap time constants.
-    trap_proportions: sequence of floats
+    trap_proportions : sequence of floats
         A list of trap proportions.
-    trap_densities_filename: path or str
+    trap_densities_filename : path or str
         Path to densities file.
-    trap_capacities_filename: path or str
+    trap_capacities_filename : path or str
         Path to capacities file.
-    trap_densities_position: tuple of int
+    trap_densities_position : tuple of int
         Indices of starting row and column, used when fitting densities to detector.
-    trap_densities_align: literal
+    trap_densities_align : literal
         Keyword to align the densities to detector. Can be any from:
         ("center", "top_left", "top_right", "bottom_left", "bottom_right")
-    trap_capacities_position: tuple of int
+    trap_capacities_position : tuple of int
         Indices of starting row and column, used when fitting capacities to detector.
-    trap_capacities_align: literal
+    trap_capacities_align : literal
         Keyword to align the capacities to detector. Can be any from:
         ("center", "top_left", "top_right", "bottom_left", "bottom_right")
     """
@@ -357,13 +357,13 @@ def compute_persistence(
 
     Parameters
     ----------
-    pixel_array: ndarray
-    all_trapped_charge: ndarray
-    trap_proportions: ndarray
-    trap_time_constants: ndarray
-    trap_densities_2d: ndarray
-    delta_t: float
-    trap_capacities_2d: ndarray, optional
+    pixel_array : ndarray
+    all_trapped_charge : ndarray
+    trap_proportions : ndarray
+    trap_time_constants : ndarray
+    trap_densities_2d : ndarray
+    delta_t : float
+    trap_capacities_2d : ndarray, optional
 
     Returns
     -------
@@ -432,15 +432,15 @@ def clip_trapped_charge(
 
     Parameters
     ----------
-    trapped_charge: ndarray
-    pixel: ndarray
-    available_traps: ndarray
-    pixel_diff: ndarray
-    trap_capacities: ndarray, optional
+    trapped_charge : ndarray
+    pixel : ndarray
+    available_traps : ndarray
+    pixel_diff : ndarray
+    trap_capacities : ndarray, optional
 
     Returns
     -------
-    output: tuple of ndarray
+    tuple of ndarray
     """
 
     n, m = trapped_charge.shape
@@ -470,13 +470,13 @@ def clip_diff(
 
     Parameters
     ----------
-    diff: ndarray
-    trapped_charge: ndarray
-    empty_traps: ndarray
+    diff : ndarray
+    trapped_charge : ndarray
+    empty_traps : ndarray
 
     Returns
     -------
-    output: ndarray
+    ndarray
     """
     n, m = diff.shape
     output = diff.copy()

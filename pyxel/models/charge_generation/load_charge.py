@@ -34,12 +34,12 @@ def load_charge(
         Pyxel Detector object.
     filename : str or Path
         File path.
-    position: tuple
+    position : tuple
         Indices of starting row and column, used when fitting charge to detector.
-    align: Literal
+    align : Literal
         Keyword to align the charge to detector. Can be any from:
         ("center", "top_left", "top_right", "bottom_left", "bottom_right")
-    time_scale: float
+    time_scale : float
         Time scale of the input charge, default is 1 second. 0.001 would be ms.
     """
     geo: Geometry = detector.geometry

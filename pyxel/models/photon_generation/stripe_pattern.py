@@ -22,16 +22,16 @@ def square_signal(n: int, lw: int, start_with: int = 0) -> List[int]:
 
     Parameters
     ----------
-    n: int
+    n : int
         Length of the signal.
-    lw:
+    lw
         Width of a pulse.
     start_with
         1 to start with high level or 0 for 0.
 
     Returns
     -------
-    out: list
+    list
         Output list.
     """
     if lw > n // 2:
@@ -55,20 +55,20 @@ def compute_pattern(
 
     Parameters
     ----------
-    detector_shape: tuple
+    detector_shape : tuple
         Detector shape.
-    period: int
+    period : int
         Period of the periodic pattern in pixels.
-    level: float
+    level : float
         Amplitude of the periodic pattern.
-    angle: int
+    angle : int
         Angle of the pattern in degrees.
-    start_with: int
+    start_with : int
         1 to start with high level or 0 for 0.
 
     Returns
     -------
-    out: ndarray
+    ndarray
         Output stripe pattern.
     """
 
@@ -118,17 +118,17 @@ def stripe_pattern(
 
     Parameters
     ----------
-    detector: Detector
+    detector : Detector
         Detector object.
-    period: int
+    period : int
         Period of the periodic pattern in pixels.
-    level: float
+    level : float
         Amplitude of the periodic pattern.
-    angle: int
+    angle : int
         Angle of the pattern in degrees.
-    startwith: int
+    startwith : int
         1 to start with high level or 0 for 0.
-    time_scale: float
+    time_scale : float
         Time scale of the photon flux, default is 1 second. 0.001 would be ms.
     """
 

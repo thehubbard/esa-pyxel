@@ -25,16 +25,16 @@ def apply_psf(
 
     Parameters
     ----------
-    array: ndarray
+    array : ndarray
         Input array.
-    psf: ndarray
+    psf : ndarray
         Convolution kernel.
-    normalize_kernel: bool
+    normalize_kernel : bool
         Normalize kernel.
 
     Returns
     -------
-    array_2d: ndarray
+    ndarray
     """
 
     mean = np.mean(array)
@@ -57,11 +57,11 @@ def load_psf(
 
     Parameters
     ----------
-    detector: Detector
+    detector : Detector
         Pyxel Detector object.
-    filename: Path or str
+    filename : Path or str
         Input filename of the point spread function.
-    normalize_kernel: bool
+    normalize_kernel : bool
         Normalize kernel.
     """
     psf = load_image(filename)

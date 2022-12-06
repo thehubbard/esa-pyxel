@@ -20,9 +20,9 @@ def compute_dc_offset(offset: float, shape: Tuple[int, int]) -> np.ndarray:
 
     Parameters
     ----------
-    offset: float
+    offset : float
         DC voltage offset. Unit: V
-    shape: tuple
+    shape : tuple
         Shape of the output array.
 
     Returns
@@ -37,9 +37,9 @@ def dc_offset(detector: Detector, offset: float) -> None:
 
     Parameters
     ----------
-    detector: Detector
+    detector : Detector
         Pyxel Detector object.
-    offset: float
+    offset : float
         DC offset voltage. Unit: V
     """
 
@@ -63,13 +63,13 @@ def compute_output_pixel_reset_voltage_apd(
 
     Parameters
     ----------
-    roic_drop: float
+    roic_drop : float
         Readout circuit drop voltage. Unit: V
-    roic_gain: float
+    roic_gain : float
         Readout circuit gain.
-    pixel_reset_voltage:
+    pixel_reset_voltage
         Pixel reset voltage. Unit: V
-    shape: tuple
+    shape : tuple
         Shape of output array.
 
     Returns
@@ -89,9 +89,9 @@ def output_pixel_reset_voltage_apd(detector: APD, roic_drop: float) -> None:
 
     Parameters
     ----------
-    detector: APD
+    detector : APD
         Pyxel APD object.
-    roic_drop: float
+    roic_drop : float
         Readout circuit drop voltage. Unit: V
     """
     if not isinstance(detector, APD):

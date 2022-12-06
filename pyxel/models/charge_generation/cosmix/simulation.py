@@ -113,20 +113,6 @@ class Simulation:
         beta: str,
         ionization_energy: float = 3.6,
     ) -> None:
-        """TBW.
-
-        Parameters
-        ----------
-        sim_mode
-        part_type
-        init_energy
-        pos_ver
-        pos_hor
-        pos_z
-        alpha
-        beta
-        ionization_energy
-        """
         self.simulation_mode = sim_mode
         self.particle_type = part_type
         self.initial_energy = init_energy
@@ -138,10 +124,6 @@ class Simulation:
         self.ionization_energy = ionization_energy
 
     def find_smaller_neighbor(self, column: str, value: float) -> float:
-        """TBW.
-
-        :return:
-        """
         sorted_list: Sequence[float] = sorted(self.data_library[column].unique())
         index = bisect(sorted_list, value) - 1
         if index < 0:
@@ -149,10 +131,6 @@ class Simulation:
         return sorted_list[index]
 
     def find_larger_neighbor(self, column: str, value: float) -> float:
-        """TBW.
-
-        :return:
-        """
         sorted_list: Sequence[float] = sorted(self.data_library[column].unique())
         index = bisect(sorted_list, value)
         if index > len(sorted_list) - 1:
@@ -160,10 +138,6 @@ class Simulation:
         return sorted_list[index]
 
     def find_closest_neighbor(self, column: str, value: float) -> float:
-        """TBW.
-
-        :return:
-        """
         sorted_list: Sequence[float] = sorted(self.data_library[column].unique())
         index_smaller = bisect(sorted_list, value) - 1
         index_larger = bisect(sorted_list, value)
@@ -178,13 +152,6 @@ class Simulation:
     def select_stepsize_data(
         self, p_type: str, p_energy: float, p_track_length: float
     ) -> Path:
-        """TBW.
-
-        :param p_type: str
-        :param p_energy: float (MeV)
-        :param p_track_length: float (um)
-        :return:
-        """
         df = self.data_library
 
         distance = self.find_larger_neighbor(column="thickness", value=p_track_length)
@@ -240,10 +207,7 @@ class Simulation:
         # self.kin_energy_cdf = np.stack((self.kin_energy_dist['energy'], cum_sum), axis=1)
 
     def event_generation(self) -> bool:
-        """Generate an event.
-
-        :return:
-        """
+        """Generate an event."""
         track_left = False
         electron_number_per_event = 0
         secondary_per_event = 0
@@ -368,10 +332,7 @@ class Simulation:
         return False
 
     def event_generation_geant4(self) -> bool:
-        """Generate an event running a geant4 app directly.
-
-        :return:
-        """
+        """Generate an event running a geant4 app directly."""
         # error = None
         electron_number_per_event = 0
         secondary_per_event = 0

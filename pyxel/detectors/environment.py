@@ -17,7 +17,7 @@ class Environment:
 
     Parameters
     ----------
-    temperature: float, optional
+    temperature : float, optional
         Temperature of the detector. Unit: K
     """
 

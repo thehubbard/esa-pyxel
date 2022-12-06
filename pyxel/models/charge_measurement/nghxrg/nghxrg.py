@@ -217,26 +217,26 @@ def nghxrg(
 
     Parameters
     ----------
-    detector: Detector
-    noise: list
-    window_position: Sequence, optional
+    detector : Detector
+    noise : list
+    window_position : Sequence, optional
         [x0 (columns), y0 (rows)].
-    window_size: Sequence, optional
+    window_size : Sequence, optional
         [x (columns), y (rows)].
-    seed: int, optional
-    n_output: int
+    seed : int, optional
+    n_output : int
         Number of detector outputs.
-    n_row_overhead: int
+    n_row_overhead : int
         New row overhead in pixel.
         This allows for a short wait at the end of a row before starting the next row.
-    n_frame_overhead: int
+    n_frame_overhead : int
         New frame overhead in rows.
         This allows for a short wait at the end of a frame before starting the next frame.
-    reverse_scan_direction: bool
+    reverse_scan_direction : bool
         Set this True to reverse the fast scanner readout directions.
         This capability was added to support Teledyne’s programmable fast scan readout directions.
         The default setting (False) corresponds to what HxRG detectors default to upon power up.
-    reference_pixel_border_width: int
+    reference_pixel_border_width : int
         Width of reference pixel border around image area.
     """
     if n_output not in range(33):

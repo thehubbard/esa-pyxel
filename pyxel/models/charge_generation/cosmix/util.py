@@ -17,10 +17,6 @@ from scipy import interpolate
 
 
 def sampling_distribution(distribution: np.ndarray) -> float:
-    """TBW.
-
-    :param distribution:
-    """
     u: float = np.random.random()
     # random_value_from_dist = distribution[bisect.bisect(distribution[:, 1], u) - 1, 0]
     random_value_from_dist = get_xvalue_with_interpolation(
@@ -31,11 +27,6 @@ def sampling_distribution(distribution: np.ndarray) -> float:
 
 
 def get_xvalue_with_interpolation(function_array: np.ndarray, y_value: float) -> float:
-    """TBW.
-
-    :param function_array:
-    :param y_value:
-    """
     if y_value <= function_array[0, 1]:
         intpol_x_value: float = function_array[0, 0]
     elif y_value >= function_array[-1, 1]:
@@ -61,11 +52,6 @@ def get_xvalue_with_interpolation(function_array: np.ndarray, y_value: float) ->
 
 
 def get_yvalue_with_interpolation(function_array, x_value):
-    """TBW.
-
-    :param function_array:
-    :param x_value:
-    """
     x_index_bot = bisect.bisect(function_array[:, 0], x_value) - 1
     x_index_top = x_index_bot + 1
     x_value_bot = function_array[x_index_bot, 0]
@@ -86,13 +72,6 @@ def load_histogram_data(
     skip_rows: Optional[int] = None,
     read_rows: Optional[int] = None,
 ) -> pd.DataFrame:
-    """TBW.
-
-    :param file_name:
-    :param hist_type:
-    :param skip_rows:
-    :param read_rows:
-    """
     # TODO store count in pandas dataframe as int !!!
 
     step_size_data = pd.read_csv(
@@ -121,11 +100,6 @@ def load_histogram_data(
 
 
 def read_data(file_name: Path) -> np.ndarray:
-    """TBW.
-
-    :param file_name:
-    :return:
-    """
     full_path = file_name.resolve()
     if not full_path.exists():
         raise FileNotFoundError(f"Cannot find file '{full_path}' !")
@@ -135,11 +109,6 @@ def read_data(file_name: Path) -> np.ndarray:
 
 
 def interpolate_data(data: np.ndarray) -> Callable[[np.ndarray], np.ndarray]:
-    """TBW.
-
-    :param data:
-    :return:
-    """
     data_function: Callable[[np.ndarray], np.ndarray] = interpolate.interp1d(
         data[:, 0], data[:, 1], kind="linear"
     )

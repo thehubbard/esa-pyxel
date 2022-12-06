@@ -19,12 +19,12 @@ def apply_simple_full_well_capacity(array: np.ndarray, fwc: int) -> np.ndarray:
 
     Parameters
     ----------
-    array: ndarray
-    fwc: int
+    array : ndarray
+    fwc:  int
 
     Returns
     -------
-    output: ndarray
+    ndarray
     """
     array[array > fwc] = fwc
     return array
@@ -37,8 +37,8 @@ def simple_full_well(detector: Detector, fwc: Optional[int] = None) -> None:
 
     Parameters
     ----------
-    detector: Detector
-    fwc: int
+    detector : Detector
+    fwc : int
     """
     if fwc is None:
         fwc_input = detector.characteristics.full_well_capacity

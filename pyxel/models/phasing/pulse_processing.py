@@ -22,10 +22,10 @@ def convert_to_phase(
 
     Parameters
     ----------
-    array: ndarray
-    wavelength: float
-    responsivity: float
-    scaling_factor: float
+    array : ndarray
+    wavelength : float
+    responsivity : float
+    scaling_factor : float
 
     Returns
     -------
@@ -52,13 +52,13 @@ def pulse_processing(
 
     Parameters
     ----------
-    detector: MKID
+    detector : MKID
         Pyxel :term:`MKID` detector object.
-    wavelength: float
+    wavelength : float
         Wavelength.
-    responsivity: float
+    responsivity : float
         Responsivity of the pixel.
-    scaling_factor: float
+    scaling_factor : float
         Scaling factor taking into account the missing pieces of superconducting physics,
         as well as the resonator quality factor, the bias power,
         the quasi-particle losses, etc.
