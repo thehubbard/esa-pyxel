@@ -384,6 +384,34 @@ class Detector:
             self, attributes, print_result=print_result, human_readable=human_readable
         )
 
+    @classmethod
+    def load(cls, filename: Union[str, Path]) -> "Detector":
+        """Load a detector object from a filename."""
+        full_filename = Path(filename).resolve()
+        if not full_filename.exists():
+            raise FileNotFoundError(f"Filename '{filename}' does not exist !")
+
+        extension: str = full_filename.suffix
+
+        if extension in (".h5", ".hdf5"):
+            return cls.from_hdf5(filename)
+        elif extension in (".asdf",):
+            return cls.from_asdf(filename)
+        else:
+            raise ValueError(f"Unknown extension {extension!r}.")
+
+    def save(self, filename: Union[str, Path]) -> None:
+        """Save a detector object into a filename."""
+        full_filename = Path(filename).resolve()
+        extension: str = full_filename.suffix
+
+        if extension in (".h5", ".hdf5"):
+            return self.to_hdf5(filename)
+        elif extension in (".asdf",):
+            return self.to_asdf(filename)
+        else:
+            raise ValueError(f"Unknown extension {extension!r}.")
+
     # TODO: Move this to another place. See #241
     def to_hdf5(self, filename: Union[str, Path]) -> None:
         """Write the detector content to a :term:`HDF5` file.

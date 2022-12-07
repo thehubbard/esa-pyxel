@@ -185,8 +185,36 @@ def test_to_from_asdf(detector: Union[CCD, CMOS, MKID, APD], tmp_path: Path):
     # Save to 'asdf'
     detector.to_asdf(filename)
 
-    # Load from 'asdf
+    # Load from 'asdf'
     new_detector = Detector.from_asdf(filename)
+
+    # Comparisons
+    assert new_detector.geometry == detector.geometry
+    assert new_detector.environment == detector.environment
+    assert new_detector.characteristics == detector.characteristics
+
+    assert new_detector == detector
+
+
+@pytest.mark.parametrize(
+    "filename",
+    [
+        "detector.h5",
+        "detector.asdf",
+        Path("detector.hdf5"),
+    ],
+)
+def test_to_from_filename(
+    detector: Union[CCD, CMOS, MKID, APD], tmp_path: Path, filename: str
+):
+    """Test methods `Detector.load` and `Detector.save`."""
+    full_filename: Path = tmp_path / filename
+
+    # Save
+    detector.save(full_filename)
+
+    # Load
+    new_detector = Detector.load(full_filename)
 
     # Comparisons
     assert new_detector.geometry == detector.geometry
