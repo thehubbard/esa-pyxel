@@ -6,3 +6,4 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """TBW."""
+from ..util import load_detector, save_detector

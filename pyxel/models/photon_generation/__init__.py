@@ -12,3 +12,4 @@ from .illumination import illumination
 from .load_image import load_image
 from .shot_noise import shot_noise
 from .stripe_pattern import stripe_pattern
+from ..util import load_detector, save_detector
