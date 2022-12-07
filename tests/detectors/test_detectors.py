@@ -200,6 +200,7 @@ def test_to_from_asdf(detector: Union[CCD, CMOS, MKID, APD], tmp_path: Path):
     "filename",
     [
         "detector.h5",
+        "detector.hdf",
         "detector.asdf",
         Path("detector.hdf5"),
     ],

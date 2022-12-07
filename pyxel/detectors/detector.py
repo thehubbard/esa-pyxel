@@ -393,7 +393,7 @@ class Detector:
 
         extension: str = full_filename.suffix
 
-        if extension in (".h5", ".hdf5"):
+        if extension in (".h5", ".hdf5", ".hdf"):
             return cls.from_hdf5(filename)
         elif extension in (".asdf",):
             return cls.from_asdf(filename)
@@ -405,7 +405,7 @@ class Detector:
         full_filename = Path(filename).resolve()
         extension: str = full_filename.suffix
 
-        if extension in (".h5", ".hdf5"):
+        if extension in (".h5", ".hdf5", ".hdf"):
             return self.to_hdf5(filename)
         elif extension in (".asdf",):
             return self.to_asdf(filename)
