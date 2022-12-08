@@ -222,7 +222,7 @@ def dark_current(
         Dark current figure of merit. Unit: nA/cm^2
     spatial_noise_factor : float
         Dark current fixed pattern noise factor.
-    band_gap: float, optional
+    band_gap : float, optional
         Semiconductor band_gap. If none, the one for silicon is used. Unit: eV
     band_gap_room_temperature : float, optional
         Semiconductor band gap at 300K. If none, the one for silicon is used. Unit: eV
