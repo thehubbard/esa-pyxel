@@ -20,7 +20,7 @@ def ccd_5x5() -> CCD:
             pixel_horz_size=10.0,
         ),
         environment=Environment(),
-        characteristics=CCDCharacteristics(),
+        characteristics=CCDCharacteristics(quantum_efficiency=0.9),
     )
     return detector
 
@@ -49,8 +49,10 @@ def valid_noise_path(
     return final_path
 
 
-def test_fixed_pattern_noise_valid(ccd_5x5: CCD, valid_noise_path: Union[str, Path]):
-    """Test function fixed_pattern_noise with valid inputs."""
+def test_fixed_pattern_noise_valid_path(
+    ccd_5x5: CCD, valid_noise_path: Union[str, Path]
+):
+    """Test function fixed_pattern_noise with valid path inputs."""
 
     detector = ccd_5x5
 
@@ -61,3 +63,9 @@ def test_fixed_pattern_noise_valid(ccd_5x5: CCD, valid_noise_path: Union[str, Pa
     fixed_pattern_noise(detector=detector, filename=valid_noise_path)
 
     np.testing.assert_array_almost_equal(detector.pixel.array, target)
+
+
+def test_fixed_pattern_noise_valid(ccd_5x5: CCD):
+    """Test function fixed_pattern_noise with valid fpn inputs."""
+    detector = ccd_5x5
+    fixed_pattern_noise(detector=detector, fixed_pattern_noise_factor=0.01)
