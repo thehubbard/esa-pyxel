@@ -104,7 +104,7 @@ coverage:
 # Scan sourcecode for licenses, copyrights & dependencies
 # experimental, latest version
 licenses-latest:
-  image: python:3.9
+  image: python:3.9.15
   stage: build
   needs: []
   script:
