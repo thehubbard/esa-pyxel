@@ -7,6 +7,56 @@ Optical models
 .. currentmodule:: pyxel.models.optics
 .. automodule:: pyxel.models.optics
 
+
+.. _optical_create_store_detector:
+
+Create and Store a detector
+===========================
+
+The models :ref:`optical_save_detector` and :ref:`optical_load_detector`
+can be used respectively to create and to store a :py:class:`~pyxel.detectors.Detector` to/from a file.
+
+These models can be used when you want to store or to inject a :py:class:`~pyxel.detectors.Detector`
+into the current :ref:`pipeline`.
+
+.. _optical_save_detector:
+
+Save detector
+-------------
+
+This model saves the current :py:class:`~pyxel.detectors.Detector` into a file.
+Accepted file formats are ``.h5``, ``.hdf5``, ``.hdf`` and ``.asdf``.
+
+.. code-block:: yaml
+
+    - name: save_detector
+      func: pyxel.models.optical.save_detector
+      enabled: true
+      arguments:
+        filename: my_detector.h5
+
+.. autofunction:: save_detector
+
+
+.. _optical_load_detector:
+
+Load detector
+-------------
+
+This model loads a :py:class:`~pyxel.detectors.Detector` from a file and injects it in the current pipeline.
+Accepted file formats are ``.h5``, ``.hdf5``, ``.hdf`` and ``.asdf``.
+
+.. code-block:: yaml
+
+    - name: load_detector
+      func: pyxel.models.optical.load_detector
+      enabled: true
+      arguments:
+        filename: my_detector.h5
+
+.. autofunction:: load_detector
+
+
 .. _Physical Optics Propagation in PYthon (POPPY):
 
 Physical Optics Propagation in PYthon (POPPY)

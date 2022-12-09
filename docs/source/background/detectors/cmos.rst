@@ -10,14 +10,17 @@ Available models
 ================
 
 * Photon generation
+    * :ref:`photon_generation_create_store_detector`
     * :ref:`Load image`
     * :ref:`Simple illumination`
     * :ref:`Stripe pattern`
     * :ref:`Shot noise`
 * Optics
+    * :ref:`optical_create_store_detector`
     * :ref:`Physical Optics Propagation in PYthon (POPPY)`
     * :ref:`Load PSF`
 * Charge generation
+    * :ref:`charge_generation_create_store_detector`
     * :ref:`Simple photoconversion`
     * :ref:`Conversion with custom QE map`
     * :ref:`Load charge`
@@ -26,6 +29,7 @@ Available models
     * :ref:`Dark current`
     * :ref:`Simple dark current`
 * Charge collection
+    * :ref:`charge_collection_create_store_detector`
     * :ref:`Simple collection`
     * :ref:`Simple full well`
     * :ref:`Fixed pattern noise`
@@ -33,6 +37,7 @@ Available models
     * :ref:`Simple persistence`
     * :ref:`Persistence`
 * Charge measurement:
+    * :ref:`charge_measurement_create_store_detector`
     * :ref:`DC offset`
     * :ref:`kTC reset noise`
     * :ref:`Simple charge measurement`
@@ -43,6 +48,7 @@ Available models
     * :ref:`Physical non-linearity with saturation`
     * :ref:`HxRG noise generator`
 * Readout electronics:
+    * :ref:`readout_electronics_create_store_detector`
     * :ref:`Simple ADC`
     * :ref:`Simple amplification`
     * :ref:`DC crosstalk`
