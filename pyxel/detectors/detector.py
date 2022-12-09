@@ -386,7 +386,24 @@ class Detector:
 
     @classmethod
     def load(cls, filename: Union[str, Path]) -> "Detector":
-        """Load a detector object from a filename."""
+        """Load a detector object from a filename.
+
+        Parameters
+        ----------
+        filename : str or Path
+
+        Returns
+        -------
+        Detector
+            A new ``Detector`` object.
+
+        Raises
+        ------
+        FileNotFoundError
+            If ``filename`` is not found.
+        ValueError
+            If the extension of filename is not recognized.
+        """
         full_filename = Path(filename).resolve()
         if not full_filename.exists():
             raise FileNotFoundError(f"Filename '{filename}' does not exist !")
@@ -401,7 +418,17 @@ class Detector:
             raise ValueError(f"Unknown extension {extension!r}.")
 
     def save(self, filename: Union[str, Path]) -> None:
-        """Save a detector object into a filename."""
+        """Save a detector object into a filename.
+
+        Parameters
+        ----------
+        filename : str or Path
+
+        Raises
+        ------
+        ValueError
+            If the extension of filename is not recognized.
+        """
         full_filename = Path(filename).resolve()
         extension: str = full_filename.suffix
 

@@ -6,8 +6,21 @@ Detectors
 
 .. currentmodule:: pyxel.detectors
 
+Top-level functions
+===================
+
+.. autosummary::
+
+    Detector.load
+    Detector.save
+    Detector.from_hdf5
+    Detector.to_hdf5
+    Detector.from_asdf
+    Detector.to_asdf
+
+
 Detector
---------
+========
 
 .. autoclass:: Detector
     :members:
