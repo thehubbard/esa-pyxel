@@ -12,10 +12,25 @@ from pyxel.detectors import Detector
 
 
 def load_detector(detector: Detector, filename: Union[str, Path]) -> None:
-    """Load a new detector from a file."""
-    detector = Detector.load(filename)
+    """Load a new detector from a file.
+
+    Raises
+    ------
+    TypeError
+        If the loaded detector has not the same type of the current detector.
+    """
+    new_detector = Detector.load(filename)
+
+    # Check type of 'new_detector'
+    if type(detector) == type(new_detector):
+        raise TypeError(
+            f"Wrong detector type from 'filename':'{filename}'. "
+            f"Got type: '{type(detector).__name__}', expected '{type(new_detector).__name__}'"
+        )
+
+    detector = new_detector
 
 
 def save_detector(detector: Detector, filename: Union[str, Path]) -> None:
-    """Save the current detector into a file."""
+    """Save the current detector into ma file."""
     detector.save(filename)
