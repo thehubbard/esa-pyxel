@@ -5,6 +5,8 @@
 #  this file, may be copied, modified, propagated, or distributed except according to
 #  the terms contained in the file ‘LICENCE.txt’.
 
+"""General purposes models or routines for all Group Models."""
+
 from pathlib import Path
 from typing import Union
 
