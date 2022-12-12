@@ -9,3 +9,4 @@
 
 # flake8: noqa
 from .pulse_processing import pulse_processing
+from ..util import load_detector, save_detector

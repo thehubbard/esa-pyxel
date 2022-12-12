@@ -113,7 +113,13 @@
                 "$ref": "#/definitions/ModelPhotonGenerationIllumination"
               },
               {
+                "$ref": "#/definitions/ModelPhotonGenerationLoadDetector"
+              },
+              {
                 "$ref": "#/definitions/ModelPhotonGenerationLoadImage"
+              },
+              {
+                "$ref": "#/definitions/ModelPhotonGenerationSaveDetector"
               },
               {
                 "$ref": "#/definitions/ModelPhotonGenerationShotNoise"
@@ -136,10 +142,16 @@
           "items": {
             "anyOf": [
               {
+                "$ref": "#/definitions/ModelOpticsLoadDetector"
+              },
+              {
                 "$ref": "#/definitions/ModelOpticsLoadPsf"
               },
               {
                 "$ref": "#/definitions/ModelOpticsOpticalPsf"
+              },
+              {
+                "$ref": "#/definitions/ModelOpticsSaveDetector"
               },
               {
                 "$ref": "#/definitions/ModelFunction"
@@ -157,7 +169,13 @@
           "items": {
             "anyOf": [
               {
+                "$ref": "#/definitions/ModelPhasingLoadDetector"
+              },
+              {
                 "$ref": "#/definitions/ModelPhasingPulseProcessing"
+              },
+              {
+                "$ref": "#/definitions/ModelPhasingSaveDetector"
               },
               {
                 "$ref": "#/definitions/ModelFunction"
@@ -205,6 +223,12 @@
                 "$ref": "#/definitions/ModelChargeGenerationLoadCharge"
               },
               {
+                "$ref": "#/definitions/ModelChargeGenerationLoadDetector"
+              },
+              {
+                "$ref": "#/definitions/ModelChargeGenerationSaveDetector"
+              },
+              {
                 "$ref": "#/definitions/ModelChargeGenerationSimpleConversion"
               },
               {
@@ -228,7 +252,13 @@
                 "$ref": "#/definitions/ModelChargeCollectionFixPatternNoise"
               },
               {
+                "$ref": "#/definitions/ModelChargeCollectionLoadDetector"
+              },
+              {
                 "$ref": "#/definitions/ModelChargeCollectionPersistence"
+              },
+              {
+                "$ref": "#/definitions/ModelChargeCollectionSaveDetector"
               },
               {
                 "$ref": "#/definitions/ModelChargeCollectionSimpleCollection"
@@ -263,6 +293,9 @@
                 "$ref": "#/definitions/ModelChargeMeasurementKtcNoise"
               },
               {
+                "$ref": "#/definitions/ModelChargeMeasurementLoadDetector"
+              },
+              {
                 "$ref": "#/definitions/ModelChargeMeasurementNghxrg"
               },
               {
@@ -285,6 +318,9 @@
               },
               {
                 "$ref": "#/definitions/ModelChargeMeasurementReadoutNoiseSaphira"
+              },
+              {
+                "$ref": "#/definitions/ModelChargeMeasurementSaveDetector"
               },
               {
                 "$ref": "#/definitions/ModelChargeMeasurementSimpleMeasurement"
@@ -317,10 +353,16 @@
                 "$ref": "#/definitions/ModelReadoutElectronicsDeadTimeFilter"
               },
               {
+                "$ref": "#/definitions/ModelReadoutElectronicsLoadDetector"
+              },
+              {
                 "$ref": "#/definitions/ModelReadoutElectronicsSarAdc"
               },
               {
                 "$ref": "#/definitions/ModelReadoutElectronicsSarAdcWithNoise"
+              },
+              {
+                "$ref": "#/definitions/ModelReadoutElectronicsSaveDetector"
               },
               {
                 "$ref": "#/definitions/ModelReadoutElectronicsSimpleAdc"
@@ -356,6 +398,12 @@
                 "$ref": "#/definitions/ModelChargeTransferCdm"
               },
               {
+                "$ref": "#/definitions/ModelChargeTransferLoadDetector"
+              },
+              {
+                "$ref": "#/definitions/ModelChargeTransferSaveDetector"
+              },
+              {
                 "$ref": "#/definitions/ModelFunction"
               }
             ]
@@ -369,7 +417,17 @@
             "null"
           ],
           "items": {
-            "$ref": "#/definitions/ModelFunction"
+            "anyOf": [
+              {
+                "$ref": "#/definitions/ModelSignalTransferLoadDetector"
+              },
+              {
+                "$ref": "#/definitions/ModelSignalTransferSaveDetector"
+              },
+              {
+                "$ref": "#/definitions/ModelFunction"
+              }
+            ]
           },
           "title": "Signal Transfer",
           "default": null
@@ -456,6 +514,52 @@
       "additionalProperties": false,
       "title": "Model 'illumination'",
       "description": "Generate photon uniformly over the entire array or over an elliptic orrectangular object."
+    },
+    "ModelPhotonGenerationLoadDetector": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "filename": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "string",
+                  "format": "uri"
+                }
+              ],
+              "title": "filename"
+            }
+          },
+          "required": [
+            "filename"
+          ],
+          "additionalProperties": false,
+          "title": "Parameters"
+        },
+        "func": {
+          "type": "string",
+          "const": "pyxel.models.photon_generation.load_detector",
+          "default": "pyxel.models.photon_generation.load_detector"
+        },
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "required": [
+        "name",
+        "arguments"
+      ],
+      "additionalProperties": false,
+      "title": "Model 'load_detector'",
+      "description": "Load a new detector from a file."
     },
     "ModelPhotonGenerationLoadImage": {
       "type": "object",
@@ -565,6 +669,52 @@
       "additionalProperties": false,
       "title": "Model 'load_image'",
       "description": "Load :term:`FITS` file as a numpy array and add to the detector asinput image."
+    },
+    "ModelPhotonGenerationSaveDetector": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "filename": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "string",
+                  "format": "uri"
+                }
+              ],
+              "title": "filename"
+            }
+          },
+          "required": [
+            "filename"
+          ],
+          "additionalProperties": false,
+          "title": "Parameters"
+        },
+        "func": {
+          "type": "string",
+          "const": "pyxel.models.photon_generation.save_detector",
+          "default": "pyxel.models.photon_generation.save_detector"
+        },
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "required": [
+        "name",
+        "arguments"
+      ],
+      "additionalProperties": false,
+      "title": "Model 'save_detector'",
+      "description": "Save the current detector into a file."
     },
     "ModelPhotonGenerationShotNoise": {
       "type": "object",
@@ -714,6 +864,52 @@
       ],
       "additionalProperties": false
     },
+    "ModelOpticsLoadDetector": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "filename": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "string",
+                  "format": "uri"
+                }
+              ],
+              "title": "filename"
+            }
+          },
+          "required": [
+            "filename"
+          ],
+          "additionalProperties": false,
+          "title": "Parameters"
+        },
+        "func": {
+          "type": "string",
+          "const": "pyxel.models.optics.load_detector",
+          "default": "pyxel.models.optics.load_detector"
+        },
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "required": [
+        "name",
+        "arguments"
+      ],
+      "additionalProperties": false,
+      "title": "Model 'load_detector'",
+      "description": "Load a new detector from a file."
+    },
     "ModelOpticsLoadPsf": {
       "type": "object",
       "properties": {
@@ -827,6 +1023,98 @@
       "title": "Model 'optical_psf'",
       "description": "Model function for poppy optics model: convolve photon array with psf."
     },
+    "ModelOpticsSaveDetector": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "filename": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "string",
+                  "format": "uri"
+                }
+              ],
+              "title": "filename"
+            }
+          },
+          "required": [
+            "filename"
+          ],
+          "additionalProperties": false,
+          "title": "Parameters"
+        },
+        "func": {
+          "type": "string",
+          "const": "pyxel.models.optics.save_detector",
+          "default": "pyxel.models.optics.save_detector"
+        },
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "required": [
+        "name",
+        "arguments"
+      ],
+      "additionalProperties": false,
+      "title": "Model 'save_detector'",
+      "description": "Save the current detector into a file."
+    },
+    "ModelPhasingLoadDetector": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "filename": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "string",
+                  "format": "uri"
+                }
+              ],
+              "title": "filename"
+            }
+          },
+          "required": [
+            "filename"
+          ],
+          "additionalProperties": false,
+          "title": "Parameters"
+        },
+        "func": {
+          "type": "string",
+          "const": "pyxel.models.phasing.load_detector",
+          "default": "pyxel.models.phasing.load_detector"
+        },
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "required": [
+        "name",
+        "arguments"
+      ],
+      "additionalProperties": false,
+      "title": "Model 'load_detector'",
+      "description": "Load a new detector from a file."
+    },
     "ModelPhasingPulseProcessing": {
       "type": "object",
       "properties": {
@@ -877,6 +1165,52 @@
       "additionalProperties": false,
       "title": "Model 'pulse_processing'",
       "description": "TBW."
+    },
+    "ModelPhasingSaveDetector": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "filename": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "string",
+                  "format": "uri"
+                }
+              ],
+              "title": "filename"
+            }
+          },
+          "required": [
+            "filename"
+          ],
+          "additionalProperties": false,
+          "title": "Parameters"
+        },
+        "func": {
+          "type": "string",
+          "const": "pyxel.models.phasing.save_detector",
+          "default": "pyxel.models.phasing.save_detector"
+        },
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "required": [
+        "name",
+        "arguments"
+      ],
+      "additionalProperties": false,
+      "title": "Model 'save_detector'",
+      "description": "Save the current detector into a file."
     },
     "ModelChargeGenerationApdGain": {
       "type": "object",
@@ -1012,8 +1346,8 @@
             },
             "energy_spectrum_sampling": {
               "type": [
-                "null",
-                "string"
+                "string",
+                "null"
               ],
               "enum": [
                 "linear",
@@ -1037,8 +1371,8 @@
             },
             "particle_direction": {
               "type": [
-                "null",
-                "string"
+                "string",
+                "null"
               ],
               "enum": [
                 "isotropic",
@@ -1149,8 +1483,8 @@
             },
             "energy_spectrum_sampling": {
               "type": [
-                "null",
-                "string"
+                "string",
+                "null"
               ],
               "enum": [
                 "linear",
@@ -1168,8 +1502,8 @@
             },
             "particle_direction": {
               "type": [
-                "null",
-                "string"
+                "string",
+                "null"
               ],
               "enum": [
                 "isotropic",
@@ -1807,6 +2141,98 @@
       "title": "Model 'load_charge'",
       "description": "Load charge from txt file for detector, mostly for but not limited to:term:`CCDs<CCD>`."
     },
+    "ModelChargeGenerationLoadDetector": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "filename": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "string",
+                  "format": "uri"
+                }
+              ],
+              "title": "filename"
+            }
+          },
+          "required": [
+            "filename"
+          ],
+          "additionalProperties": false,
+          "title": "Parameters"
+        },
+        "func": {
+          "type": "string",
+          "const": "pyxel.models.charge_generation.load_detector",
+          "default": "pyxel.models.charge_generation.load_detector"
+        },
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "required": [
+        "name",
+        "arguments"
+      ],
+      "additionalProperties": false,
+      "title": "Model 'load_detector'",
+      "description": "Load a new detector from a file."
+    },
+    "ModelChargeGenerationSaveDetector": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "filename": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "string",
+                  "format": "uri"
+                }
+              ],
+              "title": "filename"
+            }
+          },
+          "required": [
+            "filename"
+          ],
+          "additionalProperties": false,
+          "title": "Parameters"
+        },
+        "func": {
+          "type": "string",
+          "const": "pyxel.models.charge_generation.save_detector",
+          "default": "pyxel.models.charge_generation.save_detector"
+        },
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "required": [
+        "name",
+        "arguments"
+      ],
+      "additionalProperties": false,
+      "title": "Model 'save_detector'",
+      "description": "Save the current detector into a file."
+    },
     "ModelChargeGenerationSimpleConversion": {
       "type": "object",
       "properties": {
@@ -2002,6 +2428,52 @@
       "title": "Model 'fix_pattern_noise'",
       "description": "Add fix pattern noise caused by pixel non-uniformity during chargecollection."
     },
+    "ModelChargeCollectionLoadDetector": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "filename": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "string",
+                  "format": "uri"
+                }
+              ],
+              "title": "filename"
+            }
+          },
+          "required": [
+            "filename"
+          ],
+          "additionalProperties": false,
+          "title": "Parameters"
+        },
+        "func": {
+          "type": "string",
+          "const": "pyxel.models.charge_collection.load_detector",
+          "default": "pyxel.models.charge_collection.load_detector"
+        },
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "required": [
+        "name",
+        "arguments"
+      ],
+      "additionalProperties": false,
+      "title": "Model 'load_detector'",
+      "description": "Load a new detector from a file."
+    },
     "ModelChargeCollectionPersistence": {
       "type": "object",
       "properties": {
@@ -2169,6 +2641,52 @@
       "additionalProperties": false,
       "title": "Model 'persistence'",
       "description": "Apply persistence model."
+    },
+    "ModelChargeCollectionSaveDetector": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "filename": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "string",
+                  "format": "uri"
+                }
+              ],
+              "title": "filename"
+            }
+          },
+          "required": [
+            "filename"
+          ],
+          "additionalProperties": false,
+          "title": "Parameters"
+        },
+        "func": {
+          "type": "string",
+          "const": "pyxel.models.charge_collection.save_detector",
+          "default": "pyxel.models.charge_collection.save_detector"
+        },
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "required": [
+        "name",
+        "arguments"
+      ],
+      "additionalProperties": false,
+      "title": "Model 'save_detector'",
+      "description": "Save the current detector into a file."
     },
     "ModelChargeCollectionSimpleCollection": {
       "type": "object",
@@ -2441,6 +2959,52 @@
       "additionalProperties": false,
       "title": "Model 'ktc_noise'",
       "description": "Apply KTC reset noise to detector signal array."
+    },
+    "ModelChargeMeasurementLoadDetector": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "filename": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "string",
+                  "format": "uri"
+                }
+              ],
+              "title": "filename"
+            }
+          },
+          "required": [
+            "filename"
+          ],
+          "additionalProperties": false,
+          "title": "Parameters"
+        },
+        "func": {
+          "type": "string",
+          "const": "pyxel.models.charge_measurement.load_detector",
+          "default": "pyxel.models.charge_measurement.load_detector"
+        },
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "required": [
+        "name",
+        "arguments"
+      ],
+      "additionalProperties": false,
+      "title": "Model 'load_detector'",
+      "description": "Load a new detector from a file."
     },
     "ModelChargeMeasurementNghxrg": {
       "type": "object",
@@ -2987,6 +3551,52 @@
       "title": "Model 'readout_noise_saphira'",
       "description": "Apply Saphira specific readout noise to the APD detector."
     },
+    "ModelChargeMeasurementSaveDetector": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "filename": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "string",
+                  "format": "uri"
+                }
+              ],
+              "title": "filename"
+            }
+          },
+          "required": [
+            "filename"
+          ],
+          "additionalProperties": false,
+          "title": "Parameters"
+        },
+        "func": {
+          "type": "string",
+          "const": "pyxel.models.charge_measurement.save_detector",
+          "default": "pyxel.models.charge_measurement.save_detector"
+        },
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "required": [
+        "name",
+        "arguments"
+      ],
+      "additionalProperties": false,
+      "title": "Model 'save_detector'",
+      "description": "Save the current detector into a file."
+    },
     "ModelChargeMeasurementSimpleMeasurement": {
       "type": "object",
       "properties": {
@@ -3298,6 +3908,52 @@
       "title": "Model 'dead_time_filter'",
       "description": "Dead time filter."
     },
+    "ModelReadoutElectronicsLoadDetector": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "filename": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "string",
+                  "format": "uri"
+                }
+              ],
+              "title": "filename"
+            }
+          },
+          "required": [
+            "filename"
+          ],
+          "additionalProperties": false,
+          "title": "Parameters"
+        },
+        "func": {
+          "type": "string",
+          "const": "pyxel.models.readout_electronics.load_detector",
+          "default": "pyxel.models.readout_electronics.load_detector"
+        },
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "required": [
+        "name",
+        "arguments"
+      ],
+      "additionalProperties": false,
+      "title": "Model 'load_detector'",
+      "description": "Load a new detector from a file."
+    },
     "ModelReadoutElectronicsSarAdc": {
       "type": "object",
       "properties": {
@@ -3377,6 +4033,52 @@
       "additionalProperties": false,
       "title": "Model 'sar_adc_with_noise'",
       "description": "Digitize signal array using :term:`SAR` (Successive ApproximationRegister) :term:`ADC` logic with noise."
+    },
+    "ModelReadoutElectronicsSaveDetector": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "filename": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "string",
+                  "format": "uri"
+                }
+              ],
+              "title": "filename"
+            }
+          },
+          "required": [
+            "filename"
+          ],
+          "additionalProperties": false,
+          "title": "Parameters"
+        },
+        "func": {
+          "type": "string",
+          "const": "pyxel.models.readout_electronics.save_detector",
+          "default": "pyxel.models.readout_electronics.save_detector"
+        },
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "required": [
+        "name",
+        "arguments"
+      ],
+      "additionalProperties": false,
+      "title": "Model 'save_detector'",
+      "description": "Save the current detector into a file."
     },
     "ModelReadoutElectronicsSimpleAdc": {
       "type": "object",
@@ -3727,6 +4429,190 @@
       "additionalProperties": false,
       "title": "Model 'cdm'",
       "description": "Charge Distortion Model (CDM) model wrapper."
+    },
+    "ModelChargeTransferLoadDetector": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "filename": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "string",
+                  "format": "uri"
+                }
+              ],
+              "title": "filename"
+            }
+          },
+          "required": [
+            "filename"
+          ],
+          "additionalProperties": false,
+          "title": "Parameters"
+        },
+        "func": {
+          "type": "string",
+          "const": "pyxel.models.charge_transfer.load_detector",
+          "default": "pyxel.models.charge_transfer.load_detector"
+        },
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "required": [
+        "name",
+        "arguments"
+      ],
+      "additionalProperties": false,
+      "title": "Model 'load_detector'",
+      "description": "Load a new detector from a file."
+    },
+    "ModelChargeTransferSaveDetector": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "filename": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "string",
+                  "format": "uri"
+                }
+              ],
+              "title": "filename"
+            }
+          },
+          "required": [
+            "filename"
+          ],
+          "additionalProperties": false,
+          "title": "Parameters"
+        },
+        "func": {
+          "type": "string",
+          "const": "pyxel.models.charge_transfer.save_detector",
+          "default": "pyxel.models.charge_transfer.save_detector"
+        },
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "required": [
+        "name",
+        "arguments"
+      ],
+      "additionalProperties": false,
+      "title": "Model 'save_detector'",
+      "description": "Save the current detector into a file."
+    },
+    "ModelSignalTransferLoadDetector": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "filename": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "string",
+                  "format": "uri"
+                }
+              ],
+              "title": "filename"
+            }
+          },
+          "required": [
+            "filename"
+          ],
+          "additionalProperties": false,
+          "title": "Parameters"
+        },
+        "func": {
+          "type": "string",
+          "const": "pyxel.models.signal_transfer.load_detector",
+          "default": "pyxel.models.signal_transfer.load_detector"
+        },
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "required": [
+        "name",
+        "arguments"
+      ],
+      "additionalProperties": false,
+      "title": "Model 'load_detector'",
+      "description": "Load a new detector from a file."
+    },
+    "ModelSignalTransferSaveDetector": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "arguments": {
+          "type": "object",
+          "properties": {
+            "filename": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "string",
+                  "format": "uri"
+                }
+              ],
+              "title": "filename"
+            }
+          },
+          "required": [
+            "filename"
+          ],
+          "additionalProperties": false,
+          "title": "Parameters"
+        },
+        "func": {
+          "type": "string",
+          "const": "pyxel.models.signal_transfer.save_detector",
+          "default": "pyxel.models.signal_transfer.save_detector"
+        },
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        }
+      },
+      "required": [
+        "name",
+        "arguments"
+      ],
+      "additionalProperties": false,
+      "title": "Model 'save_detector'",
+      "description": "Save the current detector into a file."
     },
     "Exposure": {
       "type": "object",
