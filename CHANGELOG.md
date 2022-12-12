@@ -7,11 +7,16 @@ This release brings a number of bugfixes and documentation improvements.
 The JSON Schema files for the 'stable' and 'latest' are respectively located in 
 https://esa.gitlab.io/pyxel/pyxel_schema.json and https://esa.gitlab.io/pyxel/pyxel_schema_latest.json.
 
+A new models `load_detector` and `save_detector` for each Model Groups to load/inject or 
+to save/extract a `Detector` object to/from a running pipeline.
+
 ### Core 
 
 ### Documentation
 
 ### Models
+* Add models `load_detector` and `save_detector` to load/save a detector from/to a file.
+  (See [!545](https://gitlab.com/esa/pyxel/-/merge_requests/545)).
 
 ### Others
 * Add unit tests to charge deposition in MCT model.
