@@ -45,12 +45,12 @@ the bottom/left and select 'Pyxel'. See the current video:
 
 ### Example of validation
 
-Finally you can check directly in VSCode if your YAML Configuration file is valid: ![](_static/pycharm_example_validation.jpg)
+Finally you can check directly in PyCharm if your YAML Configuration file is valid: ![](_static/pycharm_example_validation.jpg)
 
 or visualize its annotation(s) ![](_static/pycharm_example_annotation.jpg). 
 
 
-## VS Code
+## Visual Studio Code
 
 All the steps use the Pyxel's JSON Schema with a YAML configuration are summarized in this video:
 
@@ -58,13 +58,6 @@ All the steps use the Pyxel's JSON Schema with a YAML configuration are summariz
   <source src="../_static/vscode_json_schema.mp4" type="video/mp4">
   Your browser does not support the video tag.
 </video>
-
-### Example of validation
-
-Finally you can check directly in VSCode if your YAML Configuration file is valid: ![](_static/vscode_example_validation.jpg)
-
-or visualize its annotation(s) ![](_static/vscode_example_annotation.jpg). 
-
 
 ### Install the YAML Language extension
 
@@ -97,5 +90,41 @@ or visualize its annotation(s) ![](_static/vscode_example_annotation.jpg).
 
 ## JupyterLab
 
-TBW.
+All the steps use the Pyxel's JSON Schema with a YAML configuration are summarized in this video:
 
+<video width="638" height="522" controls>
+  <source src="../_static/jupyterlab_json_schema.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
+
+### Install the YAML Language extension
+
+The first step is to install [JupyterLab Language Server Protocol](https://jupyterlab-lsp.readthedocs.io)
+with the following commands:
+
+**Notes**: This is only possible in a Conda/Anaconda environment.
+
+```bash
+conda install -c conda-forge jupyterlab jupyterlab-lsp nodejs
+npm install yaml-language-server
+```
+
+### Associate to the Pyxel's JSON Schema
+
+Then you must specify the [Pyxel JSON Schema](https://esa.gitlab.io/pyxel/pyxel_schema.json) file to use in 
+your configuration file  by adding the following line to the top of your ``YAML`` file:
+
+```yaml
+# yaml-language-server: $schema=https://esa.gitlab.io/pyxel/pyxel_schema.json
+exposure:
+
+  readout:
+    times: [1., 5., 7.]
+    non_destructive:  false
+
+...
+```
+
+### Example of validation
+
+Finally you can check directly in JupyterLab if your YAML Configuration file is valid: ![](_static/vscode_example_validation.jpg)
