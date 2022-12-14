@@ -173,7 +173,7 @@ def from_hdf5(filename: Union[str, Path]) -> Iterator[Mapping[str, Any]]:
         properties = {}
 
         name: str
-        for name in ["geometry", "environment", "characteristics"]:
+        for name in ("geometry", "environment", "characteristics"):
             properties[name] = _load(h5file, name=f"/{name}")
 
         dct["properties"] = properties

@@ -32,6 +32,11 @@ class Array:
 
     # TODO: Add units ?
     def __init__(self, value: np.ndarray):
+        if value.ndim != 2:
+            raise ValueError(
+                f"Expecting a 2D array. Got an array with {value.ndim} dimensions."
+            )
+
         self.validate_type(value)
 
         self._array: np.ndarray = value
@@ -77,9 +82,10 @@ class Array:
         return np.asarray(self._array, dtype=dtype)
 
     @property
-    def shape(self) -> Tuple[int, ...]:
+    def shape(self) -> Tuple[int, int]:
         """Return array shape."""
-        return self._array.shape
+        num_cols, num_rows = self._array.shape
+        return num_cols, num_rows
 
     @property
     def ndim(self) -> int:

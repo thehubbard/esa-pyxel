@@ -258,9 +258,7 @@ class Observation:
         -------
         out: iterator
         """
-        step_ranges = []
-        for step in self.enabled_steps:
-            step_ranges.append(range(len(step)))
+        step_ranges = [range(len(step)) for step in self.enabled_steps]
         out = itertools.product(*step_ranges)
         return out
 
@@ -1074,7 +1072,7 @@ def compute_final_sequential_dataset(
         coordinate = str(list(parameter_dict)[0])
         coordinate_short: str = dimension_names[coordinate]
 
-        if short(coordinate) not in final_dict.keys():
+        if short(coordinate) not in final_dict:
             final_dict.update({coordinate_short: []})
             final_dict[coordinate_short].append(list_of_datasets[n])
         else:
