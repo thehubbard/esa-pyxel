@@ -35,6 +35,8 @@ to save/extract a `Detector` object to/from a running pipeline.
   (See [!535](https://gitlab.com/esa/pyxel/-/merge_requests/535)).
 * Add 'Detector.load' and 'Detector.save'.
   (See [!559](https://gitlab.com/esa/pyxel/-/merge_requests/559)).
+* Refactoring with 'refurb'.
+  (See [!560](https://gitlab.com/esa/pyxel/-/merge_requests/560)).
 
 
 ## 1.5 / 2022-11-21
