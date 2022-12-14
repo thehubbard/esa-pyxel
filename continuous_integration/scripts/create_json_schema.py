@@ -824,7 +824,7 @@ def generate_all_models() -> Iterator[str]:
     yield "    else:"
     yield "        print(json.dumps(dct_schema))"
     yield "        with full_filename.open('w') as fh:"
-    yield "            json.dump(obj=dct_schema, fp=fh, indent=2)"
+    yield "            json.dump(obj=dct_schema, fp=fh, indent=2, sort_keys=True)"
     yield ""
     yield ""
     yield "if __name__ == '__main__':"
