@@ -6,6 +6,7 @@ This release brings a number of bugfixes and documentation improvements.
 
 The JSON Schema files for the 'stable' and 'latest' are respectively located in 
 https://esa.gitlab.io/pyxel/pyxel_schema.json and https://esa.gitlab.io/pyxel/pyxel_schema_latest.json.
+And detailed How-to guide about JSON Schema is available.
 
 A new models `load_detector` and `save_detector` for each Model Groups to load/inject or 
 to save/extract a `Detector` object to/from a running pipeline.
@@ -13,6 +14,8 @@ to save/extract a `Detector` object to/from a running pipeline.
 ### Core 
 
 ### Documentation
+* Add JSON Schema in the documentation.
+  (See [!543](https://gitlab.com/esa/pyxel/-/merge_requests/543)).
 
 ### Models
 * Add models `load_detector` and `save_detector` to load/save a detector from/to a file.
