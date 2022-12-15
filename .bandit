@@ -1,2 +1,0 @@
-[bandit]
-exclude: pyxel/_version.py
