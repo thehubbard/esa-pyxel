@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=63", "setuptools_scm[toml]>=7"]
+requires = ["setuptools>=63", "setuptools_scm[toml]>=7", "versioneer[toml]"]
 build-backend = "setuptools.build_meta"
 
 # https://peps.python.org/pep-0621/#readme
@@ -67,6 +67,7 @@ dependencies = [
     "pillow",
     "scikit-image",
 ]
+dynamic = ["version"]
 
 [project.urls]
 homepage = "https://esa.gitlab.io/pyxel/"
@@ -76,23 +77,37 @@ changelog = "https://gitlab.com/esa/pyxel/-/releases"
 tracker = "https://gitlab.com/esa/pyxel/issues"
 
 [project.optional-dependencies]
-calibration = [
-    "pygmo>=2.16.1",
-]
-model = [
-    "poppy>=1.0.2",
-]
-io = [
-    "asdf",
-]
-all = [
-    "%(calibration)s",
-    "%(model)s",
-    "%(io)s",
-]
+calibration = [ "pygmo>=2.16.1" ]
+model = [ "poppy>=1.0.2" ]
+io = [ "asdf" ]
+#all = [
+#    "%(calibration)s",
+#    "%(model)s",
+#    "%(io)s",
+#]
 
 [project.scripts]
 pyxel = "pyxel.run:main"
+
+[tool.versioneer]
+VCS = "git"
+style = "pep440"
+versionfile_source = "pyxel/_version.py"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = []
+
+[tool.setuptools.package-data]
+pyxel_sim =["py.typed"]
+exclude = [
+    "contrib",
+    "docs",
+    "tests",
+    "examples",
+]
 
 [tool.isort]
 profile = "black"
