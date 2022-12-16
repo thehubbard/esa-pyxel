@@ -130,7 +130,7 @@ warn_unused_ignores = false
 check_untyped_defs = true
 # no_implicit_reexport = true
 
-[tool.mypy.overrides]
+[[tool.mypy.overrides]]
 module = [
     "pyxel._version",
     "arcticpy.*",
@@ -164,6 +164,7 @@ module = [
     "click.*",
 ]
 ignore_errors=  true
+ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 addopts = [
@@ -176,7 +177,7 @@ addopts = [
 [tool.pydocstyle]
 convention = "numpy"
 match = "(?!_version).*.py"
-add-ignore= "D202,D105,D102,D103"
+add_ignore = "D202,D105,D102,D103"
 
 [tool.doc8]
 ignore = "D001,D002,D004,D005"
