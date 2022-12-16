@@ -12,7 +12,7 @@ from typing import TYPE_CHECKING, Any, Dict, Mapping, Optional, Union
 
 import numpy as np
 
-from pyxel import backends
+from pyxel import __version__, backends
 from pyxel.data_structure import (
     Charge,
     Image,
@@ -137,7 +137,7 @@ class Detector:
 
         return self._image
 
-    def to_xarray(self) -> xr.Dataset:
+    def to_xarray(self) -> "xr.Dataset":
         """Create a new ``Dataset`` from all data containers."""
         import xarray as xr
 
@@ -146,6 +146,7 @@ class Detector:
         ds["pixel"] = self.pixel.to_xarray()
         ds["signal"] = self.signal.to_xarray()
         ds["image"] = self.image.to_xarray()
+        ds.attrs.update({"pyxel version": __version__})
 
         return ds
 
