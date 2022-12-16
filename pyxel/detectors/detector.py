@@ -8,7 +8,7 @@
 """Detector class."""
 import collections
 from pathlib import Path
-from typing import Any, Dict, Mapping, Optional, Union
+from typing import TYPE_CHECKING, Any, Dict, Mapping, Optional, Union
 
 import numpy as np
 
@@ -26,6 +26,10 @@ from pyxel.data_structure import (
 from pyxel.detectors import Environment
 from pyxel.detectors.readout_properties import ReadoutProperties
 from pyxel.util.memory import get_size, memory_usage_details
+
+if TYPE_CHECKING:
+    import xarray as xr
+
 
 __all__ = ["Detector"]
 
@@ -132,6 +136,18 @@ class Detector:
             raise RuntimeError("'image' not initialized.")
 
         return self._image
+
+    def to_xarray(self) -> xr.Dataset:
+        """Create a new ``Dataset`` from all data containers."""
+        import xarray as xr
+
+        ds = xr.Dataset()
+        ds["photon"] = self.photon.to_xarray()
+        ds["pixel"] = self.pixel.to_xarray()
+        ds["signal"] = self.signal.to_xarray()
+        ds["image"] = self.image.to_xarray()
+
+        return ds
 
     def reset(self) -> None:
         """TBW."""
