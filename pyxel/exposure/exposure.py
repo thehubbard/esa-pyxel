@@ -191,6 +191,7 @@ def run_exposure_pipeline(
         if progressbar:
             pbar.update(1)
 
+    # TODO: Refactor '.result'. See #524
     processor.result = {key: np.stack(unstacked_result[key]) for key in keys}
 
     if progressbar:

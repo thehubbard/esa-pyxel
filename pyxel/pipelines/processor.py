@@ -216,6 +216,7 @@ class Processor:
         # TODO: Is is necessary to return 'self' ??
         return self
 
+    # TODO: Refactor '.result'. See #524
     @property
     def result(self) -> dict:
         """Return exposure pipeline final result in a dictionary."""
@@ -223,11 +224,13 @@ class Processor:
             raise ValueError("No result saved in the processor.")
         return self._result
 
+    # TODO: Refactor '.result'. See #524
     @result.setter
     def result(self, result_to_save: dict) -> None:
         """Set result."""
         self._result = result_to_save
 
+    # TODO: Refactor '.result'. See #524
     def result_to_dataset(
         self, y: range, x: range, times: np.ndarray, result_type: ResultType
     ) -> "xr.Dataset":

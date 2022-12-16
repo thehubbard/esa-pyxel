@@ -193,8 +193,7 @@ def display_detector(detector: "Detector") -> "Layout":
         return im
 
     array_names = [key for key in det.keys()]
-
-    if array_names:
+    if not array_names:
         raise ValueError("No data in the detector.")
 
     dmap = hv.DynamicMap(get_image, kdims=["Array"]).redim.values(Array=array_names)
