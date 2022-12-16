@@ -9,6 +9,7 @@
 
 # flake8: noqa
 # Warning: Import order matters
+from .readout_properties import ReadoutProperties
 from .environment import Environment
 from .detector import Detector
 from .geometry import Geometry
@@ -18,4 +19,3 @@ from .mkid import MKID, MKIDGeometry, MKIDCharacteristics
 from .apd import APD, APDCharacteristics, APDGeometry
 from .cmos import CMOSGeometry, CMOS, CMOSCharacteristics
 from .optics import Optics
-from .readout_properties import ReadoutProperties
