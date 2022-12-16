@@ -360,39 +360,26 @@ def run(input_filename: Union[str, Path], random_seed: Optional[int] = None) -> 
     save(input_filename=input_filename, output_dir=output_dir)
 
     pipeline: DetectionPipeline = configuration.pipeline
+    detector: Union[CCD, CMOS, MKID, APD] = configuration.detector
+    running_mode: Union[Exposure, Observation, Calibration] = configuration.running_mode
 
-    if isinstance(configuration.ccd_detector, CCD):
-        detector: Union[CCD, CMOS, MKID, APD] = configuration.ccd_detector
-    elif isinstance(configuration.cmos_detector, CMOS):
-        detector = configuration.cmos_detector
-    elif isinstance(configuration.mkid_detector, MKID):
-        detector = configuration.mkid_detector
-    elif isinstance(configuration.apd_detector, APD):
-        detector = configuration.apd_detector
-    else:
-        raise NotImplementedError("Detector is not defined in YAML config. file!")
-
-    if isinstance(configuration.exposure, Exposure):
-        exposure: Exposure = configuration.exposure
+    if isinstance(running_mode, Exposure):
         exposure_mode(
-            exposure=exposure,
+            exposure=running_mode,
             detector=detector,
             pipeline=pipeline,
         )
 
-    elif isinstance(configuration.calibration, Calibration):
-
-        calibration: Calibration = configuration.calibration
+    elif isinstance(running_mode, Calibration):
         _ = calibration_mode(
-            calibration=calibration,
+            calibration=running_mode,
             detector=detector,
             pipeline=pipeline,
         )
 
-    elif isinstance(configuration.observation, Observation):
-        observation: Observation = configuration.observation
+    elif isinstance(running_mode, Observation):
         observation_mode(
-            observation=observation,
+            observation=running_mode,
             detector=detector,
             pipeline=pipeline,
         )

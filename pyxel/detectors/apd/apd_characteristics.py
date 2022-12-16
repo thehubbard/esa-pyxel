@@ -431,5 +431,5 @@ class APDCharacteristics:
                 adc_voltage_range = tuple(adc_voltage_range)
 
             return cls(adc_voltage_range=adc_voltage_range, **new_dct)
-        else:
-            return cls(**dct)
+
+        return cls(**dct)

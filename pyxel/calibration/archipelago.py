@@ -31,12 +31,8 @@ from pyxel.calibration import Algorithm, AlgorithmType, IslandProtocol
 from pyxel.calibration.fitting import ModelFitting
 from pyxel.calibration.util import slice_to_range
 
-try:
-    import pygmo as pg
-except ImportError:
-    pass
-
 if TYPE_CHECKING:
+    import pygmo as pg
     from numpy.typing import ArrayLike
 
     from pyxel.exposure import Readout
@@ -46,23 +42,32 @@ class ArchipelagoLogs:
     """Keep log information from all algorithms in an archipelago."""
 
     def __init__(self, algo_type: AlgorithmType, num_generations: int):
+        try:
+            import pygmo as pg
+        except ImportError as exc:
+            raise ImportError(
+                "Missing optional package 'pygmo'.\n"
+                "Please install it with 'pip install pyxel-sim[calibration]' "
+                "or 'pip install pyxel-sim[all]'"
+            ) from exc
+
         self._df = pd.DataFrame()
         self._num_generations = num_generations
 
         # Get logging's columns that will be extracted from the algorithm
-        if algo_type is AlgorithmType.Sade:
-            self._columns = (
-                "num_generations",  # Generation number
-                "num_evaluations",  # Number of functions evaluation made
-                "best_fitness",  # The best fitness currently in the population
-                "f",
-                "cr",
-                "dx",
-                "df",
-            )  # See: https://esa.github.io/pygmo2/algorithms.html#pygmo.sade.get_log
-            self._algo_to_extract = pg.sade
-        else:
+        if algo_type is not AlgorithmType.Sade:
             raise NotImplementedError
+
+        self._columns = (
+            "num_generations",  # Generation number
+            "num_evaluations",  # Number of functions evaluation made
+            "best_fitness",  # The best fitness currently in the population
+            "f",
+            "cr",
+            "dx",
+            "df",
+        )  # See: https://esa.github.io/pygmo2/algorithms.html#pygmo.sade.get_log
+        self._algo_to_extract = pg.sade
 
     def _from_algo(self, algo: "pg.algorithm") -> pd.DataFrame:
         """Get logging information from an algorithm."""
@@ -189,6 +194,15 @@ class MyArchipelago:
         parallel: bool = True,
         with_bar: bool = False,
     ):
+        try:
+            import pygmo as pg
+        except ImportError as exc:
+            raise ImportError(
+                "Missing optional package 'pygmo'.\n"
+                "Please install it with 'pip install pyxel-sim[calibration]' "
+                "or 'pip install pyxel-sim[all]'"
+            ) from exc
+
         self._log = logging.getLogger(__name__)
 
         self.num_islands = num_islands

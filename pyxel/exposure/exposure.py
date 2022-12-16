@@ -173,9 +173,11 @@ def run_exposure_pipeline(
         logging.info("time = %.3f s", time)
 
         if detector.non_destructive_readout:
-            detector.empty(empty_all=False)
+            empty_all = False
         else:
-            detector.empty(empty_all=True)
+            empty_all = True
+
+        detector.empty(empty_all)
 
         processor.run_pipeline()
         detector.pipeline_count = i
@@ -189,6 +191,7 @@ def run_exposure_pipeline(
         if progressbar:
             pbar.update(1)
 
+    # TODO: Refactor '.result'. See #524
     processor.result = {key: np.stack(unstacked_result[key]) for key in keys}
 
     if progressbar:

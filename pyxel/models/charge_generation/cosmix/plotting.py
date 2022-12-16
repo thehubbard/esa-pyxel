@@ -7,21 +7,18 @@
 
 """Pyxel CosmiX model to generate charge by ionization."""
 
+from contextlib import suppress
 from pathlib import Path
 from typing import TYPE_CHECKING, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
 
+with suppress(ImportError):
+    from matplotlib import pyplot as plt
+
 if TYPE_CHECKING:
     from pyxel.models.charge_generation.cosmix.cosmix import Cosmix
-
-try:
-    from matplotlib import pyplot as plt
-    from mpl_toolkits.mplot3d import Axes3D  # noqa: F401
-except ImportError:
-    # raise Warning('Matplotlib cannot be imported')
-    pass
 
 
 class PlottingCosmix:

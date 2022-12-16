@@ -35,7 +35,7 @@ class Detector:
     """The detector class."""
 
     def __init__(self, environment: Optional[Environment] = None):
-        self.environment: Environment = environment if environment else Environment()
+        self.environment: Environment = environment or Environment()
 
         self.header: Dict[str, object] = collections.OrderedDict()
 
@@ -47,7 +47,7 @@ class Detector:
         self._image: Optional[Image] = None
 
         # This will be the memory of the detector where trapped charges will be saved
-        self._memory: Dict = dict()
+        self._memory: Dict = {}
         self._persistence: Optional[Union[Persistence, SimplePersistence]] = None
 
         self.input_image: Optional[np.ndarray] = None
@@ -307,8 +307,8 @@ class Detector:
         """
         if self._readout_properties is not None:
             return True
-        else:
-            return False
+
+        return False
 
     @property
     def non_destructive_readout(self) -> bool:
@@ -325,8 +325,8 @@ class Detector:
         """TBW."""
         if self._persistence is not None:
             return True
-        else:
-            return False
+
+        return False
 
     @property
     def persistence(self) -> Union[Persistence, SimplePersistence]:

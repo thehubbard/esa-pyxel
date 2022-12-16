@@ -160,11 +160,11 @@ def show_versions():
                 dependencies[module_name] = "installed"
 
     max_length = max(map(len, [*system_info, *dependencies]))
-    print("")
+    print()
     print("INSTALLED VERSIONS")
     print("------------------")
     for key, value in system_info.items():
         print(f"{key:<{max_length}}: {value}")
-    print("")
+    print()
     for key, value in dependencies.items():
         print(f"{key:<{max_length}}: {value}")

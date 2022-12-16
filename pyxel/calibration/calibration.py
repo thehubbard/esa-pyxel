@@ -8,7 +8,7 @@
 """TBW."""
 import logging
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, List, Optional, Sequence, Tuple, Union
+from typing import TYPE_CHECKING, Any, Mapping, Optional, Sequence, Tuple, Union
 
 import numpy as np
 from dask.delayed import Delayed
@@ -27,13 +27,6 @@ from pyxel.exposure import Readout
 from pyxel.observation import ParameterValues
 from pyxel.pipelines import FitnessFunction, Processor, ResultType
 
-try:
-    import pygmo as pg
-
-    WITH_PYGMO: bool = True
-except ImportError:
-    WITH_PYGMO = False
-
 if TYPE_CHECKING:
     import pandas as pd
     import xarray as xr
@@ -41,7 +34,7 @@ if TYPE_CHECKING:
     from pyxel.outputs import CalibrationOutputs
 
 
-def to_path_list(values: Sequence[Union[str, Path]]) -> List[Path]:
+def to_path_list(values: Sequence[Union[str, Path]]) -> Sequence[Path]:
     """TBW."""
     return [Path(obj).resolve() for obj in values]
 
@@ -52,7 +45,7 @@ class Calibration:
     def __init__(
         self,
         outputs: "CalibrationOutputs",
-        target_data_path: Sequence[Path],
+        target_data_path: Sequence[Union[str, Path]],
         fitness_function: FitnessFunction,
         algorithm: Algorithm,
         parameters: Sequence[ParameterValues],
@@ -71,7 +64,7 @@ class Calibration:
         type_islands: Literal[
             "multiprocessing", "multithreading", "ipyparallel"
         ] = "multiprocessing",
-        weights_from_file: Optional[Sequence[Path]] = None,
+        weights_from_file: Optional[Sequence[Union[str, Path]]] = None,
         weights: Optional[Sequence[float]] = None,
     ):
         if pygmo_seed is not None and pygmo_seed not in range(100001):
@@ -83,31 +76,27 @@ class Calibration:
         self._log = logging.getLogger(__name__)
 
         self.outputs = outputs
-        self.readout: Readout = readout if readout else Readout()
+        self.readout: Readout = readout or Readout()
 
         self._calibration_mode = CalibrationMode(mode)
 
         self._result_type: ResultType = ResultType(result_type)
 
-        self._result_fit_range: Sequence[int] = (
-            result_fit_range if result_fit_range else []
-        )
+        self._result_fit_range: Sequence[int] = result_fit_range or []
 
         self._result_input_arguments: Sequence[ParameterValues] = (
-            result_input_arguments if result_input_arguments else []
+            result_input_arguments or []
         )
 
         self._target_data_path: Sequence[Path] = (
             to_path_list(target_data_path) if target_data_path else []
         )
-        self._target_fit_range: Sequence[int] = (
-            target_fit_range if target_fit_range else []
-        )
+        self._target_fit_range: Sequence[int] = target_fit_range or []
 
         self._fitness_function: FitnessFunction = fitness_function
         self._algorithm: Algorithm = algorithm
 
-        self._parameters: Sequence[ParameterValues] = parameters if parameters else []
+        self._parameters: Sequence[ParameterValues] = parameters or []
 
         if pygmo_seed is None:
             rng = np.random.default_rng()
@@ -125,7 +114,9 @@ class Calibration:
         if weights and weights_from_file:
             raise ValueError("Cannot define both weights and weights from file.")
 
-        self._weights_from_file: Optional[Sequence[Path]] = weights_from_file
+        self._weights_from_file: Optional[Sequence[Path]] = (
+            to_path_list(weights_from_file) if weights_from_file else None
+        )
         self._weights: Optional[Sequence[float]] = weights
 
     @property
@@ -286,7 +277,7 @@ class Calibration:
 
     @topology.setter
     def topology(self, value: Any) -> None:
-        if value not in ["unconnected", "ring", "fully_connected"]:
+        if value not in ("unconnected", "ring", "fully_connected"):
             raise ValueError(
                 "Expecting value: 'unconnected', 'ring' or 'fully_connected'"
             )
@@ -320,12 +311,14 @@ class Calibration:
         with_progress_bar: bool = True,
     ) -> Tuple["xr.Dataset", "pd.DataFrame", "pd.DataFrame"]:
         """Run calibration pipeline."""
-        if not WITH_PYGMO:
+        try:
+            import pygmo as pg
+        except ImportError as exc:
             raise ImportError(
                 "Missing optional package 'pygmo'.\n"
                 "Please install it with 'pip install pyxel-sim[calibration]' "
                 "or 'pip install pyxel-sim[all]'"
-            )
+            ) from exc
 
         pg.set_global_rng_seed(seed=self.pygmo_seed)
         self._log.info("Pygmo seed: %d", self.pygmo_seed)
@@ -409,3 +402,36 @@ class Calibration:
         # TODO: Use output.calibration_plots ?
 
         return filenames
+
+    @classmethod
+    def from_json(cls, dct: Mapping) -> "Calibration":
+        """Create a new object from a JSON dictionary."""
+        from pyxel.outputs import CalibrationOutputs
+
+        def _from_json(
+            outputs: Mapping,
+            target_data_path: Sequence[str],
+            fitness_function: Mapping,
+            algorithm: Mapping,
+            parameters: Sequence[Mapping],
+            readout: Optional[Mapping] = None,
+            result_input_arguments: Optional[Sequence[Mapping]] = None,
+            **kwargs,
+        ) -> "Calibration":
+            """Create a new object from an unpacked JSON dictionary."""
+            return cls(
+                outputs=CalibrationOutputs(**outputs),
+                target_data_path=target_data_path,
+                fitness_function=FitnessFunction(func=fitness_function["func"]),
+                algorithm=Algorithm(**algorithm),
+                parameters=[ParameterValues(**el) for el in parameters],
+                readout=(Readout(**readout) if readout else None),
+                result_input_arguments=(
+                    [ParameterValues(**el) for el in result_input_arguments]
+                    if result_input_arguments
+                    else None
+                ),
+                **kwargs,
+            )
+
+        return _from_json(**dct)

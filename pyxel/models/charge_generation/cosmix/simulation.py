@@ -146,8 +146,8 @@ class Simulation:
             return sorted_list[-1]
         elif (sorted_list[index_larger] - value) < (value - sorted_list[index_smaller]):
             return sorted_list[index_larger]
-        else:
-            return sorted_list[index_smaller]
+
+        return sorted_list[index_smaller]
 
     def select_stepsize_data(
         self, p_type: str, p_energy: float, p_track_length: float

@@ -91,7 +91,7 @@ class ObservationOutputs(Outputs):
                         if format_list is not None:
                             for out_format in format_list:
 
-                                if out_format not in save_methods.keys():
+                                if out_format not in save_methods:
                                     raise ValueError(
                                         "Format "
                                         + out_format
@@ -107,7 +107,7 @@ class ObservationOutputs(Outputs):
                     if format_list is not None:
                         for out_format in format_list:
 
-                            if out_format not in save_methods.keys():
+                            if out_format not in save_methods:
                                 raise ValueError(
                                     "Format " + out_format + " not a valid save method!"
                                 )

@@ -132,7 +132,7 @@ class Particle:
 
         if input_energy == "random":
             self.energy: float = sampling_distribution(spectrum_cdf)
-        elif isinstance(input_energy, int) or isinstance(input_energy, float):
+        elif isinstance(input_energy, (int, float)):
             self.energy = input_energy
         else:
             raise ValueError("Given particle energy could not be read")

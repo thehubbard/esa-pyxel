@@ -129,7 +129,7 @@ class Observation:
         pipeline_seed: Optional[int] = None,
     ):
         self.outputs = outputs
-        self.readout: Readout = readout if readout else Readout()
+        self.readout: Readout = readout or Readout()
         self.parameter_mode: ParameterMode = ParameterMode(mode)
         self._parameters = parameters
         self.file = from_file
@@ -258,9 +258,7 @@ class Observation:
         -------
         out: iterator
         """
-        step_ranges = []
-        for step in self.enabled_steps:
-            step_ranges.append(range(len(step)))
+        step_ranges = [range(len(step)) for step in self.enabled_steps]
         out = itertools.product(*step_ranges)
         return out
 
@@ -368,7 +366,6 @@ class Observation:
                 processor=proc,
                 readout=self.readout,
                 outputs=self.outputs,
-                progressbar=False,
                 pipeline_seed=self.pipeline_seed,
             )
             processors.append(processor)
@@ -677,7 +674,6 @@ class Observation:
         _ = run_exposure_pipeline(
             processor=new_processor,
             readout=self.readout,
-            progressbar=False,
             result_type=self.result_type,
             pipeline_seed=self.pipeline_seed,
         )
@@ -730,7 +726,6 @@ class Observation:
         _ = run_exposure_pipeline(
             processor=new_processor,
             readout=self.readout,
-            progressbar=False,
             result_type=self.result_type,
             pipeline_seed=self.pipeline_seed,
         )
@@ -780,7 +775,6 @@ class Observation:
         _ = run_exposure_pipeline(
             processor=new_processor,
             readout=self.readout,
-            progressbar=False,
             result_type=self.result_type,
             pipeline_seed=self.pipeline_seed,
         )
@@ -1078,7 +1072,7 @@ def compute_final_sequential_dataset(
         coordinate = str(list(parameter_dict)[0])
         coordinate_short: str = dimension_names[coordinate]
 
-        if short(coordinate) not in final_dict.keys():
+        if short(coordinate) not in final_dict:
             final_dict.update({coordinate_short: []})
             final_dict[coordinate_short].append(list_of_datasets[n])
         else:

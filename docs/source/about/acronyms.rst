@@ -64,3 +64,7 @@ List of Acronyms
 
     SAR
       Successive Approximation Register.
+
+    YAML
+      YAML Ain't Markup Language
+

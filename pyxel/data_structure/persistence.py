@@ -30,19 +30,18 @@ class Persistence:
         self,
         trap_time_constants: Sequence[float],
         trap_proportions: Sequence[float],
-        geometry: Tuple[int, ...],
+        geometry: Tuple[int, int],
     ):
-        traps = []
-        for time_constant, trap_proportion in sorted(
-            zip(trap_time_constants, trap_proportions)
-        ):
-            traps.append(
-                Trap(
-                    time_constant=time_constant,
-                    proportion=trap_proportion,
-                    charge=np.zeros(geometry),
-                )
+        traps: Sequence[Trap] = [
+            Trap(
+                time_constant=time_constant,
+                proportion=trap_proportion,
+                charge=np.zeros(geometry),
             )
+            for time_constant, trap_proportion in sorted(
+                zip(trap_time_constants, trap_proportions)
+            )
+        ]
         self._trap_list = traps
         self._trapped_charge_array = np.zeros((len(traps), geometry[0], geometry[1]))
         self._trap_time_constants = np.array(trap_time_constants)
@@ -102,19 +101,19 @@ class SimplePersistence:
         self,
         trap_time_constants: Sequence[float],
         trap_densities: Sequence[float],
-        geometry: Tuple[int, ...],
+        geometry: Tuple[int, int],
     ):
-        traps = []
-        for time_constant, trap_density in sorted(
-            zip(trap_time_constants, trap_densities)
-        ):
-            traps.append(
-                SimpleTrap(
-                    time_constant=time_constant,
-                    density=trap_density,
-                    charge=np.zeros(geometry),
-                )
+        traps: Sequence[SimpleTrap] = [
+            SimpleTrap(
+                time_constant=time_constant,
+                density=trap_density,
+                charge=np.zeros(geometry),
             )
+            for time_constant, trap_density in sorted(
+                zip(trap_time_constants, trap_densities)
+            )
+        ]
+
         self._trap_list = traps
         self._trapped_charge_array = np.zeros((len(traps), geometry[0], geometry[1]))
         self._trap_time_constants = np.array(trap_time_constants)

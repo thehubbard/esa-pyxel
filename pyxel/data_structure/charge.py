@@ -391,8 +391,8 @@ class Charge:
         """Return True if frame is empty and False otherwise."""
         if self._frame.empty:
             return True
-        else:
-            return False
+
+        return False
 
     def validate_type(self, value: np.ndarray) -> None:
         """Validate a value.

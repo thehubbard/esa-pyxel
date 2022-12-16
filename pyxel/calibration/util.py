@@ -237,7 +237,7 @@ def check_ranges(
                 )
 
             # TODO: Refactor and add more unit tests. See #328
-            if len(target_fit_range) == 4 and len(out_fit_range) == 4:
+            if len(target_fit_range) == len(out_fit_range) == 4:
                 if (target_fit_range[3] - target_fit_range[2]) != (
                     out_fit_range[3] - out_fit_range[2]
                 ):
@@ -245,7 +245,7 @@ def check_ranges(
                         "Fitting ranges have different lengths in 2nd dimension"
                     )
 
-            if len(target_fit_range) == 6 and len(out_fit_range) == 6:
+            if len(target_fit_range) == len(out_fit_range) == 6:
                 if (target_fit_range[5] - target_fit_range[4]) != (
                     out_fit_range[5] - out_fit_range[4]
                 ):
@@ -258,11 +258,11 @@ def check_ranges(
         #     if not (0 <= target_fit_range[i] <= rows):
         #         raise ValueError("Value of target fit range is wrong")
 
-        for i in [-3, -4]:
+        for i in (-3, -4):
             if not (0 <= target_fit_range[i] <= rows):
                 raise ValueError("Value of target fit range is wrong")
 
-        for i in [-1, -2]:
+        for i in (-1, -2):
             if not (0 <= target_fit_range[i] <= cols):
                 raise ValueError("Value of target fit range is wrong")
 
@@ -270,7 +270,7 @@ def check_ranges(
             if readout_times is None:
                 raise ValueError("Target data is not a 3 dimensional array")
 
-            for i in [0, 1]:
+            for i in (0, 1):
                 # TODO: Refactor and add more unit tests. See #328
                 if not (0 <= target_fit_range[i] <= readout_times):
                     raise ValueError("Value of target fit range is wrong")
