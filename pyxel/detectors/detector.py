@@ -23,8 +23,7 @@ from pyxel.data_structure import (
     Signal,
     SimplePersistence,
 )
-from pyxel.detectors import Environment
-from pyxel.detectors.readout_properties import ReadoutProperties
+from pyxel.detectors import Environment, ReadoutProperties
 from pyxel.util.memory import get_size, memory_usage_details
 
 if TYPE_CHECKING:
