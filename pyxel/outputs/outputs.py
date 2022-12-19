@@ -8,7 +8,6 @@
 #
 """Classes for creating outputs."""
 import logging
-import os
 import re
 from glob import glob
 from pathlib import Path
