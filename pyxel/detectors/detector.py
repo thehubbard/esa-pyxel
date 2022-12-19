@@ -137,15 +137,36 @@ class Detector:
         return self._image
 
     def to_xarray(self) -> "xr.Dataset":
-        """Create a new ``Dataset`` from all data containers."""
+        """Create a new ``Dataset`` from all data containers.
+
+        Examples
+        --------
+        >>> detector.to_xarray()
+        <xarray.Dataset>
+        Dimensions:  (y: 100, x: 100)
+        Coordinates:
+          * y        (y) int64 0 1 2 3 4 5 6 7 8 9 10 ... 90 91 92 93 94 95 96 97 98 99
+          * x        (x) int64 0 1 2 3 4 5 6 7 8 9 10 ... 90 91 92 93 94 95 96 97 98 99
+        Data variables:
+            photon   (y, x) float64 0.0 0.0 0.0 0.0 0.0 0.0 ... 0.0 0.0 0.0 0.0 0.0 0.0
+            pixel    (y, x) float64 0.0 0.0 0.0 0.0 0.0 0.0 ... 0.0 0.0 0.0 0.0 0.0 0.0
+            signal   (y, x) float64 0.0 0.0 0.0 0.0 0.0 0.0 ... 0.0 0.0 0.0 0.0 0.0 0.0
+            image    (y, x) uint64 0 0 0 0 0 0 0 0 0 0 0 0 0 ... 0 0 0 0 0 0 0 0 0 0 0 0
+        Attributes:
+            detector:       CCD
+            pyxel version:  1.5
+        """
         import xarray as xr
 
         ds = xr.Dataset()
         ds["photon"] = self.photon.to_xarray()
+        # ds["scene"] = self.scene.to_xarray()
         ds["pixel"] = self.pixel.to_xarray()
         ds["signal"] = self.signal.to_xarray()
         ds["image"] = self.image.to_xarray()
-        ds.attrs.update({"pyxel version": __version__})
+        # ds["charge"] = self.charge.to_xarray()
+
+        ds.attrs.update({"detector": type(self).__name__, "pyxel version": __version__})
 
         return ds
 
