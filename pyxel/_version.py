@@ -16,6 +16,7 @@ import os
 import re
 import subprocess
 import sys
+from contextlib import suppress
 from typing import Callable, Dict
 
 
@@ -155,7 +156,7 @@ def git_get_keywords(versionfile_abs):
     # so we do it with a regexp instead. This function is not used from
     # _version.py.
     keywords = {}
-    try:
+    with suppress(OSError):
         with open(versionfile_abs) as fobj:
             for line in fobj:
                 if line.strip().startswith("git_refnames ="):
@@ -170,8 +171,7 @@ def git_get_keywords(versionfile_abs):
                     mo = re.search(r'=\s*"(.*)"', line)
                     if mo:
                         keywords["date"] = mo.group(1)
-    except OSError:
-        pass
+
     return keywords
 
 
@@ -651,10 +651,8 @@ def get_versions():
     cfg = get_config()
     verbose = cfg.verbose
 
-    try:
+    with suppress(NotThisMethod):
         return git_versions_from_keywords(get_keywords(), cfg.tag_prefix, verbose)
-    except NotThisMethod:
-        pass
 
     try:
         root = os.path.realpath(__file__)
@@ -672,17 +670,13 @@ def get_versions():
             "date": None,
         }
 
-    try:
+    with suppress(NotThisMethod):
         pieces = git_pieces_from_vcs(cfg.tag_prefix, root, verbose)
         return render(pieces, cfg.style)
-    except NotThisMethod:
-        pass
 
-    try:
+    with suppress(NotThisMethod):
         if cfg.parentdir_prefix:
             return versions_from_parentdir(cfg.parentdir_prefix, root, verbose)
-    except NotThisMethod:
-        pass
 
     return {
         "version": "0+unknown",

@@ -1,6 +1,5 @@
 include LICENSE.txt
 
-include versioneer.py
 include pyxel/_version.py
 
 include pyxel/templates/*.py
