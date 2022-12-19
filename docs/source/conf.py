@@ -15,23 +15,24 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 
+import sys
 from datetime import datetime
-from pathlib import Path
 
-from setuptools.config import read_configuration
 from sphinx.util import logging
 
 import pyxel
 
+if sys.version_info >= (3, 8):
+    from importlib.metadata import metadata
+else:
+    from importlib_metadata import metadata  # pip install importlib-metadata
+
+
 # https://github.com/sphinx-doc/sphinx/issues/10112
 logging.getLogger("sphinx.ext.extlinks").setLevel(40)
 
-# Read 'setup.cfg' file
-parent_folder = Path(__file__).parent
-setup_cfg_filename: Path = parent_folder.joinpath("../../setup.cfg").resolve(
-    strict=True
-)
-metadata: dict = read_configuration(setup_cfg_filename)["metadata"]
+# Get metadata from 'pyproject.toml'
+pyxel_metadata = metadata("pyxel-sim")
 
 now_dt: datetime = datetime.now()
 
@@ -123,7 +124,7 @@ source_suffix = ".rst"
 master_doc = "index"
 
 # General information about the project.
-project = metadata["name"]
+project = pyxel_metadata["Name"]
 copyright = f"2017-{now_dt:%Y}, European Space Agency"
 author = "Pyxel Developers"
 
@@ -231,7 +232,7 @@ ogp_custom_meta_tags = [
 # -- Options for HTMLHelp output ------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = metadata["name"] + "doc"
+htmlhelp_basename = pyxel_metadata["Name"] + "doc"
 
 
 # https://xarray.pydata.org/en/stable/objects.inv
@@ -275,9 +276,9 @@ latex_elements = {
 latex_documents = [
     (
         master_doc,
-        metadata["name"] + ".tex",
-        metadata["name"] + " Documentation",
-        metadata["author"],
+        pyxel_metadata["Name"] + ".tex",
+        pyxel_metadata["Name"] + " Documentation",
+        pyxel_metadata["Author-email"],
         "manual",
     )
 ]
@@ -288,7 +289,13 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    (master_doc, metadata["name"], metadata["name"] + " Documentation", [author], 1)
+    (
+        master_doc,
+        pyxel_metadata["Name"],
+        pyxel_metadata["Name"] + " Documentation",
+        [author],
+        1,
+    )
 ]
 
 
@@ -300,10 +307,10 @@ man_pages = [
 texinfo_documents = [
     (
         master_doc,
-        metadata["name"],
-        metadata["name"] + " Documentation",
+        pyxel_metadata["Name"],
+        pyxel_metadata["Name"] + " Documentation",
         author,
-        metadata["name"],
+        pyxel_metadata["Name"],
         "One line description of project.",
         "Miscellaneous",
     )

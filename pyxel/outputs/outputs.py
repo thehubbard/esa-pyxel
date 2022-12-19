@@ -8,7 +8,6 @@
 #
 """Classes for creating outputs."""
 import logging
-import os
 import re
 from glob import glob
 from pathlib import Path
@@ -213,7 +212,7 @@ class Outputs:
 
         full_filename: Path = filename.resolve()
 
-        if os.path.exists(full_filename):
+        if full_filename.exists():
             raise FileExistsError(f"File {full_filename} already exists!")
 
         np.save(file=full_filename, arr=data)
@@ -239,7 +238,7 @@ class Outputs:
 
         full_filename: Path = filename.resolve()
 
-        if os.path.exists(full_filename):
+        if full_filename.exists():
             raise FileExistsError(f"File {full_filename} already exists!")
 
         im = Image.fromarray(data)
@@ -267,7 +266,7 @@ class Outputs:
 
         full_filename: Path = filename.resolve()
 
-        if os.path.exists(full_filename):
+        if full_filename.exists():
             raise FileExistsError(f"File {full_filename} already exists!")
 
         im = Image.fromarray(data)
@@ -295,7 +294,7 @@ class Outputs:
 
         full_filename: Path = filename.resolve()
 
-        if os.path.exists(full_filename):
+        if full_filename.exists():
             raise FileExistsError(f"File {full_filename} already exists!")
 
         im = Image.fromarray(data)

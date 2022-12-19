@@ -37,6 +37,8 @@ to save/extract a `Detector` object to/from a running pipeline.
   (See [!559](https://gitlab.com/esa/pyxel/-/merge_requests/559)).
 * Refactoring with 'refurb'.
   (See [!560](https://gitlab.com/esa/pyxel/-/merge_requests/560)).
+* Use 'pyproject.toml'.
+  (See [!530](https://gitlab.com/esa/pyxel/-/merge_requests/530)).
 
 
 ## 1.5 / 2022-11-21

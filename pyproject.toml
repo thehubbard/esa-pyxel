@@ -1,0 +1,205 @@
+# Editable install  : pip install -e .
+# Build project     : python -m build . --wheel --sdist
+[build-system]
+requires = ["setuptools>=63", "setuptools_scm[toml]>=7", "versioneer[toml]"]
+build-backend = "setuptools.build_meta"
+
+# https://peps.python.org/pep-0621/#readme
+[project]
+requires-python = ">= 3.7"
+name = "pyxel-sim"
+description = "Pyxel detector simulation framework."
+readme = "README.md"
+authors = [{"name" = "The Pyxel development team", "email" = "pyxel@esa.int" }]
+license = { text = "MIT" }
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Topic :: Scientific/Engineering :: Astronomy",
+    "Topic :: Scientific/Engineering :: Image Processing",
+    "Topic :: Scientific/Engineering :: Physics",
+    "Typing :: Typed",
+]
+keywords = ["ESA", "data modeling", "sensors", "calibration", "CCD",
+    "CMOS", "active sensors", "electronics"]
+dependencies = [
+    # Scientific computing
+    "numba",
+    "numpy>=1.20",
+    "pandas",
+    "scipy",
+    "xarray>=0.19",
+
+    # Plotting
+    "matplotlib>=3.1",
+    "seaborn",
+    "holoviews>=1.15.0",
+    "bokeh",
+
+    # Parallel computing
+    "dask",
+    "distributed",
+
+    # Jupyter notebook
+    "ipywidgets>=7.5",
+
+    # Input/Output
+    "astropy>=4.3",
+    "fsspec[http]>=2021",
+    "h5py",
+    "pyyaml",
+    "xlrd",
+    "openpyxl",
+    "netcdf4",
+
+    # Others
+    "click",
+    "tqdm",
+    "typing-extensions",
+    "pympler",
+    "pillow",
+    "scikit-image",
+]
+dynamic = ["version"]
+
+[project.urls]
+homepage = "https://esa.gitlab.io/pyxel/"
+documentation = "https://esa.gitlab.io/pyxel/doc/"
+repository = "https://gitlab.com/esa/pyxel"
+changelog = "https://gitlab.com/esa/pyxel/-/releases"
+tracker = "https://gitlab.com/esa/pyxel/issues"
+
+[project.optional-dependencies]
+calibration = [ "pygmo>=2.16.1" ]
+model = [ "poppy>=1.0.2" ]
+io = [ "asdf" ]
+all = [
+    "pyxel-sim[calibration]",
+    "pyxel-sim[model]",
+    "pyxel-sim[io]",
+]
+
+[project.scripts]
+pyxel = "pyxel.run:main"
+
+[tool.versioneer]
+VCS = "git"
+style = "pep440"
+versionfile_source = "pyxel/_version.py"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = []
+
+[tool.setuptools.package-data]
+pyxel_sim =["py.typed"]
+exclude = [
+    "contrib",
+    "docs",
+    "tests",
+    "examples",
+]
+
+[tool.isort]
+profile = "black"
+# add_imports = "from __future__ import annotations"
+skip = ["__init__.py", "versioneer.py", ".ipynb_checkpoints",
+    "src", ".tox", ".eggs", ".venv", "build", "dist"]
+
+[tool.mypy]
+# disallow_untyped_calls = true
+# disallow_untyped_defs = true
+# disallow_incomplete_defs = true
+# disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_unreachable = true
+warn_unused_configs = true
+warn_redundant_casts = true
+warn_unused_ignores = false
+# warn_return_any = true
+# check_untyped_defs = true
+check_untyped_defs = true
+# no_implicit_reexport = true
+
+[[tool.mypy.overrides]]
+module = [
+    "pyxel._version",
+    "arcticpy.*",
+    "asdf.*",
+    "astropy.*",
+    "cloudpickle.*",
+    "dask.*",
+    "distributed.*",
+    "fsspec.*",
+    "jsonschema.*",
+    "h5py.*",
+    "matplotlib.*",
+    "mpl_toolkits.*",
+    "numba.*",
+    "numpy.*",
+    "pandas.*",
+    "poppy",
+    "pygmo",
+    "pympler.*",
+    "PIL",
+    "IPython.*",
+    "scipy.*",
+    "scopesim.*",
+    "toolz.*",
+    "tqdm.*",
+    "xarray.*",
+    "skimage.*",
+    "holoviews.*",
+    "bokeh.*",
+    "jinja2.*",
+    "click.*",
+]
+ignore_errors=  true
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+addopts = [
+    "--showlocals",
+    "--capture=no",
+    "-vv",
+    "--ignore=old_code"
+]
+
+[tool.pydocstyle]
+convention = "numpy"
+match = "(?!_version).*.py"
+add_ignore = "D202,D105,D102,D103"
+
+[tool.doc8]
+ignore = ["D001", "D002", "D004", "D005"]
+
+[tool.bandit]
+exclude_dirs = ["pyxel/_version.py"]
+
+[tool.codespell]
+ignore-words-list = "acn,sade,te"
+skip = "pyxel/_version.py"
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "debug",
+    "raise NotImplementedError",
+]
+
+[tool.coverage.run]
+omit = [
+    "pyxel/models/charge_measurement/nghxrg/nghxrg_beta.py",
+    "pyxel/models/charge_generation/tars/plotting.py",
+]

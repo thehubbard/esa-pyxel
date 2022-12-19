@@ -507,7 +507,7 @@ def champion_heatmap(
     # y=y[x>1e-7]
     # x=x[x>1e-7]
 
-    if logx is True:
+    if logx:
         bins: Union[list, int] = [
             np.geomspace(0.9 * np.min(x), 1.1 * np.max(x), num_bins + 1),
             num_bins,

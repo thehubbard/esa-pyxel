@@ -8,10 +8,9 @@
 """Pyxel detector simulation framework."""
 
 # flake8: noqa
-from ._version import get_versions
+from . import _version
 
-__version__: str = get_versions()["version"]
-del get_versions
+__version__: str = _version.get_versions()["version"]
 
 from .options import SetOptions as set_options
 from .show_versions import show_versions
