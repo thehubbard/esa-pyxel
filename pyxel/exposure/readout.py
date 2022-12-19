@@ -38,7 +38,7 @@ class Readout:
 
         if times is not None and times_from_file is not None:
             raise ValueError("Both times and times_from_file specified. Choose one.")
-        elif times is None and times_from_file is None:
+        elif times is times_from_file is None:
             self._times = np.array(
                 [1]
             )  # by convention default readout/exposure time is 1 second
