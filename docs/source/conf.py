@@ -15,23 +15,23 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 
+import sys
 from datetime import datetime
-from importlib.metadata import metadata
-from pathlib import Path
 
 from sphinx.util import logging
 
 import pyxel
 
+if sys.version_info >= (3, 8):
+    from importlib.metadata import metadata
+else:
+    from importlib_metadata import metadata  # pip install importlib-metadata
+
+
 # https://github.com/sphinx-doc/sphinx/issues/10112
 logging.getLogger("sphinx.ext.extlinks").setLevel(40)
 
-# Read 'setup.cfg' file
-parent_folder = Path(__file__).parent
-setup_cfg_filename: Path = parent_folder.joinpath("../../setup.cfg").resolve(
-    strict=True
-)
-
+# Get metadata from 'pyproject.toml'
 pyxel_metadata = metadata("pyxel-sim")
 
 now_dt: datetime = datetime.now()
