@@ -1,3 +1,5 @@
+# Editable install  : pip install -e .
+# Build project     : python -m build . --wheel --sdist
 [build-system]
 requires = ["setuptools>=63", "setuptools_scm[toml]>=7", "versioneer[toml]"]
 build-backend = "setuptools.build_meta"
@@ -80,11 +82,11 @@ tracker = "https://gitlab.com/esa/pyxel/issues"
 calibration = [ "pygmo>=2.16.1" ]
 model = [ "poppy>=1.0.2" ]
 io = [ "asdf" ]
-#all = [
-#    "%(calibration)s",
-#    "%(model)s",
-#    "%(io)s",
-#]
+all = [
+    "pyxel-sim[calibration]",
+    "pyxel-sim[model]",
+    "pyxel-sim[io]",
+]
 
 [project.scripts]
 pyxel = "pyxel.run:main"
