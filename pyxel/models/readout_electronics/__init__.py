@@ -15,4 +15,3 @@ from .amplifier_crosstalk import dc_crosstalk, ac_crosstalk
 from .dead_time import dead_time_filter
 from .phase_conversion import simple_phase_conversion
 from .simple_adc import simple_adc
-from ..util import load_detector, save_detector

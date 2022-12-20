@@ -10,4 +10,3 @@
 # flake8: noqa
 from .cdm import cdm
 from .arctic_cti.models_arctic_vanilla import arctic_add, arctic_remove
-from ..util import load_detector, save_detector

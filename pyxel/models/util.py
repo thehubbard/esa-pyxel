@@ -34,5 +34,5 @@ def load_detector(detector: Detector, filename: Union[str, Path]) -> None:
 
 
 def save_detector(detector: Detector, filename: Union[str, Path]) -> None:
-    """Save the current detector into ma file."""
+    """Save the current detector into a file."""
     detector.save(filename)

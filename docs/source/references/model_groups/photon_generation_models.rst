@@ -35,12 +35,12 @@ Accepted file formats are ``.h5``, ``.hdf5``, ``.hdf`` and ``.asdf``.
 .. code-block:: yaml
 
     - name: save_detector
-      func: pyxel.models.photon_generation.save_detector
+      func: pyxel.models.save_detector
       enabled: true
       arguments:
         filename: my_detector.h5
 
-.. autofunction:: save_detector
+.. autofunction:: pyxel.models.save_detector
 
 
 .. _photon_generation_load_detector:
@@ -54,12 +54,12 @@ Accepted file formats are ``.h5``, ``.hdf5``, ``.hdf`` and ``.asdf``.
 .. code-block:: yaml
 
     - name: load_detector
-      func: pyxel.models.photon_generation.load_detector
+      func: pyxel.models.load_detector
       enabled: true
       arguments:
         filename: my_detector.h5
 
-.. autofunction:: load_detector
+.. autofunction:: pyxel.models.load_detector
 
 .. _Load image:
 

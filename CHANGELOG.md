@@ -19,7 +19,8 @@ to save/extract a `Detector` object to/from a running pipeline.
 
 ### Models
 * Add models `load_detector` and `save_detector` to load/save a detector from/to a file.
-  (See [!545](https://gitlab.com/esa/pyxel/-/merge_requests/545)).
+  (See [!545](https://gitlab.com/esa/pyxel/-/merge_requests/545)
+  and [!562](https://gitlab.com/esa/pyxel/-/merge_requests/562)).
 
 ### Others
 * Add unit tests to charge deposition in MCT model.

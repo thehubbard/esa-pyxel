@@ -23,4 +23,3 @@ from .linearity import (
 )
 from .offset import dc_offset, output_pixel_reset_voltage_apd
 from .reset_noise import ktc_noise
-from ..util import load_detector, save_detector
