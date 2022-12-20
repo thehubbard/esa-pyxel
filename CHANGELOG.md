@@ -12,6 +12,10 @@ A new models `load_detector` and `save_detector` for each Model Groups to load/i
 to save/extract a `Detector` object to/from a running pipeline.
 
 ### Core 
+* Add 'Detector.load' and 'Detector.save'.
+  (See [!559](https://gitlab.com/esa/pyxel/-/merge_requests/559)).
+* Add method `Detector.to_xarray()`.
+  (See [!563](https://gitlab.com/esa/pyxel/-/merge_requests/563)).
 
 ### Documentation
 * Add JSON Schema in the documentation.
@@ -34,8 +38,6 @@ to save/extract a `Detector` object to/from a running pipeline.
   (See [!558](https://gitlab.com/esa/pyxel/-/merge_requests/558)).
 * Add a CI/CD pipeline to generate/check the JSON Schema file.
   (See [!535](https://gitlab.com/esa/pyxel/-/merge_requests/535)).
-* Add 'Detector.load' and 'Detector.save'.
-  (See [!559](https://gitlab.com/esa/pyxel/-/merge_requests/559)).
 * Refactoring with 'refurb'.
   (See [!560](https://gitlab.com/esa/pyxel/-/merge_requests/560)).
 * Use 'pyproject.toml'.

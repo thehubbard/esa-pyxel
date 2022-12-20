@@ -8,11 +8,11 @@
 """Detector class."""
 import collections
 from pathlib import Path
-from typing import Any, Dict, Mapping, Optional, Union
+from typing import TYPE_CHECKING, Any, Dict, Mapping, Optional, Union
 
 import numpy as np
 
-from pyxel import backends
+from pyxel import __version__, backends
 from pyxel.data_structure import (
     Charge,
     Image,
@@ -23,9 +23,12 @@ from pyxel.data_structure import (
     Signal,
     SimplePersistence,
 )
-from pyxel.detectors import Environment
-from pyxel.detectors.readout_properties import ReadoutProperties
+from pyxel.detectors import Environment, ReadoutProperties
 from pyxel.util.memory import get_size, memory_usage_details
+
+if TYPE_CHECKING:
+    import xarray as xr
+
 
 __all__ = ["Detector"]
 
@@ -132,6 +135,40 @@ class Detector:
             raise RuntimeError("'image' not initialized.")
 
         return self._image
+
+    def to_xarray(self) -> "xr.Dataset":
+        """Create a new ``Dataset`` from all data containers.
+
+        Examples
+        --------
+        >>> detector.to_xarray()
+        <xarray.Dataset>
+        Dimensions:  (y: 100, x: 100)
+        Coordinates:
+          * y        (y) int64 0 1 2 3 4 5 6 7 8 9 10 ... 90 91 92 93 94 95 96 97 98 99
+          * x        (x) int64 0 1 2 3 4 5 6 7 8 9 10 ... 90 91 92 93 94 95 96 97 98 99
+        Data variables:
+            photon   (y, x) float64 0.0 0.0 0.0 0.0 0.0 0.0 ... 0.0 0.0 0.0 0.0 0.0 0.0
+            pixel    (y, x) float64 0.0 0.0 0.0 0.0 0.0 0.0 ... 0.0 0.0 0.0 0.0 0.0 0.0
+            signal   (y, x) float64 0.0 0.0 0.0 0.0 0.0 0.0 ... 0.0 0.0 0.0 0.0 0.0 0.0
+            image    (y, x) uint64 0 0 0 0 0 0 0 0 0 0 0 0 0 ... 0 0 0 0 0 0 0 0 0 0 0 0
+        Attributes:
+            detector:       CCD
+            pyxel version:  1.5
+        """
+        import xarray as xr
+
+        ds = xr.Dataset()
+        ds["photon"] = self.photon.to_xarray()
+        # ds["scene"] = self.scene.to_xarray()
+        ds["pixel"] = self.pixel.to_xarray()
+        ds["signal"] = self.signal.to_xarray()
+        ds["image"] = self.image.to_xarray()
+        # ds["charge"] = self.charge.to_xarray()
+
+        ds.attrs.update({"detector": type(self).__name__, "pyxel version": __version__})
+
+        return ds
 
     def reset(self) -> None:
         """TBW."""
