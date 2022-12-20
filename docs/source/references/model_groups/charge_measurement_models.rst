@@ -31,7 +31,7 @@ Accepted file formats are ``.h5``, ``.hdf5``, ``.hdf`` and ``.asdf``.
 .. code-block:: yaml
 
     - name: save_detector
-      func: pyxel.models.charge_measurement.save_detector
+      func: pyxel.models.save_detector
       enabled: true
       arguments:
         filename: my_detector.h5
@@ -50,7 +50,7 @@ Accepted file formats are ``.h5``, ``.hdf5``, ``.hdf`` and ``.asdf``.
 .. code-block:: yaml
 
     - name: load_detector
-      func: pyxel.models.charge_measurement.load_detector
+      func: pyxel.models.load_detector
       enabled: true
       arguments:
         filename: my_detector.h5

@@ -13,4 +13,3 @@ from .fix_pattern_noise import fix_pattern_noise
 from .full_well import simple_full_well
 from .inter_pixel_capacitance import simple_ipc
 from .persistence import simple_persistence, persistence
-from ..util import load_detector, save_detector

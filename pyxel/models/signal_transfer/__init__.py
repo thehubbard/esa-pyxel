@@ -8,4 +8,3 @@
 """TBW."""
 
 # flake8: noqa
-from ..util import load_detector, save_detector

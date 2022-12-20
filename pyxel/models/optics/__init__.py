@@ -10,4 +10,3 @@
 # flake8: noqa
 from .poppy import optical_psf
 from .point_spread_function import load_psf
-from ..util import load_detector, save_detector
