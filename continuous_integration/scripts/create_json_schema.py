@@ -391,7 +391,14 @@ def generate_group(model_groups_info: Sequence[ModelGroupInfo]) -> Iterator[str]
         models_info = get_model_info(group_name)
         models_class_names = [info.model_class_name for info in models_info]
 
-        all_model_class_names = ", ".join([*models_class_names, "ModelFunction"])
+        all_model_class_names = ", ".join(
+            [
+                *models_class_names,
+                "ModelLoadDetector",
+                "ModelSaveDetector",
+                "ModelFunction",
+            ]
+        )
 
         yield f"    {group_name}: Optional["
         yield f"        Sequence[Union[{all_model_class_names}]]"
@@ -742,6 +749,30 @@ def generate_all_models() -> Iterator[str]:
     yield "from deepdiff import DeepDiff"
 
     yield ""
+    yield ""
+
+    yield "@schema(title='Parameters')"
+    yield "@dataclass"
+    yield "class ModelLoadSaveDetectorArguments(Mapping[str, Any]):"
+    yield "    filename: float = field("
+    yield "    metadata=schema(title='filename', description='Filename to load/save.')"
+    yield ")"
+    yield ""
+
+    yield "@dataclass"
+    yield "class ModelLoadDetector:"
+    yield "    name: str"
+    yield "    arguments: ModelLoadSaveDetectorArguments"
+    yield "    func: Literal['pyxel.models.load_detector'] = 'pyxel.models.load_detector'"
+    yield "    enabled: bool = True"
+    yield ""
+
+    yield "@dataclass"
+    yield "class ModelSaveDetector:"
+    yield "    name: str"
+    yield "    arguments: ModelLoadSaveDetectorArguments"
+    yield "    func: Literal['pyxel.models.save_detector'] = 'pyxel.models.save_detector'"
+    yield "    enabled: bool = True"
     yield ""
 
     yield "@dataclass"
