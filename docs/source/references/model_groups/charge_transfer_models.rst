@@ -37,7 +37,8 @@ Accepted file formats are ``.h5``, ``.hdf5``, ``.hdf`` and ``.asdf``.
       arguments:
         filename: my_detector.h5
 
-.. autofunction:: save_detector
+.. autofunction:: pyxel.models.save_detector
+   :noindex:
 
 
 .. _charge_transfer_load_detector:
@@ -56,7 +57,8 @@ Accepted file formats are ``.h5``, ``.hdf5``, ``.hdf`` and ``.asdf``.
       arguments:
         filename: my_detector.h5
 
-.. autofunction:: load_detector
+.. autofunction:: pyxel.models.load_detector
+   :noindex:
 
 
 .. _Charge Distortion Model (CDM):
