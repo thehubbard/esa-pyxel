@@ -143,16 +143,15 @@ def fixed_pattern_noise(
                 align=align,
             )
 
-        else:
-            if fixed_pattern_noise_factor is not None:
-                prnu_2d = compute_simple_prnu(
-                    shape=geo.shape,
-                    quantum_efficiency=char.quantum_efficiency,
-                    fixed_pattern_noise_factor=fixed_pattern_noise_factor,
-                )
+        elif fixed_pattern_noise_factor is not None and filename is None:
+            prnu_2d = compute_simple_prnu(
+                shape=geo.shape,
+                quantum_efficiency=char.quantum_efficiency,
+                fixed_pattern_noise_factor=fixed_pattern_noise_factor,
+            )
 
-            else:
-                raise ValueError(
-                    "Either filename or fixed_pattern_noise_factor has to be defined."
-                )
+        else:
+            raise ValueError(
+                "Either filename or fixed_pattern_noise_factor has to be defined."
+            )
     detector.pixel.array *= prnu_2d
