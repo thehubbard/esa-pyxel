@@ -190,6 +190,9 @@ class Detector:
         self._signal = Signal(geo=self.geometry)
         self._image = Image(geo=self.geometry)
 
+        if self._processed_data is None:
+            self._processed_data = ProcessedData()
+
     def empty(self, empty_all: bool = True) -> None:
         """Empty the data in the detector.
 

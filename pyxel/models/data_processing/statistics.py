@@ -1,3 +1,11 @@
+#  Copyright (c) European Space Agency, 2017, 2018, 2019, 2020, 2021, 2022.
+#
+#  This file is subject to the terms and conditions defined in file 'LICENCE.txt', which
+#  is part of this Pyxel package. No part of the package, including
+#  this file, may be copied, modified, propagated, or distributed except according to
+#  the terms contained in the file ‘LICENCE.txt’.
+
+"""Simple model to compute basic statistics."""
 from typing import Literal, Sequence, Union
 
 import xarray as xr
@@ -8,7 +16,7 @@ from pyxel.detectors import Detector
 def compute_statistics(
     detector: Detector,
     data_structure: Literal["pixel", "photon", "image", "signal"] = "pixel",
-    dimensions: Union[str, Sequence[str]] = ["x", "y"],
+    dimensions: Union[str, Sequence[str]] = ("x", "y"),
 ) -> None:
     """Compute basic statistics.
 
