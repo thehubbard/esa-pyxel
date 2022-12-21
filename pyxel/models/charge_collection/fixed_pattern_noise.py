@@ -90,7 +90,7 @@ def compute_simple_prnu(
         Fixed pattern noise caused by pixel non-uniformity during charge collection.
     """
 
-    prnu_2d = np.ones(shape) * quantum_efficiency * fixed_pattern_noise_factor
+    prnu_2d = np.ones(shape) * quantum_efficiency
     prnu_sigma = quantum_efficiency * fixed_pattern_noise_factor
     prnu_2 = prnu_2d * (1 + np.random.lognormal(sigma=prnu_sigma, size=shape))
 
