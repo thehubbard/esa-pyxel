@@ -1,10 +1,17 @@
+# You can override the included template(s) by including variable overrides
+# SAST customization: https://docs.gitlab.com/ee/user/application_security/sast/#customizing-the-sast-settings
+# Secret Detection customization: https://docs.gitlab.com/ee/user/application_security/secret_detection/#customizing-settings
+# Dependency Scanning customization: https://docs.gitlab.com/ee/user/application_security/dependency_scanning/#customizing-the-dependency-scanning-settings
+# Container Scanning customization: https://docs.gitlab.com/ee/user/application_security/container_scanning/#customizing-the-container-scanning-settings
+# Note that environment variables can be set in several places
+# See https://docs.gitlab.com/ee/ci/variables/#cicd-variable-precedence
 variables:
   # Change pip's cache directory to be inside the project directory.
   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache"
 
   # Set tags for docker images
-  DOCKER_TEST_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
-  DOCKER_RELEASE_IMAGE: $CI_REGISTRY_IMAGE:latest
+  DOCKER_TEST_IMAGE: "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA"
+  DOCKER_RELEASE_IMAGE: "$CI_REGISTRY_IMAGE:latest"
 
 stages:
   - test
@@ -13,6 +20,7 @@ stages:
 
 include:
   - template: Security/License-Scanning.gitlab-ci.yml
+  - template: Security/Dependency-Scanning.gitlab-ci.yml
 
 before_script:
   - python -V
