@@ -317,8 +317,8 @@ and :math:`t_{exp}` exposure time.
 
 To use the model,
 user has to provide arguments ``figure_of_merit`` in :math:`nA/cm^2` (:math:`D_{FM}`),
-``spatial_noise_factor`` (:math:`D_N`),
-``band_gap`` in :math:`eV` and ``band_gap_room_temperature`` in :math:`eV`.
+``band_gap`` in :math:`eV`, ``band_gap_room_temperature`` in :math:`eV`,
+``spatial_noise_factor`` (:math:`D_N`) and ``temporal_noise``.
 Parameter ``temperature`` in :math:`K` is taken from detector :py:class:`~pyxel.detectors.Environment`.
 If arguments ``band_gap`` and ``band_gap_room_temperature`` are not provided,
 the model will use the Varshni empirical formula with parameters for Silicon by default:

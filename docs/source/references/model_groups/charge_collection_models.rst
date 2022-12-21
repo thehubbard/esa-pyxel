@@ -127,8 +127,10 @@ Accepted file formats for the noise are ``.npy``, ``.fits``, ``.txt``, ``.data``
 and set where the noise is placed onto detector. You can set preset positions with argument ``align``.
 Values outside of detector shape will be cropped.
 Read more about placement in the documentation of function :py:func:`~pyxel.util.fit_into_array`.
-If the user provides a value for the ``fixed_pattern_noise_factor`` instead of a path to a filename as a string,
-the value will be multiplied with the quantum_efficiency given by the detector properties and the lognormal distribution is applied to the pixel array.
+If the user provides a value for the ``fixed_pattern_noise_factor`` instead of a filename,
+the model will use a simple calculation of the PRNU. In the simple calculation the ``fixed_pattern_noise_factor``
+will be multiplied with the quantum_efficiency, given by the detector characteristics, and applied to the pixel array through a lognormal distribution.
+
 
 Basic example of the configuration file:
 
