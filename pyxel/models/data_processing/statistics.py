@@ -1,3 +1,5 @@
+from typing import Literal, Sequence, Union
+
 import xarray as xr
 
 from pyxel.detectors import Detector
@@ -5,11 +7,18 @@ from pyxel.detectors import Detector
 
 def compute_statistics(
     detector: Detector,
-    data_structure: str = "pixel",
-    dimensions=["x", "y"],
+    data_structure: Literal["pixel", "photon", "image", "signal"] = "pixel",
+    dimensions: Union[str, Sequence[str]] = ["x", "y"],
 ) -> None:
+    """Compute basic statistics.
 
-    data_2d = getattr(detector, data_structure).to_xarray()
+    Parameters
+    ----------
+    detector
+    data_structure
+    dimensions
+    """
+    data_2d: xr.DataArray = getattr(detector, data_structure).to_xarray()
     var = data_2d.var(dim=dimensions)
     mean = data_2d.mean(dim=dimensions)
     min_array = data_2d.min(dim=dimensions)

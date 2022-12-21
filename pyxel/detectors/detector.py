@@ -422,6 +422,7 @@ class Detector:
             "_pixel",
             "_signal",
             "_image",
+            "_processed_data",
             "material",
             "environment",
             "_geometry",
