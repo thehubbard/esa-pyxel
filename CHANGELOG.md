@@ -16,6 +16,8 @@ to save/extract a `Detector` object to/from a running pipeline.
   (See [!559](https://gitlab.com/esa/pyxel/-/merge_requests/559)).
 * Add method `Detector.to_xarray()`.
   (See [!563](https://gitlab.com/esa/pyxel/-/merge_requests/563)).
+* Add parameter 'header' in function 'load_table'.
+  (See [!565](https://gitlab.com/esa/pyxel/-/merge_requests/565)).
 
 ### Documentation
 * Add JSON Schema in the documentation.
