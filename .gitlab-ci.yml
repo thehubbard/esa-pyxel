@@ -6,6 +6,14 @@ variables:
   DOCKER_TEST_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
   DOCKER_RELEASE_IMAGE: $CI_REGISTRY_IMAGE:latest
 
+  # From https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Jobs/License-Scanning.gitlab-ci.yml
+  # Setting this variable will affect all Security templates
+  # (SAST, Dependency Scanning, ...)
+  SECURE_ANALYZERS_PREFIX: "$CI_TEMPLATE_REGISTRY_HOST/security-products"
+
+  LICENSE_MANAGEMENT_SETUP_CMD: ''  # If needed, specify a command to setup your environment with a custom package manager.
+  LICENSE_MANAGEMENT_VERSION: 4
+
 stages:
   - test
   - build
@@ -82,6 +90,30 @@ codespell:
   stage: test
   script:
     - tox -e codespell
+
+# From https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Jobs/License-Scanning.gitlab-ci.yml
+license_scanning:
+  stage: test
+  before_script: []
+  image:
+    name: "$SECURE_ANALYZERS_PREFIX/license-finder:$LICENSE_MANAGEMENT_VERSION"
+    entrypoint: [""]
+  variables:
+    LM_REPORT_VERSION: '2.1'
+    SETUP_CMD: $LICENSE_MANAGEMENT_SETUP_CMD
+  allow_failure: true
+  script:
+    - export
+    - /run.sh analyze .
+  artifacts:
+    reports:
+      license_scanning: gl-license-scanning-report.json
+  dependencies: []
+  rules:
+    - if: $LICENSE_MANAGEMENT_DISABLED
+      when: never
+    - if: $CI_COMMIT_BRANCH &&
+          $GITLAB_FEATURES =~ /\blicense_scanning\b/
 
 # ###########################
 # Build stage
