@@ -26,15 +26,22 @@ class ProcessedData:
     """
 
     def __init__(self, data: Optional[xr.Dataset] = None):
-
         if data is None:
             data = xr.Dataset()
 
         self._data: xr.Dataset = data
+
+    def __eq__(self, other) -> bool:
+        return type(self) == type(other) and self.data.equals(other.data)
 
     @property
     def data(self) -> xr.Dataset:
         return self._data
 
     def append(self, other: Union[xr.Dataset, xr.DataArray]) -> None:
-        self._data = xr.combine_by_coords([self._data, other])
+        result = xr.combine_by_coords([self._data, other])
+
+        # TODO: This is only for mypy. Improve this.
+        assert isinstance(result, xr.Dataset)
+
+        self._data = result
