@@ -54,7 +54,8 @@ to save/extract a `Detector` object to/from a running pipeline.
   (See [!569](https://gitlab.com/esa/pyxel/-/merge_requests/569)).
 * Move 'environment.yml' in folder 'continuous_integration'.
   (See [!570](https://gitlab.com/esa/pyxel/-/merge_requests/570)).
-
+* Enable 'License Compliance'.
+  (See [!567](https://gitlab.com/esa/pyxel/-/merge_requests/567)).
 
 ## 1.5 / 2022-11-21
 
