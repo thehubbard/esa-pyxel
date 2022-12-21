@@ -19,6 +19,7 @@ from pyxel.data_structure import (
     Persistence,
     Photon,
     Pixel,
+    ProcessedData,
     Scene,
     Signal,
     SimplePersistence,
@@ -48,6 +49,7 @@ class Detector:
         self._pixel: Optional[Pixel] = None
         self._signal: Optional[Signal] = None
         self._image: Optional[Image] = None
+        self._processed_data: Optional[ProcessedData] = None
 
         # This will be the memory of the detector where trapped charges will be saved
         self._memory: Dict = {}
@@ -69,6 +71,7 @@ class Detector:
             and self._pixel == other._pixel
             and self._signal == other._signal
             and self._image == other._image
+            and self._processed_data == other._processed_data
         )
 
     @property
@@ -135,6 +138,14 @@ class Detector:
             raise RuntimeError("'image' not initialized.")
 
         return self._image
+
+    @property
+    def processed_data(self) -> ProcessedData:
+        """TBW."""
+        if not self._processed_data:
+            raise RuntimeError("'processed_data' not initialized.")
+
+        return self._processed_data
 
     def to_xarray(self) -> "xr.Dataset":
         """Create a new ``Dataset`` from all data containers.

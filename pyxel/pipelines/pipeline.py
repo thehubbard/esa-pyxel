@@ -27,6 +27,7 @@ class DetectionPipeline:
         charge_measurement: Optional[Sequence[ModelFunction]] = None,
         signal_transfer: Optional[Sequence[ModelFunction]] = None,
         readout_electronics: Optional[Sequence[ModelFunction]] = None,
+        data_processing: Optional[Sequence[ModelFunction]] = None,
         doc: Optional[str] = None,
     ):
         self._is_running = False
@@ -82,6 +83,12 @@ class DetectionPipeline:
             else None
         )  # CMOS
 
+        self._data_processing: Optional[ModelGroup] = (
+            ModelGroup(data_processing, name="data_processing")
+            if data_processing
+            else None
+        )
+
         # TODO: this defines the order of steps in the pipeline.
         #       The ModelGroupList could do this. Is it really needed?
         self.MODEL_GROUPS: Tuple[str, ...] = (
@@ -94,6 +101,7 @@ class DetectionPipeline:
             "charge_measurement",
             "signal_transfer",
             "readout_electronics",
+            "data_processing",
         )
 
     def __repr__(self) -> str:
@@ -150,6 +158,11 @@ class DetectionPipeline:
     def readout_electronics(self) -> Optional[ModelGroup]:
         """Get group 'readout electronics'."""
         return self._readout_electronics
+
+    @property
+    def data_processing(self) -> Optional[ModelGroup]:
+        """Get group 'data processing'."""
+        return self._data_processing
 
     @property
     def model_group_names(self) -> Tuple[str, ...]:
