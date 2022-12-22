@@ -61,9 +61,10 @@ class ProcessedData:
         if self._data.equals(xr.Dataset()):
             result = ds  # ToDo : Is it needed to copy?
         else:
-            result = xr.combine_by_coords([self._data, ds])
+            combined_result = xr.combine_by_coords([self._data, ds])
 
-        # TODO: This is only for mypy. Improve this.
-        assert isinstance(result, xr.Dataset)
+            # TODO: This is only for mypy. Improve this.
+            assert isinstance(combined_result, xr.Dataset)
+            result = combined_result
 
         self._data = result
