@@ -48,6 +48,8 @@ to save/extract a `Detector` object to/from a running pipeline.
   (See [!560](https://gitlab.com/esa/pyxel/-/merge_requests/560)).
 * Use 'pyproject.toml'.
   (See [!530](https://gitlab.com/esa/pyxel/-/merge_requests/530)).
+* Fix issue with unit test 'json schema'.
+  (See [!569](https://gitlab.com/esa/pyxel/-/merge_requests/569)).
 
 
 ## 1.5 / 2022-11-21
