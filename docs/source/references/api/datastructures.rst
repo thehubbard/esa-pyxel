@@ -67,3 +67,12 @@ Charge
     :undoc-members:
     :show-inheritance:
     :exclude-members:
+
+ProcessedData
+-------------
+.. autoclass:: ProcessedData
+    :members:
+    :inherited-members:
+    :undoc-members:
+    :show-inheritance:
+    :exclude-members:
