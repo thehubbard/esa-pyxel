@@ -10,11 +10,11 @@
 #  $ conda env list -v
 
 # Upgrade a conda environment
-#  $ conda update -f environment.yml [-n CONDA_ENV_NAME]
-#  $ conda update [-n CONDA_ENV_NAME] --all
+#  $ conda env update -f environment.yml [-n CONDA_ENV_NAME]
+#  $ conda env update [-n CONDA_ENV_NAME] --all
 
 # Remove a conda environment
-#  $ conda remove --name MYENV --all
+#  $ conda env remove --name MYENV
 
 
 name: pyxel-dev
@@ -71,6 +71,7 @@ dependencies:
   - sphinx-inline-tabs
   - myst-nb
   - sphinx-copybutton
+  - jupyter-book
 # Development
   - flake8
   - mypy
@@ -83,4 +84,6 @@ dependencies:
   - codespell
 # Pip packages
   - pip:
+#    - --no-deps
     - poppy>=1.0.2
+

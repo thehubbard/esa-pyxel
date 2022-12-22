@@ -416,6 +416,7 @@ def get_model_group_info() -> Sequence[ModelGroupInfo]:
         "readout_electronics",
         "charge_transfer",
         "signal_transfer",
+        "data_processing",
     )
 
     lst = [
@@ -800,6 +801,7 @@ def generate_all_models() -> Iterator[str]:
     yield "    readout_electronics: Optional[Sequence[ModelFunction]] = None"
     yield "    charge_transfer: Optional[Sequence[ModelFunction]] = None"
     yield "    signal_transfer: Optional[Sequence[ModelFunction]] = None"
+    yield "    data_processing: Optional[Sequence[ModelFunction]] = None"
     yield ""
     yield ""
 
