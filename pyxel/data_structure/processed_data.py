@@ -38,8 +38,19 @@ class ProcessedData:
     def data(self) -> xr.Dataset:
         return self._data
 
-    def append(self, other: Union[xr.Dataset, xr.DataArray]) -> None:
-        result = xr.combine_by_coords([self._data, other])
+    def append(
+        self, other: Union[xr.Dataset, xr.DataArray], default_name: str = "default"
+    ) -> None:
+        if self._data.equals(xr.Dataset()):
+            if isinstance(other, xr.DataArray):
+                if other.name is None:
+                    result = other.to_dataset(name=default_name)
+                else:
+                    result = other.to_dataset()
+            else:
+                result = other  # ToDo : Is it needed to copy?
+        else:
+            result = xr.combine_by_coords([self._data, other])
 
         # TODO: This is only for mypy. Improve this.
         assert isinstance(result, xr.Dataset)
