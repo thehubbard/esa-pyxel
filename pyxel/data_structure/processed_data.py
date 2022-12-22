@@ -6,7 +6,7 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """Pyxel 'Processed Data' class to generate and track processing data."""
-from typing import Optional, Union
+from typing import Union
 
 import xarray as xr
 
@@ -25,11 +25,18 @@ class ProcessedData:
     >>> obj.append(xr.DataArray(...))
     """
 
-    def __init__(self, data: Optional[xr.Dataset] = None):
+    def __init__(self, data: Union[xr.Dataset, xr.DataArray, None] = None):
         if data is None:
-            data = xr.Dataset()
+            ds: xr.Dataset = xr.Dataset()
+        elif isinstance(data, xr.DataArray):
+            if data.name is None:
+                raise ValueError("Missing parameter 'name' in the 'DataArray'")
 
-        self._data: xr.Dataset = data
+            ds = data.to_dataset()
+        else:
+            ds = data
+
+        self._data: xr.Dataset = ds
 
     def __eq__(self, other) -> bool:
         return type(self) == type(other) and self.data.equals(other.data)
@@ -39,18 +46,22 @@ class ProcessedData:
         return self._data
 
     def append(
-        self, other: Union[xr.Dataset, xr.DataArray], default_name: str = "default"
+        self,
+        other: Union[xr.Dataset, xr.DataArray],
+        default_name: str = "default",
     ) -> None:
-        if self._data.equals(xr.Dataset()):
-            if isinstance(other, xr.DataArray):
-                if other.name is None:
-                    result = other.to_dataset(name=default_name)
-                else:
-                    result = other.to_dataset()
+        if isinstance(other, xr.DataArray):
+            if other.name is None:
+                ds: xr.Dataset = other.to_dataset(name=default_name)
             else:
-                result = other  # ToDo : Is it needed to copy?
+                ds = other.to_dataset()
         else:
-            result = xr.combine_by_coords([self._data, other])
+            ds = other
+
+        if self._data.equals(xr.Dataset()):
+            result = ds  # ToDo : Is it needed to copy?
+        else:
+            result = xr.combine_by_coords([self._data, ds])
 
         # TODO: This is only for mypy. Improve this.
         assert isinstance(result, xr.Dataset)
