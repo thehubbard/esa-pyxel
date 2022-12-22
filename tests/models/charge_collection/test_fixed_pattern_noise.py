@@ -6,6 +6,7 @@ import pytest
 
 from pyxel.detectors import CCD, CCDCharacteristics, CCDGeometry, Environment
 from pyxel.models.charge_collection import fixed_pattern_noise
+from pyxel.models.charge_collection.fixed_pattern_noise import compute_simple_prnu
 
 
 @pytest.fixture
@@ -65,7 +66,36 @@ def test_fixed_pattern_noise_valid_path(
     np.testing.assert_array_almost_equal(detector.pixel.array, target)
 
 
+def test_compute_simple_prnu(ccd_5x5: CCD):
+    """Test function 'compute_simple_prnu'."""
+    detector = ccd_5x5
+    shape = detector.geometry.shape
+    quantum_efficiency = detector.characteristics.quantum_efficiency
+    fixed_pattern_noise_factor = 0.01
+
+    prnu_2d = compute_simple_prnu(shape, quantum_efficiency, fixed_pattern_noise_factor)
+    np.testing.assert_equal(prnu_2d.shape, shape)
+    assert np.all(prnu_2d >= quantum_efficiency)
+
+
 def test_fixed_pattern_noise_valid(ccd_5x5: CCD):
-    """Test function fixed_pattern_noise with valid fpn inputs."""
+    """Test model fixed_pattern_noise with valid fpn inputs."""
     detector = ccd_5x5
     fixed_pattern_noise(detector=detector, fixed_pattern_noise_factor=0.01)
+
+
+def test_fpn_raises(ccd_5x5: CCD, valid_noise_path: Union[str, Path]):
+    """Test model fixed_pattern_noise when generating an error."""
+    detector = ccd_5x5
+    invalid_noise_path = "noise.npy"
+    with pytest.raises(ValueError, match="filename or fixed_pattern_noise_factor"):
+        fixed_pattern_noise(
+            detector=detector,
+            filename=valid_noise_path,
+            fixed_pattern_noise_factor=0.01,
+        )
+    with pytest.raises(ValueError, match="filename or fixed_pattern_noise_factor"):
+        fixed_pattern_noise(detector=detector)
+
+    with pytest.raises(FileNotFoundError, match="Cannot find folder"):
+        fixed_pattern_noise(detector=detector, filename=invalid_noise_path)

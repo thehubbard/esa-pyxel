@@ -51,19 +51,19 @@ def fpn_from_file(
     """
     position_y, position_x = position
 
+    folder_path = Path(filename).expanduser().resolve()
+
+    if not folder_path.exists():
+        raise FileNotFoundError(f"Cannot find folder '{folder_path}' !")
+
     # Load charge profile as numpy array.
-    prnu_2d = load_cropped_and_aligned_image(
+    prnu_2d: np.ndarray = load_cropped_and_aligned_image(
         shape=(geometry.row, geometry.col),
         filename=filename,
         position_x=position_x,
         position_y=position_y,
         align=align,
-    )  # type: np.ndarray
-
-    folder_path = Path(filename).expanduser().resolve()
-
-    if not folder_path.exists():
-        raise FileNotFoundError(f"Cannot find folder '{folder_path}' !")
+    )
 
     return prnu_2d
 

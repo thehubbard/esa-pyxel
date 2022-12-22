@@ -77,7 +77,7 @@ def test_simple_dark_current_valid(ccd_10x10: CCD):
 
 def test_dark_current_valid(ccd_10x10: CCD):
     """Test model 'dark_current' with valid inputs."""
-    dark_current(detector=ccd_10x10, figure_of_merit=1.0, spatial_noise_factor=0.01)
+    dark_current(detector=ccd_10x10, figure_of_merit=1.0, spatial_noise_factor=0.4)
 
 
 def test_dark_current_warning(ccd_10x10: CCD):
@@ -86,9 +86,7 @@ def test_dark_current_warning(ccd_10x10: CCD):
     detector.environment.temperature = 300
 
     with pytest.warns(RuntimeWarning, match="Unphysical high value"):
-        dark_current(
-            detector=detector, figure_of_merit=100.0, spatial_noise_factor=0.01
-        )
+        dark_current(detector=detector, figure_of_merit=100.0, spatial_noise_factor=0.4)
 
 
 @pytest.mark.parametrize(
