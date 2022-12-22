@@ -68,12 +68,19 @@ class CMOS(Detector):
                 "pixel": None if self._pixel is None else self._pixel.array.copy(),
                 "signal": None if self._signal is None else self._signal.array.copy(),
                 "image": None if self._image is None else self._image.array.copy(),
-                "charge": None
-                if self._charge is None
-                else {
-                    "array": self._charge.array.copy(),
-                    "frame": self._charge.frame.copy(),
-                },
+                "processed_data": (
+                    None
+                    if self._processed_data is None
+                    else self._processed_data.data.to_dict()
+                ),
+                "charge": (
+                    None
+                    if self._charge is None
+                    else {
+                        "array": self._charge.array.copy(),
+                        "frame": self._charge.frame.copy(),
+                    }
+                ),
             },
         }
 
@@ -85,6 +92,7 @@ class CMOS(Detector):
         """Create a new instance of `CMOS` from a `dict`."""
         # TODO: This is a simplistic implementation. Improve this.
         import numpy as np
+        import xarray as xr
 
         from pyxel.data_structure import Scene
         from pyxel.detectors import CMOSCharacteristics, CMOSGeometry, Environment
@@ -121,6 +129,8 @@ class CMOS(Detector):
             detector.signal.array = np.asarray(data["signal"])
         if "image" in data:
             detector.image.array = np.asarray(data["image"])
+        if "processed_data" in data:
+            detector.processed_data._data = xr.Dataset.from_dict(data["processed_data"])
         if "charge" in data and data["charge"] is not None:
             charge_dct = data["charge"]
             detector.charge._array = np.asarray(charge_dct["array"])

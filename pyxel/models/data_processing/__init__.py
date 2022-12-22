@@ -5,16 +5,7 @@
 #  this file, may be copied, modified, propagated, or distributed except according to
 #  the terms contained in the file ‘LICENCE.txt’.
 
-"""TBW."""
+"""Subpackage with all models related to the 'DataProcessing' model group."""
 
 # flake8: noqa
-from .array import Array
-from .photon import Photon
-from .scene import Scene
-from .pixel import Pixel
-from .signal import Signal
-from .charge import Charge
-from .image import Image
-from .phase import Phase
-from .persistence import Persistence, SimplePersistence
-from .processed_data import ProcessedData
+from .statistics import compute_statistics

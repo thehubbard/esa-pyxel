@@ -18,6 +18,8 @@ to save/extract a `Detector` object to/from a running pipeline.
   (See [!563](https://gitlab.com/esa/pyxel/-/merge_requests/563)).
 * Add parameter 'header' in function 'load_table'.
   (See [!565](https://gitlab.com/esa/pyxel/-/merge_requests/565)).
+* Add new model group 'Data Processing'.
+  (See [!566](https://gitlab.com/esa/pyxel/-/merge_requests/566)).
 
 ### Documentation
 * Add JSON Schema in the documentation.
