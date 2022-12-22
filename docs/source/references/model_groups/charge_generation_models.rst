@@ -312,13 +312,13 @@ The entire dark current during exposure is:
 :math:`I_{dark}=\mathcal{P}(t_{exp}D_R)(1+\mathcal{lnN}(0, \sigma^2_{fpn}))`,
 
 where :math:`\sigma_{fpn}=t_{exp} D_R D_N`, :math:`\mathcal{P}` Poisson distribution,
-:math:`\mathcal{lnN}` log-normal distribution, :math:`D_N` the dark current fixed pattern noise factor
+:math:`\mathcal{lnN}` log-normal distribution, :math:`D_N` the dark current spatial noise factor
 and :math:`t_{exp}` exposure time.
 
 To use the model,
 user has to provide arguments ``figure_of_merit`` in :math:`nA/cm^2` (:math:`D_{FM}`),
-``fixed_pattern_noise_factor`` (:math:`D_N`),
-``band_gap`` in :math:`eV` and ``band_gap_room_temperature`` in :math:`eV`.
+``band_gap`` in :math:`eV`, ``band_gap_room_temperature`` in :math:`eV`,
+``spatial_noise_factor`` (:math:`D_N`) and ``temporal_noise``.
 Parameter ``temperature`` in :math:`K` is taken from detector :py:class:`~pyxel.detectors.Environment`.
 If arguments ``band_gap`` and ``band_gap_room_temperature`` are not provided,
 the model will use the Varshni empirical formula with parameters for Silicon by default:
@@ -337,9 +337,9 @@ Example of the configuration file:
       enabled: true
       arguments:
         figure_of_merit: 1.  # nA/cm^2
-        fixed_pattern_noise_factor: 0.01
         band_gap: 1.2  # eV, optional
         band_gap_room_temperature: 1.2  # eV, optional
+        spatial_noise_factor: 0.01
         temporal_noise: false
 
 .. autofunction:: pyxel.models.charge_generation.dark_current
@@ -354,7 +354,7 @@ Dark current rule07
 With this model you can add dark current to :py:class:`~pyxel.data_structure.Charge` following the
 model described in :cite:p:`Tennant2008MBEHT`.
 This model is only valid for :term:`MCT` hybridised array (:term:`MCT` + :term:`CMOS`).
-The model has one extra argument: ``cut-off wavelength``,and also takes some values from :py:class:`~pyxel.detectors.Detector` object,
+The model has one extra argument: ``cut-off wavelength``, and also takes some values from :py:class:`~pyxel.detectors.Detector` object,
 to be precise: ``temperature``, ``pixel size`` (assuming it is square),
 and ``time step`` since last read-out.
 Please make sure the detector :py:class:`~pyxel.detectors.Environment`, :py:class:`~pyxel.detectors.Geometry` and
@@ -369,7 +369,7 @@ Example of the configuration file:
       enabled: true
       arguments:
         cutoff_wavelength: 2.5
-        fixed_pattern_noise_factor: 0.01
+        spatial_noise_factor: 0.01
         temporal_noise: true
 
 .. note:: This model is specific for the :term:`MCT` and :term:`CMOS` detector.

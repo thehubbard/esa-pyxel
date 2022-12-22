@@ -124,7 +124,7 @@ def compute_dark_current(
     figure_of_merit: float,
     band_gap: float,
     band_gap_room_temperature: float,
-    fixed_pattern_noise_factor: Optional[float] = None,
+    spatial_noise_factor: Optional[float] = None,
     temporal_noise: bool = True,
 ) -> np.ndarray:
     """Compute dark current.
@@ -150,9 +150,9 @@ def compute_dark_current(
         Semiconductor band_gap. Unit: eV
     band_gap_room_temperature : float
         Semiconductor band gap at 300K. If none, the one for silicon is used. Unit: eV
-    fixed_pattern_noise_factor : float
-        Fixed pattern noise factor.
-    temporal_noise : bool
+    spatial_noise_factor: float
+        Dark current fixed pattern noise factor.
+    temporal_noise: bool
         Shot noise.
 
     Returns
@@ -179,9 +179,9 @@ def compute_dark_current(
         dark_signal_2d = np.ones(shape) * avg_dark_current * time_step
         dark_current_2d = dark_signal_2d
 
-    if fixed_pattern_noise_factor is not None:
+    if spatial_noise_factor is not None:
         dark_current_fpn_sigma = (
-            time_step * avg_dark_current * fixed_pattern_noise_factor
+            time_step * avg_dark_current * spatial_noise_factor
         )  # sigma of fpn distribution
 
         dark_current_2d = dark_current_2d * (
@@ -201,7 +201,7 @@ def compute_dark_current(
 def dark_current(
     detector: Detector,
     figure_of_merit: float,
-    fixed_pattern_noise_factor: Optional[float] = None,
+    spatial_noise_factor: Optional[float] = None,
     band_gap: Optional[float] = None,
     band_gap_room_temperature: Optional[float] = None,
     seed: Optional[int] = None,
@@ -220,8 +220,8 @@ def dark_current(
         Pyxel detector object.
     figure_of_merit : float
         Dark current figure of merit. Unit: nA/cm^2
-    fixed_pattern_noise_factor : float
-        Fixed pattern noise factor.
+    spatial_noise_factor : float
+        Dark current fixed pattern noise factor.
     band_gap : float, optional
         Semiconductor band_gap. If none, the one for silicon is used. Unit: eV
     band_gap_room_temperature : float, optional
@@ -256,7 +256,7 @@ def dark_current(
             figure_of_merit=figure_of_merit,
             band_gap=final_band_gap,
             band_gap_room_temperature=final_band_gap_room_temperature,
-            fixed_pattern_noise_factor=fixed_pattern_noise_factor,
+            spatial_noise_factor=spatial_noise_factor,
             temporal_noise=temporal_noise,
         )
 
