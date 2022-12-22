@@ -116,18 +116,20 @@ def load_image(filename: Union[str, Path]) -> np.ndarray:
     return data_2d
 
 
-def load_table(filename: Union[str, Path]) -> "pd.DataFrame":
+def load_table(filename: Union[str, Path], header: bool = False) -> "pd.DataFrame":
     """Load a table from a file and returns a pandas dataframe. No header is expected in xlsx.
 
     Parameters
     ----------
-    filename: str or Path
+    filename : str or Path
         Filename to read the table.
         {.npy, .xlsx, .csv, .txt., .data} are accepted.
+    header : bool, default: False
+        Remove the header.
 
     Returns
     -------
-    table: DataFrame
+    DataFrame
 
     Raises
     ------
@@ -135,7 +137,6 @@ def load_table(filename: Union[str, Path]) -> "pd.DataFrame":
         If an image is not found.
     ValueError
         When the extension of the filename is unknown or separator is not found.
-
     """
     # Late import to speedup start-up time
     import pandas as pd
@@ -167,7 +168,7 @@ def load_table(filename: Union[str, Path]) -> "pd.DataFrame":
         with fsspec.open(url_path, mode="rb", **extras) as file_handler:
             table = pd.read_excel(
                 file_handler,
-                header=None,
+                header=0 if header else None,
                 convert_float=False,
             )
 
@@ -177,7 +178,10 @@ def load_table(filename: Union[str, Path]) -> "pd.DataFrame":
                 # numpy will return ValueError with a wrong delimiter
                 with fsspec.open(url_path, mode="r", **extras) as file_handler:
                     table = pd.read_csv(
-                        file_handler, delimiter=sep, header=None, dtype="float"
+                        file_handler,
+                        delimiter=sep,
+                        header=0 if header else None,
+                        dtype="float",
                     )
                     break
         else:
@@ -188,7 +192,10 @@ def load_table(filename: Union[str, Path]) -> "pd.DataFrame":
             with suppress(ValueError):
                 with fsspec.open(url_path, mode="r", **extras) as file_handler:
                     table = pd.read_table(
-                        file_handler, delimiter=sep, header=None, dtype="float"
+                        file_handler,
+                        delimiter=sep,
+                        header=0 if header else None,
+                        dtype="float",
                     )
                     break
         else:

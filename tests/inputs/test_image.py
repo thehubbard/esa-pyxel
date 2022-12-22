@@ -184,7 +184,11 @@ def valid_table_http_hostname(tmp_path: Path, httpserver: HTTPServer) -> str:
         # Create folder 'data'
         Path("data").mkdir(parents=True, exist_ok=True)
 
-        df = pd.DataFrame([[1, 2, 3], [4, 5, 6], [7, 8, 9]], dtype="float64")
+        df = pd.DataFrame(
+            [[1, 2, 3], [4, 5, 6], [7, 8, 9]],
+            columns=["col1", "col2", "col3"],
+            dtype=float,
+        )
 
         # Save tables
         df.to_csv("data/table_tab.txt", header=False, index=False, sep="\t")
@@ -193,7 +197,19 @@ def valid_table_http_hostname(tmp_path: Path, httpserver: HTTPServer) -> str:
         df.to_csv("data/table_pipe.txt", header=False, index=False, sep="|")
         df.to_csv("data/table_semicolon.txt", header=False, index=False, sep=";")
 
+        df.to_csv("data/table_tab_with_header.txt", header=True, index=False, sep="\t")
+        df.to_csv("data/table_space_with_header.TXT", header=True, index=False, sep=" ")
+        df.to_csv(
+            "data/table_comma_with_header.data", header=True, index=False, sep=","
+        )
+        df.to_csv("data/table_pipe_with_header.txt", header=True, index=False, sep="|")
+        df.to_csv(
+            "data/table_semicolon_with_header.txt", header=True, index=False, sep=";"
+        )
+
         df.to_excel("data/table.xlsx", header=False, index=False)
+        df.to_excel("data/table_with_header.xlsx", header=True, index=False)
+
         np.save("data/table.npy", arr=df.to_numpy())
 
         text_filenames = [
@@ -202,6 +218,11 @@ def valid_table_http_hostname(tmp_path: Path, httpserver: HTTPServer) -> str:
             "data/table_comma.data",
             "data/table_pipe.txt",
             "data/table_semicolon.txt",
+            "data/table_tab_with_header.txt",
+            "data/table_space_with_header.TXT",
+            "data/table_comma_with_header.data",
+            "data/table_pipe_with_header.txt",
+            "data/table_semicolon_with_header.txt",
         ]
 
         # Put text data in a fake HTTP server
@@ -214,6 +235,7 @@ def valid_table_http_hostname(tmp_path: Path, httpserver: HTTPServer) -> str:
 
         binary_filenames = [
             ("data/table.xlsx", "application/octet-stream"),
+            ("data/table_with_header.xlsx", "application/octet-stream"),
             ("data/table.npy", "application/octet-stream"),
         ]
 
@@ -249,7 +271,7 @@ def invalid_table_http_hostname(tmp_path: Path, httpserver: HTTPServer) -> str:
         # Create folder 'data'
         Path("invalid_data").mkdir(parents=True, exist_ok=True)
 
-        df = pd.DataFrame([[1, 2, 3], [4, 5, 6], [7, 8, 9]], dtype="float64")
+        df = pd.DataFrame([[1, 2, 3], [4, 5, 6], [7, 8, 9]], dtype=float)
 
         # Save tables
         df.to_csv("invalid_data/table_X.txt", header=False, index=False, sep="X")
@@ -430,44 +452,71 @@ def test_load_table_invalid_filename(
 
 @pytest.mark.parametrize("with_caching", [False, True])
 @pytest.mark.parametrize(
-    "filename",
+    "filename, with_header",
     [
-        "data/table_tab.txt",
-        "data/table_space.TXT",
-        "data/table_comma.data",
-        "data/table_pipe.txt",
-        "data/table_semicolon.txt",
-        "data/table.xlsx",
-        "data/table.npy",
-        Path("data/table_tab.txt"),
-        Path("data/table_space.TXT"),
-        Path("data/table_comma.data"),
-        Path("data/table_pipe.txt"),
-        Path("data/table_semicolon.txt"),
-        Path("data/table.xlsx"),
-        Path("data/table.npy"),
-        "http://{host}/data/table_tab.txt",
-        "http://{host}/data/table_space.TXT",
-        "http://{host}/data/table_comma.data",
-        "http://{host}/data/table_pipe.txt",
-        "http://{host}/data/table_semicolon.txt",
-        "http://{host}/data/table.xlsx",
-        "http://{host}/data/table.npy",
+        ("data/table_tab.txt", False),
+        ("data/table_space.TXT", False),
+        ("data/table_comma.data", False),
+        ("data/table_pipe.txt", False),
+        ("data/table_semicolon.txt", False),
+        ("data/table.xlsx", False),
+        ("data/table.npy", False),
+        (Path("data/table_tab.txt"), False),
+        (Path("data/table_space.TXT"), False),
+        (Path("data/table_comma.data"), False),
+        (Path("data/table_pipe.txt"), False),
+        (Path("data/table_semicolon.txt"), False),
+        (Path("data/table.xlsx"), False),
+        (Path("data/table.npy"), False),
+        ("http://{host}/data/table_tab.txt", False),
+        ("http://{host}/data/table_space.TXT", False),
+        ("http://{host}/data/table_comma.data", False),
+        ("http://{host}/data/table_pipe.txt", False),
+        ("http://{host}/data/table_semicolon.txt", False),
+        ("http://{host}/data/table.xlsx", False),
+        ("http://{host}/data/table.npy", False),
+        ("data/table_tab_with_header.txt", True),
+        ("data/table_space_with_header.TXT", True),
+        ("data/table_comma_with_header.data", True),
+        ("data/table_pipe_with_header.txt", True),
+        ("data/table_semicolon_with_header.txt", True),
+        ("data/table_with_header.xlsx", True),
+        (Path("data/table_tab_with_header.txt"), True),
+        (Path("data/table_space_with_header.TXT"), True),
+        (Path("data/table_comma_with_header.data"), True),
+        (Path("data/table_pipe_with_header.txt"), True),
+        (Path("data/table_semicolon_with_header.txt"), True),
+        (Path("data/table_with_header.xlsx"), True),
+        ("http://{host}/data/table_tab_with_header.txt", True),
+        ("http://{host}/data/table_space_with_header.TXT", True),
+        ("http://{host}/data/table_comma_with_header.data", True),
+        ("http://{host}/data/table_pipe_with_header.txt", True),
+        ("http://{host}/data/table_semicolon_with_header.txt", True),
+        ("http://{host}/data/table_with_header.xlsx", True),
     ],
 )
-def test_load_table(with_caching: bool, valid_table_http_hostname: str, filename):
+def test_load_table(
+    with_caching: bool, valid_table_http_hostname: str, filename, with_header: bool
+):
     """Test function 'load_table'."""
     with pyxel.set_options(cache_enabled=with_caching):
         if isinstance(filename, Path):
             # Load data
-            table = pyxel.load_table(filename)
+            table = pyxel.load_table(filename, header=with_header)
         else:
             full_url: str = filename.format(host=valid_table_http_hostname)
 
             # Load data
-            table = pyxel.load_table(full_url)
+            table = pyxel.load_table(full_url, header=with_header)
 
-        exp_table = pd.DataFrame([[1, 2, 3], [4, 5, 6], [7, 8, 9]], dtype="float64")
+        if not with_header:
+            exp_table = pd.DataFrame([[1, 2, 3], [4, 5, 6], [7, 8, 9]], dtype=float)
+        else:
+            exp_table = pd.DataFrame(
+                [[1, 2, 3], [4, 5, 6], [7, 8, 9]],
+                columns=["col1", "col2", "col3"],
+                dtype=float,
+            )
         pd.testing.assert_frame_equal(table, exp_table)
 
 
