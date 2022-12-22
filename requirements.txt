@@ -1,1 +1,2 @@
 # Pyxel requirements
+-e .[all]
