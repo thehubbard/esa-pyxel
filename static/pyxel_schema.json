@@ -1014,7 +1014,7 @@
           "items": {
             "anyOf": [
               {
-                "$ref": "#/definitions/ModelChargeCollectionFixPatternNoise"
+                "$ref": "#/definitions/ModelChargeCollectionFixedPatternNoise"
               },
               {
                 "$ref": "#/definitions/ModelChargeCollectionPersistence"
@@ -1186,6 +1186,30 @@
             ]
           },
           "title": "Charge Transfer",
+          "type": [
+            "array",
+            "null"
+          ]
+        },
+        "data_processing": {
+          "default": null,
+          "items": {
+            "anyOf": [
+              {
+                "$ref": "#/definitions/ModelDataProcessingComputeStatistics"
+              },
+              {
+                "$ref": "#/definitions/ModelLoadDetector"
+              },
+              {
+                "$ref": "#/definitions/ModelSaveDetector"
+              },
+              {
+                "$ref": "#/definitions/ModelFunction"
+              }
+            ]
+          },
+          "title": "Data Processing",
           "type": [
             "array",
             "null"
@@ -1641,9 +1665,9 @@
       "title": "MKIDGeometry",
       "type": "object"
     },
-    "ModelChargeCollectionFixPatternNoise": {
+    "ModelChargeCollectionFixedPatternNoise": {
       "additionalProperties": false,
-      "description": "Add fix pattern noise caused by pixel non-uniformity during chargecollection.",
+      "description": "Add fixed pattern noise caused by pixel non-uniformity during chargecollection.",
       "properties": {
         "arguments": {
           "additionalProperties": false,
@@ -1666,15 +1690,28 @@
             "filename": {
               "anyOf": [
                 {
+                  "format": "uri",
                   "type": "string"
                 },
                 {
-                  "format": "uri",
                   "type": "string"
+                },
+                {
+                  "type": "null"
                 }
               ],
+              "default": null,
               "description": "Path to a file with an array or an image.",
               "title": "filename"
+            },
+            "fixed_pattern_noise_factor": {
+              "default": null,
+              "description": "Fixed pattern noise factor.",
+              "title": "fixed_pattern_noise_factor",
+              "type": [
+                "number",
+                "null"
+              ]
             },
             "position": {
               "additionalItems": false,
@@ -1703,11 +1740,17 @@
               ],
               "title": "position",
               "type": "array"
+            },
+            "seed": {
+              "default": null,
+              "description": "Random seed.",
+              "title": "seed",
+              "type": [
+                "integer",
+                "null"
+              ]
             }
           },
-          "required": [
-            "filename"
-          ],
           "title": "Parameters",
           "type": "object"
         },
@@ -1716,8 +1759,8 @@
           "type": "boolean"
         },
         "func": {
-          "const": "pyxel.models.charge_collection.fix_pattern_noise",
-          "default": "pyxel.models.charge_collection.fix_pattern_noise",
+          "const": "pyxel.models.charge_collection.fixed_pattern_noise",
+          "default": "pyxel.models.charge_collection.fixed_pattern_noise",
           "type": "string"
         },
         "name": {
@@ -1725,10 +1768,9 @@
         }
       },
       "required": [
-        "name",
-        "arguments"
+        "name"
       ],
-      "title": "Model 'fix_pattern_noise'",
+      "title": "Model 'fixed_pattern_noise'",
       "type": "object"
     },
     "ModelChargeCollectionPersistence": {
@@ -2756,21 +2798,21 @@
               "title": "figure_of_merit",
               "type": "number"
             },
-            "fixed_pattern_noise_factor": {
-              "default": null,
-              "description": "Fixed pattern noise factor.",
-              "title": "fixed_pattern_noise_factor",
-              "type": [
-                "number",
-                "null"
-              ]
-            },
             "seed": {
               "default": null,
               "description": "Random seed.",
               "title": "seed",
               "type": [
                 "integer",
+                "null"
+              ]
+            },
+            "spatial_noise_factor": {
+              "default": null,
+              "description": "Dark current fixed pattern noise factor.",
+              "title": "spatial_noise_factor",
+              "type": [
+                "number",
                 "null"
               ]
             },
@@ -2815,8 +2857,8 @@
           "additionalProperties": false,
           "default": {
             "cutoff_wavelength": 2.5,
-            "fixed_pattern_noise_factor": null,
             "seed": null,
+            "spatial_noise_factor": null,
             "temporal_noise": true
           },
           "properties": {
@@ -2826,20 +2868,20 @@
               "title": "cutoff_wavelength",
               "type": "number"
             },
-            "fixed_pattern_noise_factor": {
-              "default": null,
-              "description": "Fixed pattern noise factor.",
-              "title": "fixed_pattern_noise_factor",
-              "type": [
-                "number",
-                "null"
-              ]
-            },
             "seed": {
               "default": null,
               "title": "seed",
               "type": [
                 "integer",
+                "null"
+              ]
+            },
+            "spatial_noise_factor": {
+              "default": null,
+              "description": "Dark current fixed pattern noise factor.",
+              "title": "spatial_noise_factor",
+              "type": [
+                "number",
                 "null"
               ]
             },
@@ -4090,6 +4132,72 @@
         "arguments"
       ],
       "title": "Model 'cdm'",
+      "type": "object"
+    },
+    "ModelDataProcessingComputeStatistics": {
+      "additionalProperties": false,
+      "description": "Compute basic statistics.",
+      "properties": {
+        "arguments": {
+          "additionalProperties": false,
+          "default": {
+            "data_structure": "pixel",
+            "dimensions": [
+              "x",
+              "y"
+            ]
+          },
+          "properties": {
+            "data_structure": {
+              "default": "pixel",
+              "enum": [
+                "pixel",
+                "photon",
+                "image",
+                "signal"
+              ],
+              "title": "data_structure",
+              "type": "string"
+            },
+            "dimensions": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array"
+                }
+              ],
+              "default": [
+                "x",
+                "y"
+              ],
+              "title": "dimensions"
+            }
+          },
+          "title": "Parameters",
+          "type": "object"
+        },
+        "enabled": {
+          "default": true,
+          "type": "boolean"
+        },
+        "func": {
+          "const": "pyxel.models.data_processing.compute_statistics",
+          "default": "pyxel.models.data_processing.compute_statistics",
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "title": "Model 'compute_statistics'",
       "type": "object"
     },
     "ModelFunction": {
