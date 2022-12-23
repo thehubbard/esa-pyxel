@@ -443,8 +443,8 @@ Additionally, Pyxel has the following **optional** dependencies:
       $ cd pyxel
 
       Create a new conda environment 'pyxel-dev'
-      and install some dependencies from conda with `environment.yml`
-      $ conda env create -f environment.yml
+      and install some dependencies from conda with `continuous_integration/environment.yml`
+      $ conda env create -f continuous_integration/environment.yml
 
       Display all conda environments (only for checking)
       $ conda info --envs
