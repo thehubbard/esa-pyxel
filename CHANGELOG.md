@@ -50,6 +50,8 @@ to save/extract a `Detector` object to/from a running pipeline.
   (See [!530](https://gitlab.com/esa/pyxel/-/merge_requests/530)).
 * Fix issue with unit test 'json schema'.
   (See [!569](https://gitlab.com/esa/pyxel/-/merge_requests/569)).
+* Move 'environment.yml' in folder 'continuous_integration'.
+  (See [!570](https://gitlab.com/esa/pyxel/-/merge_requests/570)).
 
 
 ## 1.5 / 2022-11-21

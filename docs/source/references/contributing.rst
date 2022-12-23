@@ -209,7 +209,7 @@ We'll now kick off a two-step process:
    $ conda update -n base conda
 
    # Create the new build environment (once)
-   $ conda env create -f environment.yml
+   $ conda env create -f continuous_integration/environment.yml
 
    # Activate the build environment
    $ conda activate pyxel-dev
@@ -400,12 +400,12 @@ Requirements
 ~~~~~~~~~~~~
 Make sure to follow the instructions on :ref:`creating a development
 environment above <contributing.dev_env>`, but to build the docs you need
-to use the environment file ``environment.yml``.
+to use the environment file ``continuous_integration/environment.yml``.
 
 .. code-block:: fish
 
     # Create and activate the docs environment
-    $ conda env create -f environment.yml
+    $ conda env create -f continuous_integration/environment.yml
     $ conda activate pyxel-dev
 
     # or with older versions of Anaconda:
