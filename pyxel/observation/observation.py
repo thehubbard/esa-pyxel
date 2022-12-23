@@ -377,22 +377,26 @@ class Observation:
 
         return processors, final_logs
 
-    def _check_steps(self, processor: "Processor") -> None:
+    def validate_steps(self, processor: "Processor") -> None:
         """Validate enabled parameter steps in processor before running the pipelines.
 
         Parameters
         ----------
         processor: Processor
 
-        Returns
-        -------
-        None
+        Raises
+        ------
+        KeyError
+            If a 'step' is missing in the configuration.
+        ValueError
+            If a model referenced in the configuration has not been enabled.
         """
         step: ParameterValues
         for step in self.enabled_steps:
 
             key: str = step.key
-            assert processor.has(key)
+            if not processor.has(key):
+                raise KeyError(f"Missing parameter: {key!r} in steps.")
 
             # TODO: the string literal expressions are difficult to maintain.
             #     Example: 'pipeline.', '.arguments', '.enabled'
@@ -404,7 +408,7 @@ class Observation:
                 model_enabled: str = model_name + ".enabled"
                 if not processor.get(model_enabled):
                     raise ValueError(
-                        f"The '{model_name}' model referenced in parametric configuration"
+                        f"The '{model_name}' model referenced in Observation configuration "
                         f"has not been enabled in yaml config!"
                     )
 
@@ -432,7 +436,7 @@ class Observation:
         import xarray as xr
 
         # validation
-        self._check_steps(processor)
+        self.validate_steps(processor)
 
         types: Mapping[str, ParameterType] = self._get_parameter_types()
 

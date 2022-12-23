@@ -20,6 +20,8 @@ to save/extract a `Detector` object to/from a running pipeline.
   (See [!565](https://gitlab.com/esa/pyxel/-/merge_requests/565)).
 * Add new model group 'Data Processing'.
   (See [!566](https://gitlab.com/esa/pyxel/-/merge_requests/566)).
+* Improve error message when validation an 'Observation' configuration.
+  (See [!571](https://gitlab.com/esa/pyxel/-/merge_requests/571)).
 
 ### Documentation
 * Add JSON Schema in the documentation.
