@@ -10,22 +10,19 @@
 from pathlib import Path
 from typing import Any, Mapping, Optional, Union
 
-import attr
+import attrs
 
 
-@attr.s(
-    auto_attribs=True,
-    on_setattr=attr.setters.pipe(attr.setters.convert, attr.setters.validate),
-)
+@attrs.define(on_setattr=[attrs.setters.convert, attrs.setters.validate])
 class GlobalOptions:
     """Define a container class for all available options."""
 
-    cache_enabled: bool = attr.ib(
-        validator=attr.validators.instance_of(bool),
+    cache_enabled: bool = attrs.field(
+        validator=attrs.validators.instance_of(bool),
         default=False,
     )
-    cache_folder: Optional[Union[str, Path]] = attr.ib(
-        validator=attr.validators.optional(attr.validators.instance_of((str, Path))),
+    cache_folder: Optional[Union[str, Path]] = attrs.field(
+        validator=attrs.validators.optional(attrs.validators.instance_of((str, Path))),
         default=None,
     )
 
@@ -85,7 +82,7 @@ class GlobalOptions:
         >>> options.validate_and_convert({"cache_enabled": "hello"})
         TypeError(...)
         """
-        valid_keys = list(attr.asdict(self, recurse=False))
+        valid_keys = list(attrs.asdict(self, recurse=False))
 
         result = {}
         for key, value in dct.items():
