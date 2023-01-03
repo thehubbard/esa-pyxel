@@ -26,6 +26,8 @@ to save/extract a `Detector` object to/from a running pipeline.
 ### Documentation
 * Add JSON Schema in the documentation.
   (See [!543](https://gitlab.com/esa/pyxel/-/merge_requests/543)).
+* Fix issues sphinx.
+  (See [!574](https://gitlab.com/esa/pyxel/-/merge_requests/574)).
 
 ### Models
 * Add models `load_detector` and `save_detector` to load/save a detector from/to a file.
