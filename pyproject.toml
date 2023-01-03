@@ -63,6 +63,7 @@ dependencies = [
     "netcdf4",
 
     # Others
+    "attrs>=21.3.0",
     "click",
     "tqdm",
     "typing-extensions",
