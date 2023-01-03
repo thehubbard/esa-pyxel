@@ -1,13 +1,14 @@
-# Editable install  : pip install -e .
-# Build project     : python -m build . --wheel --sdist
+# Normal install      : pip install .
+# Development install : pip install -e .
+# Build project       : python -m build . --wheel --sdist
 [build-system]
-requires = ["setuptools>=63", "setuptools_scm[toml]>=7", "versioneer[toml]"]
+requires = ["setuptools>=63", "versioneer[toml]==0.28", "wheel"]
 build-backend = "setuptools.build_meta"
 
 # https://peps.python.org/pep-0621/#readme
 [project]
 requires-python = ">= 3.7"
-name = "pyxel-sim"
+name = "pyxel_sim"
 description = "Pyxel detector simulation framework."
 readme = "README.md"
 authors = [{"name" = "The Pyxel development team", "email" = "pyxel@esa.int" }]
@@ -95,12 +96,18 @@ pyxel = "pyxel.run:main"
 VCS = "git"
 style = "pep440"
 versionfile_source = "pyxel/_version.py"
+versionfile_build = "pyxel/_version.py"
+tag_prefix = ""
 
 [tool.setuptools]
 include-package-data = true
 
 [tool.setuptools.packages.find]
-where = []
+# where = []
+#exclude = [
+#    "docs*",
+#    "tests*",
+#]
 
 [tool.setuptools.package-data]
 pyxel_sim =["py.typed"]
