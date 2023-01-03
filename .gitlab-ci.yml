@@ -141,7 +141,7 @@ coverage:
 
 # Generate the Sphinx documentation into 'doc/html'
 doc:
-  image: python:3.8
+  image: python:3.9
   stage: build
   needs: []
   script:
@@ -156,7 +156,7 @@ doc:
 #    - if: '$CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH && $CI_COMMIT_TAG != "" && $FORCE_GITLAB_CI'
 
 doc_development:
-  image: python:3.8
+  image: python:3.9
   stage: build
   needs: []
   rules:
@@ -174,7 +174,7 @@ doc_development:
     name: development
 
 doc_production:
-  image: python:3.8
+  image: python:3.9
   stage: build
   needs: []
   rules:
