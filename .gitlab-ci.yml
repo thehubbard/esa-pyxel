@@ -190,6 +190,17 @@ doc_production:
   environment:
     name: production
 
+# Create wheel file
+build:
+  image: python:3.9
+  stage: build
+  needs: []
+  environment: build
+  script:
+    - tox -e build
+  artifacts:
+    paths:
+      - dist/
 
 # ###########################
 # Deploy Stage

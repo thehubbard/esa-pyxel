@@ -60,6 +60,8 @@ to save/extract a `Detector` object to/from a running pipeline.
   (See [!567](https://gitlab.com/esa/pyxel/-/merge_requests/567)).
 * Add attrs as dependency.
   (See [!573](https://gitlab.com/esa/pyxel/-/merge_requests/573)).
+* Create Wheel files in CI/CD.
+  (See [!575](https://gitlab.com/esa/pyxel/-/merge_requests/575)).
 
 ## 1.5 / 2022-11-21
 
