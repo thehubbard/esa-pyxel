@@ -461,7 +461,7 @@ Additionally, Pyxel has the following **optional** dependencies:
     .. code-block:: bash
 
       $ (pyxel-dev) cd pyxel
-      $ (pyxel-dev) pip install -e .
+      $ (pyxel-dev) pip install --no-deps -e .
 
     More about the conda environments (only for information):
 

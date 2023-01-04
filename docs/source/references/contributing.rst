@@ -218,7 +218,7 @@ We'll now kick off a two-step process:
    $ source activate pyxel-dev
 
    # Build and install Pyxel in the new environment
-   (pyxel-dev) $ pip install -e .
+   (pyxel-dev) $ pip install --no-deps -e .
 
 At this point you should be able to import *Pyxel* from your
 locally built version:
@@ -412,7 +412,7 @@ to use the environment file ``continuous_integration/environment.yml``.
     $ source activate pyxel-dev
 
     # Build and install pyxel
-    $ pip install -e .
+    $ pip install --no-deps -e .
 
 
 Building the documentation
