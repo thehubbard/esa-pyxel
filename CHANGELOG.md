@@ -5,6 +5,8 @@
 ### Core
 
 ### Documentation
+* Add more documentation when installing from 'continuous_integration/environment.yml'.
+  (See [!581](https://gitlab.com/esa/pyxel/-/merge_requests/581)).
 
 ### Models
 
