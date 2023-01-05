@@ -1,21 +1,6 @@
 # Changelog
 
-## UNRELEASED
-
-### Core
-
-### Documentation
-* Add more documentation when installing from 'continuous_integration/environment.yml'.
-  (See [!581](https://gitlab.com/esa/pyxel/-/merge_requests/581)).
-
-### Models
-
-### Others
-* Pygmo error in calibration.
-  (See [!580](https://gitlab.com/esa/pyxel/-/merge_requests/580)).
-
-
-## 1.6rc0 / 2023-01-03
+## 1.6 / 2023-01-05
 
 This release brings a number of bugfixes and documentation improvements.
 A single release candidate (1.6rc0) was made to fix some issues.
@@ -45,6 +30,11 @@ Add new model group `data_processing` with a new model `statistics`.
   (See [!543](https://gitlab.com/esa/pyxel/-/merge_requests/543)).
 * Fix issues sphinx.
   (See [!574](https://gitlab.com/esa/pyxel/-/merge_requests/574)).
+* Add more documentation when installing from 'continuous_integration/environment.yml'.
+  (See [!581](https://gitlab.com/esa/pyxel/-/merge_requests/581)).
+* Correct image in Documentation.
+  (See [!576](https://gitlab.com/esa/pyxel/-/merge_requests/576)).
+
 
 ### Models
 * Add models `load_detector` and `save_detector` to load/save a detector from/to a file.
@@ -79,6 +69,8 @@ Add new model group `data_processing` with a new model `statistics`.
   (See [!573](https://gitlab.com/esa/pyxel/-/merge_requests/573)).
 * Create Wheel files in CI/CD.
   (See [!575](https://gitlab.com/esa/pyxel/-/merge_requests/575)).
+* Pygmo error in calibration.
+  (See [!580](https://gitlab.com/esa/pyxel/-/merge_requests/580)).
 
 ## 1.5 / 2022-11-21
 
