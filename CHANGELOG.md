@@ -9,10 +9,14 @@
 ### Models
 
 ### Others
+* Pygmo error in calibration.
+  (See [!580](https://gitlab.com/esa/pyxel/-/merge_requests/580)).
+
 
 ## 1.6rc0 / 2023-01-03
 
 This release brings a number of bugfixes and documentation improvements.
+A single release candidate (1.6rc0) was made to fix some issues.
 
 The JSON Schema files for the 'stable' and 'latest' are respectively located in 
 https://esa.gitlab.io/pyxel/pyxel_schema.json and https://esa.gitlab.io/pyxel/pyxel_schema_latest.json.
