@@ -235,6 +235,8 @@ class MyArchipelago:
 
     def _build(self) -> None:
         """Build the island(s) and populate them."""
+        import pygmo as pg
+
         disable_bar: bool = not self.with_bar
         start_time: float = timer()
 
