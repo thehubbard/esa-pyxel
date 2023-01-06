@@ -3,12 +3,15 @@
 ## UNRELEASED
 
 ### Core
+* Bug in data processing model group.
+  (See [!585](https://gitlab.com/esa/pyxel/-/merge_requests/585)).
 
 ### Documentation
 
 ### Models
 
 ### Others
+
 
 ## 1.6 / 2023-01-05
 
