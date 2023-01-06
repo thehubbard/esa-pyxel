@@ -64,5 +64,15 @@ Statistics
 ===========================
 
 The model :ref:`statistics` can be used to do simple statistics computations.
-TBW.
+The calculated statistics can then be accessed via ``detector.processed_data.data``.
+
+
+.. code-block:: yaml
+
+    data_processing:
+    - name: compute_statistics
+      func: pyxel.models.data_processing.compute_statistics
+      enabled: true
+
+
 
