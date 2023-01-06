@@ -33,7 +33,14 @@ def compute_statistics(
     max_array = data_2d.max(dim=dimensions)
     count = data_2d.count(dim=dimensions)
 
-    dataset = xr.Dataset()
+    # Get current absolute time
+    absolute_time = xr.DataArray(
+        [detector.absolute_time],
+        dims=["time"],
+        attrs={"units": "s"},
+    )
+
+    dataset = xr.Dataset().assign_coords(time=absolute_time)
     dataset["var"] = var
     dataset["mean"] = mean
     dataset["min"] = min_array
