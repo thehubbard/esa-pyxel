@@ -13,13 +13,13 @@ TBW.
 Create and Store a detector
 ===========================
 
-The models :ref:`charge_collection_save_detector` and :ref:`charge_collection_load_detector`
+The models :ref:`data_processing_save_detector` and :ref:`data_processing_load_detector`
 can be used respectively to create and to store a :py:class:`~pyxel.detectors.Detector` to/from a file.
 
 These models can be used when you want to store or to inject a :py:class:`~pyxel.detectors.Detector`
 into the current :ref:`pipeline`.
 
-.. _charge_collection_save_detector:
+.. _data_processing_save_detector:
 
 Save detector
 -------------
@@ -38,7 +38,7 @@ Accepted file formats are ``.h5``, ``.hdf5``, ``.hdf`` and ``.asdf``.
 .. autofunction:: pyxel.models.save_detector
    :noindex:
 
-.. _charge_collection_load_detector:
+.. _data_processing_load_detector:
 
 Load detector
 -------------
