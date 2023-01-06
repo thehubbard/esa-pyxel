@@ -7,6 +7,8 @@
   (See [!585](https://gitlab.com/esa/pyxel/-/merge_requests/585)).
 
 ### Documentation
+* Update documentation example.
+  (See [!584](https://gitlab.com/esa/pyxel/-/merge_requests/584)).
 
 ### Models
 
