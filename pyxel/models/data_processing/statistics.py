@@ -6,9 +6,10 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """Simple model to compute basic statistics."""
-from typing import Literal, Sequence, Union
+from typing import Sequence, Union
 
 import xarray as xr
+from typing_extensions import Literal
 
 from pyxel.detectors import Detector
 
