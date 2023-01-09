@@ -1,6 +1,8 @@
 # Changelog
 
-## UNRELEASED
+## 1.6.1 / 2023-01-09
+
+This release brings a number of bugfixes and documentation improvements.
 
 ### Core
 * Bug in data processing model group.
@@ -9,10 +11,6 @@
 ### Documentation
 * Update documentation example.
   (See [!584](https://gitlab.com/esa/pyxel/-/merge_requests/584)).
-
-### Models
-
-### Others
 
 
 ## 1.6 / 2023-01-05
