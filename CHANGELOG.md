@@ -1,5 +1,15 @@
 # Changelog
 
+## UNRELEASED
+
+### Core
+
+### Documentation
+
+### Models
+
+### Others
+
 ## 1.6.1 / 2023-01-09
 
 This release brings a number of bugfixes and documentation improvements.
