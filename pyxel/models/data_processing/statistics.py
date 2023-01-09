@@ -6,9 +6,10 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """Simple model to compute basic statistics."""
-from typing import Literal, Sequence, Union
+from typing import Sequence, Union
 
 import xarray as xr
+from typing_extensions import Literal
 
 from pyxel.detectors import Detector
 
@@ -22,9 +23,13 @@ def compute_statistics(
 
     Parameters
     ----------
-    detector
-    data_structure
-    dimensions
+    detector : Detector
+        Pyxel Detector object.
+    data_structure : Literal
+        Keyword to choose data structure. Can be any from:
+        ("pixel", "photon", "image", "signal")
+    dimensions : str or Sequence of str
+        Dimensions.
     """
     data_2d: xr.DataArray = getattr(detector, data_structure).to_xarray()
     var = data_2d.var(dim=dimensions)
