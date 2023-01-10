@@ -7,6 +7,8 @@
 ### Documentation
 
 ### Models
+* Cannot reload a 'detector' from model 'pyxel.load_detector'.
+  (See [!588](https://gitlab.com/esa/pyxel/-/merge_requests/588)).
 
 ### Others
 
