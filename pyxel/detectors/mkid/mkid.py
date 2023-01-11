@@ -23,7 +23,7 @@ from pyxel.util.memory import memory_usage_details
 if TYPE_CHECKING:
     import pandas as pd
 
-    from pyxel.detectors import Environment, MKIDCharacteristics, MKIDGeometry
+    from pyxel.detectors import Characteristics, Environment, MKIDGeometry
 
 
 class MKID(Detector):
@@ -33,10 +33,10 @@ class MKID(Detector):
         self,
         geometry: "MKIDGeometry",
         environment: "Environment",
-        characteristics: "MKIDCharacteristics",
+        characteristics: "Characteristics",
     ):
         self._geometry: MKIDGeometry = geometry
-        self._characteristics: MKIDCharacteristics = characteristics
+        self._characteristics: Characteristics = characteristics
 
         super().__init__(environment=environment)
         self.reset()
@@ -74,7 +74,7 @@ class MKID(Detector):
         return self._geometry
 
     @property
-    def characteristics(self) -> "MKIDCharacteristics":
+    def characteristics(self) -> "Characteristics":
         """TBW."""
         return self._characteristics
 
@@ -158,7 +158,7 @@ class MKID(Detector):
         import xarray as xr
 
         from pyxel.data_structure import Scene
-        from pyxel.detectors import Environment, MKIDCharacteristics, MKIDGeometry
+        from pyxel.detectors import Characteristics, Environment, MKIDGeometry
 
         if dct["type"] != "MKID":
             raise ValueError
@@ -169,7 +169,7 @@ class MKID(Detector):
         properties = dct["properties"]
         geometry = MKIDGeometry.from_dict(properties["geometry"])
         environment = Environment.from_dict(properties["environment"])
-        characteristics = MKIDCharacteristics.from_dict(properties["characteristics"])
+        characteristics = Characteristics.from_dict(properties["characteristics"])
 
         detector = cls(
             geometry=geometry,

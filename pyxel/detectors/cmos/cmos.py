@@ -14,7 +14,7 @@ from pyxel.detectors import Detector
 if TYPE_CHECKING:
     import pandas as pd
 
-    from pyxel.detectors import CMOSCharacteristics, CMOSGeometry, Environment
+    from pyxel.detectors import Characteristics, CMOSGeometry, Environment
 
 
 class CMOS(Detector):
@@ -24,10 +24,10 @@ class CMOS(Detector):
         self,
         geometry: "CMOSGeometry",
         environment: "Environment",
-        characteristics: "CMOSCharacteristics",
+        characteristics: "Characteristics",
     ):
         self._geometry: CMOSGeometry = geometry
-        self._characteristics: CMOSCharacteristics = characteristics
+        self._characteristics: Characteristics = characteristics
 
         super().__init__(environment=environment)
         super().reset()
@@ -47,7 +47,7 @@ class CMOS(Detector):
         return self._geometry
 
     @property
-    def characteristics(self) -> "CMOSCharacteristics":
+    def characteristics(self) -> "Characteristics":
         """TBW."""
         return self._characteristics
 
@@ -95,7 +95,7 @@ class CMOS(Detector):
         import xarray as xr
 
         from pyxel.data_structure import Scene
-        from pyxel.detectors import CMOSCharacteristics, CMOSGeometry, Environment
+        from pyxel.detectors import Characteristics, CMOSGeometry, Environment
 
         if dct["type"] != "CMOS":
             raise ValueError
@@ -106,7 +106,7 @@ class CMOS(Detector):
         properties = dct["properties"]
         geometry = CMOSGeometry.from_dict(properties["geometry"])
         environment = Environment.from_dict(properties["environment"])
-        characteristics = CMOSCharacteristics.from_dict(properties["characteristics"])
+        characteristics = Characteristics.from_dict(properties["characteristics"])
 
         detector = cls(
             geometry=geometry,
