@@ -7,7 +7,7 @@
 
 import pytest
 
-from pyxel.detectors import CCD, CCDCharacteristics, CCDGeometry, Environment
+from pyxel.detectors import CCD, CCDGeometry, Characteristics, Environment
 from pyxel.models.readout_electronics import ac_crosstalk
 
 
@@ -23,7 +23,7 @@ def ccd_8x8() -> CCD:
             pixel_horz_size=10.0,
         ),
         environment=Environment(),
-        characteristics=CCDCharacteristics(),
+        characteristics=Characteristics(),
     )
 
 

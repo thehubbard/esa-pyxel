@@ -9,7 +9,7 @@ from copy import deepcopy
 
 import pytest
 
-from pyxel.detectors import Characteristics, CMOSCharacteristics
+from pyxel.detectors import Characteristics
 
 
 @pytest.mark.parametrize(
@@ -21,7 +21,7 @@ from pyxel.detectors import Characteristics, CMOSCharacteristics
         (1.0, 1.0, 100.0, 10_000_000, [0.0, 3.0], 16),
     ],
 )
-def test_create_valid_cmoscharacteristics(
+def test_create_valid_Characteristics(
     quantum_efficiency,
     charge_to_volt_conversion,
     pre_amplification,
@@ -29,8 +29,8 @@ def test_create_valid_cmoscharacteristics(
     adc_voltage_range,
     adc_bit_resolution,
 ):
-    """Test when creating a valid `CMOSCharacteristics` object."""
-    _ = CMOSCharacteristics(
+    """Test when creating a valid `Characteristics` object."""
+    _ = Characteristics(
         quantum_efficiency=quantum_efficiency,
         charge_to_volt_conversion=charge_to_volt_conversion,
         pre_amplification=pre_amplification,
@@ -44,9 +44,9 @@ def test_create_valid_cmoscharacteristics(
     "other_obj, is_equal",
     [
         pytest.param(None, False, id="None"),
-        pytest.param(CMOSCharacteristics(), False, id="Empty 'CMOSCharacteristics'"),
+        pytest.param(Characteristics(), False, id="Empty 'Characteristics'"),
         pytest.param(
-            CMOSCharacteristics(quantum_efficiency=0.1), False, id="Only one parameter"
+            Characteristics(quantum_efficiency=0.1), False, id="Only one parameter"
         ),
         pytest.param(
             Characteristics(
@@ -59,7 +59,7 @@ def test_create_valid_cmoscharacteristics(
             id="Wrong type",
         ),
         pytest.param(
-            CMOSCharacteristics(
+            Characteristics(
                 quantum_efficiency=0.1,
                 charge_to_volt_conversion=0.2,
                 pre_amplification=3.3,
@@ -73,8 +73,8 @@ def test_create_valid_cmoscharacteristics(
     ],
 )
 def test_is_equal(other_obj, is_equal):
-    """Test equality statement for `CMOSCharacteristics`."""
-    obj = CMOSCharacteristics(
+    """Test equality statement for `Characteristics`."""
+    obj = Characteristics(
         quantum_efficiency=0.1,
         charge_to_volt_conversion=0.2,
         pre_amplification=3.3,
@@ -93,7 +93,7 @@ def test_is_equal(other_obj, is_equal):
     "obj, exp_dict",
     [
         (
-            CMOSCharacteristics(
+            Characteristics(
                 quantum_efficiency=0.1,
                 charge_to_volt_conversion=0.2,
                 pre_amplification=3.3,
@@ -109,7 +109,7 @@ def test_is_equal(other_obj, is_equal):
             },
         ),
         (
-            CMOSCharacteristics(
+            Characteristics(
                 quantum_efficiency=0.1,
                 charge_to_volt_conversion=0.2,
                 pre_amplification=3.3,
@@ -130,9 +130,9 @@ def test_is_equal(other_obj, is_equal):
 )
 def test_to_and_from_dict(obj, exp_dict):
     """Test methods 'to_dict', 'from_dict'."""
-    assert type(obj) == CMOSCharacteristics
+    assert type(obj) == Characteristics
 
-    # Convert from `CMOSCharacteristics` to a `dict`
+    # Convert from `Characteristics` to a `dict`
     dct = obj.to_dict()
     assert dct == exp_dict
 
@@ -141,9 +141,9 @@ def test_to_and_from_dict(obj, exp_dict):
     assert copied_dct is not exp_dict
     assert copied_dct == exp_dict
 
-    # Convert from `dict` to `CMOSCharacteristics`
-    other_obj = CMOSCharacteristics.from_dict(copied_dct)
-    assert type(other_obj) == CMOSCharacteristics
+    # Convert from `dict` to `Characteristics`
+    other_obj = Characteristics.from_dict(copied_dct)
+    assert type(other_obj) == Characteristics
     assert obj == other_obj
     assert obj is not other_obj
     assert copied_dct == exp_dict

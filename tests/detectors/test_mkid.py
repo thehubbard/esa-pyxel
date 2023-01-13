@@ -6,19 +6,12 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 from copy import deepcopy
-from typing import Tuple
 
 import numpy as np
 import pandas as pd
 import pytest
 
-from pyxel.detectors import (
-    MKID,
-    Detector,
-    Environment,
-    MKIDCharacteristics,
-    MKIDGeometry,
-)
+from pyxel.detectors import MKID, Characteristics, Detector, Environment, MKIDGeometry
 
 
 @pytest.fixture
@@ -33,7 +26,7 @@ def valid_mkid() -> MKID:
             pixel_vert_size=34.5,
         ),
         environment=Environment(temperature=100.1),
-        characteristics=MKIDCharacteristics(
+        characteristics=Characteristics(
             quantum_efficiency=0.1,
             charge_to_volt_conversion=0.2,
             pre_amplification=3.3,
@@ -49,7 +42,7 @@ def valid_mkid() -> MKID:
             MKID(
                 geometry=MKIDGeometry(row=100, col=120),
                 environment=Environment(),
-                characteristics=MKIDCharacteristics(),
+                characteristics=Characteristics(),
             ),
             False,
             id="Empty 'MKID'",
@@ -64,7 +57,7 @@ def valid_mkid() -> MKID:
                     pixel_vert_size=34.5,
                 ),
                 environment=Environment(),
-                characteristics=MKIDCharacteristics(),
+                characteristics=Characteristics(),
             ),
             False,
             id="Almost same parameters, different class",
@@ -79,7 +72,7 @@ def valid_mkid() -> MKID:
                     pixel_vert_size=34.5,
                 ),
                 environment=Environment(temperature=100.1),
-                characteristics=MKIDCharacteristics(
+                characteristics=Characteristics(
                     quantum_efficiency=0.1,
                     charge_to_volt_conversion=0.2,
                     pre_amplification=3.3,
@@ -188,7 +181,7 @@ def comparison(dct, other_dct):
             MKID(
                 geometry=MKIDGeometry(row=100, col=120),
                 environment=Environment(),
-                characteristics=MKIDCharacteristics(),
+                characteristics=Characteristics(),
             ),
             {
                 "version": 1,
@@ -259,7 +252,7 @@ def comparison(dct, other_dct):
                     pixel_vert_size=34.5,
                 ),
                 environment=Environment(temperature=100.1),
-                characteristics=MKIDCharacteristics(
+                characteristics=Characteristics(
                     quantum_efficiency=0.1,
                     charge_to_volt_conversion=0.2,
                     pre_amplification=3.3,

@@ -7,7 +7,7 @@
 
 import pytest
 
-from pyxel.detectors import CCD, CCDCharacteristics, CCDGeometry, Environment
+from pyxel.detectors import CCD, CCDGeometry, Characteristics, Environment
 from pyxel.models.charge_transfer import arctic_add
 
 
@@ -23,7 +23,7 @@ def ccd_10x10() -> CCD:
             pixel_horz_size=10.0,
         ),
         environment=Environment(),
-        characteristics=CCDCharacteristics(),
+        characteristics=Characteristics(),
     )
 
 

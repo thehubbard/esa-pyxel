@@ -4,7 +4,7 @@ from typing import Union
 import numpy as np
 import pytest
 
-from pyxel.detectors import CCD, CCDCharacteristics, CCDGeometry, Environment
+from pyxel.detectors import CCD, CCDGeometry, Characteristics, Environment
 from pyxel.models.charge_collection import fixed_pattern_noise
 from pyxel.models.charge_collection.fixed_pattern_noise import compute_simple_prnu
 
@@ -21,7 +21,7 @@ def ccd_5x5() -> CCD:
             pixel_horz_size=10.0,
         ),
         environment=Environment(),
-        characteristics=CCDCharacteristics(quantum_efficiency=0.9),
+        characteristics=Characteristics(quantum_efficiency=0.9),
     )
     return detector
 

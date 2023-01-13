@@ -11,7 +11,7 @@ import pyxel
 from pyxel import Configuration
 from pyxel.calibration import Algorithm, Calibration, CalibrationMode
 from pyxel.data_structure import Charge, Image, Pixel, Signal
-from pyxel.detectors import CCD, CCDCharacteristics, CCDGeometry, Environment
+from pyxel.detectors import CCD, CCDGeometry, Characteristics, Environment
 from pyxel.exposure import Exposure
 from pyxel.observation import Observation, ParameterMode
 from pyxel.outputs.calibration_outputs import CalibrationOutputs
@@ -47,7 +47,7 @@ def test_yaml_load(yaml_file):
 
     assert isinstance(cfg.ccd_detector, CCD)
     assert isinstance(cfg.ccd_detector.geometry, CCDGeometry)
-    assert isinstance(cfg.ccd_detector.characteristics, CCDCharacteristics)
+    assert isinstance(cfg.ccd_detector.characteristics, Characteristics)
     assert isinstance(cfg.ccd_detector.environment, Environment)
     assert isinstance(cfg.ccd_detector.image, Image)
     assert isinstance(cfg.ccd_detector.signal, Signal)

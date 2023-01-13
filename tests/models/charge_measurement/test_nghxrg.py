@@ -8,7 +8,7 @@
 import numpy as np
 import pytest
 
-from pyxel.detectors import CMOS, CMOSCharacteristics, CMOSGeometry, Environment
+from pyxel.detectors import CMOS, Characteristics, CMOSGeometry, Environment
 from pyxel.models.charge_measurement import nghxrg
 
 
@@ -24,7 +24,7 @@ def cmos_10x10() -> CMOS:
             pixel_horz_size=10.0,
         ),
         environment=Environment(),
-        characteristics=CMOSCharacteristics(),
+        characteristics=Characteristics(),
     )
 
     # Generate fake pixels
@@ -46,7 +46,7 @@ def cmos_10x15() -> CMOS:
             pixel_horz_size=10.0,
         ),
         environment=Environment(),
-        characteristics=CMOSCharacteristics(),
+        characteristics=Characteristics(),
     )
 
     # Generate fake pixels

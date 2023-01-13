@@ -19,10 +19,9 @@ import pytest
 from pyxel.detectors import (
     CCD,
     MKID,
-    CCDCharacteristics,
     CCDGeometry,
+    Characteristics,
     Environment,
-    MKIDCharacteristics,
     MKIDGeometry,
 )
 from pyxel.models.phasing import pulse_processing
@@ -40,7 +39,7 @@ def mkid_5x5() -> MKID:
             pixel_horz_size=10.0,
         ),
         environment=Environment(),
-        characteristics=MKIDCharacteristics(),
+        characteristics=Characteristics(),
     )
     return detector
 
@@ -122,7 +121,7 @@ def test_pulse_processing_with_ccd():
             pixel_horz_size=10.0,
         ),
         environment=Environment(),
-        characteristics=CCDCharacteristics(),
+        characteristics=Characteristics(),
     )
 
     with pytest.raises(TypeError, match="Expecting a MKID object for the detector."):

@@ -8,7 +8,7 @@
 #
 import pytest
 
-from pyxel.detectors import CCD, CCDCharacteristics, CCDGeometry, Environment
+from pyxel.detectors import CCD, CCDGeometry, Characteristics, Environment
 from pyxel.models.readout_electronics import simple_phase_conversion
 
 
@@ -23,7 +23,7 @@ def test_simple_phase_conversion_with_ccd():
             pixel_horz_size=10.0,
         ),
         environment=Environment(),
-        characteristics=CCDCharacteristics(),
+        characteristics=Characteristics(),
     )
 
     with pytest.raises(TypeError, match="Expecting a MKID object for the detector."):

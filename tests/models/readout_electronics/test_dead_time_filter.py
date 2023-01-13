@@ -12,12 +12,10 @@ from pyxel.detectors import (
     CCD,
     CMOS,
     MKID,
-    CCDCharacteristics,
     CCDGeometry,
-    CMOSCharacteristics,
+    Characteristics,
     CMOSGeometry,
     Environment,
-    MKIDCharacteristics,
     MKIDGeometry,
 )
 from pyxel.models.readout_electronics import dead_time_filter
@@ -36,7 +34,7 @@ def mkid_5x4() -> MKID:
             pixel_horz_size=10.0,
         ),
         environment=Environment(),
-        characteristics=MKIDCharacteristics(),
+        characteristics=Characteristics(),
     )
 
     detector.reset()
@@ -86,7 +84,7 @@ def test_dead_time_filter_with_ccd():
             pixel_horz_size=10.0,
         ),
         environment=Environment(),
-        characteristics=CCDCharacteristics(),
+        characteristics=Characteristics(),
     )
 
     with pytest.raises(TypeError, match=r"Expecting an `MKID` object for 'detector'"):
@@ -104,7 +102,7 @@ def test_dead_time_filter_with_cmos():
             pixel_horz_size=10.0,
         ),
         environment=Environment(),
-        characteristics=CMOSCharacteristics(),
+        characteristics=Characteristics(),
     )
 
     with pytest.raises(TypeError, match=r"Expecting an `MKID` object for 'detector'"):

@@ -9,7 +9,7 @@ from copy import deepcopy
 
 import pytest
 
-from pyxel.detectors import CCDCharacteristics, Characteristics
+from pyxel.detectors import Characteristics
 
 
 @pytest.mark.parametrize(
@@ -21,7 +21,7 @@ from pyxel.detectors import CCDCharacteristics, Characteristics
         (1.0, 1.0, 100.0, 10_000_000, [0.0, 3.0], 16),
     ],
 )
-def test_create_valid_ccdcharacteristics(
+def test_create_valid_Characteristics(
     quantum_efficiency,
     charge_to_volt_conversion,
     pre_amplification,
@@ -29,8 +29,8 @@ def test_create_valid_ccdcharacteristics(
     adc_voltage_range,
     adc_bit_resolution,
 ):
-    """Test when creating a valid `CCDCharacteristics` object."""
-    _ = CCDCharacteristics(
+    """Test when creating a valid `Characteristics` object."""
+    _ = Characteristics(
         quantum_efficiency=quantum_efficiency,
         charge_to_volt_conversion=charge_to_volt_conversion,
         pre_amplification=pre_amplification,
@@ -44,9 +44,9 @@ def test_create_valid_ccdcharacteristics(
     "other_obj, is_equal",
     [
         pytest.param(None, False, id="None"),
-        pytest.param(CCDCharacteristics(), False, id="Empty 'CCDCharacteristics'"),
+        pytest.param(Characteristics(), False, id="Empty 'Characteristics'"),
         pytest.param(
-            CCDCharacteristics(quantum_efficiency=0.1), False, id="Only one parameter"
+            Characteristics(quantum_efficiency=0.1), False, id="Only one parameter"
         ),
         pytest.param(
             Characteristics(
@@ -58,7 +58,7 @@ def test_create_valid_ccdcharacteristics(
             id="Wrong type",
         ),
         pytest.param(
-            CCDCharacteristics(
+            Characteristics(
                 quantum_efficiency=0.1,
                 charge_to_volt_conversion=0.2,
                 pre_amplification=4.4,
@@ -68,7 +68,7 @@ def test_create_valid_ccdcharacteristics(
             id="Missing some parameters",
         ),
         pytest.param(
-            CCDCharacteristics(
+            Characteristics(
                 quantum_efficiency=0.1,
                 charge_to_volt_conversion=0.2,
                 pre_amplification=4.4,
@@ -82,8 +82,8 @@ def test_create_valid_ccdcharacteristics(
     ],
 )
 def test_is_equal(other_obj, is_equal):
-    """Test equality statement for `CCDCharacteristics`."""
-    obj = CCDCharacteristics(
+    """Test equality statement for `Characteristics`."""
+    obj = Characteristics(
         quantum_efficiency=0.1,
         charge_to_volt_conversion=0.2,
         pre_amplification=4.4,
@@ -102,7 +102,7 @@ def test_is_equal(other_obj, is_equal):
     "obj, exp_dict",
     [
         (
-            CCDCharacteristics(
+            Characteristics(
                 quantum_efficiency=0.1,
                 charge_to_volt_conversion=0.2,
                 pre_amplification=4.4,
@@ -118,7 +118,7 @@ def test_is_equal(other_obj, is_equal):
             },
         ),
         (
-            CCDCharacteristics(
+            Characteristics(
                 quantum_efficiency=0.1,
                 charge_to_volt_conversion=0.2,
                 pre_amplification=4.4,
@@ -139,9 +139,9 @@ def test_is_equal(other_obj, is_equal):
 )
 def test_to_and_from_dict(obj, exp_dict):
     """Test methods 'to_dict', 'from_dict'."""
-    assert type(obj) == CCDCharacteristics
+    assert type(obj) == Characteristics
 
-    # Convert from `CCDCharacteristics` to a `dict`
+    # Convert from `Characteristics` to a `dict`
     dct = obj.to_dict()
     assert dct == exp_dict
 
@@ -150,9 +150,9 @@ def test_to_and_from_dict(obj, exp_dict):
     assert copied_dct is not exp_dict
     assert copied_dct == exp_dict
 
-    # Convert from `dict` to `CCDCharacteristics`
-    other_obj = CCDCharacteristics.from_dict(copied_dct)
-    assert type(other_obj) == CCDCharacteristics
+    # Convert from `dict` to `Characteristics`
+    other_obj = Characteristics.from_dict(copied_dct)
+    assert type(other_obj) == Characteristics
     assert obj == other_obj
     assert obj is not other_obj
     assert copied_dct == exp_dict

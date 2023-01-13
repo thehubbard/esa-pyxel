@@ -14,10 +14,8 @@ import pytest
 from pyxel.detectors import (
     CCD,
     CMOS,
-    CCDCharacteristics,
     CCDGeometry,
     Characteristics,
-    CMOSCharacteristics,
     CMOSGeometry,
     Detector,
     Environment,
@@ -30,14 +28,14 @@ from pyxel.detectors import (
     "cls, geometry, environment, characteristics",
     [
         # (Geometry(), Environment(), Characteristics(), Material()),
-        # (Geometry(), Environment(), CCDCharacteristics(), Material()),
-        # (Geometry(), Environment(), CMOSCharacteristics(), Material()),
+        # (Geometry(), Environment(), Characteristics(), Material()),
+        # (Geometry(), Environment(), Characteristics(), Material()),
         (CCD, CCDGeometry(row=1, col=1), Environment(), Characteristics()),
-        (CCD, CCDGeometry(row=1, col=1), Environment(), CCDCharacteristics()),
-        (CCD, CCDGeometry(row=1, col=1), Environment(), CMOSCharacteristics()),
+        (CCD, CCDGeometry(row=1, col=1), Environment(), Characteristics()),
+        (CCD, CCDGeometry(row=1, col=1), Environment(), Characteristics()),
         (CMOS, CMOSGeometry(row=1, col=1), Environment(), Characteristics()),
-        (CMOS, CMOSGeometry(row=1, col=1), Environment(), CCDCharacteristics()),
-        (CMOS, CMOSGeometry(row=1, col=1), Environment(), CMOSCharacteristics()),
+        (CMOS, CMOSGeometry(row=1, col=1), Environment(), Characteristics()),
+        (CMOS, CMOSGeometry(row=1, col=1), Environment(), Characteristics()),
     ],
 )
 def test_init(cls, geometry, environment, characteristics):
@@ -71,19 +69,19 @@ def test_init(cls, geometry, environment, characteristics):
 #     (Detector(CMOSGeometry(), Material(), Environment(), Characteristics()),
 #      Detector(CMOSGeometry(), Material(), Environment(), Characteristics())),
 #
-#     (Detector(Geometry(), Material(), Environment(), CCDCharacteristics()),
-#      Detector(Geometry(), Material(), Environment(), CCDCharacteristics())),        # TODO
-#     (Detector(CCDGeometry(), Material(), Environment(), CCDCharacteristics()),
-#      Detector(CCDGeometry(), Material(), Environment(), CCDCharacteristics())),
-#     (Detector(CMOSGeometry(), Material(), Environment(), CCDCharacteristics()),
-#      Detector(CMOSGeometry(), Material(), Environment(), CCDCharacteristics())),
+#     (Detector(Geometry(), Material(), Environment(), Characteristics()),
+#      Detector(Geometry(), Material(), Environment(), Characteristics())),        # TODO
+#     (Detector(CCDGeometry(), Material(), Environment(), Characteristics()),
+#      Detector(CCDGeometry(), Material(), Environment(), Characteristics())),
+#     (Detector(CMOSGeometry(), Material(), Environment(), Characteristics()),
+#      Detector(CMOSGeometry(), Material(), Environment(), Characteristics())),
 #
-#     (Detector(Geometry(), Material(), Environment(), CMOSCharacteristics()),               # TODO
-#      Detector(Geometry(), Material(), Environment(), CMOSCharacteristics())),
-#     (Detector(CCDGeometry(), Material(), Environment(), CMOSCharacteristics()),
-#      Detector(CCDGeometry(), Material(), Environment(), CMOSCharacteristics())),
-#     (Detector(CMOSGeometry(), Material(), Environment(), CMOSCharacteristics()),
-#      Detector(CMOSGeometry(), Material(), Environment(), CMOSCharacteristics())),
+#     (Detector(Geometry(), Material(), Environment(), Characteristics()),               # TODO
+#      Detector(Geometry(), Material(), Environment(), Characteristics())),
+#     (Detector(CCDGeometry(), Material(), Environment(), Characteristics()),
+#      Detector(CCDGeometry(), Material(), Environment(), Characteristics())),
+#     (Detector(CMOSGeometry(), Material(), Environment(), Characteristics()),
+#      Detector(CMOSGeometry(), Material(), Environment(), Characteristics())),
 # ])
 # def test_eq(obj, other_obj):
 #     """Test Detector.__eq__."""
@@ -91,7 +89,7 @@ def test_init(cls, geometry, environment, characteristics):
 
 
 @pytest.mark.parametrize(
-    "obj", [CCD(CCDGeometry(row=1, col=1), Environment(), CCDCharacteristics())]
+    "obj", [CCD(CCDGeometry(row=1, col=1), Environment(), Characteristics())]
 )
 def test_copy(obj):
     """Test Detector.copy."""

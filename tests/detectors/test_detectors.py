@@ -18,13 +18,11 @@ from pyxel.detectors import (
     MKID,
     APDCharacteristics,
     APDGeometry,
-    CCDCharacteristics,
     CCDGeometry,
-    CMOSCharacteristics,
+    Characteristics,
     CMOSGeometry,
     Detector,
     Environment,
-    MKIDCharacteristics,
     MKIDGeometry,
 )
 
@@ -47,7 +45,7 @@ def detector(request) -> Union[CCD, CMOS, MKID, APD]:
         return CCD(
             geometry=CCDGeometry(row=4, col=5),
             environment=Environment(),
-            characteristics=CCDCharacteristics(),
+            characteristics=Characteristics(),
         )
     elif request.param == "ccd_100x120":
         return CCD(
@@ -59,7 +57,7 @@ def detector(request) -> Union[CCD, CMOS, MKID, APD]:
                 pixel_vert_size=34.5,
             ),
             environment=Environment(temperature=100.1),
-            characteristics=CCDCharacteristics(
+            characteristics=Characteristics(
                 quantum_efficiency=0.1,
                 charge_to_volt_conversion=0.2,
                 pre_amplification=3.3,
@@ -70,7 +68,7 @@ def detector(request) -> Union[CCD, CMOS, MKID, APD]:
         return CMOS(
             geometry=CMOSGeometry(row=4, col=5),
             environment=Environment(),
-            characteristics=CMOSCharacteristics(),
+            characteristics=Characteristics(),
         )
     elif request.param == "cmos_100x120":
         return CMOS(
@@ -82,7 +80,7 @@ def detector(request) -> Union[CCD, CMOS, MKID, APD]:
                 pixel_vert_size=34.5,
             ),
             environment=Environment(temperature=100.1),
-            characteristics=CMOSCharacteristics(
+            characteristics=Characteristics(
                 quantum_efficiency=0.1,
                 charge_to_volt_conversion=0.2,
                 pre_amplification=3.3,
@@ -93,7 +91,7 @@ def detector(request) -> Union[CCD, CMOS, MKID, APD]:
         return MKID(
             geometry=MKIDGeometry(row=4, col=5),
             environment=Environment(),
-            characteristics=MKIDCharacteristics(),
+            characteristics=Characteristics(),
         )
     elif request.param == "mkid_100x120":
         return MKID(
@@ -105,7 +103,7 @@ def detector(request) -> Union[CCD, CMOS, MKID, APD]:
                 pixel_vert_size=34.5,
             ),
             environment=Environment(temperature=100.1),
-            characteristics=MKIDCharacteristics(
+            characteristics=Characteristics(
                 quantum_efficiency=0.1,
                 charge_to_volt_conversion=0.2,
                 pre_amplification=3.3,
