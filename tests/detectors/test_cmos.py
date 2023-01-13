@@ -6,19 +6,12 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 from copy import deepcopy
-from typing import Tuple
 
 import numpy as np
 import pandas as pd
 import pytest
 
-from pyxel.detectors import (
-    CMOS,
-    CMOSCharacteristics,
-    CMOSGeometry,
-    Detector,
-    Environment,
-)
+from pyxel.detectors import CMOS, Characteristics, CMOSGeometry, Detector, Environment
 
 
 @pytest.fixture
@@ -33,7 +26,7 @@ def valid_cmos() -> CMOS:
             pixel_vert_size=34.5,
         ),
         environment=Environment(temperature=100.1),
-        characteristics=CMOSCharacteristics(
+        characteristics=Characteristics(
             quantum_efficiency=0.1,
             charge_to_volt_conversion=0.2,
             pre_amplification=3.3,
@@ -50,7 +43,7 @@ def valid_cmos() -> CMOS:
             CMOS(
                 geometry=CMOSGeometry(row=100, col=120),
                 environment=Environment(),
-                characteristics=CMOSCharacteristics(),
+                characteristics=Characteristics(),
             ),
             False,
             id="Empty 'CMOS'",
@@ -65,7 +58,7 @@ def valid_cmos() -> CMOS:
                     pixel_vert_size=34.5,
                 ),
                 environment=Environment(),
-                characteristics=CMOSCharacteristics(),
+                characteristics=Characteristics(),
             ),
             False,
             id="Almost same parameters, different class",
@@ -80,7 +73,7 @@ def valid_cmos() -> CMOS:
                     pixel_vert_size=34.5,
                 ),
                 environment=Environment(temperature=100.1),
-                characteristics=CMOSCharacteristics(
+                characteristics=Characteristics(
                     quantum_efficiency=0.1,
                     charge_to_volt_conversion=0.2,
                     pre_amplification=3.3,
@@ -176,7 +169,7 @@ def comparison(dct, other_dct):
             CMOS(
                 geometry=CMOSGeometry(row=100, col=120),
                 environment=Environment(),
-                characteristics=CMOSCharacteristics(),
+                characteristics=Characteristics(),
             ),
             {
                 "version": 1,
@@ -246,7 +239,7 @@ def comparison(dct, other_dct):
                     pixel_vert_size=34.5,
                 ),
                 environment=Environment(temperature=100.1),
-                characteristics=CMOSCharacteristics(
+                characteristics=Characteristics(
                     quantum_efficiency=0.1,
                     charge_to_volt_conversion=0.2,
                     pre_amplification=3.3,

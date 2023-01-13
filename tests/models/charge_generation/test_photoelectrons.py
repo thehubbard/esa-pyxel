@@ -13,7 +13,7 @@ from typing import Union
 import numpy as np
 import pytest
 
-from pyxel.detectors import CCD, CCDCharacteristics, CCDGeometry, Environment
+from pyxel.detectors import CCD, CCDGeometry, Characteristics, Environment
 from pyxel.models.charge_generation import conversion_with_qe_map, simple_conversion
 
 
@@ -29,7 +29,7 @@ def ccd_5x5() -> CCD:
             pixel_horz_size=10.0,
         ),
         environment=Environment(),
-        characteristics=CCDCharacteristics(),
+        characteristics=Characteristics(),
     )
     return detector
 

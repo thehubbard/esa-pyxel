@@ -17,8 +17,8 @@ from pyxel.detectors import (
     CCD,
     APDCharacteristics,
     APDGeometry,
-    CCDCharacteristics,
     CCDGeometry,
+    Characteristics,
     Environment,
 )
 from pyxel.models.charge_measurement import ktc_noise
@@ -36,7 +36,7 @@ def ccd_5x5() -> CCD:
             pixel_horz_size=10.0,
         ),
         environment=Environment(temperature=273.0),
-        characteristics=CCDCharacteristics(
+        characteristics=Characteristics(
             adc_voltage_range=(0.0, 10.0),
         ),
     )

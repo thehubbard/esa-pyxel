@@ -7,7 +7,7 @@
 
 import pytest
 
-from pyxel.detectors import CCD, CCDCharacteristics, CCDGeometry, Environment
+from pyxel.detectors import CCD, CCDGeometry, Characteristics, Environment
 from pyxel.models.readout_electronics import sar_adc
 
 
@@ -23,7 +23,7 @@ def ccd_10x3() -> CCD:
             pixel_horz_size=10.0,
         ),
         environment=Environment(),
-        characteristics=CCDCharacteristics(
+        characteristics=Characteristics(
             adc_bit_resolution=16, adc_voltage_range=(0.0, 10.0)
         ),
     )

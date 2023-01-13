@@ -14,7 +14,7 @@ from pyxel.detectors import Detector
 if TYPE_CHECKING:
     import pandas as pd
 
-    from pyxel.detectors import CCDCharacteristics, CCDGeometry, Environment
+    from pyxel.detectors import CCDGeometry, Characteristics, Environment
 
 
 class CCD(Detector):
@@ -24,10 +24,10 @@ class CCD(Detector):
         self,
         geometry: "CCDGeometry",
         environment: "Environment",
-        characteristics: "CCDCharacteristics",
+        characteristics: "Characteristics",
     ):
         self._geometry: CCDGeometry = geometry
-        self._characteristics: CCDCharacteristics = characteristics
+        self._characteristics: Characteristics = characteristics
 
         super().__init__(environment=environment)
         super().reset()
@@ -47,7 +47,7 @@ class CCD(Detector):
         return self._geometry
 
     @property
-    def characteristics(self) -> "CCDCharacteristics":
+    def characteristics(self) -> "Characteristics":
         """TBW."""
         return self._characteristics
 
@@ -95,7 +95,7 @@ class CCD(Detector):
         import xarray as xr
 
         from pyxel.data_structure import Scene
-        from pyxel.detectors import CCDCharacteristics, CCDGeometry, Environment
+        from pyxel.detectors import CCDGeometry, Characteristics, Environment
 
         if dct["type"] != "CCD":
             raise ValueError
@@ -106,7 +106,7 @@ class CCD(Detector):
         properties = dct["properties"]
         geometry = CCDGeometry.from_dict(properties["geometry"])
         environment = Environment.from_dict(properties["environment"])
-        characteristics = CCDCharacteristics.from_dict(properties["characteristics"])
+        characteristics = Characteristics.from_dict(properties["characteristics"])
 
         detector = cls(
             geometry=geometry,

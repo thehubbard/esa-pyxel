@@ -13,9 +13,8 @@ import pytest
 from pyxel.detectors import (
     CCD,
     CMOS,
-    CCDCharacteristics,
     CCDGeometry,
-    CMOSCharacteristics,
+    Characteristics,
     CMOSGeometry,
     Environment,
     ReadoutProperties,
@@ -35,7 +34,7 @@ def cmos_10x10() -> CMOS:
             pixel_horz_size=10.0,
         ),
         environment=Environment(temperature=273.15),
-        characteristics=CMOSCharacteristics(),
+        characteristics=Characteristics(),
     )
     detector._readout_properties = ReadoutProperties(num_steps=1)
     return detector
@@ -59,7 +58,7 @@ def test_dark_current_rule07_with_ccd():
             pixel_horz_size=10.0,
         ),
         environment=Environment(),
-        characteristics=CCDCharacteristics(),
+        characteristics=Characteristics(),
     )
 
     with pytest.raises(TypeError, match="Expecting a CMOS object for detector."):

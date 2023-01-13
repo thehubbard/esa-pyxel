@@ -10,9 +10,8 @@ import pytest
 from pyxel.detectors import (
     CCD,
     CMOS,
-    CCDCharacteristics,
     CCDGeometry,
-    CMOSCharacteristics,
+    Characteristics,
     CMOSGeometry,
     Environment,
     ReadoutProperties,
@@ -32,7 +31,7 @@ def cmos_5x10() -> CMOS:
             pixel_horz_size=10.0,
         ),
         environment=Environment(),
-        characteristics=CMOSCharacteristics(),
+        characteristics=Characteristics(),
     )
     detector._readout_properties = ReadoutProperties(num_steps=1)
 
@@ -51,7 +50,7 @@ def ccd_5x5() -> CCD:
             pixel_horz_size=10.0,
         ),
         environment=Environment(),
-        characteristics=CCDCharacteristics(),
+        characteristics=Characteristics(),
     )
     return detector
 

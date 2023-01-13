@@ -24,8 +24,8 @@ from typing_extensions import Literal
 
 from pyxel.detectors import (
     CCD,
-    CCDCharacteristics,
     CCDGeometry,
+    Characteristics,
     Environment,
     ReadoutProperties,
 )
@@ -60,7 +60,7 @@ def ccd_10x10() -> CCD:
             pixel_horz_size=10.0,
         ),
         environment=Environment(),
-        characteristics=CCDCharacteristics(
+        characteristics=Characteristics(
             quantum_efficiency=1.0,
             charge_to_volt_conversion=1.0e-6,
             pre_amplification=1.0,

@@ -36,14 +36,15 @@ CCD specific
 ------------
 :term:`CCD` specific classes.
 
-CCDCharacteristics
-==================
-.. autoclass:: CCDCharacteristics
+Characteristics
+===============
+.. autoclass:: Characteristics
     :members:
     :inherited-members:
     :undoc-members:
     :show-inheritance:
     :exclude-members:
+    :noindex:
 
 CCDGeometry
 ===========
@@ -58,14 +59,15 @@ CMOS specific
 -------------
 :term:`CMOS` specific classes.
 
-CMOSCharacteristics
-===================
-.. autoclass:: CMOSCharacteristics
+Characteristics
+===============
+.. autoclass:: Characteristics
     :members:
     :inherited-members:
     :undoc-members:
     :show-inheritance:
     :exclude-members:
+    :noindex:
 
 CMOSGeometry
 ============
@@ -80,14 +82,15 @@ MKID specific
 -------------
 :term:`MKID` specific classes.
 
-MKIDCharacteristics
-===================
-.. autoclass:: MKIDCharacteristics
+Characteristics
+===============
+.. autoclass:: Characteristics
     :members:
     :inherited-members:
     :undoc-members:
     :show-inheritance:
     :exclude-members:
+    :noindex:
 
 MKIDGeometry
 ============

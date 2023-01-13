@@ -16,9 +16,8 @@ from typing_extensions import Literal
 from pyxel.detectors import (
     CCD,
     CMOS,
-    CCDCharacteristics,
     CCDGeometry,
-    CMOSCharacteristics,
+    Characteristics,
     CMOSGeometry,
     Environment,
 )
@@ -37,7 +36,7 @@ def ccd_5x5() -> CCD:
             pixel_horz_size=10.0,
         ),
         environment=Environment(temperature=273.15),
-        characteristics=CCDCharacteristics(),
+        characteristics=Characteristics(),
     )
 
 
@@ -192,7 +191,7 @@ def test_cdm_with_cmos():
             pixel_horz_size=10.0,
         ),
         environment=Environment(),
-        characteristics=CMOSCharacteristics(),
+        characteristics=Characteristics(),
     )
 
     with pytest.raises(

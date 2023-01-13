@@ -16,9 +16,8 @@ from pyxel.detectors import (
     CMOS,
     APDCharacteristics,
     APDGeometry,
-    CCDCharacteristics,
     CCDGeometry,
-    CMOSCharacteristics,
+    Characteristics,
     CMOSGeometry,
     Environment,
 )
@@ -41,7 +40,7 @@ def ccd_5x10() -> CCD:
             pixel_horz_size=10.0,
         ),
         environment=Environment(),
-        characteristics=CCDCharacteristics(),
+        characteristics=Characteristics(),
     )
 
 
@@ -57,7 +56,7 @@ def cmos_5x10() -> CMOS:
             pixel_horz_size=10.0,
         ),
         environment=Environment(),
-        characteristics=CMOSCharacteristics(charge_to_volt_conversion=1.0e-6),
+        characteristics=Characteristics(charge_to_volt_conversion=1.0e-6),
     )
 
 

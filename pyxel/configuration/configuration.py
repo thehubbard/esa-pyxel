@@ -28,12 +28,10 @@ from pyxel.detectors import (
     MKID,
     APDCharacteristics,
     APDGeometry,
-    CCDCharacteristics,
     CCDGeometry,
-    CMOSCharacteristics,
+    Characteristics,
     CMOSGeometry,
     Environment,
-    MKIDCharacteristics,
     MKIDGeometry,
 )
 from pyxel.exposure import Exposure, Readout
@@ -407,7 +405,7 @@ def to_environment(dct: Optional[dict]) -> Environment:
     return Environment(**dct)
 
 
-def to_ccd_characteristics(dct: Optional[dict]) -> CCDCharacteristics:
+def to_ccd_characteristics(dct: Optional[dict]) -> Characteristics:
     """Create a CCDCharacteristics class from a dictionary.
 
     Parameters
@@ -420,10 +418,10 @@ def to_ccd_characteristics(dct: Optional[dict]) -> CCDCharacteristics:
     """
     if dct is None:
         dct = {}
-    return CCDCharacteristics(**dct)
+    return Characteristics(**dct)
 
 
-def to_cmos_characteristics(dct: Optional[dict]) -> CMOSCharacteristics:
+def to_cmos_characteristics(dct: Optional[dict]) -> Characteristics:
     """Create a CMOSCharacteristics class from a dictionary.
 
     Parameters
@@ -436,10 +434,10 @@ def to_cmos_characteristics(dct: Optional[dict]) -> CMOSCharacteristics:
     """
     if dct is None:
         dct = {}
-    return CMOSCharacteristics(**dct)
+    return Characteristics(**dct)
 
 
-def to_mkid_characteristics(dct: Optional[dict]) -> MKIDCharacteristics:
+def to_mkid_characteristics(dct: Optional[dict]) -> Characteristics:
     """Create a MKIDCharacteristics class from a dictionary.
 
     Parameters
@@ -452,7 +450,7 @@ def to_mkid_characteristics(dct: Optional[dict]) -> MKIDCharacteristics:
     """
     if dct is None:
         dct = {}
-    return MKIDCharacteristics(**dct)
+    return Characteristics(**dct)
 
 
 def to_apd_characteristics(dct: Optional[dict]) -> APDCharacteristics:

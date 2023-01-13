@@ -11,8 +11,8 @@ import pytest
 
 from pyxel.detectors import (
     CCD,
-    CCDCharacteristics,
     CCDGeometry,
+    Characteristics,
     Environment,
     ReadoutProperties,
 )
@@ -29,8 +29,8 @@ def ccd_geometry() -> CCDGeometry:
 
 
 @pytest.fixture
-def ccd_characteristics() -> CCDCharacteristics:
-    return CCDCharacteristics()
+def ccd_characteristics() -> Characteristics:
+    return Characteristics()
 
 
 @pytest.fixture
@@ -55,7 +55,7 @@ def ccd_10x10() -> CCD:
             pixel_horz_size=10.0,
         ),
         environment=Environment(temperature=200.0),
-        characteristics=CCDCharacteristics(),
+        characteristics=Characteristics(),
     )
     detector._readout_properties = ReadoutProperties(num_steps=1)
     return detector

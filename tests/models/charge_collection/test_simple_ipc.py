@@ -14,9 +14,8 @@ import pytest
 from pyxel.detectors import (
     CCD,
     CMOS,
-    CCDCharacteristics,
     CCDGeometry,
-    CMOSCharacteristics,
+    Characteristics,
     CMOSGeometry,
     Environment,
 )
@@ -35,7 +34,7 @@ def cmos_10x10() -> CMOS:
             pixel_horz_size=10.0,
         ),
         environment=Environment(),
-        characteristics=CMOSCharacteristics(),
+        characteristics=Characteristics(),
     )
 
 
@@ -357,7 +356,7 @@ def test_charge_blocks_with_ccd():
             pixel_horz_size=10.0,
         ),
         environment=Environment(),
-        characteristics=CCDCharacteristics(),
+        characteristics=Characteristics(),
     )
 
     with pytest.raises(TypeError, match="Expecting a CMOS object for detector."):
