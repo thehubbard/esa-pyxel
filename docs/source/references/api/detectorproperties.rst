@@ -44,6 +44,7 @@ Characteristics
     :undoc-members:
     :show-inheritance:
     :exclude-members:
+    :noindex:
 
 CCDGeometry
 ===========
@@ -66,6 +67,7 @@ Characteristics
     :undoc-members:
     :show-inheritance:
     :exclude-members:
+    :noindex:
 
 CMOSGeometry
 ============
@@ -88,6 +90,7 @@ Characteristics
     :undoc-members:
     :show-inheritance:
     :exclude-members:
+    :noindex:
 
 MKIDGeometry
 ============
