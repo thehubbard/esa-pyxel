@@ -1,12 +1,18 @@
 
 # Frequently Asked Questions
 - [How to install Pyxel?](#how-to-install-pyxel)
+- [How to run Pyxel?](#how-to-run-pyxel)
 - [What is the easiest way to get the signal to noise ratio from the detector data buckets?](#what-is-the-easiest-way-to-get-the-signal-to-noise-ratio-from-the-detector-data-buckets)
 
 <a name="how-to-install-pyxel"></a>
 ## How to install Pyxel?
 
-Look at the [Installation Guide](https://esa.gitlab.io/pyxel/doc/stable/tutorials/install.html)
+Look at the [Installation Guide](https://esa.gitlab.io/pyxel/doc/stable/tutorials/install.html).
+
+<a name="how-to-run-pyxel"></a>
+## How to run Pyxel?
+
+Look in the documentation to know [how to run Pyxel](https://esa.gitlab.io/pyxel/doc/stable/tutorials/running.html).
 
 <a name="what-is-the-easiest-way-to-get-the-signal-to-noise-ratio-from-the-detector-data-buckets"></a>
 ## What is the easiest way to get the signal to noise ratio from the detector data buckets?
