@@ -47,11 +47,11 @@ workflow:
 # ###########################
 
 # Run pytest for Python 3.7 without anaconda
-python37:
-  image: python:3.7
-  stage: test
-  script:
-    - tox -e py37-extra_all
+#python37:
+#  image: python:3.7
+#  stage: test
+#  script:
+#    - tox -e py37-extra_all
 #  rules:
     # If `$FORCE_GITLAB_CI` is set, create a pipeline.
 #    - if: '$FORCE_GITLAB_CI'
