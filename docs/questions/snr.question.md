@@ -11,7 +11,7 @@ snr = signal / noise
 snr
 ```
 
-So your snr is an array with each exposure time in exposure mode 
+The snr is an array with each exposure time in exposure mode 
 (ndarray when using observation mode) with the result of the simulation, e.g. in exposure mode:
 ```python
 result = pyxel.exposure_mode(
