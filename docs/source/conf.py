@@ -108,6 +108,7 @@ napoleon_type_aliases = {
 # For 'MyST-NB'
 nb_execution_timeout = 60 * 2
 suppress_warnings = ["mystnb.unknown_mime_type"]
+myst_heading_anchors = 3
 
 autodoc_member_order = "bysource"
 

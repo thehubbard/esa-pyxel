@@ -11,6 +11,7 @@
  (See [!591](https://gitlab.com/esa/pyxel/-/merge_requests/591)).
 * Update FAQ.
  (See [!592](https://gitlab.com/esa/pyxel/-/merge_requests/592)).
+ (See [!593](https://gitlab.com/esa/pyxel/-/merge_requests/593)).
 
 ### Models
 * Cannot reload a 'detector' from model 'pyxel.load_detector'.
