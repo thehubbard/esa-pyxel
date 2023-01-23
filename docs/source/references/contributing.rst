@@ -173,16 +173,6 @@ requires a Python environment. If you're making documentation changes, you can
 skip to :ref:`contributing.documentation` but you won't be able to build the
 documentation locally before pushing your changes.
 
-.. important::
-    Because of its optional and required dependencies, Pyxel is not compatible with
-    all versions of Python.
-
-    You can install Pyxel with `pygmo <https://esa.github.io/pygmo2/>`_ only for
-    **Python 3.7** and **Python 3.8** (not Python 3.9+).
-
-    If you don't use `pygmo <https://esa.github.io/pygmo2/>`_ then you can Pyxel with
-    **Python 3.7**, **Python 3.8** and **Python 3.9** (not Python 3.10+).
-
 .. _contributing.dev_python:
 
 
@@ -255,7 +245,7 @@ Creating a Python Environment (pip)
 If you aren't using conda for your development environment, follow
 these instructions:
 
-- You'll need to have at least python3.7 installed on your system.
+- You'll need to have at least python3.8 installed on your system.
 - Make sure that you have :ref:`cloned the repository <contributing.forking>`
 - ``cd`` to the *Pyxel* source directory
 
@@ -572,9 +562,6 @@ install *Pyxel*) by typing:
 or:
 
 .. code-block:: fish
-
-    # For testing under Python 3.7
-    $ tox -e py37
 
     # For testing under Python 3.8
     $ tox -e py38

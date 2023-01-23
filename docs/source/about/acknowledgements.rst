@@ -8,8 +8,10 @@ Acknowledgements
     :alt: esa
     :scale: 15 %
     :align: center
+    :target: https://www.esa.int
 
 .. image:: _static/eso_colour.jpg
-    :alt: esa
+    :alt: eso
     :scale: 15 %
     :align: center
+    :target: https://www.eso.org/public/
