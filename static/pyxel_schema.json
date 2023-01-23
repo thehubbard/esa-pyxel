@@ -364,7 +364,7 @@
         "characteristics": {
           "allOf": [
             {
-              "$ref": "#/definitions/CCDCharacteristics"
+              "$ref": "#/definitions/Characteristics"
             }
           ],
           "title": "characteristics"
@@ -395,87 +395,6 @@
         "characteristics"
       ],
       "title": "CCD",
-      "type": "object"
-    },
-    "CCDCharacteristics": {
-      "additionalProperties": false,
-      "description": "Characteristic attributes of a :term:`CCD` detector.",
-      "properties": {
-        "adc_bit_resolution": {
-          "default": null,
-          "description": "ADC bit resolution.",
-          "title": "adc_bit_resolution",
-          "type": [
-            "integer",
-            "null"
-          ]
-        },
-        "adc_voltage_range": {
-          "additionalItems": false,
-          "default": null,
-          "description": "ADC voltage range. Unit: V",
-          "items": [
-            {
-              "type": "number"
-            },
-            {
-              "type": "number"
-            }
-          ],
-          "maxItems": 2,
-          "minItems": 2,
-          "prefixItems": [
-            {
-              "type": "number"
-            },
-            {
-              "type": "number"
-            }
-          ],
-          "title": "adc_voltage_range",
-          "type": [
-            "array",
-            "null"
-          ]
-        },
-        "charge_to_volt_conversion": {
-          "default": null,
-          "description": "Sensitivity of charge readout. Unit: V/e-",
-          "title": "charge_to_volt_conversion",
-          "type": [
-            "number",
-            "null"
-          ]
-        },
-        "full_well_capacity": {
-          "default": null,
-          "description": "Full well capacity. Unit: e-",
-          "title": "full_well_capacity",
-          "type": [
-            "number",
-            "null"
-          ]
-        },
-        "pre_amplification": {
-          "default": null,
-          "description": "Gain of pre-amplifier. Unit: V/V",
-          "title": "pre_amplification",
-          "type": [
-            "number",
-            "null"
-          ]
-        },
-        "quantum_efficiency": {
-          "default": null,
-          "description": "Quantum efficiency.",
-          "title": "quantum_efficiency",
-          "type": [
-            "number",
-            "null"
-          ]
-        }
-      },
-      "title": "CCDCharacteristics",
       "type": "object"
     },
     "CCDGeometry": {
@@ -534,7 +453,7 @@
         "characteristics": {
           "allOf": [
             {
-              "$ref": "#/definitions/CMOSCharacteristics"
+              "$ref": "#/definitions/Characteristics"
             }
           ],
           "title": "characteristics"
@@ -565,87 +484,6 @@
         "characteristics"
       ],
       "title": "CMOS",
-      "type": "object"
-    },
-    "CMOSCharacteristics": {
-      "additionalProperties": false,
-      "description": "Characteristic attributes of a :term:`CMOS`-based detector.",
-      "properties": {
-        "adc_bit_resolution": {
-          "default": null,
-          "description": "ADC bit resolution.",
-          "title": "adc_bit_resolution",
-          "type": [
-            "integer",
-            "null"
-          ]
-        },
-        "adc_voltage_range": {
-          "additionalItems": false,
-          "default": null,
-          "description": "ADC voltage range. Unit: V",
-          "items": [
-            {
-              "type": "number"
-            },
-            {
-              "type": "number"
-            }
-          ],
-          "maxItems": 2,
-          "minItems": 2,
-          "prefixItems": [
-            {
-              "type": "number"
-            },
-            {
-              "type": "number"
-            }
-          ],
-          "title": "adc_voltage_range",
-          "type": [
-            "array",
-            "null"
-          ]
-        },
-        "charge_to_volt_conversion": {
-          "default": null,
-          "description": "Sensitivity of charge readout. Unit: V/e-",
-          "title": "charge_to_volt_conversion",
-          "type": [
-            "number",
-            "null"
-          ]
-        },
-        "full_well_capacity": {
-          "default": null,
-          "description": "Full well capacity. Unit: e-",
-          "title": "full_well_capacity",
-          "type": [
-            "number",
-            "null"
-          ]
-        },
-        "pre_amplification": {
-          "default": null,
-          "description": "Gain of pre-amplifier. Unit: V/V",
-          "title": "pre_amplification",
-          "type": [
-            "number",
-            "null"
-          ]
-        },
-        "quantum_efficiency": {
-          "default": null,
-          "description": "Quantum efficiency.",
-          "title": "quantum_efficiency",
-          "type": [
-            "number",
-            "null"
-          ]
-        }
-      },
-      "title": "CMOSCharacteristics",
       "type": "object"
     },
     "CMOSGeometry": {
@@ -911,6 +749,87 @@
       "required": [
         "output_folder"
       ],
+      "type": "object"
+    },
+    "Characteristics": {
+      "additionalProperties": false,
+      "description": "Characteristic attributes of the detector.",
+      "properties": {
+        "adc_bit_resolution": {
+          "default": null,
+          "description": "ADC bit resolution.",
+          "title": "adc_bit_resolution",
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "adc_voltage_range": {
+          "additionalItems": false,
+          "default": null,
+          "description": "ADC voltage range. Unit: V",
+          "items": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "maxItems": 2,
+          "minItems": 2,
+          "prefixItems": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "number"
+            }
+          ],
+          "title": "adc_voltage_range",
+          "type": [
+            "array",
+            "null"
+          ]
+        },
+        "charge_to_volt_conversion": {
+          "default": null,
+          "description": "Sensitivity of charge readout. Unit: V/e-",
+          "title": "charge_to_volt_conversion",
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "full_well_capacity": {
+          "default": null,
+          "description": "Full well capacity. Unit: e-",
+          "title": "full_well_capacity",
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "pre_amplification": {
+          "default": null,
+          "description": "Gain of pre-amplifier. Unit: V/V",
+          "title": "pre_amplification",
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "quantum_efficiency": {
+          "default": null,
+          "description": "Quantum efficiency.",
+          "title": "quantum_efficiency",
+          "type": [
+            "number",
+            "null"
+          ]
+        }
+      },
+      "title": "Characteristics",
       "type": "object"
     },
     "Configuration": {
@@ -1502,7 +1421,7 @@
         "characteristics": {
           "allOf": [
             {
-              "$ref": "#/definitions/MKIDCharacteristics"
+              "$ref": "#/definitions/Characteristics"
             }
           ],
           "title": "characteristics"
@@ -1533,87 +1452,6 @@
         "characteristics"
       ],
       "title": "MKID",
-      "type": "object"
-    },
-    "MKIDCharacteristics": {
-      "additionalProperties": false,
-      "description": "Characteristic attributes of a :term:`MKID`-based detector.",
-      "properties": {
-        "adc_bit_resolution": {
-          "default": null,
-          "description": "ADC bit resolution.",
-          "title": "adc_bit_resolution",
-          "type": [
-            "integer",
-            "null"
-          ]
-        },
-        "adc_voltage_range": {
-          "additionalItems": false,
-          "default": null,
-          "description": "ADC voltage range. Unit: V",
-          "items": [
-            {
-              "type": "number"
-            },
-            {
-              "type": "number"
-            }
-          ],
-          "maxItems": 2,
-          "minItems": 2,
-          "prefixItems": [
-            {
-              "type": "number"
-            },
-            {
-              "type": "number"
-            }
-          ],
-          "title": "adc_voltage_range",
-          "type": [
-            "array",
-            "null"
-          ]
-        },
-        "charge_to_volt_conversion": {
-          "default": null,
-          "description": "Sensitivity of charge readout. Unit: V/e-",
-          "title": "charge_to_volt_conversion",
-          "type": [
-            "number",
-            "null"
-          ]
-        },
-        "full_well_capacity": {
-          "default": null,
-          "description": "Full well capacity. Unit: e-",
-          "title": "full_well_capacity",
-          "type": [
-            "number",
-            "null"
-          ]
-        },
-        "pre_amplification": {
-          "default": null,
-          "description": "Gain of pre-amplifier. Unit: V/V",
-          "title": "pre_amplification",
-          "type": [
-            "number",
-            "null"
-          ]
-        },
-        "quantum_efficiency": {
-          "default": null,
-          "description": "Quantum efficiency.",
-          "title": "quantum_efficiency",
-          "type": [
-            "number",
-            "null"
-          ]
-        }
-      },
-      "title": "MKIDCharacteristics",
       "type": "object"
     },
     "MKIDGeometry": {
@@ -4150,6 +3988,7 @@
           "properties": {
             "data_structure": {
               "default": "pixel",
+              "description": "Keyword to choose data structure. Can be any from: (\"pixel\", \"photon\",\"image\", \"signal\")",
               "enum": [
                 "pixel",
                 "photon",
@@ -4175,6 +4014,7 @@
                 "x",
                 "y"
               ],
+              "description": "Dimensions.",
               "title": "dimensions"
             }
           },
