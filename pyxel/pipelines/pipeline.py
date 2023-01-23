@@ -15,6 +15,20 @@ from pyxel.pipelines import ModelFunction, ModelGroup
 class DetectionPipeline:
     """TBW."""
 
+    # Define the order of steps in the pipeline.
+    MODEL_GROUPS: Tuple[str, ...] = (
+        "photon_generation",
+        "optics",
+        "phasing",
+        "charge_generation",
+        "charge_collection",
+        "charge_transfer",
+        "charge_measurement",
+        "signal_transfer",
+        "readout_electronics",
+        "data_processing",
+    )
+
     # TODO: develop a ModelGroupList class ? See #333
     def __init__(
         self,  # TODO: Too many instance attributes
@@ -87,21 +101,6 @@ class DetectionPipeline:
             ModelGroup(data_processing, name="data_processing")
             if data_processing
             else None
-        )
-
-        # TODO: this defines the order of steps in the pipeline.
-        #       The ModelGroupList could do this. Is it really needed?
-        self.MODEL_GROUPS: Tuple[str, ...] = (
-            "photon_generation",
-            "optics",
-            "phasing",
-            "charge_generation",
-            "charge_collection",
-            "charge_transfer",
-            "charge_measurement",
-            "signal_transfer",
-            "readout_electronics",
-            "data_processing",
         )
 
     def __repr__(self) -> str:
