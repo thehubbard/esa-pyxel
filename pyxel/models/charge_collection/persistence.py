@@ -77,11 +77,10 @@ TO DO:
 """
 
 from pathlib import Path
-from typing import Optional, Sequence, Tuple, Union
+from typing import Literal, Optional, Sequence, Tuple, Union
 
 import numba
 import numpy as np
-from typing_extensions import Literal
 
 from pyxel.data_structure import Persistence, SimplePersistence
 from pyxel.detectors import CMOS

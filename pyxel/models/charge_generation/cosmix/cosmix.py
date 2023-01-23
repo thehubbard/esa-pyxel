@@ -12,12 +12,11 @@ import math
 
 # noqa: F401
 from pathlib import Path
-from typing import Optional, Tuple, Union
+from typing import Literal, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
 from tqdm.auto import tqdm
-from typing_extensions import Literal
 
 from pyxel.detectors import Detector
 from pyxel.models.charge_generation.cosmix.plotting import PlottingCosmix

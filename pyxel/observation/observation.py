@@ -21,6 +21,7 @@ from typing import (
     Generator,
     Iterator,
     List,
+    Literal,
     Mapping,
     NamedTuple,
     Optional,
@@ -32,7 +33,6 @@ from typing import (
 import dask.bag as db
 import numpy as np
 from tqdm.auto import tqdm
-from typing_extensions import Literal
 
 from pyxel.exposure import Readout, run_exposure_pipeline
 from pyxel.observation.parameter_values import ParameterType, ParameterValues

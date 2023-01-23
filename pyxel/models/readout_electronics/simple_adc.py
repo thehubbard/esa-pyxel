@@ -8,10 +8,9 @@
 #
 """Simple ADC model functions."""
 
-from typing import Tuple
+from typing import Literal, Tuple
 
 import numpy as np
-from typing_extensions import Literal
 
 from pyxel.detectors import Detector
 

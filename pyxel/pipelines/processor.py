@@ -11,10 +11,9 @@ import operator
 from copy import deepcopy
 from enum import Enum
 from numbers import Number
-from typing import TYPE_CHECKING, Callable, List, Optional, Sequence, Union
+from typing import TYPE_CHECKING, Callable, List, Literal, Optional, Sequence, Union
 
 import numpy as np
-from typing_extensions import Literal
 
 from pyxel import __version__
 from pyxel.evaluator import eval_entry

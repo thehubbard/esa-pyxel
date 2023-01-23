@@ -7,10 +7,9 @@
 
 """Pyxel photon generator models."""
 
-from typing import Optional, Sequence, Tuple
+from typing import Literal, Optional, Sequence, Tuple
 
 import numpy as np
-from typing_extensions import Literal
 
 from pyxel.detectors import Detector
 

@@ -9,10 +9,9 @@
 
 import logging
 from dataclasses import dataclass
-from typing import List, Mapping, Optional, Sequence, Tuple, Union
+from typing import List, Literal, Mapping, Optional, Sequence, Tuple, Union
 
 import numpy as np
-from typing_extensions import Literal
 
 from pyxel.detectors import CMOS, CMOSGeometry
 from pyxel.models.charge_measurement.nghxrg.nghxrg_beta import HXRGNoise

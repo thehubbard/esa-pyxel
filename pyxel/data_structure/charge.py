@@ -7,11 +7,10 @@
 
 """Pyxel Charge class to generate electrons or holes inside detector."""
 
-from typing import TYPE_CHECKING, Mapping, Optional, Sequence, Tuple, Union
+from typing import TYPE_CHECKING, Literal, Mapping, Optional, Sequence, Tuple, Union
 
 import numpy as np
 import pandas as pd
-from typing_extensions import Literal
 
 from pyxel.detectors.geometry import (
     get_horizontal_pixel_center_pos,

@@ -20,6 +20,8 @@
 ### Others
 * Remove `CCDCharacteristics`, `CMOSCharacteristics` and `MKIDCharacteristics`.
   (See [!590](https://gitlab.com/esa/pyxel/-/merge_requests/590)).
+* Remove python37.
+  (See [!594](https://gitlab.com/esa/pyxel/-/merge_requests/594)).
 
 
 ## 1.6.1 / 2023-01-09

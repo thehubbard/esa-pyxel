@@ -15,12 +15,11 @@ import math
 from copy import deepcopy
 from numbers import Number
 from pathlib import Path
-from typing import TYPE_CHECKING, Dict, List, Optional, Sequence, Tuple, Union
+from typing import TYPE_CHECKING, Dict, List, Literal, Optional, Sequence, Tuple, Union
 
 import numpy as np
 import pandas as pd
 from dask.delayed import delayed
-from typing_extensions import Literal
 
 from pyxel.calibration import (
     CalibrationMode,

@@ -7,10 +7,9 @@
 
 """Pyxel photon generator models: photon shot noise."""
 
-from typing import Optional
+from typing import Literal, Optional
 
 import numpy as np
-from typing_extensions import Literal
 
 from pyxel.detectors import Detector
 from pyxel.util import set_random_seed

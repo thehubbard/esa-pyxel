@@ -9,11 +9,21 @@
 """TBW."""
 
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Dict, List, Mapping, Optional, Sequence, Union
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Dict,
+    List,
+    Literal,
+    Mapping,
+    Optional,
+    Protocol,
+    Sequence,
+    Union,
+)
 
 import pandas as pd
 from dask.delayed import Delayed, delayed
-from typing_extensions import Literal, Protocol
 
 from pyxel.outputs import Outputs
 

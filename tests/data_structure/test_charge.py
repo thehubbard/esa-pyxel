@@ -7,11 +7,11 @@
 
 
 from dataclasses import dataclass
+from typing import Literal
 
 import numpy as np
 import pandas as pd
 import pytest
-from typing_extensions import Literal
 
 from pyxel.data_structure import Charge
 from pyxel.detectors import Geometry

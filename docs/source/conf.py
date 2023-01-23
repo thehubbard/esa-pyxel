@@ -17,16 +17,11 @@
 
 import sys
 from datetime import datetime
+from importlib.metadata import metadata
 
 from sphinx.util import logging
 
 import pyxel
-
-if sys.version_info >= (3, 8):
-    from importlib.metadata import metadata
-else:
-    from importlib_metadata import metadata  # pip install importlib-metadata
-
 
 # https://github.com/sphinx-doc/sphinx/issues/10112
 logging.getLogger("sphinx.ext.extlinks").setLevel(40)

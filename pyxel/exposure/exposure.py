@@ -10,11 +10,10 @@
 
 import logging
 import operator
-from typing import TYPE_CHECKING, Mapping, Optional, Union
+from typing import TYPE_CHECKING, Literal, Mapping, Optional, Union
 
 import numpy as np
 from tqdm.auto import tqdm
-from typing_extensions import Literal
 
 from pyxel.exposure import Readout
 from pyxel.pipelines import ResultType, result_keys
