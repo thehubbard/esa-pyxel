@@ -8,10 +8,9 @@
 """Simple model to load charge profiles."""
 
 from pathlib import Path
-from typing import Optional, Tuple, Union
+from typing import Literal, Optional, Tuple, Union
 
 import numpy as np
-from typing_extensions import Literal
 
 from pyxel.detectors import Detector, Geometry
 from pyxel.util import load_cropped_and_aligned_image

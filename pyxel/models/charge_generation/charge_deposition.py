@@ -8,11 +8,10 @@
 """Simple models to simulate charge deposition by ionizing particles (e.g. cosmic rays)."""
 
 from pathlib import Path
-from typing import Optional, Sequence, Union
+from typing import Literal, Optional, Sequence, Union
 
 import numpy as np
 import pandas as pd
-from typing_extensions import Literal
 
 from pyxel.data_structure import Charge
 from pyxel.detectors import Detector

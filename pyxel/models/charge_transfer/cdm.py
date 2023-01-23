@@ -36,12 +36,11 @@ st: constant TDI period (serial)
 """
 
 from enum import Enum
-from typing import Optional, Sequence
+from typing import Literal, Optional, Sequence
 
 import astropy.constants as const
 import numba
 import numpy as np
-from typing_extensions import Literal
 
 from pyxel.detectors import CCD
 

@@ -8,11 +8,19 @@
 """TBW."""
 import logging
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Mapping, Optional, Sequence, Tuple, Union
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Literal,
+    Mapping,
+    Optional,
+    Sequence,
+    Tuple,
+    Union,
+)
 
 import numpy as np
 from dask.delayed import Delayed
-from typing_extensions import Literal
 
 from pyxel.calibration import (
     Algorithm,

@@ -16,11 +16,10 @@
 #
 
 from pathlib import Path
-from typing import Optional, Tuple
+from typing import Literal, Optional, Tuple
 
 import numpy as np
 import pytest
-from typing_extensions import Literal
 
 from pyxel.detectors import (
     CCD,

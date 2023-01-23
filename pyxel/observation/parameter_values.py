@@ -10,9 +10,7 @@
 from collections import abc
 from enum import Enum
 from numbers import Number
-from typing import Iterator, Optional, Sequence, Tuple, Union
-
-from typing_extensions import Literal
+from typing import Iterator, Literal, Optional, Sequence, Tuple, Union
 
 from pyxel.evaluator import eval_range
 

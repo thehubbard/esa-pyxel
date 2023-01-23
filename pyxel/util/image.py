@@ -11,10 +11,9 @@
 from enum import Enum
 from functools import lru_cache
 from pathlib import Path
-from typing import Optional, Tuple, Union
+from typing import Literal, Optional, Tuple, Union
 
 import numpy as np
-from typing_extensions import Literal
 
 from pyxel.inputs import load_image
 

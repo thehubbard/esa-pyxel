@@ -8,9 +8,7 @@
 
 import math
 from enum import Enum
-from typing import TYPE_CHECKING, Optional, Union
-
-from typing_extensions import Literal
+from typing import TYPE_CHECKING, Literal, Optional, Union
 
 if TYPE_CHECKING:
     import pygmo as pg

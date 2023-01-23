@@ -7,11 +7,10 @@
 #
 #
 
-from typing import Optional, Sequence
+from typing import Literal, Optional, Sequence
 
 import numpy as np
 import pytest
-from typing_extensions import Literal
 
 from pyxel.detectors import (
     CCD,

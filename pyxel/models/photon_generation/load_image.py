@@ -7,9 +7,7 @@
 
 """Pyxel photon generator models."""
 
-from typing import Optional, Tuple
-
-from typing_extensions import Literal
+from typing import Literal, Optional, Tuple
 
 from pyxel.detectors import Detector
 from pyxel.util import load_cropped_and_aligned_image

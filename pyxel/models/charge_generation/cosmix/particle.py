@@ -7,10 +7,9 @@
 
 """Pyxel CosmiX model to generate charge by ionization."""
 
-from typing import List, Optional, Tuple, Union
+from typing import List, Literal, Optional, Tuple, Union
 
 import numpy as np
-from typing_extensions import Literal
 
 from pyxel.detectors import Detector
 from pyxel.models.charge_generation.cosmix.util import sampling_distribution

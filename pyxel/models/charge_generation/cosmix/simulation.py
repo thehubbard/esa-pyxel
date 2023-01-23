@@ -10,11 +10,10 @@
 import subprocess
 from bisect import bisect
 from pathlib import Path
-from typing import List, Optional, Sequence, Union
+from typing import List, Literal, Optional, Sequence, Union
 
 import numpy as np
 import pandas as pd
-from typing_extensions import Literal
 
 from pyxel.detectors import Detector
 from pyxel.models.charge_generation.cosmix.particle import Particle

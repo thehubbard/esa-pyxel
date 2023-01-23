@@ -8,10 +8,9 @@
 """Simple model to convert photon into photo-electrons inside detector."""
 
 from pathlib import Path
-from typing import Optional, Tuple, Union
+from typing import Literal, Optional, Tuple, Union
 
 import numpy as np
-from typing_extensions import Literal
 
 from pyxel.detectors import Detector
 from pyxel.util import load_cropped_and_aligned_image, set_random_seed

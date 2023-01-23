@@ -9,9 +9,17 @@
 """Single outputs."""
 
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Dict, Mapping, Optional, Sequence, Union
-
-from typing_extensions import Literal, Protocol
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Dict,
+    Literal,
+    Mapping,
+    Optional,
+    Protocol,
+    Sequence,
+    Union,
+)
 
 from pyxel.outputs import Outputs
 

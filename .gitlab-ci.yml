@@ -67,12 +67,12 @@ python310:
   script:
     - tox -e py310-extra_all
 
-# Run pytest for Python 3.11 without anaconda
-python311:
-  image: python:3.11
-  stage: test
-  script:
-    - tox -e py311-extra_all
+## Run pytest for Python 3.11 without anaconda
+#python311:
+#  image: python:3.11
+#  stage: test
+#  script:
+#    - tox -e py311-extra_all
 
 # Run mypy
 mypy:

@@ -7,8 +7,9 @@
 #
 #
 
+from typing import Literal
+
 import pytest
-from typing_extensions import Literal
 
 from pyxel.detectors import CCD, CCDGeometry, Characteristics, Environment
 from pyxel.models.readout_electronics import simple_adc
