@@ -7,7 +7,7 @@
 #
 #
 """Model for loading PSF from file."""
-
+import warnings
 from pathlib import Path
 from typing import Union
 
@@ -64,6 +64,13 @@ def load_psf(
     normalize_kernel : bool
         Normalize kernel.
     """
+    warnings.warn(
+        "Model 'optics.point_spread_function' is deprecated "
+        "and will be removed in version 2. "
+        "Use model 'optics.point_spread_function'",
+        DeprecationWarning,
+    )
+
     psf = load_image(filename)
 
     detector.photon.array = apply_psf(
