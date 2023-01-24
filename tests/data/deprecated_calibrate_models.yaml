@@ -78,7 +78,7 @@ ccd_detector:
 pipeline:
 
   # -> photon
-  photon_collection:
+  photon_generation:
     -
       name: load_image
       func: pyxel.models.photon_generation.load_image
@@ -94,6 +94,9 @@ pipeline:
       enabled: false
       arguments:
         level:
+
+  # photon -> photon
+  optics:
 
   # photon -> charge
   charge_generation:

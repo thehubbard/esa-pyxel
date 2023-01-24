@@ -7,6 +7,7 @@
 
 """TBW."""
 
+import warnings
 from typing import Iterable, Optional, Sequence, Tuple
 
 from pyxel.pipelines import ModelFunction, ModelGroup
@@ -18,8 +19,8 @@ class DetectionPipeline:
     # Define the order of steps in the pipeline.
     MODEL_GROUPS: Tuple[str, ...] = (
         "photon_collection",
-        "photon_generation",
-        "optics",
+        "photon_generation",  # Deprecated. It will be removed in version 2.0
+        "optics",  # Deprecated. It will be removed in version 2.0
         "phasing",
         "charge_generation",
         "charge_collection",
@@ -34,8 +35,8 @@ class DetectionPipeline:
     def __init__(
         self,  # TODO: Too many instance attributes
         photon_collection: Optional[Sequence[ModelFunction]] = None,
-        photon_generation: Optional[Sequence[ModelFunction]] = None,
-        optics: Optional[Sequence[ModelFunction]] = None,
+        photon_generation: Optional[Sequence[ModelFunction]] = None,  # Deprecated
+        optics: Optional[Sequence[ModelFunction]] = None,  # Deprecated
         phasing: Optional[Sequence[ModelFunction]] = None,
         charge_generation: Optional[Sequence[ModelFunction]] = None,
         charge_collection: Optional[Sequence[ModelFunction]] = None,
@@ -129,11 +130,23 @@ class DetectionPipeline:
     @property
     def photon_generation(self) -> Optional[ModelGroup]:
         """Get group 'photon generation'."""
+        warnings.warn(
+            "Group 'photon_generation' is deprecated "
+            "and will be removed in version 2.0. "
+            "Use group 'photon_collection'.",
+            DeprecationWarning,
+        )
         return self._photon_generation
 
     @property
     def optics(self) -> Optional[ModelGroup]:
         """Get group 'optics'."""
+        warnings.warn(
+            "Group 'optics' is deprecated "
+            "and will be removed in version 2.0. "
+            "Use group 'photon_collection'.",
+            DeprecationWarning,
+        )
         return self._optics
 
     @property
