@@ -17,6 +17,7 @@ class DetectionPipeline:
 
     # Define the order of steps in the pipeline.
     MODEL_GROUPS: Tuple[str, ...] = (
+        "photon_collection",
         "photon_generation",
         "optics",
         "phasing",
@@ -32,6 +33,7 @@ class DetectionPipeline:
     # TODO: develop a ModelGroupList class ? See #333
     def __init__(
         self,  # TODO: Too many instance attributes
+        photon_collection: Optional[Sequence[ModelFunction]] = None,
         photon_generation: Optional[Sequence[ModelFunction]] = None,
         optics: Optional[Sequence[ModelFunction]] = None,
         phasing: Optional[Sequence[ModelFunction]] = None,
@@ -46,6 +48,12 @@ class DetectionPipeline:
     ):
         self._is_running = False
         self.doc = doc
+
+        self._photon_collection: Optional[ModelGroup] = (
+            ModelGroup(photon_collection, name="photon_collection")
+            if photon_collection
+            else None
+        )
 
         self._photon_generation: Optional[ModelGroup] = (
             ModelGroup(photon_generation, name="photon_generation")
@@ -112,6 +120,11 @@ class DetectionPipeline:
             models_grp: Optional[ModelGroup] = getattr(self, model)
             if models_grp:
                 yield from models_grp
+
+    @property
+    def photon_collection(self) -> Optional[ModelGroup]:
+        """Get group 'photon collection'."""
+        return self._photon_collection
 
     @property
     def photon_generation(self) -> Optional[ModelGroup]:
@@ -188,7 +201,7 @@ class DetectionPipeline:
 
         Returns
         -------
-        None
+        ModelFunction
 
         Raises
         ------
