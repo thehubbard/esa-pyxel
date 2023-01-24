@@ -22,6 +22,8 @@
   (See [!590](https://gitlab.com/esa/pyxel/-/merge_requests/590)).
 * Remove python37.
   (See [!594](https://gitlab.com/esa/pyxel/-/merge_requests/594)).
+* Simplification when using 'group models' when generating a JSON Schema file.
+  (See [!596](https://gitlab.com/esa/pyxel/-/merge_requests/596)).
 
 
 ## 1.6.1 / 2023-01-09
