@@ -32,13 +32,10 @@ ccd_detector:
 
 pipeline:
   # -> photon
-  photon_generation:
+  photon_collection:
     - name: shot_noise
-      func: pyxel.models.photon_generation.shot_noise
+      func: pyxel.models.photon_collection.shot_noise
       enabled: true
-
-  # photon -> photon
-  optics:
 
   # photon -> charge
   charge_generation:

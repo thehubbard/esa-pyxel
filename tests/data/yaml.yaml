@@ -66,7 +66,7 @@ pipeline:
   photon_collection:
     -
       name: load_image
-      func: pyxel.models.photon_generation.load_image
+      func: pyxel.models.photon_collection.load_image
       enabled: false
       arguments:
         image_file: null
@@ -74,13 +74,13 @@ pipeline:
         bit_resolution: 16
     -
       name: illumination
-      func: pyxel.models.photon_generation.illumination
+      func: pyxel.models.photon_collection.illumination
       enabled: true
       arguments:
         level: 100
     -
       name: shot_noise
-      func: pyxel.models.photon_generation.shot_noise
+      func: pyxel.models.photon_collection.shot_noise
       enabled: true
 
   # -> charge
