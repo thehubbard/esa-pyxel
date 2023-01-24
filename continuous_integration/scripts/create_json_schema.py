@@ -25,6 +25,7 @@ from toolz import dicttoolz
 from tqdm.auto import tqdm
 
 from pyxel import __version__
+from pyxel.pipelines import DetectionPipeline
 
 
 @dataclass
@@ -406,18 +407,7 @@ def generate_group(model_groups_info: Sequence[ModelGroupInfo]) -> Iterator[str]
 
 
 def get_model_group_info() -> Sequence[ModelGroupInfo]:
-    all_group_models = (
-        "photon_generation",
-        "optics",
-        "phasing",
-        "charge_generation",
-        "charge_collection",
-        "charge_measurement",
-        "readout_electronics",
-        "charge_transfer",
-        "signal_transfer",
-        "data_processing",
-    )
+    all_group_models: tuple[str, ...] = DetectionPipeline.MODEL_GROUPS
 
     lst = [
         ModelGroupInfo(
@@ -792,16 +782,9 @@ def generate_all_models() -> Iterator[str]:
     yield ""
     yield "@dataclass"
     yield "class DetectionPipeline:"
-    yield "    photon_generation: Optional[Sequence[ModelFunction]] = None"
-    yield "    optics: Optional[Sequence[ModelFunction]] = None"
-    yield "    phasing: Optional[Sequence[ModelFunction]] = None"
-    yield "    charge_generation: Optional[Sequence[ModelFunction]] = None"
-    yield "    charge_collection: Optional[Sequence[ModelFunction]] = None"
-    yield "    charge_measurement: Optional[Sequence[ModelFunction]] = None"
-    yield "    readout_electronics: Optional[Sequence[ModelFunction]] = None"
-    yield "    charge_transfer: Optional[Sequence[ModelFunction]] = None"
-    yield "    signal_transfer: Optional[Sequence[ModelFunction]] = None"
-    yield "    data_processing: Optional[Sequence[ModelFunction]] = None"
+    for model_name in DetectionPipeline.MODEL_GROUPS:
+        yield f"    {model_name}: Optional[Sequence[ModelFunction]] = None"
+
     yield ""
     yield ""
 
