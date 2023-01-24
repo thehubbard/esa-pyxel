@@ -178,6 +178,7 @@ def test_product_simple(with_dask: bool):
     xr.testing.assert_equal(logs, exp_logs)
 
 
+@pytest.mark.deprecated
 @pytest.mark.parametrize("with_dask", [False, True])
 def test_product_deprecated(with_dask: bool):
     """Test running mode 'observation'."""

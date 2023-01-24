@@ -15,6 +15,7 @@ import pyxel
 from pyxel.pipelines import DetectionPipeline
 
 
+@pytest.mark.deprecated
 @pytest.fixture
 def pipeline_single_deprecated() -> DetectionPipeline:
     filename_single = Path("tests/data/deprecated_yaml.yaml")
