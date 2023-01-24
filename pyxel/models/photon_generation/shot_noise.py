@@ -6,7 +6,7 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """Pyxel photon generator models: photon shot noise."""
-
+import warnings
 from typing import Literal, Optional
 
 import numpy as np
@@ -90,6 +90,13 @@ def shot_noise(
     seed : int, optional
         Random seed.
     """
+    warnings.warn(
+        "Model 'photon_generation.shot_noise' is deprecated "
+        "and will be removed in version 2. "
+        "Use model 'photon_collection.shot_noise'",
+        DeprecationWarning,
+    )
+
     with set_random_seed(seed):
         noise_array = compute_noise(array=detector.photon.array, type=type)
 
