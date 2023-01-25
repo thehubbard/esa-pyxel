@@ -3,7 +3,7 @@ observation:
   mode: sequential
   parameters:
     - enabled: true
-      key: pipeline.photon_generation.illumination.arguments.level
+      key: pipeline.photon_collection.illumination.arguments.level
       values: [10, 20, 30]
     - enabled: true
       key: pipeline.charge_generation.cosmix.arguments.initial_energy
@@ -59,10 +59,10 @@ ccd_detector:
 
 pipeline:
 
-  photon_generation:
+  photon_collection:
     -
       name: load_image
-      func: pyxel.models.photon_generation.load_image
+      func: pyxel.models.photon_collection.load_image
       enabled: false
       arguments:
         image_file: null
@@ -70,17 +70,14 @@ pipeline:
         bit_resolution: 16
     -
       name: illumination
-      func: pyxel.models.photon_generation.illumination
+      func: pyxel.models.photon_collection.illumination
       enabled: true
       arguments:
         level: 100
     -
       name: shot_noise
-      func: pyxel.models.photon_generation.shot_noise
+      func: pyxel.models.photon_collection.shot_noise
       enabled: true
-
-  # -> photon
-  optics:
 
   # -> charge
   charge_generation:

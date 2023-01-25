@@ -15,6 +15,18 @@ import pyxel
 from pyxel.pipelines import DetectionPipeline
 
 
+@pytest.mark.deprecated
+@pytest.fixture
+def pipeline_single_deprecated() -> DetectionPipeline:
+    filename_single = Path("tests/data/deprecated_yaml.yaml")
+    assert filename_single.exists()
+
+    cfg = pyxel.load(filename_single)
+    pipeline: DetectionPipeline = cfg.pipeline
+
+    return pipeline
+
+
 @pytest.fixture
 def pipeline_single() -> DetectionPipeline:
     filename_single = Path("tests/data/yaml.yaml")
@@ -24,6 +36,20 @@ def pipeline_single() -> DetectionPipeline:
     pipeline: DetectionPipeline = cfg.pipeline
 
     return pipeline
+
+
+@pytest.mark.deprecated
+@pytest.mark.parametrize("pickle_method", [pickle, cloudpickle])
+def test_serialization_deprecated(
+    pipeline_single_deprecated: DetectionPipeline, pickle_method
+):
+    """Test serialization/deserialization."""
+    data = pickle_method.dumps(pipeline_single_deprecated)
+    assert isinstance(data, bytes)
+
+    obj = pickle_method.loads(data)
+    assert isinstance(obj, DetectionPipeline)
+    assert obj is not pipeline_single_deprecated
 
 
 @pytest.mark.parametrize("pickle_method", [pickle, cloudpickle])

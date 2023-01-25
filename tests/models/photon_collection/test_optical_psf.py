@@ -10,8 +10,8 @@ from typing import Mapping, Sequence
 import pytest
 
 from pyxel.detectors import CCD, CCDGeometry, Characteristics, Environment
-from pyxel.models.optics import optical_psf
-from pyxel.models.optics.poppy import (
+from pyxel.models.photon_collection import optical_psf
+from pyxel.models.photon_collection.poppy import (
     CircularAperture,
     HexagonAperture,
     MultiHexagonalAperture,

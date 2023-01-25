@@ -38,9 +38,9 @@ ccd_detector:
 
 pipeline:
 #  # -> photon
-  photon_collection:
+  photon_generation:
 #    - name: load_image
-#      func: pyxel.models.photon_collection.load_image
+#      func: pyxel.models.photon_generation.load_image
 #      enabled: true
 #      arguments:
 #        image_file: data/Pleiades_HST.fits
@@ -48,11 +48,13 @@ pipeline:
 #        convert_to_photons: true
 #
     - name: shot_noise
-      func: pyxel.models.photon_collection.shot_noise
+      func: pyxel.models.photon_generation.shot_noise
       enabled: true
 
+#  # photon -> photon
+#  optics:
 #    - name: optical_psf
-#      func: pyxel.models.photon_collection.optical_psf
+#      func: pyxel.models.optics.optical_psf
 #      enabled: true
 #      arguments:
 #        fov_arcsec: 5 # FOV in arcseconds

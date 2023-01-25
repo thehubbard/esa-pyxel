@@ -12,8 +12,6 @@
 #  is part of this Pyxel package. No part of the package, including
 #  this file, may be copied, modified, propagated, or distributed except according to
 #  the terms contained in the file ‘LICENCE.txt’.
-#
-#
 
 from pathlib import Path
 from typing import Literal, Optional, Tuple
@@ -28,7 +26,7 @@ from pyxel.detectors import (
     Environment,
     ReadoutProperties,
 )
-from pyxel.models.photon_generation import load_image
+from pyxel.models.photon_collection import load_image
 
 
 @pytest.fixture

@@ -4,10 +4,10 @@ observation:
 
   mode: product
   parameters:
-    - key: pipeline.photon_generation.illumination_uniform.arguments.level
+    - key: pipeline.photon_collection.illumination_uniform.arguments.level
       values: [10, 20, 30]
       enabled: true
-    - key: pipeline.photon_generation.illumination_elliptic.arguments.level
+    - key: pipeline.photon_collection.illumination_elliptic.arguments.level
       values: [100, 200, 300]
       enabled: true
     - key: pipeline.charge_generation.simple_conversion.arguments.quantum_efficiency
@@ -45,9 +45,9 @@ ccd_detector:
 
 pipeline:
   # photon -> photon
-  photon_generation:
+  photon_collection:
     - name: illumination_elliptic
-      func: pyxel.models.photon_generation.illumination
+      func: pyxel.models.photon_collection.illumination
       enabled: true
       arguments:
           level: 500
@@ -56,14 +56,11 @@ pipeline:
           option: "elliptic"
 
     - name: illumination_uniform
-      func: pyxel.models.photon_generation.illumination
+      func: pyxel.models.photon_collection.illumination
       enabled: true
       arguments:
           level: 500
           option: "uniform"
-
-  # photon -> photon
-  optics:
 
   # photon -> charge
   charge_generation:

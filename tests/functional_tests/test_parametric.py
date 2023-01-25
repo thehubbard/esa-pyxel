@@ -71,3 +71,47 @@ def test_pipeline_parametric_without_init_photon(mode: ParameterMode, expected):
         assert isinstance(proc, Processor)
 
         run_exposure_pipeline(processor=proc, readout=observation.readout)
+
+
+@pytest.mark.deprecated
+@pytest.mark.parametrize(
+    "mode, expected",
+    [
+        # ('single', expected_single),
+        (ParameterMode.Sequential, expected_sequential),
+        (ParameterMode.Product, expected_product),
+    ],
+)
+def test_pipeline_parametric_without_init_photon_deprecated(
+    mode: ParameterMode, expected
+):
+    input_filename = "tests/data/deprecated_parametric.yaml"
+    cfg = pyxel.load(Path(input_filename))
+
+    assert isinstance(cfg, Configuration)
+    assert hasattr(cfg, "observation")
+    assert hasattr(cfg, "ccd_detector")
+    assert hasattr(cfg, "pipeline")
+
+    observation = cfg.observation
+    assert isinstance(observation, Observation)
+
+    observation.parameter_mode = mode
+
+    detector = cfg.ccd_detector
+    assert isinstance(detector, CCD)
+
+    pipeline = cfg.pipeline
+    assert isinstance(pipeline, DetectionPipeline)
+
+    processor = Processor(detector=detector, pipeline=pipeline)
+    result = observation.debug_parameters(processor)
+    assert result == expected
+
+    processor_generator = observation._processors_it(processor=processor)
+    assert isinstance(processor_generator, abc.Generator)
+
+    for proc, _, _ in processor_generator:
+        assert isinstance(proc, Processor)
+
+        run_exposure_pipeline(processor=proc, readout=observation.readout)

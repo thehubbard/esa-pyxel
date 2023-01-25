@@ -63,10 +63,10 @@ ccd_detector:
 
 pipeline:
 
-  photon_collection:
+  photon_generation:
     -
       name: load_image
-      func: pyxel.models.photon_collection.load_image
+      func: pyxel.models.photon_generation.load_image
       enabled: false
       arguments:
         image_file: null
@@ -74,14 +74,17 @@ pipeline:
         bit_resolution: 16
     -
       name: illumination
-      func: pyxel.models.photon_collection.illumination
+      func: pyxel.models.photon_generation.illumination
       enabled: true
       arguments:
         level: 100
     -
       name: shot_noise
-      func: pyxel.models.photon_collection.shot_noise
+      func: pyxel.models.photon_generation.shot_noise
       enabled: true
+
+  # -> photon
+  optics:
 
   # -> charge
   charge_generation:

@@ -6,7 +6,7 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """Pyxel photon generator models."""
-import warnings
+
 from typing import Literal, Optional, Sequence, Tuple
 
 import numpy as np
@@ -208,13 +208,6 @@ def illumination(
     time_scale : float
         Time scale of the photon flux, default is 1 second. 0.001 would be ms.
     """
-    warnings.warn(
-        "Model 'photon_generation.illumination' is deprecated "
-        "and will be removed in version 2. "
-        "Use model 'photon_collection.illumination'",
-        DeprecationWarning,
-    )
-
     shape = (detector.geometry.row, detector.geometry.col)
 
     photon_array = calculate_illumination(

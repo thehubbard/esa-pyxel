@@ -78,10 +78,10 @@ ccd_detector:
 pipeline:
 
   # -> photon
-  photon_collection:
+  photon_generation:
     -
       name: load_image
-      func: pyxel.models.photon_collection.load_image
+      func: pyxel.models.photon_generation.load_image
       enabled: true
       arguments:
         image_file: 'tests/data/calibrate-data.fits'
@@ -90,10 +90,13 @@ pipeline:
         bit_resolution: 16
     -
       name: illumination
-      func: pyxel.models.photon_collection.illumination
+      func: pyxel.models.photon_generation.illumination
       enabled: false
       arguments:
         level:
+
+  # photon -> photon
+  optics:
 
   # photon -> charge
   charge_generation:

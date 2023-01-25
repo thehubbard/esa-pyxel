@@ -27,7 +27,7 @@ from pyxel.detectors import (
     Environment,
     ReadoutProperties,
 )
-from pyxel.models.optics import load_psf
+from pyxel.models.photon_collection import load_psf
 
 
 @pytest.fixture

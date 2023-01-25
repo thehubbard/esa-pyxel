@@ -4,13 +4,12 @@
 #  is part of this Pyxel package. No part of the package, including
 #  this file, may be copied, modified, propagated, or distributed except according to
 #  the terms contained in the file ‘LICENCE.txt’.
-#
-#
+
 import numpy as np
 import pytest
 
 from pyxel.detectors import CCD, CCDGeometry, Characteristics, Environment
-from pyxel.models.photon_generation import shot_noise
+from pyxel.models.photon_collection import shot_noise
 
 
 @pytest.fixture

@@ -2,6 +2,48 @@
 
 ## UNRELEASED
 
+This release brings a number of bugfixes and documentation improvements.
+
+Add a new model group 'Photon Collection' to replace the groups 'Photon Generation' and 'Optics'.
+All models from 'Photon Generation' and 'Optics' are copied into 'Photon Collection'.
+The current models from 'Photon Generation' and 'Optics' are obsolete/deprecated and 
+**will be removed** in version 2.0.
+
+Example of migration from a model from 'Photon Generation' to 'Optics':
+
+Before:
+```yaml
+pipeline:
+  photon_generation:
+    - name: shot_noise
+      func: pyxel.models.photon_generation.shot_noise
+      enabled: true
+
+  optics:
+    - name: optical_psf
+      func: pyxel.models.optics.optical_psf
+      enabled: true
+      arguments:
+        fov_arcsec: 5 # FOV in arcseconds
+        pixelscale: 0.01 #arcsec/pixel
+```
+
+After:
+```yaml
+pipeline:
+  photon_collection:
+    - name: shot_noise
+      func: pyxel.models.photon_collection.shot_noise
+      enabled: true
+
+    - name: optical_psf
+      func: pyxel.models.photon_collection.optical_psf
+      enabled: true
+      arguments:
+        fov_arcsec: 5 # FOV in arcseconds
+        pixelscale: 0.01 #arcsec/pixel
+```
+
 ### Core
 
 ### Documentation
@@ -10,12 +52,16 @@
 * Added citation segment in README.md.
  (See [!591](https://gitlab.com/esa/pyxel/-/merge_requests/591)).
 * Update FAQ.
- (See [!592](https://gitlab.com/esa/pyxel/-/merge_requests/592)).
- (See [!593](https://gitlab.com/esa/pyxel/-/merge_requests/593)).
+ (See [!592](https://gitlab.com/esa/pyxel/-/merge_requests/592)
+ and [!593](https://gitlab.com/esa/pyxel/-/merge_requests/593)).
 
 ### Models
 * Cannot reload a 'detector' from model 'pyxel.load_detector'.
   (See [!588](https://gitlab.com/esa/pyxel/-/merge_requests/588)).
+* Move all models in ModelGroup 'Photon Generation and 'Optics' into a 
+  new ModelGroup 'Photon Collection'. All models in 'Photon Generation' and 'Optics' are 
+  obsolete/deprecated and will be removed in version 2.0.
+  (See [!597](https://gitlab.com/esa/pyxel/-/merge_requests/597)).
 
 ### Others
 * Remove `CCDCharacteristics`, `CMOSCharacteristics` and `MKIDCharacteristics`.

@@ -8,7 +8,6 @@
 """Poppy model."""
 
 import logging
-import warnings
 from dataclasses import dataclass
 from typing import Any, Mapping, Sequence, Tuple, Union
 
@@ -444,13 +443,6 @@ def optical_psf(
     optical_system : list of dict
         List of optical elements before detector with their specific arguments.
     """
-    warnings.warn(
-        "Model 'optics.optical_psf' is deprecated "
-        "and will be removed in version 2. "
-        "Use model 'optics.optical_psf'",
-        DeprecationWarning,
-    )
-
     logging.getLogger("poppy").setLevel(
         logging.WARNING
     )  # TODO: Fix this. See issue #81

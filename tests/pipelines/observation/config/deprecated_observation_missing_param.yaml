@@ -1,79 +1,64 @@
 observation:
 
-  with_dask: false
-
-  mode: sequential
   parameters:
-    - key: pipeline.photon_collection.illumination_uniform.arguments.level
-      values: [10, 20, 30]
-      enabled: true
-    - key: pipeline.charge_generation.simple_conversion.arguments.quantum_efficiency
-      values: [0.5, 0.8, 0.9]
-      enabled: true
-
+    - key: pipeline.charge_generation.dark_current.arguments.figure_of_merit
+      values: numpy.linspace(1.0, 1.5, 5, dtype=float)
+    - key: pipeline.charge_generation.dark_current.arguments.temperature   # <=== missing 'temperature'
+      values: [240, 245, 250]
 
   outputs:
-    output_folder: outputs
-    save_data_to_file:
+    output_folder:  'outputs'
     save_observation_data:
-      - dataset: ['nc']
-      # - logs: ['csv','xlsx']
+
 
 ccd_detector:
 
   geometry:
 
     row: 100               # pixel
-    col: 100              # pixel
+    col: 100               # pixel
     total_thickness: 40.    # um
     pixel_vert_size: 10.    # um
     pixel_horz_size: 10.    # um
-
+    
   environment:
     temperature: 300        # K
 
   characteristics:
     quantum_efficiency: 1.                 # -
-    charge_to_volt_conversion: 1       # V/e
+    charge_to_volt_conversion: 3.e-6       # V/e
     pre_amplification: 100                # V/V
     adc_voltage_range: [0., 10.]
     adc_bit_resolution: 16
-    full_well_capacity: 190000               # e
+    full_well_capacity: 100000               # e
 
 pipeline:
-  # photon -> photon
-  photon_collection:
-    - name: illumination_elliptic
-      func: pyxel.models.photon_collection.illumination
+  # -> photon
+  photon_generation:
+    - name: shot_noise
+      func: pyxel.models.photon_generation.shot_noise
       enabled: true
-      arguments:
-          level: 500
-          object_center: [50,50]
-          object_size: [15,15]
-          option: "elliptic"
 
-    - name: illumination_uniform
-      func: pyxel.models.photon_collection.illumination
-      enabled: true
-      arguments:
-          level: 500
-          option: "uniform"
+  # photon -> photon
+  optics:
 
   # photon -> charge
   charge_generation:
-
-    - name: simple_conversion
+    - name: photoelectrons
       func: pyxel.models.charge_generation.simple_conversion
       enabled: true
+    - name: dark_current
+      func: pyxel.models.charge_generation.dark_current
+      enabled: true
       arguments:
-          quantum_efficiency: 0.8
+        figure_of_merit: 1.  # nA/cm^2
+        fixed_pattern_noise_factor: 0.01
 
   # charge -> pixel
   charge_collection:
     - name: simple_collection
       func: pyxel.models.charge_collection.simple_collection
       enabled: true
-
 
   # pixel -> pixel
   charge_transfer:
@@ -92,3 +77,7 @@ pipeline:
     - name: simple_adc
       func: pyxel.models.readout_electronics.simple_adc
       enabled: true
+
+
+
+
