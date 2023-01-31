@@ -70,6 +70,8 @@ pipeline:
   (See [!594](https://gitlab.com/esa/pyxel/-/merge_requests/594)).
 * Simplification when using 'group models' when generating a JSON Schema file.
   (See [!596](https://gitlab.com/esa/pyxel/-/merge_requests/596)).
+* Create a 'tox' environment to check if the JSON schema is unchanged.
+  (See [!601](https://gitlab.com/esa/pyxel/-/merge_requests/601)).
 
 
 ## 1.6.1 / 2023-01-09
