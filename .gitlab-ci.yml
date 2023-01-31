@@ -106,7 +106,7 @@ codespell:
     - tox -e codespell
 
 check_json_schema:
-  image: python:3
+  image: python:3.10
   stage: test
   script:
     - tox -e check_json_schema
