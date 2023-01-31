@@ -105,6 +105,12 @@ codespell:
   script:
     - tox -e codespell
 
+check_json_schema:
+  image: python:3
+  stage: test
+  script:
+    - tox -e check_json_schema
+
 
 # More info here: https://docs.gitlab.com/ee/user/compliance/license_compliance
 license_scanning:
