@@ -4,22 +4,23 @@ Citation instructions
 
 .. _citation:
 
+If you are using Pyxel as part of your research, teaching, or other activities,
+we would be grateful if you could state the repository and cite our work.
+
 Cite the library
 ================
 
-Pyxel repository currently does not have a DOI of its own yet.
+Please use the ASCL Code Record to cite the library: https://ascl.net/2301.002.
 
 Citing the paper
 ================
 
-If you are using Pyxel as part of your research, teaching, or other activities,
-we would be grateful if you could start the repository and/or cite our work.
-
-For citation purposes, you can use the following BibTex entries:
+For citing the paper, you can use the following BibTex entries:
 
 Pyxel 1.0: an open source Python framework for detector and end-to-end instrument simulation
 --------------------------------------------------------------------------------------------
 From Journal of Astronomical Telescopes, Instruments, and Systems Vol. 8 · No. 4 | October 2022::
+https://doi.org/10.1117/1.JATIS.8.4.048002
 
     @article{10.1117/1.JATIS.8.4.048002,
         author = {Matej Arko and Thibaut Prod’homme and Frederic Lemmel and Benoit Serra and Elizabeth M. George and Bradley Kelman and Thibault Pichon and Enrico Biancalani and James Gilbert},
