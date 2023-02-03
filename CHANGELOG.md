@@ -63,6 +63,8 @@ pipeline:
 * Add documentation about ModelGroup 'Photon Collection'.
   (See [!598](https://gitlab.com/esa/pyxel/-/merge_requests/598) and
   [!602](https://gitlab.com/esa/pyxel/-/merge_requests/602)).
+* Add Pyxel to ASCL.net.
+ (See [!603](https://gitlab.com/esa/pyxel/-/merge_requests/603)).
 
 ### Models
 * Cannot reload a 'detector' from model 'pyxel.load_detector'.
