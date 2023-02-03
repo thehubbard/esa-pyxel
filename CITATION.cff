@@ -3,9 +3,9 @@ message: "If you use this software, please cite it as below."
 type: article
 title: Pyxel 1.0: an open source Python framework for detector and end-to-end instrument simulation
 authors:
-  - given-names: Matej
+ - given-names: Matej
     family-names: Arko
-  - given-names: Thibaut 
+ - given-names: Thibaut 
     family-names: Prod’homme 
  - given-names: Frederic
     family-names: Lemmel
