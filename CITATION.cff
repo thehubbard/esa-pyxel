@@ -1,0 +1,30 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+type: article
+title: Pyxel 1.0: an open source Python framework for detector and end-to-end instrument simulation
+authors:
+ - given-names: Matej
+    family-names: Arko
+ - given-names: Thibaut 
+    family-names: Prod’homme 
+ - given-names: Frederic
+    family-names: Lemmel
+ - given-names: Benoit 
+    family-names: Serra 
+ - given-names: Elizabeth M. 
+    family-names: George
+ - given-names: Bradley 
+    family-names: Kelman
+ - given-names: Thibault 
+    family-names: Pichon
+ - given-names: Enrico 
+    family-names: Biancalani
+ - given-names: James 
+    family-names: Gilbert
+year: '2022'
+month: '12'
+journal: Journal of Astronomical Telescopes, Instruments, and Systems
+volume: '8'
+doi: 10.1117/1.JATIS.8.4.048002
+date-released: 2022-12-24
+}

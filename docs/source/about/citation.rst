@@ -4,22 +4,22 @@ Citation instructions
 
 .. _citation:
 
+If you are using Pyxel as part of your research, teaching, or other activities,
+we would be grateful if you could state the repository and cite our work.
+
 Cite the library
 ================
 
-Pyxel repository currently does not have a DOI of its own yet.
+Please use the ASCL Code Record to cite the library: https://ascl.net/2301.002.
 
 Citing the paper
 ================
 
-If you are using Pyxel as part of your research, teaching, or other activities,
-we would be grateful if you could start the repository and/or cite our work.
-
-For citation purposes, you can use the following BibTex entries:
+For citing the paper, you can use the following BibTex entries:
 
 Pyxel 1.0: an open source Python framework for detector and end-to-end instrument simulation
 --------------------------------------------------------------------------------------------
-From Journal of Astronomical Telescopes, Instruments, and Systems Vol. 8 · No. 4 | October 2022::
+From `Journal of Astronomical Telescopes, Instruments, and Systems Vol. 8 · No. 4 | October 2022 <https://doi.org/10.1117/1.JATIS.8.4.048002>`_::
 
     @article{10.1117/1.JATIS.8.4.048002,
         author = {Matej Arko and Thibaut Prod’homme and Frederic Lemmel and Benoit Serra and Elizabeth M. George and Bradley Kelman and Thibault Pichon and Enrico Biancalani and James Gilbert},
@@ -35,7 +35,7 @@ From Journal of Astronomical Telescopes, Instruments, and Systems Vol. 8 · No. 
         URL = {https://doi.org/10.1117/1.JATIS.8.4.048002}
     }
 
-From SPIE Astronomical Telescopes + Instrumentation | August 2022::
+From `SPIE Astronomical Telescopes + Instrumentation | August 2022 <https://doi.org/10.1117/12.2629241>`_::
 
     @inproceedings{10.1117/12.2629241,
         author = {Matej Arko and Thibaut Prod'homme and Fr{\'e}d{\'e}ric Lemmel and Benoit Serra and Elizabeth George and Bradley Kelman and Thibault Pichon and Enrico Biancalani and James Gilbert},
@@ -56,7 +56,7 @@ From SPIE Astronomical Telescopes + Instrumentation | August 2022::
 Pyxel: the collaborative detection simulation framework (2020)
 --------------------------------------------------------------
 
-From SPIE Astronomical Telescopes + Instrumentation 2020::
+From `SPIE Astronomical Telescopes + Instrumentation 2020 <https://doi.org/10.1117/12.2561731>`_::
 
     @inproceedings{10.1117/12.2561731,
         author = {Thibaut Prod'homme and Frédéric Lemmel and Matej Arko and Benoit Serra and Elizabeth George and Enrico Biancalani and Hans Smit and David Lucsanyi},
@@ -77,7 +77,7 @@ From SPIE Astronomical Telescopes + Instrumentation 2020::
 Pyxel: a novel and multi-purpose Python-based framework for imaging detector simulation (2018)
 ----------------------------------------------------------------------------------------------
 
-From SPIE Astronomical Telescopes + Instrumentation 2018::
+From `SPIE Astronomical Telescopes + Instrumentation 2018 <https://doi.org/10.1117/12.2314047>`_::
 
     @inproceedings{10.1117/12.2314047,
         author = {David Lucsanyi and Thibaut Prod'homme and Hans Smit and Frederic Lemmel and Pierre-Elie Crouzet and Peter Verhoeve and Brian Shortt},
