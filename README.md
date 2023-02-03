@@ -1,18 +1,18 @@
 Pyxel detector simulation framework
 ===================================
 
-[![pipeline status](https://gitlab.com/esa/pyxel/badges/master/pipeline.svg)](https://gitlab.com/esa/pyxel/-/pipelines)
-[![coverage report](https://gitlab.com/esa/pyxel/badges/master/coverage.svg)](https://gitlab.com/esa/pyxel/-/commits/master)
-[![License](https://img.shields.io/badge/license-MIT-green.svg)](https://gitlab.com/esa/pyxel/blob/master/LICENSE.txt)
+[![doi](https://zenodo.org/badge/DOI/10.1117/1.JATIS.8.4.048002.svg)](https://doi.org/10.1117/1.JATIS.8.4.048002)
+[![ASCL](https://img.shields.io/badge/ascl-2301.002-blue.svg?colorB=262255)](https://ascl.net/2301.002)
 [![docs](https://esa.gitlab.io/pyxel/documentation.svg)](https://esa.gitlab.io/pyxel/doc)
 [![gitter](https://badges.gitter.im/pyxel-framework/community.svg)](https://gitter.im/pyxel-framework/community)
 [![Google Group](https://img.shields.io/badge/Google%20Group-Pyxel%20Detector%20Framework-blue.svg)](https://groups.google.com/g/pyxel-detector-framework)
-[![doi](https://zenodo.org/badge/DOI/10.1117/1.JATIS.8.4.048002.svg)](https://doi.org/10.1117/1.JATIS.8.4.048002)
-[![ASCL](https://img.shields.io/badge/ascl-2301.002-blue.svg?colorB=262255)](https://ascl.net/2301.002)
-[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](https://gitlab.com/esa/pyxel/blob/master/LICENSE.txt)
 [![PyPI version](https://badge.fury.io/py/pyxel-sim.svg)](https://badge.fury.io/py/pyxel-sim)
 [![conda](https://img.shields.io/conda/vn/conda-forge/pyxel-sim.svg)](https://anaconda.org/conda-forge/pyxel-sim)
 [![Binder](https://mybinder.org/badge_logo.svg)](https://mybinder.org/v2/gl/esa%2Fpyxel-data/HEAD?urlpath=lab)
+[![pipeline status](https://gitlab.com/esa/pyxel/badges/master/pipeline.svg)](https://gitlab.com/esa/pyxel/-/pipelines)
+[![coverage report](https://gitlab.com/esa/pyxel/badges/master/coverage.svg)](https://gitlab.com/esa/pyxel/-/commits/master)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![JSON Schema](https://img.shields.io/badge/JSON%20Schema-draft--07-green)](https://esa.gitlab.io/pyxel/pyxel_schema.json)
 
 ## What is it?
