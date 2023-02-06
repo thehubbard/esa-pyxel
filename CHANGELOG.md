@@ -85,6 +85,8 @@ pipeline:
   (See [!596](https://gitlab.com/esa/pyxel/-/merge_requests/596)).
 * Create a 'tox' environment to check if the JSON schema is unchanged.
   (See [!601](https://gitlab.com/esa/pyxel/-/merge_requests/601)).
+* Fix issues when running tests without having 'asdf' installed.
+  (See [!605](https://gitlab.com/esa/pyxel/-/merge_requests/605)).
 
 
 ## 1.6.1 / 2023-01-09
