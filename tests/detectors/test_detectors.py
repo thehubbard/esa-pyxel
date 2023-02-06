@@ -26,6 +26,14 @@ from pyxel.detectors import (
     MKIDGeometry,
 )
 
+try:
+    # Check if library 'asdf' is installed
+    import asdf
+except ImportError:
+    WITH_ASDF = False
+else:
+    WITH_ASDF = True
+
 
 @pytest.fixture(
     params=(
@@ -176,6 +184,7 @@ def test_to_from_hdf5(detector: Union[CCD, CMOS, MKID, APD], tmp_path: Path):
     assert new_detector == detector
 
 
+@pytest.mark.skipif(WITH_ASDF is False, reason="Missing library 'asdf'")
 def test_to_from_asdf(detector: Union[CCD, CMOS, MKID, APD], tmp_path: Path):
     """Test methods `Detector.to_asdf' and `Detector.from_asdf`."""
     filename = tmp_path / f"{detector.__class__.__name__}.asdf"
@@ -208,6 +217,9 @@ def test_to_from_filename(
 ):
     """Test methods `Detector.load` and `Detector.save`."""
     full_filename: Path = tmp_path / filename
+
+    if full_filename.suffix == ".asdf" and not WITH_ASDF:
+        pytest.skip(reason="Missing library 'asdf'")
 
     # Save
     detector.save(full_filename)
