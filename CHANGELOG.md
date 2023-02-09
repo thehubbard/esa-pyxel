@@ -1,4 +1,13 @@
 # Changelog
+Pyxel version numbers are in the of form x.y.z.
+
+- The major release number (x) is incremented if a feature release includes a significant
+backward incompatible change that affects a significant fraction of users.
+- The minor release number (y) is incremented on each feature release.
+Minor releases include updated stdlib stubs from typeshed.
+- The point release number (z) is incremented when there are fixes only.
+
+Pyxel doesn't use SemVer anymore, since most minor releases have at least minor backward incompatible changes.
 
 ## UNRELEASED
 
@@ -65,6 +74,10 @@ pipeline:
   [!602](https://gitlab.com/esa/pyxel/-/merge_requests/602)).
 * Add Pyxel to ASCL.net.
  (See [!603](https://gitlab.com/esa/pyxel/-/merge_requests/603)).
+* Update contribution guide with steps for a merge request.
+  (See [!607](https://gitlab.com/esa/pyxel/-/merge_requests/607)).
+* Add more information in the contribution guide.
+ (See [!606](https://gitlab.com/esa/pyxel/-/merge_requests/606)).
 
 ### Models
 * Cannot reload a 'detector' from model 'pyxel.load_detector'.
@@ -89,8 +102,7 @@ pipeline:
   (See [!601](https://gitlab.com/esa/pyxel/-/merge_requests/601)).
 * Fix issues when running tests without having 'asdf' installed.
   (See [!605](https://gitlab.com/esa/pyxel/-/merge_requests/605)).
-* Update contribution guide with steps for a merge request.
-  (See [!607](https://gitlab.com/esa/pyxel/-/merge_requests/607)).
+
 
 
 ## 1.6.1 / 2023-01-09
