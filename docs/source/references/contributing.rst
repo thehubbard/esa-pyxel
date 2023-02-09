@@ -507,41 +507,20 @@ a lot of user code as a result, that is, we need it to be as
 
 Code Formatting
 ~~~~~~~~~~~~~~~
-
-Pyxel uses `Flake8 <http://flake8.pycqa.org/en/latest/>`_ to ensure a consistent code
-format throughout the project. ``flake8`` can be installed with
+Pyxel uses `tox <https://tox.wiki/en/latest/>`_ and `pre-commit <https://pre-commit.com>`_ to check the code quality.
+Both tools can be installed with
 ``pip``:
 
 .. code-block:: fish
 
-   $ pip install flake8 black isort mypy blackdoc
+   $ pip install tox pre-commit
 
 and then run from the root of the Pyxel repository:
 
 .. code-block:: fish
 
-   $ isort .
-   $ black .
-   $ blackdoc .
-   $ flake8
-   $ mypy .
-
-
-or:
-
-.. code-block:: fish
-
-    $ tox -e flake8
-
-Other recommended but optional tools for checking code quality (not currently
-enforced in CI):
-
-- `mypy <http://mypy-lang.org/>`_ performs static type checking, which can
-  make it easier to catch bugs. Please run ``mypy pyxel``  or ``tox -e mypy``
-  if you annotate any code with `type hints <https://docs.python.org/3/library/typing.html>`_.
-- `isort <https://github.com/timothycrosley/isort>`_ will highlight
-  incorrectly sorted imports. ``isort -y`` will automatically fix them. See
-  also `flake8-isort <https://github.com/gforcada/flake8-isort>`_.
+    $ pre-commit run -a
+    $ tox -p
 
 Backwards Compatibility
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -552,15 +531,15 @@ request. Also, be careful when changing method signatures and add deprecation
 warnings where needed.
 
 Versioning Scheme
-~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~
 Pyxel switch to a new versioning scheme. Pyxel version numbers will be of form x.y.z.
 
 Rules:
 
 - The major release number (x) is incremented if a feature release includes a significant
-backward incompatible change that affects a significant fraction of users.
+  backward incompatible change that affects a significant fraction of users.
 - The minor release number (y) is incremented on each feature release.
-Minor releases include updated stdlib stubs from typeshed.
+  Minor releases include updated stdlib stubs from typeshed.
 - The point release number (z) is incremented when there are fixes only.
 
 Pyxel doesn't use SemVer anymore, since most minor releases have at least minor backward incompatible changes.
@@ -570,10 +549,11 @@ Any significant backward incompatible change must be announced in the
 before making the change.
 
 .. _contributing.documenting_your_code:
+
 Documenting your code
 ---------------------
 
-Changes should be reflected in the release notes located in ``CHANGELOG.rst``.
+Changes should be reflected in the release notes located in ``CHANGELOG.md``.
 This file contains an ongoing change log for each release.  Add an entry to
 this file to document your fix, enhancement or (unavoidable) breaking change.
 Make sure to include the GitLab issue number when adding your entry (using
@@ -585,18 +565,19 @@ regarding documentation :ref:`above <contributing.documentation>`.
 
 
 Testing
------------------------------------
+-------
+
+.. _contributing.ci:
 
 Testing With Continuous Integration
-~~~~~~~~~~~~~~~~~~~~~~~
-.. _contributing.ci:
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 Continuous Integration (CI) automatically integrate code changes from multiple stakeholders
 in a single software project. It allows developers to to frequently contribute code changes
 to a central repository where builds and tests are then executed.
 Automated tools are used to verify the correctness of new code before the integration.
 The version control system in Git is also supported by other checks such as automated code
-Quality tests, syntax style checking tools and more
-(see `GitLab <https://about.gitlab.com/features/continuous-integration/>`_).
+Quality tests, syntax style checking tools and more (see `GitLab CI <https://about.gitlab.com/features/continuous-integration/>`_).
 For example, the CI tool `tox <https://tox.wiki/en/latest/>`_ aims to automate and
 standardize testing in Python. tox is a generic virtual environment management and
 test command line tool you can use for checking your package builds and installs correctly
@@ -605,11 +586,10 @@ installation dependencies), running your tests in each of the environments with 
 test tool of choice, acting as a frontend to continuous integration servers
 and merging CI and shell-based testing.
 
-
 .. _contributing.test-driven-development-code-writing:
 
 Test-driven development/code writing
-~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 *Pytest* is serious about testing and strongly encourages contributors to embrace
 `test-driven development (TDD) <http://en.wikipedia.org/wiki/Test-driven_development>`_.
@@ -637,7 +617,7 @@ This folder contains many current examples of tests, and we suggest looking to
 these for inspiration.
 
 Running the test suite
-~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~
 
 The tests can then be run directly inside your Git clone (without having
 to install *Pyxel*) by typing:
@@ -686,7 +666,7 @@ For more, see the `pytest <http://doc.pytest.org/en/latest/>`_ documentation.
 
 
 Running the performance test suite
-~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 To run performance test(s)/benchmark(s), check the
 `repository "Pyxel benchmarks" <https://gitlab.com/esa/pyxel-benchmarks>`_.
 To visualize the performance test(s)/benchmark(s), see
@@ -872,15 +852,17 @@ Merge Request checklist
       CI will catch any failing tests.
 
 - **Properly format your code** and verify that it passes the formatting guidelines
-  set by `Black <https://black.readthedocs.io/en/stable/>`_ and `Flake8 <http://flake8.pycqa.org/en/latest/>`_.
+  set by `tox <https://tox.wiki/en/latest/>`_ and `pre-commit <https://pre-commit.com>`_ to check the code quality.
   See :ref:`"Code formatting" <contributing.code_formatting>`.
-  You can use `pre-commit <https://pre-commit.com/>`_ to run these automatically on each commit.
 
-    - Run ``black .`` in the root directory. This may modify some files.
-      Confirm and commit any formatting changes.
-    - Run ``flake8`` in the root directory. If this fails, it will log an error
-      message.
+
+  Run from the root of the Pyxel repository:
+
+  .. code-block:: fish
+
+    $ pre-commit run -a
+    $ tox -p
 
 - **Push your code and** `create a Merge Request on GitLab <https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html>`_.
-- **Use a helpful title for your pull request** by summarizing the main contributions rather than using the latest commit message.
+- **Use a helpful title for your merge request** by summarizing the main contributions rather than using the latest commit message.
   If this addresses an `issue <https://gitlab.com/esa/pyxel/issues>`_, please `reference it <https://docs.gitlab.com/ee/user/project/issues/crosslinking_issues.html>`_.
