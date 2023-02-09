@@ -198,7 +198,8 @@ to your own local master branch
 
     .. code-block:: fish
 
-        git merge upstream/master
+        git fetch upstream master
+        git pull upstream master
 
 Now, your local master branch is up-to-date with everything modified upstream (in the
 main repository ``https://gitlab.com/esa/pyxel.git``).
