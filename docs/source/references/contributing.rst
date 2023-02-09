@@ -544,15 +544,11 @@ enforced in CI):
 
 Backwards Compatibility
 ~~~~~~~~~~~~~~~~~~~~~~~
-
 Please try to maintain backward compatibility. *Pyxel* has growing number of
 users with lots of existing code, so don't break it if at all possible.
 If you think breakage is required, clearly state why as part of the merge
 request. Also, be careful when changing method signatures and add deprecation
 warnings where needed.
-
-.. _contributing.ci:
-
 
 .. _contributing.documenting_your_code:
 Documenting your code
@@ -574,7 +570,14 @@ Testing
 
 Testing With Continuous Integration
 ~~~~~~~~~~~~~~~~~~~~~~~
-TBW.
+.. _contributing.ci:
+Continuous Integration automatically integrate code changes from multiple stakeholders
+in a single software project. It allows developers to to frequently contribute code changes
+to a central repository where builds and tests are then executed.
+Automated tools are used to verify the correctness of new code before the integration.
+The version control system in Git is also supported by other checks such as automated code
+Quality tests, syntax style checking tools and more.
+See `GitLab <https://about.gitlab.com/features/continuous-integration/>`_.
 
 
 .. _contributing.test-driven-development-code-writing:
