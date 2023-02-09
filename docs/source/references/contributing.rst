@@ -123,8 +123,8 @@ version control to allow many people to work together on the project.
 Some great resources for learning Git:
 
 * the `GitLab help pages <https://docs.gitlab.com>`_.
-* the `NumPy's documentation <http://docs.scipy.org/doc/numpy/dev/index.html>`_.
-* Matthew Brett's `Pydagogue <http://matthew-brett.github.com/pydagogue/>`_.
+* the `NumPy's documentation <https://numpy.org/doc/stable/dev>`_.
+* Matthew Brett's `Pydagogue <https://matthew-brett.github.io/pydagogue>`_.
 * Turing Way's guide about `Version Control <https://the-turing-way.netlify.app/reproducible-research/vcs.html>`_.
 
 
