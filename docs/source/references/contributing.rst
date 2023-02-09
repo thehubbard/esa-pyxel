@@ -171,8 +171,39 @@ Then the following command connects your repository to upstream (main project)
 
     $ git remote add upstream https://gitlab.com/esa/pyxel.git
 
+And finally verify the new remote 'upstream' repository:
+
+.. code-block:: fish
+
+    $ git remote -v
+
 
 Now you can push/pull your *fork* with ``git push`` and ``git pull``.
+
+A Workflow to keep your fork updated to Pyxel
+---------------------------------------------
+
+To keep your fork ``https://gitlab.com/YOUR-USER-NAME/pyxel.git`` updated to
+the main repository ``https://gitlab.com/esa/pyxel.git``, you have to:
+
+1. Make sure that you are on your master branch (from your fork) locally, if not, then
+checkout your master branch using this command
+
+    .. code-block:: fish
+
+        git checkout master
+
+2. Then keep your fork updated by merging the new commits from the main repository ``https://gitlab.com/esa/pyxel.git``
+to your own local master branch
+
+    .. code-block:: fish
+
+        git merge upstream/master
+
+Now, your local master branch is up-to-date with everything modified upstream (in the
+main repository ``https://gitlab.com/esa/pyxel.git``).
+
+This mini-guide is copied from the `workflow to contribute to others project from 'The Turing Way' <https://the-turing-way.netlify.app/reproducible-research/vcs/vcs-github.html?highlight=fork#a-workflow-to-contribute-to-others-github-projects-via-git>`_.
 
 
 .. _contributing.dev_env:
