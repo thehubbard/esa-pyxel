@@ -1,5 +1,20 @@
 # How to issue a Pyxel release
 
+Pyxel switch to a new versioning scheme. Pyxel version numbers will be of form x.y.z.
+
+Rules:
+
+- The major release number (x) is incremented if a feature release includes a significant
+backward incompatible change that affects a significant fraction of users.
+- The minor release number (y) is incremented on each feature release.
+Minor releases include updated stdlib stubs from typeshed.
+- The point release number (z) is incremented when there are fixes only.
+
+Pyxel doesn't use SemVer anymore, since most minor releases have at least minor backward incompatible changes.
+
+Any significant backward incompatible change must be announced in the Changelog for the previous feature release,
+before making the change.
+
 These instructions assume that `upstream` refers to the main repository:
 
 ```fish
@@ -9,7 +24,8 @@ upstream	https://gitlab.com/esa/pyxel.git (fetch)
 upstream	https://gitlab.com/esa/pyxel.git (push)
 ```
 
-1. Write a release summary: ~50 words describing the high level features. This will be used in the release emails, GitLab release notes, blog, etc.
+1. Write a release summary: ~50 words describing the high level features. This will be used in the release emails, 
+GitLab release notes, blog, etc.
 
 2. Ensure your master branch is synced to upstream:
 

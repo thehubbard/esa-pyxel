@@ -1,4 +1,13 @@
 # Changelog
+Pyxel version numbers are in the of form x.y.z.
+
+- The major release number (x) is incremented if a feature release includes a significant
+backward incompatible change that affects a significant fraction of users.
+- The minor release number (y) is incremented on each feature release.
+Minor releases include updated stdlib stubs from typeshed.
+- The point release number (z) is incremented when there are fixes only.
+
+Pyxel doesn't use SemVer anymore, since most minor releases have at least minor backward incompatible changes.
 
 ## UNRELEASED
 

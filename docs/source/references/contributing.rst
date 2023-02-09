@@ -550,6 +550,24 @@ If you think breakage is required, clearly state why as part of the merge
 request. Also, be careful when changing method signatures and add deprecation
 warnings where needed.
 
+Versioning Scheme
+~~~~~~~~~~~~~~~~~~~~~~~
+Pyxel switch to a new versioning scheme. Pyxel version numbers will be of form x.y.z.
+
+Rules:
+
+- The major release number (x) is incremented if a feature release includes a significant
+backward incompatible change that affects a significant fraction of users.
+- The minor release number (y) is incremented on each feature release.
+Minor releases include updated stdlib stubs from typeshed.
+- The point release number (z) is incremented when there are fixes only.
+
+Pyxel doesn't use SemVer anymore, since most minor releases have at least minor backward incompatible changes.
+
+Any significant backward incompatible change must be announced in the
+`changelog <https://esa.gitlab.io/pyxel/doc/stable/references/changelog.html>`_ for the previous feature release,
+before making the change.
+
 .. _contributing.documenting_your_code:
 Documenting your code
 ---------------------
