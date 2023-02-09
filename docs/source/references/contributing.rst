@@ -142,7 +142,19 @@ Get the source code by forking
 
 You will need your own fork to work on the code.
 Go to the `Pyxel project page <https://gitlab.com/esa/pyxel>`_ and
-hit the ``Fork`` button (top right). You have to do this operation only once.
+hit the ``Fork`` button (top right, see the following pictures). You have to do this operation only once.
+
+.. figure:: _static/fork_1.png
+    :scale: 40%
+    :alt: detector
+    :align: center
+
+.. figure:: _static/fork_2.png
+    :scale: 40%
+    :alt: detector
+    :align: center
+
+    Example of how to fork Pyxel to your own user space.
 
 After that you will want to clone your fork to your machine.
 The following command creates the directory `Pyxel`.
