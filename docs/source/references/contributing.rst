@@ -571,13 +571,20 @@ Testing
 Testing With Continuous Integration
 ~~~~~~~~~~~~~~~~~~~~~~~
 .. _contributing.ci:
-Continuous Integration automatically integrate code changes from multiple stakeholders
+Continuous Integration (CI) automatically integrate code changes from multiple stakeholders
 in a single software project. It allows developers to to frequently contribute code changes
 to a central repository where builds and tests are then executed.
 Automated tools are used to verify the correctness of new code before the integration.
 The version control system in Git is also supported by other checks such as automated code
-Quality tests, syntax style checking tools and more.
-See `GitLab <https://about.gitlab.com/features/continuous-integration/>`_.
+Quality tests, syntax style checking tools and more
+(see `GitLab <https://about.gitlab.com/features/continuous-integration/>`_).
+For example, the CI tool `tox <https://tox.wiki/en/latest/>`_ aims to automate and
+standardize testing in Python. tox is a generic virtual environment management and
+test command line tool you can use for checking your package builds and installs correctly
+under different environments (such as different Python implementations, versions or
+installation dependencies), running your tests in each of the environments with the
+test tool of choice, acting as a frontend to continuous integration servers
+and merging CI and shell-based testing.
 
 
 .. _contributing.test-driven-development-code-writing:
