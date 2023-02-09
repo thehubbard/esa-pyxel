@@ -823,12 +823,19 @@ the master version.  This merge request and its associated changes
 will eventually be committed to the master branch and available in the next
 release. To submit a merge request:
 
-#. Navigate to your repository on GitLab
-#. Click on the ``Merge Requests`` and the button ``New merge request``.
-#. You can then click on ``Commits`` and ``Files Changed`` to make sure
-   everything looks okay one last time.
-#. Write a description of your changes in the ``Preview Discussion`` tab
-#. Click ``Send Merge Request``.
+1. Navigate to your repository on GitLab
+2. Click on the ``Merge Requests`` and the button ``New merge request``.
+3. You can then select the branch to merge from your fork to ``esa/pyxel`` (see following picture).
+
+.. figure:: _static/new_merge_request.png
+    :scale: 40%
+    :alt: detector
+    :align: center
+
+    Create a new merge request.
+
+4. Write a description of your changes in the ``Discussion`` tab
+5. Click ``Create Merge Request``.
 
 This request then goes to the repository maintainers, and they will review
 the code. If you need to make more changes, you can make them in your branch,
