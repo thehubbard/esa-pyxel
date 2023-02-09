@@ -661,8 +661,10 @@ For more, see the `pytest <http://doc.pytest.org/en/latest/>`_ documentation.
 
 Running the performance test suite
 ~~~~~~~~~~~~~~~~~~~~~~~
-
-TBW.
+To run performance test(s)/benchmark(s), check the
+`repository "Pyxel benchmarks" <https://gitlab.com/esa/pyxel-benchmarks>`_.
+To visualize the performance test(s)/benchmark(s), see
+`benchmarks <https://esa.gitlab.io/pyxel/benchmarks/>`_.
 
 Contributing your changes to *Pyxel*
 ====================================
