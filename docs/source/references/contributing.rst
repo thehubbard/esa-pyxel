@@ -554,16 +554,33 @@ warnings where needed.
 .. _contributing.ci:
 
 
-Testing With Continuous Integration
+.. _contributing.documenting_your_code:
+Documenting your code
+---------------------
+
+Changes should be reflected in the release notes located in ``CHANGELOG.rst``.
+This file contains an ongoing change log for each release.  Add an entry to
+this file to document your fix, enhancement or (unavoidable) breaking change.
+Make sure to include the GitLab issue number when adding your entry (using
+``#1234``, where ``1234`` is the issue/merge request number).
+
+If your code is an enhancement, it is most likely necessary to add usage
+examples to the existing documentation.  This can be done following the section
+regarding documentation :ref:`above <contributing.documentation>`.
+
+
+Testing
 -----------------------------------
 
+Testing With Continuous Integration
+~~~~~~~~~~~~~~~~~~~~~~~
 TBW.
 
 
 .. _contributing.test-driven-development-code-writing:
 
 Test-driven development/code writing
-------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~
 
 *Pytest* is serious about testing and strongly encourages contributors to embrace
 `test-driven development (TDD) <http://en.wikipedia.org/wiki/Test-driven_development>`_.
@@ -590,66 +607,8 @@ All tests should go into the ``tests`` directory of the specific package.
 This folder contains many current examples of tests, and we suggest looking to
 these for inspiration.
 
-
-Using ``pytest``
-~~~~~~~~~~~~~~~~
-
-The tests can then be run directly inside your Git clone (without having to
-install *Pyxel*) by typing:
-
-.. code-block:: fish
-
-    $ pytest pyxel
-
-or:
-
-.. code-block:: fish
-
-    # For testing under Python 3.8
-    $ tox -e py38
-
-
-The tests suite is exhaustive and takes a few minutes.  Often it is
-worth running only a subset of tests first around your changes before running the
-entire suite.
-
-The easiest way to do this is with:
-
-.. code-block:: fish
-
-    $ pytest tests/path/to/test.py -k regex_matching_test_name
-
-Or with one of the following constructs:
-
-.. code-block:: fish
-
-    $ pytest tests/[test-module].py
-    $ pytest tests/[test-module].py::[TestClass]
-    $ pytest tests/[test-module].py::[TestClass]::[test_method]
-
-Using `pytest-xdist <https://pypi.python.org/pypi/pytest-xdist>`_, one can
-speed up local testing on multicore machines. To use this feature, you will
-need to install `pytest-xdist` via:
-
-.. code-block:: fish
-
-    $ pip install pytest-xdist
-
-
-Then, run pytest with the optional -n argument:
-
-.. code-block:: fish
-
-    $ pytest -n 4
-
-This can significantly reduce the time it takes to locally run tests before
-submitting a merge request.
-
-For more, see the `pytest <http://doc.pytest.org/en/latest/>`_ documentation.
-
-
 Running the test suite
-----------------------
+~~~~~~~~~~~~~~~~~~~~~~~
 
 The tests can then be run directly inside your Git clone (without having
 to install *Pyxel*) by typing:
@@ -698,24 +657,9 @@ For more, see the `pytest <http://doc.pytest.org/en/latest/>`_ documentation.
 
 
 Running the performance test suite
-----------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~
 
 TBW.
-
-.. _contributing.documenting_your_code:
-
-Documenting your code
----------------------
-
-Changes should be reflected in the release notes located in ``CHANGELOG.rst``.
-This file contains an ongoing change log for each release.  Add an entry to
-this file to document your fix, enhancement or (unavoidable) breaking change.
-Make sure to include the GitLab issue number when adding your entry (using
-``#1234``, where ``1234`` is the issue/merge request number).
-
-If your code is an enhancement, it is most likely necessary to add usage
-examples to the existing documentation.  This can be done following the section
-regarding documentation :ref:`above <contributing.documentation>`.
 
 Contributing your changes to *Pyxel*
 ====================================
