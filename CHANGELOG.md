@@ -74,6 +74,10 @@ pipeline:
   [!602](https://gitlab.com/esa/pyxel/-/merge_requests/602)).
 * Add Pyxel to ASCL.net.
  (See [!603](https://gitlab.com/esa/pyxel/-/merge_requests/603)).
+* Update contribution guide with steps for a merge request.
+  (See [!607](https://gitlab.com/esa/pyxel/-/merge_requests/607)).
+* Add more information in the contribution guide.
+ (See [!606](https://gitlab.com/esa/pyxel/-/merge_requests/606)).
 
 ### Models
 * Cannot reload a 'detector' from model 'pyxel.load_detector'.
@@ -98,8 +102,7 @@ pipeline:
   (See [!601](https://gitlab.com/esa/pyxel/-/merge_requests/601)).
 * Fix issues when running tests without having 'asdf' installed.
   (See [!605](https://gitlab.com/esa/pyxel/-/merge_requests/605)).
-* Update contribution guide with steps for a merge request.
-  (See [!607](https://gitlab.com/esa/pyxel/-/merge_requests/607)).
+
 
 
 ## 1.6.1 / 2023-01-09
