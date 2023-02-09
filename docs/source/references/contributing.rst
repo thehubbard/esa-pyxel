@@ -125,6 +125,7 @@ Some great resources for learning Git:
 * the `GitLab help pages <https://docs.gitlab.com>`_.
 * the `NumPy's documentation <http://docs.scipy.org/doc/numpy/dev/index.html>`_.
 * Matthew Brett's `Pydagogue <http://matthew-brett.github.com/pydagogue/>`_.
+* Turing Way's guide about `Version Control <https://the-turing-way.netlify.app/reproducible-research/vcs.html>`_.
 
 
 Getting started with Git
