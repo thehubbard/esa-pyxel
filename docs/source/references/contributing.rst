@@ -588,9 +588,7 @@ Writing tests
 
 All tests should go into the ``tests`` directory of the specific package.
 This folder contains many current examples of tests, and we suggest looking to
-these for inspiration.  If your test requires working with files or network
-connectivity, there is more information on the `testing page
-<https://gitlab.com/esa/pyxel/-/wikis/testing>`_ of the wiki.
+these for inspiration.
 
 
 Using ``pytest``
