@@ -142,7 +142,19 @@ Get the source code by forking
 
 You will need your own fork to work on the code.
 Go to the `Pyxel project page <https://gitlab.com/esa/pyxel>`_ and
-hit the ``Fork`` button (top right). You have to do this operation only once.
+hit the ``Fork`` button (top right, see the following pictures). You have to do this operation only once.
+
+.. figure:: _static/fork_1.png
+    :scale: 40%
+    :alt: detector
+    :align: center
+
+.. figure:: _static/fork_2.png
+    :scale: 40%
+    :alt: detector
+    :align: center
+
+    Example of how to fork Pyxel to your own user space.
 
 After that you will want to clone your fork to your machine.
 The following command creates the directory `Pyxel`.
@@ -159,8 +171,40 @@ Then the following command connects your repository to upstream (main project)
 
     $ git remote add upstream https://gitlab.com/esa/pyxel.git
 
+And finally verify the new remote 'upstream' repository:
+
+.. code-block:: fish
+
+    $ git remote -v
+
 
 Now you can push/pull your *fork* with ``git push`` and ``git pull``.
+
+A Workflow to keep your fork updated to Pyxel
+---------------------------------------------
+
+To keep your fork ``https://gitlab.com/YOUR-USER-NAME/pyxel.git`` updated to
+the main repository ``https://gitlab.com/esa/pyxel.git``, you have to:
+
+1. Make sure that you are on your master branch (from your fork) locally, if not, then
+checkout your master branch using this command
+
+    .. code-block:: fish
+
+        git checkout master
+
+2. Then keep your fork updated by merging the new commits from the main repository ``https://gitlab.com/esa/pyxel.git``
+to your own local master branch
+
+    .. code-block:: fish
+
+        git fetch upstream master
+        git pull upstream master
+
+Now, your local master branch is up-to-date with everything modified upstream (in the
+main repository ``https://gitlab.com/esa/pyxel.git``).
+
+This mini-guide is copied from the `workflow to contribute to others project from 'The Turing Way' <https://the-turing-way.netlify.app/reproducible-research/vcs/vcs-github.html?highlight=fork#a-workflow-to-contribute-to-others-github-projects-via-git>`_.
 
 
 .. _contributing.dev_env:
@@ -779,12 +823,19 @@ the master version.  This merge request and its associated changes
 will eventually be committed to the master branch and available in the next
 release. To submit a merge request:
 
-#. Navigate to your repository on GitLab
-#. Click on the ``Merge Requests`` and the button ``New merge request``.
-#. You can then click on ``Commits`` and ``Files Changed`` to make sure
-   everything looks okay one last time.
-#. Write a description of your changes in the ``Preview Discussion`` tab
-#. Click ``Send Merge Request``.
+1. Navigate to your repository on GitLab
+2. Click on the ``Merge Requests`` and the button ``New merge request``.
+3. You can then select the branch to merge from your fork to ``esa/pyxel`` (see following picture).
+
+.. figure:: _static/new_merge_request.png
+    :scale: 40%
+    :alt: detector
+    :align: center
+
+    Create a new merge request.
+
+4. Write a description of your changes in the ``Discussion`` tab
+5. Click ``Create Merge Request``.
 
 This request then goes to the repository maintainers, and they will review
 the code. If you need to make more changes, you can make them in your branch,

@@ -89,6 +89,8 @@ pipeline:
   (See [!601](https://gitlab.com/esa/pyxel/-/merge_requests/601)).
 * Fix issues when running tests without having 'asdf' installed.
   (See [!605](https://gitlab.com/esa/pyxel/-/merge_requests/605)).
+* Update contribution guide with steps for a merge request.
+  (See [!607](https://gitlab.com/esa/pyxel/-/merge_requests/607)).
 
 
 ## 1.6.1 / 2023-01-09
