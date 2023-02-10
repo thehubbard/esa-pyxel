@@ -8,6 +8,15 @@ Minor releases include updated stdlib stubs from typeshed.
 - The point release number (z) is incremented when there are fixes only.
 
 Pyxel doesn't use SemVer anymore, since most minor releases have at least minor backward incompatible changes.
+## UNRELEASED
+
+### Core
+
+### Documentation
+
+### Models
+
+### Others
 
 ## 1.7 / 2023-02-09
 
