@@ -260,6 +260,24 @@ def valid_table_http_hostname(tmp_path: Path, httpserver: HTTPServer) -> str:
 
 
 @pytest.fixture
+def valid_table_heterogeneous(tmp_path: Path) -> str:
+    # Create folder 'data'
+    df = pd.DataFrame(
+        [[1, 2, 3], ["foo", "bar", "baz"], [1.1, 2.2, 3.3]],
+        columns=["col1", "col2", "col3"],
+    )
+
+    # Save tables
+    df.to_csv(tmp_path / "table_tab.txt", header=False, index=False, sep="\t")
+    df.to_csv(tmp_path / "table_space.txt", header=False, index=False, sep=" ")
+    df.to_csv(tmp_path / "table_pipe.txt", header=False, index=False, sep=",")
+    df.to_csv(tmp_path / "table_comma.data", header=False, index=False, sep="|")
+    df.to_csv(tmp_path / "table_semicolon.txt", header=False, index=False, sep=";")
+
+    yield tmp_path
+
+
+@pytest.fixture
 def invalid_table_http_hostname(tmp_path: Path, httpserver: HTTPServer) -> str:
     """Create invalid tables on temporary folder and HTTP server."""
     # Get current folder
@@ -450,6 +468,7 @@ def test_load_table_invalid_filename(
         _ = pyxel.load_table(filename)
 
 
+@pytest.mark.parametrize("dtype", ["float", None])
 @pytest.mark.parametrize("with_caching", [False, True])
 @pytest.mark.parametrize(
     "filename, with_header",
@@ -496,18 +515,22 @@ def test_load_table_invalid_filename(
     ],
 )
 def test_load_table(
-    with_caching: bool, valid_table_http_hostname: str, filename, with_header: bool
+    with_caching: bool,
+    valid_table_http_hostname: str,
+    filename,
+    with_header: bool,
+    dtype,
 ):
     """Test function 'load_table'."""
     with pyxel.set_options(cache_enabled=with_caching):
         if isinstance(filename, Path):
             # Load data
-            table = pyxel.load_table(filename, header=with_header)
+            table = pyxel.load_table(filename, header=with_header, dtype=dtype)
         else:
             full_url: str = filename.format(host=valid_table_http_hostname)
 
             # Load data
-            table = pyxel.load_table(full_url, header=with_header)
+            table = pyxel.load_table(full_url, header=with_header, dtype=dtype)
 
         if not with_header:
             exp_table = pd.DataFrame([[1, 2, 3], [4, 5, 6], [7, 8, 9]], dtype=float)
@@ -518,6 +541,44 @@ def test_load_table(
                 dtype=float,
             )
         pd.testing.assert_frame_equal(table, exp_table)
+
+
+@pytest.mark.parametrize(
+    "filename",
+    [
+        "table_tab.txt",
+        "table_space.txt",
+        "table_pipe.txt",
+        "table_comma.data",
+        "table_semicolon.txt",
+    ],
+)
+def test_load_table_heterogeneous(valid_table_heterogeneous: Path, filename: str):
+    """Test function 'load_table' with heterogeneous data."""
+    folder = valid_table_heterogeneous
+
+    df = pyxel.load_table(folder / filename, header=True, dtype=None)
+
+    exp_df = df = pd.DataFrame([[1, 2, 3], ["foo", "bar", "baz"], [1.1, 2.2, 3.3]])
+    pd.testing.assert_frame_equal(df, exp_df)
+
+
+@pytest.mark.parametrize(
+    "filename",
+    [
+        "table_tab.txt",
+        "table_space.txt",
+        "table_pipe.txt",
+        "table_comma.data",
+        "table_semicolon.txt",
+    ],
+)
+def test_load_table_heterogeneous_error(valid_table_heterogeneous: Path, filename: str):
+    """Test function 'load_table' with heterogeneous data."""
+    folder = valid_table_heterogeneous
+
+    with pytest.raises(ValueError, match="could not convert string to float"):
+        df = pyxel.load_table(folder / filename, header=True)
 
 
 @pytest.mark.parametrize("filename", ["dummy.foo"])

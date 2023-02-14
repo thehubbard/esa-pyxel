@@ -7,13 +7,15 @@
 
 """Subpackage to load images and tables."""
 
+import csv
 from contextlib import suppress
-from io import BytesIO
+from io import BytesIO, StringIO
 from pathlib import Path
-from typing import TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, Sequence, Union
 
 import fsspec
 import numpy as np
+from numpy.typing import DTypeLike
 from PIL import Image
 
 from pyxel.options import global_options
@@ -116,7 +118,11 @@ def load_image(filename: Union[str, Path]) -> np.ndarray:
     return data_2d
 
 
-def load_table(filename: Union[str, Path], header: bool = False) -> "pd.DataFrame":
+def load_table(
+    filename: Union[str, Path],
+    header: bool = False,
+    dtype: DTypeLike = "float",
+) -> "pd.DataFrame":
     """Load a table from a file and returns a pandas dataframe. No header is expected in xlsx.
 
     Parameters
@@ -126,6 +132,7 @@ def load_table(filename: Union[str, Path], header: bool = False) -> "pd.DataFram
         {.npy, .xlsx, .csv, .txt., .data} are accepted.
     header : bool, default: False
         Remove the header.
+    dtype
 
     Returns
     -------
@@ -162,7 +169,7 @@ def load_table(filename: Union[str, Path], header: bool = False) -> "pd.DataFram
 
     if suffix.startswith(".npy"):
         with fsspec.open(url_path, mode="rb", **extras) as file_handler:
-            table = pd.DataFrame(np.load(file_handler), dtype="float")
+            table = pd.DataFrame(np.load(file_handler), dtype=dtype)
 
     elif suffix.startswith(".xlsx"):
         with fsspec.open(url_path, mode="rb", **extras) as file_handler:
@@ -172,34 +179,40 @@ def load_table(filename: Union[str, Path], header: bool = False) -> "pd.DataFram
                 convert_float=False,
             )
 
-    elif suffix.startswith(".csv"):
-        for sep in ("\t", " ", ",", "|", ";"):
-            with suppress(ValueError):
-                # numpy will return ValueError with a wrong delimiter
-                with fsspec.open(url_path, mode="r", **extras) as file_handler:
-                    table = pd.read_csv(
-                        file_handler,
-                        delimiter=sep,
-                        header=0 if header else None,
-                        dtype="float",
-                    )
-                    break
-        else:
-            raise ValueError("Cannot find the separator.")
+    elif suffix.startswith((".txt", ".data", ".csv")):
+        # Read file
+        with fsspec.open(url_path, mode="r", **extras) as file_handler:
+            data: str = file_handler.read()
 
-    elif suffix.startswith((".txt", ".data")):
-        for sep in ("\t", " ", ",", "|", ";"):
-            with suppress(ValueError):
-                with fsspec.open(url_path, mode="r", **extras) as file_handler:
-                    table = pd.read_table(
-                        file_handler,
-                        delimiter=sep,
-                        header=0 if header else None,
-                        dtype="float",
-                    )
-                    break
-        else:
-            raise ValueError("Cannot find the separator.")
+        valid_delimiters: Sequence[str] = ("\t", " ", ",", "|", ";")
+        valid_delimiters_str = "".join(valid_delimiters)
+
+        # Find a delimiter
+        try:
+            dialect = csv.Sniffer().sniff(data, delimiters=valid_delimiters_str)
+        except csv.Error as exc:
+            raise ValueError("Cannot find the separator") from exc
+
+        delimiter: str = dialect.delimiter
+
+        if delimiter not in valid_delimiters:
+            raise ValueError(f"Cannot find the separator. {delimiter=!r}")
+
+        with StringIO(data) as file_handler:
+            if suffix.startswith("csv"):
+                table = pd.read_csv(
+                    file_handler,
+                    delimiter=delimiter,
+                    header=0 if header else None,
+                    dtype=dtype,
+                )
+            else:
+                table = pd.read_table(
+                    file_handler,
+                    delimiter=delimiter,
+                    header=0 if header else None,
+                    dtype=dtype,
+                )
 
     else:
         raise ValueError("Only .npy, .xlsx, .csv, .txt and .data implemented.")

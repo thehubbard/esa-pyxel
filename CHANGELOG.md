@@ -64,6 +64,8 @@ parameters:
 * Multiple boundary conditions for calibration mode.
   It's now possible to add different boundaries condition
   (See [!612](https://gitlab.com/esa/pyxel/-/merge_requests/612)).
+* Add a option to force data type in function 'load_table'.
+  (See [!615](https://gitlab.com/esa/pyxel/-/merge_requests/615)).
 
 ### Documentation
 
