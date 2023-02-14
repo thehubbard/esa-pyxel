@@ -564,7 +564,7 @@ def generate_detectors() -> Iterator[str]:
     yield "        Sequence[str],"
     yield "        str, # e.g. 'numpy.unique(...)'"
     yield "    ]"
-    yield "    boundaries: Optional[Tuple[float, float]] = None"
+    yield "    boundaries: Union[Tuple[float, float], Sequence[Tuple[float, float]], None] = None"
     yield "    enabled: bool = True"
     yield "    logarithmic: bool = False"
     yield ""

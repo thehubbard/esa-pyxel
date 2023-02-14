@@ -89,7 +89,11 @@ Example of a configuration file
         - key:              pipeline.charge_transfer.cdm.arguments.trap_densities
           values:           [_, _, _, _]
           logarithmic:      true
-          boundaries:       [1.e-2, 1.e+2]
+          boundaries:                   # Set different boundaries for each values
+            - [1.e-2, 1.e+2]
+            - [1.e-4, 1.e+4]
+            - [1.e-2, 1.e+2]
+            - [1.e-4, 1.e+4]
 
 
       outputs:

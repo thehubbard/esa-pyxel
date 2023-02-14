@@ -12,6 +12,9 @@ from enum import Enum
 from numbers import Number
 from typing import Iterator, Literal, Optional, Sequence, Tuple, Union
 
+import numpy as np
+from numpy.typing import NDArray
+
 from pyxel.evaluator import eval_range
 
 
@@ -32,9 +35,16 @@ class ParameterValues:
         self,
         key: str,
         values: Union[
-            Literal["_"], Sequence[Literal["_"]], Sequence[Number], Sequence[str]
+            Literal["_"],
+            Sequence[Literal["_"]],
+            Sequence[Number],
+            Sequence[str],
         ],
-        boundaries: Optional[Tuple[float, float]] = None,
+        boundaries: Union[
+            Tuple[float, float],
+            Sequence[Tuple[float, float]],
+            None,
+        ] = None,
         enabled: bool = True,
         logarithmic: bool = False,
     ):
@@ -42,7 +52,7 @@ class ParameterValues:
         # TODO: maybe use numpy to check multi-dimensional input lists
         # Check YAML input (not real values yet) and define parameter type
         if values == "_":
-            self.type = ParameterType("multi")
+            self.type: ParameterType = ParameterType("multi")
         elif isinstance(values, str) and "numpy" in values:
             self.type = ParameterType("simple")
         elif isinstance(values, abc.Sequence) and any(
@@ -70,7 +80,25 @@ class ParameterValues:
 
         self._enabled: bool = enabled
         self._logarithmic: bool = logarithmic
-        self._boundaries: Optional[Tuple[float, float]] = boundaries
+
+        if boundaries is None:
+            boundaries_array: Optional[NDArray[np.float_]] = None
+        else:
+            boundaries_array = np.array(boundaries, dtype=np.float_)
+            if boundaries_array.ndim == 1:
+                if boundaries_array.shape != (2,):
+                    raise ValueError(
+                        f"Expecting only two values for the boundaries. Got: {boundaries}."
+                    )
+            elif boundaries_array.ndim == 2:
+                if boundaries_array.shape != (len(values), 2):
+                    raise ValueError(
+                        f"Expecting a 2x{len(values)} values for the boundaries. Got: {boundaries}."
+                    )
+            else:
+                raise ValueError(f"Wrong format of boundaries. Got {boundaries}.")
+
+        self._boundaries: Optional[NDArray[np.float_]] = boundaries_array
 
         self._current: Optional[Union[Literal["_"], Number, str]] = None
 
@@ -133,6 +161,6 @@ class ParameterValues:
         return self._logarithmic
 
     @property
-    def boundaries(self) -> Optional[Tuple[float, float]]:
+    def boundaries(self) -> Optional[NDArray[np.float_]]:
         """TBW."""
         return self._boundaries
