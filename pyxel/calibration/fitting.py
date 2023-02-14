@@ -20,6 +20,7 @@ from typing import TYPE_CHECKING, Dict, List, Literal, Optional, Sequence, Tuple
 import numpy as np
 import pandas as pd
 from dask.delayed import delayed
+from numpy.typing import NDArray
 
 from pyxel.calibration import (
     CalibrationMode,
@@ -82,8 +83,8 @@ class ModelFitting(ProblemSingleObjective):
         self.champion_f_list: Optional[np.ndarray] = None
         self.champion_x_list: Optional[np.ndarray] = None
 
-        self.lbd: Sequence[float] = []  # lower boundary
-        self.ubd: Sequence[float] = []  # upper boundary
+        self.lbd: List[float] = []  # lower boundary
+        self.ubd: List[float] = []  # upper boundary
 
         self.sim_fit_range: Tuple[slice, slice, slice] = (
             slice(None),
@@ -241,23 +242,48 @@ class ModelFitting(ProblemSingleObjective):
 
         var: ParameterValues
         for var in self.variables:
-            if var.boundaries is None:
-                raise NotImplementedError
-
-            low_val: float
-            high_val: float
-            low_val, high_val = var.boundaries
-
-            if var.logarithmic:
-                low_val = math.log10(low_val)
-                high_val = math.log10(high_val)
+            assert var.boundaries is not None  # TODO: Fix this
 
             if var.values == "_":
+                assert var.boundaries.shape == (2,)  # TODO: Fix this
+
+                low_val: float
+                high_val: float
+                low_val, high_val = var.boundaries
+
+                if var.logarithmic:
+                    low_val = math.log10(low_val)
+                    high_val = math.log10(high_val)
+
                 self.lbd += [low_val]
                 self.ubd += [high_val]
-            elif isinstance(var.values, list) and all(x == "_" for x in var.values[:]):
-                self.lbd += [low_val] * len(var.values)
-                self.ubd += [high_val] * len(var.values)
+
+            elif isinstance(var.values, Sequence) and all(
+                x == "_" for x in var.values[:]
+            ):
+                if var.boundaries.ndim == 1:
+                    low_val, high_val = var.boundaries
+
+                    low_values: NDArray[np.float_] = np.array(
+                        [low_val] * len(var.values)
+                    )
+                    high_values: NDArray[np.float_] = np.array(
+                        [high_val] * len(var.values)
+                    )
+
+                elif var.boundaries.ndim == 2:
+                    low_values = var.boundaries[:, 0]
+                    high_values = var.boundaries[:, 1]
+                else:
+                    raise NotImplementedError
+
+                if var.logarithmic:
+                    low_values = np.log10(low_values)
+                    high_values = np.log10(high_values)
+
+                self.lbd += low_values.tolist()
+                self.ubd += high_values.tolist()
+
             else:
                 raise ValueError(
                     'Character "_" (or a list of it) should be used to '
