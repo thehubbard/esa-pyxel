@@ -200,7 +200,7 @@ Dependencies
 Pyxel has the following **mandatory** dependencies:
 
 * `python <https://www.python.org>`_ 3.8 or later
-* `numpy <https://numpy.org>`_ 1.20 or later
+* `numpy <https://numpy.org>`_ 1.21 or later
 * `xarray <http://xarray.pydata.org/>`_ 0.19 or later
 * `dask <https://dask.org>`_
 * `jupyterlab <https://jupyterlab.readthedocs.io>`_
