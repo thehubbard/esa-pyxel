@@ -19,8 +19,51 @@ The minimum version of one dependency was changed:
   | --------- |-------| ---------- |
   | numpy     | 1.20  | **1.21**   |
 
+In the calibration configuration files, it is now possible to add different boundaries for values defined as a list.
+
+Example of configuration file before:
+```yaml
+parameters:   
+  - key:              pipeline.charge_transfer.cdm.arguments.beta
+    values:           _
+    logarithmic:      false
+    boundaries:       [0.1, 0.9]
+  - key:              pipeline.charge_transfer.cdm.arguments.trap_release_times
+    values:           [_, _, _, _]
+    logarithmic:      true
+    boundaries:       [1.e-5, 1.e-1]   # Same boundaries for the four values
+  - key:              pipeline.charge_transfer.cdm.arguments.trap_densities
+    values:           [_, _, _, _]
+    logarithmic:      true
+    boundaries:       [1.e-2, 1.e+2]   # Same boundaries for the four values
+```
+
+and after:
+```yaml
+parameters:   
+  - key:              pipeline.charge_transfer.cdm.arguments.beta
+    values:           _
+    logarithmic:      false
+    boundaries:       [0.1, 0.9]
+  - key:              pipeline.charge_transfer.cdm.arguments.trap_release_times
+    values:           [_, _, _, _]
+    logarithmic:      true
+    boundaries:       [1.e-5, 1.e-1]   # Same boundaries for the four values
+  - key:              pipeline.charge_transfer.cdm.arguments.trap_densities
+    values:           [_, _, _, _]
+    logarithmic:      true
+    boundaries:                       # NEW different boundaries for the four values
+      - [1.e-2, 1.e+2]
+      - [1.e-3, 1.e+3]
+      - [1.e-4, 1.e+4]
+      - [1.e-5, 1.e+5]
+```
+
 
 ### Core
+* Multiple boundary conditions for calibration mode.
+  It's now possible to add different boundaries condition
+  (See [!612](https://gitlab.com/esa/pyxel/-/merge_requests/612)).
 
 ### Documentation
 
@@ -28,7 +71,7 @@ The minimum version of one dependency was changed:
 
 ### Others
 * Set minimum version of numpy to 1.21.
-  (See [!614](https://gitlab.com/esa/pyxel/-/merge_requests/614)) was changed:
+  (See [!614](https://gitlab.com/esa/pyxel/-/merge_requests/614)).
 
  
 ## 1.7 / 2023-02-09
