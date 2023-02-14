@@ -159,9 +159,6 @@ def load_table(
     else:
         url_path = filename
 
-    valid_delimiters: Sequence[str] = ("\t", " ", ",", "|", ";")
-    valid_delimiters_str = "".join(valid_delimiters)
-
     # Define extra parameters to use with 'fsspec'
     extras = {}
     if global_options.cache_enabled:
@@ -187,8 +184,15 @@ def load_table(
         with fsspec.open(url_path, mode="r", **extras) as file_handler:
             data: str = file_handler.read()
 
+        valid_delimiters: Sequence[str] = ("\t", " ", ",", "|", ";")
+        valid_delimiters_str = "".join(valid_delimiters)
+
         # Find a delimiter
-        dialect = csv.Sniffer().sniff(data, delimiters=valid_delimiters_str)
+        try:
+            dialect = csv.Sniffer().sniff(data, delimiters=valid_delimiters_str)
+        except csv.Error as exc:
+            raise ValueError("Cannot find the separator") from exc
+
         delimiter: str = dialect.delimiter
 
         if delimiter not in valid_delimiters:
