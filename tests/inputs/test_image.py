@@ -450,6 +450,7 @@ def test_load_table_invalid_filename(
         _ = pyxel.load_table(filename)
 
 
+@pytest.mark.parametrize("dtype", ["float", None])
 @pytest.mark.parametrize("with_caching", [False, True])
 @pytest.mark.parametrize(
     "filename, with_header",
@@ -496,18 +497,22 @@ def test_load_table_invalid_filename(
     ],
 )
 def test_load_table(
-    with_caching: bool, valid_table_http_hostname: str, filename, with_header: bool
+    with_caching: bool,
+    valid_table_http_hostname: str,
+    filename,
+    with_header: bool,
+    dtype,
 ):
     """Test function 'load_table'."""
     with pyxel.set_options(cache_enabled=with_caching):
         if isinstance(filename, Path):
             # Load data
-            table = pyxel.load_table(filename, header=with_header)
+            table = pyxel.load_table(filename, header=with_header, dtype=dtype)
         else:
             full_url: str = filename.format(host=valid_table_http_hostname)
 
             # Load data
-            table = pyxel.load_table(full_url, header=with_header)
+            table = pyxel.load_table(full_url, header=with_header, dtype=dtype)
 
         if not with_header:
             exp_table = pd.DataFrame([[1, 2, 3], [4, 5, 6], [7, 8, 9]], dtype=float)

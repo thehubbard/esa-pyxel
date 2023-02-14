@@ -14,6 +14,7 @@ from typing import TYPE_CHECKING, Union
 
 import fsspec
 import numpy as np
+from numpy.typing import DTypeLike
 from PIL import Image
 
 from pyxel.options import global_options
@@ -116,7 +117,9 @@ def load_image(filename: Union[str, Path]) -> np.ndarray:
     return data_2d
 
 
-def load_table(filename: Union[str, Path], header: bool = False) -> "pd.DataFrame":
+def load_table(
+    filename: Union[str, Path], header: bool = False, dtype: DTypeLike = "float"
+) -> "pd.DataFrame":
     """Load a table from a file and returns a pandas dataframe. No header is expected in xlsx.
 
     Parameters
@@ -126,6 +129,7 @@ def load_table(filename: Union[str, Path], header: bool = False) -> "pd.DataFram
         {.npy, .xlsx, .csv, .txt., .data} are accepted.
     header : bool, default: False
         Remove the header.
+    dtype
 
     Returns
     -------
@@ -162,7 +166,7 @@ def load_table(filename: Union[str, Path], header: bool = False) -> "pd.DataFram
 
     if suffix.startswith(".npy"):
         with fsspec.open(url_path, mode="rb", **extras) as file_handler:
-            table = pd.DataFrame(np.load(file_handler), dtype="float")
+            table = pd.DataFrame(np.load(file_handler), dtype=dtype)
 
     elif suffix.startswith(".xlsx"):
         with fsspec.open(url_path, mode="rb", **extras) as file_handler:
@@ -181,7 +185,7 @@ def load_table(filename: Union[str, Path], header: bool = False) -> "pd.DataFram
                         file_handler,
                         delimiter=sep,
                         header=0 if header else None,
-                        dtype="float",
+                        dtype=dtype,
                     )
                     break
         else:
@@ -195,7 +199,7 @@ def load_table(filename: Union[str, Path], header: bool = False) -> "pd.DataFram
                         file_handler,
                         delimiter=sep,
                         header=0 if header else None,
-                        dtype="float",
+                        dtype=dtype,
                     )
                     break
         else:
