@@ -16,7 +16,6 @@ from numbers import Number
 from typing import (
     TYPE_CHECKING,
     Any,
-    Callable,
     Dict,
     Generator,
     Iterator,
@@ -123,10 +122,8 @@ class Observation:
         parameters: Sequence[ParameterValues],
         readout: Optional[Readout] = None,
         mode: Literal["product", "sequential", "custom"] = "product",
-        from_file: Optional[str] = None,  # Note: Specific for 'custom' mode
-        column_range: Optional[
-            Tuple[int, int]
-        ] = None,  # Note: Specific for 'custom' mode
+        from_file: Optional[str] = None,  # Note: Only For 'custom' mode
+        column_range: Optional[Tuple[int, int]] = None,  # Note: Only For 'custom' mode
         with_dask: bool = False,
         result_type: Literal["image", "signal", "pixel", "all"] = "all",
         pipeline_seed: Optional[int] = None,
