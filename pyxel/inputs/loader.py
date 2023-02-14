@@ -7,10 +7,11 @@
 
 """Subpackage to load images and tables."""
 
+import csv
 from contextlib import suppress
-from io import BytesIO
+from io import BytesIO, StringIO
 from pathlib import Path
-from typing import TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, Sequence, Union
 
 import fsspec
 import numpy as np
@@ -118,7 +119,9 @@ def load_image(filename: Union[str, Path]) -> np.ndarray:
 
 
 def load_table(
-    filename: Union[str, Path], header: bool = False, dtype: DTypeLike = "float"
+    filename: Union[str, Path],
+    header: bool = False,
+    dtype: DTypeLike = "float",
 ) -> "pd.DataFrame":
     """Load a table from a file and returns a pandas dataframe. No header is expected in xlsx.
 
@@ -156,6 +159,9 @@ def load_table(
     else:
         url_path = filename
 
+    valid_delimiters: Sequence[str] = ("\t", " ", ",", "|", ";")
+    valid_delimiters_str = "".join(valid_delimiters)
+
     # Define extra parameters to use with 'fsspec'
     extras = {}
     if global_options.cache_enabled:
@@ -176,34 +182,33 @@ def load_table(
                 convert_float=False,
             )
 
-    elif suffix.startswith(".csv"):
-        for sep in ("\t", " ", ",", "|", ";"):
-            with suppress(ValueError):
-                # numpy will return ValueError with a wrong delimiter
-                with fsspec.open(url_path, mode="r", **extras) as file_handler:
-                    table = pd.read_csv(
-                        file_handler,
-                        delimiter=sep,
-                        header=0 if header else None,
-                        dtype=dtype,
-                    )
-                    break
-        else:
-            raise ValueError("Cannot find the separator.")
+    elif suffix.startswith((".txt", ".data", ".csv")):
+        # Read file
+        with fsspec.open(url_path, mode="r", **extras) as file_handler:
+            data: str = file_handler.read()
 
-    elif suffix.startswith((".txt", ".data")):
-        for sep in ("\t", " ", ",", "|", ";"):
-            with suppress(ValueError):
-                with fsspec.open(url_path, mode="r", **extras) as file_handler:
-                    table = pd.read_table(
-                        file_handler,
-                        delimiter=sep,
-                        header=0 if header else None,
-                        dtype=dtype,
-                    )
-                    break
-        else:
-            raise ValueError("Cannot find the separator.")
+        # Find a delimiter
+        dialect = csv.Sniffer().sniff(data, delimiters=valid_delimiters_str)
+        delimiter: str = dialect.delimiter
+
+        if delimiter not in valid_delimiters:
+            raise ValueError(f"Cannot find the separator. {delimiter=!r}")
+
+        with StringIO(data) as file_handler:
+            if suffix.startswith("csv"):
+                table = pd.read_csv(
+                    file_handler,
+                    delimiter=delimiter,
+                    header=0 if header else None,
+                    dtype=dtype,
+                )
+            else:
+                table = pd.read_table(
+                    file_handler,
+                    delimiter=delimiter,
+                    header=0 if header else None,
+                    dtype=dtype,
+                )
 
     else:
         raise ValueError("Only .npy, .xlsx, .csv, .txt and .data implemented.")
