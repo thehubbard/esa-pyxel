@@ -138,7 +138,7 @@ class Observation:
 
         # Specific to mode 'custom'
         self._custom_file: Optional[str] = from_file
-        self._custom_data: Optional[np.ndarray] = None
+        self._custom_data: Optional[pd.DataFrame] = None
         self._custom_columns: Optional[slice] = (
             slice(*column_range) if column_range else None
         )
@@ -194,12 +194,20 @@ class Observation:
         if self._custom_file is None:
             raise ValueError("File for custom parametric mode not specified!")
 
-        all_data: pd.DataFrame = load_table(self._custom_file)
+        # Read the file without forcing its data type
+        all_data: pd.DataFrame = load_table(self._custom_file, dtype=None)
         filtered_data: pd.DataFrame = all_data.loc[:, self._custom_columns]
 
         self._custom_data = filtered_data
 
-    def _custom_parameters(self) -> Generator[Tuple[int, dict], None, None]:
+    def _custom_parameters(
+        self,
+    ) -> Iterator[
+        Tuple[
+            int,
+            Dict[str, Union[Number, str, Sequence[Union[Number, str]]]],
+        ]
+    ]:
         """Generate custom mode parameters based on input file.
 
         Yields
@@ -213,10 +221,12 @@ class Observation:
         index: int
         row_serie: pd.Series
         for index, row_serie in self._custom_data.iterrows():
-            row: list[Any] = row_serie.to_list()
+            row: Sequence[Union[Number, str]] = row_serie.to_list()
 
             i: int = 0
-            parameter_dict: Dict[str, Any] = {}
+            parameter_dict: Dict[
+                str, Union[Number, str, Sequence[Union[Number, str]]]
+            ] = {}
             for step in self.enabled_steps:
                 key: str = step.key
 
@@ -237,7 +247,9 @@ class Observation:
                             "indicate parameters updated from file in custom mode"
                         )
 
-                    value: list[Any] = row[i : i + len(values_flattened)]  # noqa: E203
+                    value: Sequence[Union[Number, str]] = row[
+                        i : i + len(values_flattened)
+                    ]  # noqa: E203
                     assert len(value) == len(step.values)
 
                     parameter_dict[key] = value
@@ -249,7 +261,7 @@ class Observation:
 
             yield index, parameter_dict
 
-    def _sequential_parameters(self) -> Generator[Tuple[int, dict], None, None]:
+    def _sequential_parameters(self) -> Iterator[Tuple[int, dict]]:
         """Generate sequential mode parameters.
 
         Yields
@@ -277,7 +289,7 @@ class Observation:
 
     def _product_parameters(
         self,
-    ) -> Generator[Tuple[Tuple, Dict[str, Any]], None, None]:
+    ) -> Iterator[Tuple[Tuple, Dict[str, Any]]]:
         """Generate product mode parameters.
 
         Yields
@@ -295,7 +307,7 @@ class Observation:
                 parameter_dict.update({key: value})
             yield indices, parameter_dict
 
-    def _parameter_it(self) -> Callable:
+    def _parameter_it(self) -> Iterator:
         """Return the method for generating parameters based on parametric mode.
 
         Returns
@@ -303,13 +315,13 @@ class Observation:
         callable
         """
         if self.parameter_mode == ParameterMode.Product:
-            return self._product_parameters
+            yield from self._product_parameters()
 
         elif self.parameter_mode == ParameterMode.Sequential:
-            return self._sequential_parameters
+            yield from self._sequential_parameters()
 
         elif self.parameter_mode == ParameterMode.Custom:
-            return self._custom_parameters
+            yield from self._custom_parameters()
         else:
             raise NotImplementedError
 
@@ -329,9 +341,9 @@ class Observation:
         parameter_dict: dict
         """
 
-        parameter_it = self._parameter_it()
+        parameter_it: Iterator = self._parameter_it()
 
-        for index, parameter_dict in parameter_it():
+        for index, parameter_dict in parameter_it:
             new_processor = create_new_processor(
                 processor=processor, parameter_dict=parameter_dict
             )
@@ -472,7 +484,7 @@ class Observation:
             )
             lst = [
                 (index, parameter_dict, n)
-                for n, (index, parameter_dict) in enumerate(self._parameter_it()())
+                for n, (index, parameter_dict) in enumerate(self._parameter_it())
             ]
 
             if self.with_dask:
@@ -547,7 +559,7 @@ class Observation:
 
             lst = [
                 (index, parameter_dict, n)
-                for n, (index, parameter_dict) in enumerate(self._parameter_it()())
+                for n, (index, parameter_dict) in enumerate(self._parameter_it())
             ]
 
             if self.with_dask:
@@ -627,7 +639,7 @@ class Observation:
             )
             lst = [
                 (index, parameter_dict, n)
-                for n, (index, parameter_dict) in enumerate(self._parameter_it()())
+                for n, (index, parameter_dict) in enumerate(self._parameter_it())
             ]
 
             if self.with_dask:
