@@ -16,7 +16,6 @@ from numbers import Number
 from typing import (
     TYPE_CHECKING,
     Any,
-    Callable,
     Dict,
     Generator,
     Iterator,
@@ -32,6 +31,7 @@ from typing import (
 
 import dask.bag as db
 import numpy as np
+import pandas as pd
 from tqdm.auto import tqdm
 
 from pyxel.exposure import Readout, run_exposure_pipeline
@@ -121,9 +121,9 @@ class Observation:
         outputs: "ObservationOutputs",
         parameters: Sequence[ParameterValues],
         readout: Optional[Readout] = None,
-        mode: str = "product",
-        from_file: Optional[str] = None,
-        column_range: Optional[Tuple[int, int]] = None,
+        mode: Literal["product", "sequential", "custom"] = "product",
+        from_file: Optional[str] = None,  # Note: Only For 'custom' mode
+        column_range: Optional[Tuple[int, int]] = None,  # Note: Only For 'custom' mode
         with_dask: bool = False,
         result_type: Literal["image", "signal", "pixel", "all"] = "all",
         pipeline_seed: Optional[int] = None,
@@ -131,11 +131,15 @@ class Observation:
         self.outputs = outputs
         self.readout: Readout = readout or Readout()
         self.parameter_mode: ParameterMode = ParameterMode(mode)
-        self._parameters = parameters
-        self.file = from_file
-        self.data: Optional[np.ndarray] = None
-        if column_range:
-            self.columns = slice(*column_range)
+        self._parameters: Sequence[ParameterValues] = parameters
+
+        # Specific to mode 'custom'
+        self._custom_file: Optional[str] = from_file
+        self._custom_data: Optional[pd.DataFrame] = None
+        self._custom_columns: Optional[slice] = (
+            slice(*column_range) if column_range else None
+        )
+
         self.with_dask = with_dask
         self.parameter_types: Dict[str, ParameterType] = {}
         self._result_type = ResultType(result_type)
@@ -179,18 +183,28 @@ class Observation:
         out = [step for step in self._parameters if step.enabled]
         return out
 
-    # TODO: is self.data really needed?
+    # TODO: is self._custom_data really needed?
     def _load_custom_parameters(self) -> None:
         """Load custom parameters from file."""
         from pyxel import load_table
 
-        if self.file is not None:
-            result: np.ndarray = load_table(self.file).to_numpy()[:, self.columns]
-        else:
+        if self._custom_file is None:
             raise ValueError("File for custom parametric mode not specified!")
-        self.data = result
 
-    def _custom_parameters(self) -> Generator[Tuple[int, dict], None, None]:
+        # Read the file without forcing its data type
+        all_data: pd.DataFrame = load_table(self._custom_file, dtype=None)
+        filtered_data: pd.DataFrame = all_data.loc[:, self._custom_columns]
+
+        self._custom_data = filtered_data
+
+    def _custom_parameters(
+        self,
+    ) -> Iterator[
+        Tuple[
+            int,
+            Dict[str, Union[Number, str, Sequence[Union[Number, str]]]],
+        ]
+    ]:
         """Generate custom mode parameters based on input file.
 
         Yields
@@ -198,45 +212,53 @@ class Observation:
         index: int
         parameter_dict: dict
         """
-        if isinstance(self.data, np.ndarray):
-            for index, data_array in enumerate(self.data):
-                i = 0
-                parameter_dict = {}
-                for step in self.enabled_steps:
-                    key = step.key
-
-                    # TODO: this is confusing code. Fix this.
-                    #       Furthermore 'step.values' should be a `List[int, float]` and not a `str`
-                    if step.values == "_":
-                        value = data_array[i]
-                        i += 1
-                        parameter_dict.update({key: value})
-
-                    elif isinstance(step.values, list):
-
-                        values: np.ndarray = np.asarray(deepcopy(step.values))
-                        sh: tuple = values.shape
-                        values_flattened = values.flatten()
-
-                        # TODO: find a way to remove the ignore
-                        if all(x == "_" for x in values_flattened):
-                            value = data_array[
-                                i : i + len(values_flattened)
-                            ]  # noqa: E203
-                            i += len(value)
-                            value = value.reshape(sh).tolist()
-                            parameter_dict.update({key: value})
-                        else:
-                            raise ValueError(
-                                'Only "_" characters (or a list of them) should be used to '
-                                "indicate parameters updated from file in custom mode"
-                            )
-                yield index, parameter_dict
-
-        else:
+        if not isinstance(self._custom_data, pd.DataFrame):
             raise TypeError("Custom parameters not loaded from file.")
 
-    def _sequential_parameters(self) -> Generator[Tuple[int, dict], None, None]:
+        index: int
+        row_serie: pd.Series
+        for index, row_serie in self._custom_data.iterrows():
+            row: Sequence[Union[Number, str]] = row_serie.to_list()
+
+            i: int = 0
+            parameter_dict: Dict[
+                str, Union[Number, str, Sequence[Union[Number, str]]]
+            ] = {}
+            for step in self.enabled_steps:
+                key: str = step.key
+
+                # TODO: this is confusing code. Fix this.
+                #       Furthermore 'step.values' should be a `List[int, float]` and not a `str`
+                if step.values == "_":
+                    parameter_dict[key] = row[i]
+
+                elif isinstance(step.values, Sequence):
+
+                    values: np.ndarray = np.array(step.values)
+                    values_flattened = values.flatten()
+
+                    # TODO: find a way to remove the ignore
+                    if not all(x == "_" for x in values_flattened):
+                        raise ValueError(
+                            'Only "_" characters (or a list of them) should be used to '
+                            "indicate parameters updated from file in custom mode"
+                        )
+
+                    value: Sequence[Union[Number, str]] = row[
+                        i : i + len(values_flattened)
+                    ]  # noqa: E203
+                    assert len(value) == len(step.values)
+
+                    parameter_dict[key] = value
+
+                else:
+                    raise NotImplementedError
+
+                i += len(step.values)
+
+            yield index, parameter_dict
+
+    def _sequential_parameters(self) -> Iterator[Tuple[int, dict]]:
         """Generate sequential mode parameters.
 
         Yields
@@ -264,7 +286,7 @@ class Observation:
 
     def _product_parameters(
         self,
-    ) -> Generator[Tuple[Tuple, Dict[str, Any]], None, None]:
+    ) -> Iterator[Tuple[Tuple, Dict[str, Any]]]:
         """Generate product mode parameters.
 
         Yields
@@ -282,7 +304,7 @@ class Observation:
                 parameter_dict.update({key: value})
             yield indices, parameter_dict
 
-    def _parameter_it(self) -> Callable:
+    def _parameter_it(self) -> Iterator:
         """Return the method for generating parameters based on parametric mode.
 
         Returns
@@ -290,13 +312,13 @@ class Observation:
         callable
         """
         if self.parameter_mode == ParameterMode.Product:
-            return self._product_parameters
+            yield from self._product_parameters()
 
         elif self.parameter_mode == ParameterMode.Sequential:
-            return self._sequential_parameters
+            yield from self._sequential_parameters()
 
         elif self.parameter_mode == ParameterMode.Custom:
-            return self._custom_parameters
+            yield from self._custom_parameters()
         else:
             raise NotImplementedError
 
@@ -316,9 +338,9 @@ class Observation:
         parameter_dict: dict
         """
 
-        parameter_it = self._parameter_it()
+        parameter_it: Iterator = self._parameter_it()
 
-        for index, parameter_dict in parameter_it():
+        for index, parameter_dict in parameter_it:
             new_processor = create_new_processor(
                 processor=processor, parameter_dict=parameter_dict
             )
@@ -459,7 +481,7 @@ class Observation:
             )
             lst = [
                 (index, parameter_dict, n)
-                for n, (index, parameter_dict) in enumerate(self._parameter_it()())
+                for n, (index, parameter_dict) in enumerate(self._parameter_it())
             ]
 
             if self.with_dask:
@@ -534,7 +556,7 @@ class Observation:
 
             lst = [
                 (index, parameter_dict, n)
-                for n, (index, parameter_dict) in enumerate(self._parameter_it()())
+                for n, (index, parameter_dict) in enumerate(self._parameter_it())
             ]
 
             if self.with_dask:
@@ -614,7 +636,7 @@ class Observation:
             )
             lst = [
                 (index, parameter_dict, n)
-                for n, (index, parameter_dict) in enumerate(self._parameter_it()())
+                for n, (index, parameter_dict) in enumerate(self._parameter_it())
             ]
 
             if self.with_dask:

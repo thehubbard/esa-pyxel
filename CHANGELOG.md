@@ -66,6 +66,8 @@ parameters:
   (See [!612](https://gitlab.com/esa/pyxel/-/merge_requests/612)).
 * Add a option to force data type in function 'load_table'.
   (See [!615](https://gitlab.com/esa/pyxel/-/merge_requests/615)).
+* Observation mode, build table with string not only float.
+  (See [!613](https://gitlab.com/esa/pyxel/-/merge_requests/613)).
 
 ### Documentation
 

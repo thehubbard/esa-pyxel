@@ -2147,8 +2147,8 @@
               ],
               "title": "energy_spectrum_sampling",
               "type": [
-                "string",
-                "null"
+                "null",
+                "string"
               ]
             },
             "energy_spread": {
@@ -2177,8 +2177,8 @@
               ],
               "title": "particle_direction",
               "type": [
-                "string",
-                "null"
+                "null",
+                "string"
               ]
             },
             "seed": {
@@ -2284,8 +2284,8 @@
               ],
               "title": "energy_spectrum_sampling",
               "type": [
-                "string",
-                "null"
+                "null",
+                "string"
               ]
             },
             "energy_spread": {
@@ -2308,8 +2308,8 @@
               ],
               "title": "particle_direction",
               "type": [
-                "string",
-                "null"
+                "null",
+                "string"
               ]
             },
             "seed": {
@@ -5533,6 +5533,11 @@
         },
         "mode": {
           "default": "product",
+          "enum": [
+            "product",
+            "sequential",
+            "custom"
+          ],
           "type": "string"
         },
         "outputs": {
