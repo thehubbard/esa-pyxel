@@ -575,7 +575,7 @@ def generate_detectors() -> Iterator[str]:
     yield "    outputs: ObservationOutputs"
     yield "    parameters: Sequence[ParameterValues]"
     yield "    readout: Optional[Readout] = None"
-    yield "    mode: str = 'product'"
+    yield "    mode: Literal['product', 'sequential', 'custom'] = 'product'"
     yield "    from_file: Optional[str] = None"
     yield "    column_range: Optional[Tuple[int, int]] = None"
     yield "    with_dask: bool = False"
