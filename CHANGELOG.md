@@ -8,7 +8,17 @@ Minor releases include updated stdlib stubs from typeshed.
 - The point release number (z) is incremented when there are fixes only.
 
 Pyxel doesn't use SemVer anymore, since most minor releases have at least minor backward incompatible changes.
+
 ## UNRELEASED
+
+This release brings a number of bugfixes and documentation improvements.
+
+The minimum version of one dependency was changed:
+
+  | Package   | Old   | New        |
+  | --------- |-------| ---------- |
+  | numpy     | 1.20  | **1.21**   |
+
 
 ### Core
 
@@ -17,7 +27,10 @@ Pyxel doesn't use SemVer anymore, since most minor releases have at least minor 
 ### Models
 
 ### Others
+* Set minimum version of numpy to 1.21.
+  (See [!614](https://gitlab.com/esa/pyxel/-/merge_requests/614)) was changed:
 
+ 
 ## 1.7 / 2023-02-09
 
 This release brings a number of bugfixes and documentation improvements.
