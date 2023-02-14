@@ -241,7 +241,8 @@ class ModelFitting(ProblemSingleObjective):
 
         var: ParameterValues
         for var in self.variables:
-            assert var.boundaries
+            if var.boundaries is None:
+                raise NotImplementedError
 
             low_val: float
             high_val: float

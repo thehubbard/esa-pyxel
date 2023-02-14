@@ -5643,30 +5643,59 @@
       "additionalProperties": false,
       "properties": {
         "boundaries": {
-          "additionalItems": false,
-          "default": null,
-          "items": [
+          "anyOf": [
             {
-              "type": "number"
+              "additionalItems": false,
+              "items": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "maxItems": 2,
+              "minItems": 2,
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "type": "array"
             },
             {
-              "type": "number"
-            }
-          ],
-          "maxItems": 2,
-          "minItems": 2,
-          "prefixItems": [
-            {
-              "type": "number"
+              "items": {
+                "additionalItems": false,
+                "items": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ],
+                "maxItems": 2,
+                "minItems": 2,
+                "prefixItems": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ],
+                "type": "array"
+              },
+              "type": "array"
             },
             {
-              "type": "number"
+              "type": "null"
             }
           ],
-          "type": [
-            "array",
-            "null"
-          ]
+          "default": null
         },
         "enabled": {
           "default": true,

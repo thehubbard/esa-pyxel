@@ -32,9 +32,16 @@ class ParameterValues:
         self,
         key: str,
         values: Union[
-            Literal["_"], Sequence[Literal["_"]], Sequence[Number], Sequence[str]
+            Literal["_"],
+            Sequence[Literal["_"]],
+            Sequence[Number],
+            Sequence[str],
         ],
-        boundaries: Optional[Tuple[float, float]] = None,
+        boundaries: Union[
+            Tuple[float, float],
+            Sequence[Tuple[float, float]],
+            None,
+        ] = None,
         enabled: bool = True,
         logarithmic: bool = False,
     ):
@@ -42,7 +49,7 @@ class ParameterValues:
         # TODO: maybe use numpy to check multi-dimensional input lists
         # Check YAML input (not real values yet) and define parameter type
         if values == "_":
-            self.type = ParameterType("multi")
+            self.type: ParameterType = ParameterType("multi")
         elif isinstance(values, str) and "numpy" in values:
             self.type = ParameterType("simple")
         elif isinstance(values, abc.Sequence) and any(
@@ -70,7 +77,9 @@ class ParameterValues:
 
         self._enabled: bool = enabled
         self._logarithmic: bool = logarithmic
-        self._boundaries: Optional[Tuple[float, float]] = boundaries
+        self._boundaries: Union[
+            Tuple[float, float], Sequence[Tuple[float, float]], None
+        ] = boundaries
 
         self._current: Optional[Union[Literal["_"], Number, str]] = None
 
@@ -133,6 +142,8 @@ class ParameterValues:
         return self._logarithmic
 
     @property
-    def boundaries(self) -> Optional[Tuple[float, float]]:
+    def boundaries(
+        self,
+    ) -> Union[Tuple[float, float], Sequence[Tuple[float, float]], None]:
         """TBW."""
         return self._boundaries
