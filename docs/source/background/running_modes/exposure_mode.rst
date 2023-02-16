@@ -62,6 +62,11 @@ and emptying the data at each iteration of the detector through the pipeline.
     outputs:
       output_folder: 'output'
 
+.. important::
+    The readout times must be:
+      - strictly superior to the start time
+      - strictly increasing (e.g. ``[1, 2, 3, 4]``)
+
 Outputs
 =======
 
