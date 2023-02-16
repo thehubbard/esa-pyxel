@@ -27,9 +27,12 @@ def test_readout_times(times, exp_times):
     assert_array_equal(obj.times, exp_times)
 
 
-@pytest.mark.parametrize("times", [[3, 2, 1], [1, 2, 3, 3, 4], [1, 3, 2, 4]])
+@pytest.mark.parametrize(
+    "times",
+    [[3, 2, 1], [1, 2, 3, 3, 4], [1, 3, 2, 4], "numpy.linspace(start=10, stop=1)"],
+)
 def test_readout_times_not_monotonic(times):
-    """Test 'Readout' with value non monotonically increasing."""
+    """Test 'Readout' with value non-monotonic increasing."""
     with pytest.raises(ValueError, match=r"Readout times must be strictly increasing"):
         _ = Readout(times)
 
