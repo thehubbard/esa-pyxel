@@ -54,6 +54,9 @@ class Readout:
         elif start_time >= self._times[0]:
             raise ValueError("Readout times should be greater than start time.")
 
+        if not np.all(np.diff(self._times) > 0):
+            raise ValueError("Readout times must be strictly increasing")
+
         self._non_destructive = non_destructive
 
         self._times_linear: bool = True
