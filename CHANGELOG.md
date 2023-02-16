@@ -68,6 +68,8 @@ parameters:
   (See [!615](https://gitlab.com/esa/pyxel/-/merge_requests/615)).
 * Observation mode, build table with string not only float.
   (See [!613](https://gitlab.com/esa/pyxel/-/merge_requests/613)).
+* Check that in exposure readout time is strictly increasing.
+  (See [!516](https://gitlab.com/esa/pyxel/-/merge_requests/516)).
 
 ### Documentation
 

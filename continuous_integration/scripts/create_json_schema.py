@@ -525,7 +525,7 @@ def generate_detectors() -> Iterator[str]:
 
     yield "@dataclass"
     yield "class Readout:"
-    yield "    times: Optional[Union[Sequence, str]] = None"
+    yield "    times: Union[Sequence, str, None] = None"
     yield "    times_from_file: Optional[str] = None"
     yield "    start_time: float = 0.0"
     yield "    non_destructive: bool = False"

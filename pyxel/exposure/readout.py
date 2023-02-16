@@ -29,7 +29,7 @@ class Readout:
 
     def __init__(
         self,
-        times: Optional[Union[Sequence, str]] = None,
+        times: Union[Sequence, str, None] = None,
         times_from_file: Optional[str] = None,
         start_time: float = 0.0,
         non_destructive: bool = False,
@@ -39,9 +39,8 @@ class Readout:
         if times is not None and times_from_file is not None:
             raise ValueError("Both times and times_from_file specified. Choose one.")
         elif times is times_from_file is None:
-            self._times = np.array(
-                [1]
-            )  # by convention default readout/exposure time is 1 second
+            # by convention default readout/exposure time is 1 second
+            self._times = np.array([1])
             self._time_domain_simulation = False
         elif times_from_file:
             self._times = load_table(times_from_file).to_numpy(dtype=float).flatten()
@@ -54,6 +53,9 @@ class Readout:
             raise ValueError("Readout times should be non-zero values.")
         elif start_time >= self._times[0]:
             raise ValueError("Readout times should be greater than start time.")
+
+        if not np.all(np.diff(self._times) > 0):
+            raise ValueError("Readout times must be strictly increasing")
 
         self._non_destructive = non_destructive
 
