@@ -22,7 +22,7 @@ from pyxel.models import load_detector, save_detector
 
 try:
     # Check if library 'asdf' is installed
-    import asdf
+    import asdf  # noqa: F401
 except ImportError:
     WITH_ASDF = False
 else:

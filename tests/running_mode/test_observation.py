@@ -23,7 +23,7 @@ dask.config.set(scheduler="single-threaded")
 
 @pytest.mark.deprecated
 @pytest.mark.parametrize("with_dask", [False, True])
-def test_product_simple(with_dask: bool):
+def test_product_simple_old(with_dask: bool):
     """Test running mode 'observation'."""
     filename = Path(
         "tests/running_mode/data/deprecated_observation_product_simple.yaml"

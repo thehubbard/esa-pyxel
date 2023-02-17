@@ -578,7 +578,7 @@ def test_load_table_heterogeneous_error(valid_table_heterogeneous: Path, filenam
     folder = valid_table_heterogeneous
 
     with pytest.raises(ValueError, match="could not convert string to float"):
-        df = pyxel.load_table(folder / filename, header=True)
+        _ = pyxel.load_table(folder / filename, header=True)
 
 
 @pytest.mark.parametrize("filename", ["dummy.foo"])
