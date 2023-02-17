@@ -87,6 +87,12 @@ flake8:
   script:
     - tox -e flake8
 
+ruff:
+  image: python:3
+  stage: test
+  script:
+    - tox -e ruff
+
 pydocstyle:
   image: python:3
   stage: test

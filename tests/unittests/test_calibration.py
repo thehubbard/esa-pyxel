@@ -163,5 +163,5 @@ def test_run_calibration(yaml):
     assert isinstance(calibration, Calibration)
 
     assert calibration is not None
-    result = calibration.run_calibration(processor)
+    _ = calibration.run_calibration(processor)
     # assert result == 1         # TODO

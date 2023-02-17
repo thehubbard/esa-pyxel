@@ -211,3 +211,10 @@ omit = [
     "pyxel/models/charge_measurement/nghxrg/nghxrg_beta.py",
     "pyxel/models/charge_generation/tars/plotting.py",
 ]
+
+[tool.ruff]
+ignore = [
+    "E501", # Omit 'Line too long'
+]
+
+exclude = ["_TEMPLATE.py"]

@@ -78,6 +78,8 @@ parameters:
 ### Others
 * Set minimum version of numpy to 1.21.
   (See [!614](https://gitlab.com/esa/pyxel/-/merge_requests/614)).
+* Use 'ruff' in CI/CD.
+  (See [!616](https://gitlab.com/esa/pyxel/-/merge_requests/616)).
 
  
 ## 1.7 / 2023-02-09

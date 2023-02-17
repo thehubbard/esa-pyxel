@@ -4,13 +4,6 @@
 #  is part of this Pyxel package. No part of the package, including
 #  this file, may be copied, modified, propagated, or distributed except according to
 #  the terms contained in the file ‘LICENCE.txt’.
-#
-#
-#
-#  This file is subject to the terms and conditions defined in file 'LICENCE.txt', which
-#  is part of this Pyxel package. No part of the package, including
-#  this file, may be copied, modified, propagated, or distributed except according to
-#  the terms contained in the file ‘LICENCE.txt’.
 
 
 from pathlib import Path
@@ -613,7 +606,7 @@ def test_load_two_running_modes(config_two_running_modes: Path):
 
 
 @pytest.mark.deprecated
-def test_load_no_detector(config_no_detector_deprecated: Path):
+def test_load_no_detector_before(config_no_detector_deprecated: Path):
     """test function 'pyxel.load' without detector."""
     filename = config_no_detector_deprecated
 
