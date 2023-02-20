@@ -1,4 +1,3 @@
-
 # Frequently Asked Questions
 - [How to contact the developers of Pyxel?](#how-to-contact-the-developers-of-pyxel)
 - [How to install Pyxel?](#how-to-install-pyxel)
@@ -21,7 +20,7 @@ If you have a question, you can use the Chat on [Gitter](https://gitter.im/pyxel
 
 [Read more](https://esa.gitlab.io/pyxel/doc/stable/tutorials/get_help.html).
 
-If you are using Pyxel on a regular basis and want to [contritbute](http://localhost:52873/references/contributing.html), let us know.
+If you are using Pyxel on a regular basis and want to [contribute](http://localhost:52873/references/contributing.html), let us know.
 
 You can always reach us via email: [pyxel@esa.int](mailto:pyxel@esa.int).
 
