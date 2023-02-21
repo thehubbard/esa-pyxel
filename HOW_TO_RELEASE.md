@@ -162,13 +162,18 @@ GitLab release notes, blog, etc.
      ### Others
      ```
 
-16. Commit you changes and push to master again:
+16. Update version `{X}.{Y}.{Z}` in the following files in repository https://gitlab.com/esa/pyxel-data:    
+    - `.binder/environment.yml` (https://gitlab.com/esa/pyxel-data/-/blob/master/.binder/environment.yml)
+    - `README.md` (https://gitlab.com/esa/pyxel-data/-/blob/master/README.md) 
+
+
+17. Commit you changes and push to master again:
      ```fish
      $ git commit -am "New Changelog section"
      $ git push upstream master
      ```
 
-17. Issue the release on GitLab.
+18. Issue the release on GitLab.
     Click on https://gitlab.com/esa/pyxel/-/releases . Type in the version number and paste the release summary in the notes.
 
-18. Issue the release announcement to the mailing list pyxel-dev@googlegroups.com and to the Pyxel blog.
+19. Issue the release announcement to the mailing list pyxel-dev@googlegroups.com and to the Pyxel blog.
