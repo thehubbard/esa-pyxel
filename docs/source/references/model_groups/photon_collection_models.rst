@@ -242,15 +242,15 @@ Example of the configuration file:
         wavelength: 0.6e-6          # wavelength in meters
         optical_system:
           - item: CircularAperture
-            radius: 3.0
+            radius: 3.0             # radius in meters        
         optical_system:
           - item: CircularAperture
-            radius: 1.5
+            radius: 1.5             # radius in meters  
           - item: ThinLens
-            radius: 1.2
+            radius: 1.2             # radius in meters  
             nwaves: 1
           - item: ZernikeWFE
-            radius: 0.8
+            radius: 0.8             # radius in meters  
             coefficients: [0.1e-6, 3.e-6, -3.e-6, 1.e-6, -7.e-7, 0.4e-6, -2.e-6]
             aperture_stop: false
 
