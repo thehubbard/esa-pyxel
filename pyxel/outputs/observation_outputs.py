@@ -81,7 +81,6 @@ class ObservationOutputs(Outputs):
         save_methods: Dict[str, SaveToFile] = {"nc": self.save_to_netcdf}
 
         if self.save_observation_data is not None:
-
             dct: Mapping[str, Sequence[str]]
             for dct in self.save_observation_data:
                 first_item, *_ = dct.items()
@@ -95,10 +94,8 @@ class ObservationOutputs(Outputs):
                 if mode == ParameterMode.Sequential and obj == "dataset":
                     dct = operator.attrgetter(obj)(result)
                     for key, value in dct.items():
-
                         if format_list is not None:
                             for out_format in format_list:
-
                                 if out_format not in save_methods:
                                     raise ValueError(
                                         "Format "
@@ -114,7 +111,6 @@ class ObservationOutputs(Outputs):
 
                     if format_list is not None:
                         for out_format in format_list:
-
                             if out_format not in save_methods:
                                 raise ValueError(
                                     "Format " + out_format + " not a valid save method!"

@@ -37,14 +37,12 @@ def apd_gain(detector: APD) -> None:
         raise TypeError("Expecting a 'APD' detector object.")
 
     if detector.charge.frame_empty():
-
         array_copy = detector.charge.array.copy()
         detector.charge.empty()
         array_copy *= detector.characteristics.avalanche_gain
         detector.charge.add_charge_array(array=array_copy)
 
     else:
-
         frame_copy = detector.charge.frame.copy()
         detector.charge.empty()
         frame_copy.number *= detector.characteristics.avalanche_gain

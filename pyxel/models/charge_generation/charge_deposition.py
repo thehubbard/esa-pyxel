@@ -323,7 +323,6 @@ def simulate_charge_deposition(
     tracks = []
     # for each particle generate and store the energy deposition track
     for e, de in zip(p_energies, deposited_energies):
-
         # generate random particle coordinates
         x = np.random.random() * x_lim
         y = np.random.random() * y_lim

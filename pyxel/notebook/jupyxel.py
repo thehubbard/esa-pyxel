@@ -171,7 +171,6 @@ def display_detector(detector: "Detector") -> "Layout":
         det["Image"] = detector.image.array
 
     def get_image(name):
-
         data: np.ndarray = det[name]
 
         if detector.geometry.row == 1:

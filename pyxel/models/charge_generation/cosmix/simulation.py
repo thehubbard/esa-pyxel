@@ -433,7 +433,6 @@ class Simulation:
         if np.any(electron_number_vector):
             # for j in range(len(step_size_vector)):
             for j in range(len(electron_number_vector)):
-
                 # UPDATE POSITION OF IONIZING PARTICLES
                 particle.position[0] += particle.dir_ver * step_size_vector[j]  # um
                 particle.position[1] += particle.dir_hor * step_size_vector[j]  # um

@@ -204,7 +204,6 @@ def compute_simple_persistence(
     pixel_diff = pixel_array - pixel_start
 
     for i, trapped_charge in enumerate(all_trapped_charge):
-
         if trap_capacities is None:
             fwc = None
         else:
@@ -297,7 +296,6 @@ def persistence(
     )
 
     if trap_capacities_filename is not None:
-
         # Extract the max amount of trap by long soak
         trap_capacities_2d = load_cropped_and_aligned_image(
             shape=shape,
@@ -371,7 +369,6 @@ def compute_persistence(
     pixel_start = pixel_array.copy()
 
     for i, trapped_charge in enumerate(all_trapped_charge):
-
         # Computer trapped charge for this increment of time
         # Time factor is the integration time divided by the time constant (1, 10, 100, 1000, 10000)
         time_factor = delta_t / trap_time_constants[i]
@@ -398,7 +395,6 @@ def compute_persistence(
     pixel_diff = pixel_array - pixel_start
 
     for i, trapped_charge in enumerate(all_trapped_charge):
-
         if trap_capacities_2d is None:
             fwc = None
         else:

@@ -87,7 +87,6 @@ def invalid_qe_map_path(
     ],
 )
 def test_simple_conversion_valid(ccd_5x5: CCD, qe: float):
-
     detector = ccd_5x5
     detector.characteristics.quantum_efficiency = 0.5
 
@@ -112,20 +111,17 @@ def test_simple_conversion_valid2(
     exp_exc,
     exp_error,
 ):
-
     with pytest.raises(exp_exc, match=exp_error):
         simple_conversion(detector=ccd_5x5, quantum_efficiency=qe)
 
 
 def test_conversion_with_qe_valid(ccd_5x5: CCD, valid_qe_map_path: Union[str, Path]):
-
     detector = ccd_5x5
 
     conversion_with_qe_map(detector=detector, filename=valid_qe_map_path)
 
 
 def test_simple_conversion_invalid(ccd_5x5: CCD, invalid_qe_map_path: Union[str, Path]):
-
     with pytest.raises(
         ValueError, match="Quantum efficiency values not between 0 and 1."
     ):

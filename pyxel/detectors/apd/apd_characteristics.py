@@ -71,7 +71,6 @@ class APDCharacteristics:
         pixel_reset_voltage: Optional[float] = None,  # unit: V
         common_voltage: Optional[float] = None,  # unit: V
     ):
-
         self._avalanche_gain = avalanche_gain
         self._common_voltage = common_voltage
         self._pixel_reset_voltage = pixel_reset_voltage

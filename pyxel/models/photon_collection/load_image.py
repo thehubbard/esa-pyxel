@@ -65,7 +65,6 @@ def load_image(
     photon_array = image
 
     if convert_to_photons:
-
         if not bit_resolution:
             raise ValueError(
                 "Bit resolution of the input image has to be specified for converting to photons."

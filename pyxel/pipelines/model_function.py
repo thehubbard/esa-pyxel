@@ -58,14 +58,12 @@ class Arguments(MutableMapping):
         self._arguments: Dict[str, Any] = input_arguments
 
     def __setitem__(self, key, value):
-
         if key not in self._arguments:
             raise KeyError(f"No argument named {key} !")
 
         self._arguments[key] = value
 
     def __getitem__(self, key):
-
         if key not in self._arguments:
             raise KeyError(f"No argument named {key} !")
 
@@ -81,7 +79,6 @@ class Arguments(MutableMapping):
         return len(self._arguments)
 
     def __getattr__(self, key):
-
         # Use non-modified __getattr__ in this case.
         if key == "_arguments":
             return object.__getattribute__(self, "_arguments")
@@ -92,7 +89,6 @@ class Arguments(MutableMapping):
         return self._arguments[key]
 
     def __setattr__(self, key, value):
-
         # Use non-modified __setattr__ in this case.
         if key == "_arguments":
             super().__setattr__(key, value)

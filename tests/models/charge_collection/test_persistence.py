@@ -121,7 +121,6 @@ def test_persistence_valid(
     valid_density_map_path: str,
     valid_capacity_map_path: str,
 ):
-
     detector = cmos_5x5
 
     assert not detector.has_persistence()
@@ -166,7 +165,6 @@ def test_persistence_invalid(
     exp_error,
     exp_msg,
 ):
-
     detector = cmos_5x5
 
     with pytest.raises(exp_error, match=exp_msg):

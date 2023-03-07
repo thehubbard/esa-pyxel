@@ -250,7 +250,6 @@ class Processor:
 
         key: Literal["image", "signal", "pixel"]
         for key in result_keys(result_type):
-
             if key == "image":
                 standard_name: str = "Image"
                 unit: str = "adu"

@@ -28,7 +28,6 @@ def test_invalid_attribute(CCD_empty):
     sys.version_info < (3, 8), reason="Different value for older versions."
 )
 def test_memory_usage(CCD_empty):
-
     attributes = [
         "_photon",
         "_charge",

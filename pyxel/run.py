@@ -276,7 +276,6 @@ def calibration_mode(
     )
 
     if compute_and_save:
-
         computed_ds, df_processors, df_logs, filenames = dask.compute(
             ds_results, df_processors, df_all_logs, filenames
         )

@@ -244,7 +244,6 @@ def generate_model(
     func_fullname: str,
     model_name: str,
 ) -> Iterator[str]:
-
     doc: FuncDocumentation = get_documentation(func)
 
     yield "@schema(title='Parameters')"
@@ -356,7 +355,6 @@ def capitalize_title(name: str) -> str:
 
 
 def generate_group(model_groups_info: Sequence[ModelGroupInfo]) -> Iterator[str]:
-
     for group_info in model_groups_info:
         group_name = group_info.name
 
@@ -364,7 +362,6 @@ def generate_group(model_groups_info: Sequence[ModelGroupInfo]) -> Iterator[str]
 
         info: ModelInfo
         for info in models_info:
-
             group_name_title = capitalize_title(group_name)
             model_title = capitalize_title(info.model_name)
 

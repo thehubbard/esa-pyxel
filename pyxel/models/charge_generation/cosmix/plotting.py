@@ -429,7 +429,6 @@ class PlottingCosmix:
 
         plt.title("Charges deposited per single event")
         for filename in hist_names:
-
             histogram = np.load(str(Path(path, filename)))
 
             if i == 0:
@@ -491,7 +490,6 @@ class PlottingCosmix:
         plt.figure()
         plt.title("Number of electrons per event")
         for filename in hist_names:
-
             histogram = np.load(
                 str(
                     Path(
@@ -546,7 +544,6 @@ class PlottingCosmix:
         plt.figure()
         plt.title("Number of electrons per event")
         for filename in hist_names:
-
             histogram = np.load(str(Path(path, filename)))
 
             if i == 0:

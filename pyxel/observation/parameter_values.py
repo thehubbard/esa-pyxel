@@ -48,7 +48,6 @@ class ParameterValues:
         enabled: bool = True,
         logarithmic: bool = False,
     ):
-
         # TODO: maybe use numpy to check multi-dimensional input lists
         # Check YAML input (not real values yet) and define parameter type
         if values == "_":
@@ -108,7 +107,6 @@ class ParameterValues:
         return f"{cls_name}<key={self.key!r}, values={self.values!r}, enabled={self.enabled!r}>"
 
     def __len__(self) -> int:
-
         try:
             values: Sequence = eval_range(self.values)
         except Exception as exc:

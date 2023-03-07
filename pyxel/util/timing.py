@@ -64,11 +64,9 @@ def time_pipeline(detector: "Detector", pipeline: "DetectionPipeline") -> pd.Dat
     model_names = []
 
     for group_name in pipeline.model_group_names:
-
         models_grp: Optional[ModelGroup] = getattr(pipeline, group_name)
 
         if models_grp:
-
             model: ModelFunction
             for model in models_grp.models:
                 if model.enabled:
