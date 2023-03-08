@@ -5,6 +5,7 @@ API reference
 =============
 
 .. toctree::
+
     api/run.rst
     api/configuration.rst
     api/datastructures.rst

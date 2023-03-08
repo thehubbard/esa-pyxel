@@ -182,7 +182,7 @@ You can install all dependencies as well:
 
     python -m pip install ".[all]"
 
-For more information see :ref:`contributing.dev_env` from the :doc:`contributing`.
+For more information see :ref:`contributing.dev_env` from the :ref:`contributing`.
 
 Verify the installation
 =======================

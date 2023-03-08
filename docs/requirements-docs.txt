@@ -1,7 +1,7 @@
 # Pyxel additional requirements for generating documentation
 
-sphinx~=4.0
-sphinx-book-theme
+sphinx>=5
+sphinx-book-theme>=1
 sphinxcontrib-bibtex
 sphinx-panels
 ipython != 8.1; python_version < '3.9'

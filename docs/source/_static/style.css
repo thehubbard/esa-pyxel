@@ -261,9 +261,3 @@ body {
 .bd-toc .nav > .active > ul {
   display: block;
 }
-
-/* https://fontawesome.com/v5/cheatsheet/free/brands
- * Display GitLab logo */
-.fa-github:before {
-    content: "\f296";
-}

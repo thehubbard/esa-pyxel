@@ -6,8 +6,6 @@ Pipelines
 
 .. currentmodule:: pyxel.pipelines
 
-DetectionPipeline
------------------
 .. autoclass:: DetectionPipeline
     :members:
     :inherited-members:
@@ -15,8 +13,6 @@ DetectionPipeline
     :show-inheritance:
     :exclude-members:
 
-Processor
----------
 .. autoclass:: Processor
     :members:
     :inherited-members:
@@ -24,8 +20,6 @@ Processor
     :show-inheritance:
     :exclude-members:
 
-ModelGroup
-----------
 .. autoclass:: ModelGroup
     :members:
     :inherited-members:
@@ -33,8 +27,6 @@ ModelGroup
     :show-inheritance:
     :exclude-members:
 
-ModelFunction
--------------
 .. autoclass:: ModelFunction
     :members:
     :inherited-members:

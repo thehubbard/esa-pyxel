@@ -5,8 +5,6 @@ Data structures
 ===============
 .. currentmodule:: pyxel.data_structure
 
-Array
------
 .. autoclass:: Array
     :members:
     :inherited-members:
@@ -14,8 +12,6 @@ Array
     :show-inheritance:
     :exclude-members:
 
-Photon
-------
 .. autoclass:: Photon
     :members:
     :inherited-members:
@@ -23,8 +19,6 @@ Photon
     :show-inheritance:
     :exclude-members:
 
-Pixel
------
 .. autoclass:: Pixel
     :members:
     :inherited-members:
@@ -32,8 +26,6 @@ Pixel
     :show-inheritance:
     :exclude-members:
 
-Phase
------
 .. autoclass:: Phase
     :members:
     :inherited-members:
@@ -41,8 +33,6 @@ Phase
     :show-inheritance:
     :exclude-members:
 
-Signal
-------
 .. autoclass:: Signal
     :members:
     :inherited-members:
@@ -50,8 +40,6 @@ Signal
     :show-inheritance:
     :exclude-members:
 
-Image
------
 .. autoclass:: Image
     :members:
     :inherited-members:
@@ -59,8 +47,6 @@ Image
     :show-inheritance:
     :exclude-members:
 
-Charge
-------
 .. autoclass:: Charge
     :members:
     :inherited-members:
@@ -68,8 +54,6 @@ Charge
     :show-inheritance:
     :exclude-members:
 
-ProcessedData
--------------
 .. autoclass:: ProcessedData
     :members:
     :inherited-members:
