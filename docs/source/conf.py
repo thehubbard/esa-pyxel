@@ -181,6 +181,8 @@ html_theme_options = {
     "home_page_in_toc": False,
     "extra_footer": f"""<p>Last updated on {now_dt:%Y-%m-%d}.</p>""",
     "toc_title": "Contents",  # Control the right sidebar items
+    "show_navbar_depth": 4,
+    # "announcement": "Hello World",
 }
 
 # This is used to generate the link 'suggest edit'

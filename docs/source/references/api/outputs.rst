@@ -6,8 +6,6 @@ Outputs
 
 .. currentmodule:: pyxel.outputs
 
-ExposureOutputs
----------------
 .. autoclass:: ExposureOutputs
     :members:
     :inherited-members:
@@ -15,8 +13,6 @@ ExposureOutputs
     :show-inheritance:
     :exclude-members:
 
-ObservationOutputs
-------------------
 .. autoclass:: ObservationOutputs
     :members:
     :inherited-members:
@@ -24,8 +20,6 @@ ObservationOutputs
     :show-inheritance:
     :exclude-members:
 
-CalibrationOutputs
-------------------
 .. autoclass:: CalibrationOutputs
     :members:
     :inherited-members:

@@ -6,8 +6,6 @@ Observation
 
 .. currentmodule:: pyxel.observation
 
-Observation
------------
 
 .. autoclass:: Observation
     :members:
@@ -16,8 +14,6 @@ Observation
     :show-inheritance:
     :exclude-members:
 
-ParametricResult
-----------------
 
 .. autoclass:: ObservationResult
     :members:
@@ -26,6 +22,4 @@ ParametricResult
     :show-inheritance:
     :exclude-members:
 
-log_parameters
---------------
 .. autofunction:: log_parameters

@@ -5,8 +5,6 @@ Detector properties
 ===================
 .. currentmodule:: pyxel.detectors
 
-Environment
------------
 .. autoclass:: Environment
     :members:
     :inherited-members:
@@ -14,8 +12,6 @@ Environment
     :show-inheritance:
     :exclude-members:
 
-Characteristics
----------------
 .. autoclass:: Characteristics
     :members:
     :inherited-members:
@@ -23,8 +19,6 @@ Characteristics
     :show-inheritance:
     :exclude-members:
 
-Geometry
---------
 .. autoclass:: Geometry
     :members:
     :inherited-members:
@@ -33,21 +27,9 @@ Geometry
     :exclude-members:
 
 CCD specific
-------------
+============
 :term:`CCD` specific classes.
 
-Characteristics
-===============
-.. autoclass:: Characteristics
-    :members:
-    :inherited-members:
-    :undoc-members:
-    :show-inheritance:
-    :exclude-members:
-    :noindex:
-
-CCDGeometry
-===========
 .. autoclass:: CCDGeometry
     :members:
     :inherited-members:
@@ -56,21 +38,9 @@ CCDGeometry
     :exclude-members:
 
 CMOS specific
--------------
+=============
 :term:`CMOS` specific classes.
 
-Characteristics
-===============
-.. autoclass:: Characteristics
-    :members:
-    :inherited-members:
-    :undoc-members:
-    :show-inheritance:
-    :exclude-members:
-    :noindex:
-
-CMOSGeometry
-============
 .. autoclass:: CMOSGeometry
     :members:
     :inherited-members:
@@ -79,21 +49,9 @@ CMOSGeometry
     :exclude-members:
 
 MKID specific
--------------
+=============
 :term:`MKID` specific classes.
 
-Characteristics
-===============
-.. autoclass:: Characteristics
-    :members:
-    :inherited-members:
-    :undoc-members:
-    :show-inheritance:
-    :exclude-members:
-    :noindex:
-
-MKIDGeometry
-============
 .. autoclass:: MKIDGeometry
     :members:
     :inherited-members:
@@ -102,11 +60,9 @@ MKIDGeometry
     :exclude-members:
 
 APD specific
-------------
+============
 :term:`APD` specific classes.
 
-APDCharacteristics
-==================
 .. autoclass:: APDCharacteristics
     :members:
     :inherited-members:
@@ -114,8 +70,6 @@ APDCharacteristics
     :show-inheritance:
     :exclude-members:
 
-APDGeometry
-===========
 .. autoclass:: APDGeometry
     :members:
     :inherited-members:
