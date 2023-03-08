@@ -4,7 +4,7 @@
 Detectors
 =========
 
-.. currentmodule:: pyxel.detectors
+.. currentmodule:: pyxel.detectors.Detector
 
 Top-level functions
 ===================
@@ -28,6 +28,8 @@ Detector
     :undoc-members:
     :show-inheritance:
     :exclude-members:
+
+.. currentmodule:: pyxel.detectors
 
 CCD
 ---

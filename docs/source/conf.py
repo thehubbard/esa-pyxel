@@ -145,7 +145,7 @@ today_fmt = "%Y-%m-%d"
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = None
+language = "en"
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -179,8 +179,6 @@ html_theme_options = {
     "use_issues_button": True,
     "use_download_button": True,
     "home_page_in_toc": False,
-    "extra_navbar": "",
-    "navbar_footer_text": "",
     "extra_footer": f"""<p>Last updated on {now_dt:%Y-%m-%d}.</p>""",
     "toc_title": "Contents",  # Control the right sidebar items
 }
