@@ -181,6 +181,9 @@ html_theme_options = {
     "home_page_in_toc": False,
     "extra_footer": f"""<p>Last updated on {now_dt:%Y-%m-%d}.</p>""",
     "toc_title": "Contents",  # Control the right sidebar items
+    # Version switcher dropdown. See issue #562
+    # "switcher": {"json_url": "https://esa.gitlab.io/pyxel/doc/switcher.json"},
+    # "check_switcher": False,
     # "announcement": "Hello World",
 }
 

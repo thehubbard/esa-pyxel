@@ -1,0 +1,10 @@
+[
+  {
+    "version": "stable",
+    "url": "https://esa.gitlab.io/pyxel/doc/stable/index.html"
+  },
+  {
+    "version": "latest",
+    "url": "https://esa.gitlab.io/pyxel/doc/latest/index.html"
+  }
+]
