@@ -37,7 +37,6 @@ def display_html(obj: Union[Callable, ModelFunction, ModelGroup]) -> "HTML":
     elif isinstance(obj, ModelFunction):
         return display_model_html(obj)
     else:
-
         d = {
             key: [
                 type(obj.__dict__[key]).__name__,

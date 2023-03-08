@@ -126,7 +126,6 @@ class ModelFitting(ProblemSingleObjective):
 
         self.original_processor = deepcopy(self.processor)
         if input_arguments:
-
             max_val, min_val = 0, 1000
             for arg in input_arguments:
                 min_val = min(min_val, len(arg.values))
@@ -353,7 +352,6 @@ class ModelFitting(ProblemSingleObjective):
             raise NotImplementedError("'pop' is not initialized.")
 
         try:
-
             # TODO: Use directory 'logging.'
             logger = logging.getLogger("pyxel")
             prev_log_level = logger.getEffectiveLevel()
@@ -366,7 +364,6 @@ class ModelFitting(ProblemSingleObjective):
             for i, (processor, target_data) in enumerate(
                 zip(processor_list, self.all_target_data)
             ):
-
                 processor = self.update_processor(
                     parameter=parameter_1d, processor=processor
                 )

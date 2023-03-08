@@ -165,7 +165,6 @@ def run_exposure_pipeline(
     time: float
     step: float
     for i, (time, step) in enumerate(time_step_it):
-
         detector.time = time
         detector.time_step = step
 

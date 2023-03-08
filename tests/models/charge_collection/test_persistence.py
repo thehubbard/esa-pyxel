@@ -4,8 +4,7 @@
 #  is part of this Pyxel package. No part of the package, including
 #  this file, may be copied, modified, propagated, or distributed except according to
 #  the terms contained in the file ‘LICENCE.txt’.
-#
-#
+
 
 from pathlib import Path
 from typing import Sequence
@@ -122,7 +121,6 @@ def test_persistence_valid(
     valid_density_map_path: str,
     valid_capacity_map_path: str,
 ):
-
     detector = cmos_5x5
 
     assert not detector.has_persistence()
@@ -167,7 +165,6 @@ def test_persistence_invalid(
     exp_error,
     exp_msg,
 ):
-
     detector = cmos_5x5
 
     with pytest.raises(exp_error, match=exp_msg):

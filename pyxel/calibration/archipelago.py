@@ -317,7 +317,6 @@ class MyArchipelago:
             unit=" generations",
             disable=not self.with_bar,
         ) as progress:
-
             champions_lst: List[xr.Dataset] = []
             # Run an evolution im the archipelago several times
             for id_evolution in range(num_evolutions):

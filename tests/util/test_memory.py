@@ -4,8 +4,7 @@
 #  is part of this Pyxel package. No part of the package, including
 #  this file, may be copied, modified, propagated, or distributed except according to
 #  the terms contained in the file ‘LICENCE.txt’.
-#
-#
+
 
 import sys
 
@@ -29,7 +28,6 @@ def test_invalid_attribute(CCD_empty):
     sys.version_info < (3, 8), reason="Different value for older versions."
 )
 def test_memory_usage(CCD_empty):
-
     attributes = [
         "_photon",
         "_charge",

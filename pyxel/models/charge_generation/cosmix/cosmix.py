@@ -141,7 +141,6 @@ def cosmix(
             cosmix.set_geant4()
             cosmix.run()
         elif running_mode == "plotting":
-
             plot_obj = PlottingCosmix(cosmix, save_plots=True, draw_plots=True)
 
             plot_obj.plot_flux_spectrum()

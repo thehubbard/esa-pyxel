@@ -242,7 +242,6 @@ class DetectionPipeline:
         for group_name in self.model_group_names:
             model_group: ModelGroup = getattr(self, group_name)
             if model_group:
-
                 model: ModelFunction
                 for model in model_group.models:
                     if name == model.name:

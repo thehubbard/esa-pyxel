@@ -233,7 +233,6 @@ class Observation:
                     parameter_dict[key] = row[i]
 
                 elif isinstance(step.values, Sequence):
-
                     values: np.ndarray = np.array(step.values)
                     values_flattened = values.flatten()
 
@@ -415,7 +414,6 @@ class Observation:
         """
         step: ParameterValues
         for step in self.enabled_steps:
-
             key: str = step.key
             if not processor.has(key):
                 raise KeyError(f"Missing parameter: {key!r} in steps.")
@@ -469,7 +467,6 @@ class Observation:
         times = self.readout.times
 
         if self.parameter_mode == ParameterMode.Product:
-
             apply_pipeline = partial(
                 self._apply_exposure_pipeline_product,
                 dimension_names=dim_names,
@@ -543,7 +540,6 @@ class Observation:
             return result
 
         elif self.parameter_mode == ParameterMode.Sequential:
-
             apply_pipeline = partial(
                 self._apply_exposure_pipeline_sequential,
                 dimension_names=dim_names,
@@ -626,7 +622,6 @@ class Observation:
             return result
 
         elif self.parameter_mode == ParameterMode.Custom:
-
             apply_pipeline = partial(
                 self._apply_exposure_pipeline_custom,
                 x=x,
@@ -689,7 +684,6 @@ class Observation:
         times: np.ndarray,
         types: Mapping[str, ParameterType],
     ):
-
         index, parameter_dict, n = index_and_parameter
 
         new_processor = create_new_processor(
@@ -741,7 +735,6 @@ class Observation:
         y: range,
         times: np.ndarray,
     ):
-
         index, parameter_dict, n = index_and_parameter
 
         new_processor = create_new_processor(
@@ -788,7 +781,6 @@ class Observation:
         times: np.ndarray,
         types: Mapping[str, ParameterType],
     ):
-
         index, parameter_dict, n = index_and_parameter
 
         new_processor = create_new_processor(
@@ -1054,7 +1046,6 @@ def _add_product_parameters(
     """
     # TODO: Implement for coordinate 'multi'
     for i, (coordinate_name, param_value) in enumerate(parameter_dict.items()):
-
         short_name: str = dimension_names[coordinate_name]
 
         #  assigning the right coordinates based on type

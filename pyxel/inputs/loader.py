@@ -83,7 +83,6 @@ def load_image(filename: Union[str, Path]) -> np.ndarray:
 
     if suffix.startswith(".fits"):
         with fsspec.open(url_path, mode="rb", **extras) as file_handler:
-
             from astropy.io import fits  # Late import to speed-up general import time
 
             with BytesIO(file_handler.read()) as content:

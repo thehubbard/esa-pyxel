@@ -4,8 +4,8 @@
 #  is part of this Pyxel package. No part of the package, including
 #  this file, may be copied, modified, propagated, or distributed except according to
 #  the terms contained in the file ‘LICENCE.txt’.
-#
-#
+
+
 """Single outputs."""
 
 from pathlib import Path
@@ -70,18 +70,14 @@ class ExposureOutputs(Outputs):
         save_methods: Dict[str, SaveToFile] = {"nc": self.save_to_netcdf}
 
         if self.save_exposure_data is not None:
-
             dct: Mapping[str, Sequence[str]]
             for dct in self.save_exposure_data:
-
                 first_item, *_ = dct.items()
                 obj, format_list = first_item
 
                 if obj == "dataset":
-
                     if format_list is not None:
                         for out_format in format_list:
-
                             if out_format not in save_methods:
                                 raise ValueError(
                                     "Format " + out_format + " not a valid save method!"

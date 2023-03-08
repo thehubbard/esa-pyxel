@@ -59,7 +59,6 @@ def ktc_noise(
     """
     with set_random_seed(seed):
         if node_capacitance is not None:
-
             if node_capacitance <= 0:
                 raise ValueError("Node capacitance should be larger than 0!")
 

@@ -32,7 +32,6 @@ class Charge:
     )
 
     def __init__(self, geo: "Geometry"):
-
         self._array: np.ndarray = np.zeros((geo.row, geo.col), dtype=self.EXP_TYPE)
         self._geo = geo
         self.nextid: int = 0

@@ -14,7 +14,6 @@ from pyxel.models.charge_generation.charge_deposition import simulate_charge_dep
 
 
 def test_simulate_charge_deposition_number_of_particles() -> None:
-
     flux = 0
     exposure = 1
     x_lim = 50
@@ -54,7 +53,6 @@ def test_simulate_charge_deposition_number_of_particles() -> None:
 
 @pytest.mark.parametrize("x_lim,y_lim,z_lim", [(-1, 2, 4), (2, -1, 4), (2, 1, -4)])
 def test_simulate_charge_deposition_sampling_argument(x_lim, y_lim, z_lim) -> None:
-
     flux = 1
     exposure = 1
     step_size = 1
