@@ -293,7 +293,7 @@ class MyArchipelago:
 
         Parameters
         ----------
-        sampling
+        readout
         num_evolutions : int
             Number of time to run the evolutions.
         num_best_decisions : int or None, optional.
@@ -306,7 +306,8 @@ class MyArchipelago:
         """
         self._log.info("Run %i evolutions", num_evolutions)
         logs = ArchipelagoLogs(
-            algo_type=self.algorithm.type, num_generations=self.algorithm.generations
+            algo_type=self.algorithm.type,
+            num_generations=self.algorithm.generations,
         )
 
         total_num_generations = num_evolutions * self.algorithm.generations
@@ -350,7 +351,7 @@ class MyArchipelago:
                     all_champions = partial_champions
 
                 champions_lst.append(
-                    all_champions.assign_coords(evolution=id_evolution)
+                    all_champions.expand_dims(evolution=[id_evolution], axis=1)
                 )
 
         champions: xr.Dataset = xr.concat(champions_lst, dim="evolution")
@@ -414,7 +415,11 @@ class MyArchipelago:
         ds.attrs["num_evolutions"] = num_evolutions
         ds.attrs["generations"] = self.algorithm.generations
 
-        ds = ds.assign_coords({"param_id": range(ds.dims["param_id"])})
+        ds = ds.assign_coords(
+            param_id=range(ds.dims["param_id"]),
+            island=range(1, self.num_islands + 1),
+            evolution=range(1, num_evolutions + 1),
+        )
 
         return ds, df_results, df_all_logs
 
@@ -439,7 +444,6 @@ class MyArchipelago:
         """
         # Get fitness and decision vectors of the num_islands' champions
         champions_1d_fitness: ArrayLike = self._pygmo_archi.get_champions_f()
-
         champions_1d_decision: ArrayLike = self._pygmo_archi.get_champions_x()
 
         # Get the champions as a Dataset
