@@ -70,6 +70,8 @@ parameters:
   (See [!613](https://gitlab.com/esa/pyxel/-/merge_requests/613)).
 * Check that in exposure readout time is strictly increasing.
   (See [!516](https://gitlab.com/esa/pyxel/-/merge_requests/516)).
+* Improve Calibration Dataset output.
+  (See [!624](https://gitlab.com/esa/pyxel/-/merge_requests/624)).
 
 ### Documentation
 * Use 'Sphinx 5' and 'Sphinx Book Theme 1'.
