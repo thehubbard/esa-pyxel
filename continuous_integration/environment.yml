@@ -26,10 +26,10 @@ dependencies:
   - pip
 # Scientific computing
   - numba
-  - numpy>=1.20
+  - numpy>=1.21
   - pandas
   - scipy
-  - xarray>=0.19
+  - xarray>=2022.06
 # Plotting
   - matplotlib>=3.1
   - seaborn

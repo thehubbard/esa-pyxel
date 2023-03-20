@@ -32,6 +32,7 @@ if TYPE_CHECKING:
     from pyxel.outputs import CalibrationOutputs, ExposureOutputs, ObservationOutputs
 
 
+# TODO: This function will be deprecated (see #563)
 def exposure_mode(
     exposure: "Exposure",
     detector: Detector,
@@ -96,6 +97,7 @@ def exposure_mode(
     return result
 
 
+# TODO: This function will be deprecated (see #563)
 def observation_mode(
     observation: "Observation",
     detector: Detector,
@@ -155,6 +157,7 @@ def observation_mode(
     return result
 
 
+# TODO: This function will be deprecated (see #563)
 def calibration_mode(
     calibration: "Calibration",
     detector: Detector,
@@ -304,6 +307,127 @@ def calibration_mode(
     return result
 
 
+def _run_calibration_mode(
+    calibration: "Calibration",
+    detector: Detector,
+    pipeline: "DetectionPipeline",
+) -> "xr.Dataset":
+    logging.info("Mode: Calibration")
+
+    calibration_outputs: CalibrationOutputs = calibration.outputs
+    detector.set_output_dir(calibration_outputs.output_dir)  # TODO: Remove this
+
+    processor = Processor(detector=detector, pipeline=pipeline)
+
+    ds = calibration.run_calibration_new(
+        processor=processor,
+        output_dir=calibration_outputs.output_dir,
+    )
+
+    return ds
+
+
+def _run_observation_mode(
+    observation: Observation,
+    detector: Detector,
+    pipeline: DetectionPipeline,
+) -> "xr.Dataset":
+    logging.info("Mode: Observation")
+
+    observation_outputs: ObservationOutputs = observation.outputs
+    detector.set_output_dir(observation_outputs.output_dir)  # TODO: Remove this
+
+    processor = Processor(detector=detector, pipeline=pipeline)
+
+    ds = observation.run_observation_new(processor=processor)
+
+    if observation_outputs.save_observation_data:
+        raise NotImplementedError
+    #     observation_outputs.save_observation_datasets(
+    #         result=result, mode=observation.parameter_mode
+    #     )
+
+    return ds
+
+
+def run_mode(
+    mode: Union[Exposure, Observation, "Calibration"],
+    detector: Detector,
+    pipeline: DetectionPipeline,
+) -> "xr.Dataset":
+    """Run a pipeline.
+
+    Parameters
+    ----------
+    mode : Exposure, Observation or Calibration
+        Mode to execute.
+    detector : Detector
+        This object is the container for all the data used for the models.
+    pipeline : DetectionPipeline
+        This is the core algorithm of Pyxel. This pipeline contains all the models to run.
+
+    Returns
+    -------
+    Dataset
+        Multi-dimensional result.
+
+    Raises
+    ------
+    TypeError
+        Raised if the ``mode`` is not valid.
+
+    Examples
+    --------
+    Load a configuration file
+
+    >>> import pyxel
+    >>> config = pyxel.load("configuration.yaml")
+    >>> config
+
+     Run a pipeline
+
+    >>> data = pyxel.run_mode(
+    ...     mode=config.exposure,
+    ...     detector=config.detector,
+    ...     pipeline=config.pipeline,
+    ... )
+    >>> data
+    <xarray.Dataset>
+    Dimensions:       (readout_time: 1, y: 450, x: 450)
+    Coordinates:
+      * readout_time  (readout_time) int64 1
+      * y             (y) int64 0 1 2 3 4 5 6 7 ... 442 443 444 445 446 447 448 449
+      * x             (x) int64 0 1 2 3 4 5 6 7 ... 442 443 444 445 446 447 448 449
+    Data variables:
+        image         (readout_time, y, x) uint16 9475 9089 8912 ... 9226 9584 10079
+        signal        (readout_time, y, x) float64 3.159 3.03 2.971 ... 3.195 3.36
+        pixel         (readout_time, y, x) float64 1.053e+03 1.01e+03 ... 1.12e+03
+    """
+    from pyxel.calibration import Calibration
+
+    if isinstance(mode, Exposure):
+        ds = exposure_mode(exposure=mode, detector=detector, pipeline=pipeline)
+
+    elif isinstance(mode, Observation):
+        ds = _run_observation_mode(
+            observation=mode,
+            detector=detector,
+            pipeline=pipeline,
+        )
+
+    elif isinstance(mode, Calibration):
+        ds = _run_calibration_mode(
+            calibration=mode,
+            detector=detector,
+            pipeline=pipeline,
+        )
+
+    else:
+        raise TypeError("Please provide a valid simulation mode !")
+
+    return ds
+
+
 def output_directory(configuration: Configuration) -> Path:
     """Return the output directory from the configuration.
 
@@ -362,32 +486,10 @@ def run(input_filename: Union[str, Path], random_seed: Optional[int] = None) -> 
     detector: Union[CCD, CMOS, MKID, APD] = configuration.detector
     running_mode: Union[Exposure, Observation, Calibration] = configuration.running_mode
 
-    if isinstance(running_mode, Exposure):
-        exposure_mode(
-            exposure=running_mode,
-            detector=detector,
-            pipeline=pipeline,
-        )
-
-    elif isinstance(running_mode, Calibration):
-        _ = calibration_mode(
-            calibration=running_mode,
-            detector=detector,
-            pipeline=pipeline,
-        )
-
-    elif isinstance(running_mode, Observation):
-        observation_mode(
-            observation=running_mode,
-            detector=detector,
-            pipeline=pipeline,
-        )
-
-    else:
-        raise NotImplementedError("Please provide a valid simulation mode !")
+    _ = run_mode(mode=running_mode, detector=detector, pipeline=pipeline)
 
     logging.info("Pipeline completed.")
-    logging.info("Running time: %.3f seconds" % (time.time() - start_time))
+    logging.info("Running time: %.3f seconds", (time.time() - start_time))
     # Closing the logger in order to be able to move the file in the output dir
     logging.shutdown()
     outputs.save_log_file(output_dir)

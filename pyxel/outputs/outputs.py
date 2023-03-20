@@ -69,6 +69,7 @@ class Outputs:
     ):
         self._log = logging.getLogger(__name__)
 
+        # TODO: Refactor this. See #566
         self.output_dir: Path = create_output_directory(output_folder)
 
         # TODO: Not related to a plot. Use by 'single' and 'parametric' modes.
@@ -357,7 +358,7 @@ class Outputs:
                 format_list: Sequence[ValidFormat]
                 obj, format_list = first_item
 
-                data: np.ndarray = processor.get(obj)
+                data: np.ndarray = np.array(processor.get(obj))
 
                 if prefix:
                     name: str = f"{prefix}_{obj}"

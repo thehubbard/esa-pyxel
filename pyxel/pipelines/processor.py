@@ -11,7 +11,16 @@ import operator
 from copy import deepcopy
 from enum import Enum
 from numbers import Number
-from typing import TYPE_CHECKING, Callable, List, Literal, Optional, Sequence, Union
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Callable,
+    List,
+    Literal,
+    Optional,
+    Sequence,
+    Union,
+)
 
 import numpy as np
 
@@ -87,16 +96,13 @@ class Processor:
     # TODO: Could it be renamed '__contains__' ?
     # TODO: reimplement this method.
     def has(self, key: str) -> bool:
-        """TBW.
+        """Check if a parameter is available in this Processor.
 
-        Parameters
-        ----------
-        key : str
-
-        Returns
-        -------
-        bool
-            TBW.
+        Examples
+        --------
+        >>> processor = Processor(...)
+        >>> processor.has("pipeline.photon_collection.illumination.arguments.level")
+        True
         """
         found = False
         obj, att = get_obj_att(self, key)
@@ -110,23 +116,21 @@ class Processor:
     # TODO: Is it really needed ?
     # TODO: What are the valid keys ? (e.g. 'detector.image.array',
     #       'detector.signal.array' and 'detector.pixel.array')
-    def get(self, key: str) -> np.ndarray:
-        """TBW.
+    def get(self, key: str) -> Any:
+        """Get the current value from a Parameter.
 
-        Parameters
-        ----------
-        key : str
-
-        Returns
-        -------
-        TBW.
+        Examples
+        --------
+        >>> processor = Processor()
+        >>> processor.get("pipeline.photon_collection.illumination.arguments.level")
+        array(0.)
+        >>> processor.get("pipeline.characteristics.quantum_efficiency")
+        array(0.1)
         """
-        # return get_value(self, key)
-
         func: Callable = operator.attrgetter(key)
         result = func(self)
 
-        return np.asarray(result, dtype=float)
+        return result
 
     # TODO: Could it be renamed '__setitem__' ?
     def set(
