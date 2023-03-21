@@ -120,7 +120,10 @@ def test_is_equal_with_arrays(valid_mkid: MKID):
     valid_mkid.phase.array = phase.copy()
 
     valid_mkid.charge._array = charge.copy()
-    valid_mkid.charge._frame.append({"charge": 1}, ignore_index=True)
+    valid_mkid.charge._frame = pd.concat(
+        [valid_mkid.charge._frame, pd.DataFrame({"charge": [1]})],
+        ignore_index=True,
+    )
 
     other_detector.photon.array = photon.copy()
     other_detector.pixel.array = pixel.copy()
@@ -129,7 +132,10 @@ def test_is_equal_with_arrays(valid_mkid: MKID):
     other_detector.phase.array = phase.copy()
 
     other_detector.charge._array = charge.copy()
-    other_detector.charge._frame.append({"charge": 1}, ignore_index=True)
+    other_detector.charge._frame = pd.concat(
+        [other_detector.charge._frame, pd.DataFrame({"charge": [1]})],
+        ignore_index=True,
+    )
 
     assert valid_mkid == other_detector
 

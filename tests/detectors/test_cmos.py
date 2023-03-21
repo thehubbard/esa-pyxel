@@ -119,7 +119,10 @@ def test_is_equal_with_arrays(valid_cmos: CMOS):
     valid_cmos.image.array = image.copy()
 
     valid_cmos.charge._array = charge.copy()
-    valid_cmos.charge._frame.append({"charge": 1}, ignore_index=True)
+    valid_cmos.charge._frame = pd.concat(
+        [valid_cmos.charge._frame, pd.DataFrame({"charge": [1]})],
+        ignore_index=True,
+    )
 
     other_detector.photon.array = photon.copy()
     other_detector.pixel.array = pixel.copy()
@@ -127,7 +130,9 @@ def test_is_equal_with_arrays(valid_cmos: CMOS):
     other_detector.image.array = image.copy()
 
     other_detector.charge._array = charge.copy()
-    other_detector.charge._frame.append({"charge": 1}, ignore_index=True)
+    other_detector.charge._frame = pd.concat(
+        [other_detector.charge._frame, pd.DataFrame({"charge": [1]})], ignore_index=True
+    )
 
     assert valid_cmos == other_detector
 
