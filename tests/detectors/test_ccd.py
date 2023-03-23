@@ -122,8 +122,9 @@ def test_is_equal_with_arrays(valid_ccd: CCD):
     valid_ccd.image.array = image_2d.copy()
 
     valid_ccd.charge._array = charge_2d.copy()
-    valid_ccd.charge._frame = valid_ccd.charge._frame.append(
-        {"charge": 1}, ignore_index=True
+    valid_ccd.charge._frame = pd.concat(
+        [valid_ccd.charge._frame, pd.DataFrame({"charge": [1]})],
+        ignore_index=True,
     )
 
     other_detector.photon.array = photon_2d.copy()
@@ -132,8 +133,9 @@ def test_is_equal_with_arrays(valid_ccd: CCD):
     other_detector.image.array = image_2d.copy()
 
     other_detector.charge._array = charge_2d.copy()
-    other_detector.charge._frame = other_detector.charge._frame.append(
-        {"charge": 1}, ignore_index=True
+    other_detector.charge._frame = pd.concat(
+        [other_detector.charge._frame, pd.DataFrame({"charge": [1]})],
+        ignore_index=True,
     )
 
     assert valid_ccd == other_detector

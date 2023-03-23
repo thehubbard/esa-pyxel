@@ -175,7 +175,7 @@ def load_table(
             table = pd.read_excel(
                 file_handler,
                 header=0 if header else None,
-                convert_float=False,
+                dtype=float,
             )
 
     elif suffix.startswith((".txt", ".data", ".csv")):
