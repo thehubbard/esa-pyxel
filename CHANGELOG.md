@@ -84,6 +84,8 @@ parameters:
 ### Documentation
 * Use 'Sphinx 5' and 'Sphinx Book Theme 1'.
   (See [!621](https://gitlab.com/esa/pyxel/-/merge_requests/621)).
+* Update links in Documentation Tutorials & Examples
+  (See [!628](https://gitlab.com/esa/pyxel/-/merge_requests/628)).
 
 ### Models
 
