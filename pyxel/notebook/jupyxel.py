@@ -163,6 +163,8 @@ def display_detector(detector: "Detector") -> "Layout":
         det["Input"] = detector.input_image
     if detector._photon is not None:
         det["Photon"] = detector.photon.array
+    if detector._charge is not None:
+        det["Charge"] = detector.charge.array
     if detector._pixel is not None:
         det["Pixel"] = detector.pixel.array
     if detector._signal is not None:
