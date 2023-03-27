@@ -37,7 +37,11 @@ if TYPE_CHECKING:
 
 
 ValidName = Literal[
-    "detector.image.array", "detector.signal.array", "detector.pixel.array"
+    "detector.photon.array",
+    "detector.charge.array",
+    "detector.pixel.array",
+    "detector.signal.array",
+    "detector.image.array",
 ]
 ValidFormat = Literal["fits", "hdf", "npy", "txt", "csv", "png"]
 

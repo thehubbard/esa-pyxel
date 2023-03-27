@@ -258,19 +258,27 @@ class Processor:
 
         lst: List[xr.DataArray] = []
 
-        key: Literal["image", "signal", "pixel"]
+        key: Literal["photon", "charge", "pixel", "signal", "image"]
         for key in result_keys(result_type):
-            if key == "image":
-                standard_name: str = "Image"
-                unit: str = "adu"
-            elif key == "signal":
-                standard_name = "Signal"
-                unit = "volt"
+            if key == "photon":
+                standard_name = "Photon"
+                unit = "photon"
+            elif key == "charge":
+                standard_name = "Charge"
+                unit = "electron"
             elif key == "pixel":
                 standard_name = "Pixel"
                 unit = "electron"
+            elif key == "signal":
+                standard_name = "Signal"
+                unit = "volt"
+            elif key == "image":
+                standard_name: str = "Image"
+                unit: str = "adu"
             else:
                 raise NotImplementedError
+                standard_name = key
+                unit = ""
 
             da = xr.DataArray(
                 self.result[key],
