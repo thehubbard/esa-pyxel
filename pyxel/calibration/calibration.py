@@ -468,7 +468,7 @@ class Calibration:
         )
 
         # Run several evolutions in the archipelago
-        ds, df_processors, df_all_logs = my_archipelago.run_evolve(
+        ds, _, _ = my_archipelago.run_evolve(
             readout=self.readout,
             num_evolutions=self._num_evolutions,
             num_best_decisions=self._num_best_decisions,
@@ -477,24 +477,8 @@ class Calibration:
         ds.attrs["topology"] = self.topology
         ds.attrs["result_type"] = str(fitting.sim_output)
 
-        ds_best_fitness_per_gen = (
-            df_all_logs.rename(
-                columns={
-                    "id_island": "island",
-                    "id_evolution": "evolution",
-                    "best_fitness": "best_fitness_per_gen",
-                }
-            )
-            .set_index(["evolution", "island", "num_generations"])[
-                ["best_fitness_per_gen"]
-            ]
-            .to_xarray()
-        )
-
-        new_ds = ds.merge(ds_best_fitness_per_gen)
-
         self._log.info("Calibration ended.")
-        return new_ds
+        return ds
 
     def post_processing(
         self,
