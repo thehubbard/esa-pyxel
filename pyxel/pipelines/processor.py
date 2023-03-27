@@ -273,8 +273,8 @@ class Processor:
                 standard_name = "Signal"
                 unit = "volt"
             elif key == "image":
-                standard_name: str = "Image"
-                unit: str = "adu"
+                standard_name = "Image"
+                unit = "adu"
             else:
                 raise NotImplementedError
                 standard_name = key

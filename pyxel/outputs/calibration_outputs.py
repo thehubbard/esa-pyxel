@@ -25,7 +25,7 @@ from typing import (
 import pandas as pd
 from dask.delayed import Delayed, delayed
 
-from pyxel.outputs import Outputs
+from pyxel.outputs import Outputs, ValidFormat, ValidName
 
 if TYPE_CHECKING:
     import xarray as xr
@@ -36,17 +36,6 @@ if TYPE_CHECKING:
         def __call__(self, data: Any, name: str, with_auto_suffix: bool = True) -> Path:
             """TBW."""
             ...
-
-
-# Define type aliases
-ValidName = Literal[
-    "detector.photon.array",
-    "detector.charge.array",
-    "detector.pixel.array",
-    "detector.signal.array",
-    "detector.image.array",
-]
-ValidFormat = Literal["fits", "hdf", "npy", "txt", "csv", "png"]
 
 
 class CalibrationOutputs(Outputs):

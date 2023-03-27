@@ -23,7 +23,7 @@ from typing import (
 )
 
 from pyxel.observation import ParameterMode
-from pyxel.outputs import Outputs
+from pyxel.outputs import Outputs, ValidFormat, ValidName
 
 if TYPE_CHECKING:
     from pyxel.observation import ObservationResult
@@ -34,16 +34,6 @@ if TYPE_CHECKING:
         def __call__(self, data: Any, name: str, with_auto_suffix: bool = True) -> Path:
             """TBW."""
             ...
-
-
-ValidName = Literal[
-    "detector.photon.array",
-    "detector.charge.array",
-    "detector.pixel.array",
-    "detector.signal.array",
-    "detector.image.array",
-]
-ValidFormat = Literal["fits", "hdf", "npy", "txt", "csv", "png"]
 
 
 class ObservationOutputs(Outputs):

@@ -360,6 +360,7 @@ class Charge:
             self.add_charge_dataframe(charge_df)
 
     @property
+    # TODO : Try to optimize function
     def array(self) -> np.ndarray:
         """Get charge in a numpy array."""
         if not self._frame.empty:
