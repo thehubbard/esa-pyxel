@@ -39,15 +39,17 @@ if TYPE_CHECKING:
 class ResultType(Enum):
     """Result type class."""
 
-    Image = "image"
-    Signal = "signal"
+    Photon = "photon"
+    Charge = "charge"
     Pixel = "pixel"
+    Signal = "signal"
+    Image = "image"
     All = "all"
 
 
 def result_keys(
     result_type: ResultType = ResultType.All,
-) -> Sequence[Literal["image", "signal", "pixel"]]:
+) -> Sequence[Literal["photon", "charge", "pixel", "signal", "image"]]:
     """Return result keys based on result type.
 
     Parameters
@@ -58,14 +60,18 @@ def result_keys(
     -------
     list
     """
-    if result_type == ResultType.Image:
-        return ["image"]
-    elif result_type == ResultType.Signal:
-        return ["signal"]
+    if result_type == ResultType.Photon:
+        return ["photon"]
+    elif result_type == ResultType.Charge:
+        return ["charge"]
     elif result_type == ResultType.Pixel:
         return ["pixel"]
+    elif result_type == ResultType.Signal:
+        return ["signal"]
+    elif result_type == ResultType.Image:
+        return ["image"]
     elif result_type == ResultType.All:
-        return ["image", "signal", "pixel"]
+        return ["photon", "charge", "pixel", "signal", "image"]
     else:
         raise ValueError("Result type unknown.")
 
@@ -252,19 +258,27 @@ class Processor:
 
         lst: List[xr.DataArray] = []
 
-        key: Literal["image", "signal", "pixel"]
+        key: Literal["photon", "charge", "pixel", "signal", "image"]
         for key in result_keys(result_type):
-            if key == "image":
-                standard_name: str = "Image"
-                unit: str = "adu"
-            elif key == "signal":
-                standard_name = "Signal"
-                unit = "volt"
+            if key == "photon":
+                standard_name = "Photon"
+                unit = "photon"
+            elif key == "charge":
+                standard_name = "Charge"
+                unit = "electron"
             elif key == "pixel":
                 standard_name = "Pixel"
                 unit = "electron"
+            elif key == "signal":
+                standard_name = "Signal"
+                unit = "volt"
+            elif key == "image":
+                standard_name = "Image"
+                unit = "adu"
             else:
                 raise NotImplementedError
+                standard_name = key
+                unit = ""
 
             da = xr.DataArray(
                 self.result[key],
