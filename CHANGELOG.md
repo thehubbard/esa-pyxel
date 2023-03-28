@@ -77,7 +77,8 @@ parameters:
 * Improve Calibration Dataset output.
   (See [!624](https://gitlab.com/esa/pyxel/-/merge_requests/624)).
 * Add new function 'pyxel.run_mode'.
-  (See [!623](https://gitlab.com/esa/pyxel/-/merge_requests/623)).
+  (See [!623](https://gitlab.com/esa/pyxel/-/merge_requests/623) 
+  and [!630](https://gitlab.com/esa/pyxel/-/merge_requests/630)).
 * Fix warning message in Calibration.
   (See [!625](https://gitlab.com/esa/pyxel/-/merge_requests/625)).
 * Add charge detector bucket to xarray output when charge is not a dataframe.
