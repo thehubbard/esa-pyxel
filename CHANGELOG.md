@@ -82,7 +82,9 @@ parameters:
 * Fix warning message in Calibration.
   (See [!625](https://gitlab.com/esa/pyxel/-/merge_requests/625)).
 * Add charge detector bucket to xarray output when charge is not a dataframe.
-  (See [!629](https://gitlab.com/esa/pyxel/-/merge_requests/629))
+  (See [!629](https://gitlab.com/esa/pyxel/-/merge_requests/629)).
+* Add photon and charge buckets also to calibration mode.
+  (See [!632](https://gitlab.com/esa/pyxel/-/merge_requests/632)).
 
 ### Documentation
 * Use 'Sphinx 5' and 'Sphinx Book Theme 1'.
