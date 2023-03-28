@@ -126,36 +126,50 @@ def extract_data_3d(
     times: int,
     readout_times: np.ndarray,
 ) -> xr.Dataset:
-    """Extract 'image', 'signal' and 'pixel' arrays from several delayed dynamic results."""
+    """Extract 'photon', 'charge', 'pixel', 'signal' and 'image' arrays from several delayed dynamic results."""
     lst: List[xr.Dataset] = []
     for _, row in df_results.iterrows():
         island: int = row["island"]
         id_processor: int = row["id_processor"]
         result: Mapping[str, Delayed] = row["processor"].result
 
-        image_delayed: Delayed = result["image"]
-        signal_delayed: Delayed = result["signal"]
+        photon_delayed: Delayed = result["photon"]
+        charge_delayed: Delayed = result["charge"]
         pixel_delayed: Delayed = result["pixel"]
+        signal_delayed: Delayed = result["signal"]
+        image_delayed: Delayed = result["image"]
 
-        image_3d = da.from_delayed(
-            image_delayed, shape=(times, rows, cols), dtype=float
+        photon_3d = da.from_delayed(
+            photon_delayed, shape=(times, rows, cols), dtype=float
         )
-        signal_3d = da.from_delayed(
-            signal_delayed, shape=(times, rows, cols), dtype=float
+        charge_3d = da.from_delayed(
+            charge_delayed, shape=(times, rows, cols), dtype=float
         )
         pixel_3d = da.from_delayed(
             pixel_delayed, shape=(times, rows, cols), dtype=float
         )
+        signal_3d = da.from_delayed(
+            signal_delayed, shape=(times, rows, cols), dtype=float
+        )
+        image_3d = da.from_delayed(
+            image_delayed, shape=(times, rows, cols), dtype=float
+        )
 
         partial_ds = xr.Dataset()
-        partial_ds["simulated_image"] = xr.DataArray(
-            image_3d, dims=["readout_time", "y", "x"]
+        partial_ds["simulated_photon"] = xr.DataArray(
+            photon_3d, dims=["readout_time", "y", "x"]
+        )
+        partial_ds["simulated_charge"] = xr.DataArray(
+            charge_3d, dims=["readout_time", "y", "x"]
+        )
+        partial_ds["simulated_pixel"] = xr.DataArray(
+            pixel_3d, dims=["readout_time", "y", "x"]
         )
         partial_ds["simulated_signal"] = xr.DataArray(
             signal_3d, dims=["readout_time", "y", "x"]
         )
-        partial_ds["simulated_pixel"] = xr.DataArray(
-            pixel_3d, dims=["readout_time", "y", "x"]
+        partial_ds["simulated_image"] = xr.DataArray(
+            image_3d, dims=["readout_time", "y", "x"]
         )
 
         lst.append(
