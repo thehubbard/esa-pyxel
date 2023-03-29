@@ -478,17 +478,20 @@ def save_log_file(output_dir: Path) -> None:
     log_file.rename(new_log_filename)
 
 
-def create_output_directory(output_folder: Union[str, Path], custom_dir_name: [str]) -> Path:
+def create_output_directory(
+    output_folder: Union[str, Path], custom_dir_name: Optional[str] = None
+) -> Path:
     """Create output directory in the output folder.
 
     Parameters
     ----------
-    custom_dir_name
     output_folder: str or Path
+    custom_dir_name
 
     Returns
     -------
-    output_dir: Path
+    Path
+        Output dir.
     """
 
     add = ""
@@ -496,14 +499,14 @@ def create_output_directory(output_folder: Union[str, Path], custom_dir_name: [s
 
     while True:
         try:
-            if custom_dir_name == "":
+            if not custom_dir_name:
                 output_dir: Path = (
                     Path(output_folder)
                     .joinpath("run_" + strftime("%Y%m%d_%H%M%S") + add)
                     .resolve()
                 )
             else:
-                output_dir: Path = (
+                output_dir = (
                     Path(output_folder)
                     .joinpath(custom_dir_name + strftime("%Y%m%d_%H%M%S") + add)
                     .resolve()

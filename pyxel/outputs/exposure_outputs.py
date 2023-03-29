@@ -47,7 +47,7 @@ class ExposureOutputs(Outputs):
     ):
         super().__init__(
             output_folder=output_folder,
-            custom_dir_name=custom_dir_name ,
+            custom_dir_name=custom_dir_name,
             save_data_to_file=save_data_to_file,
         )
 
