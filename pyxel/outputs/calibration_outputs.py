@@ -46,7 +46,7 @@ class CalibrationOutputs(Outputs):
         Folder where sub-folder(s) that will be created to save data buckets.
     custom_dir_name : str, optional
         Prefix of the sub-folder name that will be created in the 'output_folder' folder.
-        The default prefix is 'run_'.
+        The default prefix is `run_`.
     save_data_to_file : Dict
         Dictionary where key is a 'data bucket' name (e.g. 'detector.photon.array') and value
         is the data format (e.g. 'fits').
