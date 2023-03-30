@@ -61,8 +61,24 @@ ValidName = Literal[
 ValidFormat = Literal["fits", "hdf", "npy", "txt", "csv", "png", "jpg", "jpeg"]
 
 
+# TODO: Create a new class that will contain the parameter 'save_data_to_file'
 class Outputs:
-    """TBW."""
+    """Collection of methods to save the data buckets from a Detector.
+
+    Parameters
+    ----------
+    output_folder : str or Path
+        Folder where sub-folder(s) that will be created to save data buckets.
+    custom_dir_name : str, optional
+        Prefix of the sub-folder name that will be created in the 'output_folder' folder.
+        The default prefix is 'run_'.
+    save_data_to_file : Dict
+        Dictionary where key is a 'data bucket' name (e.g. 'detector.photon.array') and value
+        is the data format (e.g. 'fits').
+
+        Example:
+        {'detector.photon.array': 'fits', 'detector.charge.array': 'hdf', 'detector.image.array':'png'}
+    """
 
     def __init__(
         self,
@@ -75,7 +91,9 @@ class Outputs:
         self._log = logging.getLogger(__name__)
 
         # TODO: Refactor this. See #566
-        self.output_dir: Path = create_output_directory(output_folder, custom_dir_name)
+        self.output_dir: Path = create_output_directory(
+            output_folder=output_folder, custom_dir_name=custom_dir_name
+        )
 
         # TODO: Not related to a plot. Use by 'single' and 'parametric' modes.
         self.save_data_to_file: Optional[
