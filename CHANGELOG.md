@@ -85,6 +85,8 @@ parameters:
   (See [!629](https://gitlab.com/esa/pyxel/-/merge_requests/629)).
 * Add photon and charge buckets also to calibration mode.
   (See [!632](https://gitlab.com/esa/pyxel/-/merge_requests/632)).
+* Ability to name the outputs instread of timestamp directory creation.
+  (See [!211](https://gitlab.com/esa/pyxel/-/merge_requests/211)).
 
 ### Documentation
 * Use 'Sphinx 5' and 'Sphinx Book Theme 1'.

@@ -61,12 +61,29 @@ ValidName = Literal[
 ValidFormat = Literal["fits", "hdf", "npy", "txt", "csv", "png", "jpg", "jpeg"]
 
 
+# TODO: Create a new class that will contain the parameter 'save_data_to_file'
 class Outputs:
-    """TBW."""
+    """Collection of methods to save the data buckets from a Detector.
+
+    Parameters
+    ----------
+    output_folder : str or Path
+        Folder where sub-folder(s) that will be created to save data buckets.
+    custom_dir_name : str, optional
+        Prefix of the sub-folder name that will be created in the 'output_folder' folder.
+        The default prefix is `run_`.
+    save_data_to_file : Dict
+        Dictionary where key is a 'data bucket' name (e.g. 'detector.photon.array') and value
+        is the data format (e.g. 'fits').
+
+        Example:
+        {'detector.photon.array': 'fits', 'detector.charge.array': 'hdf', 'detector.image.array':'png'}
+    """
 
     def __init__(
         self,
         output_folder: Union[str, Path],
+        custom_dir_name: Optional[str] = "",
         save_data_to_file: Optional[
             Sequence[Mapping[ValidName, Sequence[ValidFormat]]]
         ] = None,
@@ -74,7 +91,9 @@ class Outputs:
         self._log = logging.getLogger(__name__)
 
         # TODO: Refactor this. See #566
-        self.output_dir: Path = create_output_directory(output_folder)
+        self.output_dir: Path = create_output_directory(
+            output_folder=output_folder, custom_dir_name=custom_dir_name
+        )
 
         # TODO: Not related to a plot. Use by 'single' and 'parametric' modes.
         self.save_data_to_file: Optional[
@@ -477,16 +496,20 @@ def save_log_file(output_dir: Path) -> None:
     log_file.rename(new_log_filename)
 
 
-def create_output_directory(output_folder: Union[str, Path]) -> Path:
+def create_output_directory(
+    output_folder: Union[str, Path], custom_dir_name: Optional[str] = None
+) -> Path:
     """Create output directory in the output folder.
 
     Parameters
     ----------
     output_folder: str or Path
+    custom_dir_name
 
     Returns
     -------
-    output_dir: Path
+    Path
+        Output dir.
     """
 
     add = ""
@@ -494,11 +517,18 @@ def create_output_directory(output_folder: Union[str, Path]) -> Path:
 
     while True:
         try:
-            output_dir: Path = (
-                Path(output_folder)
-                .joinpath("run_" + strftime("%Y%m%d_%H%M%S") + add)
-                .resolve()
-            )
+            if not custom_dir_name:
+                output_dir: Path = (
+                    Path(output_folder)
+                    .joinpath("run_" + strftime("%Y%m%d_%H%M%S") + add)
+                    .resolve()
+                )
+            else:
+                output_dir = (
+                    Path(output_folder)
+                    .joinpath(custom_dir_name + strftime("%Y%m%d_%H%M%S") + add)
+                    .resolve()
+                )
 
             output_dir.mkdir(parents=True, exist_ok=False)
 
