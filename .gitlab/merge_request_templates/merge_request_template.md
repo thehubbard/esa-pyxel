@@ -12,6 +12,11 @@ make it apparent that there's nothing to do.
  - [ ] Closes issue #xxxx
  - [ ] Added [**tests**](https://esa.gitlab.io/pyxel/doc/stable/references/contributing.html#running-the-test-suite) for change code
  - [ ] Updated [**documentation**](https://esa.gitlab.io/pyxel/doc/stable/references/contributing.html#contributing-to-the-documentation) for changed code
+ - [ ] **If a model is added/updated/removed** then
+   - [ ] Update documentation [**references/models**](https://esa.gitlab.io/pyxel/doc/stable/references/models.html)
+   - [ ] Update documentation [**background/detectors/CCD**](https://esa.gitlab.io/pyxel/doc/stable/background/detectors/ccd.html)
+   - [ ] Update documentation [**background/detectors/CMOS**](https://esa.gitlab.io/pyxel/doc/stable/background/detectors/cmos.html)
+   - ...
  - [ ] Documentation `.rst` files is written using [semantic newlines](https://sembr.org)
  - [ ] User visible changes (including notable bug fixes and possible deprecations) are 
        documented in `CHANGELOG.md`
