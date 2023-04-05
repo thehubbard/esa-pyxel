@@ -158,6 +158,7 @@ def comparison(dct, other_dct):
             "phase",
             "charge",
             "processed_data",
+            "data",
         }
     )
     np.testing.assert_equal(dct["data"]["photon"], other_dct["data"]["photon"])
@@ -238,12 +239,8 @@ def comparison(dct, other_dct):
                             dtype=float,
                         ),
                     },
-                    "processed_data": {
-                        "coords": {},
-                        "attrs": {},
-                        "dims": {},
-                        "data_vars": {},
-                    },
+                    "data": {},
+                    "processed_data": {},
                 },
             },
             id="Default Parameters",
@@ -315,12 +312,8 @@ def comparison(dct, other_dct):
                             dtype=float,
                         ),
                     },
-                    "processed_data": {
-                        "coords": {},
-                        "attrs": {},
-                        "dims": {},
-                        "data_vars": {},
-                    },
+                    "data": {},
+                    "processed_data": {},
                 },
             },
             id="MKID fully defined",
