@@ -35,6 +35,8 @@ Support for Python 3.8 has been dropped.
 ### Others
 * Remove support to Python 3.8.
   (See [!633](https://gitlab.com/esa/pyxel/-/merge_requests/633)).
+* Add units to data buckets in display detector.
+  (See [!641](https://gitlab.com/esa/pyxel/-/merge_requests/641)).
 
 
 ## 1.8 / 2023-03-30
