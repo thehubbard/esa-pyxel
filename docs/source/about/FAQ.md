@@ -4,7 +4,7 @@
 - [How to run Pyxel?](#how-to-run-pyxel)
 - [Is there a simple example of a configuration file?](#is-there-a-simple-example-of-a-configuration-file)
 - [Is there a way to add photons to a Detector directly from a file containing photons or pixel instead of converting from image in ADU to photons via the PTF?](#is-there-a-way-to-add-photons-to-a-detector-directly-from-a-file-containing-photons-or-pixel-instead-of-converting-from-image-in-adu-to-photons-via-the-ptf)
-- [Is there any way use Pyxel to produce a bias or dark image without including any image file?](#is-there-any-way-use-pyxel-to-produce-a-bias-or-dark-image-without-including-any-image-file)
+- [Is there any way to use Pyxel to produce a bias or dark image without including any image file?](#is-there-any-way-to-use-pyxel-to-produce-a-bias-or-dark-image-without-including-any-image-file)
 - [What are the different running modes in Pyxel?](#what-are-the-different-running-modes-in-pyxel)
 - [What detectors types are implemented in Pyxel?](#what-detectors-types-are-implemented-in-pyxel)
 - [What is the easiest way to get the signal to noise ratio from the detector data buckets?](#what-is-the-easiest-way-to-get-the-signal-to-noise-ratio-from-the-detector-data-buckets)
@@ -38,7 +38,7 @@ Look in the documentation to know [how to run Pyxel](https://esa.gitlab.io/pyxel
 ## Is there a simple example of a configuration file?
 
 There are a couple of models that are required in the pipeline to get an image in the end.  
-One have to make use of simple models in the pipeline that the conversion **photon->charge->pixel->signal->image** is happening.
+One has to make use of simple models in the pipeline that the conversion **photon->charge->pixel->signal->image** is happening.
 
 A simple pipeline example of a configuration yaml file in exposure mode can be found here: 
 [simple_exposure.yaml](https://gitlab.com/esa/pyxel-data/-/blob/master/examples/exposure/simple_exposure.yaml).
@@ -51,7 +51,7 @@ You can set the argument 'convert_to_photons' to false, and it will use your inp
 See [here](https://esa.gitlab.io/pyxel/doc/stable/references/model_groups/photon_collection_models.html#load-image) for more details.
 
 <a name="is-there-any-way-use-pyxel-to-produce-a-bias-or-dark-image-without-including-any-image-file"></a>
-## Is there any way use Pyxel to produce a bias or dark image without including any image file?
+## Is there any way to use Pyxel to produce a bias or dark image without including any image file?
 
 Without the models in the pipeline, Pyxel will still run, but will generate nothing, so just zero arrays. 
 Dark image for example would be generated using a dark current model in charge_generation. 
