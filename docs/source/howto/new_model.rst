@@ -100,12 +100,11 @@ Best Practices
 Write models as pairs of pure and impure functions
 --------------------------------------------------
 
-**EDIT: (HS writes) below is a run-on sentence and very difficult to decipher. Rewrite.**
-
 If a model is changing one of the data structures stored in the :py:class:`~pyxel.detectors.Detector` object,
-when possible it is better to write the model as a pair of an impure function
-that changes the state of the :py:class:`~pyxel.detectors.Detector` object and pure function
-that does the actual calculation without changing the state of input arguments.
+then it is advised to write the model as a pair of functions:
+one as an impure function that changes the state of the :py:class:`~pyxel.detectors.Detector` object;
+the other as a pure function that does the actual calculations without changing the state of the input arguments.
+
 More info on pure and impure functions: https://en.wikipedia.org/wiki/Pure_function,
 https://alvinalexander.com/scala/fp-book/benefits-of-pure-functions/.
 
