@@ -131,7 +131,7 @@ class Processor:
         return result
 
     # TODO: Could it be renamed '__setitem__' ?
-    def set(
+    def set(  # noqa: A003
         self,
         key: str,
         value: Union[str, Number, np.ndarray, list[Union[str, Number, np.ndarray]]],

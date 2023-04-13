@@ -49,7 +49,10 @@ def compute_gaussian_noise(array: np.ndarray) -> np.ndarray:
     return output
 
 
-def compute_noise(array: np.ndarray, type: str = "poisson") -> np.ndarray:
+def compute_noise(
+    array: np.ndarray,
+    type: str = "poisson",  # noqa: A002
+) -> np.ndarray:
     """Compute shot noise for an input array. It can be either Poisson noise or Gaussian.
 
     Parameters
@@ -76,7 +79,7 @@ def compute_noise(array: np.ndarray, type: str = "poisson") -> np.ndarray:
 
 def shot_noise(
     detector: Detector,
-    type: Literal["poisson", "normal"] = "poisson",
+    type: Literal["poisson", "normal"] = "poisson",  # noqa: A002
     seed: Optional[int] = None,
 ) -> None:
     """Add shot noise to the flux of photon per pixel. It can be either Poisson noise or Gaussian.

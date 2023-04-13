@@ -221,18 +221,23 @@ ignore = [
     "D103",     # Missing docstring in public function
     "D105",     # Missing docstring in magic method
     "D202",     # No blank lines
+    "RUF002",   # Docstring contains ambiguous unicode character
+    "RUF003",   # ambiguous unicode character
 ]
 select = [
+    "A",        # flake8-builtins
     "B",        # flake8-bugbear
     "E",        # pycodestyle
     "F",        # pyflakes
     "D",        # pydocstyle
     # "SIM",      # flake8-simplify
     "W",        # pycodestyle
-    "PD",       # pandas-vet
+    # "PD",       # pandas-vet
+    # "S",        # bandit
+    "RUF",      # Ruff-specific rules
 ]
 
-exclude = ["_TEMPLATE.py"]
+exclude = ["_TEMPLATE.py", "_version.py"]
 
 [tool.ruff.pydocstyle]
 convention = "numpy"

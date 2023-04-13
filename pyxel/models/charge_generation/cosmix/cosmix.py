@@ -9,8 +9,6 @@
 
 import logging
 import math
-
-# noqa: F401
 from pathlib import Path
 from typing import Literal, Optional, Union
 

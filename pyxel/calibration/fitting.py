@@ -194,7 +194,9 @@ class ModelFitting(ProblemSingleObjective):
                 cols=cols,
             )
             self.targ_fit_range = list_to_slice(target_fit_range)
-            out_fit_range = [None, None] + out_fit_range  # type: ignore
+
+            # TODO: remove 'type: ignore' and fix the issue
+            out_fit_range = [None, None, *out_fit_range]  # type: ignore
             self.sim_fit_range = list_to_3d_slice(out_fit_range)
 
             target_2d: np.ndarray

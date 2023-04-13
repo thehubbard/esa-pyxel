@@ -286,7 +286,7 @@ class Observation:
 
                     value: Sequence[Union[Number, str]] = row[
                         i : i + len(values_flattened)
-                    ]  # noqa: E203
+                    ]
                     assert len(value) == len(step.values)
 
                     parameter_dict[key] = value

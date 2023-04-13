@@ -193,6 +193,7 @@ def compute_dark_current(
             "Unphysical high value for dark current from fixed pattern noise distribution"
             " will result in inf values. Enable a FWC model to ensure a physical limit.",
             RuntimeWarning,
+            stacklevel=2,
         )
 
     return dark_current_2d

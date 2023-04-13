@@ -55,7 +55,7 @@ def ipc_kernel(
 
 
 def compute_ipc_convolution(
-    input: np.ndarray,
+    input: np.ndarray,  # noqa: A002
     coupling: float,
     diagonal_coupling: float,
     anisotropic_coupling: float,
