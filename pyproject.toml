@@ -216,7 +216,23 @@ omit = [
 
 [tool.ruff]
 ignore = [
-    "E501", # Omit 'Line too long'
+    "E501",     # Omit 'Line too long'
+    "D102",     # Missing docstring in public method
+    "D103",     # Missing docstring in public function
+    "D105",     # Missing docstring in magic method
+    "D202",     # No blank lines
+]
+select = [
+    "B",        # flake8-bugbear
+    "E",        # pycodestyle
+    "F",        # pyflakes
+    "D",        # pydocstyle
+    # "SIM",      # flake8-simplify
+    "W",        # pycodestyle
+    "PD",       # pandas-vet
 ]
 
 exclude = ["_TEMPLATE.py"]
+
+[tool.ruff.pydocstyle]
+convention = "numpy"
