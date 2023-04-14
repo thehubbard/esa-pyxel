@@ -29,7 +29,6 @@ Support for Python 3.8 has been dropped.
   (See [!631](https://gitlab.com/esa/pyxel/-/merge_requests/631)).
 
 ### Documentation
-
 * The general documentation has been reviewed and minor fixes made such as:
   spelling mistakes, typos in markup, grammatical issues, dead hyperlinks,
   and wording simplification.
@@ -43,6 +42,8 @@ Support for Python 3.8 has been dropped.
   (See [!633](https://gitlab.com/esa/pyxel/-/merge_requests/633)).
 * Add units to data buckets in display detector.
   (See [!641](https://gitlab.com/esa/pyxel/-/merge_requests/641)).
+* Adding more linter rules to 'ruff'.
+  (See [!644](https://gitlab.com/esa/pyxel/-/merge_requests/644)).
 
 
 ## 1.8 / 2023-03-30
