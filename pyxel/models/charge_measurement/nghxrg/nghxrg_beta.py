@@ -602,11 +602,11 @@ class HXRGNoise:
 
                 # Noisy reference pixel for each side of detector
                 if w[0] > 0:  # lower
-                    here[: w[0], :] = (  # noqa: E203
+                    here[: w[0], :] = (
                         r * rd_noise * np.random.standard_normal((w[0], self.naxis1))
                     )
                 if w[1] > 0:  # upper
-                    here[-w[1] :, :] = (  # noqa: E203
+                    here[-w[1] :, :] = (
                         r * rd_noise * np.random.standard_normal((w[1], self.naxis1))
                     )
                 if w[2] > 0:  # left
@@ -614,7 +614,7 @@ class HXRGNoise:
                         r * rd_noise * np.random.standard_normal((self.naxis2, w[2]))
                     )
                 if w[3] > 0:  # right
-                    here[:, -w[3] :] = (  # noqa: E203
+                    here[:, -w[3] :] = (
                         r * rd_noise * np.random.standard_normal((self.naxis2, w[3]))
                     )
 

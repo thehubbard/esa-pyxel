@@ -133,8 +133,8 @@ def get_state_ids(
                 key = ".".join(parent_key_list) + "." + key
                 result[key] = value
             else:
-                list(parent_key_list) + [key]
-                get_state_ids(value, list(parent_key_list) + [key], result)
+                _ = [*parent_key_list, key]  # TODO: Is it used ??
+                get_state_ids(value, [*parent_key_list, key], result)
 
     elif isinstance(obj, list):
         is_primitive = all([isinstance(value, (str, int, float)) for value in obj])
@@ -143,7 +143,7 @@ def get_state_ids(
             result[key] = obj
         else:
             for i, value in enumerate(obj):
-                get_state_ids(value, list(parent_key_list) + [str(i)], result)
+                get_state_ids(value, [*parent_key_list, str(i)], result)
     return result
 
 

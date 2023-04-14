@@ -106,16 +106,16 @@ class CalibrationOutputs(Outputs):
                 obj, format_list = first_item
 
                 if obj == "logs":
-                    for format in format_list:
-                        if format == "csv":
+                    for formal_file in format_list:
+                        if formal_file == "csv":
                             filename = self.output_dir.joinpath("logs.csv")
                             logs.to_csv(filename)
-                        elif format == "xlsx":
+                        elif formal_file == "xlsx":
                             filename = self.output_dir.joinpath("logs.xlsx")
                             logs.to_excel(filename)
                         else:
                             raise NotImplementedError(
-                                f"Saving to format {format} not implemented"
+                                f"Saving to format {formal_file} not implemented"
                             )
 
                 elif obj == "dataset":

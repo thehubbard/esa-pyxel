@@ -31,7 +31,7 @@ class Algorithm:
     def __init__(
         self,
         # TODO: Rename 'type' into 'algorithm_type'. See #334
-        type: Literal["sade", "sga", "nlopt"] = "sade",
+        type: Literal["sade", "sga", "nlopt"] = "sade",  # noqa: A002
         generations: int = 1,
         population_size: int = 1,
         # SADE #####
@@ -135,12 +135,12 @@ class Algorithm:
         self._nlopt_selection = nlopt_selection
 
     @property
-    def type(self) -> AlgorithmType:
+    def type(self) -> AlgorithmType:  # noqa: A003
         """TBW."""
         return self._type
 
     @type.setter
-    def type(self, value: AlgorithmType) -> None:
+    def type(self, value: AlgorithmType) -> None:  # noqa: A003
         """TBW."""
         self._type = AlgorithmType(value)
 
