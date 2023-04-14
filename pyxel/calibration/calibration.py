@@ -30,6 +30,7 @@ from pyxel.pipelines import FitnessFunction, Processor, ResultType
 if TYPE_CHECKING:
     import pandas as pd
     import xarray as xr
+    from datatree import DataTree
 
     from pyxel.outputs import CalibrationOutputs
 
@@ -394,7 +395,7 @@ class Calibration:
         processor: Processor,
         output_dir: Path,
         with_progress_bar: bool = True,
-    ) -> "xr.Dataset":
+    ) -> "DataTree":
         """Run calibration pipeline."""
         try:
             import pygmo as pg

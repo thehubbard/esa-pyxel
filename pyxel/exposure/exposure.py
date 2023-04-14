@@ -9,20 +9,19 @@
 """Observation class and functions."""
 
 import logging
-import operator
-from collections.abc import Mapping
 from typing import TYPE_CHECKING, Literal, Optional, Union
 
-import numpy as np
+import xarray as xr
+from datatree import DataTree
 from tqdm.auto import tqdm
 
+from pyxel import __version__
+from pyxel.data_structure import Charge, Image, Photon, Pixel, Signal
 from pyxel.exposure import Readout
 from pyxel.pipelines import Processor, ResultType, result_keys
 from pyxel.util import set_random_seed
 
 if TYPE_CHECKING:
-    import xarray as xr
-
     from pyxel.outputs import CalibrationOutputs, ExposureOutputs, ObservationOutputs
 
 
@@ -102,6 +101,33 @@ class Exposure:
 
         return ds
 
+    def run_exposure_new(self, processor: Processor) -> DataTree:
+        """Run an observation pipeline.
+
+        Parameters
+        ----------
+        processor : Processor
+
+        Returns
+        -------
+        DataTree
+        """
+        progressbar = self.readout._num_steps != 1
+
+        # Unpure changing of processor
+        data_tree: DataTree = run_exposure_pipeline(
+            processor=processor,
+            readout=self.readout,
+            outputs=self.outputs,
+            progressbar=progressbar,
+            result_type=self.result_type,
+            pipeline_seed=self.pipeline_seed,
+        )
+
+        data_tree.attrs["running mode"] = "Exposure"
+
+        return data_tree
+
 
 def run_exposure_pipeline(
     processor: Processor,
@@ -112,24 +138,24 @@ def run_exposure_pipeline(
     progressbar: bool = False,
     result_type: ResultType = ResultType.All,
     pipeline_seed: Optional[int] = None,
-) -> Processor:
+) -> DataTree:
     """Run standalone exposure pipeline.
 
     Parameters
     ----------
-    pipeline_seed: int
+    pipeline_seed : int
         Random seed for the pipeline.
-    result_type: ResultType
-    processor: Processor
-    readout: Readout
-    outputs: DynamicOutputs
+    result_type : ResultType
+    processor : Processor
+    readout : Readout
+    outputs : DynamicOutputs
         Sampling outputs.
-    progressbar: bool
+    progressbar : bool
         Sets visibility of progress bar.
 
     Returns
     -------
-    processor: Processor
+    DataTree
     """
     # if isinstance(detector, CCD):
     #    dynamic.non_destructive_readout = False
@@ -159,7 +185,7 @@ def run_exposure_pipeline(
 
         keys = result_keys(result_type)
 
-        unstacked_result: Mapping[str, list] = {key: [] for key in keys}
+        data_tree: DataTree = DataTree()
 
         i: int
         time: float
@@ -183,18 +209,48 @@ def run_exposure_pipeline(
             if outputs and detector.read_out:
                 outputs.save_to_file(processor)
 
+            # Get current absolute time
+            absolute_time = xr.DataArray(
+                [detector.absolute_time],
+                dims=["time"],
+                attrs={"units": "s"},
+            )
+
+            partial_data_tree: DataTree = DataTree()
+
+            key: Literal["photon", "charge", "pixel", "signal", "image", "data"]
             for key in keys:
-                unstacked_result[key].append(
-                    np.array(operator.attrgetter(key)(detector))
+                if key == "data":
+                    continue
+
+                obj: Union[Photon, Pixel, Image, Signal, Charge] = getattr(
+                    detector, key
                 )
+
+                if isinstance(obj, (Photon, Pixel, Image, Signal, Charge)):
+                    data_array: xr.DataArray = obj.to_xarray().expand_dims(
+                        time=absolute_time
+                    )
+                    data_array.name = "value"
+
+                    partial_data_tree[f"/bucket/{key}"] = data_array
+                else:
+                    raise NotImplementedError
 
             if progressbar:
                 pbar.update(1)
 
-        # TODO: Refactor '.result'. See #524
-        processor.result = {key: np.stack(unstacked_result[key]) for key in keys}
+            if data_tree.is_empty:
+                data_tree = partial_data_tree
+            else:
+                data_tree = data_tree.combine_first(partial_data_tree)
+
+        if "data" in keys:
+            data_tree["/data"] = detector.data
+
+        data_tree.attrs["pyxel version"] = __version__
 
         if progressbar:
             pbar.close()
 
-    return processor
+    return data_tree

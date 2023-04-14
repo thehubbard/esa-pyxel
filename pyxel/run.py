@@ -28,6 +28,7 @@ from pyxel.util import create_model, download_examples
 
 if TYPE_CHECKING:
     import xarray as xr
+    from datatree import DataTree
 
     from pyxel.calibration import Calibration
     from pyxel.outputs import CalibrationOutputs, ExposureOutputs, ObservationOutputs
@@ -91,6 +92,70 @@ def exposure_mode(
     processor = Processor(detector=detector, pipeline=pipeline)
 
     result: xr.Dataset = exposure.run_exposure(processor=processor)
+
+    if exposure_outputs.save_exposure_data:
+        exposure_outputs.save_exposure_outputs(dataset=result)
+
+    return result
+
+
+def _run_exposure_mode(
+    exposure: "Exposure",
+    detector: Detector,
+    pipeline: "DetectionPipeline",
+) -> "DataTree":
+    """Run an 'exposure' pipeline.
+
+    For more information, see :ref:`exposure_mode`.
+
+    Parameters
+    ----------
+    exposure: Exposure
+    detector: Detector
+    pipeline: DetectionPipeline
+
+    Returns
+    -------
+    Dataset
+        An multi-dimensional array database from `xarray <https://xarray.pydata.org>`_.
+
+    Examples
+    --------
+    Load a configuration file
+
+    >>> import pyxel
+    >>> config = pyxel.load("configuration.yaml")
+    >>> config
+    Configuration(...)
+
+    Run an exposure pipeline
+
+    >>> dataset = pyxel.exposure_mode(
+    ...     exposure=config.exposure,
+    ...     detector=config.detector,
+    ...     pipeline=config.pipeline,
+    ... )
+    >>> dataset
+    <xarray.Dataset>
+    Dimensions:       (readout_time: 1, y: 450, x: 450)
+    Coordinates:
+      * readout_time  (readout_time) int64 1
+      * y             (y) int64 0 1 2 3 4 5 6 7 ... 442 443 444 445 446 447 448 449
+      * x             (x) int64 0 1 2 3 4 5 6 7 ... 442 443 444 445 446 447 448 449
+    Data variables:
+        image         (readout_time, y, x) uint16 9475 9089 8912 ... 9226 9584 10079
+        signal        (readout_time, y, x) float64 3.159 3.03 2.971 ... 3.195 3.36
+        pixel         (readout_time, y, x) float64 1.053e+03 1.01e+03 ... 1.12e+03
+    """
+
+    logging.info("Mode: Exposure")
+
+    exposure_outputs: ExposureOutputs = exposure.outputs
+    detector.set_output_dir(exposure_outputs.output_dir)  # TODO: Remove this
+
+    processor = Processor(detector=detector, pipeline=pipeline)
+
+    result: DataTree = exposure.run_exposure_new(processor=processor)
 
     if exposure_outputs.save_exposure_data:
         exposure_outputs.save_exposure_outputs(dataset=result)
@@ -312,7 +377,7 @@ def _run_calibration_mode(
     calibration: "Calibration",
     detector: Detector,
     pipeline: "DetectionPipeline",
-) -> "xr.Dataset":
+) -> "DataTree":
     logging.info("Mode: Calibration")
 
     calibration_outputs: CalibrationOutputs = calibration.outputs
@@ -320,19 +385,19 @@ def _run_calibration_mode(
 
     processor = Processor(detector=detector, pipeline=pipeline)
 
-    ds = calibration.run_calibration_new(
+    data_tree = calibration.run_calibration_new(
         processor=processor,
         output_dir=calibration_outputs.output_dir,
     )
 
-    return ds
+    return data_tree
 
 
 def _run_observation_mode(
     observation: Observation,
     detector: Detector,
     pipeline: DetectionPipeline,
-) -> "xr.Dataset":
+) -> "DataTree":
     logging.info("Mode: Observation")
 
     observation_outputs: ObservationOutputs = observation.outputs
@@ -340,7 +405,7 @@ def _run_observation_mode(
 
     processor = Processor(detector=detector, pipeline=pipeline)
 
-    ds = observation.run_observation_new(processor=processor)
+    result = observation.run_observation_datatree(processor=processor)
 
     if observation_outputs.save_observation_data:
         raise NotImplementedError
@@ -348,14 +413,14 @@ def _run_observation_mode(
     #         result=result, mode=observation.parameter_mode
     #     )
 
-    return ds
+    return result
 
 
 def run_mode(
     mode: Union[Exposure, Observation, "Calibration"],
     detector: Detector,
     pipeline: DetectionPipeline,
-) -> "xr.Dataset":
+) -> "DataTree":
     """Run a pipeline.
 
     Parameters
@@ -369,8 +434,7 @@ def run_mode(
 
     Returns
     -------
-    Dataset
-        Multi-dimensional result.
+    DataTree
 
     Raises
     ------
@@ -407,17 +471,21 @@ def run_mode(
     from pyxel.calibration import Calibration
 
     if isinstance(mode, Exposure):
-        ds = exposure_mode(exposure=mode, detector=detector, pipeline=pipeline)
+        data_tree = _run_exposure_mode(
+            exposure=mode,
+            detector=detector,
+            pipeline=pipeline,
+        )
 
     elif isinstance(mode, Observation):
-        ds = _run_observation_mode(
+        data_tree = _run_observation_mode(
             observation=mode,
             detector=detector,
             pipeline=pipeline,
         )
 
     elif isinstance(mode, Calibration):
-        ds = _run_calibration_mode(
+        data_tree = _run_calibration_mode(
             calibration=mode,
             detector=detector,
             pipeline=pipeline,
@@ -426,7 +494,7 @@ def run_mode(
     else:
         raise TypeError("Please provide a valid simulation mode !")
 
-    return ds
+    return data_tree
 
 
 def output_directory(configuration: Configuration) -> Path:
