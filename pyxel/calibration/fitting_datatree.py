@@ -418,7 +418,7 @@ class ModelFittingDataTree(ProblemSingleObjective):
             )
 
         if not isinstance(simulated_data, xr.DataArray):
-            raise ValueError("Expected a 'DataArray'")
+            raise TypeError("Expected a 'DataArray'")
 
         simulated_data = simulated_data.sel(self.sim_fit_range.to_dict())
 
