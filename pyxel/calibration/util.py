@@ -132,10 +132,6 @@ def read_data(filenames: Sequence[Path]) -> Sequence[np.ndarray]:
 def list_to_slice(
     input_list: Optional[Sequence[int]] = None,
 ) -> Union[tuple[slice, slice], tuple[slice, slice, slice]]:
-    """TBW.
-
-    :return:
-    """
     if not input_list:
         return slice(None), slice(None)
 

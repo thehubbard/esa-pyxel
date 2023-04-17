@@ -36,12 +36,13 @@ class ResultType(Enum):
     Pixel = "pixel"
     Signal = "signal"
     Image = "image"
+    Data = "data"
     All = "all"
 
 
 def result_keys(
     result_type: ResultType = ResultType.All,
-) -> Sequence[Literal["photon", "charge", "pixel", "signal", "image"]]:
+) -> Sequence[Literal["photon", "charge", "pixel", "signal", "image", "data"]]:
     """Return result keys based on result type.
 
     Parameters
@@ -62,8 +63,10 @@ def result_keys(
         return ["signal"]
     elif result_type == ResultType.Image:
         return ["image"]
+    elif result_type == ResultType.Data:
+        return ["data"]
     elif result_type == ResultType.All:
-        return ["photon", "charge", "pixel", "signal", "image"]
+        return ["photon", "charge", "pixel", "signal", "image", "data"]
     else:
         raise ValueError("Result type unknown.")
 
@@ -77,7 +80,7 @@ class Processor:
 
         self.detector = detector
         self.pipeline = pipeline
-        self._result: Optional[dict] = None
+        self._result: Optional[dict] = None  # TODO: Deprecate this variable ?
 
         self._numbytes = 0
 
@@ -217,7 +220,7 @@ class Processor:
         # TODO: Is is necessary to return 'self' ??
         return self
 
-    # TODO: Refactor '.result'. See #524
+    # TODO: Refactor '.result'. See #524. Deprecate this method ?
     @property
     def result(self) -> dict:
         """Return exposure pipeline final result in a dictionary."""
@@ -225,7 +228,7 @@ class Processor:
             raise ValueError("No result saved in the processor.")
         return self._result
 
-    # TODO: Refactor '.result'. See #524
+    # TODO: Refactor '.result'. See #524. Deprecate this method ?
     @result.setter
     def result(self, result_to_save: dict) -> None:
         """Set result."""
@@ -250,9 +253,11 @@ class Processor:
 
         lst: list[xr.DataArray] = []
 
-        key: Literal["photon", "charge", "pixel", "signal", "image"]
+        key: Literal["photon", "charge", "pixel", "signal", "image", "data"]
         for key in result_keys(result_type):
-            if key == "photon":
+            if key == "data":
+                continue
+            elif key == "photon":
                 standard_name = "Photon"
                 unit = "photon"
             elif key == "charge":

@@ -8,6 +8,7 @@
 from pathlib import Path
 
 import xarray as xr
+from datatree import DataTree
 
 import pyxel
 from pyxel import Configuration
@@ -35,12 +36,12 @@ def test_basic_exposure_hdf5(tmp_path: Path):
     assert detector_filename_before.exists()
 
     # Execute 'cfg'
-    ds = pyxel.run_mode(
+    data_tree = pyxel.run_mode(
         mode=cfg.running_mode,
         detector=cfg.detector,
         pipeline=cfg.pipeline,
     )
-    assert isinstance(ds, xr.Dataset)
+    assert isinstance(data_tree, DataTree)
 
     # Save the 'detector' object into a '.hdf5' file
     detector_filename: Path = tmp_path / "detector.hdf5"
@@ -75,12 +76,12 @@ def test_basic_exposure_asdf(tmp_path: Path):
     assert detector_filename_before.exists()
 
     # Execute 'cfg'
-    ds = pyxel.run_mode(
+    data_tree = pyxel.run_mode(
         mode=cfg.running_mode,
         detector=cfg.detector,
         pipeline=cfg.pipeline,
     )
-    assert isinstance(ds, xr.Dataset)
+    assert isinstance(data_tree, DataTree)
 
     # Save the 'detector' object into a '.asdf' file
     detector_filename: Path = tmp_path / "detector.asdf"

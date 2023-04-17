@@ -16,6 +16,7 @@ from pyxel.outputs import Outputs, ValidFormat, ValidName
 
 if TYPE_CHECKING:
     import xarray as xr
+    from datatree import DataTree
 
     class SaveToFile(Protocol):
         """TBW."""
@@ -62,7 +63,7 @@ class ExposureOutputs(Outputs):
             Sequence[Mapping[str, Sequence[str]]]
         ] = save_exposure_data
 
-    def save_exposure_outputs(self, dataset: "xr.Dataset") -> None:
+    def save_exposure_outputs(self, dataset: Union["xr.Dataset", "DataTree"]) -> None:
         """Save the observation outputs such as the dataset.
 
         Parameters
@@ -72,22 +73,21 @@ class ExposureOutputs(Outputs):
 
         save_methods: dict[str, SaveToFile] = {"nc": self.save_to_netcdf}
 
-        if self.save_exposure_data is not None:
-            dct: Mapping[str, Sequence[str]]
-            for dct in self.save_exposure_data:
-                first_item, *_ = dct.items()
-                obj, format_list = first_item
+        if self.save_exposure_data is None:
+            return
 
-                if obj == "dataset":
-                    if format_list is not None:
-                        for out_format in format_list:
-                            if out_format not in save_methods:
-                                raise ValueError(
-                                    "Format " + out_format + " not a valid save method!"
-                                )
+        dct: Mapping[str, Sequence[str]]
+        for dct in self.save_exposure_data:
+            first_item, *_ = dct.items()
+            obj, format_list = first_item
 
-                            func = save_methods[out_format]
-                            func(data=dataset, name=obj)
+            if obj != "dataset":
+                raise NotImplementedError(f"Object {obj} unknown.")
 
-                else:
-                    raise NotImplementedError(f"Object {obj} unknown.")
+            out_format: str
+            for out_format in format_list:
+                if out_format not in save_methods:
+                    raise ValueError(f"Format {out_format} not a valid save method!")
+
+                func = save_methods[out_format]
+                func(data=dataset, name=obj)

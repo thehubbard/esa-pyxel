@@ -17,10 +17,11 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 from dask.delayed import Delayed
+from datatree import DataTree
 from tqdm.auto import tqdm
 
-from pyxel.calibration import Algorithm, AlgorithmType, IslandProtocol
-from pyxel.calibration.fitting import ModelFitting
+from pyxel.calibration import Algorithm, IslandProtocol
+from pyxel.calibration.fitting_datatree import ModelFittingDataTree
 from pyxel.calibration.util import slice_to_range
 
 if TYPE_CHECKING:
@@ -28,88 +29,6 @@ if TYPE_CHECKING:
     from numpy.typing import ArrayLike
 
     from pyxel.exposure import Readout
-
-
-# TODO: Deprecate this class ?
-class ArchipelagoLogs:
-    """Keep log information from all algorithms in an archipelago."""
-
-    def __init__(self, algo_type: AlgorithmType, num_generations: int):
-        try:
-            import pygmo as pg
-        except ImportError as exc:
-            raise ImportError(
-                "Missing optional package 'pygmo'.\n"
-                "Please install it with 'pip install pyxel-sim[calibration]' "
-                "or 'pip install pyxel-sim[all]'"
-            ) from exc
-
-        self._df = pd.DataFrame()
-        self._num_generations = num_generations
-
-        # Get logging's columns that will be extracted from the algorithm
-        if algo_type is not AlgorithmType.Sade:
-            raise NotImplementedError
-
-        self._columns = (
-            "num_generations",  # Generation number
-            "num_evaluations",  # Number of functions evaluation made
-            "best_fitness",  # The best fitness currently in the population
-            "f",
-            "cr",
-            "dx",
-            "df",
-        )  # See: https://esa.github.io/pygmo2/algorithms.html#pygmo.sade.get_log
-        self._algo_to_extract = pg.sade
-
-    def _from_algo(self, algo: "pg.algorithm") -> pd.DataFrame:
-        """Get logging information from an algorithm."""
-        # Extract the Pygmo algorithm and its logging information
-        algo_extracted = algo.extract(self._algo_to_extract)
-        logs: list = algo_extracted.get_log()
-
-        # Put the logging information from pygmo into a `DataFrame`
-        df = pd.DataFrame(logs, columns=self._columns)
-
-        return df
-
-    def _from_archi(self, archi: "pg.archipelago") -> pd.DataFrame:
-        """Get logging information from an archipelago."""
-        lst: list[pd.DataFrame] = []
-
-        for id_island, island in enumerate(archi):
-            # Extract the Pygmo algorithm from an island
-            df_island = self._from_algo(algo=island.get_algorithm())
-            df_island["id_island"] = id_island + 1
-
-            lst.append(df_island)
-
-        df_archipelago = pd.concat(lst)
-        return df_archipelago
-
-    # TODO: Remove parameter 'id_evolution' ?
-    def append(self, archi: "pg.archipelago", id_evolution: int) -> None:
-        """Collect logging information from a archipelago for specified evolution id."""
-        partial_df: pd.DataFrame = self._from_archi(archi=archi)
-        partial_df["id_evolution"] = id_evolution
-
-        self._df = pd.concat([self._df, partial_df])
-
-    def get_full_total(self) -> pd.DataFrame:
-        """TBW."""
-        new_df = self._df.reset_index(drop=True)
-        new_df["global_num_generations"] = (
-            new_df["id_evolution"] - 1
-        ) * self._num_generations + new_df["num_generations"]
-
-        return new_df
-
-    def get_total(self) -> pd.DataFrame:
-        """TBW."""
-        df: pd.DataFrame = self.get_full_total()
-        return df[
-            ["id_evolution", "id_island", "global_num_generations", "best_fitness"]
-        ]
 
 
 def extract_data_3d(
@@ -124,13 +43,13 @@ def extract_data_3d(
     for _, row in df_results.iterrows():
         island: int = row["island"]
         id_processor: int = row["id_processor"]
-        result: Mapping[str, Delayed] = row["processor"].result
+        data_tree: Mapping[str, Delayed] = row["data_tree"].result
 
-        photon_delayed: Delayed = result["photon"]
-        charge_delayed: Delayed = result["charge"]
-        pixel_delayed: Delayed = result["pixel"]
-        signal_delayed: Delayed = result["signal"]
-        image_delayed: Delayed = result["image"]
+        photon_delayed: Delayed = data_tree["/bucket/photon"]
+        charge_delayed: Delayed = data_tree["/bucket/charge"]
+        pixel_delayed: Delayed = data_tree["/bucket/pixel"]
+        signal_delayed: Delayed = data_tree["/bucket/signal"]
+        image_delayed: Delayed = data_tree["/bucket/image"]
 
         photon_3d = da.from_delayed(
             photon_delayed, shape=(times, rows, cols), dtype=float
@@ -185,7 +104,7 @@ def extract_data_3d(
 
 
 # TODO: Rename to PyxelArchipelago. See #335
-class MyArchipelago:
+class ArchipelagoDataTree:
     """User-defined Archipelago."""
 
     def __init__(
@@ -193,7 +112,7 @@ class MyArchipelago:
         num_islands: int,
         udi: IslandProtocol,
         algorithm: Algorithm,
-        problem: ModelFitting,
+        problem: ModelFittingDataTree,
         pop_size: int,
         bfe: Optional[Callable] = None,
         topology: Optional[Callable] = None,
@@ -215,7 +134,7 @@ class MyArchipelago:
         self.num_islands = num_islands
         self.udi = udi
         self.algorithm: Algorithm = algorithm
-        self.problem: ModelFitting = problem
+        self.problem: ModelFittingDataTree = problem
         self.pop_size = pop_size
         self.bfe = bfe
         self.topology = topology
@@ -295,7 +214,7 @@ class MyArchipelago:
         readout: "Readout",
         num_evolutions: int = 1,
         num_best_decisions: Optional[int] = None,
-    ) -> tuple[xr.Dataset, pd.DataFrame, pd.DataFrame]:
+    ) -> DataTree:
         """Run evolution(s) several time.
 
         Parameters
@@ -309,13 +228,9 @@ class MyArchipelago:
 
         Returns
         -------
-        TBW.
+        DataTree
         """
         self._log.info("Run %i evolutions", num_evolutions)
-        logs = ArchipelagoLogs(
-            algo_type=self.algorithm.type,
-            num_generations=self.algorithm.generations,
-        )
 
         total_num_generations = num_evolutions * self.algorithm.generations
 
@@ -338,10 +253,6 @@ class MyArchipelago:
                 # that was encountered
                 self._pygmo_archi.wait_check()
 
-                # Collect logging information from the algorithms running in the
-                # archipelago
-                logs.append(archi=self._pygmo_archi, id_evolution=id_evolution + 1)
-
                 progress.update(self.algorithm.generations)
 
                 # Get partial champions for this evolution
@@ -363,9 +274,6 @@ class MyArchipelago:
 
         champions: xr.Dataset = xr.concat(champions_lst, dim="evolution")
 
-        # Get logging information
-        df_all_logs: pd.DataFrame = logs.get_full_total()
-
         # Get the champions in a `Dataset`
         last_champions = champions.isel(evolution=-1)
 
@@ -374,14 +282,13 @@ class MyArchipelago:
             parameters=last_champions["champion_parameters"],
         )
 
-        assert isinstance(self.problem.sim_fit_range, tuple)
-        slice_times, slice_rows, slice_cols = self.problem.sim_fit_range
+        slice_times, slice_rows, slice_cols = self.problem.sim_fit_range.to_slices()
 
         geometry = self.problem.processor.detector.geometry
         no_times = len(readout.times)
 
         # Extract simulated 'image', 'signal' and 'pixel' from the processors
-        all_simulated_full = extract_data_3d(
+        all_simulated_full: xr.Dataset = extract_data_3d(
             df_results=df_results,
             rows=geometry.row,
             cols=geometry.col,
@@ -428,7 +335,7 @@ class MyArchipelago:
             evolution=range(1, num_evolutions + 1),
         )
 
-        return ds, df_results, df_all_logs
+        return DataTree(ds)
 
     def _get_champions(self) -> xr.Dataset:
         """Extract the champions.

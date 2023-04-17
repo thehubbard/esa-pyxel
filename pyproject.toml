@@ -223,6 +223,8 @@ ignore = [
     "D202",     # No blank lines
     "RUF002",   # Docstring contains ambiguous unicode character
     "RUF003",   # ambiguous unicode character
+    "TRY003",   # Avoid specifying long messages outside the exception class
+    "TRY301",   # Abstract `raise` to an inner function
 ]
 select = [
     "A",        # flake8-builtins
@@ -235,6 +237,7 @@ select = [
     # "PD",       # pandas-vet
     # "S",        # bandit
     "RUF",      # Ruff-specific rules
+    "TRY",      # Tryceratops
 ]
 
 exclude = ["_TEMPLATE.py", "_version.py"]

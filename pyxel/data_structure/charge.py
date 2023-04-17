@@ -19,6 +19,8 @@ from pyxel.detectors.geometry import (
 )
 
 if TYPE_CHECKING:
+    import xarray as xr
+
     from pyxel.detectors import Geometry
 
 
@@ -367,6 +369,20 @@ class Charge:
         if not self._frame.empty:
             self._array = self.convert_df_to_array()
         return self._array
+
+    def to_xarray(self) -> "xr.DataArray":
+        """Convert into a `DataArray` object."""
+        import xarray as xr
+
+        data_2d: np.ndarray = self.array
+        num_rows, num_cols = data_2d.shape
+        return xr.DataArray(
+            data_2d,
+            name="charge",
+            dims=["y", "x"],
+            coords={"y": range(num_rows), "x": range(num_cols)},
+            attrs={"units": "electron", "long_name": "Charge"},
+        )
 
     def __array__(self, dtype: Optional[np.dtype] = None):
         if not isinstance(self._array, np.ndarray):
