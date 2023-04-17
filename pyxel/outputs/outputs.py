@@ -23,6 +23,7 @@ from pyxel import __version__ as version
 
 if TYPE_CHECKING:
     import xarray as xr
+    from datatree import DataTree
 
     from pyxel.detectors import Detector
     from pyxel.pipelines import Processor
@@ -415,7 +416,10 @@ class Outputs:
         return filenames
 
     def save_to_netcdf(
-        self, data: "xr.Dataset", name: str, with_auto_suffix: bool = False
+        self,
+        data: Union["xr.Dataset", "DataTree"],
+        name: str,
+        with_auto_suffix: bool = False,
     ) -> Path:
         """Write Xarray dataset to NetCDF file.
 
