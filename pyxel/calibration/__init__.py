@@ -23,5 +23,6 @@ from .util import (
 )
 from ..pipelines.processor import ResultType
 from .archipelago import MyArchipelago
+from .archipelago_datatree import ArchipelagoDataTree
 from .calibration import Calibration, CalibrationMode
 from .fitness import sum_of_abs_residuals, sum_of_squared_residuals, reduced_chi_squared

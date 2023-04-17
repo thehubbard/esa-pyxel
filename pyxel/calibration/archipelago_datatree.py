@@ -17,10 +17,11 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 from dask.delayed import Delayed
+from datatree import DataTree
 from tqdm.auto import tqdm
 
 from pyxel.calibration import Algorithm, AlgorithmType, IslandProtocol
-from pyxel.calibration.fitting import ModelFitting
+from pyxel.calibration.fitting_datatree import ModelFittingDataTree
 from pyxel.calibration.util import slice_to_range
 
 if TYPE_CHECKING:
@@ -124,13 +125,13 @@ def extract_data_3d(
     for _, row in df_results.iterrows():
         island: int = row["island"]
         id_processor: int = row["id_processor"]
-        result: Mapping[str, Delayed] = row["processor"].result
+        data_tree: Mapping[str, Delayed] = row["data_tree"].result
 
-        photon_delayed: Delayed = result["photon"]
-        charge_delayed: Delayed = result["charge"]
-        pixel_delayed: Delayed = result["pixel"]
-        signal_delayed: Delayed = result["signal"]
-        image_delayed: Delayed = result["image"]
+        photon_delayed: Delayed = data_tree["/bucket/photon"]
+        charge_delayed: Delayed = data_tree["/bucket/charge"]
+        pixel_delayed: Delayed = data_tree["/bucket/pixel"]
+        signal_delayed: Delayed = data_tree["/bucket/signal"]
+        image_delayed: Delayed = data_tree["/bucket/image"]
 
         photon_3d = da.from_delayed(
             photon_delayed, shape=(times, rows, cols), dtype=float
@@ -185,7 +186,7 @@ def extract_data_3d(
 
 
 # TODO: Rename to PyxelArchipelago. See #335
-class MyArchipelago:
+class ArchipelagoDataTree:
     """User-defined Archipelago."""
 
     def __init__(
@@ -193,7 +194,7 @@ class MyArchipelago:
         num_islands: int,
         udi: IslandProtocol,
         algorithm: Algorithm,
-        problem: ModelFitting,
+        problem: ModelFittingDataTree,
         pop_size: int,
         bfe: Optional[Callable] = None,
         topology: Optional[Callable] = None,
@@ -215,7 +216,7 @@ class MyArchipelago:
         self.num_islands = num_islands
         self.udi = udi
         self.algorithm: Algorithm = algorithm
-        self.problem: ModelFitting = problem
+        self.problem: ModelFittingDataTree = problem
         self.pop_size = pop_size
         self.bfe = bfe
         self.topology = topology
@@ -429,6 +430,134 @@ class MyArchipelago:
         )
 
         return ds, df_results, df_all_logs
+
+    def run_evolve_datatree(
+        self,
+        readout: "Readout",
+        num_evolutions: int = 1,
+        num_best_decisions: Optional[int] = None,
+    ) -> DataTree:
+        """Run evolution(s) several time.
+
+        Parameters
+        ----------
+        readout
+        num_evolutions : int
+            Number of time to run the evolutions.
+        num_best_decisions : int or None, optional.
+            Number of best individuals to extract. If this parameter is set to None then
+            no individuals are extracted.
+
+        Returns
+        -------
+        DataTree
+        """
+        self._log.info("Run %i evolutions", num_evolutions)
+
+        total_num_generations = num_evolutions * self.algorithm.generations
+
+        with tqdm(
+            total=total_num_generations,
+            desc=f"Evolve with {self.num_islands} islands",
+            unit=" generations",
+            disable=not self.with_bar,
+        ) as progress:
+            champions_lst: list[xr.Dataset] = []
+            # Run an evolution im the archipelago several times
+            for id_evolution in range(num_evolutions):
+                # If the evolution on this archipelago was already run before, then
+                # the migration process between the islands is automatically executed
+                # Call all 'evolve()' methods on all islands
+                self._pygmo_archi.evolve()
+                # self._log.info(self._pygmo_archi)  # TODO: Remove this
+
+                # Block until all evolutions have finished and raise the first exception
+                # that was encountered
+                self._pygmo_archi.wait_check()
+
+                progress.update(self.algorithm.generations)
+
+                # Get partial champions for this evolution
+                partial_champions: xr.Dataset = self._get_champions()
+
+                # Get best population from the islands
+                if num_best_decisions:
+                    best_individuals: xr.Dataset = self.get_best_individuals(
+                        num_best_decisions=num_best_decisions
+                    )
+
+                    all_champions = xr.merge([partial_champions, best_individuals])
+                else:
+                    all_champions = partial_champions
+
+                champions_lst.append(
+                    all_champions.expand_dims(evolution=[id_evolution], axis=1)
+                )
+
+        champions: xr.Dataset = xr.concat(champions_lst, dim="evolution")
+
+        # Get the champions in a `Dataset`
+        last_champions = champions.isel(evolution=-1)
+
+        # Get the processor(s) in a `DataFrame`
+        df_results: pd.DataFrame = self.problem.apply_parameters_to_processors(
+            parameters=last_champions["champion_parameters"],
+        )
+
+        slice_times, slice_rows, slice_cols = self.problem.sim_fit_range.to_slices()
+
+        geometry = self.problem.processor.detector.geometry
+        no_times = len(readout.times)
+
+        # Extract simulated 'image', 'signal' and 'pixel' from the processors
+        all_simulated_full: xr.Dataset = extract_data_3d(
+            df_results=df_results,
+            rows=geometry.row,
+            cols=geometry.col,
+            times=no_times,
+            readout_times=readout.times,
+        )
+
+        # Get the target data
+        all_data_fit_range = all_simulated_full.sel(
+            y=slice_rows, x=slice_cols, readout_time=slice_times
+        )
+        if readout.time_domain_simulation:
+            all_data_fit_range["target"] = xr.DataArray(
+                self.problem.all_target_data,
+                dims=["id_processor", "readout_time", "y", "x"],
+                coords={
+                    "id_processor": range(len(self.problem.all_target_data)),
+                    "readout_time": slice_to_range(slice_times),
+                    "y": slice_to_range(slice_rows),
+                    "x": slice_to_range(slice_cols),
+                },
+            )
+        else:
+            all_data_fit_range["target"] = xr.DataArray(
+                self.problem.all_target_data,
+                dims=["id_processor", "y", "x"],
+                coords={
+                    "id_processor": range(len(self.problem.all_target_data)),
+                    "y": slice_to_range(slice_rows),
+                    "x": slice_to_range(slice_cols),
+                },
+            )
+
+        ds: xr.Dataset = xr.merge([champions, all_data_fit_range])
+
+        ds.attrs["num_islands"] = self.num_islands
+        ds.attrs["population_size"] = self.algorithm.population_size
+        ds.attrs["num_evolutions"] = num_evolutions
+        ds.attrs["generations"] = self.algorithm.generations
+
+        ds = ds.assign_coords(
+            param_id=range(ds.dims["param_id"]),
+            island=range(1, self.num_islands + 1),
+            evolution=range(1, num_evolutions + 1),
+        )
+
+        return DataTree(ds)
 
     def _get_champions(self) -> xr.Dataset:
         """Extract the champions.

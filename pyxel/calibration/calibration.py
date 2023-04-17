@@ -16,6 +16,7 @@ from dask.delayed import Delayed
 
 from pyxel.calibration import (
     Algorithm,
+    ArchipelagoDataTree,
     CalibrationMode,
     DaskBFE,
     DaskIsland,
@@ -23,6 +24,7 @@ from pyxel.calibration import (
     MyArchipelago,
 )
 from pyxel.calibration.fitting import ModelFitting
+from pyxel.calibration.fitting_datatree import ModelFittingDataTree
 from pyxel.exposure import Readout
 from pyxel.observation import ParameterValues
 from pyxel.pipelines import FitnessFunction, Processor, ResultType
@@ -409,7 +411,8 @@ class Calibration:
         pg.set_global_rng_seed(seed=self.pygmo_seed)
         self._log.info("Pygmo seed: %d", self.pygmo_seed)
 
-        fitting = ModelFitting(
+        # TODO: Merge 'ModelFittingDataTree.__init__' and '.configure'
+        fitting: ModelFittingDataTree = ModelFittingDataTree(
             processor=processor,
             variables=self.parameters,
             readout=self.readout,
@@ -419,9 +422,7 @@ class Calibration:
             population_size=self.algorithm.population_size,
             fitness_func=self.fitness_function,
             file_path=output_dir,
-        )
-
-        fitting.configure(
+            # New
             target_output=self.target_data_path,
             target_fit_range=self.target_fit_range,
             out_fit_range=self.result_fit_range,
@@ -448,7 +449,7 @@ class Calibration:
 
         # Create a new archipelago
         # This operation takes some time ...
-        my_archipelago = MyArchipelago(
+        archipelago = ArchipelagoDataTree(
             num_islands=self.num_islands,
             udi=user_defined_island,
             algorithm=self.algorithm,
@@ -461,17 +462,17 @@ class Calibration:
         )
 
         # Run several evolutions in the archipelago
-        ds, _, _ = my_archipelago.run_evolve(
+        data_tree: "DataTree" = archipelago.run_evolve_datatree(
             readout=self.readout,
             num_evolutions=self._num_evolutions,
             num_best_decisions=self._num_best_decisions,
         )
 
-        ds.attrs["topology"] = self.topology
-        ds.attrs["result_type"] = str(fitting.sim_output)
+        data_tree.attrs["topology"] = self.topology
+        data_tree.attrs["result_type"] = str(fitting.sim_output)
 
         self._log.info("Calibration ended.")
-        return ds
+        return data_tree
 
     def post_processing(
         self,
