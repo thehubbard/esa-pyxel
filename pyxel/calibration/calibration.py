@@ -462,7 +462,7 @@ class Calibration:
         )
 
         # Run several evolutions in the archipelago
-        data_tree: "DataTree" = archipelago.run_evolve_datatree(
+        data_tree: "DataTree" = archipelago.run_evolve(
             readout=self.readout,
             num_evolutions=self._num_evolutions,
             num_best_decisions=self._num_best_decisions,
