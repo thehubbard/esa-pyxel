@@ -9,8 +9,11 @@
 """Observation class and functions."""
 
 import logging
+import operator
+from collections.abc import Mapping
 from typing import TYPE_CHECKING, Literal, Optional, Union
 
+import numpy as np
 import xarray as xr
 from datatree import DataTree
 from tqdm.auto import tqdm
@@ -115,7 +118,7 @@ class Exposure:
         progressbar = self.readout._num_steps != 1
 
         # Unpure changing of processor
-        data_tree: DataTree = run_exposure_pipeline(
+        data_tree: DataTree = run_pipeline(
             processor=processor,
             readout=self.readout,
             outputs=self.outputs,
@@ -129,7 +132,110 @@ class Exposure:
         return data_tree
 
 
+# TODO: This function will be deprecated
 def run_exposure_pipeline(
+    processor: Processor,
+    readout: "Readout",
+    outputs: Union[
+        "CalibrationOutputs", "ObservationOutputs", "ExposureOutputs", None
+    ] = None,
+    progressbar: bool = False,
+    result_type: ResultType = ResultType.All,
+    pipeline_seed: Optional[int] = None,
+) -> Processor:
+    """Run standalone exposure pipeline.
+
+    Parameters
+    ----------
+    pipeline_seed: int
+        Random seed for the pipeline.
+    result_type: ResultType
+    processor: Processor
+    readout: Readout
+    outputs: DynamicOutputs
+        Sampling outputs.
+    progressbar: bool
+        Sets visibility of progress bar.
+
+    Returns
+    -------
+    processor: Processor
+    """
+    # if isinstance(detector, CCD):
+    #    dynamic.non_destructive_readout = False
+
+    with set_random_seed(seed=pipeline_seed):
+        num_steps = readout._num_steps
+        ndreadout = readout.non_destructive
+        times_linear = readout._times_linear
+        start_time = readout._start_time
+        end_time = readout._times[-1]
+        time_step_it = readout.time_step_it()
+
+        detector = processor.detector
+
+        detector.set_readout(
+            num_steps=num_steps,
+            ndreadout=ndreadout,
+            times_linear=times_linear,
+            start_time=start_time,
+            end_time=end_time,
+        )
+        # The detector should be reset before exposure
+        detector.empty()
+
+        if progressbar:
+            pbar = tqdm(total=num_steps, desc="Observation time: ")
+
+        keys = result_keys(result_type)
+
+        unstacked_result: Mapping[str, list] = {key: [] for key in keys}
+
+        i: int
+        time: float
+        step: float
+        for i, (time, step) in enumerate(time_step_it):
+            detector.time = time
+            detector.time_step = step
+            detector.pipeline_count = i
+
+            logging.info("time = %.3f s", time)
+
+            if detector.non_destructive_readout:
+                empty_all = False
+            else:
+                empty_all = True
+
+            detector.empty(empty_all)
+
+            processor.run_pipeline()
+
+            if outputs and detector.read_out:
+                outputs.save_to_file(processor)
+
+            for key in keys:
+                if key == "data":
+                    continue
+
+                unstacked_result[key].append(
+                    np.array(operator.attrgetter(key)(detector))
+                )
+
+            if progressbar:
+                pbar.update(1)
+
+        # TODO: Refactor '.result'. See #524
+        processor.result = {
+            key: np.stack(unstacked_result[key]) for key in keys if key != "data"
+        }
+
+        if progressbar:
+            pbar.close()
+
+    return processor
+
+
+def run_pipeline(
     processor: Processor,
     readout: "Readout",
     outputs: Union[
