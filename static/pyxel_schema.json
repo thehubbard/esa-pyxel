@@ -2153,8 +2153,8 @@
               ],
               "title": "energy_spectrum_sampling",
               "type": [
-                "string",
-                "null"
+                "null",
+                "string"
               ]
             },
             "energy_spread": {
@@ -2183,8 +2183,8 @@
               ],
               "title": "particle_direction",
               "type": [
-                "string",
-                "null"
+                "null",
+                "string"
               ]
             },
             "seed": {
@@ -2290,8 +2290,8 @@
               ],
               "title": "energy_spectrum_sampling",
               "type": [
-                "string",
-                "null"
+                "null",
+                "string"
               ]
             },
             "energy_spread": {
@@ -2314,8 +2314,8 @@
               ],
               "title": "particle_direction",
               "type": [
-                "string",
-                "null"
+                "null",
+                "string"
               ]
             },
             "seed": {
@@ -4148,7 +4148,7 @@
           "properties": {
             "data_structure": {
               "default": "all",
-              "description": "Keyword to choose data structure. Can be any from: (\"pixel\", \"photon\",\"image\", \"signal\") Dimensions.",
+              "description": "Keyword to choose data structure. Can be any from: (\"pixel\", \"photon\",\"signal\",\"image\", \"all\"). Default is \"all\" and computes the statisticson \"pixel\", \"photon\", \"signal\" and \"image\".",
               "enum": [
                 "pixel",
                 "photon",
