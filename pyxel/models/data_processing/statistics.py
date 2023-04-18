@@ -76,6 +76,9 @@ def statistics(
     else:
         names = [data_structure]
 
+    parent: str = "/statistics"
+    parent_partial: str = f"{parent}/partial"
+
     for name in names:
         # Extract data from 'detector'
         data_bucket: Union[Pixel, Photon, Signal, Image] = getattr(detector, name)
@@ -93,8 +96,6 @@ def statistics(
             data_array=data_array, absolute_time=absolute_time
         )
 
-        parent: str = "/statistics"
-        parent_partial: str = f"{parent}/partial"
         key: str = f"{parent}/{name}"
         key_partial: str = f"{parent_partial}/{name}"
 
@@ -117,5 +118,6 @@ def statistics(
         else:
             detector.data[key_partial] = data_tree
 
-    if detector.pipeline_count == (detector.num_steps - 1):
+    # This is the last step and there is at least two steps
+    if detector.num_steps > 1 and (detector.pipeline_count == (detector.num_steps - 1)):
         detector.data[parent_partial].orphan()

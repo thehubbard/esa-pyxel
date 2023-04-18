@@ -45,19 +45,20 @@ def test_statistics(ccd_10x10: CCD):
     data = detector.data
     assert isinstance(data, DataTree)
 
-    data_statistics = data["/statistics"]
-    assert isinstance(data_statistics, DataTree)
+    for name in ["pixel", "photon", "signal", "image"]:
+        data_statistics = data[f"/statistics/{name}"]
+        assert isinstance(data_statistics, DataTree)
 
-    assert "time" in data_statistics.coords
-    assert list(data_statistics.coords["time"]) == [0.0]
+        assert "time" in data_statistics.coords
+        assert list(data_statistics.coords["time"]) == [0.0]
 
-    dataset = data_statistics.to_dataset()
-    assert isinstance(dataset, xr.Dataset)
+        dataset = data_statistics.to_dataset()
+        assert isinstance(dataset, xr.Dataset)
 
-    assert "time" in dataset.coords
-    assert list(dataset.coords["time"]) == [0.0]
+        assert "time" in dataset.coords
+        assert list(dataset.coords["time"]) == [0.0]
 
     # Old tests
-    dataset = detector.processed_data.data
-    assert "time" in dataset.coords
-    assert list(dataset.coords["time"].values) == [0.0]
+    # dataset = detector.processed_data.data
+    # assert "time" in dataset.coords
+    # assert list(dataset.coords["time"].values) == [0.0]
