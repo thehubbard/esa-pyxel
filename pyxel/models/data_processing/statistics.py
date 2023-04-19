@@ -67,7 +67,7 @@ def statistics(
         Pyxel Detector object.
     data_structure : Literal
         Keyword to choose data structure. Can be any from:
-        ("pixel", "photon", "signal","image", "all").
+        ("pixel", "photon", "signal", "image", "all").
         Default is "all" and computes the statistics on "pixel", "photon", "signal" and "image".
 
     """
