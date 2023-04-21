@@ -37,7 +37,8 @@ Support for Python 3.8 has been dropped.
   spelling mistakes, typos in markup, grammatical issues, dead hyperlinks,
   and wording simplification.
   (see [!579](https://gitlab.com/esa/pyxel/-/merge_requests/579))
-
+* Fix documentation for 'JSON Schema'.
+  (see [!648](https://gitlab.com/esa/pyxel/-/merge_requests/648))
 
 ### Models
 * New data processing model 'mean-variance'.
