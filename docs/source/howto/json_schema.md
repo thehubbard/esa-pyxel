@@ -10,7 +10,7 @@ PyCharm, VSCode and Jupyter Lab support **JSON Schemas** and can offer auto-comp
 that the `YAML` configuration file is correct.
 
 A good resource for learning about JSON Schema is the book
-[Understanding JSON Schema](http://spacetelescope.github.com/understanding-json-schema) and
+[Understanding JSON Schema](https://json-schema.org/understanding-json-schema) and
 the [JSON Schema website](https://json-schema.org).
 
 
@@ -106,7 +106,7 @@ with the following commands:
 
 ```bash
 conda install -c conda-forge jupyterlab jupyterlab-lsp nodejs
-npm install yaml-language-server
+npm install --global yaml-language-server
 ```
 
 ### Associate to the Pyxel's JSON Schema
@@ -119,7 +119,6 @@ your configuration file  by adding the following line to the top of your `YAML` 
 exposure:
 
   readout:
-    times: [1., 5., 7.]
     times: [1., 5., 7.]
     non_destructive:  false
 
