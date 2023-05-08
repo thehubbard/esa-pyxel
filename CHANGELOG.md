@@ -53,6 +53,8 @@ Support for Python 3.8 has been dropped.
   (See [!641](https://gitlab.com/esa/pyxel/-/merge_requests/641)).
 * Adding more linter rules to 'ruff'.
   (See [!644](https://gitlab.com/esa/pyxel/-/merge_requests/644)).
+* Fix CI/CD pipelines.
+  (See [!650](https://gitlab.com/esa/pyxel/-/merge_requests/650)).
 
 
 ## 1.8 / 2023-03-30
