@@ -36,9 +36,11 @@ Support for Python 3.8 has been dropped and support for Python 3.11 has been add
 * The general documentation has been reviewed and minor fixes made such as:
   spelling mistakes, typos in markup, grammatical issues, dead hyperlinks,
   and wording simplification.
-  (see [!579](https://gitlab.com/esa/pyxel/-/merge_requests/579))
+  (see [!579](https://gitlab.com/esa/pyxel/-/merge_requests/579)).
 * Fix documentation for 'JSON Schema'.
-  (see [!648](https://gitlab.com/esa/pyxel/-/merge_requests/648))
+  (see [!648](https://gitlab.com/esa/pyxel/-/merge_requests/648)).
+* Update JSON Schema Documentation.
+  (see [!649](https://gitlab.com/esa/pyxel/-/merge_requests/649)).
 
 ### Models
 * New data processing model 'mean-variance'.
