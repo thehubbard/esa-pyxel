@@ -49,6 +49,8 @@ Support for Python 3.8 has been dropped and support for Python 3.11 has been add
   (See [!645](https://gitlab.com/esa/pyxel/-/merge_requests/645)).
 * Improve statistics model usage.
   (See [!646](https://gitlab.com/esa/pyxel/-/merge_requests/646)).
+* Improved model 'physical_non_linearity_with_saturation'.
+  (See [!655](https://gitlab.com/esa/pyxel/-/merge_requests/655)).
 
 ### Others
 * Remove support to Python 3.8.
