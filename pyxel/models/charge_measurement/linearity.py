@@ -10,7 +10,6 @@
 from collections.abc import Sequence
 
 import numpy as np
-import os
 from astropy import constants as const
 
 from pyxel.detectors import CMOS, Detector
@@ -120,15 +119,17 @@ def compute_simple_physical_non_linearity(
     xcd = np.linspace(0.2, 0.6, 1000)
     targeted_operating_temperature = temperature
     e_g_calculated = hgcdte_bandgap(
-        xcd, targeted_operating_temperature
+        x_cd=xcd,
+        temperature=targeted_operating_temperature,
     )  # Expected bandgap
+
     index = np.where(e_g_calculated > e_g_targeted)[0][0]
     x_cd = xcd[index]  # Targeted cadmium concentration in the HgCdTe alloy
 
     if not (0.2 <= x_cd <= 0.6):
         raise ValueError(
-            "Hansen bangap expression used out of its nominal application range. \
-                x_cd must be between 0.2 and 0.6"
+            "Hansen bangap expression used out of its nominal application range. "
+            "x_cd must be between 0.2 and 0.6"
         )
 
     ni = ni_hansen(x_cd=x_cd, temperature=temperature)
@@ -194,8 +195,8 @@ def simple_physical_non_linearity(
 
     if not (4 <= detector.environment.temperature <= 300):
         raise ValueError(
-            "Hansen bangap expression used out of its nominal application range. \
-                temperature must be between 4K and 300K"
+            "Hansen bangap expression used out of its nominal application range. "
+            "temperature must be between 4K and 300K"
         )
 
     if not isinstance(detector, CMOS):
@@ -265,8 +266,8 @@ def compute_physical_non_linearity(
 
     if not (0.2 <= x_cd <= 0.6):
         raise ValueError(
-            "Hansen bangap expression used out of its nominal application range. \
-                x_cd must be between 0.2 and 0.6"
+            "Hansen bangap expression used out of its nominal application range. "
+            "x_cd must be between 0.2 and 0.6"
         )
 
     # Calculate the effective band-gap value at the temperature at which simulations are performed.
@@ -343,8 +344,8 @@ def physical_non_linearity(
     """
     if not (4 <= detector.environment.temperature <= 300):
         raise ValueError(
-            "Hansen bangap expression used out of its nominal application range. \
-                temperature must be between 4K and 300K"
+            "Hansen bangap expression used out of its nominal application range. "
+            "temperature must be between 4K and 300K"
         )
 
     if not isinstance(detector, CMOS):
@@ -438,8 +439,8 @@ def compute_physical_non_linearity_with_saturation(
 
     if not (0.2 <= x_cd <= 0.6):
         raise ValueError(
-            "Hansen bangap expression used out of its nominal application range. \
-                x_cd must be between 0.2 and 0.6"
+            "Hansen bangap expression used out of its nominal application range. "
+            "x_cd must be between 0.2 and 0.6"
         )
 
     row, col = signal_array_2d.shape
@@ -461,7 +462,7 @@ def compute_physical_non_linearity_with_saturation(
         n_donor=n_donor,
         x_cd=x_cd,
         temperature=temperature,
-        photonic_current=np.ravel(photon_array_2d)/time_step,
+        photonic_current=np.ravel(photon_array_2d) / time_step,
         fixed_capacitance=fixed_capacitance,
         sat_current=saturation_current,
         n=ideality_factor,
@@ -518,22 +519,25 @@ def physical_non_linearity_with_saturation(
     """
     if not (4 <= detector.environment.temperature <= 300):
         raise ValueError(
-            "Hansen bangap expression used out of its nominal application range. \
-                temperature must be between 4K and 300K"
+            "Hansen bangap expression used out of its nominal application range. "
+            "temperature must be between 4K and 300K"
         )
 
     if not isinstance(detector, CMOS):
         raise TypeError("Expecting a 'CMOS' detector object.")
 
-    temp_dir = os.getcwd()
-    temp_fname = '/temporary.txt'
     if detector.pipeline_count == 0:
-        signal_array_2d = detector.signal.array
+        # This is the first step
+        signal_2d = detector.signal.array
     else:
-        signal_array_2d = np.loadtxt(temp_dir + temp_fname)
+        signal_2d = np.array(detector.data["/non_linearity_with_saturation/previous"])
+
+        if detector.pipeline_count == (detector.num_steps - 1):
+            # This is the last step. Remove the previous value
+            detector.data["/non_linearity_with_saturation"].orphan()
 
     signal_non_linear = compute_physical_non_linearity_with_saturation(
-        signal_array_2d=signal_array_2d,
+        signal_array_2d=signal_2d,
         photon_array_2d=detector.photon.array,
         time_step=detector.time_step,
         step_number=detector.pipeline_count,
@@ -551,7 +555,7 @@ def physical_non_linearity_with_saturation(
         euler_points=euler_points,
     )
 
-    # Update temporary file
-    np.savetxt(temp_dir + temp_fname, signal_non_linear)
+    # Update previous value
+    detector.data["/non_linearity_with_saturation/previous"] = signal_non_linear
 
     detector.signal.array = signal_non_linear
