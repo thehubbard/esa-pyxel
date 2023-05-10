@@ -338,7 +338,7 @@ class Detector:
             raise ValueError("No readout defined.")
 
     @property
-    def pipeline_count(self) -> float:
+    def pipeline_count(self) -> int:
         """TBW."""
         if self._readout_properties is not None:
             return self._readout_properties.pipeline_count
