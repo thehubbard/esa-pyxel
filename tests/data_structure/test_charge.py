@@ -89,10 +89,10 @@ def test_add_one_charge(geo: Geometry):
     )
 
     # ensure that the integer types are consistent
-    exp_df_charges["charge"] = exp_df_charges["charge"].astype("int64")
-    exp_df_charges["number"] = exp_df_charges["number"].astype("int64")
-    charge.frame["charge"] = charge.frame["charge"].astype("int64")
-    charge.frame["number"] = charge.frame["number"].astype("int64")
+    exp_df_charges["charge"] = exp_df_charges["charge"].astype(np.int64)
+    exp_df_charges["number"] = exp_df_charges["number"].astype(np.int64)
+    charge.frame["charge"] = charge.frame["charge"].astype(np.int64)
+    charge.frame["number"] = charge.frame["number"].astype(np.int64)
 
     assert charge.nextid == 1
     pd.testing.assert_frame_equal(charge.frame, exp_df_charges)
@@ -133,10 +133,10 @@ def test_add_one_hole(geo: Geometry):
     )
 
     # ensure that the integer types are consistent
-    exp_df_charges["charge"] = exp_df_charges["charge"].astype("int64")
-    exp_df_charges["number"] = exp_df_charges["number"].astype("int64")
-    charge.frame["charge"] = charge.frame["charge"].astype("int64")
-    charge.frame["number"] = charge.frame["number"].astype("int64")
+    exp_df_charges["charge"] = exp_df_charges["charge"].astype(np.int64)
+    exp_df_charges["number"] = exp_df_charges["number"].astype(np.int64)
+    charge.frame["charge"] = charge.frame["charge"].astype(np.int64)
+    charge.frame["number"] = charge.frame["number"].astype(np.int64)
 
     assert charge.nextid == 1
     pd.testing.assert_frame_equal(charge.frame, exp_df_charges)
@@ -297,10 +297,10 @@ def test_add_two_charges(geo: Geometry):
     )
 
     # ensure that the integer types are consistent
-    exp_df_charges["charge"] = exp_df_charges["charge"].astype("int64")
-    exp_df_charges["number"] = exp_df_charges["number"].astype("int64")
-    charge.frame["charge"] = charge.frame["charge"].astype("int64")
-    charge.frame["number"] = charge.frame["number"].astype("int64")
+    exp_df_charges["charge"] = exp_df_charges["charge"].astype(np.int64)
+    exp_df_charges["number"] = exp_df_charges["number"].astype(np.int64)
+    charge.frame["charge"] = charge.frame["charge"].astype(np.int64)
+    charge.frame["number"] = charge.frame["number"].astype(np.int64)
 
     assert charge.nextid == 2
     pd.testing.assert_frame_equal(charge.frame, exp_df_charges)
@@ -355,10 +355,10 @@ def test_add_two_charges_one_hole(geo: Geometry):
     )
 
     # ensure that the integer types are consistent
-    exp_df_charges["charge"] = exp_df_charges["charge"].astype("int64")
-    exp_df_charges["number"] = exp_df_charges["number"].astype("int64")
-    charge.frame["charge"] = charge.frame["charge"].astype("int64")
-    charge.frame["number"] = charge.frame["number"].astype("int64")
+    exp_df_charges["charge"] = exp_df_charges["charge"].astype(np.int64)
+    exp_df_charges["number"] = exp_df_charges["number"].astype(np.int64)
+    charge.frame["charge"] = charge.frame["charge"].astype(np.int64)
+    charge.frame["number"] = charge.frame["number"].astype(np.int64)
 
     assert charge.nextid == 3
     pd.testing.assert_frame_equal(charge.frame, exp_df_charges)
