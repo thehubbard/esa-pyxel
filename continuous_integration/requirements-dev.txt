@@ -6,7 +6,7 @@
 #
 # 2. Activate the virtual environment
 #   $ source .venv/bin/activate     # For Linux/MacOS
-#   $ .venv/bin/activate            # For Windows
+#   $ .venv/Scripts/activate        # For Windows
 #
 # 3. Install Pyxel with extra packages
 #   (venv-pyxel-dev) $ pip install -r continuous_integration/requirements-dev.txt
