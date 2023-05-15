@@ -526,13 +526,13 @@ def physical_non_linearity_with_saturation(
     if not isinstance(detector, CMOS):
         raise TypeError("Expecting a 'CMOS' detector object.")
 
-    if detector.pipeline_count == 0:
+    if detector.is_first_readout:
         # This is the first step
         signal_2d = detector.signal.array
     else:
         signal_2d = np.array(detector.data["/non_linearity_with_saturation/previous"])
 
-        if detector.pipeline_count == (detector.num_steps - 1):
+        if detector.is_last_readout:
             # This is the last step. Remove the previous value
             detector.data["/non_linearity_with_saturation"].orphan()
 

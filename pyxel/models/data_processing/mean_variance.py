@@ -75,9 +75,11 @@ def mean_variance(
 
     Parameters
     ----------
-    detector
-    data_structure
-    name
+    detector : Detector
+    data_structure : 'pixel', 'photon', 'image' or 'signal'
+        Data bucket to use for the linear regression.
+    name : str, optional
+        Name to use for the result.
 
     Examples
     --------
