@@ -354,6 +354,16 @@ class Detector:
             raise ValueError("No readout defined.")
 
     @property
+    def is_first_readout(self) -> bool:
+        """Check if this is the first readout time."""
+        return bool(self.pipeline_count == 0)
+
+    @property
+    def is_last_readout(self) -> bool:
+        """Check if this is the last readout time."""
+        return bool(self.pipeline_count == (self.num_steps - 1))
+
+    @property
     def read_out(self) -> bool:
         """TBW."""
         if self._readout_properties is not None:
