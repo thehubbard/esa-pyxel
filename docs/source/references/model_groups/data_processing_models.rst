@@ -103,3 +103,20 @@ Extract the roi data converts it to xarray dataset and saves the information to 
         enabled: true
 
 .. autofunction:: extract_roi_to_xarray
+
+
+Linear regression
+=================
+
+Compute a linear regression along readout time.
+
+.. code-block:: yaml
+
+  data_processing:
+    - name: linear_regression
+      func: pyxel.models.data_processing.linear_regression
+      enabled: true
+      arguments:
+        data_structure: image
+
+.. autofunction:: linear_regression
