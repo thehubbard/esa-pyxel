@@ -93,7 +93,8 @@ def mean_variance(
     ...     pipeline=config.pipeline,
     ... )
 
-    # Get results
+    Get results
+
     >>> data_tree["/data/mean_variance"]
     DataTree('mean_variance', parent="data")
     └── DataTree('image')
@@ -118,8 +119,14 @@ def mean_variance(
     Attributes:
         units:    adu^2
 
-    # Display mean-variance plot
+    Display mean-variance plot
+
     >>> mean_variance.plot()
+
+    .. figure:: _static/mean_variance_plot.png
+        :scale: 70%
+        :alt: Mean-Variance plot
+        :align: center
     """
     if name is None:
         name = data_structure

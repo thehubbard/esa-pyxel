@@ -37,14 +37,16 @@ def linear_regression(
     >>> config = pyxel.load("exposure_mode.yaml")
     >>> linear_regression(detector=detector)
 
-    # Run exposure mode with 'data_processing/linear_regression' model
+    Run exposure mode with 'data_processing/linear_regression' model
+
     >>> data_tree = pyxel.run_mode(
     ...     mode=config.exposure,
     ...     detector=config.detector,
     ...     pipeline=config.pipeline,
     ... )
 
-    # Get results
+    Get results
+
     >>> data_tree["/data/linear_regression"]
     DataTree('linear_regression', parent="data")
     └── DataTree('image')
@@ -59,8 +61,14 @@ def linear_regression(
                 slope_std      (y, x) float64 nan nan nan nan nan ... nan nan nan nan nan
                 intercept_std  (y, x) float64 nan nan nan nan nan ... nan nan nan nan nan
 
-    # Display slope as a 2D map
+    Display slope as a 2D map
+
     >>> data_tree["/data/linear_regression/image/slope"].plot(robust=True)
+
+    .. figure:: _static/linear_regression_slope.png
+        :scale: 70%
+        :alt: Linear Regression Slope
+        :align: center
     """
     if detector.num_steps < 3:
         raise ValueError(f"Expecting at least 3 steps. Got: {detector.num_steps}")
