@@ -71,6 +71,8 @@ Support for Python 3.8 has been dropped and support for Python 3.11 has been add
   (See [!655](https://gitlab.com/esa/pyxel/-/merge_requests/655)).
 * Add missing packages in 'pyxel.show_versions()'.
   (See [!657](https://gitlab.com/esa/pyxel/-/merge_requests/657)).
+* Poppy version 1.0.3 is not compatible with numpy 1.24.
+  (See [!659](https://gitlab.com/esa/pyxel/-/merge_requests/659)).
 
 
 ## 1.8 / 2023-03-30

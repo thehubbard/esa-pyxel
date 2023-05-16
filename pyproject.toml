@@ -34,7 +34,7 @@ keywords = ["ESA", "data modeling", "sensors", "calibration", "CCD",
 dependencies = [
     # Scientific computing
     "numba",
-    "numpy>=1.21, <1.24",  # poppy version 1.0.3 is not compatible with numpy>=1.24. See #591
+    "numpy>=1.21",
     "pandas",
     "scipy",
     "xarray>=2022.06",
@@ -83,7 +83,7 @@ tracker = "https://gitlab.com/esa/pyxel/issues"
 
 [project.optional-dependencies]
 calibration = [ "pygmo>=2.16.1" ]
-model = [ "poppy>=1.0.2" ]
+model = [ "poppy>=1.1.0" ]
 io = [ "asdf" ]
 all = [
     "pyxel-sim[calibration]",
