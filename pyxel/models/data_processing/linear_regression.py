@@ -33,23 +33,34 @@ def linear_regression(
 
     Examples
     --------
-    >>> detector = CCD(...)
+    >>> import pyxel
+    >>> config = pyxel.load("exposure_mode.yaml")
     >>> linear_regression(detector=detector)
 
-    >>> detector.data
-    DataTree('None', parent=None)
-    └── DataTree('linear_regression')
-        └── DataTree('image')
-                Dimensions:        (y: 450, x: 450)
-                Coordinates:
-                  * y              (y) int64 0 1 2 3 4 5 6 7 ... 442 443 444 445 446 447 448 449
-                  * x              (x) int64 0 1 2 3 4 5 6 7 ... 442 443 444 445 446 447 448 449
-                Data variables:
-                    slope          (y, x) float64 ...
-                    intercept      (y, x) float64 ...
-                    r2             (y, x) float64 ...
-                    slope_std      (y, x) float64 ...
-                    intercept_std  (y, x) float64 ...
+    # Run exposure mode with 'data_processing/linear_regression' model
+    >>> data_tree = pyxel.run_mode(
+    ...     mode=config.exposure,
+    ...     detector=config.detector,
+    ...     pipeline=config.pipeline,
+    ... )
+
+    # Get results
+    >>> data_tree["/data/linear_regression"]
+    DataTree('linear_regression', parent="data")
+    └── DataTree('image')
+            Dimensions:        (y: 450, x: 450)
+            Coordinates:
+              * y              (y) int64 0 1 2 3 4 5 6 7 ... 442 443 444 445 446 447 448 449
+              * x              (x) int64 0 1 2 3 4 5 6 7 ... 442 443 444 445 446 447 448 449
+            Data variables:
+                slope          (y, x) float64 6.102e+03 6.144e+03 ... 5.998e+03 6.071e+03
+                intercept      (y, x) float64 3.592e+03 2.1e+03 ... 5.855e+03 4.411e+03
+                r2             (y, x) float64 3.033 40.95 9.039 4.155 ... 30.59 1.269 1.964
+                slope_std      (y, x) float64 nan nan nan nan nan ... nan nan nan nan nan
+                intercept_std  (y, x) float64 nan nan nan nan nan ... nan nan nan nan nan
+
+    # Display slope as a 2D map
+    >>> data_tree["/data/linear_regression/image/slope"].plot(robust=True)
     """
     if detector.num_steps < 3:
         raise ValueError(f"Expecting at least 3 steps. Got: {detector.num_steps}")
