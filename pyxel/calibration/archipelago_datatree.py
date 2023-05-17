@@ -221,7 +221,9 @@ class ArchipelagoDataTree:
 
         Parameters
         ----------
-        readout
+        readout : Readout
+        num_rows : int
+        num_cols : int
         num_evolutions : int
             Number of time to run the evolutions.
         num_best_decisions : int or None, optional.
@@ -286,7 +288,6 @@ class ArchipelagoDataTree:
 
         slice_times, slice_rows, slice_cols = self.problem.sim_fit_range.to_slices()
 
-        # geometry = self.problem._detector.geometry
         no_times = len(readout.times)
 
         # Extract simulated 'image', 'signal' and 'pixel' from the processors

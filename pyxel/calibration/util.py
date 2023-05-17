@@ -251,7 +251,7 @@ def check_ranges(
                     raise ValueError("Value of target fit range is wrong")
 
 
-@dataclass
+@dataclass(frozen=True)
 class FitRange2D:
     """Represent a 2D range or slice with a row range and a column range.
 
@@ -271,7 +271,7 @@ class FitRange2D:
     >>> col_slice
     slice(2,7)
 
-    >>> Range2D.from_sequence([0, 5, 2, 7])
+    >>> FitRange2D.from_sequence([0, 5, 2, 7])
     FitRange2D(slice(0, 5),slice(2,7))
     """
 
@@ -303,7 +303,7 @@ class FitRange2D:
             raise ValueError("Value of target fit range is wrong")
 
 
-@dataclass
+@dataclass(frozen=True)
 class FitRange3D:
     """Represent a 3D range or slice with a time range, row range and a column range.
 
