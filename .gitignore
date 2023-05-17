@@ -43,6 +43,7 @@ blog/public/
 .coverage.
 *.cache
 .pytest_cache/
+.ruff_cache
 htmlcov/
 pytest_report.html
 pylint_report.html
@@ -63,6 +64,7 @@ Pipfile.lock
 
 # Dask
 dask-worker-space/
+dask-scratch-space/
 *.lock
 *.dirlock
 
