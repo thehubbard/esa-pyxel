@@ -50,6 +50,8 @@ pylint_report.html
 
 # Jupyter Notebook
 .ipynb_checkpoints
+docs/jupyter_execute/howto/*.ipynb
+docs/source/howto/*.h5
 
 # mypy
 .mypy_cache/
