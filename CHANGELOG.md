@@ -31,6 +31,8 @@ Support for Python 3.8 has been dropped and support for Python 3.11 has been add
   (See [!631](https://gitlab.com/esa/pyxel/-/merge_requests/631)).
 * Function `pyxel.run_mode` returns a `DataTree`.
   (See [!647](https://gitlab.com/esa/pyxel/-/merge_requests/647)).
+* Refactoring method `Calibration.run_calibration_new`.
+  (See [!661](https://gitlab.com/esa/pyxel/-/merge_requests/661)).
 
 ### Documentation
 * The general documentation has been reviewed and minor fixes made such as:
