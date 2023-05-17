@@ -354,7 +354,7 @@ class FitRange3D:
         )
 
     def to_dict(self) -> Mapping[str, slice]:
-        return {"readout_time": self.time, "y": self.row, "x": self.col}
+        return {"time": self.time, "y": self.row, "x": self.col}
 
     def to_slices(self) -> tuple[slice, slice, slice]:
         return self.time, self.row, self.col

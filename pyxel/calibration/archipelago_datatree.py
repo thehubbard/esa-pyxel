@@ -300,9 +300,12 @@ class ArchipelagoDataTree:
         )
 
         # Get the target data
-        all_data_fit_range = all_simulated_full.sel(
-            indexers=self.problem.sim_fit_range.to_dict()
-        )
+        sim_fit_range_dct: dict[str, slice] = dict(self.problem.sim_fit_range.to_dict())
+        if time_value := sim_fit_range_dct.get("time"):  # TODO: Fix this
+            sim_fit_range_dct["readout_time"] = time_value
+            del sim_fit_range_dct["time"]
+
+        all_data_fit_range = all_simulated_full.sel(indexers=sim_fit_range_dct)
         if readout.time_domain_simulation:
             all_data_fit_range["target"] = xr.DataArray(
                 self.problem.all_target_data,
