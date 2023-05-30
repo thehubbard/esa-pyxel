@@ -18,7 +18,7 @@ This release brings a number of bugfixes and documentation improvements.
 
 ### Breaking changes
 
-Function `pyxel.run_mode` is not (yet) stable and may change.
+Function [`pyxel.run_mode`](https://esa.gitlab.io/pyxel/doc/latest/references/api/run.html#pyxel.run_mode) is not (yet) stable and may change.
 
 Support for Python 3.8 has been dropped and support for Python 3.11 has been added.
 
@@ -32,7 +32,7 @@ The minimum versions of some dependencies were changed:
 ### Core
 * Use `xarray.DataTree` for a new `Detector.data` bucket.
   (See [!631](https://gitlab.com/esa/pyxel/-/merge_requests/631)).
-* Function `pyxel.run_mode` returns a `DataTree`.
+* Function [`pyxel.run_mode` ](https://esa.gitlab.io/pyxel/doc/latest/references/api/run.html#pyxel.run_mode) returns a `DataTree`.
   (See [!647](https://gitlab.com/esa/pyxel/-/merge_requests/647)).
 * Refactoring method `Calibration.run_calibration_new`.
   (See [!661](https://gitlab.com/esa/pyxel/-/merge_requests/661) and
