@@ -32,11 +32,13 @@ The minimum versions of some dependencies were changed:
 ### Core
 * Use `xarray.DataTree` for a new `Detector.data` bucket.
   (See [!631](https://gitlab.com/esa/pyxel/-/merge_requests/631)).
-* Function [`pyxel.run_mode` ](https://esa.gitlab.io/pyxel/doc/latest/references/api/run.html#pyxel.run_mode) returns a `DataTree`.
+* Function [`pyxel.run_mode`](https://esa.gitlab.io/pyxel/doc/latest/references/api/run.html#pyxel.run_mode) returns a `DataTree`.
   (See [!647](https://gitlab.com/esa/pyxel/-/merge_requests/647)).
 * Refactoring method `Calibration.run_calibration_new`.
   (See [!661](https://gitlab.com/esa/pyxel/-/merge_requests/661) and
   [!663](https://gitlab.com/esa/pyxel/-/merge_requests/663)).
+* Fix issue in function [`pyxel.run_mode`](https://esa.gitlab.io/pyxel/doc/latest/references/api/run.html#pyxel.run_mode).
+  (See [!669](https://gitlab.com/esa/pyxel/-/merge_requests/669)).
 
 ### Documentation
 * The general documentation has been reviewed and minor fixes made such as:
