@@ -81,7 +81,7 @@ The minimum versions of some dependencies were changed:
   (See [!654](https://gitlab.com/esa/pyxel/-/merge_requests/654)).
 * Fixed Windows compatibility issue with several tests.
   (See [!655](https://gitlab.com/esa/pyxel/-/merge_requests/655)).
-* Add missing packages in 'pyxel.show_versions()'.
+* Add missing packages in [`pyxel.show_versions()`](https://esa.gitlab.io/pyxel/doc/latest/references/api/run.html#pyxel.show_versions).
   (See [!657](https://gitlab.com/esa/pyxel/-/merge_requests/657)).
 * Poppy version 1.0.3 is not compatible with numpy 1.24.
   (See [!659](https://gitlab.com/esa/pyxel/-/merge_requests/659)).
