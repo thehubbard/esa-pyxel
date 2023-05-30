@@ -22,9 +22,12 @@ Function `pyxel.run_mode` is not (yet) stable and may change.
 
 Support for Python 3.8 has been dropped and support for Python 3.11 has been added.
 
-  | Package | Old   | New         |
-  |---------|-------|-------------|
-  | Python  | 3.8+  | **3.9+**    |
+The minimum versions of some dependencies were changed:
+
+  | Package | Old   | New        |
+  |---------|-------|------------|
+  | Python  | 3.8+  | **3.9+**   |
+  | Poppy   | 1.0.3 | **1.1.0+** |
 
 ### Core
 * Use `xarray.DataTree` for a new `Detector.data` bucket.
@@ -42,21 +45,25 @@ Support for Python 3.8 has been dropped and support for Python 3.11 has been add
   (see [!579](https://gitlab.com/esa/pyxel/-/merge_requests/579)).
 * Fix documentation for 'JSON Schema'.
   (see [!648](https://gitlab.com/esa/pyxel/-/merge_requests/648)).
-* Update JSON Schema Documentation.
+* Update [JSON Schema Documentation](https://esa.gitlab.io/pyxel/doc/stable/howto/json_schema.html).
   (see [!649](https://gitlab.com/esa/pyxel/-/merge_requests/649)).
-* Fix typing information for model 'charge_generation / charge_deposition'.
+* Fix typing information for model '[charge_generation.charge_deposition](https://esa.gitlab.io/pyxel/doc/stable/references/model_groups/charge_generation_models.html#charge-deposition-model)'.
   (see [!652](https://gitlab.com/esa/pyxel/-/merge_requests/652)).
-* Add more documentation for 'data_processing' models 'mean_variance' and 'linear_regression'.
+* Add more documentation for '[data_processing](https://esa.gitlab.io/pyxel/doc/stable/references/model_groups/data_processing_models.html)' 
+  models '[mean_variance](https://esa.gitlab.io/pyxel/doc/stable/references/model_groups/data_processing_models.html#mean-variance)'
+  and '[linear_regression](https://esa.gitlab.io/pyxel/doc/stable/references/model_groups/data_processing_models.html#linear-regression)'.
   (see [!660](https://gitlab.com/esa/pyxel/-/merge_requests/660)).
+* Fix documentation.
+  (see [!668](https://gitlab.com/esa/pyxel/-/merge_requests/668)).
 
 ### Models
-* New data processing model 'mean-variance'.
+* New data processing model '[data_processing.mean-variance](https://esa.gitlab.io/pyxel/doc/stable/references/model_groups/data_processing_models.html#mean-variance)'.
   (See [!645](https://gitlab.com/esa/pyxel/-/merge_requests/645)).
-* Improve statistics model usage.
+* Improve '[data_processing.statistics](https://esa.gitlab.io/pyxel/doc/stable/references/model_groups/data_processing_models.html#statistics)' model usage.
   (See [!646](https://gitlab.com/esa/pyxel/-/merge_requests/646)).
-* Improved model 'physical_non_linearity_with_saturation'.
+* Improved model '[charge_measurement.physical_non_linearity_with_saturation](https://esa.gitlab.io/pyxel/doc/stable/references/model_groups/charge_measurement_models.html#pyxel.models.charge_measurement.physical_non_linearity_with_saturation)'.
   (See [!655](https://gitlab.com/esa/pyxel/-/merge_requests/655)).
-* Add new model 'data_processing.linear_regression'.
+* Add new model '[data_processing.linear_regression](https://esa.gitlab.io/pyxel/doc/stable/references/model_groups/data_processing_models.html#linear-regression)'.
   (See [!658](https://gitlab.com/esa/pyxel/-/merge_requests/658)).
 
 ### Others
