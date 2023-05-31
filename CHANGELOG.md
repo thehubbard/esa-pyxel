@@ -39,6 +39,8 @@ The minimum versions of some dependencies were changed:
   [!663](https://gitlab.com/esa/pyxel/-/merge_requests/663)).
 * Fix issue in function [`pyxel.run_mode`](https://esa.gitlab.io/pyxel/doc/latest/references/api/run.html#pyxel.run_mode).
   (See [!669](https://gitlab.com/esa/pyxel/-/merge_requests/669)).
+* Improve Calibration mode when using [`pyxel.run_mode`](https://esa.gitlab.io/pyxel/doc/latest/references/api/run.html#pyxel.run_mode).
+  (See [!666](https://gitlab.com/esa/pyxel/-/merge_requests/666)).
 
 ### Documentation
 * The general documentation has been reviewed and minor fixes made such as:
