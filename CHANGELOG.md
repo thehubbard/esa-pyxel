@@ -22,7 +22,8 @@ This release brings a number of bugfixes and documentation improvements.
 ### Models
 
 ### Others
-
+* Cannot load a FITS file from an HTTP URL.
+  (See [!672](https://gitlab.com/esa/pyxel/-/merge_requests/672)).
 
 ## 1.9 / 2023-06-01
 

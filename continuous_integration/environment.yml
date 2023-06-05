@@ -48,6 +48,7 @@ dependencies:
 # Input/Output
   - astropy>=4.3
   - fsspec>=2021
+  - aiohttp             # For fsspec
   - h5py
   - pyyaml
   - xlrd
