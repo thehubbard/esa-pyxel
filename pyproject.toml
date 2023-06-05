@@ -56,7 +56,8 @@ dependencies = [
 
     # Input/Output
     "astropy>=4.3",
-    "fsspec[http]>=2021",
+    "fsspec>=2021",
+    "aiohttp",  # for fsspec
     "h5py",
     "h5netcdf",
     "pyyaml",
