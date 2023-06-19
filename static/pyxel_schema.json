@@ -1,8 +1,41 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "allOf": [
+  "anyOf": [
     {
-      "$ref": "#/definitions/Configuration"
+      "$ref": "#/definitions/Configuration_Exposure_CCD"
+    },
+    {
+      "$ref": "#/definitions/Configuration_Exposure_CMOS"
+    },
+    {
+      "$ref": "#/definitions/Configuration_Exposure_MKID"
+    },
+    {
+      "$ref": "#/definitions/Configuration_Exposure_APD"
+    },
+    {
+      "$ref": "#/definitions/Configuration_Observation_CCD"
+    },
+    {
+      "$ref": "#/definitions/Configuration_Observation_CMOS"
+    },
+    {
+      "$ref": "#/definitions/Configuration_Observation_MKID"
+    },
+    {
+      "$ref": "#/definitions/Configuration_Observation_APD"
+    },
+    {
+      "$ref": "#/definitions/Configuration_Calibration_CCD"
+    },
+    {
+      "$ref": "#/definitions/Configuration_Calibration_CMOS"
+    },
+    {
+      "$ref": "#/definitions/Configuration_Calibration_MKID"
+    },
+    {
+      "$ref": "#/definitions/Configuration_Calibration_APD"
     }
   ],
   "definitions": {
@@ -832,97 +865,423 @@
       "title": "Characteristics",
       "type": "object"
     },
-    "Configuration": {
+    "Configuration_Calibration_APD": {
       "additionalProperties": false,
       "properties": {
         "apd_detector": {
-          "anyOf": [
+          "allOf": [
             {
               "$ref": "#/definitions/APD"
-            },
-            {
-              "type": "null"
             }
           ],
-          "default": null,
           "title": "APD"
         },
         "calibration": {
-          "anyOf": [
+          "allOf": [
             {
               "$ref": "#/definitions/Calibration"
-            },
+            }
+          ],
+          "title": "Calibration"
+        },
+        "pipeline": {
+          "allOf": [
             {
-              "type": "null"
+              "$ref": "#/definitions/DetailedDetectionPipeline"
+            }
+          ],
+          "title": "Pipeline"
+        }
+      },
+      "required": [
+        "pipeline",
+        "calibration",
+        "apd_detector"
+      ],
+      "type": "object"
+    },
+    "Configuration_Calibration_CCD": {
+      "additionalProperties": false,
+      "properties": {
+        "calibration": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/Calibration"
             }
           ],
           "title": "Calibration"
         },
         "ccd_detector": {
-          "anyOf": [
+          "allOf": [
             {
               "$ref": "#/definitions/CCD"
-            },
-            {
-              "type": "null"
             }
           ],
-          "default": null,
           "title": "CCD"
         },
-        "cmos_detector": {
-          "anyOf": [
+        "pipeline": {
+          "allOf": [
             {
-              "$ref": "#/definitions/CMOS"
-            },
-            {
-              "type": "null"
+              "$ref": "#/definitions/DetailedDetectionPipeline"
             }
           ],
-          "default": null,
+          "title": "Pipeline"
+        }
+      },
+      "required": [
+        "pipeline",
+        "calibration",
+        "ccd_detector"
+      ],
+      "type": "object"
+    },
+    "Configuration_Calibration_CMOS": {
+      "additionalProperties": false,
+      "properties": {
+        "calibration": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/Calibration"
+            }
+          ],
+          "title": "Calibration"
+        },
+        "cmos_detector": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/CMOS"
+            }
+          ],
+          "title": "CMOS"
+        },
+        "pipeline": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/DetailedDetectionPipeline"
+            }
+          ],
+          "title": "Pipeline"
+        }
+      },
+      "required": [
+        "pipeline",
+        "calibration",
+        "cmos_detector"
+      ],
+      "type": "object"
+    },
+    "Configuration_Calibration_MKID": {
+      "additionalProperties": false,
+      "properties": {
+        "calibration": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/Calibration"
+            }
+          ],
+          "title": "Calibration"
+        },
+        "mkid_detector": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/MKID"
+            }
+          ],
+          "title": "MKID"
+        },
+        "pipeline": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/DetailedDetectionPipeline"
+            }
+          ],
+          "title": "Pipeline"
+        }
+      },
+      "required": [
+        "pipeline",
+        "calibration",
+        "mkid_detector"
+      ],
+      "type": "object"
+    },
+    "Configuration_Exposure_APD": {
+      "additionalProperties": false,
+      "properties": {
+        "apd_detector": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/APD"
+            }
+          ],
+          "title": "APD"
+        },
+        "exposure": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/Exposure"
+            }
+          ],
+          "title": "Exposure"
+        },
+        "pipeline": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/DetailedDetectionPipeline"
+            }
+          ],
+          "title": "Pipeline"
+        }
+      },
+      "required": [
+        "pipeline",
+        "exposure",
+        "apd_detector"
+      ],
+      "type": "object"
+    },
+    "Configuration_Exposure_CCD": {
+      "additionalProperties": false,
+      "properties": {
+        "ccd_detector": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/CCD"
+            }
+          ],
+          "title": "CCD"
+        },
+        "exposure": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/Exposure"
+            }
+          ],
+          "title": "Exposure"
+        },
+        "pipeline": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/DetailedDetectionPipeline"
+            }
+          ],
+          "title": "Pipeline"
+        }
+      },
+      "required": [
+        "pipeline",
+        "exposure",
+        "ccd_detector"
+      ],
+      "type": "object"
+    },
+    "Configuration_Exposure_CMOS": {
+      "additionalProperties": false,
+      "properties": {
+        "cmos_detector": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/CMOS"
+            }
+          ],
           "title": "CMOS"
         },
         "exposure": {
-          "anyOf": [
+          "allOf": [
             {
               "$ref": "#/definitions/Exposure"
-            },
-            {
-              "type": "null"
             }
           ],
-          "default": null,
+          "title": "Exposure"
+        },
+        "pipeline": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/DetailedDetectionPipeline"
+            }
+          ],
+          "title": "Pipeline"
+        }
+      },
+      "required": [
+        "pipeline",
+        "exposure",
+        "cmos_detector"
+      ],
+      "type": "object"
+    },
+    "Configuration_Exposure_MKID": {
+      "additionalProperties": false,
+      "properties": {
+        "exposure": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/Exposure"
+            }
+          ],
           "title": "Exposure"
         },
         "mkid_detector": {
-          "anyOf": [
+          "allOf": [
             {
               "$ref": "#/definitions/MKID"
-            },
-            {
-              "type": "null"
             }
           ],
-          "default": null,
           "title": "MKID"
         },
+        "pipeline": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/DetailedDetectionPipeline"
+            }
+          ],
+          "title": "Pipeline"
+        }
+      },
+      "required": [
+        "pipeline",
+        "exposure",
+        "mkid_detector"
+      ],
+      "type": "object"
+    },
+    "Configuration_Observation_APD": {
+      "additionalProperties": false,
+      "properties": {
+        "apd_detector": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/APD"
+            }
+          ],
+          "title": "APD"
+        },
         "observation": {
-          "anyOf": [
+          "allOf": [
             {
               "$ref": "#/definitions/Observation"
-            },
-            {
-              "type": "null"
             }
           ],
           "title": "Observation"
         },
         "pipeline": {
-          "$ref": "#/definitions/DetailedDetectionPipeline"
+          "allOf": [
+            {
+              "$ref": "#/definitions/DetailedDetectionPipeline"
+            }
+          ],
+          "title": "Pipeline"
         }
       },
       "required": [
-        "pipeline"
+        "pipeline",
+        "observation",
+        "apd_detector"
+      ],
+      "type": "object"
+    },
+    "Configuration_Observation_CCD": {
+      "additionalProperties": false,
+      "properties": {
+        "ccd_detector": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/CCD"
+            }
+          ],
+          "title": "CCD"
+        },
+        "observation": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/Observation"
+            }
+          ],
+          "title": "Observation"
+        },
+        "pipeline": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/DetailedDetectionPipeline"
+            }
+          ],
+          "title": "Pipeline"
+        }
+      },
+      "required": [
+        "pipeline",
+        "observation",
+        "ccd_detector"
+      ],
+      "type": "object"
+    },
+    "Configuration_Observation_CMOS": {
+      "additionalProperties": false,
+      "properties": {
+        "cmos_detector": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/CMOS"
+            }
+          ],
+          "title": "CMOS"
+        },
+        "observation": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/Observation"
+            }
+          ],
+          "title": "Observation"
+        },
+        "pipeline": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/DetailedDetectionPipeline"
+            }
+          ],
+          "title": "Pipeline"
+        }
+      },
+      "required": [
+        "pipeline",
+        "observation",
+        "cmos_detector"
+      ],
+      "type": "object"
+    },
+    "Configuration_Observation_MKID": {
+      "additionalProperties": false,
+      "properties": {
+        "mkid_detector": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/MKID"
+            }
+          ],
+          "title": "MKID"
+        },
+        "observation": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/Observation"
+            }
+          ],
+          "title": "Observation"
+        },
+        "pipeline": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/DetailedDetectionPipeline"
+            }
+          ],
+          "title": "Pipeline"
+        }
+      },
+      "required": [
+        "pipeline",
+        "observation",
+        "mkid_detector"
       ],
       "type": "object"
     },
