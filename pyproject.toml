@@ -241,6 +241,7 @@ select = [
     "W",        # pycodestyle
     # "PD",       # pandas-vet
     # "S",        # bandit
+    "PTH",      # Flake8 use Pathlib
     "RUF",      # Ruff-specific rules
     "TCH",      # Flake8 Type Checking
     "TRY",      # Tryceratops
