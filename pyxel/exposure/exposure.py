@@ -20,11 +20,11 @@ from tqdm.auto import tqdm
 
 from pyxel import __version__
 from pyxel.data_structure import Charge, Image, Photon, Pixel, Signal
-from pyxel.exposure import Readout
 from pyxel.pipelines import Processor, ResultId, get_result_id, result_keys
 from pyxel.util import set_random_seed
 
 if TYPE_CHECKING:
+    from pyxel.exposure import Readout
     from pyxel.outputs import CalibrationOutputs, ExposureOutputs, ObservationOutputs
 
 

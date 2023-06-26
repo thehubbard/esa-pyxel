@@ -7,13 +7,16 @@
 
 """Model to compute linear regressions."""
 
-from typing import Literal, Optional, Union
+from typing import TYPE_CHECKING, Literal, Optional, Union
 
 import numpy as np
-import xarray as xr
 
-from pyxel.data_structure import Image, Photon, Pixel, Signal
 from pyxel.detectors import Detector
+
+if TYPE_CHECKING:
+    import xarray as xr
+
+    from pyxel.data_structure import Image, Photon, Pixel, Signal
 
 
 def linear_regression(

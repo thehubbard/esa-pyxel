@@ -11,8 +11,6 @@ from collections.abc import Mapping
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Optional, Union
 
-import numpy as np
-
 from pyxel import __version__, backends
 from pyxel.data_structure import (
     Charge,
@@ -29,6 +27,7 @@ from pyxel.detectors import Environment, ReadoutProperties
 from pyxel.util.memory import get_size, memory_usage_details
 
 if TYPE_CHECKING:
+    import numpy as np
     import xarray as xr
     from datatree import DataTree
 
@@ -76,7 +75,7 @@ class Detector:
             and self._image == other._image
             and self._processed_data == other._processed_data
             and (
-                (self._data is None and other._data is None)
+                (self._data is other._data is None)
                 or (
                     self._data is not None
                     and other._data is not None
@@ -493,7 +492,7 @@ class Detector:
 
         if extension in (".h5", ".hdf5", ".hdf"):
             return cls.from_hdf5(filename)
-        elif extension in (".asdf",):
+        elif extension == ".asdf":
             return cls.from_asdf(filename)
         else:
             raise ValueError(f"Unknown extension {extension!r}.")
@@ -515,7 +514,7 @@ class Detector:
 
         if extension in (".h5", ".hdf5", ".hdf"):
             return self.to_hdf5(filename)
-        elif extension in (".asdf",):
+        elif extension == ".asdf":
             return self.to_asdf(filename)
         else:
             raise ValueError(f"Unknown extension {extension!r}.")

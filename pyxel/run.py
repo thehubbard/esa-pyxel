@@ -560,7 +560,6 @@ def run(input_filename: Union[str, Path], random_seed: Optional[int] = None) -> 
     >>> pyxel.run("configuration.yaml")
     """
     # Late import to speedup start-up time
-    from pyxel.calibration import Calibration
 
     logging.info("Pyxel version %s", version)
     logging.info("Pipeline started.")

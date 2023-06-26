@@ -225,6 +225,7 @@ ignore = [
     "D202",     # No blank lines
     "RUF002",   # Docstring contains ambiguous unicode character
     "RUF003",   # ambiguous unicode character
+    "TCH003",   # Move standard library import in a type-checking block
     "TRY003",   # Avoid specifying long messages outside the exception class
     "TRY301",   # Abstract `raise` to an inner function
 ]
@@ -240,6 +241,7 @@ select = [
     # "PD",       # pandas-vet
     # "S",        # bandit
     "RUF",      # Ruff-specific rules
+    "TCH",      # Flake8 Type Checking
     "TRY",      # Tryceratops
 ]
 

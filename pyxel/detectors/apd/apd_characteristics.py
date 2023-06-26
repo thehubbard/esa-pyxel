@@ -418,7 +418,7 @@ class APDCharacteristics:
             "roic_gain": self._roic_gain,
         }
 
-        return {**dct, **other_dct}
+        return dct | other_dct
 
     @classmethod
     def from_dict(cls, dct: Mapping):
