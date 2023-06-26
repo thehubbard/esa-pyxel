@@ -76,8 +76,8 @@ def result_keys(result_type: ResultId) -> Sequence[ResultId]:
             ResultId("image"),
             ResultId("data"),
         ]
-    else:
-        return [ResultId(result_type)]
+
+    return [ResultId(result_type)]
 
 
 # TODO: Is this class needed ?
