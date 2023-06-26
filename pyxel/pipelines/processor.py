@@ -187,18 +187,8 @@ class Processor:
             setattr(obj, att, new_value)
 
     # TODO: Create a method `DetectionPipeline.run`
-    def run_pipeline(self, abort_before: Optional[str] = None) -> "Processor":
+    def run_pipeline(self) -> None:
         """Run a pipeline with all its models in the right order.
-
-        Parameters
-        ----------
-        abort_before : str
-            model name, the pipeline should be aborted before this
-
-        Returns
-        -------
-        Processor
-            TBW.
 
         Notes
         -----
@@ -206,28 +196,13 @@ class Processor:
         """
         self._log.info("Start pipeline")
 
-        # TODO: Use with-statement to set/unset ._is_running
-        self.pipeline._is_running = True
-
         for group_name in self.pipeline.model_group_names:
             # Get a group of models
             models_grp: Optional[ModelGroup] = getattr(self.pipeline, group_name)
 
             if models_grp:
                 self._log.info("Processing group: %r", group_name)
-
-                abort_flag = models_grp.run(
-                    detector=self.detector,
-                    pipeline=self.pipeline,
-                    abort_model=abort_before,
-                )
-                if abort_flag:
-                    break
-
-        self.pipeline._is_running = False
-
-        # TODO: Is is necessary to return 'self' ??
-        return self
+                models_grp.run(detector=self.detector)
 
     # TODO: Refactor '.result'. See #524. Deprecate this method ?
     @property
