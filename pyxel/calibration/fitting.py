@@ -21,7 +21,6 @@ from typing import TYPE_CHECKING, Literal, Optional, Union
 import numpy as np
 import pandas as pd
 from dask.delayed import delayed
-from numpy.typing import NDArray
 
 from pyxel.calibration import (
     CalibrationMode,
@@ -39,7 +38,7 @@ from pyxel.pipelines import Processor, ResultId
 
 if TYPE_CHECKING:
     import xarray as xr
-    from numpy.typing import ArrayLike
+    from numpy.typing import ArrayLike, NDArray
 
     from pyxel.exposure import Readout
 

@@ -7,13 +7,15 @@
 
 """Simple model to compute basic statistics."""
 from collections.abc import Sequence
-from typing import Literal, Union
+from typing import TYPE_CHECKING, Literal, Union
 
 import xarray as xr
 from datatree import DataTree
 
-from pyxel.data_structure import Image, Photon, Pixel, Signal
 from pyxel.detectors import Detector
+
+if TYPE_CHECKING:
+    from pyxel.data_structure import Image, Photon, Pixel, Signal
 
 
 def compute_statistics(

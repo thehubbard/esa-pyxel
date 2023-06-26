@@ -6,13 +6,15 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """Model to compute Mean-Variance."""
-from typing import Literal, Optional, Union
+from typing import TYPE_CHECKING, Literal, Optional, Union
 
 import xarray as xr
 from datatree import DataTree
 
-from pyxel.data_structure import Image, Photon, Pixel, Signal
 from pyxel.detectors import Detector
+
+if TYPE_CHECKING:
+    from pyxel.data_structure import Image, Photon, Pixel, Signal
 
 
 def compute_mean_variance(data_array: xr.DataArray) -> xr.DataArray:

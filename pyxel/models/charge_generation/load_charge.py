@@ -8,12 +8,13 @@
 """Simple model to load charge profiles."""
 
 from pathlib import Path
-from typing import Literal, Optional, Union
-
-import numpy as np
+from typing import TYPE_CHECKING, Literal, Optional, Union
 
 from pyxel.detectors import Detector, Geometry
 from pyxel.util import load_cropped_and_aligned_image
+
+if TYPE_CHECKING:
+    import numpy as np
 
 
 def load_charge(

@@ -11,8 +11,6 @@ from collections.abc import Mapping
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Optional, Union
 
-import numpy as np
-
 from pyxel import __version__, backends
 from pyxel.data_structure import (
     Charge,
@@ -29,6 +27,7 @@ from pyxel.detectors import Environment, ReadoutProperties
 from pyxel.util.memory import get_size, memory_usage_details
 
 if TYPE_CHECKING:
+    import numpy as np
     import xarray as xr
     from datatree import DataTree
 

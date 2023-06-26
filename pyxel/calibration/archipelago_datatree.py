@@ -16,7 +16,6 @@ import dask.array as da
 import numpy as np
 import pandas as pd
 import xarray as xr
-from dask.delayed import Delayed
 from datatree import DataTree
 from tqdm.auto import tqdm
 
@@ -26,6 +25,7 @@ from pyxel.calibration.util import slice_to_range
 
 if TYPE_CHECKING:
     import pygmo as pg
+    from dask.delayed import Delayed
     from numpy.typing import ArrayLike
 
     from pyxel.exposure import Readout

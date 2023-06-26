@@ -22,7 +22,6 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 from dask.delayed import delayed
-from numpy.typing import NDArray
 
 from pyxel.calibration import (
     FitRange2D,
@@ -40,7 +39,7 @@ from pyxel.pipelines import Processor, ResultId
 
 if TYPE_CHECKING:
     from datatree import DataTree
-    from numpy.typing import ArrayLike
+    from numpy.typing import ArrayLike, NDArray
 
     from pyxel.exposure import Readout
 
