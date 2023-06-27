@@ -6,7 +6,7 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 """Configuration loader."""
 
-from collections.abc import Iterator, Sequence
+from collections.abc import Iterator, Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import Path
 from shutil import copy2
@@ -294,8 +294,9 @@ def to_fitness_function(dct: dict) -> FitnessFunction:
     callable
     """
     func: str = dct["func"]
+    arguments: Optional[Mapping[str, Any]] = dct.get("arguments")
 
-    return FitnessFunction(func=func)
+    return FitnessFunction(func=func, arguments=arguments)
 
 
 def to_calibration(dct: dict) -> "Calibration":

@@ -636,6 +636,7 @@ def generate_detectors() -> Iterator[str]:
     yield "@dataclass"
     yield "class FitnessFunction:"
     yield "    func: str"
+    yield "    arguments: Optional[Mapping[str, Any]] = None"
     yield ""
     yield ""
     yield "@schema(title='Calibration')"

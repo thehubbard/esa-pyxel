@@ -1831,6 +1831,13 @@
     "FitnessFunction": {
       "additionalProperties": false,
       "properties": {
+        "arguments": {
+          "default": null,
+          "type": [
+            "object",
+            "null"
+          ]
+        },
         "func": {
           "type": "string"
         }
