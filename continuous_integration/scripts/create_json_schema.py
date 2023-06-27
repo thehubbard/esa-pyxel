@@ -636,6 +636,7 @@ def generate_detectors() -> Iterator[str]:
     yield "@dataclass"
     yield "class FitnessFunction:"
     yield "    func: str"
+    yield "    arguments: Optional[Mapping[str, Any]] = None"
     yield ""
     yield ""
     yield "@schema(title='Calibration')"
@@ -668,45 +669,24 @@ def generate_detectors() -> Iterator[str]:
     yield ""
     yield ""
 
-    # Create wrappers for the detectors
-    # detector_classes: Sequence[str] = ("CCD", "CMOS", "MKID", "APD")
-    # for klass_name in detector_classes:
-    #     yield f"#@schema(title='{klass_name}')"
-    #     yield "#@dataclass"
-    #     yield f"#class Wrapper{klass_name}:"
-    #     yield f"#    {klass_name.lower()}: {klass_name}"
-    #     yield ""
-    #     yield ""
-
     # Create wrappers for the modes
     mode_classes: Sequence[str] = ("Exposure", "Observation", "Calibration")
-    # for klass_name in mode_classes:
-    #     yield f"#@schema(title='{klass_name}')"
-    #     yield "#@dataclass"
-    #     yield f"#class Wrapper{klass_name}:"
-    #     yield f"#    {klass_name.lower()}: {klass_name}"
-    #     yield ""
-    #     yield ""
 
-    # wrapper_detector_classes = [f"Wrapper{el}" for el in detector_classes]
-    # wrapper_mode_classes = [f"Wrapper{el}" for el in mode_classes]
+    all_configurations: list[str] = []
+    for running_mode in mode_classes:
+        for detector_klass in registered_detectors:
+            detector_name: str = detector_klass.__name__
+            klass_name: str = f"Configuration_{running_mode}_{detector_name}"
 
-    yield "@dataclass"
-    yield "class Configuration:"
-    yield "    pipeline: DetailedDetectionPipeline"
-    # yield f"    # mode: Union[{', '.join(wrapper_mode_classes)}]"
-    # yield f"    # detector: Union[{', '.join(wrapper_detector_classes)}]"
+            yield "@dataclass"
+            yield f"class {klass_name}:"
+            yield "    pipeline: DetailedDetectionPipeline = field(metadata=schema(title='Pipeline'))"
+            yield f"    {running_mode.lower()}: {running_mode} = field(metadata=schema(title={running_mode!r}))"
+            yield f"    {detector_name.lower()}_detector: {detector_name} = field(metadata=schema(title={detector_name!r}))"
 
-    yield ""
-    yield "    # Running modes"
-    for klass_name in mode_classes:
-        yield f"    {klass_name.lower()}: Optional[{klass_name}] = field(default=None, metadata=schema(title={klass_name!r}))"
+            all_configurations.append(klass_name)
 
-    yield ""
-    yield "    # Detectors"
-    for detector_klass in registered_detectors:
-        klass_name: str = detector_klass.__name__
-        yield f"    {klass_name.lower()}_detector: Optional[{klass_name}] = field(default=None, metadata=schema(title={klass_name!r}))"
+    return all_configurations
 
 
 def generate_all_models() -> Iterator[str]:
@@ -787,7 +767,7 @@ def generate_all_models() -> Iterator[str]:
     yield ""
 
     yield from generate_group(lst)
-    yield from generate_detectors()
+    all_configurations = yield from generate_detectors()
 
     yield "class NotEqualError(Exception):"
     yield "    ..."
@@ -839,7 +819,7 @@ def generate_all_models() -> Iterator[str]:
     yield "    schema(format='uri')(Path)"
     yield ""
     yield "    dct_schema = deserialization_schema("
-    yield "        Configuration, version=JsonSchemaVersion.DRAFT_7, all_refs=True,"
+    yield f"        Union[{','.join(all_configurations)}], version=JsonSchemaVersion.DRAFT_7, all_refs=True"
     yield "    )"
     yield ""
     yield ""

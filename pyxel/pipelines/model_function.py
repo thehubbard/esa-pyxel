@@ -8,7 +8,7 @@
 """TBW."""
 import inspect
 import warnings
-from collections.abc import MutableMapping
+from collections.abc import Mapping, MutableMapping
 from typing import TYPE_CHECKING, Any, Callable, Optional
 
 from pyxel.evaluator import evaluate_reference
@@ -201,8 +201,9 @@ class ModelFunction:
 class FitnessFunction:
     """Fitness function for model fitting."""
 
-    def __init__(self, func: str):
+    def __init__(self, func: str, arguments: Optional[Mapping[str, Any]] = None):
         self._func: FittingCallable = evaluate_reference(func)
+        self._arguments: Optional[Mapping[str, Any]] = arguments
 
     def __call__(
         self,
@@ -211,7 +212,17 @@ class FitnessFunction:
         weighting: "np.ndarray",
     ) -> float:
         """Compute fitness."""
-        result: float = self._func(
-            simulated=simulated, target=target, weighting=weighting
-        )
+        if self._arguments is None:
+            result: float = self._func(
+                simulated=simulated,
+                target=target,
+                weighting=weighting,
+            )
+        else:
+            result = self._func(
+                simulated=simulated,
+                target=target,
+                weighting=weighting,
+                **self._arguments,
+            )
         return result
