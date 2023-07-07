@@ -9,15 +9,9 @@ Minor releases include updated stdlib stubs from typeshed.
 
 Pyxel doesn't use SemVer anymore, since most minor releases have at least minor backward incompatible changes.
 
-## UNRELEASED
+## 1.9.1 / 2023-07-07
 
-This release brings a number of bugfixes and documentation improvements.
-
-### Breaking changes
-
-### Core
-
-### Documentation
+This release brings a number of bugfixes.
 
 ### Models
 * Fix an error in a formula for model 'dead_time' in 'readout_electronics'.

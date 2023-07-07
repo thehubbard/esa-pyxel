@@ -67,7 +67,7 @@ dependencies = [
 
     # Others
     "attrs>=21.3.0",
-    "click",
+    "click!=8.1.4",
     "tqdm",
     "typing-extensions",
     "pympler",
