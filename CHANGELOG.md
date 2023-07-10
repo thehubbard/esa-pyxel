@@ -18,6 +18,8 @@ Pyxel doesn't use SemVer anymore, since most minor releases have at least minor 
 ### Models
 
 ### Others
+* Refactoring.
+  (See [!682](https://gitlab.com/esa/pyxel/-/merge_requests/682)).
 
 ## 1.9.1 / 2023-07-07
 

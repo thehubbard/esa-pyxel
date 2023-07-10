@@ -236,10 +236,12 @@ select = [
     "E",        # pycodestyle
     "F",        # pyflakes
     "D",        # pydocstyle
+    "G",        # flake8-logging-format
     # "SIM",      # flake8-simplify
     "W",        # pycodestyle
     # "PD",       # pandas-vet
     # "S",        # bandit
+    "PTH",      # Flake8 use Pathlib
     "RUF",      # Ruff-specific rules
     "TCH",      # Flake8 Type Checking
     "TRY",      # Tryceratops
