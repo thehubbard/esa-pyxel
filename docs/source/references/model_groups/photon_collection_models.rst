@@ -282,10 +282,10 @@ Example of the configuration file:
 
 .. autofunction:: load_psf
 
-.._Wavelength dependence Airs:
+.. _Wavelength dependence AIRS:
 
-Wavelength dependent AIRS
-=========================
+Wavelength dependence AIRS
+==========================
 
 :guilabel:`Photon` → :guilabel:`Photon`
 
@@ -305,5 +305,7 @@ Example of the configuration file:
         telescope_diameter_m2: 0.7 #m
         expand_factor: 18
         time_scale:  1.0
+
+.. note:: This model is specific for the :term:`CMOS` detector.
 
 .. autofunction:: wavelength_dependence_airs
