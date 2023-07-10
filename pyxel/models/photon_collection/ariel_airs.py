@@ -34,7 +34,7 @@
 """Pyxel photon generator models for ARIEL AIRS."""
 
 import logging
-import os
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -65,7 +65,7 @@ def read_star_flux_from_file(
     flux: type array 1D
         Flux of the target considered, in  ph/s/m2/µm.
     """
-    extension = os.path.splitext(filename)[1]
+    extension = Path(filename).suffix
     if extension == ".txt":
         wavelength, flux = np.loadtxt(filename).T
         # set appropriate unit here um
