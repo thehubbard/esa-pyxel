@@ -19,7 +19,8 @@ def create_model(newmodel: str) -> None:
 
     Parameters
     ----------
-    newmodel: modeltype/modelname
+    newmodel : str
+        modeltype/modelname
     """
 
     location, model_name = get_name_and_location(newmodel)
@@ -39,7 +40,7 @@ def create_model(newmodel: str) -> None:
         raise FileNotFoundError(f"Folder '{src}' does not exists !")
 
     try:
-        # Replacing all of template in filenames and directories by model_name
+        # Replacing all templates in filenames and directories by model_name
         filename: Path
         for filename in src.glob("**/*"):
             if filename.suffix == ".pyc" or filename.name == "__pycache__":
