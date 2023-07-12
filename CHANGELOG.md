@@ -22,6 +22,10 @@ and is now replaced by the `Detector.data` bucket.
 ### Core
 * Remove data structure 'ProcessedData' and bucket `Detector.processed_data`.
   (See [!693](https://gitlab.com/esa/pyxel/-/merge_requests/693)).
+* Add parameter 'with_intermediate_steps' in function 'run_mode'.
+  (See [!687](https://gitlab.com/esa/pyxel/-/merge_requests/687)).
+* Remove data structure 'ProcessedData'.
+  (See [!693](https://gitlab.com/esa/pyxel/-/merge_requests/693)).
 
 ### Documentation
 * Add questions to FAQ.
