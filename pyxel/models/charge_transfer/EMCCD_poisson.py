@@ -22,6 +22,13 @@ def multiplication_register(
 
     Takes in CCD detector along with the gain and the total elements of the EMCCD
     multiplication register.
+
+    Parameters
+    ----------
+    detector : CCD
+    total_gain : int
+    gain_elements : int
+        Amount of single stage gain elements in the EMCCD register.
     """
 
     if total_gain < 0 or gain_elements < 0:
