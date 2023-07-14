@@ -18,6 +18,10 @@ Pyxel doesn't use SemVer anymore, since most minor releases have at least minor 
   (See [!688](https://gitlab.com/esa/pyxel/-/merge_requests/688)).
 
 ### Models
+* New model 'Wavelength dependence AIRS' for 'Photon Collection'.
+  (See [!677](https://gitlab.com/esa/pyxel/-/merge_requests/677)).
+* Refactor EMCCD multiplication register model in 'Charge Transfer' with clock-induced-charges (CIC).
+  (See [!678](https://gitlab.com/esa/pyxel/-/merge_requests/678)).
 
 ### Others
 * Refactoring.
