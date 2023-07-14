@@ -21,14 +21,14 @@
 import pytest
 
 from pyxel.detectors import CCD
-from pyxel.models.charge_transfer.EMCCD_poisson_cic import multiplication_register
+from pyxel.models.charge_transfer import multiplication_register_cic
 
 
-def test_multiplication_register(ccd_10x10: CCD):
+def test_multiplication_register_cic(ccd_10x10: CCD):
     detector = ccd_10x10
 
-    multiplication_register(
-        detector=detector, total_gain=0.0, gain_elements=1, pcic_rate=0.0, scic_rate=0.0
+    multiplication_register_cic(
+        detector=detector, total_gain=0, gain_elements=1, pcic_rate=0.0, scic_rate=0.0
     )
 
 
@@ -40,13 +40,13 @@ def test_multiplication_register(ccd_10x10: CCD):
         (-1, -1, 0.005, -0.02),
     ],
 )
-def test_multiplication_register_bad_inputs(
+def test_multiplication_register_cic_bad_inputs(
     ccd_10x10: CCD, total_gain, gain_elements, pcic_rate, scic_rate
 ):
     detector = ccd_10x10
 
     with pytest.raises(ValueError, match="Wrong input parameter"):
-        multiplication_register(
+        multiplication_register_cic(
             detector=detector,
             total_gain=total_gain,
             gain_elements=gain_elements,
