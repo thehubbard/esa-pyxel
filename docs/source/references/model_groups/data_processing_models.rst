@@ -1,8 +1,8 @@
 .. _data_processing:
 
-==========================
+======================
 Data Processing models
-==========================
+======================
 
 .. currentmodule:: pyxel.models.data_processing
 
@@ -90,7 +90,15 @@ The calculated statistics can then be accessed via ``detector.data.statistics``.
 Extract ROI
 ===========
 
-Extract the roi data converts it to xarray dataset and saves the information to the final result.
+Extracts the source data of the final pixel array and output in the form of an xarray dataset. The models makes use of
+the `SEP library`_ which has taken the `original source extractor`_ package and configured it into a library of
+stand-alone functions and classes.
+
+The `SEP library`_ is a useful post-processing tool capable of calculating statistics of a given array. There is code
+within Pyxel capable of harnessing some data, such as background subtraction and imaging a given 2D given nupy array.
+
+.. _SEP library:: <https://sep.readthedocs.io/en/v1.1.x/index.html>_
+.. _original source extractor:: <https://sep.readthedocs.io/en/v1.1.x/index.html>
 
 .. code-block:: yaml
 
