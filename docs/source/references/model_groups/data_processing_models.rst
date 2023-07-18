@@ -63,7 +63,6 @@ Accepted file formats are ``.h5``, ``.hdf5``, ``.hdf`` and ``.asdf``.
 .. autofunction:: pyxel.models.load_detector
    :noindex:
 
-
 .. _statistics:
 
 Statistics
@@ -113,8 +112,9 @@ calculating statistics of a given array.
 There is code within Pyxel capable of harnessing some data,
 such as background subtraction and imaging a given 2D given nupy array.
 
-.. autofunction:: source_extractor.plot_roi
+.. autofunction:: plot_roi
 
+.. _mean_variance:
 
 Mean-variance
 =============
@@ -132,6 +132,7 @@ Compute a mean-variance 1D array that shows relationship between the mean signal
 
 .. autofunction:: mean_variance
 
+.. _linear_regression:
 
 Linear regression
 =================

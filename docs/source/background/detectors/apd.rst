@@ -45,6 +45,6 @@ Available models
     * :ref:`Simple ADC`
 * Data processing:
     * :ref:`statistics`
-    * :ref:`mean_variance`
     * :ref:`linear_regression`
+    * :ref:`mean_variance`
     * :ref:`extract_roi_to_xarray`
