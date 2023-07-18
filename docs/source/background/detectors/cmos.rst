@@ -53,3 +53,8 @@ Available models
     * :ref:`DC crosstalk`
     * :ref:`AC crosstalk`
     * :ref:`SAR ADC`
+* Data processing:
+    * :ref:`statistics`
+    * :ref:`mean_variance`
+    * :ref:`linear_regression`
+    * :ref:`extract_roi_to_xarray`

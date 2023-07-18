@@ -68,3 +68,8 @@ Available models
     * :ref:`Simple amplification`
     * :ref:`Dead time filter`
     * :ref:`Simple phase conversion`
+* Data processing:
+    * :ref:`statistics`
+    * :ref:`mean_variance`
+    * :ref:`linear_regression`
+    * :ref:`extract_roi_to_xarray`

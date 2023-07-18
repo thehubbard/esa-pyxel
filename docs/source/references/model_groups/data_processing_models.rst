@@ -1,8 +1,8 @@
 .. _data_processing:
 
-==========================
+======================
 Data Processing models
-==========================
+======================
 
 .. currentmodule:: pyxel.models.data_processing
 
@@ -63,7 +63,6 @@ Accepted file formats are ``.h5``, ``.hdf5``, ``.hdf`` and ``.asdf``.
 .. autofunction:: pyxel.models.load_detector
    :noindex:
 
-
 .. _statistics:
 
 Statistics
@@ -90,7 +89,13 @@ The calculated statistics can then be accessed via ``detector.data.statistics``.
 Extract ROI
 ===========
 
-Extract the roi data converts it to xarray dataset and saves the information to the final result.
+Extracts the source data of the final pixel array and output in the form of an xarray dataset. The models makes use of
+the `SEP library <https://sep.readthedocs.io/en/v1.1.x/index.html>`_ which has taken the
+`original source extractor <https://sep.readthedocs.io/en/v1.1.x/index.html>`_ package and configured it into a library of
+stand-alone functions and classes.
+
+The `SEP library <https://sep.readthedocs.io/en/v1.1.x/index.html>`_ is a useful post-processing tool capable of
+calculating statistics of a given array.
 
 .. code-block:: yaml
 
@@ -104,6 +109,12 @@ Extract the roi data converts it to xarray dataset and saves the information to 
 
 .. autofunction:: extract_roi_to_xarray
 
+There is code within Pyxel capable of harnessing some data,
+such as background subtraction and imaging a given 2D given nupy array.
+
+.. autofunction:: plot_roi
+
+.. _mean_variance:
 
 Mean-variance
 =============
@@ -121,6 +132,7 @@ Compute a mean-variance 1D array that shows relationship between the mean signal
 
 .. autofunction:: mean_variance
 
+.. _linear_regression:
 
 Linear regression
 =================
