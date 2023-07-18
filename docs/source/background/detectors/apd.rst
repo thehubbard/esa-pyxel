@@ -43,3 +43,8 @@ Available models
 * Readout electronics:
     * :ref:`readout_electronics_create_store_detector`
     * :ref:`Simple ADC`
+* Data processing:
+    * :ref:`statistics`
+    * :ref:`mean_variance`
+    * :ref:`linear_regression`
+    * :ref:`extract_roi_to_xarray`

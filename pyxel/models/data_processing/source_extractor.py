@@ -148,7 +148,7 @@ def extract_roi_to_xarray(
     detector : Detector
         Pyxel Detector object.
     thresh : int
-        Thrshold pixel value above which information from the image array is extracted
+        Threshold pixel value above which information from the image array is extracted
     minarea : int
         Minimum area of pixels required that are above the threshold for the extractor to extract information
     """
