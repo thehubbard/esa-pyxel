@@ -11,7 +11,17 @@ Pyxel doesn't use SemVer anymore, since most minor releases have at least minor 
 
 ## UNRELEASED
 
+This release brings a number of bugfixes and documentation improvements.
+
+### Breaking changes
+
+Bucket `Detector.processed_data` is removed. This bucket was used in the 
+[Data Processing](https://esa.gitlab.io/pyxel/doc/stable/background/pipeline.html) group
+and is now replaced by the `Detector.data` bucket.
+
 ### Core
+* Remove data structure 'ProcessedData' and bucket `Detector.processed_data`.
+  (See [!693](https://gitlab.com/esa/pyxel/-/merge_requests/693)).
 
 ### Documentation
 * Add questions to FAQ.
