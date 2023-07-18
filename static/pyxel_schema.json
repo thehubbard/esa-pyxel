@@ -4516,13 +4516,13 @@
           "properties": {
             "minarea": {
               "default": 5,
-              "description": "minimum area of elements required that are above the threshold for theextractor to extract information",
+              "description": "Minimum area of pixels required that are above the threshold for theextractor to extract information",
               "title": "minarea",
               "type": "integer"
             },
             "thresh": {
               "default": 50,
-              "description": "threshold above which information from the image array is extracted",
+              "description": "Threshold pixel value above which information from the image array isextracted",
               "title": "thresh",
               "type": "integer"
             }
