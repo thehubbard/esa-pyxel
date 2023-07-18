@@ -20,6 +20,8 @@ Pyxel doesn't use SemVer anymore, since most minor releases have at least minor 
   (See [!676](https://gitlab.com/esa/pyxel/-/merge_requests/676)).
 * Add documentation for methods '.plot()' and '.to_xarray()' for 'Pixel', 'Photon', 'Signal', 'Image' and 'Phase'.
   (See [!533](https://gitlab.com/esa/pyxel/-/merge_requests/533)).
+* Add more info in documentation about data processing models.
+  (See [!640](https://gitlab.com/esa/pyxel/-/merge_requests/640)).
 
 ### Models
 * New model 'Wavelength dependence AIRS' for 'Photon Collection'.
