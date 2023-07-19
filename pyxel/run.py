@@ -438,11 +438,12 @@ def run_mode(
     pipeline : DetectionPipeline
         This is the core algorithm of Pyxel. This pipeline contains all the models to run.
     with_intermediate_steps : bool, default: False
-        Add all intermediate steps into the results.
+        Add all intermediate steps into the results as a ``DataTree``. This mode is used for debugging.
+
 
     Notes
     -----
-    Parameter 'with_intermediate_steps' is not (yet) stable and may change in the future.
+    Parameter ``with_intermediate_steps`` is not (yet) stable and may change in the future.
 
     Returns
     -------
@@ -452,6 +453,9 @@ def run_mode(
     ------
     TypeError
         Raised if the ``mode`` is not valid.
+
+    NotImplementedError
+        Raised if parameter ``with_intermediate_steps`` is activated and `mode` is not an ``Exposure`` object.
 
     Examples
     --------
@@ -501,6 +505,107 @@ def run_mode(
     │           signal             (trap_densities_id, angle, period, time, y, x) float64 ...
     │           image              (trap_densities_id, angle, period, time, y, x) float64 ...
     └── DataTree('data')
+
+    Run a pipeline with all intermediate steps
+
+    >>> results = pyxel.run_mode(
+    ...     mode=config.exposure,
+    ...     detector=config.detector,
+    ...     pipeline=config.pipeline,
+    ...     with_intermediate_steps=True,
+    ... )
+    >>> results["/data/intermediate"]
+    DataTree('intermediate', parent="data")
+    │   Dimensions:  ()
+    │   Data variables:
+    │       *empty*
+    │   Attributes:
+    │       long_name:  Store all intermediate results modified along a pipeline
+    └── DataTree('idx_0')
+        │   Dimensions:  ()
+        │   Data variables:
+        │       *empty*
+        │   Attributes:
+        │       long_name:       Pipeline for one unique time
+        │       pipeline_count:  0
+        │       time:            1.0 s
+        ├── DataTree('photon_collection')
+        │   │   Dimensions:  ()
+        │   │   Data variables:
+        │   │       *empty*
+        │   │   Attributes:
+        │   │       long_name:  Model group: 'photon_collection'
+        │   └── DataTree('load_image')
+        │           Dimensions:  (y: 100, x: 100)
+        │           Coordinates:
+        │             * y        (y) int64 0 1 2 3 4 5 6 7 8 9 10 ... 90 91 92 93 94 95 96 97 98 99
+        │             * x        (x) int64 0 1 2 3 4 5 6 7 8 9 10 ... 90 91 92 93 94 95 96 97 98 99
+        │           Data variables:
+        │               photon   (y, x) float64 1.515e+04 1.592e+04 ... 1.621e+04 1.621e+04
+        │           Attributes:
+        │               long_name:  Group: 'load_image'
+        ├── DataTree('charge_generation')
+        │   │   Dimensions:  ()
+        │   │   Data variables:
+        │   │       *empty*
+        │   │   Attributes:
+        │   │       long_name:  Model group: 'charge_generation'
+        │   └── DataTree('photoelectrons')
+        │           Dimensions:  (y: 100, x: 100)
+        │           Coordinates:
+        │             * y        (y) int64 0 1 2 3 4 5 6 7 8 9 10 ... 90 91 92 93 94 95 96 97 98 99
+        │             * x        (x) int64 0 1 2 3 4 5 6 7 8 9 10 ... 90 91 92 93 94 95 96 97 98 99
+        │           Data variables:
+        │               charge   (y, x) float64 1.515e+04 1.592e+04 ... 1.621e+04 1.621e+04
+        │           Attributes:
+        │               long_name:  Group: 'photoelectrons'
+        ├── DataTree('charge_collection')
+        │   │   Dimensions:  ()
+        │   │   Data variables:
+        │   │       *empty*
+        │   │   Attributes:
+        │   │       long_name:  Model group: 'charge_collection'
+        │   └── DataTree('simple_collection')
+        │           Dimensions:  (y: 100, x: 100)
+        │           Coordinates:
+        │             * y        (y) int64 0 1 2 3 4 5 6 7 8 9 10 ... 90 91 92 93 94 95 96 97 98 99
+        │             * x        (x) int64 0 1 2 3 4 5 6 7 8 9 10 ... 90 91 92 93 94 95 96 97 98 99
+        │           Data variables:
+        │               pixel    (y, x) float64 1.515e+04 1.592e+04 ... 1.621e+04 1.621e+04
+        │           Attributes:
+        │               long_name:  Group: 'simple_collection'
+        ├── DataTree('charge_measurement')
+        │   │   Dimensions:  ()
+        │   │   Data variables:
+        │   │       *empty*
+        │   │   Attributes:
+        │   │       long_name:  Model group: 'charge_measurement'
+        │   └── DataTree('simple_measurement')
+        │           Dimensions:  (y: 100, x: 100)
+        │           Coordinates:
+        │             * y        (y) int64 0 1 2 3 4 5 6 7 8 9 10 ... 90 91 92 93 94 95 96 97 98 99
+        │             * x        (x) int64 0 1 2 3 4 5 6 7 8 9 10 ... 90 91 92 93 94 95 96 97 98 99
+        │           Data variables:
+        │               signal   (y, x) float64 0.04545 0.04776 0.04634 ... 0.05004 0.04862 0.04862
+        │           Attributes:
+        │               long_name:  Group: 'simple_measurement'
+        └── DataTree('readout_electronics')
+            │   Dimensions:  ()
+            │   Data variables:
+            │       *empty*
+            │   Attributes:
+            │       long_name:  Model group: 'readout_electronics'
+            └── DataTree('simple_adc')
+                    Dimensions:  (y: 100, x: 100)
+                    Coordinates:
+                      * y        (y) int64 0 1 2 3 4 5 6 7 8 9 10 ... 90 91 92 93 94 95 96 97 98 99
+                      * x        (x) int64 0 1 2 3 4 5 6 7 8 9 10 ... 90 91 92 93 94 95 96 97 98 99
+                    Data variables:
+                        image    (y, x) uint32 298 314 304 304 304 314 ... 325 339 339 328 319 319
+                    Attributes:
+                        long_name:  Group: 'simple_adc'
+
+
     """
     from pyxel.calibration import Calibration
 
