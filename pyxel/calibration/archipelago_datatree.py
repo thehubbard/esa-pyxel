@@ -202,7 +202,10 @@ class ArchipelagoDataTree:
             # Create the islands sequentially
             it = map(create_island, seeds)
             for island in tqdm(
-                it, desc="Create islands", total=self.num_islands, disable=disable_bar
+                it,
+                desc="Create islands",
+                total=self.num_islands,
+                disable=disable_bar,
             ):
                 self._pygmo_archi.push_back(island)
 
@@ -272,10 +275,14 @@ class ArchipelagoDataTree:
                 else:
                     all_champions = partial_champions
 
+                num_params_id = len(all_champions["param_id"])
                 champions_lst.append(
-                    all_champions.expand_dims(evolution=[id_evolution], axis=1)
+                    all_champions.expand_dims(
+                        evolution=[id_evolution], axis=1
+                    ).assign_coords(param_id=range(num_params_id))
                 )
 
+        # Get all champions
         champions: xr.Dataset = xr.concat(champions_lst, dim="evolution")
 
         # Get the champions in a `Dataset`
@@ -295,7 +302,7 @@ class ArchipelagoDataTree:
             cols=num_cols,
             times=no_times,
             readout_times=readout.times,
-        )
+        ).rename(id_processor="processor")
 
         # Get the target data
         if self.problem.sim_fit_range is not None:
@@ -312,9 +319,9 @@ class ArchipelagoDataTree:
             if readout.time_domain_simulation:
                 all_data_fit_range["target"] = xr.DataArray(
                     self.problem.all_target_data,
-                    dims=["id_processor", "readout_time", "y", "x"],
+                    dims=["processor", "readout_time", "y", "x"],
                     coords={
-                        "id_processor": range(len(self.problem.all_target_data)),
+                        "processor": range(len(self.problem.all_target_data)),
                         "readout_time": slice_to_range(slice_times),
                         "y": slice_to_range(slice_rows),
                         "x": slice_to_range(slice_cols),
@@ -323,9 +330,9 @@ class ArchipelagoDataTree:
             else:
                 all_data_fit_range["target"] = xr.DataArray(
                     self.problem.all_target_data,
-                    dims=["id_processor", "y", "x"],
+                    dims=["processor", "y", "x"],
                     coords={
-                        "id_processor": range(len(self.problem.all_target_data)),
+                        "processor": range(len(self.problem.all_target_data)),
                         "y": slice_to_range(slice_rows),
                         "x": slice_to_range(slice_cols),
                     },
@@ -334,20 +341,34 @@ class ArchipelagoDataTree:
             all_data_fit_range = all_simulated_full
             all_data_fit_range["target"] = self.problem.all_target_data
 
-        ds: xr.Dataset = xr.merge([champions, all_data_fit_range])
+        data_tree: DataTree = DataTree()
+        data_tree["champion_fitness"] = champions["champion_fitness"]
+        data_tree["champion_decision"] = champions["champion_decision"]
+        data_tree["champion_parameters"] = champions["champion_parameters"]
+        data_tree["best_fitness"] = champions["best_fitness"]
+        data_tree["best_decision"] = champions["best_decision"]
+        data_tree["best_parameters"] = champions["best_parameters"]
 
-        ds.attrs["num_islands"] = self.num_islands
-        ds.attrs["population_size"] = self.algorithm.population_size
-        ds.attrs["num_evolutions"] = num_evolutions
-        ds.attrs["generations"] = self.algorithm.generations
+        data_tree["simulated_photon"] = all_data_fit_range["simulated_photon"]
+        data_tree["simulated_charge"] = all_data_fit_range["simulated_charge"]
+        data_tree["simulated_pixel"] = all_data_fit_range["simulated_pixel"]
+        data_tree["simulated_signal"] = all_data_fit_range["simulated_signal"]
+        data_tree["simulated_image"] = all_data_fit_range["simulated_image"]
+        data_tree["target"] = all_data_fit_range["target"]
 
-        ds = ds.assign_coords(
-            param_id=range(ds.dims["param_id"]),
-            island=range(1, self.num_islands + 1),
-            evolution=range(1, num_evolutions + 1),
-        )
+        data_tree["full_size/simulated_photon"] = all_simulated_full["simulated_photon"]
+        data_tree["full_size/simulated_charge"] = all_simulated_full["simulated_charge"]
+        data_tree["full_size/simulated_pixel"] = all_simulated_full["simulated_pixel"]
+        data_tree["full_size/simulated_signal"] = all_simulated_full["simulated_signal"]
+        data_tree["full_size/simulated_image"] = all_simulated_full["simulated_image"]
+        data_tree["full_size/target"] = self.problem.target_full_scale
 
-        return DataTree(ds)
+        data_tree.attrs["num_islands"] = self.num_islands
+        data_tree.attrs["population_size"] = self.algorithm.population_size
+        data_tree.attrs["num_evolutions"] = num_evolutions
+        data_tree.attrs["generations"] = self.algorithm.generations
+
+        return data_tree
 
     def _get_champions(self) -> xr.Dataset:
         """Extract the champions.
