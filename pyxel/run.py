@@ -604,8 +604,6 @@ def run_mode(
                         image    (y, x) uint32 298 314 304 304 304 314 ... 325 339 339 328 319 319
                     Attributes:
                         long_name:  Group: 'simple_adc'
-
-
     """
     from pyxel.calibration import Calibration
 

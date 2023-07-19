@@ -5,6 +5,7 @@
 - [How to run Pyxel?](#how-to-run-pyxel)
 - [Is there a simple example of a configuration file?](#is-there-a-simple-example-of-a-configuration-file)
 - [Is there a way to add photons to a Detector directly from a file containing photons or pixel instead of converting from image in ADU to photons via the PTF?](#is-there-a-way-to-add-photons-to-a-detector-directly-from-a-file-containing-photons-or-pixel-instead-of-converting-from-image-in-adu-to-photons-via-the-ptf)
+- [Is there a way to display all intermediate steps when a pipeline is executed ?](#is-there-a-way-to-display-all-intermediate-steps-when-a-pipeline-is-executed-)
 - [Is there any way to use Pyxel to produce a bias or dark image without including any image file?](#is-there-any-way-to-use-pyxel-to-produce-a-bias-or-dark-image-without-including-any-image-file)
 - [What are the different running modes in Pyxel?](#what-are-the-different-running-modes-in-pyxel)
 - [What detectors types are implemented in Pyxel?](#what-detectors-types-are-implemented-in-pyxel)
@@ -55,6 +56,93 @@ A simple pipeline example of a configuration yaml file in exposure mode can be f
 Yes, with the model `load_image` in the photon generation model group it is possible to load photons directly from a file.
 You can set the argument `convert_to_photons` to `false`, and it will use your input array without converting it via PTF.
 See [here](https://esa.gitlab.io/pyxel/doc/stable/references/model_groups/photon_collection_models.html#load-image) for more details.
+
+<a name="is-there-a-way-to-display-all-intermediate-steps-when-a-pipeline-is-executed-"></a>
+## Is there a way to display all intermediate steps when a pipeline is executed ?
+
+Yes, you can run a pipeline enabling parameter `with_intermediate_steps` with function 
+[`pyxel.run_mode`](https://esa.gitlab.io/pyxel/doc/stable/references/api/run.html#pyxel.run_mode).
+
+Example:
+```python
+>>> import pyxel
+>>> config = pyxel.load("configuration.yaml")
+>>> data_tree = pyxel.run_mode(
+...     mode=config.exposure,
+...     detector=config.detector,
+...     pipeline=config.pipeline,
+...     with_intermediate_steps=True,    # <== Enable this 
+... )
+>>> data_tree["/data/intermediate"]      # <== Display all intermediate results
+    DataTree('intermediate', parent="data")
+    │   Attributes:
+    │       long_name:  Store all intermediate results modified along a pipeline
+    └── DataTree('idx_0')
+        │   Attributes:
+        │       long_name:       Pipeline for one unique time
+        │       pipeline_count:  0
+        │       time:            1.0 s
+        ├── DataTree('photon_collection')
+        │   │   Attributes:
+        │   │       long_name:  Model group: 'photon_collection'
+        │   └── DataTree('load_image')
+        │           Dimensions:  (y: 100, x: 100)
+        │           Coordinates:
+        │             * y        (y) int64 0 1 2 3 4 5 6 7 8 9 10 ... 90 91 92 93 94 95 96 97 98 99
+        │             * x        (x) int64 0 1 2 3 4 5 6 7 8 9 10 ... 90 91 92 93 94 95 96 97 98 99
+        │           Data variables:
+        │               photon   (y, x) float64 1.515e+04 1.592e+04 ... 1.621e+04 1.621e+04
+        │           Attributes:
+        │               long_name:  Group: 'load_image'
+        ├── DataTree('charge_generation')
+        │   │   Attributes:
+        │   │       long_name:  Model group: 'charge_generation'
+        │   └── DataTree('photoelectrons')
+        │           Dimensions:  (y: 100, x: 100)
+        │           Coordinates:
+        │             * y        (y) int64 0 1 2 3 4 5 6 7 8 9 10 ... 90 91 92 93 94 95 96 97 98 99
+        │             * x        (x) int64 0 1 2 3 4 5 6 7 8 9 10 ... 90 91 92 93 94 95 96 97 98 99
+        │           Data variables:
+        │               charge   (y, x) float64 1.515e+04 1.592e+04 ... 1.621e+04 1.621e+04
+        │           Attributes:
+        │               long_name:  Group: 'photoelectrons'
+        ├── DataTree('charge_collection')
+        │   │   Attributes:
+        │   │       long_name:  Model group: 'charge_collection'
+        │   └── DataTree('simple_collection')
+        │           Dimensions:  (y: 100, x: 100)
+        │           Coordinates:
+        │             * y        (y) int64 0 1 2 3 4 5 6 7 8 9 10 ... 90 91 92 93 94 95 96 97 98 99
+        │             * x        (x) int64 0 1 2 3 4 5 6 7 8 9 10 ... 90 91 92 93 94 95 96 97 98 99
+        │           Data variables:
+        │               pixel    (y, x) float64 1.515e+04 1.592e+04 ... 1.621e+04 1.621e+04
+        │           Attributes:
+        │               long_name:  Group: 'simple_collection'
+        ├── DataTree('charge_measurement')
+        │   │   Attributes:
+        │   │       long_name:  Model group: 'charge_measurement'
+        │   └── DataTree('simple_measurement')
+        │           Dimensions:  (y: 100, x: 100)
+        │           Coordinates:
+        │             * y        (y) int64 0 1 2 3 4 5 6 7 8 9 10 ... 90 91 92 93 94 95 96 97 98 99
+        │             * x        (x) int64 0 1 2 3 4 5 6 7 8 9 10 ... 90 91 92 93 94 95 96 97 98 99
+        │           Data variables:
+        │               signal   (y, x) float64 0.04545 0.04776 0.04634 ... 0.05004 0.04862 0.04862
+        │           Attributes:
+        │               long_name:  Group: 'simple_measurement'
+        └── DataTree('readout_electronics')
+            │   Attributes:
+            │       long_name:  Model group: 'readout_electronics'
+            └── DataTree('simple_adc')
+                    Dimensions:  (y: 100, x: 100)
+                    Coordinates:
+                      * y        (y) int64 0 1 2 3 4 5 6 7 8 9 10 ... 90 91 92 93 94 95 96 97 98 99
+                      * x        (x) int64 0 1 2 3 4 5 6 7 8 9 10 ... 90 91 92 93 94 95 96 97 98 99
+                    Data variables:
+                        image    (y, x) uint32 298 314 304 304 304 314 ... 325 339 339 328 319 319
+                    Attributes:
+                        long_name:  Group: 'simple_adc'
+```
 
 <a name="is-there-any-way-to-use-pyxel-to-produce-a-bias-or-dark-image-without-including-any-image-file"></a>
 ## Is there any way to use Pyxel to produce a bias or dark image without including any image file?
