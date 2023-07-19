@@ -72,7 +72,7 @@ An example of running Pyxel as a library:
    You need install a Jupyter Server yourself (e.g. Jupyter Notebook, Jupyter Lab, Jupyter Hub...).
 
    If you want to display all intermediate steps computed by function ``pyxel.run_mode``, you can check this link:
-   `Is there a way to display all intermediate steps when a pipeline is executed ? <http://localhost:61859/about/FAQ.html#is-there-a-way-to-display-all-intermediate-steps-when-a-pipeline-is-executed>`_
+   `Is there a way to display all intermediate steps when a pipeline is executed ? <https://esa.gitlab.io/pyxel/doc/stable/about/FAQ.html#is-there-a-way-to-display-all-intermediate-steps-when-a-pipeline-is-executed>`_
 
 
 Running Pyxel from a Docker container
