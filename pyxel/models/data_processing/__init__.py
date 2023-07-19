@@ -10,6 +10,6 @@
 # flake8: noqa
 from .statistics import statistics
 from .lacosmic import remove_cosmic_rays
-from .source_extractor import extract_roi_to_xarray, plot_roi
+from .source_extractor import extract_roi_to_xarray
 from .mean_variance import mean_variance
 from .linear_regression import linear_regression
