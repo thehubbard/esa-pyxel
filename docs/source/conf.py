@@ -91,6 +91,7 @@ napoleon_type_aliases = {
     "Path": ":py:class:`Path <pathlib.Path>`",
     # XArray
     "Dataset": "~xarray.Dataset",
+    "DataTree": "~datatree.DataTree",
     # Pandas
     "DataFrame": "~pandas.DataFrame",
     # Numpy
@@ -101,7 +102,7 @@ napoleon_type_aliases = {
 }
 
 # For 'MyST-NB'
-nb_execution_timeout = 60 * 2
+nb_execution_timeout = 240
 suppress_warnings = ["mystnb.unknown_mime_type"]
 myst_heading_anchors = 3
 
