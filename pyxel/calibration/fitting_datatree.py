@@ -153,6 +153,9 @@ class ModelFittingDataTree(ProblemSingleObjective):
             self.target_full_scale: Optional[xr.DataArray] = None
 
         else:
+            self.targ_fit_range = target_fit_range
+            self.sim_fit_range = out_fit_range
+
             if self.readout.time_domain_simulation:
                 # Target(s) is/are 3D array(s) of dimensions: 'readout_time', 'y', 'x'
                 target_list_3d: Sequence[np.ndarray] = read_datacubes(
@@ -197,10 +200,7 @@ class ModelFittingDataTree(ProblemSingleObjective):
                     weights_from_file=weights_from_file,
                 )
 
-            self.targ_fit_range = target_fit_range
-            self.sim_fit_range = out_fit_range
             self.all_target_data = targets.sel(indexers=target_fit_range.to_dict())
-
             self.target_full_scale = targets
 
     def get_bounds(self) -> tuple[Sequence[float], Sequence[float]]:
