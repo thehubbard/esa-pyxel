@@ -246,6 +246,7 @@ select = [
     "TCH",      # Flake8 Type Checking
     "TRY",      # Tryceratops
     "C90",      # McCabe
+    "N",        # pep8-naming
 ]
 
 exclude = ["_TEMPLATE.py", "_version.py"]
