@@ -52,6 +52,9 @@ and is now replaced by the `Detector.data` bucket.
   (See [!682](https://gitlab.com/esa/pyxel/-/merge_requests/682)).
 * Reduce code complexity by enabling McCabe plugin ruff.
   (See [!257](https://gitlab.com/esa/pyxel/-/merge_requests/257)).
+* Add rule 'pep8-naming' to 'ruff'.
+  (See [!699](https://gitlab.com/esa/pyxel/-/merge_requests/699)).
+
 
 ## 1.9.1 / 2023-07-07
 
