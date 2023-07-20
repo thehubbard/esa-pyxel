@@ -30,6 +30,8 @@ and is now replaced by the `Detector.data` bucket.
   (See [!695](https://gitlab.com/esa/pyxel/-/merge_requests/695)).
 * Fix KeyError issue with function `pyxel.display_simulated`.
   (See [!696](https://gitlab.com/esa/pyxel/-/merge_requests/696)).
+* Fix issue when running Calibration mode with weight files with `pyxel.run_mode`.
+  (See [!700](https://gitlab.com/esa/pyxel/-/merge_requests/700)).
 
 ### Documentation
 * Add questions to FAQ.
