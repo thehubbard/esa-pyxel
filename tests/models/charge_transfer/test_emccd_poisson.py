@@ -1,7 +1,7 @@
 import pytest
 
 from pyxel.detectors import CCD
-from pyxel.models.charge_transfer.EMCCD_poisson import multiplication_register
+from pyxel.models.charge_transfer.emccd_poisson import multiplication_register
 
 
 def test_multiplication_register(ccd_10x10: CCD):
