@@ -36,7 +36,7 @@ from typing import Optional
 import numpy as np
 from astropy import constants as const
 
-from pyxel.detectors import Detector
+from pyxel.detectors import CMOS
 from pyxel.util import set_random_seed
 
 
@@ -231,7 +231,7 @@ def compute_dark_current_induced(
 
 
 def dark_current_induced(
-    detector: Detector,
+    detector: CMOS,
     depletion_volume: float,
     annealing_time: float,
     displacement_dose: float,
