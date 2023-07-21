@@ -27,6 +27,7 @@ Available models
     * :ref:`Dark current rule07`
     * :ref:`Dark current`
     * :ref:`Simple dark current`
+    * :ref:`Dark current induced`
 * Charge collection
     * :ref:`charge_collection_create_store_detector`
     * :ref:`Simple collection`
