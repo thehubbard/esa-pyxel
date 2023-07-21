@@ -11,15 +11,13 @@ from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
-from typing import TYPE_CHECKING, NamedTuple, Optional, Union
+from typing import NamedTuple, Optional, Union
 
 import numpy as np
 import pandas as pd
+import xarray as xr
 
 from pyxel import load_datacube, load_image
-
-if TYPE_CHECKING:
-    import xarray as xr
 
 #  from pyxel.pipelines import Processor
 __all__ = [
@@ -29,6 +27,7 @@ __all__ = [
     "check_ranges",
     "list_to_slice",
     "read_data",
+    "create_processor_data_array",
     "read_datacubes",
     "list_to_3d_slice",
     "FitRange2D",
@@ -41,7 +40,7 @@ __all__ = [
 class CalibrationResult(NamedTuple):
     """Result class for calibration class."""
 
-    dataset: "xr.Dataset"
+    dataset: xr.Dataset
     processors: pd.DataFrame
     logs: pd.DataFrame
     filenames: Sequence
@@ -104,6 +103,37 @@ def read_data(filenames: Sequence[Path]) -> Sequence[np.ndarray]:
     ]
 
     return output
+
+
+def create_processor_data_array(filenames: Sequence[Path]) -> xr.DataArray:
+    """Create a 3D data array from FITS or NPY files for several processor(s).
+
+    This DataArray will have dimensions 'processor', 'y' and 'x'
+
+    Examples
+    --------
+    >>> create_processor_data_array(filenames=...)
+    <xarray.DataArray (processor: 10, y: 2300, x: 1)>
+    array(...)
+    Coordinates:
+      * processor  (processor) int64 0 1 2 3 4 5 6 7 8 9
+      * y          (y) int64 0 1 2 3 4 5 6 7 ... 2293 2294 2295 2296 2297 2298 2299
+      * x          (x) int64 0
+    """
+    data_3d = np.array([read_single_data(Path(filename)) for filename in filenames])
+
+    num_processors, num_y, num_x = data_3d.shape
+
+    data_array = xr.DataArray(
+        data_3d,
+        dims=["processor", "y", "x"],
+        coords={
+            "processor": range(num_processors),
+            "y": range(num_y),
+            "x": range(num_x),
+        },
+    )
+    return data_array
 
 
 # TODO: Refactor and add more unit tests. See #327

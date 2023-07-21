@@ -29,7 +29,7 @@ from pyxel.calibration import (
     FittingCallable,
     ProblemSingleObjective,
     check_fit_ranges,
-    read_data,
+    create_processor_data_array,
     read_datacubes,
 )
 from pyxel.exposure import run_pipeline
@@ -105,7 +105,7 @@ class ModelFittingDataTree(ProblemSingleObjective):
         self.readout: Readout = readout
 
         self.weighting: Optional[np.ndarray] = None
-        self.weighting_from_file: Optional[Sequence[np.ndarray]] = None
+        self.weighting_from_file: Optional[xr.DataArray] = None
         self.fitness_func: FittingCallable = fitness_func
         self.sim_output: ResultId = simulation_output
 
@@ -144,7 +144,7 @@ class ModelFittingDataTree(ProblemSingleObjective):
             targets_list: Sequence["xr.DataArray"] = [
                 load_dataarray(filename) for filename in target_filenames
             ]
-            targets = xr.concat(targets_list, dim="processor")
+            targets: xr.DataArray = xr.concat(targets_list, dim="processor")
 
             self.targ_fit_range: Union[FitRange2D, FitRange3D, None] = None
             self.sim_fit_range: Optional[FitRange3D] = None
@@ -157,13 +157,22 @@ class ModelFittingDataTree(ProblemSingleObjective):
             self.sim_fit_range = out_fit_range
 
             if self.readout.time_domain_simulation:
+                # TODO: Create a new function 'create_temporal_processor_data_array'
                 # Target(s) is/are 3D array(s) of dimensions: 'readout_time', 'y', 'x'
                 target_list_3d: Sequence[np.ndarray] = read_datacubes(
                     filenames=target_filenames
                 )
+                targets_4d: np.ndarray = np.array(target_list_3d)
+                num_processors, _, num_y, num_x = targets_4d.shape
+
                 targets = xr.DataArray(
                     target_list_3d,
                     dims=["processor", "readout_time", "y", "x"],
+                    coords={
+                        "processor": range(num_processors),
+                        "y": range(num_y),
+                        "x": range(num_x),
+                    },
                 )
 
                 times = len(targets["readout_time"])
@@ -180,11 +189,8 @@ class ModelFittingDataTree(ProblemSingleObjective):
                 )
 
             else:
-                # Target(s) is/are 2D array(s) of dimensions: 'y', 'x'
-                target_list_2d: Sequence[np.ndarray] = read_data(
-                    filenames=target_filenames
-                )
-                targets = xr.DataArray(target_list_2d, dims=["processor", "y", "x"])
+                # Get targets from file(s)
+                targets = create_processor_data_array(filenames=target_filenames)
 
                 rows = len(targets["y"])
                 cols = len(targets["x"])
@@ -200,7 +206,7 @@ class ModelFittingDataTree(ProblemSingleObjective):
                     weights_from_file=weights_from_file,
                 )
 
-            self.all_target_data = targets.sel(indexers=target_fit_range.to_dict())
+            self.all_target_data = targets.isel(indexers=target_fit_range.to_dict())
             self.target_full_scale = targets
 
     def get_bounds(self) -> tuple[Sequence[float], Sequence[float]]:
@@ -230,15 +236,19 @@ class ModelFittingDataTree(ProblemSingleObjective):
             assert self.targ_fit_range is not None
 
             if self.readout.time_domain_simulation:
-                wf = read_datacubes(weights_from_file)
-                self.weighting_from_file = [
-                    weight_array[self.targ_fit_range.to_slices()] for weight_array in wf
-                ]
+                weights_list: Sequence[np.ndarray] = read_datacubes(weights_from_file)
+                weights_data_array = xr.DataArray(
+                    weights_list, dims=["processor", "readout_time", "y", "x"]
+                )
             else:
-                wf = read_data(weights_from_file)
-                self.weighting_from_file = [
-                    weight_array[self.targ_fit_range.to_slices()] for weight_array in wf
-                ]
+                weights_data_array = create_processor_data_array(
+                    filenames=weights_from_file
+                )
+
+            self.weighting_from_file = weights_data_array.isel(
+                indexers=self.targ_fit_range.to_dict()
+            )
+
         elif weights is not None:
             self.weighting = np.array(weights)
 
@@ -315,7 +325,7 @@ class ModelFittingDataTree(ProblemSingleObjective):
             raise TypeError("Expected a 'DataArray'")
 
         if self.sim_fit_range is not None:
-            simulated_data = simulated_data.sel(indexers=self.sim_fit_range.to_dict())
+            simulated_data = simulated_data.isel(indexers=self.sim_fit_range.to_dict())
 
         return simulated_data
 
@@ -386,7 +396,7 @@ class ModelFittingDataTree(ProblemSingleObjective):
             processor_list: Sequence[Processor] = self.param_processor_list
 
             overall_fitness: float = 0.0
-            for i, (processor, target_data) in enumerate(
+            for processor_id, (processor, target_data) in enumerate(
                 zip(processor_list, self.all_target_data)
             ):
                 processor = self.update_processor(
@@ -415,15 +425,18 @@ class ModelFittingDataTree(ProblemSingleObjective):
                             processor.detector.geometry.row,
                             processor.detector.geometry.col,
                         ),
-                        fill_value=self.weighting[i],
+                        fill_value=self.weighting[processor_id],
                     )
                 elif self.weighting_from_file is not None:
-                    weighting = self.weighting_from_file[i]
+                    weighting_data: xr.DataArray = self.weighting_from_file.isel(
+                        processor=processor_id
+                    )
+                    weighting = weighting_data.to_numpy()
 
                 overall_fitness += self._calculate_fitness(
                     simulated_data=simulated_data,
                     target_data=target_data,
-                    weighting=weighting,
+                    weighting=weighting,  # TODO: 'weighting' should be a 'DataArray'
                 )
 
         except Exception:

@@ -19,6 +19,7 @@ from .util import (
     list_to_slice,
     read_data,
     read_datacubes,
+    create_processor_data_array,
     list_to_3d_slice,
     FitRange2D,
     FitRange3D,
