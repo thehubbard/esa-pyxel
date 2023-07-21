@@ -468,9 +468,11 @@ Example of configuration file:
       func: pyxel.models.charge_generation.dark_current_induced
       enabled: true
       arguments:
-        DepletionVolume: 64 # µm3
-        AnnealingTime: 0.1 # weeks
-        Dd:  50  # TeV/g
-        ShotNoise: false
+        depletion_volume: 64 # µm3
+        annealing_time: 0.1 # weeks
+        displacement_dose:  50  # TeV/g
+        shot_noise: false
+
+.. note:: This model is only available for CMOS detector.
 
 .. autofunction:: pyxel.models.charge_generation.dark_current_induced
