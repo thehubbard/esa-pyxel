@@ -208,7 +208,7 @@ class ModelFittingDataTree(ProblemSingleObjective):
                     weights_from_file=weights_from_file,
                 )
 
-            self.all_target_data = targets.sel(indexers=target_fit_range.to_dict())
+            self.all_target_data = targets.isel(indexers=target_fit_range.to_dict())
             self.target_full_scale = targets
 
     def get_bounds(self) -> tuple[Sequence[float], Sequence[float]]:
@@ -247,7 +247,7 @@ class ModelFittingDataTree(ProblemSingleObjective):
                     filenames=weights_from_file
                 )
 
-            self.weighting_from_file = weights_data_array.sel(
+            self.weighting_from_file = weights_data_array.isel(
                 indexers=self.targ_fit_range.to_dict()
             )
 
@@ -327,7 +327,7 @@ class ModelFittingDataTree(ProblemSingleObjective):
             raise TypeError("Expected a 'DataArray'")
 
         if self.sim_fit_range is not None:
-            simulated_data = simulated_data.sel(indexers=self.sim_fit_range.to_dict())
+            simulated_data = simulated_data.isel(indexers=self.sim_fit_range.to_dict())
 
         return simulated_data
 
@@ -398,7 +398,7 @@ class ModelFittingDataTree(ProblemSingleObjective):
             processor_list: Sequence[Processor] = self.param_processor_list
 
             overall_fitness: float = 0.0
-            for i, (processor, target_data) in enumerate(
+            for processor_id, (processor, target_data) in enumerate(
                 zip(processor_list, self.all_target_data)
             ):
                 processor = self.update_processor(
@@ -427,15 +427,18 @@ class ModelFittingDataTree(ProblemSingleObjective):
                             processor.detector.geometry.row,
                             processor.detector.geometry.col,
                         ),
-                        fill_value=self.weighting[i],
+                        fill_value=self.weighting[processor_id],
                     )
                 elif self.weighting_from_file is not None:
-                    weighting = self.weighting_from_file[i]
+                    weighting_data: xr.DataArray = self.weighting_from_file.isel(
+                        processor=processor_id
+                    )
+                    weighting = weighting_data.to_numpy()
 
                 overall_fitness += self._calculate_fitness(
                     simulated_data=simulated_data,
                     target_data=target_data,
-                    weighting=weighting,
+                    weighting=weighting,  # TODO: 'weighting' should be a 'DataArray'
                 )
 
         except Exception:
