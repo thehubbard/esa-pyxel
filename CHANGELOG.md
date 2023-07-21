@@ -32,6 +32,8 @@ and is now replaced by the `Detector.data` bucket.
   (See [!696](https://gitlab.com/esa/pyxel/-/merge_requests/696)).
 * Fix issue when running Calibration mode with weight files with `pyxel.run_mode`.
   (See [!700](https://gitlab.com/esa/pyxel/-/merge_requests/700)).
+* Wrong shape when using parameters 'result_fit_range' and 'target_fit_range' in Calibration mode.
+  (See [!701](https://gitlab.com/esa/pyxel/-/merge_requests/701)).
 
 ### Documentation
 * Add questions to FAQ.
