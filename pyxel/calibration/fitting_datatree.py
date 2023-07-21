@@ -144,7 +144,7 @@ class ModelFittingDataTree(ProblemSingleObjective):
             targets_list: Sequence["xr.DataArray"] = [
                 load_dataarray(filename) for filename in target_filenames
             ]
-            targets = xr.concat(targets_list, dim="processor")
+            targets: xr.DataArray = xr.concat(targets_list, dim="processor")
 
             self.targ_fit_range: Union[FitRange2D, FitRange3D, None] = None
             self.sim_fit_range: Optional[FitRange3D] = None
@@ -190,9 +190,7 @@ class ModelFittingDataTree(ProblemSingleObjective):
 
             else:
                 # Get targets from file(s)
-                targets: xr.DataArray = create_processor_data_array(
-                    filenames=target_filenames
-                )
+                targets = create_processor_data_array(filenames=target_filenames)
 
                 rows = len(targets["y"])
                 cols = len(targets["x"])
