@@ -118,8 +118,8 @@ def _run_exposure_mode(
 
     Returns
     -------
-    Dataset
-        An multi-dimensional array database from `xarray <https://xarray.pydata.org>`_.
+    DataTree
+        An multi-dimensional tree of arrays.
 
     Examples
     --------
@@ -132,22 +132,35 @@ def _run_exposure_mode(
 
     Run an exposure pipeline
 
-    >>> dataset = pyxel.exposure_mode(
+    >>> data_tree = pyxel._run_exposure_mode(
     ...     exposure=config.exposure,
     ...     detector=config.detector,
     ...     pipeline=config.pipeline,
     ... )
-    >>> dataset
-    <xarray.Dataset>
-    Dimensions:       (readout_time: 1, y: 450, x: 450)
-    Coordinates:
-      * readout_time  (readout_time) int64 1
-      * y             (y) int64 0 1 2 3 4 5 6 7 ... 442 443 444 445 446 447 448 449
-      * x             (x) int64 0 1 2 3 4 5 6 7 ... 442 443 444 445 446 447 448 449
-    Data variables:
-        image         (readout_time, y, x) uint16 9475 9089 8912 ... 9226 9584 10079
-        signal        (readout_time, y, x) float64 3.159 3.03 2.971 ... 3.195 3.36
-        pixel         (readout_time, y, x) float64 1.053e+03 1.01e+03 ... 1.12e+03
+    >>> data_tree
+    DataTree('None', parent=None)
+    │   Dimensions:  (time: 54, y: 100, x: 100)
+    │   Coordinates:
+    │     * time     (time) float64 0.02 0.06 0.12 0.2 0.3 ... 113.0 117.8 122.7 127.7
+    │     * y        (y) int64 0 1 2 3 4 5 6 7 8 9 10 ... 90 91 92 93 94 95 96 97 98 99
+    │     * x        (x) int64 0 1 2 3 4 5 6 7 8 9 10 ... 90 91 92 93 94 95 96 97 98 99
+    │   Data variables:
+    │       photon   (time, y, x) float64 102.0 108.0 79.0 ... 2.513e+04 2.523e+04
+    │       charge   (time, y, x) float64 201.0 193.0 173.0 ... 2.523e+04 2.532e+04
+    │       pixel    (time, y, x) float64 94.68 98.18 71.82 ... 2.388e+04 2.418e+04
+    │       signal   (time, y, x) float64 0.001176 0.00129 0.0007866 ... 0.2946 0.2982
+    │       image    (time, y, x) float64 20.0 22.0 13.0 ... 4.826e+03 4.887e+03
+    │   Attributes:
+    │       pyxel version:  1.9.1+104.g9da11bb2.dirty
+    │       running mode:   Exposure
+    └── DataTree('data')
+        └── DataTree('mean_variance')
+            └── DataTree('image')
+                    Dimensions:   (mean: 54)
+                    Coordinates:
+                      * mean      (mean) float64 19.58 38.7 57.83 ... 4.586e+03 4.681e+03 4.776e+03
+                    Data variables:
+                        variance  (mean) float64 5.958 10.28 14.82 ... 1.25e+04 1.3e+04 1.348e+04
     """
 
     logging.info("Mode: Exposure")
@@ -542,37 +555,39 @@ def run_mode(
     ... )
     >>> data
     DataTree('None', parent=None)
-    │   Dimensions:            (period: 5, angle: 3, trap_densities_id: 7, dim_0: 2)
+    │   Dimensions:  (time: 54, y: 100, x: 100)
     │   Coordinates:
-    │     * period             (period) int64 4 8 12 16 20
-    │     * angle              (angle) int64 0 10 20
-    │     * trap_densities_id  (trap_densities_id) int64 0 1 2 3 4 5 6
-    │       trap_densities     (trap_densities_id, dim_0) float64 nan nan ... 70.0 80.0
-    │   Dimensions without coordinates: dim_0
+    │     * time     (time) float64 0.02 0.06 0.12 0.2 0.3 ... 113.0 117.8 122.7 127.7
+    │     * y        (y) int64 0 1 2 3 4 5 6 7 8 9 10 ... 90 91 92 93 94 95 96 97 98 99
+    │     * x        (x) int64 0 1 2 3 4 5 6 7 8 9 10 ... 90 91 92 93 94 95 96 97 98 99
     │   Data variables:
-    │       *empty*
+    │       photon   (time, y, x) float64 85.0 120.0 109.0 ... 2.533e+04 2.51e+04
+    │       charge   (time, y, x) float64 201.0 196.0 202.0 ... 2.543e+04 2.52e+04
+    │       pixel    (time, y, x) float64 77.38 110.0 99.09 ... 2.406e+04 2.406e+04
+    │       signal   (time, y, x) float64 0.0009377 0.001322 0.00133 ... 0.2968 0.2968
+    │       image    (time, y, x) float64 16.0 22.0 22.0 ... 4.863e+03 4.863e+03
     │   Attributes:
-    │       pyxel version:  1.8+141.gb470c395
-    │       running mode:   Observation - Product
-    ├── DataTree('bucket')
-    │       Dimensions:            (trap_densities_id: 7, angle: 3, period: 5, time: 1,
-    │                               y: 100, x: 100, dim_0: 2)
-    │       Coordinates:
-    │         * time               (time) float64 1.0
-    │         * y                  (y) int64 0 1 2 3 4 5 6 7 8 ... 92 93 94 95 96 97 98 99
-    │         * x                  (x) int64 0 1 2 3 4 5 6 7 8 ... 92 93 94 95 96 97 98 99
-    │         * period             (period) int64 4 8 12 16 20
-    │         * angle              (angle) int64 0 10 20
-    │         * trap_densities_id  (trap_densities_id) int64 0 1 2 3 4 5 6
-    │           trap_densities     (trap_densities_id, dim_0) float64 nan nan ... 70.0 80.0
-    │       Dimensions without coordinates: dim_0
-    │       Data variables:
-    │           photon             (trap_densities_id, angle, period, time, y, x) float64 ...
-    │           charge             (trap_densities_id, angle, period, time, y, x) float64 ...
-    │           pixel              (trap_densities_id, angle, period, time, y, x) float64 ...
-    │           signal             (trap_densities_id, angle, period, time, y, x) float64 ...
-    │           image              (trap_densities_id, angle, period, time, y, x) float64 ...
+    │       pyxel version:  1.9.1+104.g9da11bb2
+    │       running mode:   Exposure
     └── DataTree('data')
+        ├── DataTree('mean_variance')
+        │   └── DataTree('image')
+        │           Dimensions:   (mean: 54)
+        │           Coordinates:
+        │             * mean      (mean) float64 19.64 38.7 57.77 ... 4.586e+03 4.682e+03 4.777e+03
+        │           Data variables:
+        │               variance  (mean) float64 5.893 10.36 15.13 ... 1.235e+04 1.297e+04 1.342e+04
+        └── DataTree('statistics')
+            └── DataTree('pixel')
+                    Dimensions:  (time: 54)
+                    Coordinates:
+                      * time     (time) float64 0.02 0.06 0.12 0.2 0.3 ... 113.0 117.8 122.7 127.7
+                    Data variables:
+                        var      (time) float64 92.4 197.8 317.2 ... 3.027e+05 3.175e+05 3.286e+05
+                        mean     (time) float64 94.64 189.1 283.5 ... 2.269e+04 2.316e+04 2.363e+04
+                        min      (time) float64 63.39 134.9 220.3 ... 2.135e+04 2.193e+04 2.24e+04
+                        max      (time) float64 134.8 248.1 359.7 ... 2.522e+04 2.569e+04 2.64e+04
+                        count    (time) float64 1e+04 1e+04 1e+04 1e+04 ... 1e+04 1e+04 1e+04 1e+04
 
     Run a 'Calibration' pipeline
 
