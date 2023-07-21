@@ -243,14 +243,13 @@ def run_exposure_pipeline(
 
 
 def _extract_datatree(detector: "Detector", keys: Sequence[ResultId]) -> DataTree:
-    """Extract data from a detector object.
-
-    A new `DataTree` is created with name 'bucket'.
+    """Extract data from a detector object into a `DataTree`.
 
     Parameters
     ----------
-    detector
-    keys
+    detector : Detector
+    keys:
+        Bucket(s) to extract (e.g. ["photon", "charge", "pixel", "signal", "image", "data"])
 
     Returns
     -------
@@ -267,18 +266,17 @@ def _extract_datatree(detector: "Detector", keys: Sequence[ResultId]) -> DataTre
     ...     keys=["photon", "charge", "pixel", "signal", "image", "data"],
     ... )
     DataTree('None', parent=None)
-    └── DataTree('bucket')
-            Dimensions:  (time: 1, y: 100, x: 100)
-            Coordinates:
-              * time     (time) float64 1.0
-              * y        (y) int64 0 1 2 3 4 5 6 7 8 9 10 ... 90 91 92 93 94 95 96 97 98 99
-              * x        (x) int64 0 1 2 3 4 5 6 7 8 9 10 ... 90 91 92 93 94 95 96 97 98 99
-            Data variables:
-                photon   (time, y, x) float64 1.515e+04 1.592e+04 ... 1.621e+04 1.621e+04
-                charge   (time, y, x) float64 1.515e+04 1.592e+04 ... 1.621e+04 1.621e+04
-                pixel    (time, y, x) float64 1.515e+04 1.592e+04 ... 1.621e+04 1.621e+04
-                signal   (time, y, x) float64 0.04545 0.04776 0.04634 ... 0.04862 0.04862
-                image    (time, y, x) uint32 298 314 304 304 304 314 ... 339 339 328 319 319
+        Dimensions:  (time: 1, y: 100, x: 100)
+        Coordinates:
+          * time     (time) float64 1.0
+          * y        (y) int64 0 1 2 3 4 5 6 7 8 9 10 ... 90 91 92 93 94 95 96 97 98 99
+          * x        (x) int64 0 1 2 3 4 5 6 7 8 9 10 ... 90 91 92 93 94 95 96 97 98 99
+        Data variables:
+            photon   (time, y, x) float64 1.515e+04 1.592e+04 ... 1.621e+04 1.621e+04
+            charge   (time, y, x) float64 1.515e+04 1.592e+04 ... 1.621e+04 1.621e+04
+            pixel    (time, y, x) float64 1.515e+04 1.592e+04 ... 1.621e+04 1.621e+04
+            signal   (time, y, x) float64 0.04545 0.04776 0.04634 ... 0.04862 0.04862
+            image    (time, y, x) uint32 298 314 304 304 304 314 ... 339 339 328 319 319
     """
     # Get current absolute time
     absolute_time = xr.DataArray(
@@ -287,7 +285,7 @@ def _extract_datatree(detector: "Detector", keys: Sequence[ResultId]) -> DataTre
         attrs={"units": "s"},
     )
 
-    partial_data_tree: DataTree = DataTree()
+    dataset: xr.Dataset = xr.Dataset()
 
     key: ResultId
     for key in keys:
@@ -304,9 +302,9 @@ def _extract_datatree(detector: "Detector", keys: Sequence[ResultId]) -> DataTre
         data_array: xr.DataArray = obj.to_xarray().expand_dims(time=absolute_time)
         data_array.name = "value"
 
-        partial_data_tree[f"/bucket/{key}"] = data_array
+        dataset[key] = data_array
 
-    return partial_data_tree
+    return DataTree(dataset)
 
 
 def run_pipeline(
@@ -396,7 +394,7 @@ def run_pipeline(
             partial_datatree: DataTree = _extract_datatree(detector=detector, keys=keys)
 
             # Concatenate all 'partialtree'
-            if data_tree.get("bucket") is None:
+            if data_tree.is_empty:
                 data_tree = partial_datatree
             else:
                 data_tree = data_tree.combine_first(partial_datatree)

@@ -34,6 +34,8 @@ and is now replaced by the `Detector.data` bucket.
   (See [!700](https://gitlab.com/esa/pyxel/-/merge_requests/700)).
 * Wrong shape when using parameters 'result_fit_range' and 'target_fit_range' in Calibration mode.
   (See [!701](https://gitlab.com/esa/pyxel/-/merge_requests/701)).
+* Simplify outputs of 'pyxel.run_mode' in Exposure mode.
+  (See [!702](https://gitlab.com/esa/pyxel/-/merge_requests/702)).
 
 ### Documentation
 * Add questions to FAQ.
