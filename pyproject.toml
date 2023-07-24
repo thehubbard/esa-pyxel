@@ -156,6 +156,7 @@ module = [
     "fsspec.*",
     "jsonschema.*",
     "h5py.*",
+    "lacosmic.*",
     "matplotlib.*",
     "mpl_toolkits.*",
     "numba.*",
