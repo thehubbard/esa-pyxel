@@ -17,7 +17,6 @@ References,
 import lacosmic
 import numpy as np
 import xarray as xr
-
 from datatree import DataTree
 
 from pyxel.detectors import Detector

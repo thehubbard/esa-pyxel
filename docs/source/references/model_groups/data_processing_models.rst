@@ -150,6 +150,7 @@ Compute a linear regression along readout time.
 
 .. autofunction:: linear_regression
 
+.. _remove_cosmic_rays:
 
 Remove Cosmic Rays
 ==================

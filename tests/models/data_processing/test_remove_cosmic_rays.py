@@ -5,11 +5,10 @@
 #   this file, may be copied, modified, propagated, or distributed except according to
 #   the terms contained in the file ‘LICENCE.txt’.
 import numpy as np
-from skimage.draw import line_aa, circle_perimeter_aa, disk
-
 import pytest
 import xarray as xr
 from datatree import DataTree
+from skimage.draw import circle_perimeter_aa, disk, line_aa
 
 from pyxel.detectors import (
     CCD,
@@ -19,18 +18,6 @@ from pyxel.detectors import (
     ReadoutProperties,
 )
 from pyxel.models.data_processing import remove_cosmic_rays
-
-
-def save_to_fits(fits_file, data):
-    """Debugging function."""
-    from astropy.io import fits
-    fits.writeto(filename=fits_file, data=data, clobber=True)
-
-
-def show_in_view(fits_file):
-    """Debugging function."""
-    import requests
-    requests.get(url="http://localhost:9991/append", params={"file": fits_file},)
 
 
 def create_image_with_cosmics():
@@ -95,8 +82,8 @@ def test_data_ouput(ccd_50x50: CCD):
     assert isinstance(data["/lacosmic/cosmic_ray_clean"], xr.DataArray)
     assert isinstance(data["/lacosmic/cosmic_ray_mask"], xr.DataArray)
 
-    assert list(data["/lacosmic/cosmic_ray_clean"].coords.keys()) == ['y', 'x', 'time']
-    assert list(data["/lacosmic/cosmic_ray_mask"].coords.keys()) == ['y', 'x', 'time']
+    assert list(data["/lacosmic/cosmic_ray_clean"].coords.keys()) == ["y", "x", "time"]
+    assert list(data["/lacosmic/cosmic_ray_mask"].coords.keys()) == ["y", "x", "time"]
 
     assert list(data["/lacosmic/cosmic_ray_clean"].coords["time"]) == [0.0]
     assert list(data["/lacosmic/cosmic_ray_mask"].coords["time"]) == [0.0]
