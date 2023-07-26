@@ -146,6 +146,8 @@ def extract_roi_to_xarray(
 ) -> None:
     """Extract the roi data converts it to xarray dataset and saves the information to the final result.
 
+    A warning is generated if the processed data_array is empty.
+
     Parameters
     ----------
     array_type
@@ -155,6 +157,11 @@ def extract_roi_to_xarray(
         Threshold pixel value above which information from the image array is extracted
     minarea : int
         Minimum area of pixels required that are above the threshold for the extractor to extract information
+
+    Raises
+    ------
+    ValueError
+        If parameter 'array_type' is not 'pixel','signal','image',photon' or 'charge'
     """
     if array_type == "pixel":
         data_2d = detector.pixel.array
