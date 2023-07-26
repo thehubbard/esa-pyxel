@@ -34,6 +34,11 @@ def linear_regression(
     name : str, optional
         Name to use for the result.
 
+    Raises
+    ------
+    ValueError
+        If less than 2 timing steps is used.
+
     Examples
     --------
     >>> import pyxel
@@ -74,7 +79,7 @@ def linear_regression(
         :align: center
     """
     if detector.num_steps < 3:
-        raise ValueError(f"Expecting at least 3 steps. Got: {detector.num_steps}")
+        raise ValueError(f"Expecting at least 2 steps. Got: {detector.num_steps}")
 
     if name is None:
         name = data_structure
