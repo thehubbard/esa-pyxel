@@ -6,6 +6,7 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """Wrapper to create simple graphs using the source extractor package."""
+import warnings
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -139,21 +140,48 @@ def plot_roi(data: np.ndarray, roi) -> None:
 
 def extract_roi_to_xarray(
     detector: Detector,
+    array_type: str = "pixel",
     thresh: int = 50,
     minarea: int = 5,
 ) -> None:
     """Extract the roi data converts it to xarray dataset and saves the information to the final result.
 
+    A warning is generated if the processed data_array is empty.
+
     Parameters
     ----------
+    array_type
     detector : Detector
         Pyxel Detector object.
     thresh : int
         Threshold pixel value above which information from the image array is extracted
     minarea : int
         Minimum area of pixels required that are above the threshold for the extractor to extract information
+
+    Raises
+    ------
+    ValueError
+        If parameter 'array_type' is not 'pixel','signal','image',photon' or 'charge'
     """
-    data_2d = detector.pixel.array
+    if array_type == "pixel":
+        data_2d = detector.pixel.array
+    elif array_type == "signal":
+        data_2d = detector.signal.array
+    elif array_type == "image":
+        data_2d = detector.image.array
+    elif array_type == "photon":
+        data_2d = detector.photon.array
+    elif array_type == "charge":
+        data_2d = detector.charge.array
+    else:
+        raise ValueError(
+            "Incorrect array_type. Must be one of 'pixel','signal','image',photon' or 'charge'."
+        )
+
+    data_2d = np.asarray(data_2d, dtype=float)
+    if np.all(data_2d == 0):
+        warnings.warn(f"{array_type} data array is empty", stacklevel=2)
+
     objects, segmap = sep.extract(
         data_2d, thresh=thresh, minarea=minarea, segmentation_map=True
     )
