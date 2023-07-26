@@ -54,6 +54,8 @@ and is now replaced by the `Detector.data` bucket.
   (See [!678](https://gitlab.com/esa/pyxel/-/merge_requests/678)).
 * New model of induced dark current.
   (See [!698](https://gitlab.com/esa/pyxel/-/merge_requests/698)).
+* New data processing model 'Remove Cosmic Rays' for 'Pixel Array'.
+  (See [!685](https://gitlab.com/esa/pyxel/-/merge_requests/685)).
 
 ### Others
 * Refactoring.

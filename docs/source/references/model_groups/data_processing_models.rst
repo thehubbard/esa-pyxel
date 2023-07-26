@@ -149,3 +149,25 @@ Compute a linear regression along readout time.
         data_structure: image
 
 .. autofunction:: linear_regression
+
+.. _remove_cosmic_rays:
+
+Remove Cosmic Rays
+==================
+
+Removes cosmic rays from the pixel array using LACosmic package.
+
+.. code-block:: yaml
+
+  data_processing:
+    - name: remove_cosmic_rays
+      func: pyxel.models.data_processing.remove_cosmic_rays
+      enabled: true
+      arguments:
+        contrast: 1.0
+        cr_threshold: 50.0
+        neighbor_threshold: 50.0
+        effective_gain: 1.0
+        readnoise: 0.0
+
+.. autofunction:: remove_cosmic_rays

@@ -48,3 +48,4 @@ Available models
     * :ref:`linear_regression`
     * :ref:`mean_variance`
     * :ref:`extract_roi_to_xarray`
+    * :ref:`remove_cosmic_rays`
