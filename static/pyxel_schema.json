@@ -4581,10 +4581,16 @@
         "arguments": {
           "additionalProperties": false,
           "default": {
+            "array_type": "pixel",
             "minarea": 5,
             "thresh": 50
           },
           "properties": {
+            "array_type": {
+              "default": "pixel",
+              "title": "array_type",
+              "type": "string"
+            },
             "minarea": {
               "default": 5,
               "description": "Minimum area of pixels required that are above the threshold for theextractor to extract information",
