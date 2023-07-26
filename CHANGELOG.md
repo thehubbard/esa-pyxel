@@ -144,6 +144,8 @@ The minimum versions of some dependencies were changed:
   (See [!658](https://gitlab.com/esa/pyxel/-/merge_requests/658)).
 * Fix issues with '[data_processing.linear_regression](https://esa.gitlab.io/pyxel/doc/stable/references/model_groups/data_processing_models.html#linear-regression)' model.
   (See [!670](https://gitlab.com/esa/pyxel/-/merge_requests/670)).
+* Add unit tests to models in model group data processing.
+  (See [!703](https://gitlab.com/esa/pyxel/-/merge_requests/703)).
 
 ### Others
 * Remove support to Python 3.8.
