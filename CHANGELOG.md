@@ -64,6 +64,8 @@ and is now replaced by the `Detector.data` bucket.
   (See [!257](https://gitlab.com/esa/pyxel/-/merge_requests/257)).
 * Add rule 'pep8-naming' to 'ruff'.
   (See [!699](https://gitlab.com/esa/pyxel/-/merge_requests/699)).
+* Fix coverage.
+  (See [!704](https://gitlab.com/esa/pyxel/-/merge_requests/704)).
 
 
 ## 1.9.1 / 2023-07-07
