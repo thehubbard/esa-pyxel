@@ -177,7 +177,7 @@ Removes cosmic rays from the pixel array using LACosmic package.
 Signal-to-noise ratio
 =====================
 
-The model :ref:`snr` can be used to get the signal-to-noise-ratio (SNR) for of the data buckets
+The model :ref:`snr` can be used to get the signal-to-noise-ratio (SNR) along the time for of the data buckets
 photon, pixel, signal and image of the detector. The ``data_structure`` "signal" is the one selected by default.
 
 .. code-block:: yaml
