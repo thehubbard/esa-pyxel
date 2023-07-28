@@ -49,7 +49,15 @@ class ReadoutProperties:
         non_destructive: bool = False,
     ):
         times_1d = np.array(times, dtype=float)
-        assert times_1d.ndim == 1
+
+        if times_1d.ndim != 1:
+            raise ValueError("Readout times must be 1D")
+        elif times_1d[0] == 0:
+            raise ValueError("Readout times should be non-zero values.")
+        elif start_time >= times_1d[0]:
+            raise ValueError("Readout times should be greater than start time.")
+        elif not np.all(np.diff(times_1d) > 0):
+            raise ValueError("Readout times must be strictly increasing")
 
         steps = calculate_steps(times=times_1d, start_time=start_time)
 
