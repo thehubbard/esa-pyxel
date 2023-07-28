@@ -143,6 +143,8 @@ coverage:
       coverage_report:
         coverage_format: cobertura
         path: coverage.xml
+    paths:
+      - htmlcov
 
 # Scan sourcecode for licenses, copyrights & dependencies
 # experimental, latest version
