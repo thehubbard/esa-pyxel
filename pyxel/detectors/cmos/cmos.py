@@ -35,7 +35,7 @@ class CMOS(Detector):
 
     def __eq__(self, other) -> bool:
         return (
-            type(self) == type(other)
+            type(self) is type(other)
             and self.geometry == other.geometry
             and self.environment == other.environment
             and self.characteristics == other.characteristics

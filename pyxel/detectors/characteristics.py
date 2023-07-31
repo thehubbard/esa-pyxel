@@ -80,7 +80,7 @@ class Characteristics:
 
     def __eq__(self, other) -> bool:
         return (
-            type(self) == type(other)
+            type(self) is type(other)
             and self._quantum_efficiency == other._quantum_efficiency
             and self._charge_to_volt_conversion == other._charge_to_volt_conversion
             and self._pre_amplification == other._pre_amplification

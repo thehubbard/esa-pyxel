@@ -120,7 +120,7 @@ class APDCharacteristics:
 
     def __eq__(self, other) -> bool:
         return (
-            type(self) == type(other)
+            type(self) is type(other)
             and self._quantum_efficiency == other._quantum_efficiency
             and self._full_well_capacity == other._full_well_capacity
             and self._adc_bit_resolution == other._adc_bit_resolution
