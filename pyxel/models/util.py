@@ -24,7 +24,7 @@ def load_detector(detector: Detector, filename: Union[str, Path]) -> None:
     new_detector = Detector.load(filename)
 
     # Check type of 'new_detector'
-    if type(detector) != type(new_detector):
+    if type(detector) is not type(new_detector):
         raise TypeError(
             f"Wrong detector type from 'filename':'{filename}'. "
             f"Got type: '{type(detector).__name__}', expected '{type(new_detector).__name__}'"

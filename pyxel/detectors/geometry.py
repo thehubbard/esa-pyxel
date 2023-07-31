@@ -97,7 +97,7 @@ class Geometry:
         )
 
     def __eq__(self, other) -> bool:
-        return type(self) == type(other) and (
+        return type(self) is type(other) and (
             self.row,
             self.col,
             self._total_thickness,

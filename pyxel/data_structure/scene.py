@@ -25,7 +25,7 @@ class Scene:
         self._source: Source = source
 
     def __eq__(self, other) -> bool:
-        return type(self) == type(other) and self.data == other.data
+        return type(self) is type(other) and self.data == other.data
 
     # TODO: This method will be removed in the future.
     #       If you want to have a `Source` object, you should use method '.to_scopesim'

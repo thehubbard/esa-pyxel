@@ -35,7 +35,7 @@ class Environment:
         return f"{cls_name}(temperature={self._temperature!r})"
 
     def __eq__(self, other) -> bool:
-        return type(self) == type(other) and self._temperature == other._temperature
+        return type(self) is type(other) and self._temperature == other._temperature
 
     @property
     def temperature(self) -> float:
