@@ -312,7 +312,7 @@ class ModelFittingDataTree(ProblemSingleObjective):
         """Extract 2D data from a processor."""
         import xarray as xr
 
-        if not self.sim_output in (
+        if self.sim_output not in (
             "image",
             "signal",
             "pixel",
@@ -321,8 +321,7 @@ class ModelFittingDataTree(ProblemSingleObjective):
                 f"Simulation mode: {self.sim_output!r} not implemented"
             )
 
-        simulated_data: xr.DataArray = data[self.sim_output]
-
+        simulated_data = data[self.sim_output]
         if not isinstance(simulated_data, xr.DataArray):
             raise TypeError("Expected a 'DataArray'")
 
