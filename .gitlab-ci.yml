@@ -267,6 +267,9 @@ pages:
 #    - (test -f stable/pyxel_schema.json && cp stable/pyxel_schema.json public/pyxel_schema.json) || echo "No file 'stable/pyxel_schema.json'"
     - (test -f latest/pyxel_schema.json && cp latest/pyxel_schema.json public/pyxel_schema_latest.json) || echo "No file 'latest/pyxel_schema.json'"
 
+    # Copy Coverage reports
+    - (test -d htmlcov && mv htmlcov public/htmlcov) || echo "Missing folder 'htmlcov'"
+
     # Move folder 'stable' to 'public/doc/stable'
     # only if folder 'stable' exists
     - test -d stable && mv stable public/doc/stable
