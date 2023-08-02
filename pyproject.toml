@@ -73,6 +73,10 @@ dependencies = [
     "pympler",
     "pillow",
     "scikit-image",
+    "astroquery",
+    "specutils",
+    "synphot",
+    "scopesim",
 ]
 dynamic = ["version"]
 
