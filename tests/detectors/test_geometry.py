@@ -7,7 +7,6 @@
 
 from copy import deepcopy
 from dataclasses import dataclass
-from typing import Type
 
 import numpy as np
 import pytest

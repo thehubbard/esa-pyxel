@@ -6,7 +6,7 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 from pathlib import Path
-from typing import Optional, Type
+from typing import Optional
 
 import pytest
 

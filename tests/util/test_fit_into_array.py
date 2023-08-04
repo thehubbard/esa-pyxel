@@ -6,7 +6,7 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 
-from typing import Literal, Optional, Tuple
+from typing import Literal, Optional
 
 import numpy as np
 import pytest

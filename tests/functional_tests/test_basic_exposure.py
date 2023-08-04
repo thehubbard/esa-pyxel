@@ -7,7 +7,6 @@
 
 from pathlib import Path
 
-import xarray as xr
 from datatree import DataTree
 
 import pyxel

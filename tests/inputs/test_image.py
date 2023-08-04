@@ -93,11 +93,10 @@ def valid_data2d_http_hostname(
 
         # Put text data in a fake HTTP server
         for filename in text_filenames:
-            with open(filename) as fh:
-                response_data: str = fh.read()
-                httpserver.expect_request(f"/{filename}").respond_with_data(
-                    response_data, content_type="text/plain"
-                )
+            response_data: str = Path(filename).read_text()
+            httpserver.expect_request(f"/{filename}").respond_with_data(
+                response_data, content_type="text/plain"
+            )
 
         binary_filenames = [
             ("data/img.fits", "text/plain"),  # TODO: Change this type
@@ -116,11 +115,10 @@ def valid_data2d_http_hostname(
 
         # Put binary data in a fake HTTP server
         for filename, content_type in binary_filenames:
-            with open(filename, "rb") as fh:
-                response_data_bytes: bytes = fh.read()
-                httpserver.expect_request(f"/{filename}").respond_with_data(
-                    response_data_bytes, content_type=content_type
-                )
+            response_data_bytes: bytes = Path(filename).read_bytes()
+            httpserver.expect_request(f"/{filename}").respond_with_data(
+                response_data_bytes, content_type=content_type
+            )
 
         # Extract an url (e.g. 'http://localhost:59226/)
         url: str = httpserver.url_for("")
@@ -154,11 +152,10 @@ def invalid_data2d_hostname(tmp_path: Path, httpserver: HTTPServer) -> str:
 
         # Put text data in a fake HTTP server
         for filename in text_filenames:
-            with open(filename) as fh:
-                response_data: str = fh.read()
-                httpserver.expect_request(f"/{filename}").respond_with_data(
-                    response_data, content_type="text/plain"
-                )
+            response_data: str = Path(filename).read_text()
+            httpserver.expect_request(f"/{filename}").respond_with_data(
+                response_data, content_type="text/plain"
+            )
 
         # Extract an url (e.g. 'http://localhost:59226/)
         url: str = httpserver.url_for("")
@@ -227,11 +224,10 @@ def valid_table_http_hostname(tmp_path: Path, httpserver: HTTPServer) -> str:
 
         # Put text data in a fake HTTP server
         for filename in text_filenames:
-            with open(filename) as fh:
-                response_data: str = fh.read()
-                httpserver.expect_request(f"/{filename}").respond_with_data(
-                    response_data, content_type="text/plain"
-                )
+            response_data: str = Path(filename).read_text()
+            httpserver.expect_request(f"/{filename}").respond_with_data(
+                response_data, content_type="text/plain"
+            )
 
         binary_filenames = [
             ("data/table.xlsx", "application/octet-stream"),
@@ -241,11 +237,10 @@ def valid_table_http_hostname(tmp_path: Path, httpserver: HTTPServer) -> str:
 
         # Put binary data in a fake HTTP server
         for filename, content_type in binary_filenames:
-            with open(filename, "rb") as fh:
-                response_data_bytes: bytes = fh.read()
-                httpserver.expect_request(f"/{filename}").respond_with_data(
-                    response_data_bytes, content_type=content_type
-                )
+            response_data_bytes: bytes = Path(filename).read_bytes()
+            httpserver.expect_request(f"/{filename}").respond_with_data(
+                response_data_bytes, content_type=content_type
+            )
 
         # Extract an url (e.g. 'http://localhost:59226/)
         url: str = httpserver.url_for("")
@@ -274,7 +269,7 @@ def valid_table_heterogeneous(tmp_path: Path) -> str:
     df.to_csv(tmp_path / "table_comma.data", header=False, index=False, sep="|")
     df.to_csv(tmp_path / "table_semicolon.txt", header=False, index=False, sep=";")
 
-    yield tmp_path
+    return tmp_path
 
 
 @pytest.fixture
@@ -302,11 +297,10 @@ def invalid_table_http_hostname(tmp_path: Path, httpserver: HTTPServer) -> str:
 
         # Put text data in a fake HTTP server
         for filename in text_filenames:
-            with open(filename) as fh:
-                response_data: str = fh.read()
-                httpserver.expect_request(f"/{filename}").respond_with_data(
-                    response_data, content_type="text/plain"
-                )
+            response_data: str = Path(filename).read_text()
+            httpserver.expect_request(f"/{filename}").respond_with_data(
+                response_data, content_type="text/plain"
+            )
 
         # Extract an url (e.g. 'http://localhost:59226/)
         url: str = httpserver.url_for("")

@@ -29,7 +29,7 @@ from pyxel.models.data_processing import extract_roi_to_xarray
     ],
 )
 def test_extract_roi_to_xarray_empty_array(ccd_10x10: CCD, array_type, exp_warn):
-    """Tests empty array warning"""
+    """Tests empty array warning."""
     with pytest.warns(UserWarning, match=exp_warn):
         extract_roi_to_xarray(detector=ccd_10x10, array_type=array_type)
 

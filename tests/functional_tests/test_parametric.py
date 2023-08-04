@@ -80,7 +80,7 @@ def test_pipeline_parametric_without_init_photon(mode: ParameterMode, expected):
         run_exposure_pipeline(processor=proc, readout=observation.readout)
 
 
-@pytest.mark.deprecated
+@pytest.mark.deprecated()
 @pytest.mark.parametrize(
     "mode, expected",
     [

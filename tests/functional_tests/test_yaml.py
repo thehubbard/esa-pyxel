@@ -20,7 +20,7 @@ from pyxel.outputs.observation_outputs import ObservationOutputs
 from pyxel.pipelines import DetectionPipeline, ModelFunction, ModelGroup
 
 
-@pytest.mark.deprecated
+@pytest.mark.deprecated()
 @pytest.mark.parametrize(
     "yaml_file",
     [

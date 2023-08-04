@@ -8,7 +8,7 @@ import numpy as np
 import pytest
 import xarray as xr
 from datatree import DataTree
-from skimage.draw import circle_perimeter_aa, disk, line_aa
+from skimage.draw import line_aa
 
 from pyxel.detectors import (
     CCD,

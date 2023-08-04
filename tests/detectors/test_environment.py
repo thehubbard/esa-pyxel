@@ -62,7 +62,7 @@ def test_is_equal(other_obj, is_equal):
     ],
 )
 def test_to_and_from_dict(obj, exp_dict):
-    """Test methods 'to_dict' and 'from_dict'"""
+    """Test methods 'to_dict' and 'from_dict'."""
 
     assert type(obj) == Environment
 
