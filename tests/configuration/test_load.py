@@ -524,7 +524,7 @@ pipeline:
     return filename
 
 
-@pytest.mark.deprecated()
+@pytest.mark.deprecated
 def test_load_2_times_deprecated():
     """Test function 'pyxel.load' called two times."""
     filename = "tests/data/deprecated_dummy_simple.yaml"
@@ -559,7 +559,7 @@ def test_load_2_times():
         _ = pyxel.load(full_filename)
 
 
-@pytest.mark.deprecated()
+@pytest.mark.deprecated
 def test_load_no_running_mode_deprecated(config_no_running_mode_deprecated: Path):
     """Test function 'pyxel.load' without a running mode."""
     filename = config_no_running_mode_deprecated
@@ -582,7 +582,7 @@ def test_load_no_running_mode(config_no_running_mode: Path):
         _ = pyxel.load(filename)
 
 
-@pytest.mark.deprecated()
+@pytest.mark.deprecated
 def test_load_two_running_modes_deprecated(config_two_running_modes_deprecated: Path):
     """Test function 'pyxel.load' without two running modes."""
     filename = config_two_running_modes_deprecated
@@ -605,7 +605,7 @@ def test_load_two_running_modes(config_two_running_modes: Path):
         _ = pyxel.load(filename)
 
 
-@pytest.mark.deprecated()
+@pytest.mark.deprecated
 def test_load_no_detector_before(config_no_detector_deprecated: Path):
     """Test function 'pyxel.load' without detector."""
     filename = config_no_detector_deprecated
@@ -628,7 +628,7 @@ def test_load_no_detector(config_no_detector: Path):
         _ = pyxel.load(filename)
 
 
-@pytest.mark.deprecated()
+@pytest.mark.deprecated
 def test_load_two_detectors_deprecated(config_two_detectors_deprecated: Path):
     """Test function 'pyxel.load' with two detectors."""
     filename = config_two_detectors_deprecated

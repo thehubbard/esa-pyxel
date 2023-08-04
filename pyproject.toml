@@ -264,7 +264,7 @@ exclude = ["_TEMPLATE.py", "_version.py"]
 
 [tool.ruff.flake8-pytest-style]
 fixture-parentheses = false
-mark-parentheses = true
+mark-parentheses = false
 
 
 [tool.ruff.pydocstyle]

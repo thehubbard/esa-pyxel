@@ -129,9 +129,9 @@ def test_simple_persistence_bad_inputs(
 
 def test_persistence_with_ccd(ccd_5x5: CCD):
     """Test model 'simple_persistence' with a `CCD` detector."""
-    with pytest.raises(TypeError, match="Expecting a CMOS object for detector."):
-        detector = ccd_5x5
+    detector = ccd_5x5
 
+    with pytest.raises(TypeError, match="Expecting a CMOS object for detector."):
         simple_persistence(
             detector=detector,
             trap_time_constants=[1.0, 10.0],

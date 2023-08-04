@@ -66,8 +66,7 @@ def test_configure_params(yaml_file):
         file_path=None,
     )
 
-    if not isinstance(mf.processor, Processor):
-        raise ValueError
+    assert isinstance(mf.processor, Processor)
 
     configure(mf, cfg)
 
@@ -238,7 +237,7 @@ def test_weighting(yaml, factor, expected_fitness):
 
 
 def custom_fitness_func(simulated, target, weighting=None):
-    """Custom fitness func for testing."""
+    """Customize fitness func for testing."""
     return np.sum(target * 2 - simulated / 2 + 1.0)
 
 

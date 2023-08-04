@@ -13,21 +13,21 @@ import pytest
 from pyxel.util import memory_usage_details
 
 
-def test_no_attributes(CCD_empty):
-    with pytest.raises(ValueError):
-        memory_usage_details(CCD_empty)
+def test_no_attributes(ccd_empty):
+    with pytest.raises(ValueError, match=r"No attributes provided"):
+        memory_usage_details(ccd_empty)
 
 
-def test_invalid_attribute(CCD_empty):
+def test_invalid_attribute(ccd_empty):
     with pytest.raises(AttributeError):
-        memory_usage_details(CCD_empty, ["dummy"])
+        memory_usage_details(ccd_empty, ["dummy"])
 
 
 @pytest.mark.skip(reason="Fix this test !")
 @pytest.mark.skipif(
     sys.version_info < (3, 8), reason="Different value for older versions."
 )
-def test_memory_usage(CCD_empty):
+def test_memory_usage(ccd_empty):
     attributes = [
         "_photon",
         "_charge",
@@ -39,7 +39,7 @@ def test_memory_usage(CCD_empty):
         "_characteristics",
     ]
 
-    usage = memory_usage_details(CCD_empty, attributes, print_result=False)
+    usage = memory_usage_details(ccd_empty, attributes, print_result=False)
 
     empty_size = {
         "characteristics": 1160,

@@ -20,7 +20,7 @@ from pyxel.outputs.observation_outputs import ObservationOutputs
 from pyxel.pipelines import DetectionPipeline, ModelFunction, ModelGroup
 
 
-@pytest.mark.deprecated()
+@pytest.mark.deprecated
 @pytest.mark.parametrize(
     "yaml_file",
     [
@@ -33,6 +33,11 @@ def test_yaml_load_deprecated(yaml_file):
     cfg = pyxel.load(yaml_file)
 
     assert isinstance(cfg, Configuration)
+    assert (
+        isinstance(cfg.exposure, Exposure)
+        or isinstance(cfg.calibration, Calibration)
+        or isinstance(cfg.observation, Observation)
+    )
 
     if isinstance(cfg.exposure, Exposure):
         assert isinstance(cfg.exposure.outputs, ExposureOutputs)
@@ -43,8 +48,6 @@ def test_yaml_load_deprecated(yaml_file):
     elif isinstance(cfg.observation, Observation):
         assert isinstance(cfg.observation.outputs, ObservationOutputs)
         assert isinstance(cfg.observation.parameter_mode, ParameterMode)
-    else:
-        raise AssertionError("Running mode not initialized.")
 
     assert isinstance(cfg.ccd_detector, CCD)
     assert isinstance(cfg.ccd_detector.geometry, CCDGeometry)
@@ -80,6 +83,11 @@ def test_yaml_load(yaml_file):
     cfg = pyxel.load(yaml_file)
 
     assert isinstance(cfg, Configuration)
+    assert (
+        isinstance(cfg.exposure, Exposure)
+        or isinstance(cfg.calibration, Calibration)
+        or isinstance(cfg.observation, Observation)
+    )
 
     if isinstance(cfg.exposure, Exposure):
         assert isinstance(cfg.exposure.outputs, ExposureOutputs)
@@ -90,8 +98,6 @@ def test_yaml_load(yaml_file):
     elif isinstance(cfg.observation, Observation):
         assert isinstance(cfg.observation.outputs, ObservationOutputs)
         assert isinstance(cfg.observation.parameter_mode, ParameterMode)
-    else:
-        raise AssertionError("Running mode not initialized.")
 
     assert isinstance(cfg.ccd_detector, CCD)
     assert isinstance(cfg.ccd_detector.geometry, CCDGeometry)

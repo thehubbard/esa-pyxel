@@ -581,5 +581,5 @@ def test_load_table_invalid_format(tmp_path: Path, filename: str):
     full_filename: Path = tmp_path.joinpath(filename)
     full_filename.touch()
 
-    with pytest.raises(ValueError):
+    with pytest.raises(ValueError, match=r"Only .* implemented"):
         _ = pyxel.load_table(full_filename)

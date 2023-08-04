@@ -31,10 +31,6 @@ from pyxel.detectors import (
         # (Geometry(), Environment(), Characteristics(), Material()),
         # (Geometry(), Environment(), Characteristics(), Material()),
         (CCD, CCDGeometry(row=1, col=1), Environment(), Characteristics()),
-        (CCD, CCDGeometry(row=1, col=1), Environment(), Characteristics()),
-        (CCD, CCDGeometry(row=1, col=1), Environment(), Characteristics()),
-        (CMOS, CMOSGeometry(row=1, col=1), Environment(), Characteristics()),
-        (CMOS, CMOSGeometry(row=1, col=1), Environment(), Characteristics()),
         (CMOS, CMOSGeometry(row=1, col=1), Environment(), Characteristics()),
     ],
 )

@@ -165,7 +165,7 @@ def test_dark_current_saphira_invalid(
 ):
     """Test model 'dark_current_saphira' with valid inputs."""
     detector = apd_5x5
-    with pytest.raises(exp_exc, match=exp_error):
+    with pytest.raises(exp_exc, match=exp_error):  # noqa
         detector.environment.temperature = temperature
         detector.characteristics.avalanche_gain = gain
         dark_current_saphira(detector=detector)

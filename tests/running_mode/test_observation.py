@@ -21,7 +21,7 @@ from pyxel.pipelines import DetectionPipeline
 dask.config.set(scheduler="single-threaded")
 
 
-@pytest.mark.deprecated()
+@pytest.mark.deprecated
 @pytest.mark.parametrize("with_dask", [False, True])
 def test_product_simple_old(with_dask: bool):
     """Test running mode 'observation'."""
@@ -178,7 +178,7 @@ def test_product_simple(with_dask: bool):
     xr.testing.assert_equal(logs, exp_logs)
 
 
-@pytest.mark.deprecated()
+@pytest.mark.deprecated
 @pytest.mark.parametrize("with_dask", [False, True])
 def test_product_deprecated(with_dask: bool):
     """Test running mode 'observation'."""
@@ -367,7 +367,7 @@ def test_product(with_dask: bool):
     xr.testing.assert_equal(logs, exp_logs)
 
 
-@pytest.mark.deprecated()
+@pytest.mark.deprecated
 @pytest.mark.parametrize("with_dask", [False, True])
 def test_sequential_simple_deprecated(with_dask: bool):
     """Test running mode 'sequential'."""
