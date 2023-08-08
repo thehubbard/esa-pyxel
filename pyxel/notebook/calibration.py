@@ -180,6 +180,10 @@ def display_simulated(ds: "xr.Dataset") -> "hv.Layout":
         # Fix issue #627. In the future, this fix may be not relevant anymore.
         result_type = result_type.value
 
+    if result_type.startswith("ResultType."):
+        # Fix issue #627. In the future, this fix may be not relevant anymore.
+        result_type = result_type.removeprefix("ResultType.").lower()  # type: ignore
+
     var_name = {
         "image": "simulated_image",
         "signal": "simulated_signal",
