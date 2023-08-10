@@ -53,7 +53,6 @@ def damage_factors(
 ) -> tuple[float, float]:
     """Calculaye damage factors and return as list [nu_dark, mu_dark].
 
-
     Parameters
     ----------
     annealing_time : float
