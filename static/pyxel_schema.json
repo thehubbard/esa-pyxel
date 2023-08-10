@@ -3135,17 +3135,17 @@
           "additionalProperties": false,
           "properties": {
             "annealing_time": {
-              "description": "Parameter Annealing time. Unit: s",
+              "description": "Annealing time. Unit: weeks",
               "title": "annealing_time",
               "type": "number"
             },
             "depletion_volume": {
-              "description": "DepletionVolume parameter. Unit \u00b5m3.",
+              "description": "Depletion volume parameter. Unit: \u00b5m3.",
               "title": "depletion_volume",
               "type": "number"
             },
             "displacement_dose": {
-              "description": "Displacement dose parameter. Unit TeV/g",
+              "description": "Displacement dose parameter. Unit: TeV/g",
               "title": "displacement_dose",
               "type": "number"
             },
@@ -3158,7 +3158,7 @@
               ]
             },
             "shot_noise": {
-              "description": "True to enable shotnoise",
+              "description": "True to enable shotnoise.",
               "title": "shot_noise",
               "type": "boolean"
             }

@@ -24,10 +24,12 @@
 """Model to generate charge due to dark current induced by radiation.
 
 The Dark Current Model description can be found in:
-A. Le Roch et al., "Radiation-Induced Leakage Current and Electric Field Enhancement in CMOS Image Sensor Sense Node Floating Diffusions,"
+A. Le Roch et al., "Radiation-Induced Leakage Current and Electric Field Enhancement in CMOS Image Sensor Sense Node
+Floating Diffusions,"
 in IEEE Transactions on Nuclear Science, vol. 66, no. 3, pp. 616-624, March 2019, doi: 10.1109/TNS.2019.2892645.
-Jean-Marc Belloir, Vincent Goiffon, Cédric Virmontois, Mélanie Raine, Philippe Paillet, Olivier Duhamel, Marc Gaillardin,
-Romain Molina, Pierre Magnan, and Olivier Gilard, "Pixel pitch and particle energy influence on the dark current distribution of neutron irradiated CMOS image sensors," Opt. Express 24, 4299-4315 (2016)
+Jean-Marc Belloir, Vincent Goiffon, Cédric Virmontois, Mélanie Raine, Philippe Paillet, Olivier Duhamel,
+Marc Gaillardin, Romain Molina, Pierre Magnan, and Olivier Gilard, "Pixel pitch and particle energy influence on the
+dark current distribution of neutron irradiated CMOS image sensors," Opt. Express 24, 4299-4315 (2016)
 """
 
 import warnings
@@ -49,34 +51,31 @@ def damage_factors(
     depletion_volume: float,
     displacement_dose: float,
 ) -> tuple[float, float]:
-    """Return Damage Factors calculation list [nuDark, muDark].
-
-    muDark: mean number of interactions per pixel
-
+    """Calculaye damage factors and return as list [nu_dark, mu_dark].
 
     Parameters
     ----------
     annealing_time : float
-        Parameter annealing_time. Unit: s
+        Annealing time. Unit: s
     eact_dc : float
-        Activation Energy parameter. Unit: eV
+        Activation energy parameter. Unit: eV
     temperature : float
-        temperature parameter. Unit K
+        Temperature parameter. Unit K
     kdark_srour : float
-        Kdark_Srour parameter. Unit e-/cm3/sec per MeV/g
+        Damage factor K. Unit e-/cm3/sec per MeV/g
     gamma_dark : float
-        gammaDark parameter. Unit 1/µm3/(TeV/g)
+        Gamma dark parameter. Unit 1/µm3/(TeV/g)
     depletion_volume : float
-        DepletionVolume parameter. Unit µm3
+        Depletion volume parameter. Unit µm3
     displacement_dose : float
         Displacement dose parameter. Unit TeV/g
 
     Returns
     -------
     float
-        Nudark. Unit: e-/s
+        nu_dark. Unit: e-/s
     float
-        MuDark. Unit: no units
+        mu_dark: Mean number of interactions per pixel. Unit: no units
     """
 
     k = const.k_B.value
@@ -108,31 +107,29 @@ def damage_factors_silicon(
     depletion_volume: float,
     displacement_dose: float,
 ) -> tuple[float, float]:
-    """Return Damage Factors (for silicon device) calculation list [nuDark, muDark].
+    """Return damage factors (for silicon device) calculation list [nu_dark, mu_dark].
 
     based on:
-    Source: J. R. Srour and D. H. Lo, "Universal damage factor for radiation-induced dark current in silicon devices," in IEEE Transactions     xon Nuclear Science, vol. 47, no. 6, pp. 2451-2459, Dec. 2000, doi: 10.1109/23.903792.
-
-    muDark: mean number of interactions per pixel
-
+    Source: J. R. Srour and D. H. Lo, "Universal damage factor for radiation-induced dark current in silicon devices,"
+    in IEEE Transactions     xon Nuclear Science, vol. 47, no. 6, pp. 2451-2459, Dec. 2000, doi: 10.1109/23.903792.
 
     Parameters
     ----------
     annealing_time : float
-        Parameter annealing_time. Unit: weeks
+        Annealing time. Unit: weeks
     temperature :
-        Temperature parameter. Unit K
+        Temperature parameter. Unit: K
     depletion_volume :
-        DepletionVolume parameter. Unit µm3
+        Depletion volume parameter. Unit: µm3
     displacement_dose :
-        Displacement dose parameter. Unit TeV/g
+        Displacement dose parameter. Unit: TeV/g
 
     Returns
     -------
     float
-        Nudark. Unit: e-/s
+        nu_dark. Unit: e-/s
     float
-        MuDark. Unit: no units
+        mu_dark: Mean number of interactions per pixel. Unit: no units
     """
 
     eact_dc = 0.63  # eV
@@ -164,17 +161,17 @@ def compute_dark_current_induced(
     Parameters
     ----------
     number_of_rows : int
-        Parameter NumberOfRows. Unit: pixels (#)
+        Number of rows. Unit: pixel
     number_of_columns : int
-        NumberOfColumns parameter. Unit: pixels (#)
+        Number of columns. Unit: pixel
     mu_dark : float
-        mean number of interactions per pixel. Unit: no units
+        Mean number of interactions per pixel. Unit: no unit
     nu_dark : float
-        nuDark parameter. Unit: e-/s
+        Parameter nu_dark. Unit: e-/s
     integration_time : float
-        IntegrationTime parameter. Unit s
+        Integration time. Unit: s
     shot_noise : bool
-        Shotnoise: true for shotnoise
+        Shot noise: true for shotnoise
 
     Returns
     -------
@@ -185,7 +182,7 @@ def compute_dark_current_induced(
     # Define the Dark Current Frame
     dark_current_frame = np.zeros((number_of_rows, number_of_columns))  # e-
 
-    # Assign a number of interactions for each pixels of the frame
+    # Assign a number of interactions for each pixel of the frame
     interactions_array = np.random.poisson(
         mu_dark, size=(number_of_rows, number_of_columns)
     )
@@ -240,20 +237,20 @@ def dark_current_induced(
 ) -> None:
     """Model to add dark current induced by radiation to the detector charge.
 
-    The Dark Current Model description can be found in :cite:p:`RadiationLeRoch2019` and :cite:p:`Belloir:16`.
+    The induced dark current model description can be found in :cite:p:`RadiationLeRoch2019` and :cite:p:`Belloir:16`.
 
     Parameters
     ----------
     detector : Detector
         Pyxel detector object.
     depletion_volume : float
-        DepletionVolume parameter. Unit µm3.
+        Depletion volume parameter. Unit: µm3.
     annealing_time : float
-        Parameter Annealing time. Unit: s
+        Annealing time. Unit: weeks
     displacement_dose : float
-        Displacement dose parameter. Unit TeV/g
+        Displacement dose parameter. Unit: TeV/g
     shot_noise : bool
-        True to enable shotnoise
+        True to enable shotnoise.
     seed : int, optional
     """
     geo = detector.geometry
