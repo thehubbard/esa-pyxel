@@ -247,7 +247,7 @@ def dark_current_induced(
     depletion_volume : float
         Depletion volume parameter. Unit: µm3.
     annealing_time : float
-        Annealing time. Unit: s
+        Annealing time. Unit: weeks
     displacement_dose : float
         Displacement dose parameter. Unit: TeV/g
     shot_noise : bool
