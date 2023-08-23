@@ -21,7 +21,7 @@ from pyxel.detectors import Characteristics
         (1.0, 1.0, 100.0, 10_000_000, [0.0, 3.0], 16),
     ],
 )
-def test_create_valid_Characteristics(
+def test_create_valid_characteristics(
     quantum_efficiency,
     charge_to_volt_conversion,
     pre_amplification,

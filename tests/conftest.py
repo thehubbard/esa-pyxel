@@ -33,7 +33,7 @@ def ccd_characteristics() -> Characteristics:
 
 
 @pytest.fixture
-def CCD_empty(ccd_geometry, environment, ccd_characteristics) -> CCD:
+def ccd_empty(ccd_geometry, environment, ccd_characteristics) -> CCD:
     detector = CCD(
         geometry=ccd_geometry,
         environment=environment,

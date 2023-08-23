@@ -74,6 +74,8 @@ and is now replaced by the `Detector.data` bucket.
   and [!706](https://gitlab.com/esa/pyxel/-/merge_requests/706)).
 * Fix issue E721 found by flake8 version 6.1.0.
   (See [!708](https://gitlab.com/esa/pyxel/-/merge_requests/708)).
+* Apply 'ruff' to folder 'tests..
+  (See [!718](https://gitlab.com/esa/pyxel/-/merge_requests/718)).
 
 ## 1.9.1 / 2023-07-07
 

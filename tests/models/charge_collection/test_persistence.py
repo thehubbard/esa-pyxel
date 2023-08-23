@@ -181,9 +181,9 @@ def test_persistence_with_ccd(
     ccd_5x5: CCD, valid_density_map_path: str, valid_capacity_map_path: str
 ):
     """Test model 'persistence' with a `CCD` detector."""
-    with pytest.raises(TypeError, match="Expecting a CMOS object for detector."):
-        detector = ccd_5x5
+    detector = ccd_5x5
 
+    with pytest.raises(TypeError, match="Expecting a CMOS object for detector."):
         persistence(
             detector=detector,
             trap_time_constants=[1.0, 10.0],
@@ -197,11 +197,11 @@ def test_persistence_with_invalid_density_map(
     cmos_5x5: CMOS, invalid_density_map_path: str
 ):
     """Test model 'persistence' with an invalid density map."""
+    detector = cmos_5x5
+
     with pytest.raises(
         ValueError, match="Trap density map values not between 0 and 1."
     ):
-        detector = cmos_5x5
-
         persistence(
             detector=detector,
             trap_time_constants=[1.0, 10.0],

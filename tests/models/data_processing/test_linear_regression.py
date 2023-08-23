@@ -5,7 +5,6 @@
 #   this file, may be copied, modified, propagated, or distributed except according to
 #   the terms contained in the file ‘LICENCE.txt’.
 
-from typing import Tuple
 
 import numpy as np
 import pytest

@@ -561,7 +561,7 @@ def test_load_2_times():
 
 @pytest.mark.deprecated
 def test_load_no_running_mode_deprecated(config_no_running_mode_deprecated: Path):
-    """test function 'pyxel.load' without a running mode."""
+    """Test function 'pyxel.load' without a running mode."""
     filename = config_no_running_mode_deprecated
 
     with pytest.raises(
@@ -572,7 +572,7 @@ def test_load_no_running_mode_deprecated(config_no_running_mode_deprecated: Path
 
 
 def test_load_no_running_mode(config_no_running_mode: Path):
-    """test function 'pyxel.load' without a running mode."""
+    """Test function 'pyxel.load' without a running mode."""
     filename = config_no_running_mode
 
     with pytest.raises(
@@ -584,7 +584,7 @@ def test_load_no_running_mode(config_no_running_mode: Path):
 
 @pytest.mark.deprecated
 def test_load_two_running_modes_deprecated(config_two_running_modes_deprecated: Path):
-    """test function 'pyxel.load' without two running modes."""
+    """Test function 'pyxel.load' without two running modes."""
     filename = config_two_running_modes_deprecated
 
     with pytest.raises(
@@ -595,7 +595,7 @@ def test_load_two_running_modes_deprecated(config_two_running_modes_deprecated: 
 
 
 def test_load_two_running_modes(config_two_running_modes: Path):
-    """test function 'pyxel.load' without two running modes."""
+    """Test function 'pyxel.load' without two running modes."""
     filename = config_two_running_modes
 
     with pytest.raises(
@@ -607,7 +607,7 @@ def test_load_two_running_modes(config_two_running_modes: Path):
 
 @pytest.mark.deprecated
 def test_load_no_detector_before(config_no_detector_deprecated: Path):
-    """test function 'pyxel.load' without detector."""
+    """Test function 'pyxel.load' without detector."""
     filename = config_no_detector_deprecated
 
     with pytest.raises(
@@ -618,7 +618,7 @@ def test_load_no_detector_before(config_no_detector_deprecated: Path):
 
 
 def test_load_no_detector(config_no_detector: Path):
-    """test function 'pyxel.load' without detector."""
+    """Test function 'pyxel.load' without detector."""
     filename = config_no_detector
 
     with pytest.raises(
@@ -630,7 +630,7 @@ def test_load_no_detector(config_no_detector: Path):
 
 @pytest.mark.deprecated
 def test_load_two_detectors_deprecated(config_two_detectors_deprecated: Path):
-    """test function 'pyxel.load' with two detectors."""
+    """Test function 'pyxel.load' with two detectors."""
     filename = config_two_detectors_deprecated
 
     with pytest.raises(
@@ -641,7 +641,7 @@ def test_load_two_detectors_deprecated(config_two_detectors_deprecated: Path):
 
 
 def test_load_two_detectors(config_two_detectors: Path):
-    """test function 'pyxel.load' with two detectors."""
+    """Test function 'pyxel.load' with two detectors."""
     filename = config_two_detectors
 
     with pytest.raises(

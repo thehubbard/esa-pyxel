@@ -40,18 +40,11 @@ except ImportError:
     ],
 )
 def test_set_algo(yaml):
-    """Test"""
+    """Test."""
     cfg = load(yaml)
     calibration = cfg.calibration
     obj = calibration.algorithm.get_algorithm()
-    if isinstance(obj, pg.sade):
-        pass
-    elif isinstance(obj, pg.sga):
-        pass
-    elif isinstance(obj, pg.nlopt):
-        pass
-    else:
-        raise ReferenceError
+    assert isinstance(obj, (pg.sade, pg.sga, pg.nlopt))
 
 
 @pytest.mark.parametrize(
@@ -80,7 +73,7 @@ def test_set_algo(yaml):
     ],
 )
 def test_read_data(input_data):
-    """Test"""
+    """Test."""
     output = read_data(input_data)
     assert isinstance(output, list)
 
@@ -131,7 +124,7 @@ def test_read_single_data(input_data):
     ],
 )
 def test_list_to_slice(input_data):
-    """Test"""
+    """Test."""
     output = list_to_slice(input_data)
     if isinstance(output, slice):
         pass
@@ -146,7 +139,7 @@ def test_list_to_slice(input_data):
 @pytest.mark.skipif(not WITH_PYGMO, reason="Package 'pygmo' is not installed.")
 @pytest.mark.parametrize("yaml", ["tests/data/calibrate_models.yaml"])
 def test_run_calibration(yaml):
-    """Test"""
+    """Test."""
     cfg = load(yaml)
     assert isinstance(cfg, Configuration)
 

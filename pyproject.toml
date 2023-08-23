@@ -219,6 +219,25 @@ omit = [
 ]
 
 [tool.ruff]
+select = [
+    "A",        # flake8-builtins
+    "B",        # flake8-bugbear
+    "E",        # pycodestyle
+    "F",        # pyflakes
+    "D",        # pydocstyle
+    "G",        # flake8-logging-format
+    # "SIM",      # flake8-simplify
+    "W",        # pycodestyle
+    # "PD",       # pandas-vet
+    # "S",        # bandit
+    "PTH",      # Flake8 use Pathlib
+    "PT",       # Flake8-pytest-style
+    "RUF",      # Ruff-specific rules
+    "TCH",      # Flake8 Type Checking
+    "TRY",      # Tryceratops
+    "C90",      # McCabe
+    "N",        # pep8-naming
+]
 ignore = [
     "E501",     # Omit 'Line too long'
     "D102",     # Missing docstring in public method
@@ -233,26 +252,20 @@ ignore = [
     "PTH207",   # Replace 'glob' with 'Path.glob' or 'Path.rglob'
 ]
 
-select = [
-    "A",        # flake8-builtins
-    "B",        # flake8-bugbear
-    "E",        # pycodestyle
-    "F",        # pyflakes
-    "D",        # pydocstyle
-    "G",        # flake8-logging-format
-    # "SIM",      # flake8-simplify
-    "W",        # pycodestyle
-    # "PD",       # pandas-vet
-    # "S",        # bandit
-    "PTH",      # Flake8 use Pathlib
-    "RUF",      # Ruff-specific rules
-    "TCH",      # Flake8 Type Checking
-    "TRY",      # Tryceratops
-    "C90",      # McCabe
-    "N",        # pep8-naming
+exclude = ["_TEMPLATE.py", "_version.py"]
+
+[tool.ruff.per-file-ignores]
+"tests/*" = [
+    "D100",     # Missing docstring in public module
+    "D104",     # Missing docstring in public package
+    "N803",     # Argument name should be lowercase
+    "PT006",    # Wrong name(s) type in '@pytest.mark.parametrize'
 ]
 
-exclude = ["_TEMPLATE.py", "_version.py"]
+[tool.ruff.flake8-pytest-style]
+fixture-parentheses = false
+mark-parentheses = false
+
 
 [tool.ruff.pydocstyle]
 convention = "numpy"

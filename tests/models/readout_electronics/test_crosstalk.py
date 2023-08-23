@@ -11,7 +11,7 @@ import pytest
 from pyxel.models.readout_electronics.amplifier_crosstalk import get_channel_slices
 
 
-@pytest.fixture()
+@pytest.fixture
 def shape():
     return 100, 100
 

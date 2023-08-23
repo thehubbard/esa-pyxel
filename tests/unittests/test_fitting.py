@@ -47,7 +47,7 @@ def configure(mf: ModelFitting, sim: pyxel.Configuration) -> None:
 @pytest.mark.skipif(not WITH_PYGMO, reason="Package 'pygmo' is not installed.")
 @pytest.mark.parametrize("yaml_file", ["tests/data/calibrate.yaml"])
 def test_configure_params(yaml_file):
-    """Test"""
+    """Test."""
     cfg = pyxel.load(yaml_file)
     detector = cfg.ccd_detector
     pipeline = cfg.pipeline
@@ -66,8 +66,7 @@ def test_configure_params(yaml_file):
         file_path=None,
     )
 
-    if not isinstance(mf.processor, Processor):
-        raise ValueError
+    assert isinstance(mf.processor, Processor)
 
     configure(mf, cfg)
 
@@ -84,7 +83,7 @@ def test_configure_params(yaml_file):
 @pytest.mark.skipif(not WITH_PYGMO, reason="Package 'pygmo' is not installed.")
 @pytest.mark.parametrize("yaml", ["tests/data/calibrate_fits.yaml"])
 def test_configure_fits_target(yaml):
-    """Test"""
+    """Test."""
     cfg = pyxel.load(yaml)
     detector = cfg.ccd_detector
     pipeline = cfg.pipeline
@@ -127,7 +126,7 @@ def test_configure_fits_target(yaml):
     "yaml", ["tests/data/calibrate.yaml", "tests/data/calibrate_fits.yaml"]
 )
 def test_boundaries(yaml):
-    """Test"""
+    """Test."""
     cfg = pyxel.load(yaml)
     detector = cfg.ccd_detector
     pipeline = cfg.pipeline
@@ -179,7 +178,7 @@ def test_boundaries(yaml):
     ],
 )
 def test_calculate_fitness(simulated_data, target_data, expected_fitness):
-    """Test"""
+    """Test."""
     cfg = pyxel.load("tests/data/calibrate.yaml")
     detector = cfg.ccd_detector
     pipeline = cfg.pipeline
@@ -212,7 +211,7 @@ def test_calculate_fitness(simulated_data, target_data, expected_fitness):
     ],
 )
 def test_weighting(yaml, factor, expected_fitness):
-    """Test"""
+    """Test."""
     cfg = pyxel.load(yaml)
     detector = cfg.ccd_detector
     pipeline = cfg.pipeline
@@ -238,7 +237,7 @@ def test_weighting(yaml, factor, expected_fitness):
 
 
 def custom_fitness_func(simulated, target, weighting=None):
-    """Custom fitness func for testing"""
+    """Customize fitness func for testing."""
     return np.sum(target * 2 - simulated / 2 + 1.0)
 
 
@@ -267,7 +266,7 @@ def custom_fitness_func(simulated, target, weighting=None):
     ],
 )
 def test_custom_fitness(yaml, simulated, target, weighting):
-    """Test"""
+    """Test."""
     cfg = pyxel.load(yaml)
     assert isinstance(cfg, pyxel.Configuration)
 
@@ -334,7 +333,7 @@ def test_custom_fitness(yaml, simulated, target, weighting):
     ],
 )
 def test_fitness(yaml, parameter, expected_fitness):
-    """Test"""
+    """Test."""
     cfg = pyxel.load(yaml)
 
     detector = cfg.ccd_detector
@@ -397,7 +396,7 @@ def test_fitness(yaml, parameter, expected_fitness):
     ],
 )
 def test_split_and_update(yaml, parameter, expected_array):
-    """Test"""
+    """Test."""
     cfg = pyxel.load(yaml)
     detector = cfg.ccd_detector
     pipeline = cfg.pipeline
@@ -449,7 +448,7 @@ def test_split_and_update(yaml, parameter, expected_array):
     ],
 )
 def test_detector_and_model_update(yaml: str, param_array: np.ndarray):
-    """Test"""
+    """Test."""
     cfg = pyxel.load(yaml)
 
     detector = cfg.ccd_detector
@@ -489,7 +488,7 @@ def test_detector_and_model_update(yaml: str, param_array: np.ndarray):
         mf.processor.detector.environment.temperature,
     ]
     a = 0
-    for idx, attr in enumerate(attributes):
+    for _idx, attr in enumerate(attributes):
         if isinstance(attr, np.ndarray):
             b = len(attr)
             np.testing.assert_array_equal(attr, param_array[a : a + b])
