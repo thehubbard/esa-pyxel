@@ -52,19 +52,20 @@ and is now replaced by the `Detector.data` bucket.
 * Wrong shape when using parameters 'result_fit_range' and 'target_fit_range' in Calibration mode.
   (See [!701](https://gitlab.com/esa/pyxel/-/merge_requests/701)).
 * Simplify outputs of [`pyxel.run_mode`](https://esa.gitlab.io/pyxel/doc/latest/references/api/run.html#pyxel.run_mode)
-  in Exposure mode. (See [!702](https://gitlab.com/esa/pyxel/-/merge_requests/702) and [!709](https://gitlab.com/esa/pyxel/-/merge_requests/709)).
+  in [Exposure mode](https://esa.gitlab.io/pyxel/doc/latest/background/running_modes/exposure_mode.html).
+  (See [!702](https://gitlab.com/esa/pyxel/-/merge_requests/702) and [!709](https://gitlab.com/esa/pyxel/-/merge_requests/709)).
 * Refactor class [`ReadoutProperties`](https://esa.gitlab.io/pyxel/doc/latest/references/api/detectorproperties.html#pyxel.detectors.ReadoutProperties).
   (See [!705](https://gitlab.com/esa/pyxel/-/merge_requests/705)).
 
 ### Documentation
-* Add questions to FAQ.
+* Add questions to [FAQ](https://esa.gitlab.io/pyxel/doc/latest/about/FAQ.html).
   (See [!688](https://gitlab.com/esa/pyxel/-/merge_requests/688) and [!692](https://gitlab.com/esa/pyxel/-/merge_requests/692)).
 * Data link missing. Add link to `DataTree`.
   (See [!676](https://gitlab.com/esa/pyxel/-/merge_requests/676)).
 * Add documentation for methods `.plot()` and `.to_xarray()` for `Pixel`, `Photon`, `Signal`, `Image` and `Phase`.
   (See [!533](https://gitlab.com/esa/pyxel/-/merge_requests/533)).
-* Add more info in documentation about data processing models.
-  (See [!640](https://gitlab.com/esa/pyxel/-/merge_requests/640)).
+* Add more info in documentation about [`Data Processing`](https://esa.gitlab.io/pyxel/doc/latest/references/model_groups/data_processing_models.html)
+  models. (See [!640](https://gitlab.com/esa/pyxel/-/merge_requests/640)).
 
 ### Models
 * New model [`Wavelength dependence AIRS`](https://esa.gitlab.io/pyxel/doc/latest/references/model_groups/photon_collection_models.html#wavelength-dependence-airs)
@@ -95,7 +96,7 @@ and is now replaced by the `Detector.data` bucket.
   (See [!257](https://gitlab.com/esa/pyxel/-/merge_requests/257)).
 * Add rule 'pep8-naming' to 'ruff'.
   (See [!699](https://gitlab.com/esa/pyxel/-/merge_requests/699)).
-* Fix coverage and generate an HTML report.
+* Fix coverage and generate an [HTML report](https://esa.gitlab.io/pyxel/htmlcov/).
   (See [!704](https://gitlab.com/esa/pyxel/-/merge_requests/704)
   and [!706](https://gitlab.com/esa/pyxel/-/merge_requests/706)).
 * Fix issue E721 found by flake8 version 6.1.0.
