@@ -14,7 +14,6 @@ References,
 * https://lacosmic.readthedocs.io/en/stable/
 * https://www.astropy.org/ccd-reduction-and-photometry-guide/v/dev/notebooks/08-03-Cosmic-ray-removal.html
 """
-import lacosmic
 import numpy as np
 import xarray as xr
 from datatree import DataTree
@@ -51,6 +50,8 @@ def compute_cosmic_rays(
     readnoise : float
         The read noise (in electrons) in the input data.
     """
+    import lacosmic
+
     cleaned_image, cr_mask = lacosmic.lacosmic(
         data_2d,
         contrast=contrast,
