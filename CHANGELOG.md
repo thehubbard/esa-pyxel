@@ -9,9 +9,24 @@ Minor releases include updated stdlib stubs from typeshed.
 
 Pyxel doesn't use SemVer anymore, since most minor releases have at least minor backward incompatible changes.
 
-## UNRELEASED
+## 1.10 / 2023-08-28
 
-This release brings a number of bugfixes and documentation improvements.
+This release brings a number of bugfixes, documentation and improvements.
+
+The [Pixel Coordinate conventions](https://esa.gitlab.io/pyxel/doc/latest/background/pixel_coordinate_conventions.html#pixel-coordinate-conventions) 
+is now clarified.
+
+The following new models were added:
+* [`Wavelength dependence AIRS`](https://esa.gitlab.io/pyxel/doc/latest/references/model_groups/photon_collection_models.html#wavelength-dependence-airs)
+  from CEA Paris-Saclay.
+* [`Dark Current induced`](https://esa.gitlab.io/pyxel/doc/latest/references/model_groups/charge_generation_models.html#dark-current-induced)
+  from ISAE Supaero.
+* [`Remove Cosmic Rays`](https://esa.gitlab.io/pyxel/doc/latest/references/model_groups/data_processing_models.html#remove-cosmic-rays).
+* [`Signal to Noise Ratio`](https://esa.gitlab.io/pyxel/doc/latest/references/model_groups/data_processing_models.html#pyxel.models.data_processing.signal_to_noise_ratio).
+
+A new parameter `with_intermediate_steps` in function [`pyxel.run_mode`](https://esa.gitlab.io/pyxel/doc/latest/references/api/run.html#pyxel.run_mode)
+has been added. With this parameter, it is now possible to display all intermediate steps executed in the
+pipeline. This parameter is provisional and may change in the future.
 
 ### Breaking changes
 
@@ -20,48 +35,58 @@ Bucket `Detector.processed_data` is removed. This bucket was used in the
 and is now replaced by the `Detector.data` bucket.
 
 ### Core
-* Remove data structure 'ProcessedData' and bucket `Detector.processed_data`.
+* Remove data structure `ProcessedData` and bucket `Detector.processed_data`.
   (See [!693](https://gitlab.com/esa/pyxel/-/merge_requests/693)).
-* Add parameter 'with_intermediate_steps' in function 'run_mode'.
+* Add parameter `with_intermediate_steps` in function 
+  [`pyxel.run_mode`](https://esa.gitlab.io/pyxel/doc/latest/references/api/run.html#pyxel.run_mode).
   (See [!687](https://gitlab.com/esa/pyxel/-/merge_requests/687)).
-* Remove data structure 'ProcessedData'.
-  (See [!693](https://gitlab.com/esa/pyxel/-/merge_requests/693)).
-* Get full size 'simulated' and 'target' image when running a Calibration pipeline with `pyxel.run_mode`.
+* Get full size 'simulated' and 'target' image when running a Calibration pipeline
+  with [`pyxel.run_mode`](https://esa.gitlab.io/pyxel/doc/latest/references/api/run.html#pyxel.run_mode).
   (See [!695](https://gitlab.com/esa/pyxel/-/merge_requests/695)).
-* Fix KeyError issue with function `pyxel.display_simulated`.
+* Fix KeyError issue with function
+  [`pyxel.display_simulated`](https://esa.gitlab.io/pyxel/doc/latest/references/api/notebook.html#pyxel.display_simulated).
   (See [!696](https://gitlab.com/esa/pyxel/-/merge_requests/696)).
-* Fix issue when running Calibration mode with weight files with `pyxel.run_mode`.
+* Fix issue when running Calibration mode with weight files 
+  with [`pyxel.run_mode`](https://esa.gitlab.io/pyxel/doc/latest/references/api/run.html#pyxel.run_mode).
   (See [!700](https://gitlab.com/esa/pyxel/-/merge_requests/700)).
 * Wrong shape when using parameters 'result_fit_range' and 'target_fit_range' in Calibration mode.
   (See [!701](https://gitlab.com/esa/pyxel/-/merge_requests/701)).
-* Simplify outputs of 'pyxel.run_mode' in Exposure mode.
-  (See [!702](https://gitlab.com/esa/pyxel/-/merge_requests/702)
-  and [!709](https://gitlab.com/esa/pyxel/-/merge_requests/709)).
-* Refactor class `ReadoutProperties`.
+* Simplify outputs of [`pyxel.run_mode`](https://esa.gitlab.io/pyxel/doc/latest/references/api/run.html#pyxel.run_mode)
+  in [Exposure mode](https://esa.gitlab.io/pyxel/doc/latest/background/running_modes/exposure_mode.html).
+  (See [!702](https://gitlab.com/esa/pyxel/-/merge_requests/702) and [!709](https://gitlab.com/esa/pyxel/-/merge_requests/709)).
+* Refactor class [`ReadoutProperties`](https://esa.gitlab.io/pyxel/doc/latest/references/api/detectorproperties.html#pyxel.detectors.ReadoutProperties).
   (See [!705](https://gitlab.com/esa/pyxel/-/merge_requests/705)).
 
 ### Documentation
-* Add questions to FAQ.
+* Add questions to [FAQ](https://esa.gitlab.io/pyxel/doc/latest/about/FAQ.html).
   (See [!688](https://gitlab.com/esa/pyxel/-/merge_requests/688) and [!692](https://gitlab.com/esa/pyxel/-/merge_requests/692)).
 * Data link missing. Add link to `DataTree`.
   (See [!676](https://gitlab.com/esa/pyxel/-/merge_requests/676)).
-* Add documentation for methods '.plot()' and '.to_xarray()' for 'Pixel', 'Photon', 'Signal', 'Image' and 'Phase'.
+* Add documentation for methods `.plot()` and `.to_xarray()` for `Pixel`, `Photon`, `Signal`, `Image` and `Phase`.
   (See [!533](https://gitlab.com/esa/pyxel/-/merge_requests/533)).
-* Add more info in documentation about data processing models.
-  (See [!640](https://gitlab.com/esa/pyxel/-/merge_requests/640)).
+* Add more info in documentation about [`Data Processing`](https://esa.gitlab.io/pyxel/doc/latest/references/model_groups/data_processing_models.html)
+  models. (See [!640](https://gitlab.com/esa/pyxel/-/merge_requests/640)).
 
 ### Models
-* New model 'Wavelength dependence AIRS' for 'Photon Collection'.
+* New model [`Wavelength dependence AIRS`](https://esa.gitlab.io/pyxel/doc/latest/references/model_groups/photon_collection_models.html#wavelength-dependence-airs)
+  in [`Photon Collection`](https://esa.gitlab.io/pyxel/doc/latest/references/model_groups/photon_collection_models.html)
+  from CEA Paris Saclay.
   (See [!677](https://gitlab.com/esa/pyxel/-/merge_requests/677)).
-* Refactor EMCCD multiplication register model in 'Charge Transfer' with clock-induced-charges (CIC).
+* Refactor [`EMCCD multiplication register`](https://esa.gitlab.io/pyxel/doc/latest/references/model_groups/charge_transfer_models.html#emccd-model) 
+  model in [`Charge Transfer`](https://esa.gitlab.io/pyxel/doc/latest/references/model_groups/charge_transfer_models.html) with clock-induced-charges (CIC).
   (See [!678](https://gitlab.com/esa/pyxel/-/merge_requests/678)).
-* New model of induced dark current.
+* New model of [`Dark Current induced`](https://esa.gitlab.io/pyxel/doc/latest/references/model_groups/charge_generation_models.html#dark-current-induced)
+  in [`Charge Geneneration`](https://esa.gitlab.io/pyxel/doc/latest/references/model_groups/charge_generation_models.html).
+  This model was developed by ISAE Supaero.
   (See [!698](https://gitlab.com/esa/pyxel/-/merge_requests/698)).
-* New data processing model 'Remove Cosmic Rays' for 'Pixel Array'.
+* New data processing model [`Remove Cosmic Rays`](https://esa.gitlab.io/pyxel/doc/latest/references/model_groups/data_processing_models.html#remove-cosmic-rays)
+  in [`Data Processing`](https://esa.gitlab.io/pyxel/doc/latest/references/model_groups/data_processing_models.html).
   (See [!685](https://gitlab.com/esa/pyxel/-/merge_requests/685)).
-* Signal to Noise Ratio model.
+* New [`Signal to Noise Ratio`](https://esa.gitlab.io/pyxel/doc/latest/references/model_groups/data_processing_models.html#pyxel.models.data_processing.signal_to_noise_ratio) model
+  in [`Data Processing`](https://esa.gitlab.io/pyxel/doc/latest/references/model_groups/data_processing_models.html).
   (See [!707](https://gitlab.com/esa/pyxel/-/merge_requests/707)).
-* Use new Pyxel Coordinate Conventions for model 'charge_generation.load_charge'.
+* Use new Pyxel Coordinate Conventions for model [`Load Charge`](https://esa.gitlab.io/pyxel/doc/latest/references/model_groups/charge_generation_models.html#load-charge)
+  in [`Charge Geneneration`](https://esa.gitlab.io/pyxel/doc/latest/references/model_groups/charge_generation_models.html).
   (See [!717](https://gitlab.com/esa/pyxel/-/merge_requests/717)).
 
 ### Others
@@ -71,12 +96,12 @@ and is now replaced by the `Detector.data` bucket.
   (See [!257](https://gitlab.com/esa/pyxel/-/merge_requests/257)).
 * Add rule 'pep8-naming' to 'ruff'.
   (See [!699](https://gitlab.com/esa/pyxel/-/merge_requests/699)).
-* Fix coverage and generate an HTML report.
+* Fix coverage and generate an [HTML report](https://esa.gitlab.io/pyxel/htmlcov/).
   (See [!704](https://gitlab.com/esa/pyxel/-/merge_requests/704)
   and [!706](https://gitlab.com/esa/pyxel/-/merge_requests/706)).
 * Fix issue E721 found by flake8 version 6.1.0.
   (See [!708](https://gitlab.com/esa/pyxel/-/merge_requests/708)).
-* Apply 'ruff' to folder 'tests..
+* Apply 'ruff' to folder 'tests'.
   (See [!718](https://gitlab.com/esa/pyxel/-/merge_requests/718)).
 
 ## 1.9.1 / 2023-07-07
