@@ -178,9 +178,68 @@ Example of the configuration file:
 
 .. autofunction:: arctic_remove
 
+.. _EMCCD Model:
+
 EMCCD Model
 ===========
 
 :guilabel:`Pixel` → :guilabel:`Pixel`
 
-TBW.
+The Electron Multiplying CCD (EMCCD) model for the :term:`CCD` detector includes a ``multiplication_register``.
+This register takes each pixel, and applies a Poisson distribution, centered around the ``total_gain``.
+Each pixel is inputted and iterated through the number of ``gain_elements`` with probability of multiplication :math:`P`:
+
+:math:`P = {G}^(\frac{1}{N_E}) - 1`
+
+:math:`G` is the total gain, and :math:`N_E` is the number of gain elements.
+
+The output is a :py:class:`~pyxel.data_structure.Pixel` array, with
+each pixel having gone through a multiplication register.
+
+Example of the configuration file:
+
+.. code-block:: yaml
+
+    - name: multiplication_register
+      func: pyxel.models.charge_transfer.multiplication_register
+      enabled: true
+      arguments:
+        gain_elements: 100
+        total_gain: 1000
+
+
+.. autofunction:: multiplication_register
+
+.. note:: This model is specific for the :term:`CCD` detector.
+
+.. _EMCCD Clock Induced Charge (CIC):
+
+EMCCD Clock Induced Charge (CIC)
+================================
+
+:guilabel:`Pixel` → :guilabel:`Pixel`
+
+Clock Induced Charge (CIC), can be included with ``multiplication_register_cic``.
+Here a parallel CIC rate, ``pcic_rate``, and serial CIC rate ``scic_rate`` are specified,
+and added to the :py:class:`~pyxel.data_structure.Pixel` array.
+Each ``gain_elements`` has possibility to introduce a serial CIC event.
+Serial and parallel CIC is assumed to be Poisson distributed.
+
+
+Example of the configuration file:
+
+.. code-block:: yaml
+
+    - name: multiplication_register_cic
+      func: pyxel.models.charge_transfer.multiplication_register_cic
+      enabled: true
+      arguments:
+        gain_elements: 100
+        total_gain: 1000
+        pcic_rate: 0.01
+        scic_rate: 0.005
+
+
+.. autofunction:: multiplication_register_cic
+
+.. note:: This model is specific for photon counting, and should be used with very low individual pixel values.
