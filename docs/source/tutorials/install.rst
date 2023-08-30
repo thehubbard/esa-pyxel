@@ -80,13 +80,15 @@ To update an existing installation you can use:
 
 .. note::
 
-    For now, it's not possible to install a recent version of `poppy <https://poppy-optics.readthedocs.io>`__
+    For now, it's not possible to install a recent version of `poppy <https://poppy-optics.readthedocs.io>`__ and
+    `lacosmic <https://lacosmic.readthedocs.io/en/stable/api/lacosmic.lacosmic.html#lacosmic.lacosmic>`__
     for all platforms directly from ``conda`` or ``mamba``.
     The user **must** install ``poppy`` manually (in the current conda environment) with the command ``pip``:
 
     .. code-block:: bash
 
         pip install poppy
+        pip install lacosmic
 
 
 Using Mamba
@@ -113,13 +115,15 @@ as above except for replacing the ``conda`` with the ``mamba`` command.
 
 .. note::
 
-    For now, it's not possible to install a recent version of `poppy <https://poppy-optics.readthedocs.io>`__
+    For now, it's not possible to install a recent version of `poppy <https://poppy-optics.readthedocs.io>`__ and
+    `lacosmic <https://lacosmic.readthedocs.io/en/stable/api/lacosmic.lacosmic.html#lacosmic.lacosmic>`__
     for all platforms directly from ``conda`` or ``mamba``.
     The user **must** install ``poppy`` manually (in the current conda environment) with the command ``pip``:
 
     .. code-block:: bash
 
         pip install poppy
+        pip install lacosmic
 
 Pip
 ===
@@ -144,7 +148,7 @@ To install only the optional dependencies for the models, you can run:
 .. code-block:: bash
 
    pip install pyxel-sim[model]  # Install all extra dependencies
-                                 # for models (poppy)
+                                 # for models (poppy, lacosmic)
 
 
 .. warning::
@@ -216,9 +220,11 @@ Additionally, Pyxel has the following **optional** dependencies:
 
 * `pygmo <https://esa.github.io/pygmo2/>`_, version 2.16.1 or later
 * `poppy <https://poppy-optics.readthedocs.io/>`_, version 1.1.0 or later
+* `lacosmic <https://lacosmic.readthedocs.io/en/stable/api/lacosmic.lacosmic.html#lacosmic.lacosmic>`__
 
 .. note::
-    Optional package `poppy <https://poppy-optics.readthedocs.io/>`_ is not available
+    Optional packages `poppy <https://poppy-optics.readthedocs.io/>`_ and
+    `lacosmic <https://lacosmic.readthedocs.io/en/stable/api/lacosmic.lacosmic.html#lacosmic.lacosmic>`__ is not available
     on ``conda``, only on the ``PyPI`` repository.
 
 
@@ -338,7 +344,7 @@ Additionally, Pyxel has the following **optional** dependencies:
 
       $ python3.7 -m pip install -e ".[all]"            # Install everything (recommended)
       $ python3.7 -m pip install -e ".[calibration]"    # Install dependencies for 'calibration mode' (pygmo)
-      $ python3.7 -m pip install -e ".[model]"          # Install dependencies for optional models (poppy)
+      $ python3.7 -m pip install -e ".[model]"          # Install dependencies for optional models (poppy, lacosmic)
       $ python3.7 -m pip install -e .                   # Install without any optional dependencies
 
 
@@ -357,7 +363,7 @@ Additionally, Pyxel has the following **optional** dependencies:
 
           $ python3.7 -m pip install -e ".[calibration]"
 
-        * To install ``pyxel`` and the optional models (``poppy``):
+        * To install ``pyxel`` and the optional models (``poppy``, ``lacosmic``):
 
         .. code-block:: bash
 
