@@ -65,6 +65,9 @@ def multiplication_register_cic(
 def poisson_register(lam, new_image_cube_pix, gain_elements, scic_rate):
     """Calculate the total gain of a single pixel from EMCCD register elements.
 
+    A single pixel is inputted and iterated through the total number of gain elements
+    with the result being the resultant signal from the pixel going through the multiplication process.
+
     Parameters
     ----------
     lam : float
@@ -102,6 +105,9 @@ def multiplication_register_poisson(
     scic_rate: float,
 ) -> np.ndarray:
     """Calculate total gain of image from EMCCD register.
+
+    Cycles through each pixel within the image provided.
+    Returns a final image with signal added.
 
     Parameters
     ----------

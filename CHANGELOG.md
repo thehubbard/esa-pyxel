@@ -18,6 +18,8 @@ Pyxel doesn't use SemVer anymore, since most minor releases have at least minor 
   (See [!726](https://gitlab.com/esa/pyxel/-/merge_requests/726)).
 * Add new icon/badge 'I want to contribute !'
   (See [!727](https://gitlab.com/esa/pyxel/-/merge_requests/727)).
+* Update EMCCD cic model updates.
+  (See [!728](https://gitlab.com/esa/pyxel/-/merge_requests/728)).
 
 ### Models
 
