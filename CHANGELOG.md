@@ -14,6 +14,8 @@ Pyxel doesn't use SemVer anymore, since most minor releases have at least minor 
 ### Core
 
 ### Documentation
+* Add info about Jupyter book being not interactive.
+  (See [!726](https://gitlab.com/esa/pyxel/-/merge_requests/726).
 
 ### Models
 
