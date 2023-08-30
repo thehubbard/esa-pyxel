@@ -83,7 +83,8 @@ To update an existing installation you can use:
     For now, it's not possible to install a recent version of `poppy <https://poppy-optics.readthedocs.io>`__ and
     `lacosmic <https://lacosmic.readthedocs.io/en/stable/api/lacosmic.lacosmic.html#lacosmic.lacosmic>`__
     for all platforms directly from ``conda`` or ``mamba``.
-    The user **must** install ``poppy`` manually (in the current conda environment) with the command ``pip``:
+    The user **must** install ``poppy`` and ``lacosmic`` manually (in the current conda environment) with the
+    command ``pip``:
 
     .. code-block:: bash
 
@@ -118,7 +119,7 @@ as above except for replacing the ``conda`` with the ``mamba`` command.
     For now, it's not possible to install a recent version of `poppy <https://poppy-optics.readthedocs.io>`__ and
     `lacosmic <https://lacosmic.readthedocs.io/en/stable/api/lacosmic.lacosmic.html#lacosmic.lacosmic>`__
     for all platforms directly from ``conda`` or ``mamba``.
-    The user **must** install ``poppy`` manually (in the current conda environment) with the command ``pip``:
+    The user **must** install ``poppy`` and ``lacosmic`` manually (in the current conda environment) with the command ``pip``:
 
     .. code-block:: bash
 
@@ -171,7 +172,7 @@ Install from source
 ===================
 
 To install Pyxel from source, clone the repository from the
-`Pyxel GitLab repository <https://gitlab.com/esa/pyxel>`_
+`Pyxel GitLab repository <https://gitlab.com/esa/pyxel>`_.
 
 .. code-block:: bash
 
@@ -186,7 +187,7 @@ You can install all dependencies as well:
 
     python -m pip install ".[all]"
 
-For more information see :ref:`contributing.dev_env` from the :ref:`contributing`.
+For more information see :ref:`contributing.dev_env` from the page :ref:`contributing`.
 
 Verify the installation
 =======================
@@ -203,18 +204,35 @@ Dependencies
 
 Pyxel has the following **mandatory** dependencies:
 
+Packages used for scientific computing:
+
 * `python <https://www.python.org>`_ 3.9 or later
 * `numpy <https://numpy.org>`_ 1.21 or later
 * `xarray <http://xarray.pydata.org/>`_ 2022.06 or later
-* `dask <https://dask.org>`_
-* `jupyterlab <https://jupyterlab.readthedocs.io>`_
+* `xarray-datatree <https://xarray-datatree.readthedocs.io/en/stable/index.html>`_ 0.0.12 or later
 * `astropy <https://www.astropy.org>`_ 4.3 or later
 * `pandas <https://pandas.pydata.org>`_
 * `numba <https://numba.pydata.org>`_
+* `scipy <https://scipy.org>`_
+* `sep <https://sep.readthedocs.io>`_
 * `tqdm <https://tqdm.github.io>`_
-* `holoviews <https://holoviews.org>`_ 1.15 or later
-* `matplotlib <https://matplotlib.org>`_
+
+Packages used for input/output handling:
+
 * `h5py <https://www.h5py.org>`_
+* `netcdf4 <https://unidata.github.io/netcdf4-python/>`_
+* `fsspec <https://filesystem-spec.readthedocs.io>`_ 2021 or later
+
+Packages used for plotting:
+
+* `holoviews <https://holoviews.org>`_ 1.15 or later
+* `matplotlib <https://matplotlib.org>`_ 3.1 or later
+* `seaborn <https://seaborn.pydata.org>`_
+* `bokeh <http://bokeh.org>`_
+
+Packages used for parallel computing:
+
+* `dask <https://dask.org>`_
 
 Additionally, Pyxel has the following **optional** dependencies:
 

@@ -18,7 +18,7 @@ Please note, that the Jupyter book is just for viewing the examples and not inte
     :classes: btn-outline-primary btn-block
 
 If you want to change the inputs and see the results immediately,
-you need to a :ref:`_install` of Pyxel and download the `Pyxel Data <https://gitlab.com/esa/pyxel-data>`_ repository
+you need to a :ref:`install` of Pyxel and download the `Pyxel Data <https://gitlab.com/esa/pyxel-data>`_ repository
 or launch a live session on Binder.
 
 Once you’ve installed Pyxel, the example repository can be either downloaded directly by clicking on button download
