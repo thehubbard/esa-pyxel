@@ -15,7 +15,9 @@ Pyxel doesn't use SemVer anymore, since most minor releases have at least minor 
 
 ### Documentation
 * Add info about Jupyter book being not interactive.
-  (See [!726](https://gitlab.com/esa/pyxel/-/merge_requests/726).
+  (See [!726](https://gitlab.com/esa/pyxel/-/merge_requests/726)).
+* Add new icon/badge 'I want to contribute !'
+  (See [!727](https://gitlab.com/esa/pyxel/-/merge_requests/727)).
 
 ### Models
 
@@ -718,6 +720,9 @@ This release is a bugfix to resolve issues with command `pyxel create-model`.
   (See [!470](https://gitlab.com/esa/pyxel/-/merge_requests/470)).
 
 ### Documentation
+* Add new icon/badge 'I want to contribute !'
+  (See [!727](https://gitlab.com/esa/pyxel/-/merge_requests/727)).
+
 
 * Add how-to guide about saving/loading a Detector object.
   (See [!468](https://gitlab.com/esa/pyxel/-/merge_requests/468)).
