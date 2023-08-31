@@ -48,8 +48,11 @@ The following new models were added:
   from CEA Paris-Saclay.
 * [`Dark Current induced`](https://esa.gitlab.io/pyxel/doc/latest/references/model_groups/charge_generation_models.html#dark-current-induced)
   from ISAE Supaero.
+* * [`EMCCD Clock Induced Charge`](https://esa.gitlab.io/pyxel/doc/latest/references/model_groups/charge_transfer_models.html#emccd-clock-induced-charge-cic) 
+  from the Niels Bohr Institute and the University of Copenhagen.
 * [`Remove Cosmic Rays`](https://esa.gitlab.io/pyxel/doc/latest/references/model_groups/data_processing_models.html#remove-cosmic-rays).
 * [`Signal to Noise Ratio`](https://esa.gitlab.io/pyxel/doc/latest/references/model_groups/data_processing_models.html#pyxel.models.data_processing.signal_to_noise_ratio).
+
 
 A new parameter `with_intermediate_steps` in function [`pyxel.run_mode`](https://esa.gitlab.io/pyxel/doc/latest/references/api/run.html#pyxel.run_mode)
 has been added. With this parameter, it is now possible to display all intermediate steps executed in the
