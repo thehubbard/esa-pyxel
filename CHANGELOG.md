@@ -14,6 +14,7 @@ This release brings a number of bugfixes, documentation and improvements.
 
 The following new models were added:
 * `load_star_map`.
+* `simple_adc`.
 
 ### Core
 
@@ -29,6 +30,8 @@ The following new models were added:
 * Add first model for group `load_star_map` in `Scene Generation`.
   (See [!715](https://gitlab.com/esa/pyxel/-/merge_requests/715)
   and [!716](https://gitlab.com/esa/pyxel/-/merge_requests/716)).
+* Fix unexpected value in `simple_adc` in `Readout Electronics`.
+  (See [!732](https://gitlab.com/esa/pyxel/-/merge_requests/732)).
 
 ### Others
 
