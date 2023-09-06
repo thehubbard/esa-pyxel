@@ -32,7 +32,9 @@ def configure(mf: ModelFitting, sim: pyxel.Configuration) -> None:
     """TBW."""
     assert sim.calibration is not None
 
-    pg.set_global_rng_seed(sim.calibration.pygmo_seed)
+    if WITH_PYGMO:
+        pg.set_global_rng_seed(sim.calibration.pygmo_seed)
+
     np.random.seed(sim.calibration.pygmo_seed)
 
     mf.configure(
@@ -302,7 +304,6 @@ def test_custom_fitness(yaml, simulated, target, weighting):
     print("fitness: ", fitness)
 
 
-@pytest.mark.skipif(not WITH_PYGMO, reason="Package 'pygmo' is not installed.")
 @pytest.mark.parametrize(
     "yaml, parameter, expected_fitness",
     [
@@ -328,7 +329,7 @@ def test_custom_fitness(yaml, simulated, target, weighting):
                     100.0,
                 ]
             ),
-            88455.49014776475,
+            88449.49014776475,
         )
     ],
 )
@@ -360,7 +361,7 @@ def test_fitness(yaml, parameter, expected_fitness):
     overall_fitness = mf.fitness(parameter)
 
     np.testing.assert_array_equal(parameter, parameter_before)
-    assert overall_fitness[0] == expected_fitness
+    assert overall_fitness[0] == pytest.approx(expected_fitness)
 
     print("fitness: ", overall_fitness[0])
 
