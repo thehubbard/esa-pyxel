@@ -4,24 +4,21 @@
 #  is part of this Pyxel package. No part of the package, including
 #  this file, may be copied, modified, propagated, or distributed except according to
 #  the terms contained in the file ‘LICENCE.txt’.
+import sys
 
-from typing import TYPE_CHECKING
-
+import astropy.constants as const
 import astropy.units as u
+import numpy as np
 import pytest
 import xarray as xr
 from astropy.table import Table
-from astropy.utils.diff import diff_values
-from numpy.testing import assert_allclose
+from astropy.tests.helper import assert_quantity_allclose
+from datatree import DataTree
 from pytest_mock import MockerFixture  # pip install pytest-mock
-from scopesim import Source
 
 from pyxel.detectors import CCD
-from pyxel.models.scene_generation import generate_scene
-from pyxel.models.scene_generation.scene_generator import GaiaPassBand
-
-if TYPE_CHECKING:
-    from synphot import SourceSpectrum
+from pyxel.models.scene_generation import load_star_map
+from pyxel.models.scene_generation.load_star_map import GaiaPassBand, retrieve_from_gaia
 
 
 @pytest.fixture
@@ -186,6 +183,71 @@ def spectra_dct(
     return dct
 
 
+@pytest.fixture
+def source1_gaia(
+    positions: xr.Dataset,
+    source_ids: list[int],
+    spectra1: xr.Dataset,
+    spectra2: xr.Dataset,
+    spectra3: xr.Dataset,
+    spectra4: xr.Dataset,
+) -> xr.Dataset:
+    """Build a Dataset object retrieved from the Gaia database."""
+    return xr.merge(
+        [
+            positions,
+            xr.concat(
+                [
+                    spectra.assign(source_id=source_id)
+                    for source_id, spectra in zip(
+                        source_ids, [spectra1, spectra2, spectra3, spectra4]
+                    )
+                ],
+                dim="source_id",
+            ),
+        ]
+    )
+
+
+@pytest.fixture
+def source1_pyxel(
+    positions: xr.Dataset,
+    source_ids: list[int],
+    spectra1: xr.Dataset,
+    spectra2: xr.Dataset,
+    spectra3: xr.Dataset,
+    spectra4: xr.Dataset,
+) -> DataTree:
+    return 0
+
+
+@pytest.mark.skipif(sys.version_info < (3, 11), reason="Requires Python 3.11+")
+def test_retrieve_from_gaia(
+    mocker: MockerFixture,
+    positions_table: Table,
+    spectra_dct: dict[int, Table],
+    source1_pyxel: xr.Dataset,
+    source1_gaia: xr.Dataset,
+):
+    """Test function 'retrieve_from_gaia'."""
+    # Mock function 'pyxel.models.scene_generation.load_star_map.retrieve_objects_from_gaia'
+    # When this function will be called (with any parameters), it will always return this tuple
+    # (positions_table, spectra_dct)
+    mocker.patch(
+        target="pyxel.models.scene_generation.load_star_map._retrieve_objects_from_gaia",
+        return_value=(positions_table, spectra_dct),
+    )
+
+    ds = retrieve_from_gaia(
+        right_ascension=0.0,  # This parameter is not important
+        declination=0.0,  # This parameter is not important
+        fov_radius=0.0,  # This parameter is not important
+    )
+
+    expected_ds = source1_gaia
+    xr.testing.assert_equal(ds, expected_ds)
+
+
 @pytest.mark.parametrize(
     "name, exp_band",
     [
@@ -211,26 +273,69 @@ def test_gaia_pass_band_magnitude_key(band: GaiaPassBand, exp_result: str):
     assert result == exp_result
 
 
-def test_scene_generator(
+def test_compute_flux_compare_to_astropy():
+    """Test function 'compute_flux'."""
+    wavelengths = u.Quantity([336.0, 338.0, 1018.0, 1020.0], unit=u.nm)
+    flux = u.Quantity(
+        [4.1858373e-17, 4.1012171e-17, 1.3888942e-17, 1.3445790e-17],
+        unit="W / (nm * m2)",
+    )
+    expected_flux = u.Quantity(
+        [0.00070802, 0.00069783, 0.00071177, 0.00069041],
+        unit="ph / (Angstrom s cm2)",
+    )
+
+    # Compute new flux using astropy
+    new_flux = [
+        y.to(u.Unit("ph / (Angstrom s cm2)"), equivalencies=u.spectral_density(x))
+        for x, y in zip(wavelengths, flux)
+    ]
+
+    assert_quantity_allclose(actual=new_flux, desired=expected_flux, rtol=1e-5)
+
+
+def test_compute_flux_compare_to_manual_conversion():
+    """Test function 'compute_flux'."""
+    wavelengths = u.Quantity([336.0, 338.0, 1018.0, 1020.0], unit=u.nm)
+    flux = u.Quantity(
+        [4.1858373e-17, 4.1012171e-17, 1.3888942e-17, 1.3445790e-17],
+        unit="W / (nm * m2)",
+    )
+    expected_flux = u.Quantity(
+        [0.00070802, 0.00069783, 0.00071177, 0.00069041],
+        unit="ph / (Angstrom s cm2)",
+    )
+
+    # Compute new flux using the Plank's equation 'E = h * v = h * (c / wavelength)'
+    photon_energy = (const.h * const.c / wavelengths).to(u.J) / u.ph
+    new_flux = (flux / photon_energy).to("ph / (Angstrom s cm2)")
+
+    assert_quantity_allclose(actual=new_flux, desired=expected_flux, rtol=1e-5)
+
+
+@pytest.mark.skipif(sys.version_info < (3, 11), reason="Requires Python 3.11+")
+def test_load_star_map(
     mocker: MockerFixture,
     ccd_10x10: CCD,
     positions_table: Table,
     spectra_dct: dict[int, Table],
     wavelengths: xr.DataArray,
+    source1_gaia,
+    source1_pyxel: DataTree,
 ):
-    """Test model 'scene_generator."""
+    """Test model 'load_star_map'."""
 
-    # Mock function 'pyxel.models.scene_generation.scene_generator.retrieve_objects_from_gaia'
+    # Mock function 'pyxel.models.scene_generation.load_star_map.retrieve_objects_from_gaia'
     # When this function will be called (with any parameters), it will always return this tuple
     # (positions_table, spectra_dct)
     mocker.patch(
-        target="pyxel.models.scene_generation.scene_generator.retrieve_objects_from_gaia",
+        target="pyxel.models.scene_generation.load_star_map._retrieve_objects_from_gaia",
         return_value=(positions_table, spectra_dct),
     )
 
     # Run model
     detector: CCD = ccd_10x10
-    generate_scene(
+    load_star_map(
         detector=detector,
         right_ascension=0.0,  # This parameter is not important
         declination=0.0,  # This parameter is not important
@@ -238,51 +343,36 @@ def test_scene_generator(
     )
 
     # Check outputs
-    obj = detector.scene.data
-    assert isinstance(obj, Source)
+    scene = detector.scene.data
+    assert isinstance(scene, DataTree)
 
-    # Check .fields
-    assert len(obj.fields) == 1
-    first_field: Table = obj.fields[0]
+    expected_x = 3600 * (source1_gaia["ra"] - source1_gaia["ra"].mean())
+    expected_y = 3600 * (source1_gaia["dec"] - source1_gaia["dec"].mean())
 
-    expected_x = 3600 * (positions_table["ra"] - positions_table["ra"].mean()).data
-    expected_y = 3600 * (positions_table["dec"] - positions_table["dec"].mean()).data
-
-    exp_field = Table(
-        {
-            "x": expected_x * u.arcsec,
-            "y": expected_y * u.arcsec,
-            "ref": [0, 1, 2, 3],
-            "weight": [14.734505, 12.338661, 14.627676, 14.272486] * u.mag,
-        }
+    exp_ds = xr.Dataset()
+    exp_ds["x"] = xr.DataArray(
+        np.array(expected_x), dims="ref", coords={"ref": [0, 1, 2, 3]}
+    )
+    exp_ds["y"] = xr.DataArray(
+        np.array(expected_y), dims="ref", coords={"ref": [0, 1, 2, 3]}
+    )
+    exp_ds["weight"] = xr.DataArray(
+        np.array(source1_gaia["phot_bp_mean_mag"]),
+        dims="ref",
+        coords={"ref": [0, 1, 2, 3]},
     )
 
-    assert all(diff_values(first_field, exp_field))
+    x = u.Quantity(wavelengths, unit="nm")
+    flux = u.Quantity(source1_gaia["flux"], unit="W / (nm * m2)")
 
-    # Check .spectra
-    wavelengths_nm: u.Quantity = wavelengths.to_numpy() * u.nm
-    assert len(obj.spectra) == 4
+    # Compute new flux using the Plank's equation 'E = h * v = h * (c / wavelength)'
+    photon_energy = (const.h * const.c / x).to(u.J) / u.ph
+    new_flux = (flux / photon_energy).to("ph / (nm s cm2)")
 
-    source_spectrum: SourceSpectrum = obj.spectra[0]
-    spectra = source_spectrum(wavelengths_nm)
-    assert_allclose(
-        spectra.value, [0.00070802, 0.00069783, 0.00071177, 0.00069041], rtol=1e-5
-    )
+    flux_converted: xr.DataArray = xr.zeros_like(scene["/list/0"]["flux"])
+    flux_converted[:] = new_flux
+    exp_ds["flux"] = flux_converted
 
-    source_spectrum: SourceSpectrum = obj.spectra[1]
-    spectra = source_spectrum(wavelengths_nm)
-    assert_allclose(
-        spectra.value, [0.00511449, 0.00506812, 0.01276998, 0.01313122], rtol=1e-5
-    )
-
-    source_spectrum: SourceSpectrum = obj.spectra[2]
-    spectra = source_spectrum(wavelengths_nm)
-    assert_allclose(
-        spectra.value, [0.00034489, 0.00038478, 0.00316398, 0.00334145], rtol=1e-5
-    )
-
-    source_spectrum: SourceSpectrum = obj.spectra[3]
-    spectra = source_spectrum(wavelengths_nm)
-    assert_allclose(
-        spectra.value, [0.00041891, 0.00036679, 0.00466095, 0.00471831], rtol=1e-5
-    )
+    assert "list" in scene
+    assert "0" in scene["list"]
+    xr.testing.assert_allclose(scene["/list/0"].to_dataset(), exp_ds)
