@@ -153,16 +153,16 @@ def convert_spectrum(flux: xr.DataArray) -> xr.DataArray:
 
     >>> convert_spectrum(flux)
     <xarray.DataArray 'flux' (source_id: 345, wavelength: 343)>
-    array([[3.76907117e-03, 4.13740861e-03, ..., 8.00785350e-02, 8.32541239e-02],
-           [1.15190254e-03, 1.02210366e-03, ..., 2.00486326e-03, 2.05518196e-03],
+    array([[3.76907117e-02, 4.13740861e-02, ..., 8.00785350e-01, 8.32541239e-01],
+           [1.15190254e-02, 1.02210366e-02, ..., 2.00486326e-02, 2.05518196e-02],
            ...,
-           [1.01187592e-02, 9.57637374e-03, ..., 2.71410354e-02, 2.85997559e-02],
-           [1.80093381e-01, 1.69864354e-01, ..., 1.81295134e-01, 1.89642359e-01]])
+           [1.01187592e-01, 9.57637374e-02, ..., 2.71410354e-01, 2.85997559e-01],
+           [1.80093381e+00, 1.69864354e+00, ..., 1.81295134e+00, 1.89642359e+00]])
     Coordinates:
       * source_id   (source_id) int64 66504343062472704 ... 65296357738731008
       * wavelength  (wavelength) float64 336.0 338.0 340.0 ... 1.018e+03 1.02e+03
     Attributes:
-        units:    ph / (Angstrom s cm2)
+        units:    ph / (nm s cm2)
     """
     new_flux: xr.DataArray = xr.apply_ufunc(
         _convert_spectrum,
@@ -173,7 +173,7 @@ def convert_spectrum(flux: xr.DataArray) -> xr.DataArray:
         output_core_dims=[["wavelength"]],
     )
 
-    new_flux.attrs["units"] = str(u.ph / (u.s * u.AA * u.cm * u.cm))
+    new_flux.attrs["units"] = str(u.ph / (u.s * u.nm * u.cm * u.cm))
     new_flux["wavelength"].attrs["units"] = flux["wavelength"].units
     return new_flux
 

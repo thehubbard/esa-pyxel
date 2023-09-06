@@ -363,7 +363,7 @@ def test_load_star_map(
 
     # Compute new flux using the Plank's equation 'E = h * v = h * (c / wavelength)'
     photon_energy = (const.h * const.c / x).to(u.J) / u.ph
-    new_flux = (flux / photon_energy).to("ph / (Angstrom s cm2)")
+    new_flux = (flux / photon_energy).to("ph / (nm s cm2)")
 
     flux_converted: xr.DataArray = xr.zeros_like(scene["/list/0"]["flux"])
     flux_converted[:] = new_flux
