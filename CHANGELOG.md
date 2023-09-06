@@ -22,6 +22,8 @@ Pyxel doesn't use SemVer anymore, since most minor releases have at least minor 
   (See [!728](https://gitlab.com/esa/pyxel/-/merge_requests/728)).
 
 ### Models
+* Add first model for group 'Scene Generation'.
+  (See [!715](https://gitlab.com/esa/pyxel/-/merge_requests/715)).
 
 ### Others
 
