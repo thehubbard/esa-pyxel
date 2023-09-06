@@ -4,6 +4,8 @@
 #  is part of this Pyxel package. No part of the package, including
 #  this file, may be copied, modified, propagated, or distributed except according to
 #  the terms contained in the file ‘LICENCE.txt’.
+import sys
+
 import astropy.constants as const
 import astropy.units as u
 import numpy as np
@@ -219,6 +221,7 @@ def source1_pyxel(
     return 0
 
 
+@pytest.mark.skipif(sys.version_info < (3, 11), reason="Requires Python 3.11+")
 def test_retrieve_from_gaia(
     mocker: MockerFixture,
     positions_table: Table,
@@ -310,6 +313,7 @@ def test_compute_flux_compare_to_manual_conversion():
     assert_quantity_allclose(actual=new_flux, desired=expected_flux, rtol=1e-5)
 
 
+@pytest.mark.skipif(sys.version_info < (3, 11), reason="Requires Python 3.11+")
 def test_load_star_map(
     mocker: MockerFixture,
     ccd_10x10: CCD,
