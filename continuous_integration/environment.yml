@@ -90,6 +90,9 @@ dependencies:
   - tryceratops
   - freezegun
   - codespell
+# Profiling
+  - pyinstrument
+  - memray
 # Pip packages
   - pip:
 #    - --no-deps
