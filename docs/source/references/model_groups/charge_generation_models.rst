@@ -143,7 +143,7 @@ Basic example of YAML configuration model:
       func: pyxel.models.charge_generation.load_charge
       enabled: true
       arguments:
-        charge_file: data/charge.npy
+        filename: data/charge.npy
         position: [0,0]
 
 .. autofunction:: load_charge
