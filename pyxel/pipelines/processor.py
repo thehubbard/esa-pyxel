@@ -44,11 +44,13 @@ ResultId = NewType("ResultId", str)
 def get_result_id(name: str) -> ResultId:
     """Convert to a 'ResultId' object."""
     if name not in (
+        "scene",
         "photon",
         "charge",
         "pixel",
         "signal",
         "image",
+        "data",
         "all",
     ) and not name.startswith("data"):
         raise ValueError(f"Result type: {name!r} unknown !")
@@ -69,6 +71,7 @@ def result_keys(result_type: ResultId) -> Sequence[ResultId]:
     """
     if result_type == "all":
         return [
+            ResultId("scene"),
             ResultId("photon"),
             ResultId("charge"),
             ResultId("pixel"),
@@ -251,7 +254,7 @@ class Processor:
 
         key: ResultId
         for key in result_keys(result_type):
-            if key.startswith("data"):
+            if key.startswith("data") or key.startswith("scene"):
                 continue
             elif key == "photon":
                 standard_name = "Photon"

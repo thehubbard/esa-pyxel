@@ -23,6 +23,8 @@ If this parameter is not provided then it is inferred from `adc_bit_resolution` 
   (See [!737](https://gitlab.com/esa/pyxel/-/merge_requests/737)).
 * Speedup function `pyxel.load`.
   (See [!738](https://gitlab.com/esa/pyxel/-/merge_requests/738)).
+* Add `Scene` to `pyxel.run_mode`.
+  (See [!740](https://gitlab.com/esa/pyxel/-/merge_requests/740)).
 
 ### Documentation
 * Add info about Jupyter book being not interactive.
