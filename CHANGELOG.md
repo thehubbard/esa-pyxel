@@ -13,19 +13,23 @@ Pyxel doesn't use SemVer anymore, since most minor releases have at least minor 
 This release brings a number of bugfixes, documentation and improvements.
 
 The following new models were added:
-* `load_star_map`.
+* [`load_star_map`](https://esa.gitlab.io/pyxel/doc/latest/references/model_groups/scene_generation_models.html#pyxel.models.scene_generation.load_star_map) in `Readout Electronics`.
+* [`simple_aperture`](https://esa.gitlab.io/pyxel/doc/latest/references/model_groups/photon_collection_models.html#pyxel.models.photon_collection.simple_aperture) in `Photon Collection`.
 
-Parameter `data_type` is now optional in model `simple_adc` in `Readout Electronics`.
+Parameter `data_type` is now optional in model 
+[`simple_adc`](https://esa.gitlab.io/pyxel/doc/latest/references/model_groups/readout_electronics.html#pyxel.models.readout_electronics.simple_adc) 
+in `Readout Electronics`.
 If this parameter is not provided then it is inferred from `adc_bit_resolution` in `Detector`.
 
 ### Core
 * Bug when using with a configuration file with extension '.yml' instead of '.yaml'.
   (See [!737](https://gitlab.com/esa/pyxel/-/merge_requests/737)).
-* Speedup function `pyxel.load`.
+* Speedup function [`pyxel.load`](https://esa.gitlab.io/pyxel/doc/latest/references/api/configuration.html#pyxel.load).
   (See [!738](https://gitlab.com/esa/pyxel/-/merge_requests/738)).
 * Add `Scene` to `pyxel.run_mode`.
   (See [!740](https://gitlab.com/esa/pyxel/-/merge_requests/740)).
-* Fix bug with the output of `pyxel.run_mode`. The 'image' container has type float64 instead of int.
+* Fix bug with the output of [`pyxel.run_mode`](https://esa.gitlab.io/pyxel/doc/latest/references/api/run.html#pyxel.run_mode).
+  The 'image' container has type `float64` instead of `int`.
   (See [!742](https://gitlab.com/esa/pyxel/-/merge_requests/742)).
 
 ### Documentation
@@ -37,20 +41,24 @@ If this parameter is not provided then it is inferred from `adc_bit_resolution` 
   (See [!728](https://gitlab.com/esa/pyxel/-/merge_requests/728)).
 
 ### Models
-* Add first model for group `load_star_map` in `Scene Generation`.
+* Add first model for group [`load_star_map`](https://esa.gitlab.io/pyxel/doc/latest/references/model_groups/scene_generation_models.html#pyxel.models.scene_generation.load_star_map)
+  in `Scene Generation`.
   (See [!715](https://gitlab.com/esa/pyxel/-/merge_requests/715)
   and [!716](https://gitlab.com/esa/pyxel/-/merge_requests/716)).
-* Fix unexpected value in `simple_adc` in `Readout Electronics`.
+* Fix unexpected value in [`simple_adc`](https://esa.gitlab.io/pyxel/doc/latest/references/model_groups/readout_electronics.html#pyxel.models.readout_electronics.simple_adc)
+  in `Readout Electronics`.
   (See [!732](https://gitlab.com/esa/pyxel/-/merge_requests/732)).
-* Conversion from scene to photon.
+* Add model [`simple_aperture`](https://esa.gitlab.io/pyxel/doc/latest/references/model_groups/photon_collection_models.html#pyxel.models.photon_collection.simple_aperture)
+  in `Photon Collection` to convert from scene to photon.
   (See [!733](https://gitlab.com/esa/pyxel/-/merge_requests/733)).
-* Parameter 'data_type' is optional in model `simple_adc` in `Readout Electronics`.
+* Parameter `data_type` is optional in model [`simple_adc`](https://esa.gitlab.io/pyxel/doc/latest/references/model_groups/readout_electronics.html#pyxel.models.readout_electronics.simple_adc)
+  in `Readout Electronics`.
   (See [!736](https://gitlab.com/esa/pyxel/-/merge_requests/736)).
 
 ### Others
 * Fix issues with mypy and Matplotlib 3.8.
   (See [!734](https://gitlab.com/esa/pyxel/-/merge_requests/734)).
-* Add `poppy` as a dependency in Conda.
+* Add [`poppy`](https://poppy-optics.readthedocs.io/) as a dependency in Conda.
   (See [!741](https://gitlab.com/esa/pyxel/-/merge_requests/741)).
 
 
