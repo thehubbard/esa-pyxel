@@ -7,15 +7,10 @@
 
 """Tests for radiation induced dark current model."""
 
-from collections.abc import Sequence
-
-import numpy as np
 import pytest
 
 from pyxel.detectors import (
-    CCD,
     CMOS,
-    CCDGeometry,
     Characteristics,
     CMOSGeometry,
     Environment,
@@ -47,7 +42,7 @@ def test_radiation_induced_dark_current_valid(cmos_5x5: CMOS):
     detector = cmos_5x5
 
     # Call the function with appropriate arguments
-    depletion_volume = 64  #  µm3
+    depletion_volume = 64  # µm3
     annealing_time = 0.1  # weeks
     displacement_dose = 50  # TeV/g
     seed = 42
@@ -58,4 +53,5 @@ def test_radiation_induced_dark_current_valid(cmos_5x5: CMOS):
         annealing_time=annealing_time,
         displacement_dose=displacement_dose,
         seed=seed,
+        shot_noise=False,
     )
