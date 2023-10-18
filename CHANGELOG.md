@@ -58,6 +58,8 @@ If this parameter is not provided then it is inferred from `adc_bit_resolution` 
 * Parameter `data_type` is optional in model [`simple_adc`](https://esa.gitlab.io/pyxel/doc/latest/references/model_groups/readout_electronics.html#pyxel.models.readout_electronics.simple_adc)
   in `Readout Electronics`.
   (See [!736](https://gitlab.com/esa/pyxel/-/merge_requests/736)).
+* Rename induced dark_current model to [`radiation induced dark current`](https://esa.gitlab.io/pyxel/doc/latest/references/model_groups/charge_generation_models.html#dark-current-induced).
+  (See [!731](https://gitlab.com/esa/pyxel/-/merge_requests/731)).
 
 ### Others
 * Fix issues with mypy and Matplotlib 3.8.
