@@ -393,6 +393,14 @@ def run_pipeline(
             else:
                 data_tree = data_tree.combine_first(partial_datatree)
 
+                # Fix dtype of container 'image'. See #652
+                image_dtype: np.dtype = data_tree["image"].dtype
+                exp_dtype: np.dtype = detector.image.dtype
+
+                if image_dtype != exp_dtype:
+                    new_image: xr.DataArray = data_tree["image"].astype(dtype=exp_dtype)
+                    data_tree["image"] = new_image
+
             if progressbar:
                 pbar.update(1)
 

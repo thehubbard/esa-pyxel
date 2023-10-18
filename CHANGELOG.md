@@ -25,6 +25,8 @@ If this parameter is not provided then it is inferred from `adc_bit_resolution` 
   (See [!738](https://gitlab.com/esa/pyxel/-/merge_requests/738)).
 * Add `Scene` to `pyxel.run_mode`.
   (See [!740](https://gitlab.com/esa/pyxel/-/merge_requests/740)).
+* Fix bug with the output of `pyxel.run_mode`. The 'image' container has type float64 instead of int.
+  (See [!742](https://gitlab.com/esa/pyxel/-/merge_requests/742)).
 
 ### Documentation
 * Add info about Jupyter book being not interactive.
