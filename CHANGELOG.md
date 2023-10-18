@@ -37,8 +37,12 @@ If this parameter is not provided then it is inferred from `adc_bit_resolution` 
   (See [!726](https://gitlab.com/esa/pyxel/-/merge_requests/726)).
 * Add new icon/badge 'I want to contribute !'
   (See [!727](https://gitlab.com/esa/pyxel/-/merge_requests/727)).
-* Update EMCCD cic model updates.
+* Update EMCCD cic model [`multiplication_register_cic`](https://esa.gitlab.io/pyxel/doc/latest/references/model_groups/charge_transfer_models.html#pyxel.models.charge_transfer.multiplication_register_cic)
+  in `Charge Transfer`.
   (See [!728](https://gitlab.com/esa/pyxel/-/merge_requests/728)).
+* Fix documentation for model [`load_charge`](https://esa.gitlab.io/pyxel/doc/latest/references/model_groups/charge_generation_models.html#pyxel.models.charge_generation.load_charge) 
+  in `charge_generation`.
+  (See [!743](https://gitlab.com/esa/pyxel/-/merge_requests/743)).
 
 ### Models
 * Add first model for group [`load_star_map`](https://esa.gitlab.io/pyxel/doc/latest/references/model_groups/scene_generation_models.html#pyxel.models.scene_generation.load_star_map)
