@@ -524,13 +524,18 @@ pipeline:
     return filename
 
 
-@pytest.mark.deprecated
-def test_load_2_times_deprecated():
-    """Test function 'pyxel.load' called two times."""
-    filename = "tests/data/deprecated_dummy_simple.yaml"
+@pytest.fixture
+def folder_data(request: pytest.FixtureRequest) -> Path:
+    """Get the folder 'tests'."""
+    filename: Path = request.path / "../../data"
+    return filename.resolve(strict=True)
 
+
+@pytest.mark.deprecated
+def test_load_2_times_deprecated(folder_data: Path):
+    """Test function 'pyxel.load' called two times."""
     # Get full filename
-    full_filename: Path = Path(filename)
+    full_filename: Path = folder_data / "deprecated_dummy_simple.yaml"
     assert full_filename.exists()
 
     # Load the configuration file for the first time
@@ -542,12 +547,10 @@ def test_load_2_times_deprecated():
         _ = pyxel.load(full_filename)
 
 
-def test_load_2_times():
+def test_load_2_times(folder_data: Path):
     """Test function 'pyxel.load' called two times."""
-    filename = "tests/data/dummy_simple.yaml"
-
     # Get full filename
-    full_filename: Path = Path(filename)
+    full_filename: Path = folder_data / "dummy_simple.yaml"
     assert full_filename.exists()
 
     # Load the configuration file for the first time
