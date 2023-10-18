@@ -38,6 +38,8 @@ The following new models were added:
 ### Others
 * Fix issues with mypy and Matplotlib 3.8.
   (See [!734](https://gitlab.com/esa/pyxel/-/merge_requests/734)).
+* Add `poppy` as a dependency in Conda.
+  (See [!741](https://gitlab.com/esa/pyxel/-/merge_requests/741)).
 
 
 ## 1.10.2 / 2023-08-29
