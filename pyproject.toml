@@ -76,7 +76,6 @@ dependencies = [
     "astroquery",
     "specutils",
     "synphot",
-    "scopesim",
 ]
 dynamic = ["version"]
 
