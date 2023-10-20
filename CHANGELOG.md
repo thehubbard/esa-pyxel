@@ -9,6 +9,16 @@ Minor releases include updated stdlib stubs from typeshed.
 
 Pyxel doesn't use SemVer anymore, since most minor releases have at least minor backward incompatible changes.
 
+## UNRELEASED
+
+### Core
+
+### Documentation
+
+### Models
+
+### Others
+
 ## 1.11.1 / 2023-10-19
 
 This release brings one bugfix.
@@ -16,7 +26,6 @@ This release brings one bugfix.
 ### Others
 * Remove Scopesim as a dependency of Pyxel.
   (See [!745](https://gitlab.com/esa/pyxel/-/merge_requests/745)).
- 
 
 ## 1.11 / 2023-10-18
 This release brings a number of bugfixes, documentation and improvements.
@@ -67,7 +76,7 @@ If this parameter is not provided then it is inferred from `adc_bit_resolution` 
 * Parameter `data_type` is optional in model [`simple_adc`](https://esa.gitlab.io/pyxel/doc/latest/references/model_groups/readout_electronics.html#pyxel.models.readout_electronics.simple_adc)
   in `Readout Electronics`.
   (See [!736](https://gitlab.com/esa/pyxel/-/merge_requests/736)).
-* Rename induced dark_current model to [`radiation induced dark current`](https://esa.gitlab.io/pyxel/doc/latest/references/model_groups/charge_generation_models.html#dark-current-induced).
+* Rename induced dark_current model to [`radiation induced dark current`](https://esa.gitlab.io/pyxel/doc/stable/references/model_groups/charge_generation_models.html#radiation-induced-dark-current).
   (See [!731](https://gitlab.com/esa/pyxel/-/merge_requests/731)).
 
 ### Others
