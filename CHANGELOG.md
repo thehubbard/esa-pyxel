@@ -10,10 +10,14 @@ Minor releases include updated stdlib stubs from typeshed.
 Pyxel doesn't use SemVer anymore, since most minor releases have at least minor backward incompatible changes.
 
 ## UNRELEASED
+This release brings a number of bugfixes, documentation and improvements.
 
 ### Core
 
 ### Documentation
+* Add more information about the Conda environments in the 
+  [installation documentation](https://esa.gitlab.io/pyxel/doc/stable/tutorials/install.html).
+  (See [!746](https://gitlab.com/esa/pyxel/-/merge_requests/746)).
 
 ### Models
 
