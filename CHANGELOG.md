@@ -35,7 +35,7 @@ This release brings one bugfix.
 This release brings a number of bugfixes, documentation and improvements.
 
 The following new models were added:
-* [`load_star_map`](https://esa.gitlab.io/pyxel/doc/latest/references/model_groups/scene_generation_models.html#pyxel.models.scene_generation.load_star_map) in `Readout Electronics`.
+* [`load_star_map`](https://esa.gitlab.io/pyxel/doc/latest/references/model_groups/scene_generation_models.html#pyxel.models.scene_generation.load_star_map) in `Scene Generation`.
 * [`simple_aperture`](https://esa.gitlab.io/pyxel/doc/latest/references/model_groups/photon_collection_models.html#pyxel.models.photon_collection.simple_aperture) in `Photon Collection`.
 
 Parameter `data_type` is now optional in model 
