@@ -28,9 +28,11 @@ from typing import (
 )
 
 import dask.bag as db
+import datatree
 import numpy as np
 import pandas as pd
 import toolz
+import xarray as xr
 from numpy.typing import ArrayLike
 from tqdm.auto import tqdm
 
@@ -805,7 +807,14 @@ class Observation:
             datatree_list: Iterator[DataTree] = (
                 apply_pipeline(el) for el in tqdm(parameters)
             )
-            final_datatree = reduce(DataTree.combine_first, datatree_list)  # type: ignore
+
+            def my_func(*args):
+                return xr.merge(args)
+
+            other_func = datatree.map_over_subtree(my_func)
+
+            final_datatree = reduce(other_func, datatree_list)  # type: ignore
+            # final_datatree = reduce(DataTree.combine_first, datatree_list)  # type: ignore
 
         parameter_name: str = self.parameter_mode.name
         final_datatree.attrs["running mode"] = f"Observation - {parameter_name}"
@@ -1323,6 +1332,8 @@ def _add_product_parameters_datatree(
     """
     import xarray as xr
 
+    dim_idx = 0
+
     # TODO: join 'indexes' and 'parameter_dict'
     for index, (coordinate_name, param_value) in zip(indexes, parameter_dict.items()):
         short_name: str = dimension_names[coordinate_name]
@@ -1333,9 +1344,13 @@ def _add_product_parameters_datatree(
 
         elif types[coordinate_name] == ParameterType.Multi:
             data = np.array(param_value)
-            data_array = xr.DataArray(data).expand_dims(
-                dim={f"{short_name}_id": [index]}
-            )
+            assert data.ndim == 1
+
+            data_array = xr.DataArray(
+                data, dims=f"dim_{dim_idx}", coords={f"dim_{dim_idx}": range(len(data))}
+            ).expand_dims(dim={f"{short_name}_id": [index]})
+            dim_idx += 1
+
             data_tree = data_tree.expand_dims(
                 {f"{short_name}_id": [index]}
             ).assign_coords({short_name: data_array})
