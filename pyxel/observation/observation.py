@@ -32,7 +32,6 @@ import datatree
 import numpy as np
 import pandas as pd
 import toolz
-import xarray as xr
 from numpy.typing import ArrayLike
 from tqdm.auto import tqdm
 
@@ -807,6 +806,7 @@ class Observation:
             datatree_list: Iterator[DataTree] = (
                 apply_pipeline(el) for el in tqdm(parameters)
             )
+            import xarray as xr
 
             def my_func(*args):
                 return xr.merge(args)
