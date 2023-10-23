@@ -13,6 +13,8 @@ Pyxel doesn't use SemVer anymore, since most minor releases have at least minor 
 This release brings a number of bugfixes, documentation and improvements.
 
 ### Core
+* In 'Custom Observation' mode, add a sanity test to verify input custom data.
+  (See [!749](https://gitlab.com/esa/pyxel/-/merge_requests/749)).
 
 ### Documentation
 * Add more information about the Conda environments in the 

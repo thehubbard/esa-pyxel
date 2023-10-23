@@ -14,6 +14,7 @@ from copy import deepcopy
 from dataclasses import dataclass
 from enum import Enum
 from functools import partial, reduce
+from itertools import chain
 from numbers import Number
 from typing import (
     TYPE_CHECKING,
@@ -245,6 +246,21 @@ class Observation:
         # Read the file without forcing its data type
         all_data: pd.DataFrame = load_table(self._custom_file, dtype=None)
         filtered_data: pd.DataFrame = all_data.loc[:, self._custom_columns]
+
+        # Sanity check
+        num_columns = len(filtered_data.columns)
+        all_values = [list(el.values) for el in self.enabled_steps]
+
+        counter = Counter(chain.from_iterable(all_values))
+        if "_" not in counter:
+            raise ValueError("Missing at parameter '_'")
+
+        num_parameters: int = counter["_"]
+        if num_parameters != num_columns:
+            raise ValueError(
+                f"Custom data file has {num_columns} column(s). "
+                f"{num_parameters} is/are expected ! "
+            )
 
         self._custom_data = filtered_data
 
