@@ -9,7 +9,7 @@
 observation:
 
   mode:  custom
-  from_file:        'data/custom_input.txt'
+  from_file:        'data/good_custom_input.txt'
   column_range:     [0, 3]
   parameters:
     - key:      pipeline.charge_transfer.cdm.arguments.sigma

@@ -12,17 +12,24 @@ import pytest
 import pyxel
 
 
-@pytest.fixture
-def input_folder(request: pytest.FixtureRequest) -> Path:
-    """Get a valid existing YAML filename."""
-    filename: Path = request.path.parent
-    return filename.resolve(strict=True)
-
-
-def test_observation_custom_mode(input_folder: Path):
+def test_bad_observation_custom_mode(monkeypatch: pytest.MonkeyPatch):
     """Test Observation custom mode with a bad custom file."""
-    config_filename = input_folder / "data/observation_custom.yaml"
+    base_path = Path(__file__).parent
+    monkeypatch.chdir(base_path)
+
+    config_filename = Path("data/bad_observation_custom.yaml").resolve()
     assert config_filename.exists()
 
     with pytest.raises(ValueError, match=r"Custom data file has"):
         _ = pyxel.load(config_filename)
+
+
+def test_good_observation_custom_mode(monkeypatch: pytest.MonkeyPatch):
+    """Test Observation custom mode with a bad custom file."""
+    base_path = Path(__file__).parent
+    monkeypatch.chdir(base_path)
+
+    config_filename = Path("data/good_observation_custom.yaml").resolve()
+    assert config_filename.exists()
+
+    _ = pyxel.load(config_filename)
