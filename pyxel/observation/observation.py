@@ -13,7 +13,7 @@ from collections.abc import Iterable, Iterator, Mapping, Sequence
 from copy import deepcopy
 from dataclasses import dataclass
 from enum import Enum
-from functools import partial, reduce
+from functools import partial
 from itertools import chain
 from numbers import Number
 from typing import (
@@ -168,6 +168,22 @@ def _get_short_dimension_names_new(
         return dim_names
 
     return potential_dim_names
+
+
+# TODO: Replace this function by 'xr.merge'
+# TODO: or 'datatree.merge' when it will be possible
+def merge(*objects: Iterable["DataTree"]) -> "DataTree":
+    """Merge any number of DataTree into a single DataTree."""
+    import datatree
+    import xarray as xr
+
+    def _merge_dataset(*args: xr.Dataset) -> xr.Dataset:
+        return xr.merge(args)
+
+    _merge_datatree: Callable[..., "DataTree"] = datatree.map_over_subtree(
+        _merge_dataset
+    )
+    return _merge_datatree(*objects)
 
 
 class Observation:
@@ -773,7 +789,6 @@ class Observation:
     def run_observation_datatree(self, processor: "Processor") -> "DataTree":
         """Run the observation pipelines."""
         # Late import to speedup start-up time
-        from datatree import DataTree
 
         # validation
         self.validate_steps(processor)
@@ -798,14 +813,16 @@ class Observation:
             datatree_bag: db.Bag = (
                 db.from_sequence(parameters)
                 .map(apply_pipeline)
-                .fold(binop=DataTree.combine_first, combine=DataTree.combine_first)  # type: ignore
+                .fold(binop=merge)  # type: ignore
             )
+
             final_datatree: DataTree = datatree_bag.compute()
         else:
             datatree_list: Iterator[DataTree] = (
                 apply_pipeline(el) for el in tqdm(parameters)
             )
-            final_datatree = reduce(DataTree.combine_first, datatree_list)  # type: ignore
+
+            final_datatree = merge(*datatree_list)
 
         parameter_name: str = self.parameter_mode.name
         final_datatree.attrs["running mode"] = f"Observation - {parameter_name}"
@@ -1323,6 +1340,8 @@ def _add_product_parameters_datatree(
     """
     import xarray as xr
 
+    dim_idx = 0
+
     # TODO: join 'indexes' and 'parameter_dict'
     for index, (coordinate_name, param_value) in zip(indexes, parameter_dict.items()):
         short_name: str = dimension_names[coordinate_name]
@@ -1333,9 +1352,15 @@ def _add_product_parameters_datatree(
 
         elif types[coordinate_name] == ParameterType.Multi:
             data = np.array(param_value)
-            data_array = xr.DataArray(data).expand_dims(
-                dim={f"{short_name}_id": [index]}
-            )
+            assert data.ndim == 1
+
+            data_array = xr.DataArray(
+                data,
+                dims=f"dim_{dim_idx}",
+                coords={f"dim_{dim_idx}": range(len(data))},
+            ).expand_dims(dim={f"{short_name}_id": [index]})
+            dim_idx += 1
+
             data_tree = data_tree.expand_dims(
                 {f"{short_name}_id": [index]}
             ).assign_coords({short_name: data_array})
