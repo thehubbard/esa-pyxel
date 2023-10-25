@@ -19,6 +19,8 @@ This release brings a number of bugfixes, documentation and improvements.
   (See [!750](https://gitlab.com/esa/pyxel/-/merge_requests/750)).
 * Improved function `pyxel.display_detector`.
   (See [!739](https://gitlab.com/esa/pyxel/-/merge_requests/739)).
+* Add filter to ignore warnings in scene_generation.
+  (See [!751](https://gitlab.com/esa/pyxel/-/merge_requests/751)).
 
 ### Documentation
 * Add more information about the Conda environments in the 
