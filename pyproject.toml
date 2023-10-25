@@ -44,7 +44,7 @@ dependencies = [
     # Plotting
     "matplotlib>=3.1",
     "seaborn",
-    "holoviews>=1.15.0",
+    "hvplot",
     "bokeh",
 
     # Parallel computing
@@ -161,12 +161,14 @@ module = [
     "fsspec.*",
     "jsonschema.*",
     "h5py.*",
+    "hvplot.*",
     "lacosmic.*",
     "matplotlib.*",
     "mpl_toolkits.*",
     "numba.*",
     "numpy.*",
     "pandas.*",
+    "param.*",
     "poppy",
     "pygmo",
     "pympler.*",
