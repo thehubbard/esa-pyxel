@@ -7,6 +7,7 @@
 
 """Scene generator creates Scopesim Source object."""
 
+import warnings
 from collections.abc import Sequence
 from enum import Enum
 from typing import TYPE_CHECKING, Literal
@@ -20,6 +21,8 @@ from specutils import Spectrum1D
 from synphot import SourceSpectrum
 
 from pyxel.detectors import Detector
+
+warnings.filterwarnings("ignore")
 
 if TYPE_CHECKING:
     from astropy.io.votable import tree
