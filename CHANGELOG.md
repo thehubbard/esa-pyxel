@@ -17,6 +17,8 @@ This release brings a number of bugfixes, documentation and improvements.
   (See [!749](https://gitlab.com/esa/pyxel/-/merge_requests/749)).
 * Nan output and missing output in observation mode.
   (See [!750](https://gitlab.com/esa/pyxel/-/merge_requests/750)).
+* Improved function `pyxel.display_detector`.
+  (See [!739](https://gitlab.com/esa/pyxel/-/merge_requests/739)).
 
 ### Documentation
 * Add more information about the Conda environments in the 
@@ -57,8 +59,6 @@ If this parameter is not provided then it is inferred from `adc_bit_resolution` 
 * Fix bug with the output of [`pyxel.run_mode`](https://esa.gitlab.io/pyxel/doc/latest/references/api/run.html#pyxel.run_mode).
   The 'image' container has type `float64` instead of `int`.
   (See [!742](https://gitlab.com/esa/pyxel/-/merge_requests/742)).
-* Improved function `pyxel.display_detector`.
-  (See [!739](https://gitlab.com/esa/pyxel/-/merge_requests/739)).
 
 ### Documentation
 * Add info about Jupyter book being not interactive.
