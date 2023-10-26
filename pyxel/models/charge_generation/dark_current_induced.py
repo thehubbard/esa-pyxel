@@ -41,6 +41,8 @@ from astropy import constants as const
 from pyxel.detectors import CMOS
 from pyxel.util import set_random_seed
 
+warnings.filterwarnings("once", category=RuntimeWarning, append=True)
+
 
 def damage_factors(
     annealing_time: float,

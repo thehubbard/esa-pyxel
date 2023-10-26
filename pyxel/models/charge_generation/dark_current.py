@@ -15,6 +15,8 @@ from astropy import constants as const
 from pyxel.detectors import APD, Detector
 from pyxel.util import set_random_seed
 
+warnings.filterwarnings("once", category=RuntimeWarning, append=True)
+
 
 def calculate_band_gap(
     band_gap_0: float, alpha: float, beta: float, temperature: float
@@ -184,9 +186,11 @@ def compute_dark_current(
             time_step * avg_dark_current * spatial_noise_factor
         )  # sigma of fpn distribution
 
-        dark_current_2d = dark_current_2d * (
-            1 + np.random.lognormal(sigma=dark_current_fpn_sigma, size=shape)
-        )
+        with np.errstate(all="ignore"):
+            dark_current_2d = np.multiply(
+                dark_current_2d,
+                (1 + np.random.lognormal(sigma=dark_current_fpn_sigma, size=shape)),
+            )
 
     if np.isinf(dark_current_2d).any():
         warnings.warn(

@@ -14,6 +14,8 @@ import numpy as np
 from pyxel.detectors import CMOS
 from pyxel.util import set_random_seed
 
+warnings.filterwarnings("once", category=RuntimeWarning, append=True)
+
 
 def lambda_e(lambda_cutoff: float) -> float:
     """Compute lambda_e.

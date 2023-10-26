@@ -21,6 +21,8 @@ This release brings a number of bugfixes, documentation and improvements.
   (See [!739](https://gitlab.com/esa/pyxel/-/merge_requests/739)).
 * Add filter to ignore warnings in scene_generation.
   (See [!751](https://gitlab.com/esa/pyxel/-/merge_requests/751)).
+* Reduce warning in dark current model.
+  (See [!643](https://gitlab.com/esa/pyxel/-/merge_requests/643)).
 
 ### Documentation
 * Add more information about the Conda environments in the 
