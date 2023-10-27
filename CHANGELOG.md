@@ -28,6 +28,8 @@ This release brings a number of bugfixes, documentation and improvements.
 * Add more information about the Conda environments in the 
   [installation documentation](https://esa.gitlab.io/pyxel/doc/stable/tutorials/install.html).
   (See [!746](https://gitlab.com/esa/pyxel/-/merge_requests/746)).
+* Add documentation for ModelGroup 'Scene Generation'.
+  (See [!752](https://gitlab.com/esa/pyxel/-/merge_requests/752)).
 
 ### Models
 
