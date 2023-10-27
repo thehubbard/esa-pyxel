@@ -111,7 +111,7 @@ which object of the :py:class:`~pyxel.detectors.Detector` object is used or modi
 the models. These groups correspond roughly to the detector fundamental
 functions.
 
-Models in Pyxel makes changes and storing the data in data bucktes (:py:class:`~pyxel.data_structure.Scene`,
+Models in Pyxel makes changes and storing the data in data buckets (:py:class:`~pyxel.data_structure.Scene`,
 :py:class:`~pyxel.data_structure.Photon`, :py:class:`~pyxel.data_structure.Charge`,
 :py:class:`~pyxel.data_structure.Phase`,
 :py:class:`~pyxel.data_structure.Pixel`, :py:class:`~pyxel.data_structure.Signal` or
