@@ -9,8 +9,12 @@ Minor releases include updated stdlib stubs from typeshed.
 
 Pyxel doesn't use SemVer anymore, since most minor releases have at least minor backward incompatible changes.
 
-## UNRELEASED
+## 1.12 / 2023-10-27
 This release brings a number of bugfixes, documentation and improvements.
+
+The function `pyxel.display_detector` used in the jupyter notebooks to visualise the detector at each stage of the 
+pipeline, has now the option to display in logarithmic scale besides the linear scale and to change the color of the image.
+The bin size and the x-axis range can now be changed in the related historgram plot.
 
 ### Core
 * In 'Custom Observation' mode, add a sanity test to verify input custom data.
@@ -30,10 +34,6 @@ This release brings a number of bugfixes, documentation and improvements.
   (See [!746](https://gitlab.com/esa/pyxel/-/merge_requests/746)).
 * Add documentation for ModelGroup 'Scene Generation'.
   (See [!752](https://gitlab.com/esa/pyxel/-/merge_requests/752)).
-
-### Models
-
-### Others
 
 ## 1.11.1 / 2023-10-19
 
