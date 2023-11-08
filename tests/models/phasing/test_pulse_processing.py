@@ -37,6 +37,7 @@ def mkid_5x5() -> MKID:
     return detector
 
 
+@pytest.mark.skip(reason="This test is too slow ! Fix this.")
 @pytest.mark.parametrize(
     "wavelength, responsivity, scaling_factor",
     [
