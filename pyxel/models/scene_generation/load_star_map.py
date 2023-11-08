@@ -48,11 +48,11 @@ class GaiaPassBand(Enum):
         >>> band.get_magnitude_key()
         'phot_bp_mean_map'
         """
-        if self is self.BluePhotometer:
+        if self is GaiaPassBand.BluePhotometer:
             return "phot_bp_mean_mag"
-        elif self is self.GaiaBand:
+        elif self is GaiaPassBand.GaiaBand:
             return "phot_g_mean_mag"
-        elif self is self.RedPhotometer:
+        elif self is GaiaPassBand.RedPhotometer:
             return "phot_rp_mean_mag"
         else:
             raise NotImplementedError
@@ -260,10 +260,11 @@ def _retrieve_objects_from_gaia(
     try:
         # Query for the catalog to search area with coordinates in FOV of optics.
         job = Gaia.launch_job_async(
-            f"SELECT source_id, ra, dec, has_xp_sampled, phot_bp_mean_mag, phot_g_mean_mag, phot_rp_mean_mag \
-        FROM gaiadr3.gaia_source \
-        WHERE CONTAINS(POINT('ICRS', ra, dec),CIRCLE('ICRS',{right_ascension},{declination},{fov_radius}))=1 \
-        AND has_xp_sampled = 'True'"
+            "SELECT source_id, ra, dec, has_xp_sampled, phot_bp_mean_mag,"
+            " phot_g_mean_mag, phot_rp_mean_mag         FROM gaiadr3.gaia_source      "
+            "   WHERE CONTAINS(POINT('ICRS', ra,"
+            f" dec),CIRCLE('ICRS',{right_ascension},{declination},{fov_radius}))=1     "
+            "    AND has_xp_sampled = 'True'"
         )
 
         # get the results from the query job

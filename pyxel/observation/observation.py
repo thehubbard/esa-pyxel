@@ -16,16 +16,7 @@ from enum import Enum
 from functools import partial
 from itertools import chain
 from numbers import Number
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Callable,
-    Literal,
-    NamedTuple,
-    Optional,
-    Tuple,
-    Union,
-)
+from typing import TYPE_CHECKING, Any, Callable, Literal, NamedTuple, Optional, Union
 
 import dask.bag as db
 import numpy as np
@@ -355,7 +346,7 @@ class Observation:
                 parameter_dict = {key: value}
                 yield index, parameter_dict
 
-    def _product_indices(self) -> "Iterator[Tuple]":
+    def _product_indices(self) -> Iterator[tuple]:
         """Return an iterator of product parameter indices.
 
         Returns
@@ -545,8 +536,8 @@ class Observation:
                 model_enabled: str = model_name + ".enabled"
                 if not processor.get(model_enabled):
                     raise ValueError(
-                        f"The '{model_name}' model referenced in Observation configuration "
-                        f"has not been enabled in yaml config!"
+                        f"The '{model_name}' model referenced in Observation"
+                        " configuration has not been enabled in yaml config!"
                     )
 
             if (
@@ -811,9 +802,7 @@ class Observation:
 
         if self.with_dask:
             datatree_bag: db.Bag = (
-                db.from_sequence(parameters)
-                .map(apply_pipeline)
-                .fold(binop=merge)  # type: ignore
+                db.from_sequence(parameters).map(apply_pipeline).fold(binop=merge)
             )
 
             final_datatree: DataTree = datatree_bag.compute()
