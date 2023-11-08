@@ -46,6 +46,11 @@ The bin size and the x-axis range can now be changed in the related historgram p
 * Add documentation for ModelGroup 'Scene Generation'.
   (See [!752](https://gitlab.com/esa/pyxel/-/merge_requests/752)).
 
+### Models
+* Improvements in model 'pulse_processing' in Model group 'phasing'.
+  (See [!665](https://gitlab.com/esa/pyxel/-/merge_requests/665)).
+
+
 ## 1.11.1 / 2023-10-19
 
 This release brings one bugfix.
