@@ -118,7 +118,7 @@ def test_pulse_processing_with_ccd():
         characteristics=Characteristics(),
     )
 
-    with pytest.raises(TypeError, match="Expecting a MKID object for the detector."):
+    with pytest.raises(TypeError, match="Expecting an MKID object for the detector."):
         pulse_processing(
             detector=detector, wavelength=1.0, responsivity=1.0, scaling_factor=1.0
         )
