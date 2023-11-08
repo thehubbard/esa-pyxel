@@ -284,6 +284,7 @@ exclude = ["_TEMPLATE.py", "_version.py"]
     "N",        # pep8-naming
     "W",        # pycodestyle
     "PTH",      # Flake8 use Pathlib
+    "UP",       # pyupgrade
 ]
 
 [tool.ruff.flake8-pytest-style]

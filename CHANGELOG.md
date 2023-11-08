@@ -10,14 +10,19 @@ Minor releases include updated stdlib stubs from typeshed.
 Pyxel doesn't use SemVer anymore, since most minor releases have at least minor backward incompatible changes.
 
 ## UNRELEASED
+This release brings a number of bugfixes, documentation and improvements.
 
 ### Core
 
 ### Documentation
 
 ### Models
+* Improvements in model 'pulse_processing' in Model group 'phasing'.
+  (See [!665](https://gitlab.com/esa/pyxel/-/merge_requests/665)).
 
 ### Others
+* Minor refactoring.
+  (See [!756](https://gitlab.com/esa/pyxel/-/merge_requests/756)).
 
 
 ## 1.12 / 2023-10-27
@@ -45,10 +50,6 @@ The bin size and the x-axis range can now be changed in the related historgram p
   (See [!746](https://gitlab.com/esa/pyxel/-/merge_requests/746)).
 * Add documentation for ModelGroup 'Scene Generation'.
   (See [!752](https://gitlab.com/esa/pyxel/-/merge_requests/752)).
-
-### Models
-* Improvements in model 'pulse_processing' in Model group 'phasing'.
-  (See [!665](https://gitlab.com/esa/pyxel/-/merge_requests/665)).
 
 
 ## 1.11.1 / 2023-10-19
