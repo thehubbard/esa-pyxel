@@ -23,6 +23,8 @@ This release brings a number of bugfixes, documentation and improvements.
 ### Others
 * Minor refactoring.
   (See [!756](https://gitlab.com/esa/pyxel/-/merge_requests/756)).
+* Check more packages with function `pyxel.show_versions()`.
+  (See [!757](https://gitlab.com/esa/pyxel/-/merge_requests/757)).
 
 
 ## 1.12 / 2023-10-27
