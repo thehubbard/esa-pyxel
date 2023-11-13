@@ -120,6 +120,9 @@ class MKID(Detector):
             },
             "data": {
                 "photon": None if self._photon is None else self._photon.array.copy(),
+                "photon_3d": (
+                    None if self._photon3d is None else self._photon3d.to_dict()
+                ),
                 "pixel": None if self._pixel is None else self._pixel.array.copy(),
                 "signal": None if self._signal is None else self._signal.array.copy(),
                 "image": None if self._image is None else self._image.array.copy(),
@@ -155,7 +158,7 @@ class MKID(Detector):
         import xarray as xr
         from datatree import DataTree
 
-        from pyxel.data_structure import Scene
+        from pyxel.data_structure import Photon3D, Scene
         from pyxel.detectors import Characteristics, Environment, MKIDGeometry
 
         if dct["type"] != "MKID":
@@ -179,7 +182,10 @@ class MKID(Detector):
 
         if "photon" in data:
             detector.photon.array = np.asarray(data["photon"])
-
+        if "photon_3d" in data:
+            detector.photon3d = Photon3D.from_dict(
+                geometry=geometry, data=data["photon_3d"]
+            )
         if "pixel" in data:
             detector.pixel.array = np.asarray(data["pixel"])
         if "signal" in data:

@@ -6,10 +6,15 @@
 #   the terms contained in the file ‘LICENCE.txt’.
 """Pyxel Photon 3D class to generate and track 3D photon."""
 
-from typing import Optional
+from typing import TYPE_CHECKING, Optional
 
 import numpy as np
 import xarray as xr
+
+from pyxel.util import get_size
+
+if TYPE_CHECKING:
+    from pyxel.detectors import Geometry
 
 
 class Photon3D:
@@ -18,26 +23,55 @@ class Photon3D:
     Accepted array types: ``np.float16``, ``np.float32``, ``np.float64``
     """
 
-    EXP_TYPE = float
     TYPE_LIST = (
         np.dtype(np.float16),
         np.dtype(np.float32),
         np.dtype(np.float64),
     )
-    NAME = "Photon3d"
-    UNIT = "Ph/nm"  # ?
+    NAME = "Photon3d"  # TODO: not used. To remove ?
+    UNIT = "Ph/nm"  # TODO: not used. To remove ?
 
-    def __init__(self, array):
-        assert array.ndim == 3
+    def __init__(self, geo: "Geometry"):
+        self._rows: int = geo.row
+        self._cols: int = geo.col
 
-        assert array.dims == ("wavelength", "y", "x")
-
-        self._array = array
+        self._array: Optional[xr.DataArray] = None
 
     def __eq__(self, other) -> bool:
-        return type(self) is type(other) and xr.testing.assert_equal(
-            self.array, other.array
+        return isinstance(other, Photon3D) and (
+            (self._array is None and other._array is None)
+            or (
+                self._array is not None
+                and other._array is not None
+                and self._array.equals(other._array)
+            )
         )
+
+    def _validate_array(self, value: xr.DataArray) -> None:
+        assert isinstance(value, xr.DataArray)
+        if value.ndim != 3:
+            raise ValueError(
+                f"Expected array with 3 dimensions. Got {value.ndim} dimensions."
+            )
+
+        if value.dtype not in self.TYPE_LIST:
+            raise ValueError(
+                f"Expected valid dtype: {', '.join(map(repr, self.TYPE_LIST))}. "
+                f"Got dtype: {value.dtype}"
+            )
+
+        if value.dims != ("wavelength", "y", "x"):
+            raise ValueError(
+                "Expected dimensions: 'wavelength', 'y', 'x'. "
+                f"Got dimensions: {', '.join(map(repr, value.dims))}"
+            )
+
+        shape = (value.sizes["y"], value.sizes["x"])
+        if shape != (self._rows, self._cols):
+            raise ValueError(
+                f"Expected shape {(self._rows,self._cols)!r}. "
+                f"Got dimensions: {shape!r}"
+            )
 
     @property
     def array(self) -> xr.DataArray:
@@ -45,6 +79,9 @@ class Photon3D:
 
         Only accepts an DataArray with the right type and shape.
         """
+        if self._array is None:
+            raise ValueError("'.array' is not initialized.")
+
         return self._array
 
     @array.setter
@@ -53,13 +90,14 @@ class Photon3D:
 
         Only accepts an array with the right type and shape.
         """
-
-        assert value.ndim == 3
-
-        assert value.dims == ("wavelength", "y", "x")
+        self._validate_array(value)
+        self._array = value
 
     def to_xarray(self, dtype: Optional[np.typing.DTypeLike] = None) -> "xr.DataArray":
-        return self._array
+        if dtype is None:
+            return self.array
+        else:
+            return self.array.astype(dtype)
 
     @property
     def numbytes(self) -> int:
@@ -70,6 +108,22 @@ class Photon3D:
         int
             Size of the object in bytes.
         """
-        # self._numbytes = get_size(self)
-        # return self._numbytes
-        raise NotImplementedError
+        self._numbytes = get_size(self)
+        return self._numbytes
+
+    def to_dict(self) -> dict:
+        return {
+            key.replace("/", "#"): value for key, value in self.array.to_dict().items()
+        }
+
+    # TODO: Remove parameter 'geometry' ?
+    @classmethod
+    def from_dict(cls, geometry: "Geometry", data: dict) -> "Photon3D":
+        new_dct = {key.replace("#", "/"): value for key, value in data.items()}
+
+        array: xr.DataArray = xr.DataArray.from_dict(new_dct)
+
+        obj = cls(geo=geometry)
+        obj.array = array
+
+        return obj
