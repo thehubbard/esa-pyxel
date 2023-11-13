@@ -15,6 +15,8 @@ This release brings a number of bugfixes, documentation and improvements.
 ### Core
 * Removed deprecated `Detector.set_output_dir` method and `Detector.output_dir` property.
   (See [!759](https://gitlab.com/esa/pyxel/-/merge_requests/749)).
+* Create 3D photon container.
+  (See [!673](https://gitlab.com/esa/pyxel/-/merge_requests/673)).
 
 ### Documentation
 
