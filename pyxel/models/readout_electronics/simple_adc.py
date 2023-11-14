@@ -14,6 +14,7 @@ import numpy as np
 from numpy.typing import DTypeLike
 
 from pyxel.detectors import Detector
+from pyxel.util import get_dtype
 
 
 def apply_simple_adc(
@@ -74,45 +75,6 @@ def apply_simple_adc(
     return np.trunc(output).astype(dtype)
 
 
-def _get_dtype(bit_resolution: int) -> np.dtype:
-    """Get NumPy data type based on a given bit resolution.
-
-    Parameters
-    ----------
-    bit_resolution : int
-        Number of bits representing the data.
-
-    Returns
-    -------
-    np.dtype
-        Numpy data type corresponding to the provided bit resolution.
-
-    Raises
-    ------
-    ValueError
-        Raised if the bit resolution does not fall within the supported range [1, 64]
-
-    Examples
-    --------
-    >>> _get_dtype(8)
-    dtype('uint8')
-    >>> _get_dtype(12)
-    dtype('uint16')
-    """
-    if 1 <= bit_resolution <= 8:
-        return np.dtype(np.uint8)
-    elif 9 <= bit_resolution <= 16:
-        return np.dtype(np.uint16)
-    elif 17 <= bit_resolution <= 32:
-        return np.dtype(np.uint32)
-    elif 33 <= bit_resolution <= 64:
-        return np.dtype(np.uint64)
-    else:
-        raise ValueError(
-            "Bit resolution does not fall within the supported range [1, 64]"
-        )
-
-
 def simple_adc(
     detector: Detector,
     data_type: Optional[Literal["uint8", "uint16", "uint32", "uint64"]] = None,
@@ -146,7 +108,7 @@ def simple_adc(
         if not issubclass(d_type.type, np.integer):
             raise TypeError("Expecting a signed/unsigned integer.")
     else:
-        d_type = _get_dtype(bit_resolution)
+        d_type = get_dtype(bit_resolution)
 
     detector.image.array = apply_simple_adc(
         signal=detector.signal.array,

@@ -29,6 +29,7 @@ __all__ = [
     "load_cropped_and_aligned_image",
     "set_random_seed",
     "deprecated",
+    "get_dtype",
 ]
 
 
@@ -129,3 +130,42 @@ def convert_unit(name: str) -> str:
         return f"{unit:unicode}"
     except ValueError:
         return name
+
+
+def get_dtype(bit_resolution: int) -> np.dtype:
+    """Get NumPy data type based on a given bit resolution.
+
+    Parameters
+    ----------
+    bit_resolution : int
+        Number of bits representing the data.
+
+    Returns
+    -------
+    np.dtype
+        Numpy data type corresponding to the provided bit resolution.
+
+    Raises
+    ------
+    ValueError
+        Raised if the bit resolution does not fall within the supported range [1, 64]
+
+    Examples
+    --------
+    >>> get_dtype(8)
+    dtype('uint8')
+    >>> get_dtype(12)
+    dtype('uint16')
+    """
+    if 1 <= bit_resolution <= 8:
+        return np.dtype(np.uint8)
+    elif 9 <= bit_resolution <= 16:
+        return np.dtype(np.uint16)
+    elif 17 <= bit_resolution <= 32:
+        return np.dtype(np.uint32)
+    elif 33 <= bit_resolution <= 64:
+        return np.dtype(np.uint64)
+    else:
+        raise ValueError(
+            "Bit resolution does not fall within the supported range [1, 64]"
+        )

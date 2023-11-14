@@ -14,7 +14,9 @@ This release brings a number of bugfixes, documentation and improvements.
 
 ### Core
 * Removed deprecated `Detector.set_output_dir` method and `Detector.output_dir` property.
-  (See [!759](https://gitlab.com/esa/pyxel/-/merge_requests/749)).
+  (See [!759](https://gitlab.com/esa/pyxel/-/merge_requests/759)).
+* Image data bucket only allows integer data.
+  (See [!764](https://gitlab.com/esa/pyxel/-/merge_requests/764)).
 
 ### Documentation
 
