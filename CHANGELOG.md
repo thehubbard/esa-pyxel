@@ -23,6 +23,8 @@ This release brings a number of bugfixes, documentation and improvements.
 ### Models
 * Improvements in model 'pulse_processing' in Model group 'phasing'.
   (See [!665](https://gitlab.com/esa/pyxel/-/merge_requests/665)).
+* Model 'amplifier_crosstalk' is moved from 'readout_electronics' to 'charge_measurement'.
+  (See [!763](https://gitlab.com/esa/pyxel/-/merge_requests/763)).
 
 ### Others
 * Minor refactoring.
