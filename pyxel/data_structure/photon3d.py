@@ -47,6 +47,9 @@ class Photon3D:
             )
         )
 
+    def empty(self) -> None:
+        self._array = None
+
     def _validate_array(self, value: xr.DataArray) -> None:
         assert isinstance(value, xr.DataArray)
         if value.ndim != 3:
@@ -117,6 +120,7 @@ class Photon3D:
         }
 
     # TODO: Remove parameter 'geometry' ?
+    # TODO: This method is not used. Remove it.
     @classmethod
     def from_dict(cls, geometry: "Geometry", data: dict) -> "Photon3D":
         new_dct = {key.replace("#", "/"): value for key, value in data.items()}

@@ -114,11 +114,6 @@ class Detector:
             raise RuntimeError("Photon 3D array is not initialized ! ")
         return self._photon3d
 
-    @photon3d.setter
-    def photon3d(self, obj: Photon3D) -> None:
-        assert isinstance(obj, Photon3D)
-        self._photon3d = obj
-
     @property
     def photon(self) -> Photon:
         """TBW."""
@@ -210,7 +205,7 @@ class Detector:
         from datatree import DataTree
 
         self._scene = Scene()
-        # self._photon3d = Photon3D(geo=self.geometry)
+        self._photon3d = Photon3D(geo=self.geometry)
         self._photon = Photon(geo=self.geometry)
         self._charge = Charge(geo=self.geometry)
         self._pixel = Pixel(geo=self.geometry)
@@ -225,8 +220,8 @@ class Detector:
 
         if self._photon:
             self.photon.array = np.zeros_like(self.photon.array)
-        # if self._photon3d:
-        #     self.photon3d.array = np.zeros_like(self.photon3d.array)
+        if self._photon3d:
+            self.photon3d.empty()
         if self._signal:
             self.signal.array = np.zeros_like(self.signal.array)
         if self._image:
@@ -418,7 +413,7 @@ class Detector:
         attributes = [
             "_scene",
             "_photon",
-            # "_photon3d",
+            "_photon3d",
             "_charge",
             "_pixel",
             "_signal",

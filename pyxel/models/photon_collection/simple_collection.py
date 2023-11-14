@@ -13,7 +13,6 @@ import xarray as xr
 from astropy import wcs
 from astropy.coordinates import SkyCoord
 
-from pyxel.data_structure import Photon3D
 from pyxel.detectors import Detector
 from pyxel.models.photon_collection.aperture import convert_flux, extract_wavelength
 
@@ -189,11 +188,11 @@ def simple_collection(
         attrs={"units": str(converted_flux.unit)},
     )
 
-    projection = project_objects_to_detector(
+    projection: xr.DataArray = project_objects_to_detector(
         scene_data=scene_data,
         pixel_scale=pixel_scale * u.arcsec / u.pixel,
         rows=detector.geometry.row,
         cols=detector.geometry.col,
     )
 
-    detector.photon3d = Photon3D(projection)
+    detector.photon3d.array = projection
