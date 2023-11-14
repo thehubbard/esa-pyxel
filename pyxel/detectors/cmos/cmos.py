@@ -126,7 +126,7 @@ class CMOS(Detector):
 
         if "photon" in data:
             detector.photon.array = np.asarray(data["photon"])
-        if "photon_3d" in data:
+        if "photon_3d" in data and data["photon_3d"]:
             detector.photon3d.array = xr.DataArray(
                 {
                     key.replace("#", "/"): value
