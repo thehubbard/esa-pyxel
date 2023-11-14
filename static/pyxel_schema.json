@@ -1390,6 +1390,12 @@
           "items": {
             "anyOf": [
               {
+                "$ref": "#/definitions/ModelChargeMeasurementAcCrosstalk"
+              },
+              {
+                "$ref": "#/definitions/ModelChargeMeasurementDcCrosstalk"
+              },
+              {
                 "$ref": "#/definitions/ModelChargeMeasurementDcOffset"
               },
               {
@@ -1647,12 +1653,6 @@
         "readout_electronics": {
           "items": {
             "anyOf": [
-              {
-                "$ref": "#/definitions/ModelReadoutElectronicsAcCrosstalk"
-              },
-              {
-                "$ref": "#/definitions/ModelReadoutElectronicsDcCrosstalk"
-              },
               {
                 "$ref": "#/definitions/ModelReadoutElectronicsDeadTimeFilter"
               },
@@ -3502,6 +3502,124 @@
         "arguments"
       ],
       "title": "Model 'simple_dark_current'",
+      "type": "object"
+    },
+    "ModelChargeMeasurementAcCrosstalk": {
+      "additionalProperties": false,
+      "description": "Apply AC crosstalk signal to detector signal.",
+      "properties": {
+        "arguments": {
+          "additionalProperties": false,
+          "properties": {
+            "channel_matrix": {
+              "title": "channel_matrix",
+              "type": "array"
+            },
+            "coupling_matrix": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "format": "uri",
+                  "type": "string"
+                },
+                {
+                  "type": "array"
+                }
+              ],
+              "title": "coupling_matrix"
+            },
+            "readout_directions": {
+              "title": "readout_directions",
+              "type": "array"
+            }
+          },
+          "required": [
+            "coupling_matrix",
+            "channel_matrix",
+            "readout_directions"
+          ],
+          "title": "Parameters",
+          "type": "object"
+        },
+        "enabled": {
+          "default": true,
+          "type": "boolean"
+        },
+        "func": {
+          "const": "pyxel.models.charge_measurement.ac_crosstalk",
+          "default": "pyxel.models.charge_measurement.ac_crosstalk",
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "arguments"
+      ],
+      "title": "Model 'ac_crosstalk'",
+      "type": "object"
+    },
+    "ModelChargeMeasurementDcCrosstalk": {
+      "additionalProperties": false,
+      "description": "Apply DC crosstalk signal to detector signal.",
+      "properties": {
+        "arguments": {
+          "additionalProperties": false,
+          "properties": {
+            "channel_matrix": {
+              "title": "channel_matrix",
+              "type": "array"
+            },
+            "coupling_matrix": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "format": "uri",
+                  "type": "string"
+                },
+                {
+                  "type": "array"
+                }
+              ],
+              "title": "coupling_matrix"
+            },
+            "readout_directions": {
+              "title": "readout_directions",
+              "type": "array"
+            }
+          },
+          "required": [
+            "coupling_matrix",
+            "channel_matrix",
+            "readout_directions"
+          ],
+          "title": "Parameters",
+          "type": "object"
+        },
+        "enabled": {
+          "default": true,
+          "type": "boolean"
+        },
+        "func": {
+          "const": "pyxel.models.charge_measurement.dc_crosstalk",
+          "default": "pyxel.models.charge_measurement.dc_crosstalk",
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "arguments"
+      ],
+      "title": "Model 'dc_crosstalk'",
       "type": "object"
     },
     "ModelChargeMeasurementDcOffset": {
@@ -6018,124 +6136,6 @@
         "name"
       ],
       "title": "Model 'stripe_pattern'",
-      "type": "object"
-    },
-    "ModelReadoutElectronicsAcCrosstalk": {
-      "additionalProperties": false,
-      "description": "Apply AC crosstalk signal to detector signal.",
-      "properties": {
-        "arguments": {
-          "additionalProperties": false,
-          "properties": {
-            "channel_matrix": {
-              "title": "channel_matrix",
-              "type": "array"
-            },
-            "coupling_matrix": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "format": "uri",
-                  "type": "string"
-                },
-                {
-                  "type": "array"
-                }
-              ],
-              "title": "coupling_matrix"
-            },
-            "readout_directions": {
-              "title": "readout_directions",
-              "type": "array"
-            }
-          },
-          "required": [
-            "coupling_matrix",
-            "channel_matrix",
-            "readout_directions"
-          ],
-          "title": "Parameters",
-          "type": "object"
-        },
-        "enabled": {
-          "default": true,
-          "type": "boolean"
-        },
-        "func": {
-          "const": "pyxel.models.readout_electronics.ac_crosstalk",
-          "default": "pyxel.models.readout_electronics.ac_crosstalk",
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "name",
-        "arguments"
-      ],
-      "title": "Model 'ac_crosstalk'",
-      "type": "object"
-    },
-    "ModelReadoutElectronicsDcCrosstalk": {
-      "additionalProperties": false,
-      "description": "Apply DC crosstalk signal to detector signal.",
-      "properties": {
-        "arguments": {
-          "additionalProperties": false,
-          "properties": {
-            "channel_matrix": {
-              "title": "channel_matrix",
-              "type": "array"
-            },
-            "coupling_matrix": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "format": "uri",
-                  "type": "string"
-                },
-                {
-                  "type": "array"
-                }
-              ],
-              "title": "coupling_matrix"
-            },
-            "readout_directions": {
-              "title": "readout_directions",
-              "type": "array"
-            }
-          },
-          "required": [
-            "coupling_matrix",
-            "channel_matrix",
-            "readout_directions"
-          ],
-          "title": "Parameters",
-          "type": "object"
-        },
-        "enabled": {
-          "default": true,
-          "type": "boolean"
-        },
-        "func": {
-          "const": "pyxel.models.readout_electronics.dc_crosstalk",
-          "default": "pyxel.models.readout_electronics.dc_crosstalk",
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "name",
-        "arguments"
-      ],
-      "title": "Model 'dc_crosstalk'",
       "type": "object"
     },
     "ModelReadoutElectronicsDeadTimeFilter": {
