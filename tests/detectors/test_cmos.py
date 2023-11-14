@@ -151,6 +151,7 @@ def comparison(dct, other_dct):
             "data",
             "image",
             "photon",
+            "photon_3d",
             "pixel",
             "scene",
             "signal",
@@ -207,6 +208,7 @@ def comparison(dct, other_dct):
                 },
                 "data": {
                     "photon": np.zeros(shape=(100, 120)),
+                    "photon_3d": None,
                     "scene": None,
                     "pixel": np.zeros(shape=(100, 120)),
                     "signal": np.zeros(shape=(100, 120)),
@@ -279,6 +281,7 @@ def comparison(dct, other_dct):
                 },
                 "data": {
                     "photon": np.zeros(shape=(100, 120)),
+                    "photon_3d": None,
                     "scene": None,
                     "pixel": np.zeros(shape=(100, 120)),
                     "signal": np.zeros(shape=(100, 120)),
