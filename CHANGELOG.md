@@ -23,6 +23,8 @@ This release brings a number of bugfixes, documentation and improvements.
 ### Models
 * Improvements in model 'pulse_processing' in Model group 'phasing'.
   (See [!665](https://gitlab.com/esa/pyxel/-/merge_requests/665)).
+* Add model that converts 3D scene to 3D photon.
+  (See [!674](https://gitlab.com/esa/pyxel/-/merge_requests/674)).
 
 ### Others
 * Minor refactoring.
