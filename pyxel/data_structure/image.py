@@ -29,9 +29,6 @@ class Image(Array):
         np.dtype(np.uint16),
         np.dtype(np.uint32),
         np.dtype(np.uint64),
-        np.dtype(np.float16),
-        np.dtype(np.float32),
-        np.dtype(np.float64),
     )
     NAME = "Image"
     UNIT = "adu"

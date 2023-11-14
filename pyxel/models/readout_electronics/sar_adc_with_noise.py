@@ -67,7 +67,7 @@ def apply_sar_adc_with_noise(
         # Divide reference voltage by 2 for next step
         ref_2d /= 2.0
 
-    return data_digitized_2d
+    return data_digitized_2d.astype(np.uint64)
 
 
 # TODO: documentation, range volt - only max is used
