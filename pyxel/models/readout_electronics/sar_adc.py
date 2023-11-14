@@ -9,6 +9,7 @@
 import numpy as np
 
 from pyxel.detectors import Detector
+from pyxel.util import get_dtype
 
 
 def apply_sar_adc(
@@ -55,7 +56,8 @@ def apply_sar_adc(
         # Divide reference voltage by 2 for next step
         ref /= 2.0
 
-    return data_digitized_2d.astype(np.uint64)
+    dtype = get_dtype(adc_bits)
+    return data_digitized_2d.astype(dtype)
 
 
 # TODO: documentation, range volt - only max is used

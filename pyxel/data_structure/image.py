@@ -26,6 +26,7 @@ class Image(Array):
 
     EXP_TYPE = np.dtype(np.uint64)
     TYPE_LIST = (
+        np.dtype(np.uint8),
         np.dtype(np.uint16),
         np.dtype(np.uint32),
         np.dtype(np.uint64),
