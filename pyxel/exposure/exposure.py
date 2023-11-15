@@ -19,7 +19,7 @@ from datatree import DataTree
 from tqdm.auto import tqdm
 
 from pyxel import __version__
-from pyxel.data_structure import Charge, Image, Photon, Pixel, Signal
+from pyxel.data_structure import Charge, Image, Photon, Photon3D, Pixel, Signal
 from pyxel.pipelines import Processor, ResultId, get_result_id, result_keys
 from pyxel.util import set_random_seed
 
@@ -261,16 +261,18 @@ def _extract_datatree(detector: "Detector", keys: Sequence[ResultId]) -> DataTre
     --------
     >>> _extract_datatree(
     ...     detector=detector,
-    ...     keys=["photon", "charge", "pixel", "signal", "image", "data"],
+    ...     keys=["photon", "photon3d", "charge", "pixel", "signal", "image", "data"],
     ... )
     DataTree('None', parent=None)
-        Dimensions:  (time: 1, y: 100, x: 100)
+        Dimensions:  (time: 1, y: 100, x: 100, wavelength: 201)
         Coordinates:
           * time     (time) float64 1.0
           * y        (y) int64 0 1 2 3 4 5 6 7 8 9 10 ... 90 91 92 93 94 95 96 97 98 99
           * x        (x) int64 0 1 2 3 4 5 6 7 8 9 10 ... 90 91 92 93 94 95 96 97 98 99
+          * wavelength  (wavelength) float64 500.0 502.0 504.0 ... 896.0 898.0 900.0
         Data variables:
             photon   (time, y, x) float64 1.515e+04 1.592e+04 ... 1.621e+04 1.621e+04
+            photon3d    (time, wavelength, y, x) float64 0.0 0.0 0.0 0.0 ... 0.0 0.0 0.0
             charge   (time, y, x) float64 1.515e+04 1.592e+04 ... 1.621e+04 1.621e+04
             pixel    (time, y, x) float64 1.515e+04 1.592e+04 ... 1.621e+04 1.621e+04
             signal   (time, y, x) float64 0.04545 0.04776 0.04634 ... 0.04862 0.04862
@@ -290,9 +292,10 @@ def _extract_datatree(detector: "Detector", keys: Sequence[ResultId]) -> DataTre
         if key.startswith("data") or key.startswith("scene"):
             continue
 
-        obj: Union[Photon, Pixel, Image, Signal, Charge] = getattr(detector, key)
-
-        if not isinstance(obj, (Photon, Pixel, Image, Signal, Charge)):
+        obj: Union[Photon, Photon3D, Pixel, Image, Signal, Charge] = getattr(
+            detector, key
+        )
+        if not isinstance(obj, (Photon, Photon3D, Pixel, Image, Signal, Charge)):
             raise TypeError(
                 f"Wrong type from attribute 'detector.{key}'. Type: {type(obj)!r}"
             )

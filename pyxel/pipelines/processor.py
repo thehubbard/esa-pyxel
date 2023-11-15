@@ -46,6 +46,7 @@ def get_result_id(name: str) -> ResultId:
     if name not in (
         "scene",
         "photon",
+        "photon3d",
         "charge",
         "pixel",
         "signal",
@@ -73,6 +74,7 @@ def result_keys(result_type: ResultId) -> Sequence[ResultId]:
         return [
             ResultId("scene"),
             ResultId("photon"),
+            ResultId("photon3d"),
             ResultId("charge"),
             ResultId("pixel"),
             ResultId("signal"),
