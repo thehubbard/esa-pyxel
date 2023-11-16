@@ -304,9 +304,13 @@ class Cosmix:
                         "path": str(Path(path, filename_list[i])),
                     }
                     new_df = pd.DataFrame(data_dict, index=[0])
-                    self.sim_obj.data_library = pd.concat(
-                        [self.sim_obj.data_library, new_df], ignore_index=True
-                    )
+
+                    if self.sim_obj.data_library.empty:
+                        self.sim_obj.data_library = new_df
+                    else:
+                        self.sim_obj.data_library = pd.concat(
+                            [self.sim_obj.data_library, new_df], ignore_index=True
+                        )
                     i += 1
 
     def run(self) -> None:
