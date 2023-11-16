@@ -109,7 +109,9 @@ def test_is_equal_with_arrays(valid_mkid: MKID):
     photon: np.ndarray = np.random.random(size=shape)
     pixel: np.ndarray = np.random.random(size=shape)
     signal: np.ndarray = np.random.random(size=shape)
-    image: np.ndarray = np.random.random(size=shape)
+    image: np.ndarray = np.random.randint(
+        low=0, high=2**16 - 1, size=shape, dtype=np.uint64
+    )
     charge: np.ndarray = np.random.random(size=shape)
     phase: np.ndarray = np.random.random(size=shape)
 
@@ -217,7 +219,7 @@ def comparison(dct, other_dct):
                     "scene": None,
                     "pixel": np.zeros(shape=(100, 120)),
                     "signal": np.zeros(shape=(100, 120)),
-                    "image": np.zeros(shape=(100, 120)),
+                    "image": np.zeros(shape=(100, 120), dtype=np.uint64),
                     "phase": np.zeros(shape=(100, 120)),
                     "charge": {
                         "array": np.zeros(shape=(100, 120)),
@@ -290,7 +292,7 @@ def comparison(dct, other_dct):
                     "scene": None,
                     "pixel": np.zeros(shape=(100, 120)),
                     "signal": np.zeros(shape=(100, 120)),
-                    "image": np.zeros(shape=(100, 120)),
+                    "image": np.zeros(shape=(100, 120), dtype=np.uint64),
                     "phase": np.zeros(shape=(100, 120)),
                     "charge": {
                         "array": np.zeros(shape=(100, 120)),

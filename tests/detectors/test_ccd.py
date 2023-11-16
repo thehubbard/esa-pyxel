@@ -112,7 +112,9 @@ def test_is_equal_with_arrays(valid_ccd: CCD):
     photon_2d: np.ndarray = np.random.random(size=shape)
     pixel_2d: np.ndarray = np.random.random(size=shape)
     signal_2d: np.ndarray = np.random.random(size=shape)
-    image_2d: np.ndarray = np.random.random(size=shape)
+    image_2d: np.ndarray = np.random.randint(
+        low=0, high=2**16 - 1, size=shape, dtype=np.uint64
+    )
     charge_2d: np.ndarray = np.random.random(size=shape)
 
     # Apply the random data to 'valid_ccd' and 'other_detector'
@@ -216,7 +218,7 @@ def comparison(dct, other_dct):
                     "scene": None,
                     "pixel": np.zeros(shape=(100, 120)),
                     "signal": np.zeros(shape=(100, 120)),
-                    "image": np.zeros(shape=(100, 120)),
+                    "image": np.zeros(shape=(100, 120), dtype=np.uint64),
                     "charge": {
                         "array": np.zeros(shape=(100, 120)),
                         "frame": pd.DataFrame(
@@ -289,7 +291,7 @@ def comparison(dct, other_dct):
                     "scene": None,
                     "pixel": np.zeros(shape=(100, 120)),
                     "signal": np.zeros(shape=(100, 120)),
-                    "image": np.zeros(shape=(100, 120)),
+                    "image": np.zeros(shape=(100, 120), dtype=np.uint64),
                     "charge": {
                         "array": np.zeros(shape=(100, 120)),
                         "frame": pd.DataFrame(
@@ -346,7 +348,9 @@ def test_to_and_from_dict_with_arrays_no_frame(valid_ccd: CCD, klass):
     photon_2d: np.ndarray = np.random.random(size=shape)
     pixel_2d: np.ndarray = np.random.random(size=shape)
     signal_2d: np.ndarray = np.random.random(size=shape)
-    image_2d: np.ndarray = np.random.random(size=shape)
+    image_2d: np.ndarray = np.random.randint(
+        low=0, high=2**16 - 1, size=shape, dtype=np.uint64
+    )
     charge_2d: np.ndarray = np.random.random(size=shape)
 
     valid_ccd.photon.array = photon_2d.copy()

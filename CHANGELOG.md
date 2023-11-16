@@ -14,6 +14,10 @@ This release brings a number of bugfixes, documentation and improvements.
 
 ### Core
 * Removed deprecated `Detector.set_output_dir` method and `Detector.output_dir` property.
+  (See [!759](https://gitlab.com/esa/pyxel/-/merge_requests/759)).
+* Image data bucket only allows integer data.
+  (See [!764](https://gitlab.com/esa/pyxel/-/merge_requests/764)).
+* Removed deprecated `Detector.set_output_dir` method and `Detector.output_dir` property.
   (See [!759](https://gitlab.com/esa/pyxel/-/merge_requests/749)).
 * Create 3D photon container.
   (See [!673](https://gitlab.com/esa/pyxel/-/merge_requests/673)).
@@ -25,6 +29,8 @@ This release brings a number of bugfixes, documentation and improvements.
 ### Models
 * Improvements in model 'pulse_processing' in Model group 'phasing'.
   (See [!665](https://gitlab.com/esa/pyxel/-/merge_requests/665)).
+* Model 'amplifier_crosstalk' is moved from 'readout_electronics' to 'charge_measurement'.
+  (See [!763](https://gitlab.com/esa/pyxel/-/merge_requests/763)).
 * Add model that converts 3D scene to 3D photon.
   (See [!674](https://gitlab.com/esa/pyxel/-/merge_requests/674)).
 
