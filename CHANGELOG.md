@@ -25,6 +25,8 @@ This release brings a number of bugfixes, documentation and improvements.
   (See [!665](https://gitlab.com/esa/pyxel/-/merge_requests/665)).
 * Model 'amplifier_crosstalk' is moved from 'readout_electronics' to 'charge_measurement'.
   (See [!763](https://gitlab.com/esa/pyxel/-/merge_requests/763)).
+* Remove warnings from model 'Cosmix' from 'Charge Generation.
+  (See [!768](https://gitlab.com/esa/pyxel/-/merge_requests/768)).
 
 ### Others
 * Minor refactoring.
