@@ -17,6 +17,8 @@ This release brings a number of bugfixes, documentation and improvements.
   (See [!759](https://gitlab.com/esa/pyxel/-/merge_requests/749)).
 * Create 3D photon container.
   (See [!673](https://gitlab.com/esa/pyxel/-/merge_requests/673)).
+* Add 'Photon3D' as an output of function 'pyxel.run_mode'.
+  (See [!766](https://gitlab.com/esa/pyxel/-/merge_requests/766)).
 
 ### Documentation
 

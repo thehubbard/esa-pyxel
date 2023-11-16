@@ -6,12 +6,13 @@
 #   the terms contained in the file ‘LICENCE.txt’.
 """Pyxel Photon 3D class to generate and track 3D photon."""
 
+from collections.abc import Mapping
 from typing import TYPE_CHECKING, Optional
 
 import numpy as np
 import xarray as xr
 
-from pyxel.util import get_size
+from pyxel.util import convert_unit, get_size
 
 if TYPE_CHECKING:
     from pyxel.detectors import Geometry
@@ -46,6 +47,20 @@ class Photon3D:
                 and self._array.equals(other._array)
             )
         )
+
+    def __repr__(self) -> str:
+        cls_name = self.__class__.__name__
+
+        if self._array is None:
+            dct: Mapping = {"y": self._rows, "x": self._cols}
+        else:
+            dct = self._array.sizes
+
+        result = ", ".join([f"{key}: {value}" for key, value in dct.items()])
+        return f"{cls_name}<{result:s}>"
+
+    def __array__(self, dtype: Optional[np.dtype] = None):
+        return np.asarray(self.array, dtype=dtype)
 
     def empty(self) -> None:
         self._array = None
@@ -83,7 +98,7 @@ class Photon3D:
         Only accepts an DataArray with the right type and shape.
         """
         if self._array is None:
-            raise ValueError("'.array' is not initialized.")
+            raise ValueError("Property 'array' is not initialized.")
 
         return self._array
 
@@ -97,10 +112,17 @@ class Photon3D:
         self._array = value
 
     def to_xarray(self, dtype: Optional[np.typing.DTypeLike] = None) -> "xr.DataArray":
-        if dtype is None:
-            return self.array
+        if self._array is None:
+            new_array = xr.DataArray()
+        elif dtype is None:
+            new_array = self.array.copy()
         else:
-            return self.array.astype(dtype)
+            new_array = self.array.astype(dtype=dtype)
+
+        new_array.name = self.NAME.lower()
+        new_array.attrs = {"units": convert_unit(self.UNIT), "long_name": self.NAME}
+
+        return new_array
 
     @property
     def numbytes(self) -> int:

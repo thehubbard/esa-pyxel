@@ -46,6 +46,7 @@ def get_result_id(name: str) -> ResultId:
     if name not in (
         "scene",
         "photon",
+        "photon3d",
         "charge",
         "pixel",
         "signal",
@@ -73,6 +74,7 @@ def result_keys(result_type: ResultId) -> Sequence[ResultId]:
         return [
             ResultId("scene"),
             ResultId("photon"),
+            ResultId("photon3d"),
             ResultId("charge"),
             ResultId("pixel"),
             ResultId("signal"),
@@ -233,6 +235,7 @@ class Processor:
         """Set result."""
         self._result = result_to_save
 
+    # TODO: This function will be deprecated (see #563)
     # TODO: Refactor '.result'. See #524
     def result_to_dataset(
         self,
@@ -258,9 +261,10 @@ class Processor:
 
         key: ResultId
         for key in result_keys(result_type):
-            if key.startswith("data") or key.startswith("scene"):
+            if key.startswith("data") or key.startswith("scene") or key == "photon3d":
                 continue
-            elif key == "photon":
+
+            if key == "photon":
                 standard_name = "Photon"
                 unit = "photon"
             elif key == "charge":
@@ -280,6 +284,10 @@ class Processor:
                 # standard_name = key
                 # unit = ""
 
+            if key not in self.result:
+                continue
+
+            # TODO: 'self.result' returns a numpy array, it should returns an xarray DataArray
             da = xr.DataArray(
                 self.result[key],
                 dims=("readout_time", "y", "x"),
