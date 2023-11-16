@@ -27,6 +27,8 @@ This release brings a number of bugfixes, documentation and improvements.
   (See [!763](https://gitlab.com/esa/pyxel/-/merge_requests/763)).
 * Remove warnings from model 'Cosmix' from 'Charge Generation.
   (See [!768](https://gitlab.com/esa/pyxel/-/merge_requests/768)).
+* Remove all warnings in dark current model.
+  (See [!769](https://gitlab.com/esa/pyxel/-/merge_requests/769)).
 
 ### Others
 * Minor refactoring.
