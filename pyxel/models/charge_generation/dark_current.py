@@ -15,8 +15,6 @@ from astropy import constants as const
 from pyxel.detectors import APD, Detector
 from pyxel.util import set_random_seed
 
-warnings.filterwarnings("once", category=RuntimeWarning, append=True)
-
 
 def calculate_band_gap(
     band_gap_0: float, alpha: float, beta: float, temperature: float
@@ -254,17 +252,20 @@ def dark_current(
         final_band_gap_room_temperature = band_gap_silicon(temperature=300)
 
     with set_random_seed(seed):
-        dark_current_array = compute_dark_current(
-            shape=geo.shape,
-            time_step=time_step,
-            temperature=temperature,
-            pixel_area=pixel_area,
-            figure_of_merit=figure_of_merit,
-            band_gap=final_band_gap,
-            band_gap_room_temperature=final_band_gap_room_temperature,
-            spatial_noise_factor=spatial_noise_factor,
-            temporal_noise=temporal_noise,
-        )
+        with warnings.catch_warnings():
+            warnings.filterwarnings(action="ignore", category=RuntimeWarning)
+
+            dark_current_array = compute_dark_current(
+                shape=geo.shape,
+                time_step=time_step,
+                temperature=temperature,
+                pixel_area=pixel_area,
+                figure_of_merit=figure_of_merit,
+                band_gap=final_band_gap,
+                band_gap_room_temperature=final_band_gap_room_temperature,
+                spatial_noise_factor=spatial_noise_factor,
+                temporal_noise=temporal_noise,
+            )
 
     detector.charge.add_charge_array(dark_current_array)
 
