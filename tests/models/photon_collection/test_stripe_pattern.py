@@ -5,8 +5,9 @@
 #  this file, may be copied, modified, propagated, or distributed except according to
 #  the terms contained in the file ‘LICENCE.txt’.
 
-
 import pytest
+
+import numpy as np
 
 from pyxel.detectors import (
     CCD,
@@ -32,6 +33,7 @@ def ccd_20x20() -> CCD:
         environment=Environment(),
         characteristics=Characteristics(),
     )
+    detector.photon.array = np.zeros(detector.geometry.shape, dtype=float)
     detector._readout_properties = ReadoutProperties(times=[1.0])
     return detector
 

@@ -101,7 +101,7 @@ class Detector:
 
     @photon.setter
     def photon(self, obj: Photon) -> None:
-        self._photon = obj
+        self.photon.array = obj.array
 
     @property
     def scene(self) -> Scene:
@@ -131,6 +131,11 @@ class Detector:
 
         return self._pixel
 
+    @pixel.setter
+    def pixel(self, obj: Pixel) -> None:
+        """TBW."""
+        self.pixel.array = obj.array
+
     @property
     def signal(self) -> Signal:
         """TBW."""
@@ -139,6 +144,11 @@ class Detector:
 
         return self._signal
 
+    @signal.setter
+    def signal(self, obj: Pixel) -> None:
+        """TBW."""
+        self.signal.array = obj.array
+
     @property
     def image(self) -> Image:
         """TBW."""
@@ -146,6 +156,11 @@ class Detector:
             raise RuntimeError("'image' not initialized.")
 
         return self._image
+
+    @image.setter
+    def image(self, obj: Pixel) -> None:
+        """TBW."""
+        self.image.array = obj.array
 
     @property
     def data(self) -> "DataTree":
@@ -204,20 +219,13 @@ class Detector:
 
     def empty(self, empty_all: bool = True) -> None:
         """Empty the data in the detector."""
-        if self._photon:
-            self.photon.array = np.zeros_like(self.photon.array)
-
-        self._scene = Scene()
-
-        if self._signal:
-            self.signal.array = np.zeros_like(self.signal.array)
-        if self._image:
-            self.image.array = np.zeros_like(self.image.array)
-        if self._charge:
-            self._charge.empty()
+        self.photon.empty()
+        self.scene = Scene()
+        self.signal.empty()
+        self.image.empty()
+        self.charge.empty()
         if empty_all:
-            if self._pixel:
-                self.pixel.array = np.zeros_like(self.pixel.array)
+            self.pixel.empty()
 
     def set_readout(
         self,

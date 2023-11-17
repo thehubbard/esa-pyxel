@@ -36,27 +36,10 @@ class Photon(Array):
     UNIT = "Ph"
 
     def __init__(self, geo: "Geometry"):
-        new_array = np.zeros((geo.row, geo.col), dtype=self.EXP_TYPE)
+        super().__init__(shape=(geo.row, geo.col))
 
-        super().__init__(new_array)
-
-    @property
-    def array(self) -> np.ndarray:
-        """Two-dimensional numpy array storing the data.
-
-        Only accepts an array with the right type and shape.
-        """
-        return super().array
-
-    @array.setter
-    def array(self, value: np.ndarray) -> None:
-        """Overwrite the two-dimensional numpy array storing the data.
-
-        Only accepts an array with the right type and shape.
-        """
-        self.validate_type(value)
-        self.validate_shape(value)
-
+    def _validate(self, value: np.ndarray) -> None:
+        """Check that values in array are all positive."""
         if np.any(value < 0):
             value[value < 0] = 0.0
             warnings.warn(
@@ -64,5 +47,4 @@ class Photon(Array):
                 " clipped to 0.",
                 stacklevel=2,
             )
-
-        self._array = value
+        super()._validate(value)

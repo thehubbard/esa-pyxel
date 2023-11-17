@@ -10,6 +10,7 @@
 from collections.abc import Mapping
 from typing import TYPE_CHECKING
 
+from pyxel.data_structure import copy_array, load_array
 from pyxel.detectors import Detector
 
 if TYPE_CHECKING:
@@ -64,10 +65,10 @@ class CCD(Detector):
                 "characteristics": self.characteristics.to_dict(),
             },
             "data": {
-                "photon": None if self._photon is None else self._photon.array.copy(),
-                "pixel": None if self._pixel is None else self._pixel.array.copy(),
-                "signal": None if self._signal is None else self._signal.array.copy(),
-                "image": None if self._image is None else self._image.array.copy(),
+                "photon": copy_array(self._photon),
+                "pixel": copy_array(self._pixel),
+                "signal": copy_array(self._signal),
+                "image": copy_array(self._image),
                 "data": (
                     None
                     if self._data is None
@@ -128,14 +129,11 @@ class CCD(Detector):
 
         data = dct["data"]
 
-        if "photon" in data:
-            detector.photon.array = np.asarray(data["photon"])
-        if "pixel" in data:
-            detector.pixel.array = np.asarray(data["pixel"])
-        if "signal" in data:
-            detector.signal.array = np.asarray(data["signal"])
-        if "image" in data:
-            detector.image.array = np.asarray(data["image"])
+        load_array(data, "photon", detector.photon)
+        load_array(data, "pixel", detector.pixel)
+        load_array(data, "signal", detector.signal)
+        load_array(data, "image", detector.image)
+
         if "data" in data:
             detector._data = DataTree.from_dict(
                 {
