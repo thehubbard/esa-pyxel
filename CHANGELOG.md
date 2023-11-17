@@ -19,6 +19,9 @@ This release brings a number of bugfixes, documentation and improvements.
   (See [!764](https://gitlab.com/esa/pyxel/-/merge_requests/764)).
 * Fix issue in Observation mode with a 2D parameter.
   (See [!770](https://gitlab.com/esa/pyxel/-/merge_requests/770)).
+* Changed Array class initializer. The internal array is initialized to None not np.zeroes. 
+  (See [!767](https://gitlab.com/esa/pyxel/-/merge_requests/767)).
+
 
 ### Documentation
 
