@@ -7,9 +7,8 @@
 
 from collections.abc import Mapping, Sequence
 
-import pytest
-
 import numpy as np
+import pytest
 
 from pyxel.detectors import CCD, CCDGeometry, Characteristics, Environment
 from pyxel.models.photon_collection import optical_psf

@@ -481,13 +481,15 @@ def wavelength_dependence_airs(
 
     target_conv_flux = convert_flux(
         wavelength=target_wavelength,
-        flux=target_flux,
+        flux=Quantity(target_flux),
         telescope_diameter_m1=telescope_diameter_m1,
         telescope_diameter_m2=telescope_diameter_m2,
     )
     # Integrate the flux over the PSF spectral bin
     integrated_flux = integrate_flux(
-        target_wavelength, target_conv_flux, psf_wavelength
+        Quantity(target_wavelength),
+        Quantity(target_conv_flux),
+        Quantity(psf_wavelength),
     )  # The flux is now sample similarly to the PSF
 
     # The Flux can be multiplied here by the optical elements
@@ -499,9 +501,9 @@ def wavelength_dependence_airs(
     # Expend factor used: expand_factor = 18
     photon_incident, photo_electron_generated = project_psfs(
         psf_datacube_3d=psf_datacube,
-        line_psf_pos_1d=line_psf_pos,
+        line_psf_pos_1d=Quantity(line_psf_pos),
         col_psf_pos=col_psf_pos,
-        flux=integrated_flux,
+        flux=Quantity(integrated_flux),
         row=detector.geometry.row,
         col=detector.geometry.col,
         expand_factor=expand_factor,
