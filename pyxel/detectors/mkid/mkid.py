@@ -59,7 +59,7 @@ class MKID(Detector):
         """
         super().empty(empty_all)
 
-        if empty_all and self._phase:
+        if empty_all and self._phase and self._phase._array is not None:
             self.phase.array *= 0
 
     @property
