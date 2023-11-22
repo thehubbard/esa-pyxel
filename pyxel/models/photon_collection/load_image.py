@@ -61,7 +61,6 @@ def load_image(
         position_y=position_y,
     )
 
-    detector.input_image = image
     photon_array = image
 
     if convert_to_photons:

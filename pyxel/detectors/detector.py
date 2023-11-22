@@ -56,7 +56,6 @@ class Detector:
         self._memory: dict = {}
         self._persistence: Optional[Union[Persistence, SimplePersistence]] = None
 
-        self.input_image: Optional[np.ndarray] = None
         self._output_dir: Optional[Path] = None  # TODO: See #330
 
         self._readout_properties: Optional["ReadoutProperties"] = None
