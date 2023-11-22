@@ -172,9 +172,10 @@ def compute_bandwidth(
     return bandwidth, all_poles
 
 
+# TODO: Add units
 def integrate_flux(
-    wavelength: Quantity,
-    flux: Quantity,
+    wavelength: np.ndarray,
+    flux: np.ndarray,
     psf_wavelength: Quantity,
 ) -> np.ndarray:
     """Integrate flux on each bin around the psf.
@@ -202,7 +203,7 @@ def integrate_flux(
     bandwidth, all_poles = compute_bandwidth(psf_wavelength)
 
     # Cumulative count
-    cum_sum = cumtrapz(flux.value, wavelength.value, initial=0.0)
+    cum_sum = cumtrapz(y=flux, x=wavelength, initial=0.0)
 
     # self.wavelength has to quantity: value and units
     # interpolate over psf wavelength
@@ -212,7 +213,7 @@ def integrate_flux(
     flux_int = cum_sum_interp[1:] - cum_sum_interp[:-1]
 
     # Update flux matrix
-    flux_int = flux_int * flux.unit * wavelength.unit
+    flux_int = flux_int  # * flux.unit * wavelength.unit
     flux = np.copy(flux_int)
 
     return flux
@@ -287,15 +288,16 @@ def read_psf_from_fits_file(
     return psf_datacube, psf_wavelength, line_psf_pos, col_psf_pos
 
 
+# TODO: Add units
 def project_psfs(
     psf_datacube_3d: np.ndarray,
-    line_psf_pos_1d: Quantity,
+    line_psf_pos_1d: np.ndarray,
     col_psf_pos,
-    flux: Quantity,
+    flux: np.ndarray,
     row: int,
     col: int,
     expand_factor: int,
-) -> tuple[Quantity, Quantity]:
+) -> tuple[np.ndarray, np.ndarray]:
     """Project each psf on a (n_line_final * self.zoom, n_col_final * self.zoom) pixel image.
 
     n_line_final, n_col_final = corresponds to window size. It varies with the channel.
@@ -371,7 +373,7 @@ def project_psfs(
         )
 
     # This is the amount of photons incident on the detector
-    photon_incident = photon_incident * flux.unit
+    photon_incident = photon_incident  # * flux.unit
 
     # This is the amount of photons incident on the detector
     photoelectron_generated = photoelectron_generated * u.electron
@@ -428,6 +430,7 @@ def rebin_2d(
     return result
 
 
+# TODO: Add units
 def wavelength_dependence_airs(
     detector: Detector,
     psf_filename: str,
@@ -481,15 +484,15 @@ def wavelength_dependence_airs(
 
     target_conv_flux = convert_flux(
         wavelength=target_wavelength,
-        flux=Quantity(target_flux),
+        flux=target_flux,
         telescope_diameter_m1=telescope_diameter_m1,
         telescope_diameter_m2=telescope_diameter_m2,
     )
     # Integrate the flux over the PSF spectral bin
     integrated_flux = integrate_flux(
-        Quantity(target_wavelength),
-        Quantity(target_conv_flux),
-        Quantity(psf_wavelength),
+        wavelength=target_wavelength,
+        flux=target_conv_flux,
+        psf_wavelength=psf_wavelength,
     )  # The flux is now sample similarly to the PSF
 
     # The Flux can be multiplied here by the optical elements
@@ -501,9 +504,9 @@ def wavelength_dependence_airs(
     # Expend factor used: expand_factor = 18
     photon_incident, photo_electron_generated = project_psfs(
         psf_datacube_3d=psf_datacube,
-        line_psf_pos_1d=Quantity(line_psf_pos),
+        line_psf_pos_1d=line_psf_pos,
         col_psf_pos=col_psf_pos,
-        flux=Quantity(integrated_flux),
+        flux=integrated_flux,
         row=detector.geometry.row,
         col=detector.geometry.col,
         expand_factor=expand_factor,
@@ -512,6 +515,6 @@ def wavelength_dependence_airs(
     time_step = 1.0  # ?
 
     photon_array = photo_electron_generated * (time_step / time_scale)
-    assert photon_array.unit == "electron"
+    # assert photon_array.unit == "electron"
 
     detector.photon += np.array(photon_array)
