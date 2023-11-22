@@ -27,6 +27,9 @@ This release brings a number of bugfixes, documentation and improvements.
   (See [!773](https://gitlab.com/esa/pyxel/-/merge_requests/773)).
 * Fix bugs in Calibration mode.
   (See [!774](https://gitlab.com/esa/pyxel/-/merge_requests/774)).
+* Add two new `load_table_v2` and `load_image_v2` functions. 
+  These functions are more flexible than `load_table` and `load_image` and are provisional.
+  (See [!775](https://gitlab.com/esa/pyxel/-/merge_requests/775)).
 
 ### Documentation
 
