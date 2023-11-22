@@ -360,8 +360,7 @@ def project_psfs(
         )
         # Derive the amount of photon incident on the detector
         photon_incident[line1:line2, col1:col2] = (
-            photon_incident[line1:line2, col1:col2]
-            + psf_datacube_3d[i, :, :] * flux[i].value
+            photon_incident[line1:line2, col1:col2] + psf_datacube_3d[i, :, :] * flux[i]
         )
 
         # TODO: Here take into account the QE map of the detector, and its dependence with wavelength
