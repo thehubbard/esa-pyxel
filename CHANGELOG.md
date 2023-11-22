@@ -21,6 +21,8 @@ This release brings a number of bugfixes, documentation and improvements.
   (See [!770](https://gitlab.com/esa/pyxel/-/merge_requests/770)).
 * Changed Array class initializer. The internal array is initialized to None not np.zeroes. 
   (See [!767](https://gitlab.com/esa/pyxel/-/merge_requests/767)).
+* Remove attribute `input_image` from `Detector`.
+  (See [!772](https://gitlab.com/esa/pyxel/-/merge_requests/772)).
 
 
 ### Documentation
