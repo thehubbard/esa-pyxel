@@ -42,6 +42,8 @@ This release brings a number of bugfixes, documentation and improvements.
   (See [!768](https://gitlab.com/esa/pyxel/-/merge_requests/768)).
 * Remove all warnings in dark current model.
   (See [!769](https://gitlab.com/esa/pyxel/-/merge_requests/769)).
+* Fix issue with model 'wavelength_dependence_airs' in 'Photon Collection'.
+  (See [!776](https://gitlab.com/esa/pyxel/-/merge_requests/776)).
 
 ### Others
 * Minor refactoring.
