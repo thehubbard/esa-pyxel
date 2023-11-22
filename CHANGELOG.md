@@ -9,8 +9,13 @@ Minor releases include updated stdlib stubs from typeshed.
 
 Pyxel doesn't use SemVer anymore, since most minor releases have at least minor backward incompatible changes.
 
-## UNRELEASED
-This release brings a number of bugfixes, documentation and improvements.
+## 1.13 / 2023-11-22
+This release brings a number of bugfixes and improvements.
+
+### Breaking changes
+
+The containers such as `Photon`, `Pixel`, `Signal` and `Image` are not
+initialized before running a pipeline. The models must initialize the containers.
 
 ### Core
 * Removed deprecated `Detector.set_output_dir` method and `Detector.output_dir` property.
@@ -30,8 +35,6 @@ This release brings a number of bugfixes, documentation and improvements.
 * Add two new `load_table_v2` and `load_image_v2` functions. 
   These functions are more flexible than `load_table` and `load_image` and are provisional.
   (See [!775](https://gitlab.com/esa/pyxel/-/merge_requests/775)).
-
-### Documentation
 
 ### Models
 * Improvements in model 'pulse_processing' in Model group 'phasing'.
@@ -60,7 +63,7 @@ This release brings a number of bugfixes, documentation and improvements.
 
 The function `pyxel.display_detector` used in the jupyter notebooks to visualise the detector at each stage of the 
 pipeline, has now the option to display in logarithmic scale besides the linear scale and to change the color of the image.
-The bin size and the x-axis range can now be changed in the related historgram plot.
+The bin size and the x-axis range can now be changed in the related histogram plot.
 
 ### Core
 * In 'Custom Observation' mode, add a sanity test to verify input custom data.
