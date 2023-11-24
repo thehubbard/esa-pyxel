@@ -7,14 +7,37 @@
 
 """Pyxel Array class."""
 
-from typing import TYPE_CHECKING, Optional, Union
+from typing import TYPE_CHECKING, Optional
 
 import numpy as np
+from typing_extensions import TypeGuard
 
 from pyxel.util import convert_unit, get_size
 
 if TYPE_CHECKING:
     import xarray as xr
+
+
+def _is_array_initialized(data: Optional[np.ndarray]) -> TypeGuard[np.ndarray]:
+    """Check whether the parameter data is a numpy array.
+
+    Parameters
+    ----------
+    data : array, Optional
+        An optional numpy array.
+
+    Returns
+    -------
+    bool
+        A boolean value indicating whether the array is initialized (not None).
+
+    Notes
+    -----
+    This function uses special `typing.TypeGuard`.
+    This technique is used by static type checkers to narrow type of 'data'.
+    For more information, see https://docs.python.org/3/library/typing.html#typing.TypeGuard
+    """
+    return data is not None
 
 
 # TODO: Is it possible to move this to `data_structure/__init__.py' ?
@@ -70,7 +93,15 @@ class Array:
 
         Parameters
         ----------
-        value
+        value : array
+            Numpy array to be validated.
+
+        Raises
+        ------
+        TypeError
+            Raised if 'value' is not a NumPy array or has not the expected dtype.
+        ValueError
+            Raised if the shape does not match the expected shape.
         """
         cls_name: str = self.__class__.__name__
 
@@ -111,15 +142,25 @@ class Array:
         """Empty the array by setting the array to None."""
         self._array = None
 
+    def _get_uninitialized_error_message(self) -> str:
+        """Get an explicit error message for an uninitialized 'array'."""
+        return f"'array' is not initialized for {self}."
+
     @property
     def array(self) -> np.ndarray:
         """Two-dimensional numpy array storing the data.
 
         Only accepts an array with the right type and shape.
+
+        Raises
+        ------
+        ValueError
+            Raised if 'array' is not initialized.
         """
-        if self._array is None:
-            # TODO: add more info explaining how to solve this exception
-            raise ValueError(f"'array' is not initialized for {self}.")
+        if not _is_array_initialized(self._array):
+            msg: str = self._get_uninitialized_error_message()
+            raise ValueError(msg)
+
         return self._array
 
     @array.setter

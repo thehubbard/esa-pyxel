@@ -60,7 +60,7 @@ dependencies:
   - attrs
   - click
   - tqdm
-  - typing-extensions
+  - typing-extensions>=4.5
   - pygmo>=2.16.1
   - pympler
   - pillow

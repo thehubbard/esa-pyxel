@@ -10,6 +10,7 @@
 from typing import TYPE_CHECKING
 
 import numpy as np
+from typing_extensions import override
 
 from pyxel.data_structure import Array
 
@@ -34,3 +35,30 @@ class Pixel(Array):
 
     def __init__(self, geo: "Geometry"):
         super().__init__(shape=(geo.row, geo.col))
+
+    @override
+    def _get_uninitialized_error_message(self) -> str:
+        """Get an explicit error message for an uninitialized 'array'.
+
+        This method is used in the property 'array' in the ``Array`` parent class.
+        """
+        example_model = "simple_collection"
+        example_yaml_content = """
+- name: simple_collection
+  func: pyxel.models.charge_collection.simple_collection
+  enabled: true
+"""
+        cls_name: str = self.__class__.__name__
+        obj_name = "pixels"
+        group_name = "Charge Collection"
+
+        return (
+            f"The '.array' attribute cannot be retrieved because the '{cls_name}'"
+            " container is not initialized.\nTo resolve this issue, initialize"
+            f" '.array' using a model that generates {obj_name} from the "
+            f"'{group_name}' group.\n"
+            f"Consider using the '{example_model}' model from"
+            f" the '{group_name}' group.\n\n"
+            "Example code snippet to add to your YAML configuration file "
+            f"to initialize the '{cls_name}' container:\n{example_yaml_content}"
+        )
