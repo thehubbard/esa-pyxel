@@ -8,9 +8,9 @@
 """:term:`CMOS` detector modeling class."""
 
 from collections.abc import Mapping
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
-from pyxel.data_structure import copy_array, load_array
+from pyxel.data_structure import _get_array_if_initialized
 from pyxel.detectors import Detector
 
 if TYPE_CHECKING:
@@ -65,10 +65,10 @@ class CMOS(Detector):
                 "characteristics": self.characteristics.to_dict(),
             },
             "data": {
-                "photon": copy_array(self._photon),
-                "pixel": copy_array(self._pixel),
-                "signal": copy_array(self._signal),
-                "image": copy_array(self._image),
+                "photon": _get_array_if_initialized(self._photon),
+                "pixel": _get_array_if_initialized(self._pixel),
+                "signal": _get_array_if_initialized(self._signal),
+                "image": _get_array_if_initialized(self._image),
                 "data": None if self._data is None else self._data.to_dict(),
                 "charge": (
                     None
@@ -120,12 +120,12 @@ class CMOS(Detector):
             characteristics=characteristics,
         )
 
-        data = dct["data"]
+        data: Mapping[str, Any] = dct["data"]
 
-        load_array(data, "photon", detector.photon)
-        load_array(data, "pixel", detector.pixel)
-        load_array(data, "signal", detector.signal)
-        load_array(data, "image", detector.image)
+        detector.photon.update(data.get("photon"))
+        detector.pixel.update(data.get("pixel"))
+        detector.signal.update(data.get("signal"))
+        detector.image.update(data.get("image"))
 
         if "data" in data:
             detector._data = DataTree.from_dict(
