@@ -25,8 +25,6 @@ class Photon(Array):
     ``np.float16``, ``np.float32``, ``np.float64``
     """
 
-    # TODO: add unit (ph)
-    EXP_TYPE = float
     TYPE_LIST = (
         np.dtype(np.float16),
         np.dtype(np.float32),

@@ -25,7 +25,6 @@ if TYPE_CHECKING:
 class Array:
     """Array class."""
 
-    EXP_TYPE: Union[type, np.dtype] = type(None)
     TYPE_LIST: tuple[np.dtype, ...] = ()
     NAME: str = ""
     UNIT: str = ""
@@ -79,8 +78,10 @@ class Array:
             raise TypeError(f"{cls_name} array should be a numpy.ndarray")
 
         if value.dtype not in self.TYPE_LIST:
-            exp_type_name: str = str(self.EXP_TYPE)
-            raise TypeError(f"Expected type of {cls_name} array is {exp_type_name}.")
+            raise TypeError(
+                f"Expected types of {cls_name} array are "
+                f"{', '.join(map(str, self.TYPE_LIST))}."
+            )
 
         if value.shape != self._shape:
             raise ValueError(f"Expected {cls_name} array is {self._shape}.")

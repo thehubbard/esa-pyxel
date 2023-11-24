@@ -24,7 +24,6 @@ class Pixel(Array):
     ``np.float16``, ``np.float32``, ``np.float64``.
     """
 
-    EXP_TYPE = float
     TYPE_LIST = (
         np.dtype(np.float16),
         np.dtype(np.float32),

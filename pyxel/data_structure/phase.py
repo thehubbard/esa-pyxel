@@ -23,7 +23,6 @@ class Phase(Array):
     Accepted array types: np.float16, np.float32 and np.float64.
     """
 
-    EXP_TYPE = float
     TYPE_LIST = (np.dtype(np.float16), np.dtype(np.float32), np.dtype(np.float64))
     NAME = "Phase"
     UNIT = ""

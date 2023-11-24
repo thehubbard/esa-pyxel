@@ -24,7 +24,6 @@ class Image(Array):
     Accepted array types: ``np.uint16``, ``np.uint32``, ``np.uint64``
     """
 
-    EXP_TYPE = np.dtype(np.uint64)
     TYPE_LIST = (
         np.dtype(np.uint8),
         np.dtype(np.uint16),
