@@ -16,6 +16,8 @@ This release brings a number of bugfixes, documentation and improvements.
 * Add better error message when a 'Photon', 'Pixel', 'Signal' and 'Image' 
   data containers are not initialized.
   (See [!780](https://gitlab.com/esa/pyxel/-/merge_requests/780)).
+* Small refactoring of methods 'Detector.from_dict' and 'Detector.to_dict'.
+  (See [!781](https://gitlab.com/esa/pyxel/-/merge_requests/781)).
 
 ### Documentation
 
