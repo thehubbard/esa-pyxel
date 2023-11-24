@@ -24,19 +24,19 @@ from .phase import Phase
 from .persistence import Persistence, SimplePersistence
 
 
-def copy_array(obj: Optional[Array]) -> Optional[np.ndarray]:
-    """Copy the array if the object has an array."""
+def _get_array_if_initialized(obj: Optional[Array]) -> Optional[np.ndarray]:
+    """Get a copy of the numpy array if the object is fully initialized.
+
+    Parameters
+    ----------
+    obj : Array, Optional
+        An object that may contain an array.
+
+    Returns
+    -------
+    Array or None
+        A copy of the numpy array contained in 'obj' if it has an array.
+    """
     if obj and obj._array is not None:
         return obj.array.copy()
     return None
-
-
-def load_array(data: Mapping, key: str, obj: Optional[Array]) -> None:
-    """Load new data into array."""
-    if obj is None or key not in data:
-        return None
-
-    if data[key] is not None:
-        obj.array = np.asarray(data[key])
-    else:
-        obj._array = None

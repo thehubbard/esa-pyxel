@@ -10,6 +10,7 @@
 from typing import TYPE_CHECKING, Optional
 
 import numpy as np
+from numpy.typing import ArrayLike
 from typing_extensions import TypeGuard
 
 from pyxel.util import convert_unit, get_size
@@ -172,6 +173,32 @@ class Array:
         self._validate(value)
 
         self._array = value
+
+    # TODO: Rename this method to '_update' ?
+    def update(self, data: Optional[ArrayLike]) -> None:
+        """Update 'array' attribute.
+
+        This method updates 'array' attribute of this object with new data.
+        If the data is None, then the object is empty.
+
+        Parameters
+        ----------
+        data : array_like, Optional
+
+        Examples
+        --------
+        >>> from pyxel.data_structure import Photon
+        >>> obj = Photon(...)
+        >>> obj.update([[1, 2], [3, 4]])
+        >>> obj.array
+        array([[1, 2], [3, 4]])
+
+        >>> obj.update(None)  # Equivalent to obj.empty()
+        """
+        if data is not None:
+            self.array = np.asarray(data)
+        else:
+            self.empty()
 
     @property
     def numbytes(self) -> int:

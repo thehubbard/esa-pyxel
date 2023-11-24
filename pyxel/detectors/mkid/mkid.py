@@ -8,9 +8,9 @@
 """:term:`MKID`-array detector modeling class."""
 
 from collections.abc import Mapping
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
-from pyxel.data_structure import Phase, copy_array, load_array
+from pyxel.data_structure import Phase, _get_array_if_initialized
 from pyxel.detectors import Detector
 from pyxel.util import memory_usage_details
 
@@ -119,11 +119,11 @@ class MKID(Detector):
                 "characteristics": self.characteristics.to_dict(),
             },
             "data": {
-                "photon": copy_array(self._photon),
-                "pixel": copy_array(self._pixel),
-                "signal": copy_array(self._signal),
-                "image": copy_array(self._image),
-                "phase": copy_array(self._phase),
+                "photon": _get_array_if_initialized(self._photon),
+                "pixel": _get_array_if_initialized(self._pixel),
+                "signal": _get_array_if_initialized(self._signal),
+                "image": _get_array_if_initialized(self._image),
+                "phase": _get_array_if_initialized(self._phase),
                 "data": None if self._data is None else self._data.to_dict(),
                 "charge": (
                     None
@@ -175,12 +175,12 @@ class MKID(Detector):
             characteristics=characteristics,
         )
 
-        data = dct["data"]
+        data: Mapping[str, Any] = dct["data"]
 
-        load_array(data, "photon", detector.photon)
-        load_array(data, "pixel", detector.pixel)
-        load_array(data, "signal", detector.signal)
-        load_array(data, "image", detector.image)
+        detector.photon.update(data.get("photon"))
+        detector.pixel.update(data.get("pixel"))
+        detector.signal.update(data.get("signal"))
+        detector.image.update(data.get("image"))
 
         if "data" in data:
             detector._data = DataTree.from_dict(
