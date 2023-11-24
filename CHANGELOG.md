@@ -13,6 +13,9 @@ Pyxel doesn't use SemVer anymore, since most minor releases have at least minor 
 This release brings a number of bugfixes, documentation and improvements.
 
 ### Core
+* Add better error message when a 'Photon', 'Pixel', 'Signal' and 'Image' 
+  data containers are not initialized.
+  (See [!780](https://gitlab.com/esa/pyxel/-/merge_requests/780)).
 
 ### Documentation
 
