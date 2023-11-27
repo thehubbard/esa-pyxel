@@ -92,7 +92,7 @@ dependencies:
   - codespell
 # Profiling
   - pyinstrument
-  - memray
+#  - memray
 # Pip packages
   - pip:
 #    - --no-deps
