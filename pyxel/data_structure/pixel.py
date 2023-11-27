@@ -37,6 +37,11 @@ class Pixel(Array):
         super().__init__(shape=(geo.row, geo.col))
 
     @override
+    def empty(self):
+        """Empty the array by setting the array to zero array in detector shape."""
+        self._array = np.zeros(shape=self._shape, dtype=float)
+
+    @override
     def _get_uninitialized_error_message(self) -> str:
         """Get an explicit error message for an uninitialized 'array'.
 

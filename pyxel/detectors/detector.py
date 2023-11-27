@@ -207,10 +207,12 @@ class Detector:
         """TBW."""
         from datatree import DataTree
 
-        self._photon = Photon(geo=self.geometry)
         self._scene = Scene()
+        self._photon = Photon(geo=self.geometry)
         self._charge = Charge(geo=self.geometry)
+
         self._pixel = Pixel(geo=self.geometry)
+
         self._signal = Signal(geo=self.geometry)
         self._image = Image(geo=self.geometry)
 
@@ -218,13 +220,15 @@ class Detector:
 
     def empty(self, empty_all: bool = True) -> None:
         """Empty the data in the detector."""
-        self.photon.empty()
         self.scene = Scene()
-        self.signal.empty()
-        self.image.empty()
+        self.photon.empty()
         self.charge.empty()
+
         if empty_all:
             self.pixel.empty()
+
+        self.signal.empty()
+        self.image.empty()
 
     def set_readout(
         self,
