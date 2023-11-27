@@ -7,9 +7,10 @@
 
 """Pyxel Pixel class."""
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 import numpy as np
+from numpy.typing import ArrayLike
 from typing_extensions import override
 
 from pyxel.data_structure import Array
@@ -40,6 +41,33 @@ class Pixel(Array):
     def empty(self):
         """Empty the array by setting the array to zero array in detector shape."""
         self._array = np.zeros(shape=self._shape, dtype=float)
+        # TODO: Rename this method to '_update' ?
+
+    @override
+    def update(self, data: Optional[ArrayLike]) -> None:
+        """Update 'array' attribute.
+
+        This method updates 'array' attribute of this object with new data.
+        If the data is None, then the object is empty.
+
+        Parameters
+        ----------
+        data : array_like, Optional
+
+        Examples
+        --------
+        >>> from pyxel.data_structure import Photon
+        >>> obj = Photon(...)
+        >>> obj.update([[1, 2], [3, 4]])
+        >>> obj.array
+        array([[1, 2], [3, 4]])
+
+        >>> obj.update(None)  # Equivalent to obj.empty()
+        """
+        if data is not None:
+            self.array = np.asarray(data)
+        else:
+            self._array = None
 
     @override
     def _get_uninitialized_error_message(self) -> str:
