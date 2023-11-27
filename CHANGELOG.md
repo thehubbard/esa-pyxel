@@ -72,6 +72,8 @@ initialized before running a pipeline. The models must initialize the containers
   (See [!757](https://gitlab.com/esa/pyxel/-/merge_requests/757)).
 * Fix issues when running Mypy 1.7.
   (See [!762](https://gitlab.com/esa/pyxel/-/merge_requests/762)).
+* Remove conda package 'memray' from 'environment.yml'.
+  (See [!782](https://gitlab.com/esa/pyxel/-/merge_requests/782)).
 
 
 ## 1.12 / 2023-10-27
