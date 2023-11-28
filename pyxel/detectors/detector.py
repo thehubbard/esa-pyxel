@@ -203,8 +203,8 @@ class Detector:
 
         return ds
 
-    def reset(self) -> None:
-        """TBW."""
+    def _initialize(self) -> None:
+        """Initialize data buckets."""
         from datatree import DataTree
 
         self._scene = Scene()
@@ -218,13 +218,14 @@ class Detector:
 
         self._data = DataTree()
 
-    def empty(self, empty_all: bool = True) -> None:
+    # TODO: refactor to split up to empty and reset.
+    def empty(self, reset: bool = True) -> None:
         """Empty the data in the detector."""
         self.scene = Scene()
         self.photon.empty()
         self.charge.empty()
 
-        if empty_all:
+        if reset:
             self.pixel.empty()
 
         self.signal.empty()

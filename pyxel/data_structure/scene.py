@@ -44,7 +44,7 @@ class Scene:
         --------
         >>> from pyxel.detectors import CCD
         >>> detector = CCD(...)
-        >>> detector.reset()
+        >>> detector._initialize()
 
         >>> source
         <xarray.Dataset>

@@ -33,7 +33,7 @@ class MKID(Detector):
         self._characteristics: Characteristics = characteristics
 
         super().__init__(environment=environment)
-        self.reset()
+        self._initialize()
 
     def __eq__(self, other) -> bool:
         return (
@@ -45,21 +45,21 @@ class MKID(Detector):
             and super().__eq__(other)
         )
 
-    def reset(self) -> None:
+    def _initialize(self) -> None:
         """TBW."""
-        super().reset()
+        super()._initialize()
         self._phase = Phase(geo=self.geometry)
 
-    def empty(self, empty_all: bool = True) -> None:
+    def empty(self, reset: bool = True) -> None:
         """Empty the data in the detector.
 
         Returns
         -------
         None
         """
-        super().empty(empty_all)
+        super().empty(reset)
 
-        if empty_all and self._phase and self._phase._array is not None:
+        if reset and self._phase and self._phase._array is not None:
             self.phase.array *= 0
 
     @property

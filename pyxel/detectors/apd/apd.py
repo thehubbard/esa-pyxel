@@ -39,7 +39,7 @@ class APD(Detector):
         self._characteristics: APDCharacteristics = characteristics
 
         super().__init__(environment=environment)
-        super().reset()
+        super()._initialize()
 
     def __eq__(self, other) -> bool:
         return (
