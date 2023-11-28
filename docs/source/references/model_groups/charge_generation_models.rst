@@ -5,7 +5,6 @@ Charge Generation models
 ========================
 
 .. currentmodule:: pyxel.models.charge_generation
-.. automodule:: pyxel.models.charge_generation
 
 Charge generation models are used to add to and manipulate data in :py:class:`~pyxel.data_structure.Charge` array
 inside the :py:class:`~pyxel.detectors.Detector` object.
