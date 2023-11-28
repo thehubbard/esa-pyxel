@@ -18,6 +18,9 @@ This release brings a number of bugfixes, documentation and improvements.
   (See [!780](https://gitlab.com/esa/pyxel/-/merge_requests/780)).
 * Small refactoring of methods 'Detector.from_dict' and 'Detector.to_dict'.
   (See [!781](https://gitlab.com/esa/pyxel/-/merge_requests/781)).
+* Non destructive readout, signal is not increasing.
+  (See [!783](https://gitlab.com/esa/pyxel/-/merge_requests/783)).
+
 
 ### Documentation
 

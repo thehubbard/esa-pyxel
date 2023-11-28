@@ -37,7 +37,7 @@ def mkid_5x4() -> MKID:
         characteristics=Characteristics(),
     )
 
-    detector.reset()
+    detector._initialize()
     detector.phase.array = np.zeros(detector.geometry.shape, dtype=float)
     detector.photon.array = np.zeros(detector.geometry.shape, dtype=float)
 

@@ -32,7 +32,7 @@ class CCD(Detector):
         self._characteristics: Characteristics = characteristics
 
         super().__init__(environment=environment)
-        super().reset()
+        super()._initialize()
 
     def __eq__(self, other) -> bool:
         return (

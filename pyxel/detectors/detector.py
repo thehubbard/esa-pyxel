@@ -203,28 +203,33 @@ class Detector:
 
         return ds
 
-    def reset(self) -> None:
-        """TBW."""
+    def _initialize(self) -> None:
+        """Initialize data buckets."""
         from datatree import DataTree
 
-        self._photon = Photon(geo=self.geometry)
         self._scene = Scene()
+        self._photon = Photon(geo=self.geometry)
         self._charge = Charge(geo=self.geometry)
+
         self._pixel = Pixel(geo=self.geometry)
+
         self._signal = Signal(geo=self.geometry)
         self._image = Image(geo=self.geometry)
 
         self._data = DataTree()
 
-    def empty(self, empty_all: bool = True) -> None:
+    # TODO: refactor to split up to empty and reset.
+    def empty(self, reset: bool = True) -> None:
         """Empty the data in the detector."""
-        self.photon.empty()
         self.scene = Scene()
+        self.photon.empty()
+        self.charge.empty()
+
+        if reset:
+            self.pixel.empty()
+
         self.signal.empty()
         self.image.empty()
-        self.charge.empty()
-        if empty_all:
-            self.pixel.empty()
 
     def set_readout(
         self,
