@@ -9,8 +9,13 @@ Minor releases include updated stdlib stubs from typeshed.
 
 Pyxel doesn't use SemVer anymore, since most minor releases have at least minor backward incompatible changes.
 
-## UNRELEASED
-This release brings a number of bugfixes, documentation and improvements.
+## 1.13.1 / 2023-11-28
+This release brings a number of bugfixes and improvements.
+
+With the new breaking changes in version 1.13 the pixel array was reset also when using non-destructive readout mode. 
+This new release fixes the bug. 
+The error message is improved when an array is not initialized and the documentation for the model groups is updated, 
+such that the user is better informed.
 
 ### Core
 * Add better error message when a 'Photon', 'Pixel', 'Signal' and 'Image' 
@@ -26,9 +31,6 @@ This release brings a number of bugfixes, documentation and improvements.
 * Review model descriptions in reference documentation.
   (See [!784](https://gitlab.com/esa/pyxel/-/merge_requests/784)).
 
-### Models
-
-### Others
 
 ## 1.13 / 2023-11-22
 This release brings a number of bugfixes and improvements.
