@@ -209,12 +209,12 @@ def comparison(dct, other_dct):
                     },
                 },
                 "data": {
-                    "photon": np.zeros(shape=(100, 120)),
+                    "photon": None,
                     "photon_3d": None,
                     "scene": None,
-                    "pixel": np.zeros(shape=(100, 120)),
-                    "signal": np.zeros(shape=(100, 120)),
-                    "image": np.zeros(shape=(100, 120), dtype=np.uint64),
+                    "pixel": None,
+                    "signal": None,
+                    "image": None,
                     "charge": {
                         "array": np.zeros(shape=(100, 120)),
                         "frame": pd.DataFrame(
@@ -282,12 +282,12 @@ def comparison(dct, other_dct):
                     },
                 },
                 "data": {
-                    "photon": np.zeros(shape=(100, 120)),
+                    "photon": None,
                     "photon_3d": None,
                     "scene": None,
-                    "pixel": np.zeros(shape=(100, 120)),
-                    "signal": np.zeros(shape=(100, 120)),
-                    "image": np.zeros(shape=(100, 120), dtype=np.uint64),
+                    "pixel": None,
+                    "signal": None,
+                    "image": None,
                     "charge": {
                         "array": np.zeros(shape=(100, 120)),
                         "frame": pd.DataFrame(

@@ -1330,14 +1330,31 @@ def _add_product_parameters_datatree(
 
         elif types[coordinate_name] == ParameterType.Multi:
             data = np.array(param_value)
-            assert data.ndim == 1
 
-            data_array = xr.DataArray(
-                data,
-                dims=f"dim_{dim_idx}",
-                coords={f"dim_{dim_idx}": range(len(data))},
-            ).expand_dims(dim={f"{short_name}_id": [index]})
-            dim_idx += 1
+            if data.ndim == 1:
+                data_array = xr.DataArray(
+                    data,
+                    dims=f"dim_{dim_idx}",
+                    coords={f"dim_{dim_idx}": range(len(data))},
+                ).expand_dims(dim={f"{short_name}_id": [index]})
+
+                dim_idx += 1
+
+            elif data.ndim == 2:
+                shape_0, shape_1 = data.shape
+                data_array = xr.DataArray(
+                    data,
+                    dims=[f"dim_{dim_idx}", f"dim_{dim_idx+1}"],
+                    coords={
+                        f"dim_{dim_idx}": range(shape_0),
+                        f"dim_{dim_idx+1}": range(shape_1),
+                    },
+                ).expand_dims(dim={f"{short_name}_id": [index]})
+
+                dim_idx += 2
+
+            else:
+                raise NotImplementedError
 
             data_tree = data_tree.expand_dims(
                 {f"{short_name}_id": [index]}

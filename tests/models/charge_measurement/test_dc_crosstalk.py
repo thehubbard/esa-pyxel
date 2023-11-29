@@ -5,6 +5,7 @@
 #  this file, may be copied, modified, propagated, or distributed except according to
 #  the terms contained in the file ‘LICENCE.txt’.
 
+import numpy as np
 import pytest
 
 from pyxel.detectors import CCD, CCDGeometry, Characteristics, Environment
@@ -14,7 +15,7 @@ from pyxel.models.charge_measurement import dc_crosstalk
 @pytest.fixture
 def ccd_8x8() -> CCD:
     """Create a valid CCD detector."""
-    return CCD(
+    detector = CCD(
         geometry=CCDGeometry(
             row=8,
             col=8,
@@ -25,6 +26,8 @@ def ccd_8x8() -> CCD:
         environment=Environment(),
         characteristics=Characteristics(),
     )
+    detector.signal.array = np.zeros(detector.geometry.shape, dtype=float)
+    return detector
 
 
 @pytest.mark.parametrize(

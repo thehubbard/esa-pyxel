@@ -58,7 +58,6 @@ class Detector:
         self._memory: dict = {}
         self._persistence: Optional[Union[Persistence, SimplePersistence]] = None
 
-        self.input_image: Optional[np.ndarray] = None
         self._output_dir: Optional[Path] = None  # TODO: See #330
 
         self._readout_properties: Optional["ReadoutProperties"] = None
@@ -94,6 +93,17 @@ class Detector:
     def characteristics(self):
         """TBW."""
         raise NotImplementedError
+
+    @property
+    def photon(self) -> Photon:
+        """TBW."""
+        if not self._photon:
+            raise RuntimeError("Photon array is not initialized ! ")
+        return self._photon
+
+    @photon.setter
+    def photon(self, obj: Photon) -> None:
+        self.photon.array = obj.array
 
     @property
     def scene(self) -> Scene:
@@ -142,6 +152,11 @@ class Detector:
 
         return self._pixel
 
+    @pixel.setter
+    def pixel(self, obj: Pixel) -> None:
+        """TBW."""
+        self.pixel.array = obj.array
+
     @property
     def signal(self) -> Signal:
         """TBW."""
@@ -150,6 +165,11 @@ class Detector:
 
         return self._signal
 
+    @signal.setter
+    def signal(self, obj: Pixel) -> None:
+        """TBW."""
+        self.signal.array = obj.array
+
     @property
     def image(self) -> Image:
         """TBW."""
@@ -157,6 +177,11 @@ class Detector:
             raise RuntimeError("'image' not initialized.")
 
         return self._image
+
+    @image.setter
+    def image(self, obj: Pixel) -> None:
+        """TBW."""
+        self.image.array = obj.array
 
     @property
     def data(self) -> "DataTree":
@@ -200,37 +225,38 @@ class Detector:
 
         return ds
 
-    def reset(self) -> None:
-        """TBW."""
+    def _initialize(self) -> None:
+        """Initialize data buckets."""
         from datatree import DataTree
 
         self._scene = Scene()
         self._photon3d = Photon3D(geo=self.geometry)
         self._photon = Photon(geo=self.geometry)
         self._charge = Charge(geo=self.geometry)
+
         self._pixel = Pixel(geo=self.geometry)
+
         self._signal = Signal(geo=self.geometry)
         self._image = Image(geo=self.geometry)
 
         self._data = DataTree()
 
-    def empty(self, empty_all: bool = True) -> None:
+    # TODO: refactor to split up to empty and reset.
+    def empty(self, reset: bool = True) -> None:
         """Empty the data in the detector."""
-        self._scene = Scene()
+        self.scene = Scene()
 
-        if self._photon:
-            self.photon.array = np.zeros_like(self.photon.array)
+        self.photon.empty()
         if self._photon3d:
             self.photon3d.empty()
-        if self._signal:
-            self.signal.array = np.zeros_like(self.signal.array)
-        if self._image:
-            self.image.array = np.zeros_like(self.image.array)
-        if self._charge:
-            self._charge.empty()
-        if empty_all:
-            if self._pixel:
-                self.pixel.array = np.zeros_like(self.pixel.array)
+
+        self.charge.empty()
+
+        if reset:
+            self.pixel.empty()
+
+        self.signal.empty()
+        self.image.empty()
 
     def set_readout(
         self,

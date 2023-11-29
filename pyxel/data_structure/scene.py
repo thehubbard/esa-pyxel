@@ -44,7 +44,7 @@ class Scene:
         --------
         >>> from pyxel.detectors import CCD
         >>> detector = CCD(...)
-        >>> detector.reset()
+        >>> detector._initialize()
 
         >>> source
         <xarray.Dataset>
@@ -105,6 +105,10 @@ class Scene:
     def data(self) -> DataTree:
         """Get a multi-wavelength object."""
         return self._source
+
+    def empty(self):
+        """Create a new source."""
+        self._source = DataTree(name="scene")
 
     def from_scopesim(self, source: "Source") -> None:
         """Convert a ScopeSim `Source` object into a `Scene` object.

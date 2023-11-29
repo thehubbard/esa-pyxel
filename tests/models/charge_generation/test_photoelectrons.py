@@ -30,6 +30,8 @@ def ccd_5x5() -> CCD:
         environment=Environment(),
         characteristics=Characteristics(),
     )
+    detector.photon.array = np.zeros(detector.geometry.shape, dtype=float)
+
     return detector
 
 

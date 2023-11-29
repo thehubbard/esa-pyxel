@@ -64,7 +64,6 @@ def load_image(
         position_y=position_y,
     )
 
-    detector.input_image = image
     photon_array = image
 
     if convert_to_photons:
@@ -81,7 +80,4 @@ def load_image(
 
     photon_array = photon_array * (detector.time_step / time_scale) * multiplier
 
-    try:
-        detector.photon.array += photon_array
-    except ValueError as ex:
-        raise ValueError("Shapes of arrays do not match") from ex
+    detector.photon.array = photon_array
