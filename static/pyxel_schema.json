@@ -3363,12 +3363,18 @@
             "qe_col_name": {
               "description": "Column name of quantum efficiency in loaded file.",
               "title": "qe_col_name",
-              "type": "string"
+              "type": [
+                "string",
+                "integer"
+              ]
             },
             "wavelength_col_name": {
               "description": "Column name of wavelength in loaded file.",
               "title": "wavelength_col_name",
-              "type": "string"
+              "type": [
+                "string",
+                "integer"
+              ]
             }
           },
           "required": [
