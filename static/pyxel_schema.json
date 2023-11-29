@@ -1333,6 +1333,9 @@
                 "$ref": "#/definitions/ModelChargeGenerationApdGain"
               },
               {
+                "$ref": "#/definitions/ModelChargeGenerationApplyQeCurve"
+              },
+              {
                 "$ref": "#/definitions/ModelChargeGenerationChargeBlocks"
               },
               {
@@ -1358,9 +1361,6 @@
               },
               {
                 "$ref": "#/definitions/ModelChargeGenerationLoadCharge"
-              },
-              {
-                "$ref": "#/definitions/ModelChargeGenerationLoadQeCurve"
               },
               {
                 "$ref": "#/definitions/ModelChargeGenerationRadiationInducedDarkCurrent"
@@ -2452,6 +2452,71 @@
       "title": "Model 'apd_gain'",
       "type": "object"
     },
+    "ModelChargeGenerationApplyQeCurve": {
+      "additionalProperties": false,
+      "description": "Apply wavelength dependent QE with loading a file.",
+      "properties": {
+        "arguments": {
+          "additionalProperties": false,
+          "properties": {
+            "filename": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "format": "uri",
+                  "type": "string"
+                }
+              ],
+              "description": "CSV File path.",
+              "title": "filename"
+            },
+            "qe_col_name": {
+              "description": "Column name of quantum efficiency in loaded file.",
+              "title": "qe_col_name",
+              "type": [
+                "string",
+                "integer"
+              ]
+            },
+            "wavelength_col_name": {
+              "description": "Column name of wavelength in loaded file.",
+              "title": "wavelength_col_name",
+              "type": [
+                "string",
+                "integer"
+              ]
+            }
+          },
+          "required": [
+            "filename",
+            "wavelength_col_name",
+            "qe_col_name"
+          ],
+          "title": "Parameters",
+          "type": "object"
+        },
+        "enabled": {
+          "default": true,
+          "type": "boolean"
+        },
+        "func": {
+          "const": "pyxel.models.charge_generation.apply_qe_curve",
+          "default": "pyxel.models.charge_generation.apply_qe_curve",
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "arguments"
+      ],
+      "title": "Model 'apply_qe_curve'",
+      "type": "object"
+    },
     "ModelChargeGenerationChargeBlocks": {
       "additionalProperties": false,
       "description": "Inject a block of charge into the :term:`CCD` detector.",
@@ -3338,71 +3403,6 @@
         "arguments"
       ],
       "title": "Model 'load_charge'",
-      "type": "object"
-    },
-    "ModelChargeGenerationLoadQeCurve": {
-      "additionalProperties": false,
-      "description": "Apply wavelength dependent QE with loading a file.",
-      "properties": {
-        "arguments": {
-          "additionalProperties": false,
-          "properties": {
-            "filename": {
-              "anyOf": [
-                {
-                  "type": "string"
-                },
-                {
-                  "format": "uri",
-                  "type": "string"
-                }
-              ],
-              "description": "CSV File path.",
-              "title": "filename"
-            },
-            "qe_col_name": {
-              "description": "Column name of quantum efficiency in loaded file.",
-              "title": "qe_col_name",
-              "type": [
-                "string",
-                "integer"
-              ]
-            },
-            "wavelength_col_name": {
-              "description": "Column name of wavelength in loaded file.",
-              "title": "wavelength_col_name",
-              "type": [
-                "string",
-                "integer"
-              ]
-            }
-          },
-          "required": [
-            "filename",
-            "wavelength_col_name",
-            "qe_col_name"
-          ],
-          "title": "Parameters",
-          "type": "object"
-        },
-        "enabled": {
-          "default": true,
-          "type": "boolean"
-        },
-        "func": {
-          "const": "pyxel.models.charge_generation.load_qe_curve",
-          "default": "pyxel.models.charge_generation.load_qe_curve",
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "name",
-        "arguments"
-      ],
-      "title": "Model 'load_qe_curve'",
       "type": "object"
     },
     "ModelChargeGenerationRadiationInducedDarkCurrent": {

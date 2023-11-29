@@ -14,7 +14,7 @@ import xarray as xr
 
 from pyxel.detectors import CCD, CCDGeometry, Characteristics, Environment
 from pyxel.inputs.loader import load_table_v2
-from pyxel.models.charge_generation.wavelength_qe import load_qe_curve
+from pyxel.models.charge_generation.wavelength_qe import apply_qe_curve
 
 if TYPE_CHECKING:
     import pandas as pd
@@ -91,7 +91,7 @@ def invalid_qe_dataframe(
 def test_conversion_with_qe_valid(ccd_5x5: CCD, valid_qe_dataframe: Union[str, Path]):
     detector = ccd_5x5
 
-    load_qe_curve(
+    apply_qe_curve(
         detector=detector,
         filename=valid_qe_dataframe,
         wavelength_col_name=0,
@@ -105,7 +105,7 @@ def test_simple_conversion_invalid(
     with pytest.raises(
         ValueError, match="Quantum efficiency values not between 0 and 1."
     ):
-        load_qe_curve(
+        apply_qe_curve(
             detector=ccd_5x5,
             filename=invalid_qe_dataframe,
             wavelength_col_name=0,

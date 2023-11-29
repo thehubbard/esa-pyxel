@@ -14,7 +14,7 @@ import numpy as np
 import xarray as xr
 
 from pyxel.detectors import Detector
-from pyxel.inputs.loader import load_table_v2
+from pyxel.inputs.loader import load_dataarray, load_table_v2
 
 if TYPE_CHECKING:
     import pandas as pd
@@ -84,7 +84,7 @@ def integrate_charge(input_array: xr.DataArray) -> xr.DataArray:
     return integrated_charge
 
 
-def load_qe_curve(
+def apply_qe_curve(
     detector: Detector,
     filename: Union[str, Path],
     wavelength_col_name: Union[str, int],
@@ -136,3 +136,15 @@ def load_qe_curve(
     new_charge: np.ndarray = np.asarray(integrated_charge)
 
     detector.charge.add_charge_array(new_charge)
+
+
+# TODO: refactor with 2d and give option of wavelength to go for 3d
+# def conversion_with_3d_qe_map(
+#     detector: Detector,
+#     filename: Union[str, Path],
+#     # position: tuple[int, int] = (0, 0),
+#     # align: Optional[
+#     #     Literal["center", "top_left", "top_right", "bottom_left", "bottom_right"]
+#     # ] = None,
+#     # seed: Optional[int] = None,
+# ) -> None:
