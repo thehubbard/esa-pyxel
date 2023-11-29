@@ -66,3 +66,15 @@ def test_error_message_empty_image(empty_detector: CCD):
         match=r"Consider using the \'simple_amplifier\' model from the \'Readout Electronics\' group",
     ):
         _ = empty_detector.image.array
+
+
+# def test_error_message_empty_photon_3d(empty_detector: CCD):
+#     """Test error messages generated with an empty 'Photon3d' container."""
+#     assert isinstance(empty_detector, CCD)
+#
+#     # Test '.pixel.array'
+#     with pytest.raises(
+#         ValueError,
+#         match=r"Consider using the \'\' model from the \'Readout Electronics\' group",
+#     ):
+#         _ = empty_detector.photon3d.array

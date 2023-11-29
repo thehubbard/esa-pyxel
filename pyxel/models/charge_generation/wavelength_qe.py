@@ -10,13 +10,13 @@
 from pathlib import Path
 from typing import TYPE_CHECKING, Union
 
+import numpy as np
 import xarray as xr
 
 from pyxel.detectors import Detector
 from pyxel.inputs.loader import load_table_v2
 
 if TYPE_CHECKING:
-    import numpy as np
     import pandas as pd
 
 # from pyxel.models.charge_generation.photoelectrons import apply_qe
@@ -79,9 +79,9 @@ def integrate_charge(input_array: xr.DataArray) -> xr.DataArray:
     -------
     xr.DataArray
     """
-    integrated_charge = input_array.integrate(coord="wavelength")
+    integrated_charge: xr.DataArray = input_array.integrate(coord="wavelength")
 
-    return integrated_charge.data
+    return integrated_charge
 
 
 def load_qe_curve(
@@ -118,8 +118,10 @@ def load_qe_curve(
         input_array=detector.photon3d.array,
     )
 
-    if not 0 <= qe_interpolated["QE"].any() <= 1:
-        raise ValueError("Quantum efficiency not between 0 and 1.")
+    if not np.all(
+        (0 <= qe_interpolated["QE"].values) & (qe_interpolated["QE"].values <= 1)
+    ):
+        raise ValueError("Quantum efficiency values not between 0 and 1.")
 
     # apply QE
     detector_charge: xr.DataArray = apply_wavelength_qe(
@@ -131,6 +133,6 @@ def load_qe_curve(
     integrated_charge: xr.DataArray = integrate_charge(input_array=detector_charge)
 
     # get data from xr.DataArray
-    new_charge: np.ndarray = integrated_charge.data
+    new_charge: np.ndarray = np.asarray(integrated_charge)
 
     detector.charge.add_charge_array(new_charge)

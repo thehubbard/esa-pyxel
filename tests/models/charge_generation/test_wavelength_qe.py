@@ -6,16 +6,23 @@
 #   the terms contained in the file ‘LICENCE.txt’.
 
 from pathlib import Path
-from typing import Union
+from typing import TYPE_CHECKING, Union
 
 import numpy as np
 import pytest
 import xarray as xr
 
 from pyxel.detectors import CCD, CCDGeometry, Characteristics, Environment
-from pyxel.models.charge_generation.wavelength_qe import (  # interpolate_dataset,; apply_wavelength_qe,; integrate_charge,
+from pyxel.inputs.loader import load_table_v2
+from pyxel.models.charge_generation.wavelength_qe import (
+    apply_wavelength_qe,
+    integrate_charge,
+    interpolate_dataset,
     load_qe_curve,
 )
+
+if TYPE_CHECKING:
+    import pandas as pd
 
 
 # Fixture for creating a sample detector object
@@ -33,11 +40,17 @@ def ccd_5x5() -> CCD:
         environment=Environment(),
         characteristics=Characteristics(),
     )
+
+    detector.photon3d.array = xr.DataArray(
+        np.zeros(shape=(6, 5, 5), dtype=float),
+        dims=["wavelength", "y", "x"],
+    )
+
     return detector
 
 
 @pytest.fixture
-def valid_qe_dataset(
+def valid_qe_dataframe(
     tmp_path: Path,
 ) -> str:
     """Create valid 2D file on a temporary folder."""
@@ -59,7 +72,7 @@ def valid_qe_dataset(
 
 
 @pytest.fixture
-def invalid_qe_dataset(
+def invalid_qe_dataframe(
     tmp_path: Path,
 ) -> str:
     """Create invalid 2D file on a temporary folder."""
@@ -80,77 +93,79 @@ def invalid_qe_dataset(
     return final_path
 
 
-def test_conversion_with_qe_valid(ccd_5x5: CCD, valid_qe_dataset: Union[str, Path]):
+def test_conversion_with_qe_valid(ccd_5x5: CCD, valid_qe_dataframe: Union[str, Path]):
     detector = ccd_5x5
 
     load_qe_curve(
         detector=detector,
-        filename=valid_qe_dataset,
+        filename=valid_qe_dataframe,
         wavelength_col_name=0,
         qe_col_name=1,
     )
 
 
-def test_simple_conversion_invalid(ccd_5x5: CCD, invalid_qe_dataset: Union[str, Path]):
+def test_simple_conversion_invalid(
+    ccd_5x5: CCD, invalid_qe_dataframe: Union[str, Path]
+):
     with pytest.raises(
         ValueError, match="Quantum efficiency values not between 0 and 1."
     ):
         load_qe_curve(
             detector=ccd_5x5,
-            filename=invalid_qe_dataset,
+            filename=invalid_qe_dataframe,
             wavelength_col_name=0,
             qe_col_name=1,
         )
 
 
-# # Fixture for creating a sample detector object
-# @pytest.fixture
-# def sample_detector():
-#     # Replace with actual detector parameters
-#     return Detector(photon3d=xr.DataArray(np.random.rand(3, 100, 100), dims=["wavelength", "y", "x"]))
-
-
-# Fixture for creating a sample wavelength-QE dataset
 @pytest.fixture
-def sample_qe_dataset():
-    # Replace with actual QE dataset parameters
-    wavelengths = np.linspace(400, 700, 3)
-    qe_values = np.array([0.8, 0.9, 0.95])
-    return xr.Dataset(
-        {"QE": ("wavelength", qe_values)}, coords={"wavelength": wavelengths}
+def valid_qe_dataset(valid_qe_dataframe):
+    valid_qe_dataframe: pd.DataFrame = load_table_v2(
+        filename=valid_qe_dataframe,
+        rename_cols={"wavelength": 0, "QE": 1},
+        header=False,
     )
+    qe_dataset: xr.Dataset = valid_qe_dataframe.set_index("wavelength").to_xarray()
+
+    return qe_dataset
 
 
+# TODO: add more tests.
 # # Test for interpolate_dataset function
-# def test_interpolate_dataset():
-#     input_dataset = xr.Dataset({"data": ("wavelength", np.random.rand(3))})
-#     input_array = xr.DataArray(np.random.rand(5), dims=["wavelength"])
+# def test_interpolate_dataset(ccd_5x5: CCD, valid_qe_dataset):
+#     input_dataset = valid_qe_dataset
+#     detector = ccd_5x5
+#     input_array = detector.photon3d.array
+#     # xr.DataArray(np.random.rand(15), dims=["wavelength"])
 #
-#     result = interpolate_dataset(input_dataset, input_array)
+#     interpolate_dataset(input_dataset, input_array)
 #
-#     assert isinstance(result, xr.Dataset)
-#     assert set(result.coords) == {"wavelength"}
+#     # assert isinstance(result, xr.Dataset)
+#     # assert set(result.coords) == {"wavelength"}
 #
 #
 # # Test for apply_wavelength_qe function
-# def test_apply_wavelength_qe(sample_detector, sample_qe_dataset):
-#     result = apply_wavelength_qe(sample_detector.photon3d.array, sample_qe_dataset["QE"])
+# def test_apply_wavelength_qe(ccd_5x5: CCD, valid_qe_dataset):
+#     detector = ccd_5x5
+#     result = apply_wavelength_qe(detector.photon3d.array, valid_qe_dataset["QE"])
 #
 #     assert isinstance(result, xr.DataArray)
-#     assert result.shape == sample_detector.photon3d.array.shape
+#     assert result.shape == detector.photon3d.array.shape
 #
 #
 # # Test for integrate_charge function
-# def test_integrate_charge(sample_detector):
-#     input_array = sample_detector.photon3d.array
+# def test_integrate_charge(ccd_5x5: CCD):
+#     detector = ccd_5x5
+#     input_array = detector.photon3d.array
 #     result = integrate_charge(input_array)
 #
-#     assert isinstance(result, np.ndarray)
-#     assert result.shape == (sample_detector.photon3d.array.shape[1], sample_detector.photon3d.array.shape[2])
+#     assert isinstance(result, xr.DataArray)
+#     assert result.shape == (detector.photon3d.array.shape[1], detector.photon3d.array.shape[2])
 #
 #
 # # Test for load_qe_curve function
-# def test_load_qe_curve(ccd_5x5, tmp_path):
+# def test_load_qe_curve(ccd_5x5: CCD, tmp_path):
+#     detector = ccd_5x5
 #     # Create a sample CSV file for testing
 #     csv_path = tmp_path / "qe_curve.csv"
 #     wavelengths = np.linspace(400, 700, 3)
@@ -161,5 +176,4 @@ def sample_qe_dataset():
 #     load_qe_curve(detector, csv_path, "wavelength", "QE")
 #
 #     # Assert that charge array is added to the detector
-#     assert "charge" in detector.__dict__
 #     assert isinstance(detector.charge.array, np.ndarray)

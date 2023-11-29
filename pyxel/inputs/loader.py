@@ -340,8 +340,8 @@ def load_table_v2(
                     else:
                         raise ValueError
 
-                    table.columns = dims
-                    table_data = table.copy()
+                table.columns = dims
+                table_data = table.copy()
 
     elif suffix.startswith((".txt", ".data", ".csv")):
         with open(url_path) as file_handler:
