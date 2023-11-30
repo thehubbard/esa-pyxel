@@ -126,9 +126,9 @@ def apply_qe_curve(
         raise ValueError("Quantum efficiency values not between 0 and 1.")
 
     # apply QE
+    foo: xr.DataArray = qe_interpolated["QE"]
     detector_charge: xr.DataArray = apply_wavelength_qe(
-        photon_array=detector.photon3d.array,
-        qe_array=qe_interpolated["QE"],
+        photon_array=detector.photon3d.array, qe_array=foo
     )
 
     # integrate charge along coordinate wavelength

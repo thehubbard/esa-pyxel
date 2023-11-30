@@ -1345,6 +1345,9 @@
                 "$ref": "#/definitions/ModelChargeGenerationChargeDepositionInMct"
               },
               {
+                "$ref": "#/definitions/ModelChargeGenerationConversionWith3dQeMap"
+              },
+              {
                 "$ref": "#/definitions/ModelChargeGenerationConversionWithQeMap"
               },
               {
@@ -2825,6 +2828,53 @@
         "arguments"
       ],
       "title": "Model 'charge_deposition_in_mct'",
+      "type": "object"
+    },
+    "ModelChargeGenerationConversionWith3dQeMap": {
+      "additionalProperties": false,
+      "description": "Generate charge from incident photon via photoelectric effect.",
+      "properties": {
+        "arguments": {
+          "additionalProperties": false,
+          "properties": {
+            "filename": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "format": "uri",
+                  "type": "string"
+                }
+              ],
+              "description": "File path.",
+              "title": "filename"
+            }
+          },
+          "required": [
+            "filename"
+          ],
+          "title": "Parameters",
+          "type": "object"
+        },
+        "enabled": {
+          "default": true,
+          "type": "boolean"
+        },
+        "func": {
+          "const": "pyxel.models.charge_generation.conversion_with_3d_qe_map",
+          "default": "pyxel.models.charge_generation.conversion_with_3d_qe_map",
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "arguments"
+      ],
+      "title": "Model 'conversion_with_3d_qe_map'",
       "type": "object"
     },
     "ModelChargeGenerationConversionWithQeMap": {
