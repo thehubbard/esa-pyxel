@@ -168,7 +168,7 @@ With this model you can create and add charge to :py:class:`~pyxel.detectors.Det
 by converting photons in charge. Loading QE values from a file to apply the QE to the photon array.
 Loading a 3D QE map from a file containing one QE map in the size of the detector per wavelength to apply the QE
 to the photon array. The file format must be netCDF, so ending with ``.nc`` to be able to read in.
-The file loaded will be intepreted as xr.DataArray and should have the "wavelength" as coordinate, such that the
+The file loaded will be interpreted as xr.DataArray and should have the "wavelength" as coordinate, such that the
 wavelength resolution of the QE map data can be interpolated to match to the resolution of the wavelength used in
 the photon array. After that the photoconversion from photon to charge, applying the QE values to the photon array
 takes places and finally integrating along the wavelength dimension to get a 2D charge array as output.
