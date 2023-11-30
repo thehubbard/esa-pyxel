@@ -8,7 +8,7 @@
 """Simple model to convert photon into photo-electrons using QE(-map) inside detector."""
 
 from pathlib import Path
-from typing import TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, TypeVar, Union
 
 import numpy as np
 import xarray as xr
@@ -21,23 +21,25 @@ if TYPE_CHECKING:
 
 # from pyxel.models.charge_generation.photoelectrons import apply_qe
 
+T = TypeVar("T", xr.DataArray, xr.Dataset)
+
 
 def interpolate_dataset(
-    input_dataset: xr.Dataset,
-    input_array: xr.DataArray,
-) -> xr.Dataset:
+    input_dataset: T,
+    input_array: T,
+) -> T:
     """Interpolate xr.Dataset to the resolution of xr.DataArray.
 
     Parameters
     ----------
-    input_dataset : xr.Dataset
+    input_dataset : xr.Dataset or xr.Dataarray
         Input dataset to interpolate.
-    input_array : xr.DataArray
-        Input array on which the dataset is interpolated to.
+    input_array : xr.Dataset or xr.Dataarray
+        Input data on which the input dataset is interpolated to.
 
     Returns
     -------
-    xr.Dataset
+    xr.Dataset or xr.DataArray
     """
     interpolated_ds = input_dataset.interp_like(input_array)
 
@@ -139,12 +141,46 @@ def apply_qe_curve(
 
 
 # TODO: refactor with 2d and give option of wavelength to go for 3d
-# def conversion_with_3d_qe_map(
-#     detector: Detector,
-#     filename: Union[str, Path],
-#     # position: tuple[int, int] = (0, 0),
-#     # align: Optional[
-#     #     Literal["center", "top_left", "top_right", "bottom_left", "bottom_right"]
-#     # ] = None,
-#     # seed: Optional[int] = None,
-# ) -> None:
+# TODO: unit test to check that file dim and detector are the same
+def conversion_with_3d_qe_map(
+    detector: Detector,
+    filename: Union[str, Path],
+    # position: tuple[int, int] = (0, 0),
+    # align: Optional[
+    #     Literal["center", "top_left", "top_right", "bottom_left", "bottom_right"]
+    # ] = None,
+    # seed: Optional[int] = None,
+) -> None:
+    """Generate charge from incident photon via photoelectric effect.
+
+    Model converts photon to charge using custom :term:`QE` map for different wavelengths.
+
+    Parameters
+    ----------
+    detector : Detector
+        Pyxel Detector object.
+    filename : str or Path
+        File path.
+    """
+    # load 3D QE-map as dataarray from file
+    qe_dataarray: xr.DataArray = load_dataarray(filename=filename)
+
+    # interpolate the qe_curve wavelength data to the resolution of the photon3D data.
+    qe_interpolated: xr.DataArray = interpolate_dataset(
+        input_dataset=qe_dataarray,
+        input_array=detector.photon3d.array,
+    )
+
+    # apply QE
+    detector_charge: xr.DataArray = apply_wavelength_qe(
+        photon_array=detector.photon3d.array,
+        qe_array=qe_interpolated,
+    )
+
+    # integrate charge along coordinate wavelength
+    integrated_charge: xr.DataArray = integrate_charge(input_array=detector_charge)
+
+    # get data from xr.DataArray
+    new_charge: np.ndarray = np.asarray(integrated_charge)
+
+    detector.charge.add_charge_array(new_charge)
