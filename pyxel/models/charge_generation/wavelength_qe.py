@@ -26,7 +26,7 @@ T = TypeVar("T", xr.DataArray, xr.Dataset)
 
 def interpolate_dataset(
     input_dataset: T,
-    input_array: T,
+    input_array: xr.DataArray,
 ) -> T:
     """Interpolate xr.Dataset to the resolution of xr.DataArray.
 
@@ -34,7 +34,7 @@ def interpolate_dataset(
     ----------
     input_dataset : xr.Dataset or xr.Dataarray
         Input dataset to interpolate.
-    input_array : xr.Dataset or xr.Dataarray
+    input_array : xr.Dataarray
         Input data on which the input dataset is interpolated to.
 
     Returns
