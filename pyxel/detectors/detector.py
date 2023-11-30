@@ -124,17 +124,6 @@ class Detector:
             raise RuntimeError("Photon 3D array is not initialized ! ")
         return self._photon3d
 
-    @property
-    def photon(self) -> Photon:
-        """TBW."""
-        if not self._photon:
-            raise RuntimeError("Photon array is not initialized ! ")
-        return self._photon
-
-    @photon.setter
-    def photon(self, obj: Photon) -> None:
-        self._photon = obj
-
     # TODO: Why no setter for charge, pixel, signal and image?
     @property
     def charge(self) -> Charge:

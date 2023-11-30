@@ -22,6 +22,8 @@ Pyxel doesn't use SemVer anymore, since most minor releases have at least minor 
 ### Models
 * Add model that converts 3D scene to 3D photon.
   (See [!674](https://gitlab.com/esa/pyxel/-/merge_requests/674)).
+* Implement a wavelength-dependancy for the QE map.
+  (See [!765](https://gitlab.com/esa/pyxel/-/merge_requests/765)).
 
 ### Others
 

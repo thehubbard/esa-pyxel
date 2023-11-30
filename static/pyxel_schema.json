@@ -1333,6 +1333,9 @@
                 "$ref": "#/definitions/ModelChargeGenerationApdGain"
               },
               {
+                "$ref": "#/definitions/ModelChargeGenerationApplyQeCurve"
+              },
+              {
                 "$ref": "#/definitions/ModelChargeGenerationChargeBlocks"
               },
               {
@@ -1340,6 +1343,9 @@
               },
               {
                 "$ref": "#/definitions/ModelChargeGenerationChargeDepositionInMct"
+              },
+              {
+                "$ref": "#/definitions/ModelChargeGenerationConversionWith3dQeMap"
               },
               {
                 "$ref": "#/definitions/ModelChargeGenerationConversionWithQeMap"
@@ -2449,6 +2455,71 @@
       "title": "Model 'apd_gain'",
       "type": "object"
     },
+    "ModelChargeGenerationApplyQeCurve": {
+      "additionalProperties": false,
+      "description": "Apply wavelength dependent QE with loading a file.",
+      "properties": {
+        "arguments": {
+          "additionalProperties": false,
+          "properties": {
+            "filename": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "format": "uri",
+                  "type": "string"
+                }
+              ],
+              "description": "CSV File path.",
+              "title": "filename"
+            },
+            "qe_col_name": {
+              "description": "Column name of quantum efficiency in loaded file.",
+              "title": "qe_col_name",
+              "type": [
+                "string",
+                "integer"
+              ]
+            },
+            "wavelength_col_name": {
+              "description": "Column name of wavelength in loaded file.",
+              "title": "wavelength_col_name",
+              "type": [
+                "string",
+                "integer"
+              ]
+            }
+          },
+          "required": [
+            "filename",
+            "wavelength_col_name",
+            "qe_col_name"
+          ],
+          "title": "Parameters",
+          "type": "object"
+        },
+        "enabled": {
+          "default": true,
+          "type": "boolean"
+        },
+        "func": {
+          "const": "pyxel.models.charge_generation.apply_qe_curve",
+          "default": "pyxel.models.charge_generation.apply_qe_curve",
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "arguments"
+      ],
+      "title": "Model 'apply_qe_curve'",
+      "type": "object"
+    },
     "ModelChargeGenerationChargeBlocks": {
       "additionalProperties": false,
       "description": "Inject a block of charge into the :term:`CCD` detector.",
@@ -2757,6 +2828,53 @@
         "arguments"
       ],
       "title": "Model 'charge_deposition_in_mct'",
+      "type": "object"
+    },
+    "ModelChargeGenerationConversionWith3dQeMap": {
+      "additionalProperties": false,
+      "description": "Generate charge from incident photon via photoelectric effect.",
+      "properties": {
+        "arguments": {
+          "additionalProperties": false,
+          "properties": {
+            "filename": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "format": "uri",
+                  "type": "string"
+                }
+              ],
+              "description": "File path.",
+              "title": "filename"
+            }
+          },
+          "required": [
+            "filename"
+          ],
+          "title": "Parameters",
+          "type": "object"
+        },
+        "enabled": {
+          "default": true,
+          "type": "boolean"
+        },
+        "func": {
+          "const": "pyxel.models.charge_generation.conversion_with_3d_qe_map",
+          "default": "pyxel.models.charge_generation.conversion_with_3d_qe_map",
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "arguments"
+      ],
+      "title": "Model 'conversion_with_3d_qe_map'",
       "type": "object"
     },
     "ModelChargeGenerationConversionWithQeMap": {
