@@ -366,8 +366,8 @@ class Calibration:
         """Run calibration pipeline."""
         try:
             import pygmo as pg
-        except ImportError as exc:
-            raise ImportError(
+        except ModuleNotFoundError as exc:
+            raise ModuleNotFoundError(
                 "Missing optional package 'pygmo'.\n"
                 "Please install it with 'pip install pyxel-sim[calibration]' "
                 "or 'pip install pyxel-sim[all]'"
@@ -430,8 +430,8 @@ class Calibration:
         """Run calibration pipeline."""
         try:
             import pygmo as pg
-        except ImportError as exc:
-            raise ImportError(
+        except ModuleNotFoundError as exc:
+            raise ModuleNotFoundError(
                 "Missing optional package 'pygmo'.\n"
                 "Please install it with 'pip install pyxel-sim[calibration]' "
                 "or 'pip install pyxel-sim[all]'"

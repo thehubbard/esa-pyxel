@@ -37,8 +37,8 @@ class ArchipelagoLogs:
     def __init__(self, algo_type: AlgorithmType, num_generations: int):
         try:
             import pygmo as pg
-        except ImportError as exc:
-            raise ImportError(
+        except ModuleNotFoundError as exc:
+            raise ModuleNotFoundError(
                 "Missing optional package 'pygmo'.\n"
                 "Please install it with 'pip install pyxel-sim[calibration]' "
                 "or 'pip install pyxel-sim[all]'"
@@ -203,8 +203,8 @@ class MyArchipelago:
     ):
         try:
             import pygmo as pg
-        except ImportError as exc:
-            raise ImportError(
+        except ModuleNotFoundError as exc:
+            raise ModuleNotFoundError(
                 "Missing optional package 'pygmo'.\n"
                 "Please install it with 'pip install pyxel-sim[calibration]' "
                 "or 'pip install pyxel-sim[all]'"

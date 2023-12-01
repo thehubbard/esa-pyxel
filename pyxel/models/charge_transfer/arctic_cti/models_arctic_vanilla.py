@@ -23,7 +23,7 @@ try:
     import arcticpy as ac
 
     WITH_ARTICPY = True
-except ImportError:
+except ModuleNotFoundError:
     # No 'arcticpy' library
     WITH_ARTICPY = False
 

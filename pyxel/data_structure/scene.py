@@ -132,8 +132,8 @@ class Scene:
         """
         try:
             from scopesim import Source
-        except ImportError as exc:
-            raise RuntimeError(
+        except ModuleNotFoundError as exc:
+            raise ModuleNotFoundError(
                 "Package 'scopesim' is not installed ! "
                 "Please run command 'pip install scopesim' from the command line."
             ) from exc
