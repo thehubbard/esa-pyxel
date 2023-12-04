@@ -14,7 +14,7 @@ from typing import TYPE_CHECKING, Optional, Union
 import numpy as np
 import pandas as pd
 
-with suppress(ImportError):
+with suppress(ModuleNotFoundError):
     from matplotlib import pyplot as plt
 
 if TYPE_CHECKING:

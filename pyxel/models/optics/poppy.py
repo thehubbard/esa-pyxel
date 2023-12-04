@@ -23,7 +23,7 @@ try:
     import poppy as op
 
     WITH_POPPY: bool = True
-except ImportError:
+except ModuleNotFoundError:
     WITH_POPPY = False
 
 
@@ -360,7 +360,7 @@ def calc_psf(
         Tuple of lists containing the psf and intermediate wavefronts.
     """
     if not WITH_POPPY:
-        raise ImportError(
+        raise ModuleNotFoundError(
             "Missing optional package 'poppy'.\n"
             "Please install it with 'pip install pyxel-sim[model]' "
             "or 'pip install pyxel-sim[all]'"
