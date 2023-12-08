@@ -12,6 +12,8 @@ Pyxel doesn't use SemVer anymore, since most minor releases have at least minor 
 ## UNRELEASED
 
 ### Core
+* Move "intermediate_steps" from data to parent data_tree..
+  (See [!788](https://gitlab.com/esa/pyxel/-/merge_requests/788)).
 
 ### Documentation
 
