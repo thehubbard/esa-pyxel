@@ -20,6 +20,8 @@ Pyxel doesn't use SemVer anymore, since most minor releases have at least minor 
 ### Others
 * Catch exception `ModuleNotFoundError` instead of `ImportError`.
   (See [!789](https://gitlab.com/esa/pyxel/-/merge_requests/789)).
+* Add missing packages in `environment.yml`.
+  (See [!792](https://gitlab.com/esa/pyxel/-/merge_requests/792)).
 
 
 ## 1.13.1 / 2023-11-28
