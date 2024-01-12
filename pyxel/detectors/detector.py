@@ -201,13 +201,30 @@ class Detector:
         """
         import xarray as xr
 
-        ds = xr.Dataset()
         # ds["scene"] = self.scene.to_xarray()
-        ds["photon"] = self.photon.to_xarray()
-        ds["charge"] = self.charge.to_xarray()
-        ds["pixel"] = self.pixel.to_xarray()
-        ds["signal"] = self.signal.to_xarray()
-        ds["image"] = self.image.to_xarray()
+
+        ds = xr.Dataset()
+        for name in ("photon", "charge", "pixel", "signal", "image"):
+            container: Union[Photon, Charge, Pixel, Signal, Image] = getattr(self, name)
+            data_array: xr.DataArray = container.to_xarray()
+
+            # TODO: Special case, this will be fixed in issue #692
+            if name == "charge" and bool((data_array == 0).all()):
+                # No charges
+                continue
+
+            if data_array.ndim != 0:
+                ds[name] = data_array
+        #
+        # array:xr.DataArray = self.photon.to_xarray()
+        # if array.ndim != 0:
+        #     ds['photon'] = array
+        #
+        # ds["photon"] = self.photon.to_xarray()
+        # ds["charge"] = self.charge.to_xarray()
+        # ds["pixel"] = self.pixel.to_xarray()
+        # ds["signal"] = self.signal.to_xarray()
+        # ds["image"] = self.image.to_xarray()
 
         ds.attrs.update({"detector": type(self).__name__, "pyxel version": __version__})
 
