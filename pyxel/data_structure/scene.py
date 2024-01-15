@@ -99,8 +99,6 @@ class Scene:
 
         self.data[f"/list/{key}"] = DataTree(source)
 
-    # TODO: This method will be removed in the future.
-    #       If you want to have a `Source` object, you should use method '.to_scopesim'
     @property
     def data(self) -> DataTree:
         """Get a multi-wavelength object."""
@@ -219,7 +217,24 @@ class Scene:
         Attributes:
             units:    ph / (cm2 nm s)
         """
-        assert len(self.data["/list"]) == 1
-        data: xr.Dataset = self.data["/list/0"].to_dataset()
+        if "list" not in self.data:
+            return xr.Dataset()
 
-        return data
+        scene_dt = self.data["/list"]
+        assert isinstance(scene_dt, DataTree)  # TODO: Improve this
+
+        last_ref: int = 0
+        lst: list[xr.Dataset] = []
+
+        partial_scene: DataTree
+        for partial_scene in scene_dt.values():
+            ds: xr.Dataset = partial_scene.to_dataset()
+
+            num_ref: int = len(ds["ref"])
+            lst.append(ds.assign_coords(ref=range(last_ref, last_ref + num_ref)))
+
+            last_ref += num_ref
+
+        scene: xr.Dataset = xr.concat(lst, dim="ref")
+
+        return scene
