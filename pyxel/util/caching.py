@@ -21,7 +21,7 @@ def get_cache(folder: Optional[str] = None) -> Cache:
 
     if _global_cache is None:
         if folder is None:
-            folder: str = tempfile.gettempdir()
+            folder = tempfile.gettempdir()
 
         _global_cache = Cache(directory=folder)
 
