@@ -34,6 +34,8 @@ Pyxel doesn't use SemVer anymore, since most minor releases have at least minor 
   (See [!765](https://gitlab.com/esa/pyxel/-/merge_requests/765)).
 * Add a caching mechanism with model `load_star_map` from `Scene Generation`.
   (See [!798](https://gitlab.com/esa/pyxel/-/merge_requests/798)).
+* Add model "load_PSF_wavelength".
+  (See [!686](https://gitlab.com/esa/pyxel/-/merge_requests/686)).
 
 ### Others
 * Catch exception `ModuleNotFoundError` instead of `ImportError`.
