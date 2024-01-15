@@ -215,8 +215,15 @@ class Detector:
         # ds["scene"] = self.scene.to_xarray()
 
         ds = xr.Dataset()
-        for name in ("photon", "charge", "pixel", "signal", "image"):
-            container: Union[Photon, Charge, Pixel, Signal, Image] = getattr(self, name)
+        for name in ("photon", "photon3d", "charge", "pixel", "signal", "image"):
+            container: Union[
+                Photon,
+                Photon3D,
+                Charge,
+                Pixel,
+                Signal,
+                Image,
+            ] = getattr(self, name)
             data_array: xr.DataArray = container.to_xarray()
 
             # TODO: Special case, this will be fixed in issue #692
