@@ -1,4 +1,4 @@
-#  Copyright (c) European Space Agency, 2017, 2018, 2019, 2020, 2021, 2022.
+#  Copyright (c) European Space Agency, 2017.
 #
 #  This file is subject to the terms and conditions defined in file 'LICENCE.txt', which
 #  is part of this Pyxel package. No part of the package, including
@@ -21,6 +21,7 @@ from .timing import time_pipeline
 from .add_model import create_model
 from .randomize import set_random_seed
 from .image import fit_into_array, load_cropped_and_aligned_image
+from .caching import get_cache
 
 __all__ = [
     "convert_to_int",

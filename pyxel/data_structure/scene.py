@@ -1,4 +1,4 @@
-#  Copyright (c) European Space Agency, 2017, 2018, 2019, 2020, 2021, 2022.
+#  Copyright (c) European Space Agency, 2017.
 #
 #  This file is subject to the terms and conditions defined in file 'LICENCE.txt', which
 #  is part of this Pyxel package. No part of the package, including
@@ -18,7 +18,11 @@ if TYPE_CHECKING:
 
 
 class Scene:
-    """Scene class defining and storing information of all multi-wavelength photon."""
+    """Scene class defining and storing information of all multi-wavelength photons.
+
+    Multi-wavelength photon information are store in form of xarray Datasets
+    within a hierarchical structure.
+    """
 
     def __init__(self):
         self._source: DataTree = DataTree(name="scene")
@@ -44,7 +48,7 @@ class Scene:
         --------
         >>> from pyxel.detectors import CCD
         >>> detector = CCD(...)
-        >>> detector._initialize()
+        >>> detector.initialize()
 
         >>> source
         <xarray.Dataset>
@@ -99,15 +103,13 @@ class Scene:
 
         self.data[f"/list/{key}"] = DataTree(source)
 
-    # TODO: This method will be removed in the future.
-    #       If you want to have a `Source` object, you should use method '.to_scopesim'
     @property
     def data(self) -> DataTree:
         """Get a multi-wavelength object."""
         return self._source
 
     def empty(self):
-        """Create a new source."""
+        """Create a new empty source."""
         self._source = DataTree(name="scene")
 
     def from_scopesim(self, source: "Source") -> None:
@@ -132,8 +134,8 @@ class Scene:
         """
         try:
             from scopesim import Source
-        except ImportError as exc:
-            raise RuntimeError(
+        except ModuleNotFoundError as exc:
+            raise ModuleNotFoundError(
                 "Package 'scopesim' is not installed ! "
                 "Please run command 'pip install scopesim' from the command line."
             ) from exc
@@ -219,7 +221,24 @@ class Scene:
         Attributes:
             units:    ph / (cm2 nm s)
         """
-        assert len(self.data["/list"]) == 1
-        data: xr.Dataset = self.data["/list/0"].to_dataset()
+        if "list" not in self.data:
+            return xr.Dataset()
 
-        return data
+        scene_dt = self.data["/list"]
+        assert isinstance(scene_dt, DataTree)  # TODO: Improve this
+
+        last_ref: int = 0
+        lst: list[xr.Dataset] = []
+
+        partial_scene: DataTree
+        for partial_scene in scene_dt.values():
+            ds: xr.Dataset = partial_scene.to_dataset()
+
+            num_ref: int = len(ds["ref"])
+            lst.append(ds.assign_coords(ref=range(last_ref, last_ref + num_ref)))
+
+            last_ref += num_ref
+
+        scene: xr.Dataset = xr.concat(lst, dim="ref")
+
+        return scene

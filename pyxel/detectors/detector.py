@@ -1,4 +1,4 @@
-#  Copyright (c) European Space Agency, 2017, 2018, 2019, 2020, 2021, 2022.
+#  Copyright (c) European Space Agency, 2017.
 #
 #  This file is subject to the terms and conditions defined in file 'LICENCE.txt', which
 #  is part of this Pyxel package. No part of the package, including
@@ -53,6 +53,8 @@ class Detector:
         self._signal: Optional[Signal] = None
         self._image: Optional[Image] = None
         self._data: Optional[DataTree] = None
+
+        self._intermediate: Optional[DataTree] = None
 
         # This will be the memory of the detector where trapped charges will be saved
         self._memory: dict = {}
@@ -180,6 +182,14 @@ class Detector:
 
         return self._data
 
+    @property
+    def intermediate(self) -> "DataTree":
+        """TBW."""
+        if self._intermediate is None:
+            raise RuntimeError("'intermediate' not initialized.")
+
+        return self._intermediate
+
     def to_xarray(self) -> "xr.Dataset":
         """Create a new ``Dataset`` from all data containers.
 
@@ -202,13 +212,30 @@ class Detector:
         """
         import xarray as xr
 
-        ds = xr.Dataset()
         # ds["scene"] = self.scene.to_xarray()
-        ds["photon"] = self.photon.to_xarray()
-        ds["charge"] = self.charge.to_xarray()
-        ds["pixel"] = self.pixel.to_xarray()
-        ds["signal"] = self.signal.to_xarray()
-        ds["image"] = self.image.to_xarray()
+
+        ds = xr.Dataset()
+        for name in ("photon", "charge", "pixel", "signal", "image"):
+            container: Union[Photon, Charge, Pixel, Signal, Image] = getattr(self, name)
+            data_array: xr.DataArray = container.to_xarray()
+
+            # TODO: Special case, this will be fixed in issue #692
+            if name == "charge" and bool((data_array == 0).all()):
+                # No charges
+                continue
+
+            if data_array.ndim != 0:
+                ds[name] = data_array
+        #
+        # array:xr.DataArray = self.photon.to_xarray()
+        # if array.ndim != 0:
+        #     ds['photon'] = array
+        #
+        # ds["photon"] = self.photon.to_xarray()
+        # ds["charge"] = self.charge.to_xarray()
+        # ds["pixel"] = self.pixel.to_xarray()
+        # ds["signal"] = self.signal.to_xarray()
+        # ds["image"] = self.image.to_xarray()
 
         ds.attrs.update({"detector": type(self).__name__, "pyxel version": __version__})
 

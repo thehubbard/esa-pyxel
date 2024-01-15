@@ -1,4 +1,4 @@
-#  Copyright (c) European Space Agency, 2017, 2018, 2019, 2020, 2021, 2022.
+#  Copyright (c) European Space Agency, 2017.
 #
 #  This file is subject to the terms and conditions defined in file 'LICENCE.txt', which
 #  is part of this Pyxel package. No part of the package, including
@@ -26,7 +26,12 @@ if TYPE_CHECKING:
 
 
 class Charge:
-    """TBW."""
+    """Charge class representing charge distribution.
+
+    This class manipulates charge data in the form of a Numpy array
+    and Pandas dataframe.
+
+    """
 
     EXP_TYPE = float
     TYPE_LIST = (

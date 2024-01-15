@@ -34,7 +34,7 @@ keywords = ["ESA", "data modeling", "sensors", "calibration", "CCD",
 dependencies = [
     # Scientific computing
     "numba",
-    "numpy>=1.21",
+    "numpy>=1.21,<2",
     "pandas",
     "scipy",
     "xarray>=2022.06",
@@ -76,6 +76,7 @@ dependencies = [
     "astroquery",
     "specutils",
     "synphot",
+    "diskcache",
 ]
 dynamic = ["version"]
 
@@ -160,6 +161,7 @@ module = [
     "cloudpickle.*",
     "dask.*",
     "distributed.*",
+    "diskcache.*",
     "fsspec.*",
     "jsonschema.*",
     "h5py.*",
@@ -202,7 +204,9 @@ addopts = [
     "-vv",
     "--ignore=old_code"
 ]
-
+markers = [
+    "deprecated: marks tests as deprecated (deselect with '-m \"not deprecated\"')",
+]
 [tool.pydocstyle]
 convention = "numpy"
 match = "(?!_version).*.py"

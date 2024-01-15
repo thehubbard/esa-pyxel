@@ -16,16 +16,39 @@ Pyxel doesn't use SemVer anymore, since most minor releases have at least minor 
   (See [!673](https://gitlab.com/esa/pyxel/-/merge_requests/673)).
 * Add 'Photon3D' as an output of function 'pyxel.run_mode'.
   (See [!766](https://gitlab.com/esa/pyxel/-/merge_requests/766)).
+* Move "intermediate_steps" from data to parent data_tree..
+  (See [!788](https://gitlab.com/esa/pyxel/-/merge_requests/788)).
+* Improved method `Detector.to_xarray()`.
+  (See [!787](https://gitlab.com/esa/pyxel/-/merge_requests/787)).
+* Improved method `Scene.to_xarray()`.
+  (See [!799](https://gitlab.com/esa/pyxel/-/merge_requests/799)).
 
 ### Documentation
+* Add documentation for `Detector.scene`.
+  (See [!800](https://gitlab.com/esa/pyxel/-/merge_requests/800)).
 
 ### Models
 * Add model that converts 3D scene to 3D photon.
   (See [!674](https://gitlab.com/esa/pyxel/-/merge_requests/674)).
 * Implement a wavelength-dependancy for the QE map.
   (See [!765](https://gitlab.com/esa/pyxel/-/merge_requests/765)).
+* Add a caching mechanism with model `load_star_map` from `Scene Generation`.
+  (See [!798](https://gitlab.com/esa/pyxel/-/merge_requests/798)).
 
 ### Others
+* Catch exception `ModuleNotFoundError` instead of `ImportError`.
+  (See [!789](https://gitlab.com/esa/pyxel/-/merge_requests/789)).
+* Refactor functions in `state.py`.
+  (See [!790](https://gitlab.com/esa/pyxel/-/merge_requests/790)).
+* Add missing packages in `environment.yml`.
+  (See [!792](https://gitlab.com/esa/pyxel/-/merge_requests/792)).
+* Fix for Xarray 2023.12.0.
+  (See [!793](https://gitlab.com/esa/pyxel/-/merge_requests/793)).
+* Prepare for Numpy 2.
+  (See [!795](https://gitlab.com/esa/pyxel/-/merge_requests/795)).
+* Parameter `with_intermediate_steps` is not optional in function `run_pipeline`.
+  (See [!794](https://gitlab.com/esa/pyxel/-/merge_requests/794)).
+
 
 ## 1.13.1 / 2023-11-28
 This release brings a number of bugfixes and improvements.
