@@ -763,12 +763,10 @@ def run_mode(
                     Attributes:
                         long_name:  Group: 'simple_adc'
     """
-    from pyxel.calibration import Calibration
 
-    if debug and isinstance(mode, (Observation, Calibration)):
+    if debug and not isinstance(mode, Exposure):
         raise NotImplementedError(
-            "Parameter 'debug' is not implemented for 'Observation'"
-            " and 'Calibration' modes."
+            "Parameter 'debug' is only implemented for 'Exposure' mode."
         )
 
     if isinstance(mode, Exposure):
@@ -786,15 +784,19 @@ def run_mode(
             pipeline=pipeline,
         )
 
-    elif isinstance(mode, Calibration):
-        data_tree = _run_calibration_mode(
-            calibration=mode,
-            detector=detector,
-            pipeline=pipeline,
-        )
-
     else:
-        raise TypeError("Please provide a valid simulation mode !")
+        # Late import.
+        # Importing 'Calibration' can take up to 3 s !
+        from pyxel.calibration import Calibration
+
+        if isinstance(mode, Calibration):
+            data_tree = _run_calibration_mode(
+                calibration=mode,
+                detector=detector,
+                pipeline=pipeline,
+            )
+        else:
+            raise TypeError("Please provide a valid simulation mode !")
 
     return data_tree
 
