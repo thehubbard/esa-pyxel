@@ -20,6 +20,8 @@ Pyxel doesn't use SemVer anymore, since most minor releases have at least minor 
 ### Documentation
 
 ### Models
+* Add a caching mechanism with model `load_star_map` from `Scene Generation`.
+  (See [!798](https://gitlab.com/esa/pyxel/-/merge_requests/798)).
 
 ### Others
 * Catch exception `ModuleNotFoundError` instead of `ImportError`.

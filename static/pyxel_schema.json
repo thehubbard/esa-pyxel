@@ -6487,6 +6487,12 @@
               "description": "RA coordinate in degree.",
               "title": "right_ascension",
               "type": "number"
+            },
+            "with_caching": {
+              "default": true,
+              "description": "Enable/Disable caching request to GAIA catalog.",
+              "title": "with_caching",
+              "type": "boolean"
             }
           },
           "required": [

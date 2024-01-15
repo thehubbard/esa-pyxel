@@ -10,7 +10,7 @@
 import warnings
 from collections.abc import Sequence
 from enum import Enum
-from typing import TYPE_CHECKING, Literal
+from typing import TYPE_CHECKING, Callable, Literal
 
 import astropy.units as u
 import numpy as np
@@ -20,6 +20,7 @@ from astroquery.gaia import Gaia
 from specutils import Spectrum1D
 from synphot import SourceSpectrum
 
+from pyxel import util
 from pyxel.detectors import Detector
 
 warnings.filterwarnings("ignore")
@@ -510,6 +511,7 @@ def load_star_map(
     declination: float,
     fov_radius: float,
     band: Literal["blue_photometer", "gaia_band", "red_photometer"] = "blue_photometer",
+    with_caching: bool = True,
 ):
     """Generate scene from scopesim Source object loading stars from the GAIA catalog.
 
@@ -528,10 +530,18 @@ def load_star_map(
         * 'blue_photometer' is the band from 330 nm to 680 nm
         * 'gaia_band' is the band from 330 nm to 1050 nm
         * 'red_photometer' is the band from 640 nm to 1050 nm
+    with_caching : bool
+        Enable/Disable caching request to GAIA catalog.
     """
     band_pass: GaiaPassBand = GaiaPassBand(band)
 
-    ds: xr.Dataset = load_objects_from_gaia(
+    if not with_caching:
+        func: Callable = load_objects_from_gaia
+    else:
+        cache = util.get_cache()
+        func = cache.memoize()(load_objects_from_gaia)
+
+    ds: xr.Dataset = func(
         right_ascension=right_ascension,
         declination=declination,
         fov_radius=fov_radius,
