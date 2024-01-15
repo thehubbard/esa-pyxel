@@ -220,14 +220,15 @@ class Scene:
         if "list" not in self.data:
             return xr.Dataset()
 
-        scene_dt: DataTree = self.data["/list"]
+        scene_dt = self.data["/list"]
+        assert isinstance(scene_dt, DataTree)  # TODO: Improve this
 
         last_ref: int = 0
         lst: list[xr.Dataset] = []
 
-        scene: DataTree
-        for scene in scene_dt.values():
-            ds: xr.Dataset = scene.to_dataset()
+        partial_scene: DataTree
+        for partial_scene in scene_dt.values():
+            ds: xr.Dataset = partial_scene.to_dataset()
 
             num_ref: int = len(ds["ref"])
             lst.append(ds.assign_coords(ref=range(last_ref, last_ref + num_ref)))
