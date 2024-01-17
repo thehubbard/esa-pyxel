@@ -25,7 +25,7 @@ from pyxel.detectors import APD, CCD, CMOS, MKID, Detector
 from pyxel.exposure import Exposure
 from pyxel.observation import Observation, ObservationResult
 from pyxel.pipelines import DetectionPipeline, Processor
-from pyxel.util import create_model, deprecated, download_examples
+from pyxel.util import create_model, download_examples
 
 if TYPE_CHECKING:
     import xarray as xr
@@ -35,11 +35,6 @@ if TYPE_CHECKING:
     from pyxel.outputs import CalibrationOutputs, ExposureOutputs, ObservationOutputs
 
 
-# TODO: This function will be deprecated (see #563)
-@deprecated(
-    "Model 'pyxel.models.optics.load_psf' is deprecated and will be removed in version"
-    " 2. Use model 'pyxel.models.photon_collection.stripe_pattern' instead."
-)
 def exposure_mode(
     exposure: "Exposure",
     detector: Detector,
@@ -47,8 +42,8 @@ def exposure_mode(
 ) -> "xr.Dataset":
     """Run an 'exposure' pipeline.
 
-    .. deprecated:: 1.8.0
-        `exposure_mode` will be removed in pyxel 2.0.0, it is replaced by `run_mode`.
+    .. deprecated:: 1.14
+        `exposure_mode` will be removed in pyxel 2.0.0, it is replaced by `pyxel.run_mode`.
 
     For more information, see :ref:`exposure_mode`.
 
@@ -188,7 +183,6 @@ def _run_exposure_mode(
     return result
 
 
-# TODO: This function will be deprecated (see #563)
 def observation_mode(
     observation: "Observation",
     detector: Detector,
@@ -196,8 +190,8 @@ def observation_mode(
 ) -> "ObservationResult":
     """Run an 'observation' pipeline.
 
-    .. deprecated:: 1.8.0
-        `observation_mode` will be removed in pyxel 2.0.0, it is replaced by `run_mode`.
+    .. deprecated:: 1.14
+        `observation_mode` will be removed in pyxel 2.0.0, it is replaced by `pyxel.run_mode`.
 
     For more information, see :ref:`observation_mode`.
 
@@ -252,7 +246,6 @@ def observation_mode(
     return result
 
 
-# TODO: This function will be deprecated (see #563)
 def calibration_mode(
     calibration: "Calibration",
     detector: Detector,
@@ -261,8 +254,8 @@ def calibration_mode(
 ) -> tuple["xr.Dataset", pd.DataFrame, pd.DataFrame, Sequence]:
     """Run a 'calibration' pipeline.
 
-    .. deprecated:: 1.8.0
-        `calibration_mode` will be removed in pyxel 2.0.0, it is replaced by `run_mode`.
+    .. deprecated:: 1.14
+        `calibration_mode` will be removed in pyxel 2.0.0, it is replaced by `pyxel.run_mode`.
 
     For more information, see :ref:`calibration_mode`.
 

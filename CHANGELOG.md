@@ -19,7 +19,8 @@ Pyxel doesn't use SemVer anymore, since most minor releases have at least minor 
 * Improved method `Scene.to_xarray()`.
   (See [!799](https://gitlab.com/esa/pyxel/-/merge_requests/799)).
 * Added deprecated warnings to `pyxel.calibdation_mode()`, `pyxel.exposure_mode()`, `pyxel.observation_mode()`.
-  (See [!802](https://gitlab.com/esa/pyxel/-/merge_requests/802)).
+  (See [!802](https://gitlab.com/esa/pyxel/-/merge_requests/802)
+  and [!804](https://gitlab.com/esa/pyxel/-/merge_requests/804)).
 
 ### Documentation
 * Add documentation for `Detector.scene`.

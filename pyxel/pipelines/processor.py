@@ -8,6 +8,7 @@
 """TBW."""
 import logging
 import operator
+import warnings
 from collections.abc import Sequence
 from copy import deepcopy
 from numbers import Number
@@ -300,7 +301,6 @@ class Processor:
         """Set result."""
         self._result = result_to_save
 
-    # TODO: This function will be deprecated (see #563)
     # TODO: Refactor '.result'. See #524
     def result_to_dataset(
         self,
@@ -310,6 +310,10 @@ class Processor:
         result_type: ResultId,
     ) -> "xr.Dataset":
         """Return the result in a xarray dataset."""
+        warnings.warn(
+            "Deprecated. Will be removed in Pyxel 2.0", DeprecationWarning, stacklevel=1
+        )
+
         # Late import to speedup start-up time
         import xarray as xr
 
