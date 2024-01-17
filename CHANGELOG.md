@@ -9,7 +9,12 @@ Minor releases include updated stdlib stubs from typeshed.
 
 Pyxel doesn't use SemVer anymore, since most minor releases have at least minor backward incompatible changes.
 
-## UNRELEASED
+## 1.14 / 2024-01-19
+This release brings a number of bugfixes and improvements.
+
+The functions `pyxel.exposure_mode(...)`, `pyxel.observation_mode(...)` and `pyxel.calibration_mode(...)`
+are deprecated and will be removed in Pyxel 2.0.
+These functions are replaced by `pyxel.run_mode(...)`
 
 ### Core
 * Move "intermediate_steps" from data to parent data_tree.
