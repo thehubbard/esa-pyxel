@@ -340,12 +340,16 @@ class Observation:
         index: int
         parameter_dict: dict
         """
+        index = 0
+
         step: ParameterValues
         for step in self.enabled_steps:
             key: str = step.key
-            for index, value in enumerate(step):
+            for value in step:
                 parameter_dict: ParametersType = {key: value}
                 yield index, parameter_dict
+
+                index += 1
 
     def _product_indices(self) -> Iterator[tuple]:
         """Return an iterator of product parameter indices.
