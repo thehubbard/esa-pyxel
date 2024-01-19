@@ -12,13 +12,13 @@ Pyxel doesn't use SemVer anymore, since most minor releases have at least minor 
 ## UNRELEASED
 
 ### Core
-* Move "intermediate_steps" from data to parent data_tree..
+* Move "intermediate_steps" from data to parent data_tree.
   (See [!788](https://gitlab.com/esa/pyxel/-/merge_requests/788)).
 * Improved method `Detector.to_xarray()`.
   (See [!787](https://gitlab.com/esa/pyxel/-/merge_requests/787)).
 * Improved method `Scene.to_xarray()`.
   (See [!799](https://gitlab.com/esa/pyxel/-/merge_requests/799)).
-* Added deprecated warnings to `pyxel.calibdation_mode()`, `pyxel.exposure_mode()`, `pyxel.observation_mode()`.
+* Added deprecated warnings to `pyxel.calibration_mode()`, `pyxel.exposure_mode()`, `pyxel.observation_mode()`.
   (See [!802](https://gitlab.com/esa/pyxel/-/merge_requests/802)
   and [!804](https://gitlab.com/esa/pyxel/-/merge_requests/804)).
 
@@ -51,6 +51,8 @@ Pyxel doesn't use SemVer anymore, since most minor releases have at least minor 
   (See [!805](https://gitlab.com/esa/pyxel/-/merge_requests/805)).
 * Speedup function `run_mode`.
   (See [!806](https://gitlab.com/esa/pyxel/-/merge_requests/806)).
+* Improved some error messages.
+  (See [!810](https://gitlab.com/esa/pyxel/-/merge_requests/810)).
 
 
 ## 1.13.1 / 2023-11-28
