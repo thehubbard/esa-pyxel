@@ -122,7 +122,7 @@ master_doc = "index"
 
 # General information about the project.
 project = pyxel_metadata["Name"]
-copyright = f"2017-{now_dt:%Y}, European Space Agency"
+copyright = f"2020-{now_dt:%Y}, European Space Agency"
 author = "Pyxel Developers"
 
 # The version info for the project you're documenting, acts as replacement for
