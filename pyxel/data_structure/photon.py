@@ -54,8 +54,6 @@ class Photon:
         np.dtype(np.float32),
         np.dtype(np.float64),
     )
-    # NAME = "Photon"
-    # UNIT = "Ph"
 
     def __init__(self, geo: "Geometry"):
         self._array_2d: Optional[np.ndarray] = None
@@ -90,15 +88,15 @@ class Photon:
             and xr.DataArray.equals(self._array_3d, other._array_3d)
         )
 
-    def __array__(self, dtype: Optional[np.dtype] = None):
+    def __array__(self, dtype: Optional[np.dtype] = None) -> np.ndarray:
         if self._array_2d is None and self._array_3d is None:
-            return ValueError("Not initialized")
+            raise ValueError("Not initialized")
         elif self._array_2d is not None:
             return np.asarray(self._array_2d, dtype=dtype)
         elif self._array_3d is not None:
             return np.array(self._array_3d, dtype=dtype)
         else:
-            return NotImplementedError
+            raise NotImplementedError
 
     def __iadd__(self, other: np.ndarray):
         if not isinstance(other, np.ndarray):
@@ -202,6 +200,8 @@ class Photon:
         """
         cls_name: str = self.__class__.__name__
 
+        assert self._array_3d is None
+
         if not isinstance(value, np.ndarray):
             raise TypeError(f"{cls_name} array should be a numpy.ndarray")
 
@@ -227,10 +227,14 @@ class Photon:
 
     @property
     def array_3d(self) -> xr.DataArray:
-        raise NotImplementedError
+        assert self._array_3d is not None
+
+        return self._array_3d
 
     @array_3d.setter
     def array_3d(self, value: xr.DataArray) -> None:
+        assert self._array_2d is None
+
         if not isinstance(value, xr.DataArray):
             raise TypeError("Expecting a 'DataArray'.")
 
