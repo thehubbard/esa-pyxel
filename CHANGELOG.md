@@ -53,6 +53,9 @@ Pyxel doesn't use SemVer anymore, since most minor releases have at least minor 
   (See [!806](https://gitlab.com/esa/pyxel/-/merge_requests/806)).
 * Improved some error messages.
   (See [!810](https://gitlab.com/esa/pyxel/-/merge_requests/810)).
+* Year correction in ESA copyright.
+  (See [!796](https://gitlab.com/esa/pyxel/-/merge_requests/796)
+  and [!811](https://gitlab.com/esa/pyxel/-/merge_requests/811)).
 
 
 ## 1.13.1 / 2023-11-28
