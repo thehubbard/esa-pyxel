@@ -1,4 +1,4 @@
-#  Copyright (c) European Space Agency, 2017.
+#  Copyright (c) European Space Agency, 2020.
 #
 #  This file is subject to the terms and conditions defined in file 'LICENCE.txt', which
 #  is part of this Pyxel package. No part of the package, including
@@ -9,6 +9,7 @@
 """TBW."""
 
 import operator
+import warnings
 from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Optional, Protocol, Union
@@ -64,7 +65,6 @@ class ObservationOutputs(Outputs):
             Sequence[Mapping[str, Sequence[str]]]
         ] = save_observation_data
 
-    # TODO: This function will be deprecated (see #563)
     def save_observation_datasets(
         self, result: "ObservationResult", mode: "ParameterMode"
     ) -> None:
@@ -75,6 +75,9 @@ class ObservationOutputs(Outputs):
         result: Result
         mode: ParameterMode
         """
+        warnings.warn(
+            "Deprecated. Will be removed in Pyxel 2.0", DeprecationWarning, stacklevel=1
+        )
 
         dataset_names = ("dataset", "parameters", "logs")
 

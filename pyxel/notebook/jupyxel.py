@@ -1,4 +1,4 @@
-#  Copyright (c) European Space Agency, 2017.
+#  Copyright (c) European Space Agency, 2020.
 #
 #  This file is subject to the terms and conditions defined in file 'LICENCE.txt', which
 #  is part of this Pyxel package. No part of the package, including
@@ -45,7 +45,7 @@ def display_config(configuration: "Configuration", only: str = "all") -> None:
         if cfg[key] is None:
             pass
         elif (only not in cfg) & (only != "all"):
-            error = "Config file only contains following keys: " + str(cfg.keys())
+            error = "Config file only contains following keys: " + str(list(cfg))
             display(Markdown(f"<font color=red> {error} </font>"))
             break
         elif (only == key) & (only != "all"):

@@ -1,4 +1,4 @@
-#  Copyright (c) European Space Agency, 2017.
+#  Copyright (c) European Space Agency, 2020.
 #
 #  This file is subject to the terms and conditions defined in file 'LICENCE.txt', which
 #  is part of this Pyxel package. No part of the package, including
@@ -32,7 +32,7 @@ class Pixel(Array):
         np.dtype(np.float64),
     )
     NAME = "Pixel"
-    UNIT = "$e^{-1}$"
+    UNIT = "e⁻"
 
     def __init__(self, geo: "Geometry"):
         super().__init__(shape=(geo.row, geo.col))

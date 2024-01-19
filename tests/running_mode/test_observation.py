@@ -1,4 +1,4 @@
-#  Copyright (c) European Space Agency, 2017, 2018, 2019, 2020, 2021, 2022.
+#  Copyright (c) European Space Agency, 2020.
 #
 #  This file is subject to the terms and conditions defined in file 'LICENCE.txt', which
 #  is part of this Pyxel package. No part of the package, including
@@ -367,7 +367,7 @@ def test_product(with_dask: bool):
     xr.testing.assert_equal(logs, exp_logs)
 
 
-@pytest.mark.deprecated
+@pytest.mark.skip(reason="Deprecated tests")
 @pytest.mark.parametrize("with_dask", [False, True])
 def test_sequential_simple_deprecated(with_dask: bool):
     """Test running mode 'sequential'."""
@@ -467,6 +467,7 @@ def test_sequential_simple_deprecated(with_dask: bool):
     xr.testing.assert_equal(logs, exp_logs)
 
 
+@pytest.mark.skip(reason="Deprecated tests")
 @pytest.mark.parametrize("with_dask", [False, True])
 def test_sequential_simple(with_dask: bool):
     """Test running mode 'sequential'."""

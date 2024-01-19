@@ -1,4 +1,4 @@
-#  Copyright (c) European Space Agency, 2017.
+#  Copyright (c) European Space Agency, 2020.
 #
 #  This file is subject to the terms and conditions defined in file 'LICENCE.txt', which
 #  is part of this Pyxel package. No part of the package, including
@@ -107,7 +107,9 @@ def elliptic(
         if not (
             (0 <= object_center[0] <= shape[0]) and (0 <= object_center[1] <= shape[1])
         ):
-            raise ValueError('Argument "object_center" should be inside Photon array.')
+            raise ValueError(
+                f"Argument 'object_center' should be inside Photon array. {object_center=}, {shape=}"
+            )
     else:
         object_center = [int(shape[0] / 2), int(shape[1] / 2)]
     y, x = np.ogrid[: shape[0], : shape[1]]

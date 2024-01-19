@@ -1,4 +1,4 @@
-#  Copyright (c) European Space Agency, 2017.
+#  Copyright (c) European Space Agency, 2020.
 #
 #  This file is subject to the terms and conditions defined in file 'LICENCE.txt', which
 #  is part of this Pyxel package. No part of the package, including
@@ -76,6 +76,6 @@ class Photon(Array):
             warnings.warn(
                 "Trying to set negative values in the Photon array! Negative values"
                 " clipped to 0.",
-                stacklevel=2,
+                stacklevel=4,
             )
         super()._validate(value)
