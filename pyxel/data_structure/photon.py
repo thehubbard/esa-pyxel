@@ -8,39 +8,16 @@
 """Pyxel Photon class to generate and track photon."""
 
 import warnings
-from collections.abc import Mapping
-from typing import TYPE_CHECKING, Any, Optional, Self
+from collections.abc import Hashable, Mapping
+from typing import TYPE_CHECKING, Any, Optional, Self, Union
 
 import numpy as np
 import xarray as xr
-from typing_extensions import TypeGuard
 
 from pyxel.util import convert_unit, get_size
 
 if TYPE_CHECKING:
     from pyxel.detectors import Geometry
-
-
-def _is_array_initialized(data: Optional[np.ndarray]) -> TypeGuard[np.ndarray]:
-    """Check whether the parameter data is a numpy array.
-
-    Parameters
-    ----------
-    data : array, Optional
-        An optional numpy array.
-
-    Returns
-    -------
-    bool
-        A boolean value indicating whether the array is initialized (not None).
-
-    Notes
-    -----
-    This function uses special `typing.TypeGuard`.
-    This technique is used by static type checkers to narrow type of 'data'.
-    For more information, see https://docs.python.org/3/library/typing.html#typing.TypeGuard
-    """
-    return data is not None
 
 
 class Photon:
@@ -56,22 +33,22 @@ class Photon:
     )
 
     def __init__(self, geo: "Geometry"):
-        self._array_2d: Optional[np.ndarray] = None
-        self._array_3d: Optional[xr.DataArray] = None
+        self._array: Union[np.ndarray, xr.DataArray, None] = None
 
-        self._shape_2d = geo.row, geo.col
+        self._num_rows: int = geo.row
+        self._num_cols: int = geo.col
 
     def __repr__(self) -> str:
         cls_name = self.__class__.__name__
 
-        if self._array_2d is None and self._array_3d is None:
+        if self._array is None:
             return f"{cls_name}<UNINITIALIZED, shape={self.shape}>"
 
-        elif self._array_2d is not None and self._array_3d is None:
+        elif isinstance(self._array, np.ndarray):
             return f"{cls_name}<shape={self.shape}, dtype={self.dtype}>"
 
-        elif self._array_2d is None and self._array_3d is not None:
-            dct = self._array_3d.sizes
+        elif isinstance(self._array, xr.DataArray):
+            dct = self._array.sizes
             result = ", ".join([f"{key}: {value}" for key, value in dct.items()])
             return f"{cls_name}<{result:s}>"
 
@@ -79,43 +56,50 @@ class Photon:
             raise NotImplementedError
 
     def __eq__(self, other) -> bool:
-        return (
-            type(self) is type(other)
-            and (
-                self._array_2d is not None
-                and np.array_equal(self._array_2d, other._array_2d)
-            )
-            and xr.DataArray.equals(self._array_3d, other._array_3d)
-        )
+        if type(self) is not type(other):
+            return False
+
+        if self._array is None and other._array is None:
+            return True
+
+        if isinstance(self._array, np.ndarray):
+            return np.array_equal(self._array, other._array)
+
+        if isinstance(self._array, xr.DataArray):
+            return self._array.equals(other._array)
+
+        return False
 
     def __array__(self, dtype: Optional[np.dtype] = None) -> np.ndarray:
-        if self._array_2d is None and self._array_3d is None:
+        if self._array is None:
             raise ValueError("Not initialized")
-        elif self._array_2d is not None:
-            return np.asarray(self._array_2d, dtype=dtype)
-        elif self._array_3d is not None:
-            return np.array(self._array_3d, dtype=dtype)
-        else:
-            raise NotImplementedError
 
-    def __iadd__(self, other: np.ndarray):
-        if not isinstance(other, np.ndarray):
-            raise TypeError
+        return np.asarray(self._array, dtype=dtype)
 
-        if self._array_2d is not None:
-            self._array_2d += other
+    def __iadd__(self, other: Union[np.ndarray, xr.DataArray]) -> Self:
+        if isinstance(other, np.ndarray) and isinstance(self._array, xr.DataArray):
+            raise TypeError("Must be a DataArray")
+
+        if isinstance(other, xr.DataArray) and isinstance(self._array, np.ndarray):
+            raise TypeError("Must be a numpy array")
+
+        if self._array is not None:
+            self._array += other
         else:
-            self._array_2d = other
+            self._array = other
         return self
 
-    def __add__(self, other: np.ndarray):
-        if not isinstance(other, np.ndarray):
-            raise TypeError
+    def __add__(self, other: Union[np.ndarray, xr.DataArray]) -> Self:
+        if isinstance(other, np.ndarray) and isinstance(self._array, xr.DataArray):
+            raise TypeError("Must be a DataArray")
 
-        if self._array_2d is not None:
-            self._array_2d += other
+        if isinstance(other, xr.DataArray) and isinstance(self._array, np.ndarray):
+            raise TypeError("Must be a numpy array")
+
+        if self._array is not None:
+            self._array += other
         else:
-            self._array_2d = other
+            self._array = other
         return self
 
     def _get_uninitialized_error_message(self) -> str:
@@ -151,14 +135,10 @@ class Photon:
 
     @property
     def shape(self) -> tuple[int, ...]:
-        if self._array_2d is None and self._array_3d is None:
+        if self._array is None:
             return tuple()
-        elif self._array_2d is not None:
-            return self._array_2d.shape
-        elif self._array_3d is not None:
-            return self._array_3d.shape
-        else:
-            raise NotImplementedError
+
+        return self._array.shape
 
     @property
     def ndim(self) -> int:
@@ -166,17 +146,13 @@ class Photon:
 
     @property
     def dtype(self) -> np.dtype:
-        if self._array_2d is None and self._array_3d is None:
+        if self._array is None:
             raise ValueError("Not initialized")
-        elif self._array_2d is not None:
-            return self._array_2d.dtype
-        elif self._array_3d is not None:
-            return self._array_3d.dtype
-        else:
-            raise NotImplementedError
+
+        return self._array.dtype
 
     @property
-    def array(self) -> np.ndarray:
+    def array(self) -> Union[np.ndarray, xr.DataArray]:
         """Two-dimensional numpy array storing the data.
 
         Only accepts an array with the right type and shape.
@@ -186,36 +162,64 @@ class Photon:
         ValueError
             Raised if 'array' is not initialized.
         """
-        if not _is_array_initialized(self._array_2d):
+        if self._array is None:
             msg: str = self._get_uninitialized_error_message()
             raise ValueError(msg)
 
-        return self._array_2d
+        return self._array
 
     @array.setter
-    def array(self, value: np.ndarray) -> None:
+    def array(self, value: Union[np.ndarray, xr.DataArray]) -> None:
         """Overwrite the two-dimensional numpy array storing the data.
 
         Only accepts an array with the right type and shape.
         """
         cls_name: str = self.__class__.__name__
 
-        assert self._array_3d is None
-
-        if not isinstance(value, np.ndarray):
-            raise TypeError(f"{cls_name} array should be a numpy.ndarray")
+        if not isinstance(value, (np.ndarray, xr.DataArray)):
+            raise TypeError(f"{cls_name} array must be a numpy.ndarray or xr.DataArray")
 
         if value.dtype not in self.TYPE_LIST:
-            raise TypeError(
-                f"Expected types of {cls_name} array are "
-                f"{', '.join(map(str, self.TYPE_LIST))}."
+            raise ValueError(
+                f"{cls_name} array 'dtype' must be one of these values: "
+                f"{', '.join(map(str, self.TYPE_LIST))}. Got {value.dtype!r}"
             )
 
-        if value.shape != self._shape_2d:
-            raise ValueError(f"Expected {cls_name} array is {self._shape_2d}.")
+        if isinstance(value, np.ndarray):
+            if value.ndim != 2:
+                raise ValueError(
+                    f"{cls_name} array must have 2 dimensions. Got: {value.ndim}"
+                )
+
+            if value.shape != (self._num_rows, self._num_cols):
+                raise ValueError(
+                    f"{cls_name} array must have this shape: {(self._num_rows, self._num_cols)!r}. Got: {(self._num_rows, self._num_cols)!r}"
+                )
+
+        elif isinstance(value, xr.DataArray):
+            if value.ndim != 3:
+                raise ValueError(
+                    f"{cls_name} data array must have 3 dimensions. Got: {value.ndim}"
+                )
+
+            expected_dims = ("wavelength", "y", "x")
+            if value.dims != expected_dims:
+                raise ValueError(
+                    f"{cls_name} data array must have these dimensions: {expected_dims!r}. Got: {value.dims!r}"
+                )
+
+            shape_3d: Mapping[Hashable, int] = value.sizes
+            if (shape_3d["y"], shape_3d["x"]) != (self._num_rows, self._num_cols):
+                raise ValueError(
+                    f"{cls_name} data array must have this shape: {(self._num_rows, self._num_cols)!r}. Got: {self.shape!r}"
+                )
+
+            if "wavelength" not in value.coords:
+                raise ValueError(
+                    f"{cls_name} data array must have coordinates for dimension 'wavelength'."
+                )
 
         if np.any(value < 0):
-            value[value < 0] = 0.0
             value = np.clip(value, a_min=0.0, a_max=None)
             warnings.warn(
                 "Trying to set negative values in the Photon array! Negative values"
@@ -223,43 +227,47 @@ class Photon:
                 stacklevel=4,
             )
 
-        self._array_2d = value
+        self._array = value.copy()
+
+    @property
+    def array_2d(self) -> np.ndarray:
+        """Two-dimensional numpy array storing the data.
+
+        Only accepts an array with the right type and shape.
+
+        Raises
+        ------
+        ValueError
+            Raised if 'array' is not initialized.
+        """
+        if self._array is None:
+            msg: str = self._get_uninitialized_error_message()
+            raise ValueError(msg)
+
+        if not isinstance(self._array, np.ndarray):
+            raise TypeError
+
+        return self._array
 
     @property
     def array_3d(self) -> xr.DataArray:
-        assert self._array_3d is not None
+        """Three-dimensional numpy array storing the data.
 
-        return self._array_3d
+        Only accepts an array with the right type and shape.
 
-    @array_3d.setter
-    def array_3d(self, value: xr.DataArray) -> None:
-        assert self._array_2d is None
+        Raises
+        ------
+        ValueError
+            Raised if 'array' is not initialized.
+        """
+        if self._array is None:
+            msg: str = self._get_uninitialized_error_message()
+            raise ValueError(msg)
 
-        if not isinstance(value, xr.DataArray):
-            raise TypeError("Expecting a 'DataArray'.")
+        if not isinstance(self._array, xr.DataArray):
+            raise TypeError
 
-        if value.ndim != 3:
-            raise ValueError(
-                f"Expected array with 3 dimensions. Got {value.ndim} dimensions."
-            )
-
-        if value.dtype not in self.TYPE_LIST:
-            raise ValueError(
-                f"Expected valid dtype: {', '.join(map(repr, self.TYPE_LIST))}. "
-                f"Got dtype: {value.dtype}"
-            )
-
-        if value.dims != ("wavelength", "y", "x"):
-            raise ValueError(
-                "Expected dimensions: 'wavelength', 'y', 'x'. "
-                f"Got dimensions: {', '.join(map(repr, value.dims))}"
-            )
-
-        shape = (value.sizes["y"], value.sizes["x"])
-        if shape != self._shape_2d:
-            raise ValueError(
-                f"Expected shape {self._shape_2d!r}. Got dimensions: {shape!r}"
-            )
+        return self._array
 
     @property
     def numbytes(self) -> int:
@@ -270,28 +278,24 @@ class Photon:
         int
             Size of the object in bytes.
         """
-        if self._array_2d is None and self._array_3d is None:
+        if self._array is None:
             return 0
-        elif self._array_2d is not None and self._array_3d is None:
-            return get_size(self._array_2d)
-        elif self._array_2d is None and self._array_3d is not None:
-            return get_size(self._array_3d)
-        else:
-            raise NotImplementedError
+
+        return get_size(self._array)
 
     def to_dict(self) -> dict:
         dct: dict = {}
-        if self._array_2d is None and self._array_3d is None:
+        if self._array is None:
             # Do nothing
             pass
 
-        if self._array_2d is not None:
-            dct["array_2d"] = self._array_2d.copy()
+        elif isinstance(self._array, np.ndarray):
+            dct["array_2d"] = self._array.copy()
 
-        if self._array_3d is not None:
+        elif isinstance(self._array, xr.DataArray):
             dct["array_3d"] = {
                 key.replace("/", "#"): value
-                for key, value in self._array_3d.to_dict().items()
+                for key, value in self._array.to_dict().items()
             }
 
         else:
@@ -301,29 +305,26 @@ class Photon:
 
     @classmethod
     def from_dict(cls, geometry: "Geometry", data: Mapping[str, Any]) -> Self:
-        array_2d: Optional[np.ndarray] = None
-        if "array_2d" in data:
-            array_2d = np.array(data["array_2d"])
+        obj = cls(geo=geometry)
 
-        array_3d: Optional[xr.DataArray] = None
-        if "array_3d" in data:
+        if "array_2d" in data:
+            obj.array = np.array(data["array_2d"])
+
+        elif "array_3d" in data:
             dct_array_3d = data.get("array_3d", dict())
             new_dct = {
                 key.replace("#", "/"): value for key, value in dct_array_3d.items()
             }
 
-            array_3d = xr.DataArray.from_dict(new_dct)
-
-        obj = cls(geo=geometry)
-        obj._array_2d = array_2d
-        obj._array_3d = array_3d
+            obj.array = xr.DataArray.from_dict(new_dct)
 
         return obj
 
     def to_xarray(self, dtype: Optional[np.typing.DTypeLike] = None) -> xr.DataArray:
-        if self._array_2d is None and self._array_3d is None:
+        if self._array is None:
             return xr.DataArray()
-        elif self._array_2d is not None and self._array_3d is None:
+
+        if isinstance(self._array, np.ndarray):
             num_rows, num_cols = self.shape
 
             return xr.DataArray(
@@ -334,16 +335,14 @@ class Photon:
                 attrs={"units": convert_unit("Ph"), "long_name": "Photon"},
             )
 
-        elif self._array_2d is None and self._array_3d is not None:
-            new_array = self._array_3d.astype(dtype=dtype)
-
-            new_array.name = "photon3d"
-            new_array.attrs = {"units": convert_unit("Ph/nm"), "long_name": "Photon 3D"}
-
-            return new_array
-
         else:
-            raise NotImplementedError
+            data_3d: xr.DataArray = self._array.astype(dtype=dtype)
+            data_3d.name = "photon"
+            data_3d.coords["y"] = range(self._num_rows)
+            data_3d.coords["x"] = range(self._num_cols)
+            data_3d.attrs = {"units": convert_unit("Ph"), "long_name": "Photon"}
+
+            return data_3d
 
     def plot(self, robust: bool = True) -> None:
         """Plot the array using Matplotlib.
@@ -364,6 +363,5 @@ class Photon:
 
         return arr.plot(robust=robust)
 
-    def empty(self):
-        self._array_2d = None
-        self._array_3d = None
+    def empty(self) -> None:
+        self._array = None

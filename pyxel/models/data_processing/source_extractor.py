@@ -175,13 +175,13 @@ def extract_roi_to_xarray(
         ) from exc
 
     if array_type == "pixel":
-        data_2d = detector.pixel.array
+        data_2d: np.ndarray = detector.pixel.array
     elif array_type == "signal":
         data_2d = detector.signal.array
     elif array_type == "image":
         data_2d = detector.image.array
     elif array_type == "photon":
-        data_2d = detector.photon.array
+        data_2d = detector.photon.array_2d
     elif array_type == "charge":
         data_2d = detector.charge.array
     else:

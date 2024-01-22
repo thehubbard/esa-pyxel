@@ -236,7 +236,7 @@ def run_exposure_pipeline(
                     )
 
                 if isinstance(obj, Photon):
-                    if obj._array_2d is not None:
+                    if obj._array is not None:
                         data_arr: np.ndarray = np.array(obj)
                         unstacked_result[key].append(data_arr)
                 elif obj._array is not None:
