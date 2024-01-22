@@ -496,6 +496,8 @@ def calc_psf(
     fov_arcsec: float,
     pixelscale: float,
     optical_elements: Sequence["op.OpticalElement"],
+    apply_jitter: bool = False,
+    jitter_sigma: float = 0.007,
 ) -> tuple[fits.PrimaryHDU, fits.PrimaryHDU]:
     """Calculate the point spread function for the given optical system.
 
@@ -510,6 +512,10 @@ def calc_psf(
         Defines sampling resolution of :term:`PSF`.
     optical_elements : list of OpticalElement
         List of optical elements to apply.
+    apply_jitter : bool
+        Defines whether jitter should be applied. Default = False.
+    jitter_sigma : float
+        Jitter sigma value in arcsec per axis, default is 0.007.
 
     Returns
     -------
@@ -545,6 +551,12 @@ def calc_psf(
         pixelscale=pixelscale,
         fov_arcsec=fov_arcsec,
     )
+
+    if apply_jitter:
+        instrument.options["jitter"] = "gaussian"
+        instrument.options[
+            "jitter_sigma"
+        ] = jitter_sigma  # in arcsec per axis, default 0.007
 
     output_fits, wavefronts = instrument.calc_datacube(wavelengths=wavelengths)
 
@@ -583,6 +595,8 @@ def optical_psf(
     wavelength: float,
     fov_arcsec: float,
     optical_system: Sequence[Mapping[str, Any]],
+    apply_jitter: bool = False,
+    jitter_sigma: float = 0.007,
 ) -> None:
     """Model function for poppy optics model: convolve photon array with psf.
 
@@ -596,6 +610,10 @@ def optical_psf(
         Field Of View on detector plane in arcsec.
     optical_system : list of dict
         List of optical elements before detector with their specific arguments.
+    apply_jitter : bool
+        Defines whether jitter should be applied. Default = False.
+    jitter_sigma : float
+        Jitter sigma value in arcsec per axis, default is 0.007.
     """
     logging.getLogger("poppy").setLevel(
         logging.WARNING
@@ -628,6 +646,8 @@ def optical_psf(
         fov_arcsec=fov_arcsec,
         pixelscale=detector.geometry.pixel_scale,
         optical_elements=optical_elements,
+        apply_jitter=apply_jitter,
+        jitter_sigma=jitter_sigma,
     )
 
     data_2d: np.ndarray = image_3d.data[0]
