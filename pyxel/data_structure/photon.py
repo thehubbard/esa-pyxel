@@ -340,7 +340,7 @@ class Photon:
             data_3d.name = "photon"
             data_3d.coords["y"] = range(self._num_rows)
             data_3d.coords["x"] = range(self._num_cols)
-            data_3d.attrs = {"units": convert_unit("Ph"), "long_name": "Photon"}
+            data_3d.attrs = {"units": convert_unit("Ph/nm"), "long_name": "Photon"}
 
             return data_3d
 

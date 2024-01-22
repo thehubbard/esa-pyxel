@@ -319,3 +319,69 @@ def test_eq(empty_photon: Photon, photon_2d: Photon, photon_3d: Photon):
     assert photon_3d != empty_photon
     assert photon_3d != photon_2d
     assert photon_3d == deepcopy(photon_3d)
+
+
+def test_to_xarray_empty(empty_photon: Photon):
+    """Test method 'Photon.to_xarray()' with an empty Photon."""
+    obj = empty_photon.to_xarray()
+
+    exp_obj = xr.DataArray()
+
+    xr.testing.assert_identical(obj, exp_obj)
+
+
+def test_to_xarray_2d(photon_2d: Photon):
+    """Test method 'Photon.to_xarray()' with a 2D Photon."""
+    obj = photon_2d.to_xarray()
+
+    exp_obj = xr.DataArray(
+        np.array([[0, 1, 2], [4, 5, 6]], dtype=float),
+        dims=["y", "x"],
+        coords={"y": [0, 1], "x": [0, 1, 2]},
+        name="photon",
+        attrs={"units": "Ph", "long_name": "Photon"},
+    )
+
+    xr.testing.assert_identical(obj, exp_obj)
+
+
+def test_to_xarray_3d(photon_3d: Photon):
+    """Test method 'Photon.to_xarray()' with a 3D Photon."""
+    obj = photon_3d.to_xarray()
+
+    exp_obj = xr.DataArray(
+        np.array(
+            [
+                [[0, 1, 2], [4, 5, 6]],
+                [[12, 13, 14], [16, 17, 18]],
+            ],
+            dtype=float,
+        ),
+        dims=["wavelength", "y", "x"],
+        coords={"y": [0, 1], "x": [0, 1, 2], "wavelength": [300.0, 350.0]},
+        name="photon",
+        attrs={"units": "Ph nm⁻¹", "long_name": "Photon"},
+    )
+    xr.testing.assert_identical(obj, exp_obj)
+
+
+def test_to_dict_from_dict_2d(photon_2d: Photon):
+    """Test methods 'Photon.to_dict' and 'Photon.from_dict'."""
+    dct = photon_2d.to_dict()
+    assert isinstance(dct, dict)
+
+    obj = Photon.from_dict(geometry=Geometry(row=2, col=3), data=dct)
+    assert isinstance(obj, Photon)
+
+    assert photon_2d == obj
+
+
+def test_to_dict_from_dict_3d(photon_3d: Photon):
+    """Test methods 'Photon.to_dict' and 'Photon.from_dict'."""
+    dct = photon_3d.to_dict()
+    assert isinstance(dct, dict)
+
+    obj = Photon.from_dict(geometry=Geometry(row=2, col=3), data=dct)
+    assert isinstance(obj, Photon)
+
+    assert photon_3d == obj
