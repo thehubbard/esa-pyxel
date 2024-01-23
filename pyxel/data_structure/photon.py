@@ -40,16 +40,17 @@ class Photon:
     >>> detector.photon
     Photon<UNINITIALIZED, shape=(5, 5)>
 
-    Use monochromatic photons with the container
+    Use monochromatic photons
 
+    >>> detector.photon.empty()
     >>> detector.photon.array = np.zeros(shape=(5, 5), dtype=float)
     >>> detector.photon
     Photon<shape=(5, 5), dtype=float64>
 
     >>> detector.photon.array = detector.photon.array + np.ones(shape=(5, 5))
-    >>> detector.photon.array += np.ones(shape=(5, 5))
+    >>> detector.photon += np.ones(shape=(5, 5))
 
-    >>> np.array(detector.photon)
+    >>> detector.photon.array
     array([[2., ...., 2.],
            ...,
            [2., ..., 2.]])
@@ -64,6 +65,26 @@ class Photon:
     Attributes:
         units:      Ph
         long_name:  Photon
+
+    Use multi-wavelength photons
+
+    >>> detector.photon.empty()
+    >>> new_photon_3d = xr.DataArray(
+    ...     np.ones(shape=(4, 5, 5), dtype=float),
+    ...     dims=["wavelength", "y", "x"],
+    ...     coords={"wavelength": [400.0, 420.0, 440.0, 460.0]},
+    ... )
+
+    >>> detector.photon.array_3d = detector.photon.array_3d + new_photon_3d
+    >>> detector.photon += new_photon_3d
+
+    >>> detector.photon.array_3d
+    <xarray.DataArray 'photon' (wavelength: 4, y: 5, x: 5)>
+    array([[[2., ...., 2.],
+            ...,
+            [2., ..., 2.]]])
+    Coordinates:
+      * wavelength  (wavelength) float 400.0 ... 460.0
     """
 
     TYPE_LIST = (
@@ -116,7 +137,7 @@ class Photon:
         if self._array is None:
             raise ValueError("Not initialized")
 
-        return np.asarray(self._array, dtype=dtype)
+        return np.asarray(self.array, dtype=dtype)
 
     def __iadd__(self, other: Union[np.ndarray, xr.DataArray]) -> Self:
         if isinstance(other, np.ndarray) and isinstance(self._array, xr.DataArray):
