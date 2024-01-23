@@ -480,7 +480,7 @@ def optical_psf(
 
     # Convolution
     new_array_2d: np.ndarray = apply_convolution(
-        data_2d=detector.photon.array,
+        data_2d=detector.photon.array_2d,
         kernel_2d=first_image.data,
     )
 

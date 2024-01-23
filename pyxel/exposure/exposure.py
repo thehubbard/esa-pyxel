@@ -19,7 +19,7 @@ from datatree import DataTree
 from tqdm.auto import tqdm
 
 from pyxel import __version__
-from pyxel.data_structure import Charge, Image, Photon, Photon3D, Pixel, Scene, Signal
+from pyxel.data_structure import Charge, Image, Photon, Pixel, Scene, Signal
 from pyxel.pipelines import Processor, ResultId, get_result_id, result_keys
 from pyxel.util import set_random_seed
 
@@ -141,6 +141,7 @@ class Exposure:
 
 
 # TODO: This function will be deprecated
+# ruff: noqa: C901
 def run_exposure_pipeline(
     processor: Processor,
     readout: "Readout",
@@ -224,22 +225,23 @@ def run_exposure_pipeline(
                 if key in ("data", "scene"):
                     continue
 
-                obj: Union[
-                    Scene, Photon, Photon3D, Pixel, Image, Signal, Charge
-                ] = getattr(detector, key)
+                obj: Union[Scene, Photon, Pixel, Image, Signal, Charge] = getattr(
+                    detector, key
+                )
 
                 # TODO: Is this necessary ?
-                if not isinstance(
-                    obj, (Photon, Photon3D, Pixel, Image, Signal, Charge)
-                ):
+                if not isinstance(obj, (Photon, Pixel, Image, Signal, Charge)):
                     raise TypeError(
                         f"Wrong type from attribute 'detector.{key}'. Type: {type(obj)!r}"
                     )
 
-                if obj._array is not None:
-                    data_arr: np.ndarray = np.array(obj)
+                if isinstance(obj, Photon):
+                    if obj._array is not None:
+                        data_arr: np.ndarray = np.array(obj)
+                        unstacked_result[key].append(data_arr)
+                elif obj._array is not None:
+                    data_arr = np.array(obj)
                     unstacked_result[key].append(data_arr)
-
             if progressbar:
                 pbar.update(1)
 
@@ -277,7 +279,7 @@ def _extract_datatree(detector: "Detector", keys: Sequence[ResultId]) -> DataTre
     --------
     >>> _extract_datatree(
     ...     detector=detector,
-    ...     keys=["photon", "photon3d", "charge", "pixel", "signal", "image", "data"],
+    ...     keys=["photon", "charge", "pixel", "signal", "image", "data"],
     ... )
     DataTree('None', parent=None)
         Dimensions:  (time: 1, y: 100, x: 100, wavelength: 201)
@@ -288,7 +290,6 @@ def _extract_datatree(detector: "Detector", keys: Sequence[ResultId]) -> DataTre
           * wavelength  (wavelength) float64 500.0 502.0 504.0 ... 896.0 898.0 900.0
         Data variables:
             photon   (time, y, x) float64 1.515e+04 1.592e+04 ... 1.621e+04 1.621e+04
-            photon3d    (time, wavelength, y, x) float64 0.0 0.0 0.0 0.0 ... 0.0 0.0 0.0
             charge   (time, y, x) float64 1.515e+04 1.592e+04 ... 1.621e+04 1.621e+04
             pixel    (time, y, x) float64 1.515e+04 1.592e+04 ... 1.621e+04 1.621e+04
             signal   (time, y, x) float64 0.04545 0.04776 0.04634 ... 0.04862 0.04862
@@ -308,12 +309,10 @@ def _extract_datatree(detector: "Detector", keys: Sequence[ResultId]) -> DataTre
         if key.startswith("data") or key.startswith("scene"):
             continue
 
-        obj: Union[Photon, Photon3D, Pixel, Image, Signal, Charge] = getattr(
-            detector, key
-        )
+        obj: Union[Photon, Pixel, Image, Signal, Charge] = getattr(detector, key)
 
         # TODO: Is this necessary ?
-        if not isinstance(obj, (Photon, Photon3D, Pixel, Image, Signal, Charge)):
+        if not isinstance(obj, (Photon, Pixel, Image, Signal, Charge)):
             raise TypeError(
                 f"Wrong type from attribute 'detector.{key}'. Type: {type(obj)!r}"
             )
