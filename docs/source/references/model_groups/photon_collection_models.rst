@@ -72,7 +72,7 @@ Simple aperture
 
 :guilabel:`Scene` → :guilabel:`Photon`
 
-Converts scene to photon with given aperture.
+Converts scene to 2D photon with given aperture.
 First an xarray Dataset will be extracted from the Scene for a selected wavelength band, where the flux of the objects will be integrated along the wavelength band.
 This integrated flux in photon/(s cm2) is converted to photon/(s pixel).
 Finally, the objects are projected onto detector, while converting the object coordinates from arcsec to detector coordinates (pixel).
@@ -83,11 +83,33 @@ Finally, the objects are projected onto detector, while converting the object co
       func: pyxel.models.photon_collection.simple_aperture
       enabled: true
       arguments:
-         pixel_scale: 1.65
          aperture: 126.70e-3
          wavelength_band: [500, 900]
 
 .. autofunction:: simple_aperture
+
+.. _simple_collection:
+
+Simple aperture
+===============
+
+:guilabel:`Scene` → :guilabel:`Photon`
+
+Converts scene to photon with given aperture and keeping the wavelength dimension.
+First an xarray Dataset will be extracted from the Scene for a selected wavelength band.
+The objects are projected onto detector, while converting the object coordinates from arcsec to detector
+coordinates (pixel).
+
+.. code-block:: yaml
+
+     - name : simple_collection
+      func: pyxel.models.photon_collection.simple_collection
+      enabled: true
+      arguments:
+        aperture: 126.70e-3 #m
+        filter_band: [420, 1000] #nm
+
+.. autofunction:: simple_collection
 
 .. _Load image:
 
@@ -266,7 +288,6 @@ Example of the configuration file:
       enabled: true
       arguments:
         fov_arcsec: 5               # FOV in arcseconds
-        pixelscale: 0.01            # arcsec/pixel
         wavelength: 0.6e-6          # wavelength in meters
         optical_system:
           - item: CircularAperture
