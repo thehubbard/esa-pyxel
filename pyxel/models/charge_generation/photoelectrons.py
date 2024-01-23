@@ -68,7 +68,7 @@ def simple_conversion(
 
     with set_random_seed(seed):
         detector_charge = apply_qe(
-            array=detector.photon.array_2d,
+            array=detector.photon.array,
             qe=final_qe,
             binomial_sampling=binomial_sampling,
         )
@@ -119,7 +119,7 @@ def conversion_with_qe_map(
 
     with set_random_seed(seed):
         detector_charge = apply_qe(
-            array=detector.photon.array_2d, qe=qe, binomial_sampling=binomial_sampling
+            array=detector.photon.array, qe=qe, binomial_sampling=binomial_sampling
         )
     detector.charge.add_charge_array(detector_charge)
 

@@ -35,7 +35,7 @@ def photon_2d() -> Photon:
 def photon_3d() -> Photon:
     """Contain a 3D array in the Photon object."""
     photon = Photon(geo=Geometry(row=2, col=3))
-    photon.array = xr.DataArray(
+    photon.array_3d = xr.DataArray(
         np.array(
             [
                 [[0, 1, 2], [4, 5, 6]],
@@ -108,19 +108,14 @@ def test_valid_array_3d(dtype):
     )
     copied_data_3d = data_3d.copy()
 
-    # Test properties 'Photon.array'
-    photon.array = data_3d
-    new_data_3d = photon.array
+    # Test properties 'Photon.array_3d'
+    photon.array_3d = data_3d
+    new_data_3d = photon.array_3d
 
     data_3d *= 2
 
     np.testing.assert_allclose(new_data_3d, copied_data_3d)
     assert new_data_3d.dtype == copied_data_3d.dtype
-
-    # Test 'Photon.__array__'
-    another_data_3d = np.array(photon)
-    np.testing.assert_allclose(another_data_3d, copied_data_3d)
-    assert another_data_3d.dtype == copied_data_3d.dtype
 
     # Test 'Photon.shape'
     assert photon.shape == copied_data_3d.shape
@@ -174,8 +169,8 @@ def test_valid_negative_array_3d(dtype):
 
     # Test properties 'Photon.array'
     with pytest.warns(UserWarning, match=r"Trying to set negative values"):
-        photon.array = data_3d
-    new_data_3d = photon.array
+        photon.array_3d = data_3d
+    new_data_3d = photon.array_3d
 
     np.testing.assert_allclose(new_data_3d, expected_data_3d)
     assert new_data_3d.dtype == expected_data_3d.dtype
@@ -187,13 +182,13 @@ def test_valid_negative_array_3d(dtype):
         pytest.param(
             [[0.0, 1.0, 2.0], [4.0, 5.0, 6.0]],
             TypeError,
-            r"Photon array must be a numpy\.ndarray or xr\.DataArray",
+            r"Photon array must be a 2D Numpy array",
             id="2D list",
         ),
         pytest.param(
             None,
             TypeError,
-            r"Photon array must be a numpy\.ndarray or xr\.DataArray",
+            r"Photon array must be a 2D Numpy array",
             id="None",
         ),
         pytest.param(
@@ -202,6 +197,37 @@ def test_valid_negative_array_3d(dtype):
             r"'dtype' must be one of these values",
             id="2D Array - wrong dtype",
         ),
+        pytest.param(
+            np.array(
+                [
+                    [[0, 1, 2], [4, 5, 6]],
+                    [[12, 13, 14], [16, 17, 18]],
+                ],
+                dtype=float,
+            ),
+            ValueError,
+            r"must have 2 dimensions",
+            id="2D Array - Wrong ndim",
+        ),
+        pytest.param(
+            np.array([[0, 1], [2, 4], [5, 6]], dtype=float),
+            ValueError,
+            r"must have this shape",
+            id="2D Array - Wrong shape",
+        ),
+    ],
+)
+def test_invalid_array_2d(data, exp_exc: Exception, exp_msg: str):
+    """Test with invalid data and empty 'Photon'."""
+    photon = Photon(geo=Geometry(row=2, col=3))
+
+    with pytest.raises(exp_exc, match=exp_msg):
+        photon.array = data
+
+
+@pytest.mark.parametrize(
+    "data, exp_exc, exp_msg",
+    [
         pytest.param(
             xr.DataArray(
                 np.array(
@@ -219,18 +245,6 @@ def test_valid_negative_array_3d(dtype):
             id="3D Array - wrong dtype",
         ),
         pytest.param(
-            np.array(
-                [
-                    [[0, 1, 2], [4, 5, 6]],
-                    [[12, 13, 14], [16, 17, 18]],
-                ],
-                dtype=float,
-            ),
-            ValueError,
-            r"must have 2 dimensions",
-            id="2D Array - Wrong ndim",
-        ),
-        pytest.param(
             xr.DataArray(
                 np.array(
                     [[0, 0, 2.2], [4.4, 5.5, 0]],
@@ -241,12 +255,6 @@ def test_valid_negative_array_3d(dtype):
             ValueError,
             r"must have 3 dimensions",
             id="3D Array - Wrong ndim",
-        ),
-        pytest.param(
-            np.array([[0, 1], [2, 4], [5, 6]], dtype=float),
-            ValueError,
-            r"must have this shape",
-            id="2D Array - Wrong shape",
         ),
         pytest.param(
             xr.DataArray(
@@ -297,15 +305,15 @@ def test_valid_negative_array_3d(dtype):
         ),
     ],
 )
-def test_invalid_array(data, exp_exc: Exception, exp_msg: str):
+def test_invalid_array_3d(data, exp_exc: Exception, exp_msg: str):
     """Test with invalid data and empty 'Photon'."""
     photon = Photon(geo=Geometry(row=2, col=3))
 
     with pytest.raises(exp_exc, match=exp_msg):
-        photon.array = data
+        photon.array_3d = data
 
 
-def test_set_array_3d_after_2d(photon_2d: Photon):
+def test_set_array_3d_after_3d(photon_2d: Photon):
     """Test 'Photon.array' with 3D array when 2D array were set before."""
     photon_3d = xr.DataArray(
         np.array(
@@ -320,7 +328,7 @@ def test_set_array_3d_after_2d(photon_2d: Photon):
     )
 
     # Try to set '3D' photons to 'photon_2d'
-    with pytest.raises(TypeError, match="expects a 2D numpy array"):
+    with pytest.raises(TypeError, match="Photon array must be a 2D Numpy array"):
         photon_2d.array = photon_3d
 
 
@@ -329,8 +337,8 @@ def test_set_array_2d_after_3d(photon_3d: Photon):
     photon_2d = np.array([[0, 1, 2], [4, 5, 6]], dtype=float)
 
     # Try to set '2D' photons to 'photon_3d'
-    with pytest.raises(TypeError, match="expects a 3D Data Array"):
-        photon_3d.array = photon_2d
+    with pytest.raises(TypeError, match="Photon array must be a 3D DataArray"):
+        photon_3d.array_3d = photon_2d
 
 
 def test_eq(empty_photon: Photon, photon_2d: Photon, photon_3d: Photon):

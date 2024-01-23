@@ -72,7 +72,7 @@ def load_psf(
     psf = load_image(filename)
 
     detector.photon.array = apply_psf(
-        array=detector.photon.array_2d, psf=psf, normalize_kernel=normalize_kernel
+        array=detector.photon.array, psf=psf, normalize_kernel=normalize_kernel
     )
 
 
@@ -166,4 +166,4 @@ def load_wavelength_psf(
 
     # integrated = psf.integrate(coord="wavelength")
 
-    detector.photon.array = psf
+    detector.photon.array_3d = psf

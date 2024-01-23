@@ -15,7 +15,8 @@ Pyxel doesn't use SemVer anymore, since most minor releases have at least minor 
 * Create 3D photon container, add it as an output of function `pyxel.run_mode` and merge it with `Photon`.
   (See [!673](https://gitlab.com/esa/pyxel/-/merge_requests/673)
   , [!766](https://gitlab.com/esa/pyxel/-/merge_requests/766)
-  and [!813](https://gitlab.com/esa/pyxel/-/merge_requests/813)).
+  , [!813](https://gitlab.com/esa/pyxel/-/merge_requests/813)
+  and [!815](https://gitlab.com/esa/pyxel/-/merge_requests/815)).
 
 ### Documentation
 
