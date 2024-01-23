@@ -36,7 +36,7 @@ def ccd_5x5() -> CCD:
         characteristics=Characteristics(),
     )
 
-    detector.photon.array = xr.DataArray(
+    detector.photon.array_3d = xr.DataArray(
         np.zeros(shape=(6, 5, 5), dtype=float),
         dims=["wavelength", "y", "x"],
         coords={"wavelength": [400.0, 420, 440, 460, 480, 500]},

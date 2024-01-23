@@ -120,10 +120,10 @@ class Photon:
 
     def __iadd__(self, other: Union[np.ndarray, xr.DataArray]) -> Self:
         if isinstance(other, np.ndarray) and isinstance(self._array, xr.DataArray):
-            raise TypeError("Must be a 3D DataArray")
+            raise TypeError("data must be a 3D DataArray")
 
         if isinstance(other, xr.DataArray) and isinstance(self._array, np.ndarray):
-            raise TypeError("Must be a 2D numpy array")
+            raise TypeError("data must be a 2D Numpy array")
 
         if self._array is not None:
             self._array += other
@@ -144,7 +144,7 @@ class Photon:
             self._array = other
         return self
 
-    def _get_uninitialized_error_message(self) -> str:
+    def _get_uninitialized_2d_error_message(self) -> str:
         """Get an explicit error message for an uninitialized 'array'.
 
         This method is used in the property 'array' in the ``Array`` parent class.
@@ -167,10 +167,52 @@ class Photon:
         return (
             f"The '.array' attribute cannot be retrieved because the '{cls_name}'"
             " container is not initialized.\nTo resolve this issue, initialize"
-            f" '.array' using a model that generates {obj_name} from the "
+            f" '.array' using a model that generate {obj_name} from the "
             f"'{group_name}' group.\n"
             f"Consider using the '{example_model}' model from"
             f" the '{group_name}' group.\n\n"
+            "Example code snippet to add to your YAML configuration file "
+            f"to initialize the '{cls_name}' container:\n{example_yaml_content}"
+        )
+
+    def _get_uninitialized_3d_error_message(self) -> str:
+        """Get an explicit error message for an uninitialized 'array'.
+
+        This method is used in the property 'array' in the ``Array`` parent class.
+        """
+        example_models = "'load_star_map' and 'simple_aperture'"
+        example_yaml_content = """
+
+pipeline:
+
+  scene_generation:
+    - name: load_star_map
+      func: pyxel.models.scene_generation.load_star_map
+      enabled: true
+      arguments:
+        right_ascension: 56.75 # deg
+        declination: 24.1167 # deg
+        fov_radius: 0.5 # deg
+
+  photon_collection:
+    - name: aperture
+      func: pyxel.models.photon_collection.simple_aperture
+      enabled: true
+      arguments:
+       aperture: 126.70e-3
+       wavelength_band: [500, 900]
+"""
+        cls_name: str = self.__class__.__name__
+        obj_name = "photons"
+        groups_names = "'Scene Generation' and 'Photon Collection'"
+
+        return (
+            f"The '.array_3d' attribute cannot be retrieved because the '{cls_name}'"
+            " container is not initialized.\nTo resolve this issue, initialize"
+            f" '.array_3d' using a model that generate {obj_name} from the "
+            f"{groups_names} groups.\n"
+            f"Consider using the {example_models} models from"
+            f" the {groups_names} groups.\n\n"
             "Example code snippet to add to your YAML configuration file "
             f"to initialize the '{cls_name}' container:\n{example_yaml_content}"
         )
@@ -194,7 +236,7 @@ class Photon:
         return self._array.dtype
 
     @property
-    def array(self) -> Union[np.ndarray, xr.DataArray]:
+    def array(self) -> np.ndarray:
         """Two-dimensional numpy array storing the data.
 
         Only accepts an array with the right type and shape.
@@ -205,22 +247,21 @@ class Photon:
             Raised if 'array' is not initialized.
         """
         if self._array is None:
-            msg: str = self._get_uninitialized_error_message()
+            msg: str = self._get_uninitialized_2d_error_message()
             raise ValueError(msg)
+
+        if isinstance(self._array, xr.DataArray):
+            raise TypeError("Cannot get a 2D array. A 3D array is already defined !")
 
         return self._array
 
     # ruff: noqa: C901
     @array.setter
-    def array(self, value: Union[np.ndarray, xr.DataArray]) -> None:
-        """Overwrite the two-dimensional numpy array storing the data.
-
-        Only accepts an array with the right type and shape.
-        """
+    def array(self, value: np.ndarray) -> None:
         cls_name: str = self.__class__.__name__
 
-        if not isinstance(value, (np.ndarray, xr.DataArray)):
-            raise TypeError(f"{cls_name} array must be a numpy.ndarray or xr.DataArray")
+        if not isinstance(value, np.ndarray):
+            raise TypeError(f"{cls_name} array must be a 2D Numpy array")
 
         if value.dtype not in self.TYPE_LIST:
             raise ValueError(
@@ -228,47 +269,19 @@ class Photon:
                 f"{', '.join(map(str, self.TYPE_LIST))}. Got {value.dtype!r}"
             )
 
-        if isinstance(value, np.ndarray):
-            if value.ndim != 2:
-                raise ValueError(
-                    f"{cls_name} array must have 2 dimensions. Got: {value.ndim}"
-                )
+        if value.ndim != 2:
+            raise ValueError(
+                f"{cls_name} array must have 2 dimensions. Got: {value.ndim}"
+            )
 
-            if value.shape != (self._num_rows, self._num_cols):
-                raise ValueError(
-                    f"{cls_name} array must have this shape: {(self._num_rows, self._num_cols)!r}. Got: {(self._num_rows, self._num_cols)!r}"
-                )
-
-        elif isinstance(value, xr.DataArray):
-            if value.ndim != 3:
-                raise ValueError(
-                    f"{cls_name} data array must have 3 dimensions. Got: {value.ndim}"
-                )
-
-            expected_dims = ("wavelength", "y", "x")
-            if value.dims != expected_dims:
-                raise ValueError(
-                    f"{cls_name} data array must have these dimensions: {expected_dims!r}. Got: {value.dims!r}"
-                )
-
-            shape_3d: Mapping[Hashable, int] = value.sizes
-            if (shape_3d["y"], shape_3d["x"]) != (self._num_rows, self._num_cols):
-                raise ValueError(
-                    f"{cls_name} data array must have this shape: {(self._num_rows, self._num_cols)!r}. Got: {self.shape!r}"
-                )
-
-            if "wavelength" not in value.coords:
-                raise ValueError(
-                    f"{cls_name} data array must have coordinates for dimension 'wavelength'."
-                )
+        if value.shape != (self._num_rows, self._num_cols):
+            raise ValueError(
+                f"{cls_name} array must have this shape: {(self._num_rows, self._num_cols)!r}. "
+                f"Got: {(self._num_rows, self._num_cols)!r}"
+            )
 
         if isinstance(self._array, np.ndarray) and not isinstance(value, np.ndarray):
             raise TypeError(f"{cls_name} expects a 2D numpy array")
-
-        if isinstance(self._array, xr.DataArray) and not isinstance(
-            value, xr.DataArray
-        ):
-            raise TypeError(f"{cls_name} expects a 3D Data Array")
 
         if np.any(value < 0):
             value = np.clip(value, a_min=0.0, a_max=None)
@@ -291,14 +304,11 @@ class Photon:
         ValueError
             Raised if 'array' is not initialized.
         """
-        if self._array is None:
-            msg: str = self._get_uninitialized_error_message()
-            raise ValueError(msg)
+        return self.array
 
-        if not isinstance(self._array, np.ndarray):
-            raise TypeError
-
-        return self._array
+    @array_2d.setter
+    def array_2d(self, value: np.ndarray) -> None:
+        self.array = value
 
     @property
     def array_3d(self) -> xr.DataArray:
@@ -312,13 +322,65 @@ class Photon:
             Raised if 'array' is not initialized.
         """
         if self._array is None:
-            msg: str = self._get_uninitialized_error_message()
+            msg: str = self._get_uninitialized_3d_error_message()
             raise ValueError(msg)
 
-        if not isinstance(self._array, xr.DataArray):
-            raise TypeError
+        if isinstance(self._array, np.ndarray):
+            raise TypeError("Cannot get a 3D array. A 2D array is already defined !")
 
         return self._array
+
+    @array_3d.setter
+    def array_3d(self, value: xr.DataArray) -> None:
+        cls_name: str = self.__class__.__name__
+
+        if not isinstance(value, xr.DataArray):
+            raise TypeError(f"{cls_name} array must be a 3D DataArray")
+
+        if value.dtype not in self.TYPE_LIST:
+            raise ValueError(
+                f"{cls_name} array 'dtype' must be one of these values: "
+                f"{', '.join(map(str, self.TYPE_LIST))}. Got {value.dtype!r}"
+            )
+
+        if value.ndim != 3:
+            raise ValueError(
+                f"{cls_name} data array must have 3 dimensions. Got: {value.ndim}"
+            )
+
+        expected_dims = ("wavelength", "y", "x")
+        if value.dims != expected_dims:
+            raise ValueError(
+                f"{cls_name} data array must have these dimensions: {expected_dims!r}. "
+                f"Got: {value.dims!r}"
+            )
+
+        shape_3d: Mapping[Hashable, int] = value.sizes
+        if (shape_3d["y"], shape_3d["x"]) != (self._num_rows, self._num_cols):
+            raise ValueError(
+                f"{cls_name} data array must have this shape: {(self._num_rows, self._num_cols)!r}."
+                f" Got: {self.shape!r}"
+            )
+
+        if "wavelength" not in value.coords:
+            raise ValueError(
+                f"{cls_name} data array must have coordinates for dimension 'wavelength'."
+            )
+
+        if isinstance(self._array, xr.DataArray) and not isinstance(
+            value, xr.DataArray
+        ):
+            raise TypeError(f"{cls_name} expects a 3D Data Array")
+
+        if np.any(value < 0):
+            value = value.clip(min=0.0)
+            warnings.warn(
+                "Trying to set negative values in the Photon array! Negative values"
+                " clipped to 0.",
+                stacklevel=4,
+            )
+
+        self._array = value.copy()
 
     @property
     def numbytes(self) -> int:
@@ -367,7 +429,7 @@ class Photon:
                 key.replace("#", "/"): value for key, value in dct_array_3d.items()
             }
 
-            obj.array = xr.DataArray.from_dict(new_dct)
+            obj.array_3d = xr.DataArray.from_dict(new_dct)
 
         return obj
 

@@ -98,6 +98,6 @@ def shot_noise(
         Random seed.
     """
     with set_random_seed(seed):
-        noise_array = compute_noise(array=detector.photon.array_2d, type=type)
+        noise_array = compute_noise(array=detector.photon.array, type=type)
 
     detector.photon.array = noise_array
