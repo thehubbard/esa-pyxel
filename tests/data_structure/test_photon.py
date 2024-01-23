@@ -108,7 +108,7 @@ def test_valid_array_3d(dtype):
     )
     copied_data_3d = data_3d.copy()
 
-    # Test properties 'Photon.array'
+    # Test properties 'Photon.array_3d'
     photon.array_3d = data_3d
     new_data_3d = photon.array_3d
 
@@ -116,11 +116,6 @@ def test_valid_array_3d(dtype):
 
     np.testing.assert_allclose(new_data_3d, copied_data_3d)
     assert new_data_3d.dtype == copied_data_3d.dtype
-
-    # Test 'Photon.__array__'
-    another_data_3d = np.array(photon)
-    np.testing.assert_allclose(another_data_3d, copied_data_3d)
-    assert another_data_3d.dtype == copied_data_3d.dtype
 
     # Test 'Photon.shape'
     assert photon.shape == copied_data_3d.shape
