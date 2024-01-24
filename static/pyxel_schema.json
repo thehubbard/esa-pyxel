@@ -195,6 +195,15 @@
             "null"
           ]
         },
+        "pixel_scale": {
+          "default": null,
+          "description": "Dimension of how much of the sky is covered by one pixel. Unit:arcsec/pixel",
+          "title": "pixel_scale",
+          "type": [
+            "number",
+            "null"
+          ]
+        },
         "pixel_vert_size": {
           "default": null,
           "description": "Vertical dimension of pixel. Unit: um",
@@ -448,6 +457,15 @@
             "null"
           ]
         },
+        "pixel_scale": {
+          "default": null,
+          "description": "Dimension of how much of the sky is covered by one pixel. Unit:arcsec/pixel",
+          "title": "pixel_scale",
+          "type": [
+            "number",
+            "null"
+          ]
+        },
         "pixel_vert_size": {
           "default": null,
           "description": "Vertical dimension of pixel. Unit: um",
@@ -532,6 +550,15 @@
           "default": null,
           "description": "Horizontal dimension of pixel. Unit: um",
           "title": "pixel_horz_size",
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "pixel_scale": {
+          "default": null,
+          "description": "Dimension of how much of the sky is covered by one pixel. Unit:arcsec/pixel",
+          "title": "pixel_scale",
           "type": [
             "number",
             "null"
@@ -1333,6 +1360,9 @@
                 "$ref": "#/definitions/ModelChargeGenerationApdGain"
               },
               {
+                "$ref": "#/definitions/ModelChargeGenerationApplyQeCurve"
+              },
+              {
                 "$ref": "#/definitions/ModelChargeGenerationChargeBlocks"
               },
               {
@@ -1340,6 +1370,9 @@
               },
               {
                 "$ref": "#/definitions/ModelChargeGenerationChargeDepositionInMct"
+              },
+              {
+                "$ref": "#/definitions/ModelChargeGenerationConversionWith3dQeMap"
               },
               {
                 "$ref": "#/definitions/ModelChargeGenerationConversionWithQeMap"
@@ -1587,6 +1620,9 @@
                 "$ref": "#/definitions/ModelPhotonCollectionLoadPsf"
               },
               {
+                "$ref": "#/definitions/ModelPhotonCollectionLoadWavelengthPsf"
+              },
+              {
                 "$ref": "#/definitions/ModelPhotonCollectionOpticalPsf"
               },
               {
@@ -1594,6 +1630,9 @@
               },
               {
                 "$ref": "#/definitions/ModelPhotonCollectionSimpleAperture"
+              },
+              {
+                "$ref": "#/definitions/ModelPhotonCollectionSimpleCollection"
               },
               {
                 "$ref": "#/definitions/ModelPhotonCollectionStripePattern"
@@ -1924,6 +1963,15 @@
           "default": null,
           "description": "Horizontal dimension of pixel. Unit: um",
           "title": "pixel_horz_size",
+          "type": [
+            "number",
+            "null"
+          ]
+        },
+        "pixel_scale": {
+          "default": null,
+          "description": "Dimension of how much of the sky is covered by one pixel. Unit:arcsec/pixel",
+          "title": "pixel_scale",
           "type": [
             "number",
             "null"
@@ -2446,6 +2494,71 @@
       "title": "Model 'apd_gain'",
       "type": "object"
     },
+    "ModelChargeGenerationApplyQeCurve": {
+      "additionalProperties": false,
+      "description": "Apply wavelength dependent QE with loading a file.",
+      "properties": {
+        "arguments": {
+          "additionalProperties": false,
+          "properties": {
+            "filename": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "format": "uri",
+                  "type": "string"
+                }
+              ],
+              "description": "CSV File path.",
+              "title": "filename"
+            },
+            "qe_col_name": {
+              "description": "Column name of quantum efficiency in loaded file.",
+              "title": "qe_col_name",
+              "type": [
+                "string",
+                "integer"
+              ]
+            },
+            "wavelength_col_name": {
+              "description": "Column name of wavelength in loaded file.",
+              "title": "wavelength_col_name",
+              "type": [
+                "string",
+                "integer"
+              ]
+            }
+          },
+          "required": [
+            "filename",
+            "wavelength_col_name",
+            "qe_col_name"
+          ],
+          "title": "Parameters",
+          "type": "object"
+        },
+        "enabled": {
+          "default": true,
+          "type": "boolean"
+        },
+        "func": {
+          "const": "pyxel.models.charge_generation.apply_qe_curve",
+          "default": "pyxel.models.charge_generation.apply_qe_curve",
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "arguments"
+      ],
+      "title": "Model 'apply_qe_curve'",
+      "type": "object"
+    },
     "ModelChargeGenerationChargeBlocks": {
       "additionalProperties": false,
       "description": "Inject a block of charge into the :term:`CCD` detector.",
@@ -2754,6 +2867,53 @@
         "arguments"
       ],
       "title": "Model 'charge_deposition_in_mct'",
+      "type": "object"
+    },
+    "ModelChargeGenerationConversionWith3dQeMap": {
+      "additionalProperties": false,
+      "description": "Generate charge from incident photon via photoelectric effect.",
+      "properties": {
+        "arguments": {
+          "additionalProperties": false,
+          "properties": {
+            "filename": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "format": "uri",
+                  "type": "string"
+                }
+              ],
+              "description": "File path.",
+              "title": "filename"
+            }
+          },
+          "required": [
+            "filename"
+          ],
+          "title": "Parameters",
+          "type": "object"
+        },
+        "enabled": {
+          "default": true,
+          "type": "boolean"
+        },
+        "func": {
+          "const": "pyxel.models.charge_generation.conversion_with_3d_qe_map",
+          "default": "pyxel.models.charge_generation.conversion_with_3d_qe_map",
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "arguments"
+      ],
+      "title": "Model 'conversion_with_3d_qe_map'",
       "type": "object"
     },
     "ModelChargeGenerationConversionWithQeMap": {
@@ -5510,6 +5670,83 @@
       "title": "Model 'load_psf'",
       "type": "object"
     },
+    "ModelPhotonCollectionLoadWavelengthPsf": {
+      "additionalProperties": false,
+      "description": "Read psf files depending on simulation and instrument parameters.",
+      "properties": {
+        "arguments": {
+          "additionalProperties": false,
+          "properties": {
+            "filename": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "format": "uri",
+                  "type": "string"
+                }
+              ],
+              "description": "Input filename of the point spread function.",
+              "title": "filename"
+            },
+            "normalize_kernel": {
+              "default": true,
+              "description": "Normalize kernel.",
+              "title": "normalize_kernel",
+              "type": "boolean"
+            },
+            "wavelength_col": {
+              "description": "Dimension name in the file that contains the wavelength information.",
+              "title": "wavelength_col",
+              "type": "string"
+            },
+            "wavelength_table_name": {
+              "description": "Column name in the file that contains the wavelength information.",
+              "title": "wavelength_table_name",
+              "type": "string"
+            },
+            "x_col": {
+              "description": "Dimension name in the file that contains the x information.",
+              "title": "x_col",
+              "type": "string"
+            },
+            "y_col": {
+              "description": "Dimension name in the file that contains the y information.",
+              "title": "y_col",
+              "type": "string"
+            }
+          },
+          "required": [
+            "filename",
+            "wavelength_col",
+            "y_col",
+            "x_col",
+            "wavelength_table_name"
+          ],
+          "title": "Parameters",
+          "type": "object"
+        },
+        "enabled": {
+          "default": true,
+          "type": "boolean"
+        },
+        "func": {
+          "const": "pyxel.models.photon_collection.load_wavelength_psf",
+          "default": "pyxel.models.photon_collection.load_wavelength_psf",
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "arguments"
+      ],
+      "title": "Model 'load_wavelength_psf'",
+      "type": "object"
+    },
     "ModelPhotonCollectionOpticalPsf": {
       "additionalProperties": false,
       "description": "Model function for poppy optics model: convolve photon array with psf.",
@@ -5530,11 +5767,6 @@
               "title": "optical_system",
               "type": "array"
             },
-            "pixelscale": {
-              "description": "Pixel scale on detector plane (arcsec/pixel). Defines samplingresolution of :term:`PSF`.",
-              "title": "pixelscale",
-              "type": "number"
-            },
             "wavelength": {
               "description": "Wavelength of incoming light in meters.",
               "title": "wavelength",
@@ -5544,7 +5776,6 @@
           "required": [
             "wavelength",
             "fov_arcsec",
-            "pixelscale",
             "optical_system"
           ],
           "title": "Parameters",
@@ -5635,11 +5866,6 @@
               "title": "aperture",
               "type": "number"
             },
-            "pixel_scale": {
-              "description": "Pixel scale. Unit: arcsec/pixel.",
-              "title": "pixel_scale",
-              "type": "number"
-            },
             "wavelength_band": {
               "additionalItems": false,
               "description": "Wavelength band. Unit: nm.",
@@ -5666,7 +5892,6 @@
             }
           },
           "required": [
-            "pixel_scale",
             "aperture",
             "wavelength_band"
           ],
@@ -5691,6 +5916,70 @@
         "arguments"
       ],
       "title": "Model 'simple_aperture'",
+      "type": "object"
+    },
+    "ModelPhotonCollectionSimpleCollection": {
+      "additionalProperties": false,
+      "description": "Convert scene in ph/(cm2 nm s) to 3D photon in ph/nm s.",
+      "properties": {
+        "arguments": {
+          "additionalProperties": false,
+          "properties": {
+            "aperture": {
+              "description": "Collecting area of the telescope. Unit: m.",
+              "title": "aperture",
+              "type": "number"
+            },
+            "filter_band": {
+              "additionalItems": false,
+              "description": "Wavelength range of selected filter band. Unit: nm.",
+              "items": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "maxItems": 2,
+              "minItems": 2,
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "title": "filter_band",
+              "type": "array"
+            }
+          },
+          "required": [
+            "aperture",
+            "filter_band"
+          ],
+          "title": "Parameters",
+          "type": "object"
+        },
+        "enabled": {
+          "default": true,
+          "type": "boolean"
+        },
+        "func": {
+          "const": "pyxel.models.photon_collection.simple_collection",
+          "default": "pyxel.models.photon_collection.simple_collection",
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "arguments"
+      ],
+      "title": "Model 'simple_collection'",
       "type": "object"
     },
     "ModelPhotonCollectionStripePattern": {

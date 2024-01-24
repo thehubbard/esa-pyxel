@@ -65,7 +65,7 @@ class CCD(Detector):
                 "characteristics": self.characteristics.to_dict(),
             },
             "data": {
-                "photon": _get_array_if_initialized(self._photon),
+                "photon": self.photon.to_dict(),
                 "pixel": _get_array_if_initialized(self._pixel),
                 "signal": _get_array_if_initialized(self._signal),
                 "image": _get_array_if_initialized(self._image),
@@ -107,7 +107,7 @@ class CCD(Detector):
         import xarray as xr
         from datatree import DataTree
 
-        from pyxel.data_structure import Scene
+        from pyxel.data_structure import Photon, Scene
         from pyxel.detectors import CCDGeometry, Characteristics, Environment
 
         if dct["type"] != "CCD":
@@ -129,7 +129,9 @@ class CCD(Detector):
 
         data: Mapping[str, Any] = dct["data"]
 
-        detector.photon.update(data.get("photon"))
+        detector.photon = Photon.from_dict(
+            geometry=geometry, data=data.get("photon", dict())
+        )
         detector.pixel.update(data.get("pixel"))
         detector.signal.update(data.get("signal"))
         detector.image.update(data.get("image"))

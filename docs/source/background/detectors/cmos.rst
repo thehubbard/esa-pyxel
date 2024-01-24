@@ -26,6 +26,8 @@ Available models
     * :ref:`charge_generation_create_store_detector`
     * :ref:`Simple photoconversion`
     * :ref:`Conversion with custom QE map`
+    * :ref:`Conversion with 3D QE map`
+    * :ref:`Apply QE curve`
     * :ref:`Load charge`
     * :ref:`CosmiX cosmic ray model`
     * :ref:`Dark current rule07`

@@ -128,6 +128,63 @@ Basic example of YAML configuration model:
 
 .. warning:: Model assumes shot noise model was applied to photon array when using binomial sampling.
 
+
+.. _Apply QE curve:
+
+Apply QE curve
+==============
+
+:guilabel:`Photon` → :guilabel:`Charge`
+
+With this model you can create and add charge to :py:class:`~pyxel.detectors.Detector` via photoelectric effect
+by converting photons in charge. Loading QE vs wavelength values from a file to apply the QE to the photon array.
+Accepted file formats are ``.npy``, ``.fits``, ``.txt``, ``.data`` and ``.csv``.
+The column containing wavelength information should be in nanometers.
+After the photoconversion from photon to charge, applying the QE values to the photon array
+takes places and finally integrating along the wavelength dimension to get a 2D charge array as output.
+
+Basic example of YAML configuration model:
+
+.. code-block:: yaml
+
+    - name: load_qe_curve
+      func: pyxel.models.charge_generation.apply_qe_curve
+      enabled: false
+      arguments:
+        filename: "qe_curve.csv"
+        wavelength_col_name: "corrected lambda / nm"
+        qe_col_name: "QE"
+
+.. autofunction:: apply_qe_curve
+
+.. _Conversion with 3D QE map:
+
+Conversion with 3D QE map
+=========================
+
+:guilabel:`Photon` → :guilabel:`Charge`
+
+With this model you can create and add charge to :py:class:`~pyxel.detectors.Detector` via photoelectric effect
+by converting photons in charge. Loading QE values from a file to apply the QE to the photon array.
+Loading a 3D QE map from a file containing one QE map in the size of the detector per wavelength to apply the QE
+to the photon array. The file format must be netCDF, so ending with ``.nc`` to be able to read in.
+The file loaded will be interpreted as xr.DataArray and should have the "wavelength" as coordinate, such that the
+wavelength resolution of the QE map data can be interpolated to match to the resolution of the wavelength used in
+the photon array. After that the photoconversion from photon to charge, applying the QE values to the photon array
+takes places and finally integrating along the wavelength dimension to get a 2D charge array as output.
+
+Basic example of YAML configuration model:
+
+.. code-block:: yaml
+
+    - name: conversion_with_3d_qe_map
+      func: pyxel.models.charge_generation.conversion_with_3d_qe_map
+      enabled: true
+      arguments:
+        filename: "qe_map.nc"
+
+.. autofunction:: conversion_with_3d_qe_map
+
 .. _Load charge:
 
 Load charge

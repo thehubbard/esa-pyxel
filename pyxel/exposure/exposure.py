@@ -141,6 +141,7 @@ class Exposure:
 
 
 # TODO: This function will be deprecated
+# ruff: noqa: C901
 def run_exposure_pipeline(
     processor: Processor,
     readout: "Readout",
@@ -234,10 +235,13 @@ def run_exposure_pipeline(
                         f"Wrong type from attribute 'detector.{key}'. Type: {type(obj)!r}"
                     )
 
-                if obj._array is not None:
-                    data_arr: np.ndarray = np.array(obj)
+                if isinstance(obj, Photon):
+                    if obj._array is not None:
+                        data_arr: np.ndarray = np.array(obj)
+                        unstacked_result[key].append(data_arr)
+                elif obj._array is not None:
+                    data_arr = np.array(obj)
                     unstacked_result[key].append(data_arr)
-
             if progressbar:
                 pbar.update(1)
 
@@ -278,11 +282,12 @@ def _extract_datatree(detector: "Detector", keys: Sequence[ResultId]) -> DataTre
     ...     keys=["photon", "charge", "pixel", "signal", "image", "data"],
     ... )
     DataTree('None', parent=None)
-        Dimensions:  (time: 1, y: 100, x: 100)
+        Dimensions:  (time: 1, y: 100, x: 100, wavelength: 201)
         Coordinates:
           * time     (time) float64 1.0
           * y        (y) int64 0 1 2 3 4 5 6 7 8 9 10 ... 90 91 92 93 94 95 96 97 98 99
           * x        (x) int64 0 1 2 3 4 5 6 7 8 9 10 ... 90 91 92 93 94 95 96 97 98 99
+          * wavelength  (wavelength) float64 500.0 502.0 504.0 ... 896.0 898.0 900.0
         Data variables:
             photon   (time, y, x) float64 1.515e+04 1.592e+04 ... 1.621e+04 1.621e+04
             charge   (time, y, x) float64 1.515e+04 1.592e+04 ... 1.621e+04 1.621e+04

@@ -8,7 +8,7 @@
 """:term:`MKID`-array detector modeling class."""
 
 from collections.abc import Mapping
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, Optional
 
 from pyxel.data_structure import Phase, _get_array_if_initialized
 from pyxel.detectors import Detector
@@ -33,6 +33,8 @@ class MKID(Detector):
         self._characteristics: Characteristics = characteristics
 
         super().__init__(environment=environment)
+
+        self._phase: Optional[Phase] = None
         self._initialize()
 
     def __eq__(self, other) -> bool:
@@ -119,12 +121,19 @@ class MKID(Detector):
                 "characteristics": self.characteristics.to_dict(),
             },
             "data": {
-                "photon": _get_array_if_initialized(self._photon),
+                "photon": self.photon.to_dict(),
                 "pixel": _get_array_if_initialized(self._pixel),
                 "signal": _get_array_if_initialized(self._signal),
                 "image": _get_array_if_initialized(self._image),
                 "phase": _get_array_if_initialized(self._phase),
-                "data": None if self._data is None else self._data.to_dict(),
+                "data": (
+                    None
+                    if self._data is None
+                    else {
+                        key.replace("/", "#"): value
+                        for key, value in self._data.to_dict().items()
+                    }
+                ),
                 "charge": (
                     None
                     if self._charge is None
@@ -155,7 +164,7 @@ class MKID(Detector):
         import xarray as xr
         from datatree import DataTree
 
-        from pyxel.data_structure import Scene
+        from pyxel.data_structure import Photon, Scene
         from pyxel.detectors import Characteristics, Environment, MKIDGeometry
 
         if dct["type"] != "MKID":
@@ -177,7 +186,9 @@ class MKID(Detector):
 
         data: Mapping[str, Any] = dct["data"]
 
-        detector.photon.update(data.get("photon"))
+        detector.photon = Photon.from_dict(
+            geometry=geometry, data=data.get("photon", dict())
+        )
         detector.pixel.update(data.get("pixel"))
         detector.signal.update(data.get("signal"))
         detector.image.update(data.get("image"))
@@ -185,7 +196,7 @@ class MKID(Detector):
         if "data" in data:
             detector._data = DataTree.from_dict(
                 {
-                    key: xr.Dataset.from_dict(value)
+                    key.replace("#", "/"): xr.Dataset.from_dict(value)
                     for key, value in data["data"].items()
                 }
             )

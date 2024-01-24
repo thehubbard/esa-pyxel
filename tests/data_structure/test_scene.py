@@ -88,6 +88,10 @@ def test_empty_scene():
     assert scene == other_scene
 
 
+@pytest.mark.skipif(
+    xr.__version__ == "2023.12.0",
+    reason="Issue with Xarray version 2023.12.0 and DataTree",
+)
 def test_add_source(source: xr.Dataset):
     """Test method 'Scene.add_source'."""
     scene = Scene()

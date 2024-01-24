@@ -44,8 +44,8 @@ class Detector:
 
         self.header: dict[str, object] = collections.OrderedDict()
 
-        self._photon: Optional[Photon] = None
         self._scene: Optional[Scene] = None
+        self._photon: Optional[Photon] = None
         self._charge: Optional[Charge] = None
         self._pixel: Optional[Pixel] = None
         self._signal: Optional[Signal] = None
@@ -67,8 +67,8 @@ class Detector:
     def __eq__(self, other) -> bool:
         return (
             isinstance(other, Detector)
-            and self._photon == other._photon
             and self._scene == other._scene
+            and self._photon == other._photon
             and self._charge == other._charge
             and self._pixel == other._pixel
             and self._signal == other._signal
@@ -102,7 +102,7 @@ class Detector:
 
     @photon.setter
     def photon(self, obj: Photon) -> None:
-        self.photon.array = obj.array
+        self.photon._array = obj._array
 
     @property
     def scene(self) -> Scene:
@@ -116,6 +116,7 @@ class Detector:
         """TBW."""
         self._scene = obj
 
+    # TODO: Why no setter for charge, pixel, signal and image?
     @property
     def charge(self) -> Charge:
         """TBW."""
@@ -249,6 +250,7 @@ class Detector:
     def empty(self, reset: bool = True) -> None:
         """Empty the data in the detector."""
         self.scene = Scene()
+
         self.photon.empty()
         self.charge.empty()
 
@@ -437,8 +439,8 @@ class Detector:
             Dictionary of attribute memory usage
         """
         attributes = [
-            "_photon",
             "_scene",
+            "_photon",
             "_charge",
             "_pixel",
             "_signal",

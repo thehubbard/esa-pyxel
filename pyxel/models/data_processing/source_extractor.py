@@ -175,7 +175,7 @@ def extract_roi_to_xarray(
         ) from exc
 
     if array_type == "pixel":
-        data_2d = detector.pixel.array
+        data_2d: np.ndarray = detector.pixel.array
     elif array_type == "signal":
         data_2d = detector.signal.array
     elif array_type == "image":

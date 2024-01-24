@@ -9,7 +9,6 @@
 
 # flake8: noqa
 from typing import Optional
-from collections.abc import Mapping
 
 import numpy as np
 
