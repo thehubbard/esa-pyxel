@@ -147,7 +147,6 @@ def project_objects_to_detector(
 
 def simple_collection(
     detector: Detector,
-    pixel_scale: float,
     aperture: float,
     filter_band: tuple[float, float],
 ):
@@ -157,8 +156,6 @@ def simple_collection(
     ----------
     detector : Detector
         Pyxel detector object.
-    pixel_scale : float
-        Pixel scale. Unit: arcsec/pixel.
     aperture : float
         Collecting area of the telescope. Unit: m.
     filter_band : tuple[float, float]
@@ -191,7 +188,7 @@ def simple_collection(
 
     projection: xr.DataArray = project_objects_to_detector(
         scene_data=scene_data,
-        pixel_scale=pixel_scale * u.arcsec / u.pixel,
+        pixel_scale=detector.geometry.pixel_scale * u.arcsec / u.pixel,
         rows=detector.geometry.row,
         cols=detector.geometry.col,
     )

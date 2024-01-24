@@ -425,7 +425,6 @@ def optical_psf(
     detector: Detector,
     wavelength: float,
     fov_arcsec: float,
-    pixelscale: float,
     optical_system: Sequence[Mapping[str, Any]],
 ) -> None:
     """Model function for poppy optics model: convolve photon array with psf.
@@ -438,9 +437,6 @@ def optical_psf(
         Wavelength of incoming light in meters.
     fov_arcsec : float
         Field Of View on detector plane in arcsec.
-    pixelscale : float
-        Pixel scale on detector plane (arcsec/pixel).
-        Defines sampling resolution of :term:`PSF`.
     optical_system : list of dict
         List of optical elements before detector with their specific arguments.
     """
@@ -450,10 +446,10 @@ def optical_psf(
 
     # Validation and Conversion stage
     # These steps will be probably moved into the YAML engine
-    if wavelength < 0.0 or fov_arcsec < 0.0 or pixelscale < 0.0:
+    if wavelength < 0.0 or fov_arcsec < 0.0 or detector.geometry.pixel_scale < 0.0:
         raise ValueError(
             "Expecting strictly positive value for 'wavelength', "
-            "'fov_arcsec' and 'pixelscale'."
+            "'fov_arcsec' and 'pixel_scale'."
         )
 
     # Convert 'optical_system' to 'optical_parameters'
@@ -466,7 +462,7 @@ def optical_psf(
     images, wavefronts = calc_psf(
         wavelength=wavelength,
         fov_arcsec=fov_arcsec,
-        pixelscale=pixelscale,
+        pixelscale=detector.geometry.pixel_scale,
         optical_parameters=optical_parameters,
     )
 

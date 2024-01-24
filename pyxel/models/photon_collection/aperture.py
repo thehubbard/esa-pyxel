@@ -310,7 +310,6 @@ def project_objects_to_detector(
 
 def simple_aperture(
     detector: Detector,
-    pixel_scale: float,
     aperture: float,
     wavelength_band: tuple[float, float],
 ):
@@ -320,8 +319,6 @@ def simple_aperture(
     ----------
     detector : Detector
         Pyxel detector object.
-    pixel_scale : float
-        Pixel scale. Unit: arcsec/pixel.
     aperture : float
         Collecting area of the telescope. Unit: m.
     wavelength_band : tuple[float, float]
@@ -353,7 +350,7 @@ def simple_aperture(
 
     projection = project_objects_to_detector(
         selected_data=selected_data,
-        pixel_scale=pixel_scale * u.arcsec / u.pixel,
+        pixel_scale=detector.geometry.pixel_scale * u.arcsec / u.pixel,
         rows=detector.geometry.row,
         cols=detector.geometry.col,
     )
