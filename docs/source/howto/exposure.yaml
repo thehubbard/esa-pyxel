@@ -29,6 +29,7 @@ ccd_detector:
     total_thickness: 40.    # um
     pixel_vert_size: 10.    # um
     pixel_horz_size: 10.    # um
+    pixel_scale: 0.01       # arcsec/pixel
 
   environment:
     temperature: 300        # K
@@ -61,8 +62,7 @@ pipeline:
       func: pyxel.models.photon_collection.optical_psf
       enabled: true
       arguments:
-        fov_arcsec: 5 # FOV in arcseconds
-        pixelscale: 0.01 #arcsec/pixel
+        fov_arcsec: 5 # FOV in arcsecond
         wavelength: 0.6e-6 # wavelength in meters
         optical_system:
           - item: CircularAperture
