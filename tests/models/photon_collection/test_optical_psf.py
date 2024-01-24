@@ -140,13 +140,6 @@ def test_create_optical_parameter(dct: Mapping, exp_parameter):
             marks=pytest.mark.xfail(raises=ValueError, strict=True),
             id="Negative 'fov_arcsec'",
         ),
-        # pytest.param(
-        #     0.6e-6,
-        #     5,
-        #     [{"item": "CircularAperture", "radius": 3.0}],
-        #     marks=pytest.mark.xfail(raises=ValueError, strict=True),
-        #     id="Negative 'pixelscale'",
-        # ),
     ],
 )
 def test_optical_psf(
