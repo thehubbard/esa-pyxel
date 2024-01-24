@@ -17,6 +17,8 @@ Pyxel doesn't use SemVer anymore, since most minor releases have at least minor 
   , [!766](https://gitlab.com/esa/pyxel/-/merge_requests/766)
   , [!813](https://gitlab.com/esa/pyxel/-/merge_requests/813)
   and [!815](https://gitlab.com/esa/pyxel/-/merge_requests/815)).
+* Moving pixel scale parameter to detector geometry.
+  (See [!816](https://gitlab.com/esa/pyxel/-/merge_requests/816)).
 
 ### Documentation
 
