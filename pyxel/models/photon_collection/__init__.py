@@ -5,7 +5,8 @@
 #  this file, may be copied, modified, propagated, or distributed except according to
 #  the terms contained in the file ‘LICENCE.txt’.
 
-"""TBW."""
+"""Photon generation models are used to add to and manipulate data in Photon array
+inside the Detector object. """
 
 # flake8: noqa
 from .illumination import illumination

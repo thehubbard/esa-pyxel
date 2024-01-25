@@ -36,13 +36,14 @@ Available models
     * :ref:`load_star_map`
 * Photon collection
     * :ref:`photon_collection_create_store_detector`
-    * :ref:`aperture`
+    * :ref:`simple_collection`
     * :ref:`Load image`
     * :ref:`Simple illumination`
     * :ref:`Stripe pattern`
     * :ref:`Shot noise`
     * :ref:`Physical Optics Propagation in PYthon (POPPY)`
-    * :ref:`Load PSF`
+    * :ref:`Load monochromatic PSF`
+    * :ref:`Load multiwavelength PSF`
 * Charge generation
     * :ref:`charge_generation_create_store_detector`
     * :ref:`Simple photoconversion`
