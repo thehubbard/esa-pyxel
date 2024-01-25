@@ -95,7 +95,7 @@ Finally, the objects are projected onto detector, while converting the object co
 .. _simple_collection:
 
 Simple collection
-===============
+=================
 
 :guilabel:`Scene` → :guilabel:`Photon`
 
