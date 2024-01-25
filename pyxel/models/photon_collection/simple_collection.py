@@ -6,6 +6,7 @@
 #   the terms contained in the file ‘LICENCE.txt’.
 
 """Convert scene to photon with aperture model."""
+from typing import Union
 
 import astropy.units as u
 import numpy as np
@@ -167,7 +168,7 @@ def project_objects_to_detector(
     rows: int,
     cols: int,
     integrate_wavelength: bool = True,
-) -> np.ndarray | xr.DataArray:
+) -> Union[np.ndarray, xr.DataArray]:
     """
     Project objects onto detector. Converting scene from arcsec to detector coordinates.
 
@@ -304,14 +305,14 @@ def project_objects_to_detector(
 
     if integrate_wavelength:
         # get empty array in shape of the detector
-        projection = np.zeros([rows, cols])
+        projection_2d: np.ndarray = np.zeros([rows, cols])
 
         # fill in projection of objects in detector coordinates
         for x, group_x in selected_data2.groupby("detector_coords_x"):
             for y, group_y in group_x.groupby("detector_coords_y"):
-                projection[int(y), int(x)] += group_y["converted_flux"].values.sum()
+                projection_2d[int(y), int(x)] += group_y["converted_flux"].values.sum()
 
-        projected: np.ndarray = projection
+        return projection_2d
 
     else:
         # get empty array in shape of the 3D datacube of the detector
@@ -324,14 +325,14 @@ def project_objects_to_detector(
                     group_y["converted_flux"].squeeze()
                 )
 
-        projected: xr.DataArray = xr.DataArray(
+        projection_3d: xr.DataArray = xr.DataArray(
             projection,
             dims=["wavelength", "y", "x"],
             coords={"wavelength": selected_data2.wavelength},
             attrs={"units": selected_data2.converted_flux.units},
         )
 
-    return projected
+        return projection_3d
 
 
 def simple_collection(
@@ -370,16 +371,18 @@ def simple_collection(
         flux = u.Quantity(integrated_flux, unit=integrated_flux.units)
 
         # get flux converted to ph
-        converted_flux: u.Quantity = convert_flux(
+        converted_flux_2d: u.Quantity = convert_flux(
             flux=flux, t_exp=time, aperture=aperture
         )
 
         # load converted flux to selected dataset
         scene_data["converted_flux"] = xr.DataArray(
-            converted_flux, dims="ref", attrs={"units": str(converted_flux.unit)}
+            converted_flux_2d, dims="ref", attrs={"units": str(converted_flux_2d.unit)}
         )
 
-        projection = project_objects_to_detector(
+        photon_projection_2d: Union[
+            np.ndarray, xr.DataArray
+        ] = project_objects_to_detector(
             scene_data=scene_data,
             pixel_scale=detector.geometry.pixel_scale * u.arcsec / u.pixel,
             rows=detector.geometry.row,
@@ -387,25 +390,30 @@ def simple_collection(
             integrate_wavelength=integrate_wavelength,
         )
 
-        detector.photon.array_2d = projection
+        if not isinstance(photon_projection_2d, np.ndarray):
+            raise NotImplementedError
+
+        detector.photon.array_2d = photon_projection_2d
 
     else:
         # get flux in ph/(s nm cm^2)
         flux = u.Quantity(np.asarray(scene_data["flux"]), unit=scene_data["flux"].units)
 
         # get flux converted to ph/nm
-        converted_flux: u.Quantity = convert_flux(
+        converted_flux_3d: u.Quantity = convert_flux(
             flux=flux, t_exp=time, aperture=aperture
         )
 
         # load converted flux to scene_data dataset
         scene_data["converted_flux"] = xr.DataArray(
-            converted_flux,
+            converted_flux_3d,
             dims=["ref", "wavelength"],
-            attrs={"units": str(converted_flux.unit)},
+            attrs={"units": str(converted_flux_3d.unit)},
         )
 
-        projection: xr.DataArray = project_objects_to_detector(
+        photon_projection_3d: Union[
+            np.ndarray, xr.DataArray
+        ] = project_objects_to_detector(
             scene_data=scene_data,
             pixel_scale=detector.geometry.pixel_scale * u.arcsec / u.pixel,
             rows=detector.geometry.row,
@@ -413,4 +421,7 @@ def simple_collection(
             integrate_wavelength=integrate_wavelength,
         )
 
-        detector.photon.array_3d = projection
+        if not isinstance(photon_projection_3d, xr.DataArray):
+            raise NotImplementedError
+
+        detector.photon.array_3d = photon_projection_3d

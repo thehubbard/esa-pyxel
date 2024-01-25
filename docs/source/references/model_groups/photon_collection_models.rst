@@ -6,7 +6,7 @@ Photon Collection models
 
 .. currentmodule:: pyxel.models.photon_collection
 
-Photon generation models are used to add to and manipulate data in :py:class:`~pyxel.data_structure.Photon` array
+Photon generation models are used to add and manipulate data in :py:class:`~pyxel.data_structure.Photon` array
 inside the :py:class:`~pyxel.detectors.Detector` object. If the :ref:`scene generation <scene_generation>` model group
 is used, a model like :ref:`simple_collection` needs to be enabled in the pipeline to make the conversion from
 :guilabel:`Scene` to :guilabel:`Photon`.
