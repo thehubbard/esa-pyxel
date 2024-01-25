@@ -5953,6 +5953,12 @@
               ],
               "title": "filter_band",
               "type": "array"
+            },
+            "integrate_wavelength": {
+              "default": true,
+              "description": "If true, integrates along the wavelength else multiwavelength.",
+              "title": "integrate_wavelength",
+              "type": "boolean"
             }
           },
           "required": [
