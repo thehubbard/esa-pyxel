@@ -8,7 +8,7 @@ Photon Collection models
 
 Photon generation models are used to add to and manipulate data in :py:class:`~pyxel.data_structure.Photon` array
 inside the :py:class:`~pyxel.detectors.Detector` object. If the :ref:`scene generation <scene_generation>` model group
-is used, a model like :ref:`aperture` needs to be enabled in the pipeline to make the conversion from
+is used, a model like :ref:`simple_collection` needs to be enabled in the pipeline to make the conversion from
 :guilabel:`Scene` to :guilabel:`Photon`.
 Otherwise, models like :ref:`Simple illumination` or :ref:`Load image` need to be enabled to initialize the
 :py:class:`~pyxel.data_structure.Photon` array.
@@ -72,6 +72,10 @@ Simple aperture
 
 :guilabel:`Scene` → :guilabel:`Photon`
 
+.. deprecated:: 1.15
+    The model **simple_aperture** has been deprecated and will be removed for version 2.0.
+    Please use model **simple_collection** instead.
+
 Converts scene to 2D photon with given aperture.
 First an xarray Dataset will be extracted from the Scene for a selected wavelength band, where the flux of the objects will be integrated along the wavelength band.
 This integrated flux in photon/(s cm2) is converted to photon/(s pixel).
@@ -90,15 +94,21 @@ Finally, the objects are projected onto detector, while converting the object co
 
 .. _simple_collection:
 
-Simple aperture
+Simple collection
 ===============
 
 :guilabel:`Scene` → :guilabel:`Photon`
 
-Converts scene to photon with given aperture and keeping the wavelength dimension.
+Converts scene to photon with given aperture.
 First an xarray Dataset will be extracted from the Scene for a selected wavelength band.
+It is possible to use this model in monochromatic or multiwavelength mode.
+With ``integrate_wavelenght`` set to true (default) the monochromatic mode is chosen,
+as the flux of the objects in the scene will be integrated along the wavelength band.
+The integrated flux in photon/(s cm2) is converted to photon/(s pixel).
+With ``integrate_wavelenght`` set to false, the photon has the dimensions "wavelength", "y", and "x".
+
 The objects are projected onto detector, while converting the object coordinates from arcsec to detector
-coordinates (pixel).
+coordinates (pixel) using ``pixel_scale`` defined in the :py:class:`~pyxel.detectors.Detector.Geometry`.
 
 .. code-block:: yaml
 
@@ -108,6 +118,7 @@ coordinates (pixel).
       arguments:
         aperture: 126.70e-3 #m
         filter_band: [420, 1000] #nm
+        integrate_wavelength: true
 
 .. autofunction:: simple_collection
 
