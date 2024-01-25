@@ -316,10 +316,10 @@ Example of the configuration file:
 
 .. autofunction:: optical_psf
 
-.. _Load PSF:
+.. _Load monochromatic PSF:
 
-Load PSF
-========
+Load monochromatic PSF
+======================
 
 :guilabel:`Photon` → :guilabel:`Photon`
 
@@ -341,6 +341,37 @@ Example of the configuration file:
         normalize_kernel: true  # optional
 
 .. autofunction:: load_psf
+
+.. _Load multiwavelength PSF:
+
+Load multiwavelength PSF
+========================
+
+:guilabel:`Photon` → :guilabel:`Photon`
+
+With this model you can load a Point Spread Function (:term:`PSF`) from a file containing wavelength information.
+Currently, only ``.fits`` files are a valid input.
+The model will convolve the :py:class:`~pyxel.data_structure.Photon` array
+inside the :py:class:`~pyxel.detectors.Detector` object with the loaded :term:`PSF`, using the
+`astropy.convolution.convolve_fft <https://docs.astropy.org/en/stable/api/astropy.convolution.convolve_fft.html>`_
+function.
+
+Example of the configuration file:
+
+.. code-block:: yaml
+
+    - name: load_wavelength_psf
+      func: pyxel.models.photon_collection.load_wavelength_psf
+      enabled: true
+      arguments:
+        filename: "data/psf.fits"
+        wavelength_col: "dim_0"
+        x_col: "dim_2"
+        y_col: "dim_1"
+        wavelength_table_name: "waves"
+        normalize_kernel: false  # optional
+
+.. autofunction:: load_wavelength_psf
 
 .. _Wavelength dependence AIRS:
 
