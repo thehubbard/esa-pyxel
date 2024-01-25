@@ -7,6 +7,8 @@
 
 """Convert scene to photon with aperture model."""
 
+import warnings
+
 import astropy.units as u
 import numpy as np
 import xarray as xr
@@ -324,6 +326,9 @@ def simple_aperture(
     wavelength_band : tuple[float, float]
         Wavelength band. Unit: nm.
     """
+    warnings.warn(
+        "Deprecated. Will be removed in Pyxel 2.0", DeprecationWarning, stacklevel=1
+    )
     # get dataset for given wavelength and scene object.
     selected_data: xr.Dataset = extract_wavelength(
         scene=detector.scene, wavelength_band=wavelength_band
