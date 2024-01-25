@@ -167,7 +167,7 @@ def project_objects_to_detector(
     rows: int,
     cols: int,
     integrate_wavelength: bool = True,
-) -> xr.DataArray:
+) -> np.ndarray | xr.DataArray:
     """
     Project objects onto detector. Converting scene from arcsec to detector coordinates.
 
@@ -186,9 +186,39 @@ def project_objects_to_detector(
 
     Returns
     -------
-     projected_xr : xr.DataArray
-        Projected objects in detector coordinates.
+     projected : np.ndarray | xr.DataArray
+        Projected objects in detector coordinates. Numpy.ndarray if integrate_wavelength=True,
+        xr.DataArray if integrate_wavelength=False.
 
+    Examples
+    --------
+    >>> scene_data
+    <xarray.Dataset>
+    Dimensions:            (ref: 345, wavelength: 201)
+    Coordinates:
+      * ref                (ref) int64 0 1 2 3 4 5 6 ... 338 339 340 341 342 343 344
+      * wavelength         (wavelength) float64 500.0 502.0 504.0 ... 898.0 900.0
+    Data variables:
+        x                  (ref) float64 2.057e+05 2.058e+05 ... 2.031e+05 2.03e+05
+        y                  (ref) float64 8.575e+04 8.58e+04 ... 8.795e+04 8.807e+04
+        weight             (ref) float64 11.49 14.13 15.22 ... 15.21 11.51 8.727
+        flux               (ref, wavelength) float64 0.2331 0.231 ... 2.213 2.212
+        converted_flux     (ref) float64 1.616e+08 7.695e+06 ... 9.719e+07 8.949e+08
+        detector_coords_x  (ref) float64 1.307e+03 1.252e+03 ... 2.748e+03 2.809e+03
+        detector_coords_y  (ref) float64 1.454e+03 1.487e+03 ... 2.79e+03 2.859e+03
+    >>> project_objects_to_detector(
+    ...     selected_data=selected_data,
+    ...     pixel_scale=1.65 * u.arcsec / u.pixel,
+    ...     rows=4096,
+    ...     cols=4132,
+    ... )
+    array([[0., 0., 0., ..., 0., 0., 0.],
+           [0., 0., 0., ..., 0., 0., 0.],
+           [0., 0., 0., ..., 0., 0., 0.],
+           ...,
+           [0., 0., 0., ..., 0., 0., 0.],
+           [0., 0., 0., ..., 0., 0., 0.],
+           [0., 0., 0., ..., 0., 0., 0.]])
     """
     # we project the stars in the FOV:
     stars_coords = SkyCoord(
@@ -281,10 +311,7 @@ def project_objects_to_detector(
             for y, group_y in group_x.groupby("detector_coords_y"):
                 projection[int(y), int(x)] += group_y["converted_flux"].values.sum()
 
-        projected_xr = xr.DataArray(
-            projection,
-            dims=["y", "x"],
-        )
+        projected: np.ndarray = projection
 
     else:
         # get empty array in shape of the 3D datacube of the detector
@@ -297,14 +324,14 @@ def project_objects_to_detector(
                     group_y["converted_flux"].squeeze()
                 )
 
-        projected_xr = xr.DataArray(
+        projected: xr.DataArray = xr.DataArray(
             projection,
             dims=["wavelength", "y", "x"],
             coords={"wavelength": selected_data2.wavelength},
             attrs={"units": selected_data2.converted_flux.units},
         )
 
-    return projected_xr
+    return projected
 
 
 def simple_collection(
@@ -352,6 +379,16 @@ def simple_collection(
             converted_flux, dims="ref", attrs={"units": str(converted_flux.unit)}
         )
 
+        projection = project_objects_to_detector(
+            scene_data=scene_data,
+            pixel_scale=detector.geometry.pixel_scale * u.arcsec / u.pixel,
+            rows=detector.geometry.row,
+            cols=detector.geometry.col,
+            integrate_wavelength=integrate_wavelength,
+        )
+
+        detector.photon.array_2d = projection
+
     else:
         # get flux in ph/(s nm cm^2)
         flux = u.Quantity(np.asarray(scene_data["flux"]), unit=scene_data["flux"].units)
@@ -368,12 +405,12 @@ def simple_collection(
             attrs={"units": str(converted_flux.unit)},
         )
 
-    projection: xr.DataArray = project_objects_to_detector(
-        scene_data=scene_data,
-        pixel_scale=detector.geometry.pixel_scale * u.arcsec / u.pixel,
-        rows=detector.geometry.row,
-        cols=detector.geometry.col,
-        integrate_wavelength=integrate_wavelength,
-    )
+        projection: xr.DataArray = project_objects_to_detector(
+            scene_data=scene_data,
+            pixel_scale=detector.geometry.pixel_scale * u.arcsec / u.pixel,
+            rows=detector.geometry.row,
+            cols=detector.geometry.col,
+            integrate_wavelength=integrate_wavelength,
+        )
 
-    detector.photon.array_3d = projection
+        detector.photon.array_3d = projection

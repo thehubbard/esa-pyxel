@@ -327,7 +327,10 @@ def simple_aperture(
         Wavelength band. Unit: nm.
     """
     warnings.warn(
-        "Deprecated. Will be removed in Pyxel 2.0", DeprecationWarning, stacklevel=1
+        "The model `simple_aperture` is deprecated and will be removed in Pyxel 2.0. "
+        "Please use `simple_collection` instead.",
+        DeprecationWarning,
+        stacklevel=1,
     )
     # get dataset for given wavelength and scene object.
     selected_data: xr.Dataset = extract_wavelength(
