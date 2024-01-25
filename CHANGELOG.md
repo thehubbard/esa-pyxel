@@ -29,7 +29,9 @@ Pyxel doesn't use SemVer anymore, since most minor releases have at least minor 
   (See [!765](https://gitlab.com/esa/pyxel/-/merge_requests/765)).
 * Add model "load_PSF_wavelength".
   (See [!686](https://gitlab.com/esa/pyxel/-/merge_requests/686)).
-
+* Refactor aperture and simple collection.
+  (See [!818](https://gitlab.com/esa/pyxel/-/merge_requests/818)).
+* 
 ### Others
 
 
