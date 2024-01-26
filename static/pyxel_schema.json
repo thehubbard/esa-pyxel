@@ -1626,6 +1626,9 @@
                 "$ref": "#/definitions/ModelPhotonCollectionOpticalPsf"
               },
               {
+                "$ref": "#/definitions/ModelPhotonCollectionOpticalPsfMultiWavelength"
+              },
+              {
                 "$ref": "#/definitions/ModelPhotonCollectionShotNoise"
               },
               {
@@ -5799,6 +5802,79 @@
         "arguments"
       ],
       "title": "Model 'optical_psf'",
+      "type": "object"
+    },
+    "ModelPhotonCollectionOpticalPsfMultiWavelength": {
+      "additionalProperties": false,
+      "description": "Model function for poppy optics model: convolve photon array with psf.",
+      "properties": {
+        "arguments": {
+          "additionalProperties": false,
+          "properties": {
+            "fov_arcsec": {
+              "description": "Field Of View on detector plane in arcsec.",
+              "title": "fov_arcsec",
+              "type": "number"
+            },
+            "optical_system": {
+              "description": "List of optical elements before detector with their specificarguments.",
+              "items": {
+                "type": "object"
+              },
+              "title": "optical_system",
+              "type": "array"
+            },
+            "wavelengths": {
+              "additionalItems": false,
+              "description": "Wavelengths of incoming light in meters.",
+              "items": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "maxItems": 2,
+              "minItems": 2,
+              "prefixItems": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "number"
+                }
+              ],
+              "title": "wavelengths",
+              "type": "array"
+            }
+          },
+          "required": [
+            "wavelengths",
+            "fov_arcsec",
+            "optical_system"
+          ],
+          "title": "Parameters",
+          "type": "object"
+        },
+        "enabled": {
+          "default": true,
+          "type": "boolean"
+        },
+        "func": {
+          "const": "pyxel.models.photon_collection.optical_psf_multi_wavelength",
+          "default": "pyxel.models.photon_collection.optical_psf_multi_wavelength",
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "arguments"
+      ],
+      "title": "Model 'optical_psf_multi_wavelength'",
       "type": "object"
     },
     "ModelPhotonCollectionShotNoise": {

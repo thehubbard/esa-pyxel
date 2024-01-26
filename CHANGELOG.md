@@ -33,6 +33,8 @@ Pyxel doesn't use SemVer anymore, since most minor releases have at least minor 
   (See [!686](https://gitlab.com/esa/pyxel/-/merge_requests/686)).
 * Refactor aperture and simple collection.
   (See [!818](https://gitlab.com/esa/pyxel/-/merge_requests/818)).
+* Add model 'optical_psf_multi_wavelength' from group 'Photon Collection'.
+  (See [!820](https://gitlab.com/esa/pyxel/-/merge_requests/820)).
 
 ### Others
 * Convert DeprecationWarning to FutureWarning.
