@@ -329,7 +329,7 @@ def simple_aperture(
     warnings.warn(
         "The model `simple_aperture` is deprecated and will be removed in Pyxel 2.0. "
         "Please use `simple_collection` instead.",
-        DeprecationWarning,
+        FutureWarning,
         stacklevel=1,
     )
     # get dataset for given wavelength and scene object.
