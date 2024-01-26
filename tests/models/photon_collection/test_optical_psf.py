@@ -25,6 +25,8 @@ from pyxel.models.photon_collection.poppy import (
     create_optical_parameter,
 )
 
+_ = pytest.importorskip("poppy")
+
 
 @pytest.fixture
 def ccd_3x3() -> CCD:

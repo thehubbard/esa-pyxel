@@ -10,7 +10,7 @@
 import logging
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
-from typing import Any, Union
+from typing import Any, Optional, Union
 
 import numpy as np
 from astropy.convolution import convolve_fft
@@ -50,10 +50,13 @@ class ThinLens:
     radius : float
         Pupil radius, in meters, over which the Zernike defocus term should be computed
         such that rho = 1 at r = `radius`.
+    reference_wavelength : float
+        Wavelength, in meters, at which that number of waves of defocus is specified.
     """
 
     nwaves: float
     radius: float
+    reference_wavelength: Optional[float] = None
 
 
 @dataclass
@@ -208,7 +211,13 @@ def create_optical_parameter(dct: Mapping) -> OpticalParameter:
         return CircularAperture(radius=dct["radius"])
 
     elif dct["item"] == "ThinLens":
-        return ThinLens(nwaves=dct["nwaves"], radius=dct["radius"])
+        return ThinLens(
+            nwaves=dct["nwaves"],
+            radius=dct["radius"],
+            reference_wavelength=dct.get(
+                "reference_wavelength",
+            ),
+        )
 
     elif dct["item"] == "SquareAperture":
         return SquareAperture(size=dct["size"])
@@ -334,29 +343,29 @@ def create_optical_item(
 
 
 def calc_psf(
-    wavelength: float,
+    wavelengths: Sequence[float],
     fov_arcsec: float,
     pixelscale: float,
-    optical_parameters: Sequence[OpticalParameter],
-) -> tuple[Sequence[fits.hdu.image.PrimaryHDU], Sequence["op.Wavefront"]]:
+    optical_elements: Sequence["op.OpticalElement"],
+) -> tuple[fits.PrimaryHDU, fits.PrimaryHDU]:
     """Calculate the point spread function for the given optical system.
 
     Parameters
     ----------
-    wavelength : float
-        Wavelength of incoming light in meters.
+    wavelengths : sequence of float
+        Wavelengths of incoming light in meters.
     fov_arcsec : float, optional
         Field Of View on detector plane in arcsec.
     pixelscale : float
         Pixel scale on detector plane (arcsec/pixel).
         Defines sampling resolution of :term:`PSF`.
-    optical_parameters : list of OpticalParameter
-        List of optical parameters before detector with their specific arguments.
+    optical_elements : list of OpticalElement
+        List of optical elements to apply.
 
     Returns
     -------
-    Sequence of :term:`FITS` and sequence of Wavefront
-        Tuple of lists containing the psf and intermediate wavefronts.
+    Tuple of two :term:`FITS`
+        Tuple of psf and intermediate wavefronts.
     """
     if not WITH_POPPY:
         raise ModuleNotFoundError(
@@ -378,23 +387,17 @@ def calc_psf(
 
     # Create the optical element(s)
     # osys = op.OpticalSystem(npix=1000)  # default: 1024
-    for param in optical_parameters:
-        element: op.OpticalElement = create_optical_item(
-            param=param,
-            wavelength=wavelength,
-        )
 
+    element: "op.OpticalElement"
+    for element in optical_elements:
         instrument.optsys.add_pupil(element)
-        # instrument.optsys.add_pupil(element)
 
     instrument.optsys.add_detector(
         pixelscale=pixelscale,
         fov_arcsec=fov_arcsec,
     )
 
-    output_fits, wavefronts = instrument.calc_datacube(
-        wavelengths=wavelength,
-    )
+    output_fits, wavefronts = instrument.calc_datacube(wavelengths=wavelengths)
 
     return output_fits, wavefronts
 
@@ -462,10 +465,85 @@ def optical_psf(
         create_optical_parameter(dct) for dct in optical_system
     ]
 
+    optical_elements: Sequence["op.OpticalElement"] = [
+        create_optical_item(param=param, wavelength=wavelength)
+        for param in optical_parameters
+    ]
+
+    # Processing
+    # Get a Point Spread Function
+    image_3d: fits.PrimaryHDU
+    wavefront_3d: fits.PrimaryHDU
+    image_3d, wavefront_3d = calc_psf(
+        wavelengths=[wavelength],
+        fov_arcsec=fov_arcsec,
+        pixelscale=detector.geometry.pixel_scale,
+        optical_elements=optical_elements,
+    )
+
+    data_2d: np.ndarray = image_3d.data[0]
+
+    # Convolution
+    new_array_2d: np.ndarray = apply_convolution(
+        data_2d=detector.photon.array,
+        kernel_2d=data_2d,
+    )
+
+    detector.photon.array = new_array_2d
+
+
+def optical_psf_multi_wavelength(
+    detector: Detector,
+    wavelengths: tuple[float, float],
+    fov_arcsec: float,
+    optical_system: Sequence[Mapping[str, Any]],
+) -> None:
+    """Model function for poppy optics model: convolve photon array with psf.
+
+    Parameters
+    ----------
+    detector : Detector
+        Pyxel Detector object.
+    wavelengths : tuple of floats
+        Wavelengths of incoming light in meters.
+    fov_arcsec : float
+        Field Of View on detector plane in arcsec.
+    optical_system : list of dict
+        List of optical elements before detector with their specific arguments.
+    """
+    logging.getLogger("poppy").setLevel(
+        logging.WARNING
+    )  # TODO: Fix this. See issue #81
+
+    # Validation and Conversion stage
+    # These steps will be probably moved into the YAML engine
+    if not len(wavelengths) != 2:
+        raise ValueError("Expecting two wavelengths in parameter 'wavelengths'.")
+
+    min_wavelength, max_wavelength = wavelengths
+    if 0 < min_wavelength:
+        raise ValueError("Expecting strictly positive value for the 'wavelengths'")
+
+    if min_wavelength > max_wavelength:
+        raise ValueError(
+            f"Min wavelength must be smaller that max wavelength. Got: {wavelengths!r}"
+        )
+
+    if fov_arcsec < 0.0 or detector.geometry.pixel_scale < 0.0:
+        raise ValueError(
+            "Expecting strictly positive value for 'wavelength', "
+            "'fov_arcsec' and 'pixel_scale'."
+        )
+
+    # Convert 'optical_system' to 'optical_parameters'
+    optical_parameters: Sequence[OpticalParameter] = [
+        create_optical_parameter(dct) for dct in optical_system
+    ]
+
     # Processing
     # Get a Point Spread Function
     images, wavefronts = calc_psf(
-        wavelength=wavelength,
+        wavelengths=[wavelength],
         fov_arcsec=fov_arcsec,
         pixelscale=detector.geometry.pixel_scale,
         optical_parameters=optical_parameters,
