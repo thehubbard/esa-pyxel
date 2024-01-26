@@ -33,8 +33,10 @@ Pyxel doesn't use SemVer anymore, since most minor releases have at least minor 
   (See [!686](https://gitlab.com/esa/pyxel/-/merge_requests/686)).
 * Refactor aperture and simple collection.
   (See [!818](https://gitlab.com/esa/pyxel/-/merge_requests/818)).
-* 
+
 ### Others
+* Convert DeprecationWarning to FutureWarning.
+  (See [!821](https://gitlab.com/esa/pyxel/-/merge_requests/821)).
 
 
 ## 1.14 / 2024-01-19
