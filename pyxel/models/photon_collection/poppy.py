@@ -50,6 +50,23 @@ class ThinLens:
     radius : float
         Pupil radius, in meters, over which the Zernike defocus term should be computed
         such that rho = 1 at r = `radius`.
+    """
+
+    nwaves: float
+    radius: float
+
+
+@dataclass
+class NewThinLens:
+    """Parameters for an idealized thin lens.
+
+    Parameters
+    ----------
+    nwaves : float
+        The number of waves of defocus, peak to valley.
+    radius : float
+        Pupil radius, in meters, over which the Zernike defocus term should be computed
+        such that rho = 1 at r = `radius`.
     reference_wavelength : float
         Wavelength, in meters, at which that number of waves of defocus is specified.
     """
@@ -192,6 +209,17 @@ OpticalParameter = Union[
     ZernikeWFE,
     SineWaveWFE,
 ]
+NewOpticalParameter = Union[
+    CircularAperture,
+    NewThinLens,
+    SquareAperture,
+    RectangleAperture,
+    HexagonAperture,
+    MultiHexagonalAperture,
+    SecondaryObscuration,
+    ZernikeWFE,
+    SineWaveWFE,
+]
 
 
 def create_optical_parameter(dct: Mapping) -> OpticalParameter:
@@ -214,9 +242,69 @@ def create_optical_parameter(dct: Mapping) -> OpticalParameter:
         return ThinLens(
             nwaves=dct["nwaves"],
             radius=dct["radius"],
-            reference_wavelength=dct.get(
-                "reference_wavelength",
-            ),
+        )
+
+    elif dct["item"] == "SquareAperture":
+        return SquareAperture(size=dct["size"])
+
+    elif dct["item"] == "RectangularAperture":
+        return RectangleAperture(width=dct["width"], height=dct["height"])
+
+    elif dct["item"] == "HexagonAperture":
+        return HexagonAperture(side=dct["side"])
+
+    elif dct["item"] == "MultiHexagonalAperture":
+        return MultiHexagonalAperture(
+            side=dct["side"],
+            rings=dct["rings"],
+            gap=dct["gap"],
+        )  # cm
+
+    elif dct["item"] == "SecondaryObscuration":
+        return SecondaryObscuration(
+            secondary_radius=dct["secondary_radius"],
+            n_supports=dct["n_supports"],
+            support_width=dct["support_width"],
+        )  # cm
+
+    elif dct["item"] == "ZernikeWFE":
+        return ZernikeWFE(
+            radius=dct["radius"],
+            coefficients=dct["coefficients"],  # list of floats
+            aperture_stop=dct["aperture_stop"],
+        )  # bool
+
+    elif dct["item"] == "SineWaveWFE":
+        return SineWaveWFE(
+            spatialfreq=dct["spatialfreq"],  # 1/m
+            amplitude=dct["amplitude"],  # um
+            rotation=dct["rotation"],
+        )
+    else:
+        raise NotImplementedError
+
+
+def new_create_optical_parameter(dct: Mapping) -> NewOpticalParameter:
+    """Create a new ``OpticalParameter`` based on a dictionary.
+
+    Parameters
+    ----------
+    dct : dict
+        Dictionary to convert
+
+    Returns
+    -------
+    OpticalParameter
+        New parameters.
+    """
+    if dct["item"] == "CircularAperture":
+        return CircularAperture(radius=dct["radius"])
+
+    elif dct["item"] == "ThinLens":
+        return NewThinLens(
+            nwaves=dct["nwaves"],
+            radius=dct["radius"],
+            reference_wavelength=dct["reference_wavelength"],
         )
 
     elif dct["item"] == "SquareAperture":
@@ -342,6 +430,67 @@ def create_optical_item(
         raise NotImplementedError
 
 
+def new_create_optical_item(param: NewOpticalParameter) -> "op.OpticalElement":
+    """Create a new poppy ``OpticalElement``.
+
+    Parameters
+    ----------
+    param : ``NewOpticalParameter``
+        Pyxel Optical parameters to create a poppy ``OpticalElement``.
+
+    Returns
+    -------
+    ``OpticalElement``
+        A new poppy ``OpticalElement``.
+    """
+    if isinstance(param, CircularAperture):
+        return op.CircularAperture(radius=param.radius)
+
+    elif isinstance(param, NewThinLens):
+        return op.ThinLens(
+            nwaves=param.nwaves,
+            reference_wavelength=param.reference_wavelength,
+            radius=param.radius,
+        )
+
+    elif isinstance(param, SquareAperture):
+        return op.SquareAperture(size=param.size)
+
+    elif isinstance(param, RectangleAperture):
+        return op.RectangleAperture(width=param.width, height=param.height)
+
+    elif isinstance(param, HexagonAperture):
+        return op.HexagonAperture(side=param.side)
+
+    elif isinstance(param, MultiHexagonalAperture):
+        return op.MultiHexagonAperture(
+            side=param.side, rings=param.rings, gap=param.gap
+        )
+
+    elif isinstance(param, SecondaryObscuration):
+        return op.SecondaryObscuration(
+            secondary_radius=param.secondary_radius,
+            n_supports=param.n_supports,
+            support_width=param.support_width,
+        )
+
+    elif isinstance(param, ZernikeWFE):
+        return op.ZernikeWFE(
+            radius=param.radius,
+            coefficients=param.coefficients,
+            aperture_stop=param.aperture_stop,
+        )
+
+    elif isinstance(param, SineWaveWFE):
+        return op.SineWaveWFE(
+            spatialfreq=param.spatialfreq,
+            amplitude=param.amplitude,
+            rotation=param.rotation,
+        )
+    else:
+        raise NotImplementedError
+
+
 def calc_psf(
     wavelengths: Sequence[float],
     fov_arcsec: float,
@@ -402,14 +551,14 @@ def calc_psf(
     return output_fits, wavefronts
 
 
-def apply_convolution(data_2d: np.ndarray, kernel_2d: np.ndarray) -> np.ndarray:
-    """Convolve an array.
+def apply_convolution(data: np.ndarray, kernel: np.ndarray) -> np.ndarray:
+    """Convolve an array in 2D or 3D.
 
     Parameters
     ----------
-    data_2d : ndarray
-        2D Array to be convolved with kernel_2d.
-    kernel_2d : ndarray
+    data : ndarray
+        2D or 3D Array to be convolved with kernel_2d.
+    kernel : ndarray
         The convolution kernel.
 
     Returns
@@ -417,16 +566,16 @@ def apply_convolution(data_2d: np.ndarray, kernel_2d: np.ndarray) -> np.ndarray:
     ndarray
         A convolved array.
     """
-    mean = np.mean(data_2d)
+    mean = np.mean(data)
 
-    array_2d = convolve_fft(
-        data_2d,
-        kernel=kernel_2d,
+    array = convolve_fft(
+        data,
+        kernel=kernel,
         boundary="fill",
         fill_value=mean,
     )
 
-    return array_2d
+    return array
 
 
 def optical_psf(
@@ -485,8 +634,8 @@ def optical_psf(
 
     # Convolution
     new_array_2d: np.ndarray = apply_convolution(
-        data_2d=detector.photon.array,
-        kernel_2d=data_2d,
+        data=detector.photon.array,
+        kernel=data_2d,
     )
 
     detector.photon.array = new_array_2d
@@ -511,17 +660,20 @@ def optical_psf_multi_wavelength(
     optical_system : list of dict
         List of optical elements before detector with their specific arguments.
     """
+    import xarray as xr
+    from astropy.units import Quantity
+
     logging.getLogger("poppy").setLevel(
         logging.WARNING
     )  # TODO: Fix this. See issue #81
 
     # Validation and Conversion stage
     # These steps will be probably moved into the YAML engine
-    if not len(wavelengths) != 2:
+    if len(wavelengths) != 2:
         raise ValueError("Expecting two wavelengths in parameter 'wavelengths'.")
 
     min_wavelength, max_wavelength = wavelengths
-    if 0 < min_wavelength:
+    if min_wavelength <= 0:
         raise ValueError("Expecting strictly positive value for the 'wavelengths'")
 
     if min_wavelength > max_wavelength:
@@ -531,31 +683,53 @@ def optical_psf_multi_wavelength(
 
     if fov_arcsec < 0.0 or detector.geometry.pixel_scale < 0.0:
         raise ValueError(
-            "Expecting strictly positive value for 'wavelength', "
-            "'fov_arcsec' and 'pixel_scale'."
+            "Expecting strictly positive value for " "'fov_arcsec' and 'pixel_scale'."
         )
 
     # Convert 'optical_system' to 'optical_parameters'
-    optical_parameters: Sequence[OpticalParameter] = [
-        create_optical_parameter(dct) for dct in optical_system
+    optical_parameters: Sequence[NewOpticalParameter] = [
+        new_create_optical_parameter(dct) for dct in optical_system
     ]
+
+    optical_elements: Sequence["op.OpticalElement"] = [
+        new_create_optical_item(param=param) for param in optical_parameters
+    ]
+
+    # Get current wavelengths (in nm)
+    start_wavelength = Quantity(min_wavelength, unit="m")
+    end_wavelength = Quantity(max_wavelength, unit="m")
+    wavelengths_nm: Quantity = Quantity(
+        detector.photon.array_3d["wavelength"], unit="nm"
+    )
+
+    selected_wavelengths_nm: Quantity = wavelengths_nm[
+        np.logical_and(
+            wavelengths_nm >= start_wavelength, wavelengths_nm <= end_wavelength
+        )
+    ]
+    if selected_wavelengths_nm.size == 0:
+        raise ValueError
 
     # Processing
     # Get a Point Spread Function
-    images, wavefronts = calc_psf(
-        wavelengths=[wavelength],
+    image_3d: fits.PrimaryHDU
+    wavefront_3d: fits.PrimaryHDU
+    image_3d, wavefront_3d = calc_psf(
+        wavelengths=selected_wavelengths_nm.to("m").value,
         fov_arcsec=fov_arcsec,
         pixelscale=detector.geometry.pixel_scale,
-        optical_parameters=optical_parameters,
+        optical_elements=optical_elements,
     )
-
-    # Extract 'first_image'
-    first_image, *other_images = images
 
     # Convolution
-    new_array_2d: np.ndarray = apply_convolution(
-        data_2d=detector.photon.array,
-        kernel_2d=first_image.data,
+    new_array_3d: np.ndarray = apply_convolution(
+        data=detector.photon.array_3d.to_numpy(),
+        kernel=image_3d.data,
     )
 
-    detector.photon.array = new_array_2d
+    array_3d = xr.DataArray(
+        new_array_3d,
+        dims=["wavelength", "y", "x"],
+        coords={"wavelength": selected_wavelengths_nm.value},
+    )
+    detector.photon.array_3d = array_3d
