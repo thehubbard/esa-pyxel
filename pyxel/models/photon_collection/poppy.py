@@ -492,7 +492,7 @@ def new_create_optical_item(param: NewOpticalParameter) -> "op.OpticalElement":
         raise NotImplementedError(f"{param=}")
 
 
-class PyxelInstrument(poppy.Instrument):
+class PyxelInstrument(op.instrument.Instrument):
     """Instrument class for Pyxel using poppy.instrument."""
 
     def __init__(
