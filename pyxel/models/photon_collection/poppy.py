@@ -17,7 +17,6 @@ from astropy.convolution import convolve_fft
 from astropy.io import fits
 
 from pyxel.detectors import Detector
-from pyxel.models.optics import poppy
 
 try:
     import poppy as op
@@ -492,69 +491,6 @@ def new_create_optical_item(param: NewOpticalParameter) -> "op.OpticalElement":
         raise NotImplementedError(f"{param=}")
 
 
-class PyxelInstrument(op.instrument.Instrument):
-    """Instrument class for Pyxel using poppy.instrument."""
-
-    def __init__(
-        self,
-        pixelscale: float,
-        optical_elements: Sequence["op.OpticalElement"],
-        fov_arcsec: float = 2,
-        name="PyxelInstrument",
-    ):
-        super().__init__(name=name)
-        self._pixelscale = pixelscale
-        self._optical_elements = optical_elements
-        self._fov_arcsec = fov_arcsec
-
-    def get_optical_system(
-        self,
-        fft_oversample=2,
-        detector_oversample=None,
-        fov_arcsec=None,
-        fov_pixels=None,
-        options=None,
-    ):
-        """Return an OpticalSystem instance corresponding to the instrument as currently configured.
-
-        Parameters
-        ----------
-        fft_oversample : int
-            Oversampling factor for intermediate plane calculations. Default is 2
-        detector_oversample: int, optional
-            By default the detector oversampling is equal to the intermediate calculation oversampling.
-            If you wish to use a different value for the detector, set this parameter.
-            Note that if you just want images at detector pixel resolution you will achieve higher fidelity
-            by still using some oversampling (i.e. *not* setting `oversample_detector=1`) and instead rebinning
-            down the oversampled data.
-        fov_pixels : float
-            Field of view in pixels. Overrides fov_arcsec if both set.
-        fov_arcsec : float
-            Field of view, in arcseconds. Default is 2
-        options : dict
-            Other arbitrary options for optical system creation
-
-
-        Returns
-        -------
-        osys : poppy.OpticalSystem
-            an optical system instance representing the desired configuration.
-
-        """
-        osys = op.OpticalSystem(npix=1000)  # default: 1024
-
-        element: op.OpticalElement
-        for element in self._optical_elements:
-            osys.add_pupil(element)
-
-        osys.add_detector(
-            pixelscale=self._pixelscale,
-            fov_arcsec=self._fov_arcsec,
-        )
-
-        return osys
-
-
 def calc_psf(
     wavelengths: Sequence[float],
     fov_arcsec: float,
@@ -593,7 +529,70 @@ def calc_psf(
             "or 'pip install pyxel-sim[all]'"
         )
 
+    class PyxelInstrument(op.instrument.Instrument):
+        """Instrument class for Pyxel using poppy.instrument."""
+
+        def __init__(
+            self,
+            pixelscale: float,
+            optical_elements: Sequence["op.OpticalElement"],
+            fov_arcsec: float = 2,
+            name="PyxelInstrument",
+        ):
+            super().__init__(name=name)
+            self._pixelscale = pixelscale
+            self._optical_elements = optical_elements
+            self._fov_arcsec = fov_arcsec
+
+        def get_optical_system(
+            self,
+            fft_oversample=2,
+            detector_oversample=None,
+            fov_arcsec=None,
+            fov_pixels=None,
+            options=None,
+        ):
+            """Return an OpticalSystem instance corresponding to the instrument as currently configured.
+
+            Parameters
+            ----------
+            fft_oversample : int
+                Oversampling factor for intermediate plane calculations. Default is 2
+            detector_oversample: int, optional
+                By default the detector oversampling is equal to the intermediate calculation oversampling.
+                If you wish to use a different value for the detector, set this parameter.
+                Note that if you just want images at detector pixel resolution you will achieve higher fidelity
+                by still using some oversampling (i.e. *not* setting `oversample_detector=1`) and instead rebinning
+                down the oversampled data.
+            fov_pixels : float
+                Field of view in pixels. Overrides fov_arcsec if both set.
+            fov_arcsec : float
+                Field of view, in arcseconds. Default is 2
+            options : dict
+                Other arbitrary options for optical system creation
+
+
+            Returns
+            -------
+            osys : poppy.OpticalSystem
+                an optical system instance representing the desired configuration.
+
+            """
+            osys = op.OpticalSystem(npix=1000)  # default: 1024
+
+            element: op.OpticalElement
+            for element in self._optical_elements:
+                osys.add_pupil(element)
+
+            osys.add_detector(
+                pixelscale=self._pixelscale,
+                fov_arcsec=self._fov_arcsec,
+            )
+
+            return osys
+
         # Calculate a monochromatic PSF
+
     output_fits: Sequence[fits.hdu.image.PrimaryHDU]
     wavefronts: Sequence[op.Wavefront]
 
