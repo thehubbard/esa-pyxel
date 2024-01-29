@@ -348,6 +348,7 @@ Example of the configuration file:
           - item: ThinLens
             radius: 1.2                # radius in meters
             nwaves: 1
+            reference_wavelength: 0.6e-6
           - item: ZernikeWFE
             radius: 0.8                # radius in meters
             coefficients: [0.1e-6, 3.e-6, -3.e-6, 1.e-6, -7.e-7, 0.4e-6, -2.e-6]
@@ -356,12 +357,15 @@ Example of the configuration file:
 .. autofunction:: optical_psf_multi_wavelength
 
 
-.. _Load monochromatic PSF:
+.. _Load PSF:
 
-Load monochromatic PSF
-======================
+Load PSF
+========
 
 :guilabel:`Photon` → :guilabel:`Photon`
+
+Load monochromatic PSF
+----------------------
 
 With this model you can load a Point Spread Function (:term:`PSF`) from a file.
 The model will convolve the :py:class:`~pyxel.data_structure.Photon` array
@@ -382,12 +386,9 @@ Example of the configuration file:
 
 .. autofunction:: load_psf
 
-.. _Load multiwavelength PSF:
 
 Load multiwavelength PSF
-========================
-
-:guilabel:`Photon` → :guilabel:`Photon`
+------------------------
 
 With this model you can load a Point Spread Function (:term:`PSF`) from a file containing wavelength information.
 Currently, only ``.fits`` files are a valid input.

@@ -42,8 +42,7 @@ Available models
     * :ref:`Stripe pattern`
     * :ref:`Shot noise`
     * :ref:`Physical Optics Propagation in PYthon (POPPY)`
-    * :ref:`Load monochromatic PSF`
-    * :ref:`Load multiwavelength PSF`
+    * :ref:`Load PSF`
 * Charge generation
     * :ref:`charge_generation_create_store_detector`
     * :ref:`Simple photoconversion`
