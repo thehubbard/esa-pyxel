@@ -591,8 +591,6 @@ def calc_psf(
 
             return osys
 
-        # Calculate a monochromatic PSF
-
     output_fits: Sequence[fits.hdu.image.PrimaryHDU]
     wavefronts: Sequence[op.Wavefront]
 
@@ -603,13 +601,18 @@ def calc_psf(
         fov_arcsec=fov_arcsec,
     )
 
+    instrument.pixelscale = pixelscale
+
     if apply_jitter:
         instrument.options["jitter"] = "gaussian"
         instrument.options[
             "jitter_sigma"
         ] = jitter_sigma  # in arcsec per axis, default 0.007
 
-    output_fits, wavefronts = instrument.calc_datacube(wavelengths=wavelengths)
+    output_fits, wavefronts = instrument.calc_datacube(
+        wavelengths=wavelengths,
+        fov_arcsec=fov_arcsec,
+    )
 
     return output_fits, wavefronts
 
@@ -629,7 +632,29 @@ def apply_convolution(data: np.ndarray, kernel: np.ndarray) -> np.ndarray:
     ndarray
         A convolved array.
     """
-    mean = np.mean(data)
+
+    if kernel.ndim == 2:
+        mean = np.mean(data)
+    elif kernel.ndim == 3:
+        integrated = kernel.sum(axis=0)
+        mean = integrated.mean()
+    else:
+        raise ValueError
+
+    *_, num_rows, num_cols = kernel.shape
+
+    assert num_rows == num_cols
+    # resize kernel, if kernel size too big.
+    if num_rows > 10:
+        import skimage.transform as sk
+
+        if kernel.ndim == 2:
+            new_shape = (10, 10)
+        elif kernel.ndim == 3:
+            num_wavelengths, _, _ = kernel.shape
+            new_shape = num_wavelengths, 10, 10
+
+        kernel = sk.resize(kernel, output_shape=new_shape)
 
     array = convolve_fft(
         data,
@@ -780,9 +805,11 @@ def optical_psf_multi_wavelength(
         detector.photon.array_3d["wavelength"], unit="nm"
     )
 
+    tolerance = Quantity(1e-7, unit="m")
     selected_wavelengths_nm: Quantity = wavelengths_nm[
         np.logical_and(
-            wavelengths_nm >= start_wavelength, wavelengths_nm <= end_wavelength
+            wavelengths_nm >= (start_wavelength - tolerance),
+            wavelengths_nm <= (end_wavelength + tolerance),
         )
     ]
     if selected_wavelengths_nm.size == 0:
