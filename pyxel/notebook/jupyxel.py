@@ -160,7 +160,11 @@ def display_detector(detector: "Detector") -> "pn.Tabs":
     ds: "xr.Dataset" = detector.to_xarray()
 
     # Extract names from the arrays
-    array_names: list[str] = [str(name) for name in ds]
+    array_names: list[str] = [
+        str(name)
+        for name, data_array in ds.items()
+        if "wavelength" not in data_array.dims
+    ]
     if not array_names:
         raise ValueError("Detector object does not contain any arrays.")
 
