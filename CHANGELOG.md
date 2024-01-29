@@ -35,6 +35,8 @@ Pyxel doesn't use SemVer anymore, since most minor releases have at least minor 
   (See [!818](https://gitlab.com/esa/pyxel/-/merge_requests/818)).
 * Add model 'optical_psf_multi_wavelength' from group 'Photon Collection'.
   (See [!820](https://gitlab.com/esa/pyxel/-/merge_requests/820)).
+* Pointing jitter model.
+  (See [!814](https://gitlab.com/esa/pyxel/-/merge_requests/814)).
 
 ### Others
 * Convert DeprecationWarning to FutureWarning.
