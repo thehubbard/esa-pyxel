@@ -649,7 +649,7 @@ def apply_convolution(data: np.ndarray, kernel: np.ndarray) -> np.ndarray:
         import skimage.transform as sk
 
         if kernel.ndim == 2:
-            new_shape = (10, 10)
+            new_shape: tuple[int, ...] = (10, 10)
         elif kernel.ndim == 3:
             num_wavelengths, _, _ = kernel.shape
             new_shape = num_wavelengths, 10, 10
