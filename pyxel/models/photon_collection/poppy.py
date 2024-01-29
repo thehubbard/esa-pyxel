@@ -488,7 +488,7 @@ def new_create_optical_item(param: NewOpticalParameter) -> "op.OpticalElement":
             rotation=param.rotation,
         )
     else:
-        raise NotImplementedError
+        raise NotImplementedError(f"{param=}")
 
 
 def calc_psf(
@@ -496,6 +496,8 @@ def calc_psf(
     fov_arcsec: float,
     pixelscale: float,
     optical_elements: Sequence["op.OpticalElement"],
+    apply_jitter: bool = False,
+    jitter_sigma: float = 0.007,
 ) -> tuple[fits.PrimaryHDU, fits.PrimaryHDU]:
     """Calculate the point spread function for the given optical system.
 
@@ -510,6 +512,10 @@ def calc_psf(
         Defines sampling resolution of :term:`PSF`.
     optical_elements : list of OpticalElement
         List of optical elements to apply.
+    apply_jitter : bool
+        Defines whether jitter should be applied. Default = False.
+    jitter_sigma : float
+        Jitter sigma value in arcsec per axis, default is 0.007.
 
     Returns
     -------
@@ -523,30 +529,90 @@ def calc_psf(
             "or 'pip install pyxel-sim[all]'"
         )
 
-        # Calculate a monochromatic PSF
+    class PyxelInstrument(op.instrument.Instrument):
+        """Instrument class for Pyxel using poppy.instrument."""
+
+        def __init__(
+            self,
+            pixelscale: float,
+            optical_elements: Sequence["op.OpticalElement"],
+            fov_arcsec: float = 2,
+            name="PyxelInstrument",
+        ):
+            super().__init__(name=name)
+            self._pixelscale = pixelscale
+            self._optical_elements = optical_elements
+            self._fov_arcsec = fov_arcsec
+
+        def get_optical_system(
+            self,
+            fft_oversample=2,
+            detector_oversample=None,
+            fov_arcsec=None,
+            fov_pixels=None,
+            options=None,
+        ):
+            """Return an OpticalSystem instance corresponding to the instrument as currently configured.
+
+            Parameters
+            ----------
+            fft_oversample : int
+                Oversampling factor for intermediate plane calculations. Default is 2
+            detector_oversample: int, optional
+                By default the detector oversampling is equal to the intermediate calculation oversampling.
+                If you wish to use a different value for the detector, set this parameter.
+                Note that if you just want images at detector pixel resolution you will achieve higher fidelity
+                by still using some oversampling (i.e. *not* setting `oversample_detector=1`) and instead rebinning
+                down the oversampled data.
+            fov_pixels : float
+                Field of view in pixels. Overrides fov_arcsec if both set.
+            fov_arcsec : float
+                Field of view, in arcseconds. Default is 2
+            options : dict
+                Other arbitrary options for optical system creation
+
+
+            Returns
+            -------
+            osys : poppy.OpticalSystem
+                an optical system instance representing the desired configuration.
+
+            """
+            osys = op.OpticalSystem(npix=1000)  # default: 1024
+
+            element: op.OpticalElement
+            for element in self._optical_elements:
+                osys.add_pupil(element)
+
+            osys.add_detector(
+                pixelscale=self._pixelscale,
+                fov_arcsec=self._fov_arcsec,
+            )
+
+            return osys
+
     output_fits: Sequence[fits.hdu.image.PrimaryHDU]
     wavefronts: Sequence[op.Wavefront]
 
     # Create Instrument
-    instrument = op.Instrument(name="inst")
-
-    instrument.pixelscale = pixelscale
-
-    instrument.optsys = op.OpticalSystem(npix=1000)
-
-    # Create the optical element(s)
-    # osys = op.OpticalSystem(npix=1000)  # default: 1024
-
-    element: "op.OpticalElement"
-    for element in optical_elements:
-        instrument.optsys.add_pupil(element)
-
-    instrument.optsys.add_detector(
+    instrument = PyxelInstrument(
+        optical_elements=optical_elements,
         pixelscale=pixelscale,
         fov_arcsec=fov_arcsec,
     )
 
-    output_fits, wavefronts = instrument.calc_datacube(wavelengths=wavelengths)
+    instrument.pixelscale = pixelscale
+
+    if apply_jitter:
+        instrument.options["jitter"] = "gaussian"
+        instrument.options[
+            "jitter_sigma"
+        ] = jitter_sigma  # in arcsec per axis, default 0.007
+
+    output_fits, wavefronts = instrument.calc_datacube(
+        wavelengths=wavelengths,
+        fov_arcsec=fov_arcsec,
+    )
 
     return output_fits, wavefronts
 
@@ -566,7 +632,30 @@ def apply_convolution(data: np.ndarray, kernel: np.ndarray) -> np.ndarray:
     ndarray
         A convolved array.
     """
-    mean = np.mean(data)
+
+    if kernel.ndim == 2:
+        mean = np.mean(data)
+    elif kernel.ndim == 3:
+        integrated = kernel.sum(axis=0)
+        mean = integrated.mean()
+    else:
+        raise ValueError
+
+    *_, num_rows, num_cols = kernel.shape
+
+    assert num_rows == num_cols
+    # resize kernel, if kernel size too big.
+    if num_rows > 10:
+        import skimage.transform as sk
+
+        if kernel.ndim == 2:
+            new_shape: tuple[int, ...] = (10, 10)
+        elif kernel.ndim == 3:
+            num_wavelengths, _, _ = kernel.shape
+            new_shape = num_wavelengths, 10, 10
+
+        resized_kernel = sk.resize(kernel, output_shape=new_shape, anti_aliasing=False)
+        kernel = resized_kernel / resized_kernel.sum()
 
     array = convolve_fft(
         data,
@@ -583,6 +672,8 @@ def optical_psf(
     wavelength: float,
     fov_arcsec: float,
     optical_system: Sequence[Mapping[str, Any]],
+    apply_jitter: bool = False,
+    jitter_sigma: float = 0.007,
 ) -> None:
     """Model function for poppy optics model: convolve photon array with psf.
 
@@ -596,6 +687,10 @@ def optical_psf(
         Field Of View on detector plane in arcsec.
     optical_system : list of dict
         List of optical elements before detector with their specific arguments.
+    apply_jitter : bool
+        Defines whether jitter should be applied. Default = False.
+    jitter_sigma : float
+        Jitter sigma value in arcsec per axis, default is 0.007.
     """
     logging.getLogger("poppy").setLevel(
         logging.WARNING
@@ -621,16 +716,19 @@ def optical_psf(
 
     # Processing
     # Get a Point Spread Function
-    image_3d: fits.PrimaryHDU
-    wavefront_3d: fits.PrimaryHDU
-    image_3d, wavefront_3d = calc_psf(
+    image_hdu_3d: fits.PrimaryHDU
+    # wavefront_hdu_3d: fits.PrimaryHDU
+    image_hdu_3d, wavefront_3d = calc_psf(
         wavelengths=[wavelength],
         fov_arcsec=fov_arcsec,
         pixelscale=detector.geometry.pixel_scale,
         optical_elements=optical_elements,
+        apply_jitter=apply_jitter,
+        jitter_sigma=jitter_sigma,
     )
 
-    data_2d: np.ndarray = image_3d.data[0]
+    data_3d: np.ndarray = image_hdu_3d.data
+    data_2d: np.ndarray = data_3d[0, :, :]
 
     # Convolution
     new_array_2d: np.ndarray = apply_convolution(
@@ -646,6 +744,8 @@ def optical_psf_multi_wavelength(
     wavelengths: tuple[float, float],
     fov_arcsec: float,
     optical_system: Sequence[Mapping[str, Any]],
+    apply_jitter: bool = False,
+    jitter_sigma: float = 0.007,
 ) -> None:
     """Model function for poppy optics model: convolve photon array with psf.
 
@@ -659,6 +759,10 @@ def optical_psf_multi_wavelength(
         Field Of View on detector plane in arcsec.
     optical_system : list of dict
         List of optical elements before detector with their specific arguments.
+    apply_jitter : bool
+        Defines whether jitter should be applied. Default = False.
+    jitter_sigma : float
+        Jitter sigma value in arcsec per axis, default is 0.007.
     """
     import xarray as xr
     from astropy.units import Quantity
@@ -702,9 +806,11 @@ def optical_psf_multi_wavelength(
         detector.photon.array_3d["wavelength"], unit="nm"
     )
 
+    tolerance = Quantity(1e-7, unit="m")
     selected_wavelengths_nm: Quantity = wavelengths_nm[
         np.logical_and(
-            wavelengths_nm >= start_wavelength, wavelengths_nm <= end_wavelength
+            wavelengths_nm >= (start_wavelength - tolerance),
+            wavelengths_nm <= (end_wavelength + tolerance),
         )
     ]
     if selected_wavelengths_nm.size == 0:
@@ -719,6 +825,8 @@ def optical_psf_multi_wavelength(
         fov_arcsec=fov_arcsec,
         pixelscale=detector.geometry.pixel_scale,
         optical_elements=optical_elements,
+        apply_jitter=apply_jitter,
+        jitter_sigma=jitter_sigma,
     )
 
     # Convolution
