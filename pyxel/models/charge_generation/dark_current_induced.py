@@ -89,11 +89,7 @@ def damage_factors(
         (-eact_dc * q / k / temperature) - (-eact_dc * q / k / 300)
     )
     kdark = (
-        kdark_srour
-        * annealing_factor
-        * operating_temperature_correction
-        / 1e4**3
-        * 1e6
+        kdark_srour * annealing_factor * operating_temperature_correction / 1e4**3 * 1e6
     )
     nu_dark = kdark / gamma_dark
     mu_dark = (

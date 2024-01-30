@@ -810,9 +810,9 @@ class Observation:
             types=types,
         )
 
-        parameters: Sequence[
-            Union[ParameterItem, CustomParameterItem]
-        ] = self._get_parameters_item(processor=processor)
+        parameters: Sequence[Union[ParameterItem, CustomParameterItem]] = (
+            self._get_parameters_item(processor=processor)
+        )
 
         if self.with_dask:
             datatree_bag: db.Bag = (

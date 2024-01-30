@@ -136,18 +136,14 @@ def eg_hansen_inverse(eg, temperature):
                         - (
                             (54.0 * cc * ee**2 - 36.0 * cc * dd * ee) * eg
                             + 54.0 * aa * cc * ee**2
-                            + (
-                                (-18.0 * bb - 36.0 * aa) * cc * dd
-                                + 24.0 * bb**2.0 * cc
-                            )
+                            + ((-18.0 * bb - 36.0 * aa) * cc * dd + 24.0 * bb**2.0 * cc)
                             * ee
                             + 4.0 * cc * dd**3
                             - 4.0 * bb * cc * dd**2
                         )
                         * temperature
                         + 27.0 * ee**2.0 * eg**2
-                        - (-54.0 * aa * ee**2 + 18.0 * bb * dd * ee - 4.0 * dd**3)
-                        * eg
+                        - (-54.0 * aa * ee**2 + 18.0 * bb * dd * ee - 4.0 * dd**3) * eg
                         + 27.0 * aa**2.0 * ee**2
                         - (18.0 * aa * bb * dd - 4.0 * bb**3) * ee
                         + 4.0 * aa * dd**3

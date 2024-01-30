@@ -44,9 +44,9 @@ class Simulation:
         self.flux_dist: Optional[np.ndarray] = None
         self.spectrum_cdf: Optional[np.ndarray] = None
 
-        self.energy_loss_data: Optional[
-            Literal["stopping", "stepsize", "geant4"]
-        ] = None
+        self.energy_loss_data: Optional[Literal["stopping", "stepsize", "geant4"]] = (
+            None
+        )
 
         self.elec_number_dist = pd.DataFrame()
         self.elec_number_cdf = np.zeros((1, 2))

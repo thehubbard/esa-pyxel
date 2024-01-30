@@ -389,8 +389,7 @@ class Outputs:
                                 "Cannot save non-digitized data into image formats."
                             )
                         maximum = (
-                            2**processor.detector.characteristics.adc_bit_resolution
-                            - 1
+                            2**processor.detector.characteristics.adc_bit_resolution - 1
                         )
                         rescaled_data = (255.0 / maximum * data).astype(np.uint8)
 

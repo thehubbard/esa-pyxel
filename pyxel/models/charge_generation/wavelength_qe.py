@@ -48,7 +48,7 @@ def interpolate_dataset(
 
 def apply_wavelength_qe(
     photon_array: xr.DataArray,
-    qe_array: xr.DataArray
+    qe_array: xr.DataArray,
     # binomial_sampling = False,
     # TODO: add option for binominal_sampling. See pyxel.models.charge_generation.photoelectrons.apply_qe()
 ) -> xr.DataArray:

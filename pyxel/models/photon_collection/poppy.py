@@ -605,9 +605,9 @@ def calc_psf(
 
     if apply_jitter:
         instrument.options["jitter"] = "gaussian"
-        instrument.options[
-            "jitter_sigma"
-        ] = jitter_sigma  # in arcsec per axis, default 0.007
+        instrument.options["jitter_sigma"] = (
+            jitter_sigma  # in arcsec per axis, default 0.007
+        )
 
     output_fits, wavefronts = instrument.calc_datacube(
         wavelengths=wavelengths,

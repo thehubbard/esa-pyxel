@@ -62,9 +62,9 @@ class CalibrationOutputs(Outputs):
         )
 
         # Parameter(s) specific for 'Calibration'
-        self.save_calibration_data: Optional[
-            Sequence[Mapping[str, Sequence[str]]]
-        ] = save_calibration_data
+        self.save_calibration_data: Optional[Sequence[Mapping[str, Sequence[str]]]] = (
+            save_calibration_data
+        )
 
     def save_processors(self, processors: pd.DataFrame) -> Sequence[Delayed]:
         """TBW."""

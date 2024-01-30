@@ -59,9 +59,9 @@ class ExposureOutputs(Outputs):
             save_data_to_file=save_data_to_file,
         )
 
-        self.save_exposure_data: Optional[
-            Sequence[Mapping[str, Sequence[str]]]
-        ] = save_exposure_data
+        self.save_exposure_data: Optional[Sequence[Mapping[str, Sequence[str]]]] = (
+            save_exposure_data
+        )
 
     def save_exposure_outputs(self, dataset: Union["xr.Dataset", "DataTree"]) -> None:
         """Save the observation outputs such as the dataset.
