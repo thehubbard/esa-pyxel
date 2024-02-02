@@ -61,11 +61,11 @@ class ObservationOutputs(Outputs):
             custom_dir_name=custom_dir_name,
         )
 
-        self.save_observation_data: Optional[Sequence[Mapping[str, Sequence[str]]]] = (
-            save_observation_data
-        )
+        self._save_observation_data_deprecated: Optional[
+            Sequence[Mapping[str, Sequence[str]]]
+        ] = save_observation_data
 
-    def save_observation_datasets(
+    def _save_observation_datasets_deprecated(
         self, result: "ObservationResult", mode: "ParameterMode"
     ) -> None:
         """Save the result datasets from parametric mode on disk.
@@ -83,9 +83,9 @@ class ObservationOutputs(Outputs):
 
         save_methods: dict[str, SaveToFile] = {"nc": self.save_to_netcdf}
 
-        if self.save_observation_data is not None:
+        if self._save_observation_data_deprecated is not None:
             dct: Mapping[str, Sequence[str]]
-            for dct in self.save_observation_data:
+            for dct in self._save_observation_data_deprecated:
                 first_item, *_ = dct.items()
                 obj, format_list = first_item
 

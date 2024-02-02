@@ -16,7 +16,7 @@ import pytest
 import pyxel
 from pyxel import Configuration
 from pyxel.detectors import CCD
-from pyxel.exposure import run_exposure_pipeline
+from pyxel.exposure import _run_exposure_pipeline_deprecated
 from pyxel.observation import Observation, ParameterMode
 from pyxel.pipelines import DetectionPipeline, Processor
 from pyxel.pipelines.processor import _get_obj_att
@@ -123,4 +123,4 @@ def test_pipeline_parametric_without_init_photon(mode: ParameterMode, expected):
     for proc, _, _ in processor_generator:
         assert isinstance(proc, Processor)
 
-        run_exposure_pipeline(processor=proc, readout=observation.readout)
+        _run_exposure_pipeline_deprecated(processor=proc, readout=observation.readout)

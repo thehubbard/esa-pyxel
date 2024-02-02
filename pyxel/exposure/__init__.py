@@ -10,4 +10,4 @@
 
 # flake8: noqa
 from .readout import Readout
-from .exposure import Exposure, run_exposure_pipeline, run_pipeline
+from .exposure import Exposure, _run_exposure_pipeline_deprecated, run_pipeline

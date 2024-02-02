@@ -32,7 +32,7 @@ from pyxel.calibration import (
     read_data,
     read_datacubes,
 )
-from pyxel.exposure import run_exposure_pipeline
+from pyxel.exposure import _run_exposure_pipeline_deprecated
 from pyxel.observation import ParameterValues
 from pyxel.pipelines import Processor, ResultId
 
@@ -370,7 +370,7 @@ class ModelFitting(ProblemSingleObjective):
                 logger.setLevel(logging.WARNING)  # TODO: Fix this. See issue #81
                 # result_proc = None
                 if self.calibration_mode == CalibrationMode.Pipeline:
-                    _ = run_exposure_pipeline(
+                    _ = _run_exposure_pipeline_deprecated(
                         processor=processor,
                         readout=self.readout,
                         pipeline_seed=self.pipeline_seed,
@@ -446,7 +446,7 @@ class ModelFitting(ProblemSingleObjective):
         """Create a new ``Processor`` with new parameters."""
         new_processor = self.update_processor(parameter=parameter, processor=processor)
 
-        _ = run_exposure_pipeline(
+        _ = _run_exposure_pipeline_deprecated(
             processor=new_processor,
             readout=self.readout,
             pipeline_seed=self.pipeline_seed,

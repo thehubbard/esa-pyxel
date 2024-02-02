@@ -24,7 +24,7 @@ import pandas as pd
 import toolz
 from tqdm.auto import tqdm
 
-from pyxel.exposure import Readout, run_exposure_pipeline, run_pipeline
+from pyxel.exposure import Readout, _run_exposure_pipeline_deprecated, run_pipeline
 from pyxel.observation.parameter_values import ParameterType, ParameterValues
 from pyxel.pipelines import ResultId, get_result_id
 
@@ -461,6 +461,11 @@ class Observation:
         index: tuple of int
         parameter_dict: dict
         """
+        warnings.warn(
+            "Deprecated. Will be removed in Pyxel 2.0",
+            DeprecationWarning,
+            stacklevel=1,
+        )
 
         for index, parameter_dict in self._parameter_it():
             new_processor = create_new_processor(
@@ -475,7 +480,7 @@ class Observation:
             self.parameter_types.update({step.key: step.type})
         return self.parameter_types
 
-    def run_debug_mode(
+    def _run_debug_mode_deprecated(
         self, processor: "Processor"
     ) -> tuple[list["Processor"], "xr.Dataset"]:
         """Run observation pipelines in debug mode and return list of processors and parameter logs.
@@ -489,6 +494,12 @@ class Observation:
         processors: list
         final_logs: Dataset
         """
+        warnings.warn(
+            "Deprecated. Will be removed in Pyxel 2.0",
+            DeprecationWarning,
+            stacklevel=1,
+        )
+
         # Late import to speedup start-up time
         import xarray as xr
 
@@ -502,7 +513,7 @@ class Observation:
                 processor_id=processor_id, parameter_dict=parameter_dict
             )
             logs.append(log)
-            _ = run_exposure_pipeline(
+            _ = _run_exposure_pipeline_deprecated(
                 processor=proc,
                 readout=self.readout,
                 outputs=self.outputs,
@@ -561,7 +572,7 @@ class Observation:
                 )
 
     # ruff: noqa: C901
-    def run_observation(self, processor: "Processor") -> ObservationResult:
+    def _run_observation_deprecated(self, processor: "Processor") -> ObservationResult:
         """Run the observation pipelines.
 
         Parameters
@@ -573,7 +584,9 @@ class Observation:
         Result
         """
         warnings.warn(
-            "Deprecated. Will be removed in Pyxel 2.0", FutureWarning, stacklevel=1
+            "Deprecated. Will be removed in Pyxel 2.0",
+            DeprecationWarning,
+            stacklevel=1,
         )
 
         # Late import to speedup start-up time
@@ -804,7 +817,7 @@ class Observation:
         apply_pipeline: Callable[
             [Union[ParameterItem, CustomParameterItem]], DataTree
         ] = partial(
-            self._apply_exposure_pipeline_new,
+            self._apply_exposure_pipeline,
             dimension_names=dim_names,
             processor=processor,
             types=types,
@@ -861,7 +874,7 @@ class Observation:
         )
 
         # run the pipeline
-        _ = run_exposure_pipeline(
+        _ = _run_exposure_pipeline_deprecated(
             processor=new_processor,
             readout=self.readout,
             result_type=self.result_type,
@@ -878,7 +891,7 @@ class Observation:
         )
 
         # Can also be done outside dask in a loop
-        ds = _add_product_parameters(
+        ds = _add_product_parameters_deprecated(
             ds=ds,
             parameter_dict=parameter_dict,
             dimension_names=dimension_names,
@@ -890,7 +903,7 @@ class Observation:
 
         return ds
 
-    def _apply_exposure_pipeline_new(
+    def _apply_exposure_pipeline(
         self,
         param_item: Union[ParameterItem, CustomParameterItem],
         dimension_names: Mapping[str, str],
@@ -918,7 +931,7 @@ class Observation:
 
         # Can also be done outside dask in a loop
         if isinstance(param_item, ParameterItem):
-            final_data_tree = _add_product_parameters_datatree(
+            final_data_tree = _add_product_parameters(
                 data_tree=data_tree,
                 parameter_dict=param_item.parameters,
                 indexes=param_item.index,
@@ -927,7 +940,7 @@ class Observation:
             )
 
         else:
-            final_data_tree = _add_custom_parameters_datatree(
+            final_data_tree = _add_custom_parameters(
                 data_tree=data_tree,
                 parameter_dict=param_item.parameters,
                 index=param_item.index,
@@ -961,7 +974,7 @@ class Observation:
         )
 
         # run the pipeline
-        _ = run_exposure_pipeline(
+        _ = _run_exposure_pipeline_deprecated(
             processor=new_processor,
             readout=self.readout,
             result_type=self.result_type,
@@ -975,7 +988,7 @@ class Observation:
         )
 
         # Can also be done outside dask in a loop
-        ds = _add_custom_parameters(
+        ds = _add_custom_parameters_deprecated(
             ds=ds,
             index=index,
         )
@@ -1011,7 +1024,7 @@ class Observation:
         coordinate = str(next(iter(parameter_dict)))
 
         # run the pipeline
-        _ = run_exposure_pipeline(
+        _ = _run_exposure_pipeline_deprecated(
             processor=new_processor,
             readout=self.readout,
             result_type=self.result_type,
@@ -1025,7 +1038,7 @@ class Observation:
         )
 
         # Can also be done outside dask in a loop
-        ds = _add_sequential_parameters(
+        ds = _add_sequential_parameters_deprecated(
             ds=ds,
             parameter_dict=parameter_dict,
             dimension_names=dimension_names,
@@ -1087,6 +1100,12 @@ def log_parameters(processor_id: int, parameter_dict: dict) -> "xr.Dataset":
     -------
     Dataset
     """
+    warnings.warn(
+        "Deprecated. Will be removed in Pyxel 2.0",
+        DeprecationWarning,
+        stacklevel=1,
+    )
+
     # Late import to speedup start-up time
     import xarray as xr
 
@@ -1118,6 +1137,12 @@ def parameter_to_dataset(
     -------
     Dataset
     """
+    warnings.warn(
+        "Deprecated. Will be removed in Pyxel 2.0",
+        DeprecationWarning,
+        stacklevel=1,
+    )
+
     # Late import to speedup start-up time
     import xarray as xr
 
@@ -1141,7 +1166,7 @@ def parameter_to_dataset(
     return parameter_ds
 
 
-def _add_custom_parameters(ds: "xr.Dataset", index: int) -> "xr.Dataset":
+def _add_custom_parameters_deprecated(ds: "xr.Dataset", index: int) -> "xr.Dataset":
     """Add coordinate "index" to the dataset.
 
     Parameters
@@ -1163,7 +1188,7 @@ def _add_custom_parameters(ds: "xr.Dataset", index: int) -> "xr.Dataset":
     return ds
 
 
-def _add_custom_parameters_datatree(
+def _add_custom_parameters(
     data_tree: "DataTree",
     parameter_dict: ParametersType,
     index: int,
@@ -1206,7 +1231,7 @@ def _add_custom_parameters_datatree(
     return data_tree
 
 
-def _add_sequential_parameters(
+def _add_sequential_parameters_deprecated(
     ds: "xr.Dataset",
     parameter_dict: ParametersType,
     dimension_names: Mapping[str, str],
@@ -1247,7 +1272,7 @@ def _add_sequential_parameters(
     return ds
 
 
-def _add_product_parameters(
+def _add_product_parameters_deprecated(
     ds: "xr.Dataset",
     parameter_dict: ParametersType,
     dimension_names: Mapping[str, str],
@@ -1301,7 +1326,7 @@ def to_tuples(data: Iterable) -> tuple:
     return tuple(lst)
 
 
-def _add_product_parameters_datatree(
+def _add_product_parameters(
     data_tree: "DataTree",
     parameter_dict: ParametersType,
     indexes: tuple[int, ...],
@@ -1387,6 +1412,12 @@ def compute_final_sequential_dataset(
     -------
     dict
     """
+    warnings.warn(
+        "Deprecated. Will be removed in Pyxel 2.0",
+        DeprecationWarning,
+        stacklevel=1,
+    )
+
     # Late import to speedup start-up time
     import xarray as xr
 

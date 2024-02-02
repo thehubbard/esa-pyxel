@@ -94,7 +94,7 @@ def exposure_mode(
 
     processor = Processor(detector=detector, pipeline=pipeline)
 
-    result: xr.Dataset = exposure.run_exposure(processor=processor)
+    result: xr.Dataset = exposure._run_exposure_deprecated(processor=processor)
 
     if exposure_outputs.save_exposure_data:
         exposure_outputs.save_exposure_outputs(dataset=result)
@@ -172,7 +172,7 @@ def _run_exposure_mode(
 
     processor = Processor(detector=detector, pipeline=pipeline)
 
-    result: DataTree = exposure.run_exposure_new(
+    result: DataTree = exposure.run_exposure(
         processor=processor,
         debug=debug,
     )
@@ -236,10 +236,12 @@ def observation_mode(
 
     processor = Processor(detector=detector, pipeline=pipeline)
 
-    result: ObservationResult = observation.run_observation(processor=processor)
+    result: ObservationResult = observation._run_observation_deprecated(
+        processor=processor
+    )
 
-    if observation_outputs.save_observation_data:
-        observation_outputs.save_observation_datasets(
+    if observation_outputs._save_observation_data_deprecated:
+        observation_outputs._save_observation_datasets_deprecated(
             result=result, mode=observation.parameter_mode
         )
 
@@ -347,7 +349,7 @@ def calibration_mode(
 
     processor = Processor(detector=detector, pipeline=pipeline)
 
-    ds_results, df_processors, df_all_logs = calibration.run_calibration(
+    ds_results, df_processors, df_all_logs = calibration._run_calibration_deprecated(
         processor=processor, output_dir=calibration_outputs.output_dir
     )
 
@@ -375,8 +377,8 @@ def calibration_mode(
             ds_results, df_processors, df_all_logs, filenames
         )
 
-        if calibration_outputs.save_calibration_data:
-            calibration_outputs.save_calibration_outputs(
+        if calibration_outputs._save_calibration_data_deprecated:
+            calibration_outputs._save_calibration_outputs_deprecated(
                 dataset=computed_ds, logs=df_logs
             )
             print(f"Saved calibration outputs to {calibration_outputs.output_dir}")
@@ -478,7 +480,7 @@ def _run_calibration_mode(
 
     processor = Processor(detector=detector, pipeline=pipeline)
 
-    data_tree = calibration.run_calibration_new(
+    data_tree = calibration.run_calibration(
         processor=processor,
         output_dir=calibration_outputs.output_dir,
     )
@@ -499,7 +501,7 @@ def _run_observation_mode(
 
     result = observation.run_observation_datatree(processor=processor)
 
-    if observation_outputs.save_observation_data:
+    if observation_outputs._save_observation_data_deprecated:
         raise NotImplementedError
     #     observation_outputs.save_observation_datasets(
     #         result=result, mode=observation.parameter_mode

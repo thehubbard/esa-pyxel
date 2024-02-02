@@ -156,5 +156,5 @@ def test_run_calibration(yaml):
     assert isinstance(calibration, Calibration)
 
     assert calibration is not None
-    _ = calibration.run_calibration(processor)
+    _ = calibration._run_calibration_deprecated(processor)
     # assert result == 1         # TODO
