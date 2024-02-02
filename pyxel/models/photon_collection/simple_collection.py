@@ -380,14 +380,14 @@ def simple_collection(
             converted_flux_2d, dims="ref", attrs={"units": str(converted_flux_2d.unit)}
         )
 
-        photon_projection_2d: Union[
-            np.ndarray, xr.DataArray
-        ] = project_objects_to_detector(
-            scene_data=scene_data,
-            pixel_scale=detector.geometry.pixel_scale * u.arcsec / u.pixel,
-            rows=detector.geometry.row,
-            cols=detector.geometry.col,
-            integrate_wavelength=integrate_wavelength,
+        photon_projection_2d: Union[np.ndarray, xr.DataArray] = (
+            project_objects_to_detector(
+                scene_data=scene_data,
+                pixel_scale=detector.geometry.pixel_scale * u.arcsec / u.pixel,
+                rows=detector.geometry.row,
+                cols=detector.geometry.col,
+                integrate_wavelength=integrate_wavelength,
+            )
         )
 
         if not isinstance(photon_projection_2d, np.ndarray):
@@ -411,14 +411,14 @@ def simple_collection(
             attrs={"units": str(converted_flux_3d.unit)},
         )
 
-        photon_projection_3d: Union[
-            np.ndarray, xr.DataArray
-        ] = project_objects_to_detector(
-            scene_data=scene_data,
-            pixel_scale=detector.geometry.pixel_scale * u.arcsec / u.pixel,
-            rows=detector.geometry.row,
-            cols=detector.geometry.col,
-            integrate_wavelength=integrate_wavelength,
+        photon_projection_3d: Union[np.ndarray, xr.DataArray] = (
+            project_objects_to_detector(
+                scene_data=scene_data,
+                pixel_scale=detector.geometry.pixel_scale * u.arcsec / u.pixel,
+                rows=detector.geometry.row,
+                cols=detector.geometry.col,
+                integrate_wavelength=integrate_wavelength,
+            )
         )
 
         if not isinstance(photon_projection_3d, xr.DataArray):

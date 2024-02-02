@@ -18,6 +18,9 @@ Pyxel doesn't use SemVer anymore, since most minor releases have at least minor 
 ### Models
 
 ### Others
+* Bump pre-commit versions.
+  (See [!826](https://gitlab.com/esa/pyxel/-/merge_requests/826)).
+
 
 ## 1.15 / 2024-01-29
 This release brings a number of bugfixes and improvements.

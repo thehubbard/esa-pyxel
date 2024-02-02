@@ -61,9 +61,9 @@ class ObservationOutputs(Outputs):
             custom_dir_name=custom_dir_name,
         )
 
-        self.save_observation_data: Optional[
-            Sequence[Mapping[str, Sequence[str]]]
-        ] = save_observation_data
+        self.save_observation_data: Optional[Sequence[Mapping[str, Sequence[str]]]] = (
+            save_observation_data
+        )
 
     def save_observation_datasets(
         self, result: "ObservationResult", mode: "ParameterMode"
