@@ -12,7 +12,3 @@ Exposure
     :undoc-members:
     :show-inheritance:
     :exclude-members:
-
-.. autofunction:: run_exposure_pipeline
-
-
