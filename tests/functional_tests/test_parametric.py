@@ -16,7 +16,7 @@ import pytest
 import pyxel
 from pyxel import Configuration
 from pyxel.detectors import CCD
-from pyxel.exposure import run_exposure_pipeline
+from pyxel.exposure import _run_exposure_pipeline_deprecated
 from pyxel.observation import Observation, ParameterMode
 from pyxel.pipelines import DetectionPipeline, Processor
 from pyxel.pipelines.processor import _get_obj_att
@@ -123,53 +123,4 @@ def test_pipeline_parametric_without_init_photon(mode: ParameterMode, expected):
     for proc, _, _ in processor_generator:
         assert isinstance(proc, Processor)
 
-        run_exposure_pipeline(processor=proc, readout=observation.readout)
-
-
-@pytest.mark.deprecated
-@pytest.mark.parametrize(
-    "mode, expected",
-    [
-        # ('single', expected_single),
-        (ParameterMode.Sequential, expected_sequential),
-        (ParameterMode.Product, expected_product),
-    ],
-)
-def test_pipeline_parametric_without_init_photon_deprecated(
-    mode: ParameterMode, expected
-):
-    input_filename = "tests/data/deprecated_parametric.yaml"
-    cfg = pyxel.load(Path(input_filename))
-
-    assert isinstance(cfg, Configuration)
-    assert hasattr(cfg, "observation")
-    assert hasattr(cfg, "ccd_detector")
-    assert hasattr(cfg, "pipeline")
-
-    observation = cfg.observation
-    assert isinstance(observation, Observation)
-
-    observation.parameter_mode = mode
-
-    detector = cfg.ccd_detector
-    assert isinstance(detector, CCD)
-
-    pipeline = cfg.pipeline
-    assert isinstance(pipeline, DetectionPipeline)
-
-    processor = Processor(detector=detector, pipeline=pipeline)
-    result = debug_parameters(observation=observation, processor=processor)
-    assert result == expected
-
-    detector.photon.array = np.zeros(detector.geometry.shape, dtype=float)
-    detector.image.array = np.zeros(detector.geometry.shape, dtype=np.uint64)
-    detector.pixel.array = np.zeros(detector.geometry.shape, dtype=float)
-    detector.signal.array = np.zeros(detector.geometry.shape, dtype=float)
-
-    processor_generator = observation._processors_it(processor=processor)
-    assert isinstance(processor_generator, abc.Generator)
-
-    for proc, _, _ in processor_generator:
-        assert isinstance(proc, Processor)
-
-        run_exposure_pipeline(processor=proc, readout=observation.readout)
+        _run_exposure_pipeline_deprecated(processor=proc, readout=observation.readout)

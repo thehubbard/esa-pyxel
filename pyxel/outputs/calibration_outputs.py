@@ -7,7 +7,7 @@
 
 
 """TBW."""
-
+import warnings
 from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Optional, Protocol, Union
@@ -62,12 +62,18 @@ class CalibrationOutputs(Outputs):
         )
 
         # Parameter(s) specific for 'Calibration'
-        self.save_calibration_data: Optional[Sequence[Mapping[str, Sequence[str]]]] = (
-            save_calibration_data
+        self._save_calibration_data_deprecated: Optional[
+            Sequence[Mapping[str, Sequence[str]]]
+        ] = save_calibration_data
+
+    def _save_processors_deprecated(
+        self, processors: pd.DataFrame
+    ) -> Sequence[Delayed]:
+        """TBW."""
+        warnings.warn(
+            "Deprecated. Will be removed in Pyxel 2.0", DeprecationWarning, stacklevel=1
         )
 
-    def save_processors(self, processors: pd.DataFrame) -> Sequence[Delayed]:
-        """TBW."""
         lst: list[Delayed] = []
 
         if self.save_data_to_file:
@@ -86,7 +92,7 @@ class CalibrationOutputs(Outputs):
 
         return lst
 
-    def save_calibration_outputs(
+    def _save_calibration_outputs_deprecated(
         self, dataset: "xr.Dataset", logs: pd.DataFrame
     ) -> None:
         """Save the calibration outputs such as dataset and logs.
@@ -96,12 +102,17 @@ class CalibrationOutputs(Outputs):
         dataset: Dataset
         logs: DataFrame
         """
+        warnings.warn(
+            "Deprecated. Will be removed in Pyxel 2.0",
+            DeprecationWarning,
+            stacklevel=1,
+        )
 
         save_methods: dict[str, SaveToFile] = {"nc": self.save_to_netcdf}
 
-        if self.save_calibration_data is not None:
+        if self._save_calibration_data_deprecated is not None:
             dct: Mapping[str, Sequence[str]]
-            for dct in self.save_calibration_data:
+            for dct in self._save_calibration_data_deprecated:
                 first_item, *_ = dct.items()
                 obj, format_list = first_item
 

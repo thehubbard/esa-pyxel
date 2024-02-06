@@ -9,6 +9,7 @@
 """Observation class and functions."""
 
 import logging
+import warnings
 from collections import defaultdict
 from collections.abc import Sequence
 from typing import TYPE_CHECKING, Optional, Union
@@ -69,7 +70,7 @@ class Exposure:
         self._pipeline_seed = value
 
     # TODO: This function will be deprecated
-    def run_exposure(self, processor: Processor) -> "xr.Dataset":
+    def _run_exposure_deprecated(self, processor: Processor) -> "xr.Dataset":
         """Run an observation pipeline.
 
         Parameters
@@ -80,13 +81,17 @@ class Exposure:
         -------
         Dataset
         """
+        warnings.warn(
+            "Deprecated. Will be removed in Pyxel 2.0", DeprecationWarning, stacklevel=1
+        )
+
         progressbar = self.readout._num_steps != 1
         y = range(processor.detector.geometry.row)
         x = range(processor.detector.geometry.col)
         times = self.readout.times
 
         # Unpure changing of processor
-        _ = run_exposure_pipeline(
+        _ = _run_exposure_pipeline_deprecated(
             processor=processor,
             readout=self.readout,
             outputs=self.outputs,
@@ -106,7 +111,7 @@ class Exposure:
 
         return ds
 
-    def run_exposure_new(
+    def run_exposure(
         self,
         processor: Processor,
         debug: bool,
@@ -142,7 +147,7 @@ class Exposure:
 
 # TODO: This function will be deprecated
 # ruff: noqa: C901
-def run_exposure_pipeline(
+def _run_exposure_pipeline_deprecated(
     processor: Processor,
     readout: "Readout",
     outputs: Union[
@@ -172,6 +177,9 @@ def run_exposure_pipeline(
     """
     # if isinstance(detector, CCD):
     #    dynamic.non_destructive_readout = False
+    warnings.warn(
+        "Deprecated. Will be removed in Pyxel 2.0", DeprecationWarning, stacklevel=1
+    )
 
     with set_random_seed(seed=pipeline_seed):
         num_steps = readout._num_steps

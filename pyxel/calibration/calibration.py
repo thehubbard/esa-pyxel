@@ -357,7 +357,7 @@ class Calibration:
 
         return problem
 
-    def run_calibration(
+    def _run_calibration_deprecated(
         self,
         processor: Processor,
         output_dir: Path,
@@ -365,7 +365,7 @@ class Calibration:
     ) -> tuple["xr.Dataset", "pd.DataFrame", "pd.DataFrame"]:
         """Run calibration pipeline."""
         warnings.warn(
-            "Deprecated. Will be removed in Pyxel 2.0", FutureWarning, stacklevel=1
+            "Deprecated. Will be removed in Pyxel 2.0", DeprecationWarning, stacklevel=1
         )
 
         try:
@@ -425,7 +425,7 @@ class Calibration:
         self._log.info("Calibration ended.")
         return ds, df_processors, df_all_logs
 
-    def run_calibration_new(
+    def run_calibration(
         self,
         processor: Processor,
         output_dir: Path,
@@ -516,7 +516,9 @@ class Calibration:
             "Deprecated. Will be removed in Pyxel 2.0", DeprecationWarning, stacklevel=1
         )
 
-        filenames: Sequence[Delayed] = output.save_processors(processors=df_processors)
+        filenames: Sequence[Delayed] = output._save_processors_deprecated(
+            processors=df_processors
+        )
 
         # TODO: Use output.fitting_plot ?
         # TODO: Use output.fitting_plot_close ?
