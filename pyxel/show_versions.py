@@ -12,6 +12,7 @@ import os
 import platform
 import struct
 import sys
+import warnings
 from collections.abc import Mapping
 from typing import Any, Optional
 
@@ -121,6 +122,8 @@ def show_versions():
         "param",
         "PIL",
         "poppy",
+        "synphot",
+        "lacosmic",
         "pygmo",
         "pympler",
         "scipy",
@@ -155,8 +158,12 @@ def show_versions():
 
     for module_name in dependencies_lst:
         try:
-            # Try to get a module
-            module = importlib.import_module(module_name)
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+
+                # Try to get a module
+                module = importlib.import_module(module_name)
+
         except Exception:
             dependencies[module_name] = None
         else:
