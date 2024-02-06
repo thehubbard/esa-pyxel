@@ -25,6 +25,8 @@ The deprecated model `simple_aperture` in `photon_collection` is removed.
   (See [!827](https://gitlab.com/esa/pyxel/-/merge_requests/827)).
 
 ### Documentation
+* Update documentation about quick start installation.
+  (See [!830](https://gitlab.com/esa/pyxel/-/merge_requests/830)).
 
 ### Models
 
