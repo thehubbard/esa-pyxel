@@ -246,7 +246,7 @@ def observation_mode(
         processor=processor
     )
 
-    if observation_outputs._save_observation_data_deprecated:
+    if observation_outputs.save_observation_data:
         observation_outputs._save_observation_datasets_deprecated(
             result=result, mode=observation.parameter_mode
         )
@@ -515,7 +515,8 @@ def _run_observation_mode(
 
     result: "DataTree" = observation.run_observation_datatree(processor=processor)
 
-    if observation_outputs._save_observation_data_deprecated:
+    # TODO: Fix this. See issue #723
+    if observation_outputs.save_observation_data:
         raise NotImplementedError
     #     observation_outputs.save_observation_datasets(
     #         result=result, mode=observation.parameter_mode
