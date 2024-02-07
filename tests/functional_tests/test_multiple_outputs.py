@@ -15,7 +15,6 @@ from freezegun import freeze_time
 
 import pyxel
 from pyxel import Configuration
-from pyxel.exposure import Exposure
 
 
 @contextmanager
@@ -35,8 +34,13 @@ def folder_parent(request: pytest.FixtureRequest) -> Path:
     return request.path.parent
 
 
-@pytest.mark.parametrize("config_filename", ["data/simple_exposure.yaml"])
-def test_exposure_output(config_filename: str, folder_parent: Path, tmp_path: Path):
+@pytest.mark.parametrize(
+    "config_filename, with_outputs",
+    [("data/simple_exposure.yaml", True), ("data/simple_observation.yaml", False)],
+)
+def test_exposure_output(
+    config_filename: str, with_outputs: bool, folder_parent: Path, tmp_path: Path
+):
     """Test simple mode with different outputs."""
     full_config_filename = folder_parent.joinpath(config_filename).resolve(strict=True)
 
@@ -94,7 +98,6 @@ def test_exposure_output(config_filename: str, folder_parent: Path, tmp_path: Pa
         #
         # First run
         #
-        assert isinstance(mode, Exposure)
         with freeze_time(date_2023_12_19_08_20):
             _ = pyxel.run_mode(mode=mode, detector=detector, pipeline=pipeline)
 
@@ -108,7 +111,11 @@ def test_exposure_output(config_filename: str, folder_parent: Path, tmp_path: Pa
 
         folder_run_01 = folder_output_01 / "run_20231219_082000"
         assert folder_run_01.exists()
-        assert list(folder_run_01.glob("*")) != []
+
+        if with_outputs:
+            assert list(folder_run_01.glob("*")) != []
+        else:
+            assert list(folder_run_01.glob("*")) == []
 
         # Check 'mode.output.output_dir'
         output_dir = mode.outputs.current_output_folder
@@ -131,7 +138,11 @@ def test_exposure_output(config_filename: str, folder_parent: Path, tmp_path: Pa
 
         folder_run_02 = folder_output_01 / "run_20231219_082000_1"
         assert folder_run_02.exists()
-        assert list(folder_run_02.glob("*")) != []
+
+        if with_outputs:
+            assert list(folder_run_02.glob("*")) != []
+        else:
+            assert list(folder_run_02.glob("*")) == []
 
         # Check 'mode.output.output_dir'
         output_dir = mode.outputs.current_output_folder
@@ -155,7 +166,11 @@ def test_exposure_output(config_filename: str, folder_parent: Path, tmp_path: Pa
 
         folder_run_03 = folder_output_01 / "run_20231219_083000"
         assert folder_run_03.exists()
-        assert list(folder_run_03.glob("*")) != []
+
+        if with_outputs:
+            assert list(folder_run_03.glob("*")) != []
+        else:
+            assert list(folder_run_03.glob("*")) == []
 
         # Check 'mode.output.output_dir'
         output_dir = mode.outputs.current_output_folder
@@ -180,7 +195,11 @@ def test_exposure_output(config_filename: str, folder_parent: Path, tmp_path: Pa
         }
         folder_run_04 = folder_output_01 / "foo_20231219_083000"
         assert folder_run_04.exists()
-        assert list(folder_run_04.glob("*")) != []
+
+        if with_outputs:
+            assert list(folder_run_04.glob("*")) != []
+        else:
+            assert list(folder_run_04.glob("*")) == []
 
         # Check 'mode.output.output_dir'
         output_dir = mode.outputs.current_output_folder
@@ -205,7 +224,11 @@ def test_exposure_output(config_filename: str, folder_parent: Path, tmp_path: Pa
         }
         folder_run_05 = folder_output_01 / "foo_20231219_083000_1"
         assert folder_run_05.exists()
-        assert list(folder_run_05.glob("*")) != []
+
+        if with_outputs:
+            assert list(folder_run_05.glob("*")) != []
+        else:
+            assert list(folder_run_05.glob("*")) == []
 
         # Check 'mode.output.output_dir'
         output_dir = mode.outputs.current_output_folder
@@ -230,7 +253,11 @@ def test_exposure_output(config_filename: str, folder_parent: Path, tmp_path: Pa
         assert filenames_output == {Path("folder1/folder2/foo_20231219_084000")}
         folder_run_06 = folder_output_02 / "foo_20231219_084000"
         assert folder_run_06.exists()
-        assert list(folder_run_06.glob("*")) != []
+
+        if with_outputs:
+            assert list(folder_run_06.glob("*")) != []
+        else:
+            assert list(folder_run_06.glob("*")) == []
 
         # Check 'mode.output.output_dir'
         output_dir = mode.outputs.current_output_folder
