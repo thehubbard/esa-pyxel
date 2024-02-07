@@ -49,7 +49,7 @@ class CalibrationOutputs(Outputs):
     def __init__(
         self,
         output_folder: Union[str, Path],
-        custom_dir_name: Optional[str] = "",
+        custom_dir_name: str = "",
         save_data_to_file: Optional[
             Sequence[Mapping[ValidName, Sequence[ValidFormat]]]
         ] = None,
@@ -119,10 +119,10 @@ class CalibrationOutputs(Outputs):
                 if obj == "logs":
                     for formal_file in format_list:
                         if formal_file == "csv":
-                            filename = self.output_dir.joinpath("logs.csv")
+                            filename = self.current_output_folder.joinpath("logs.csv")
                             logs.to_csv(filename)
                         elif formal_file == "xlsx":
-                            filename = self.output_dir.joinpath("logs.xlsx")
+                            filename = self.current_output_folder.joinpath("logs.xlsx")
                             logs.to_excel(filename)
                         else:
                             raise NotImplementedError(

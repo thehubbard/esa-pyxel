@@ -49,7 +49,7 @@ class ObservationOutputs(Outputs):
     def __init__(
         self,
         output_folder: Union[str, Path],
-        custom_dir_name: Optional[str] = "",
+        custom_dir_name: str = "",
         save_data_to_file: Optional[
             Sequence[Mapping[ValidName, Sequence[ValidFormat]]]
         ] = None,
@@ -61,9 +61,9 @@ class ObservationOutputs(Outputs):
             custom_dir_name=custom_dir_name,
         )
 
-        self._save_observation_data_deprecated: Optional[
-            Sequence[Mapping[str, Sequence[str]]]
-        ] = save_observation_data
+        self.save_observation_data: Optional[Sequence[Mapping[str, Sequence[str]]]] = (
+            save_observation_data
+        )
 
     def _save_observation_datasets_deprecated(
         self, result: "ObservationResult", mode: "ParameterMode"
@@ -83,9 +83,9 @@ class ObservationOutputs(Outputs):
 
         save_methods: dict[str, SaveToFile] = {"nc": self.save_to_netcdf}
 
-        if self._save_observation_data_deprecated is not None:
+        if self.save_observation_data is not None:
             dct: Mapping[str, Sequence[str]]
-            for dct in self._save_observation_data_deprecated:
+            for dct in self.save_observation_data:
                 first_item, *_ = dct.items()
                 obj, format_list = first_item
 
