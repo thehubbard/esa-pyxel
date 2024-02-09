@@ -5,22 +5,23 @@
 #   this file, may be copied, modified, propagated, or distributed except according to
 #   the terms contained in the file ‘LICENCE.txt’.
 
-"""Convert scene to photon with aperture model."""
-from typing import Union
+"""Convert scene to photon with simple collection model."""
+from typing import Optional, Union
 
 import astropy.units as u
 import numpy as np
 import xarray as xr
 from astropy import wcs
 from astropy.coordinates import SkyCoord
+from astropy.units import Quantity
 
 from pyxel.data_structure import Scene
-from pyxel.detectors import Detector
+from pyxel.detectors import Detector, WavelengthHandling
 
 
 def extract_wavelength(
     scene: Scene,
-    wavelength_band: tuple[float, float],
+    wavelengths: xr.DataArray,
 ) -> xr.Dataset:
     """Extract xarray Dataset of Scene for selected wavelength band.
 
@@ -28,7 +29,7 @@ def extract_wavelength(
     ----------
     scene : Scene
         Pyxel scene object.
-    wavelength_band : float
+    wavelengths : WavelengthHandling
         Selected wavelength band. Unit: nm.
 
     Returns
@@ -51,17 +52,15 @@ def extract_wavelength(
         flux        (ref, wavelength) float64 0.2331 0.231 0.2269 ... 2.213 2.212
     """
 
-    start_wavelength, end_wavelength = wavelength_band
-
-    if start_wavelength > end_wavelength:
-        raise ValueError(
-            "First input in wavelength_band needs to be smaller than the second."
-        )
-
+    # get data from scene and convert to xarray
     data = scene.to_xarray()
+
+    # interpolation
+    interpolated_wavelengths = data.interp_like(wavelengths)
+
     # get dataset with x, y, weight and flux of scene for selected wavelength band.
     selected_data: xr.Dataset = data.sel(
-        wavelength=slice(start_wavelength, end_wavelength)
+        wavelength=interpolated_wavelengths["wavelength"]
     )
 
     return selected_data
@@ -335,13 +334,46 @@ def project_objects_to_detector(
         return projection_3d
 
 
+# TODO: Add unit tests
+def _extract_wavelength(
+    resolution: Optional[int],
+    filter_band: Optional[tuple[float, float]],
+    default_wavelength_handling: Union[None, float, WavelengthHandling],
+) -> xr.DataArray:
+    """Extract wavelength."""
+    if filter_band is not None and resolution is not None:
+        multi_wavelengths: WavelengthHandling = WavelengthHandling(
+            cut_on=filter_band[0], cut_off=filter_band[1], resolution=resolution
+        )
+
+    elif filter_band is None and resolution is None:
+        if not isinstance(default_wavelength_handling, WavelengthHandling):
+            raise ValueError(
+                "No filter band provided for model 'simple_collection'. Please provide `cut_on` and `cut_off` "
+                "parameters in the detector environment wavelength or as input to model directly."
+            )
+
+        multi_wavelengths = default_wavelength_handling
+
+    else:
+        raise ValueError(
+            "`filter_band` and `resolution` have both to be provided either as model arguments or in the "
+            "detector environment."
+        )
+
+    wavelengths: xr.DataArray = multi_wavelengths.get_wavelengths()
+    return wavelengths
+
+
 def simple_collection(
     detector: Detector,
     aperture: float,
-    filter_band: tuple[float, float],
+    filter_band: Union[tuple[float, float], None] = None,
+    resolution: Optional[int] = None,
+    pixelscale: Union[float, None] = None,
     integrate_wavelength: bool = True,
 ):
-    """Convert scene in ph/(cm2 nm s) to 3D photon in ph/nm s.
+    """Convert scene in ph/(cm2 nm s) to photon in ph/nm s or ph s.
 
     Parameters
     ----------
@@ -349,14 +381,34 @@ def simple_collection(
         Pyxel detector object.
     aperture : float
         Collecting area of the telescope. Unit: m.
-    filter_band : tuple[float, float]
-        Wavelength range of selected filter band. Unit: nm.
+    filter_band : Union[tuple[float, float], None]
+        Wavelength range of selected filter band, default is None. Unit: nm.
+    resolution : Optional[int]
+        Resolution of provided wavelength range in filter band. Unit: nm.
+    pixelscale : Union[float, None]
+        Pixel scale of detector, default is None. Unit: arcsec/pixel.
     integrate_wavelength : bool
-        If true, integrates along the wavelength else multiwavelength.
+        If true, integrates along the wavelength else multiwavelength, default is True.
     """
+    if pixelscale is None:
+        if detector.geometry.pixel_scale is None:
+            raise ValueError(
+                "Pixel scale is not defined. It must be either provided in the detector geometry "
+                "or as model argument."
+            )
+        pixel_scale: float = detector.geometry.pixel_scale
+    else:
+        pixel_scale = pixelscale
+
+    wavelengths: xr.DataArray = _extract_wavelength(
+        resolution=resolution,
+        filter_band=filter_band,
+        default_wavelength_handling=detector.environment._wavelength,
+    )
+
     # get dataset for given wavelength and scene object.
     scene_data: xr.Dataset = extract_wavelength(
-        scene=detector.scene, wavelength_band=filter_band
+        scene=detector.scene, wavelengths=wavelengths
     )
 
     # get time in s
@@ -383,7 +435,7 @@ def simple_collection(
         photon_projection_2d: Union[np.ndarray, xr.DataArray] = (
             project_objects_to_detector(
                 scene_data=scene_data,
-                pixel_scale=detector.geometry.pixel_scale * u.arcsec / u.pixel,
+                pixel_scale=Quantity(pixel_scale, unit="arcsec/pixel"),
                 rows=detector.geometry.row,
                 cols=detector.geometry.col,
                 integrate_wavelength=integrate_wavelength,
@@ -414,7 +466,7 @@ def simple_collection(
         photon_projection_3d: Union[np.ndarray, xr.DataArray] = (
             project_objects_to_detector(
                 scene_data=scene_data,
-                pixel_scale=detector.geometry.pixel_scale * u.arcsec / u.pixel,
+                pixel_scale=Quantity(pixel_scale, unit="arcsec/pixel"),
                 rows=detector.geometry.row,
                 cols=detector.geometry.col,
                 integrate_wavelength=integrate_wavelength,

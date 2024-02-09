@@ -8,13 +8,16 @@
 """Poppy model."""
 
 import logging
+import warnings
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from typing import Any, Optional, Union
 
 import numpy as np
+import xarray as xr
 from astropy.convolution import convolve_fft
 from astropy.io import fits
+from astropy.units import Quantity
 
 from pyxel.detectors import Detector
 
@@ -32,10 +35,27 @@ class CircularAperture:
 
     Parameters
     ----------
-    radius : float
+    radius : Quantity
         Radius of the pupil, in meters.
     """
 
+    radius: Quantity
+
+
+@dataclass
+class DeprecatedThinLens:
+    """Parameters for an idealized thin lens.
+
+    Parameters
+    ----------
+    nwaves : float
+        The number of waves of defocus, peak to valley.
+    radius : float
+        Pupil radius, in meters, over which the Zernike defocus term should be computed
+        such that rho = 1 at r = `radius`.
+    """
+
+    nwaves: float
     radius: float
 
 
@@ -47,33 +67,17 @@ class ThinLens:
     ----------
     nwaves : float
         The number of waves of defocus, peak to valley.
-    radius : float
+    radius : Quantity
         Pupil radius, in meters, over which the Zernike defocus term should be computed
         such that rho = 1 at r = `radius`.
+    reference_wavelength : Quantity
+        Wavelength, in nm, at which that number of waves of defocus is specified.
     """
 
     nwaves: float
-    radius: float
-
-
-@dataclass
-class NewThinLens:
-    """Parameters for an idealized thin lens.
-
-    Parameters
-    ----------
-    nwaves : float
-        The number of waves of defocus, peak to valley.
-    radius : float
-        Pupil radius, in meters, over which the Zernike defocus term should be computed
-        such that rho = 1 at r = `radius`.
-    reference_wavelength : float
-        Wavelength, in meters, at which that number of waves of defocus is specified.
-    """
-
-    nwaves: float
-    radius: float
-    reference_wavelength: Optional[float] = None
+    radius: Quantity
+    reference_wavelength: Optional[Quantity] = None
+    # center wavelength if not provided takes the middle
 
 
 @dataclass
@@ -82,11 +86,11 @@ class SquareAperture:
 
     Parameters
     ----------
-    size : float
+    size : Quantity
         side length of the square, in meters.
     """
 
-    size: float
+    size: Quantity
 
 
 @dataclass
@@ -95,14 +99,14 @@ class RectangleAperture:
 
     Parameters
     ----------
-    width : float
+    width : Quantity
         width of the rectangle, in meters.
-    height : float
+    height : Quantity
         height of the rectangle, in meters.
     """
 
-    width: float
-    height: float
+    width: Quantity
+    height: Quantity
 
 
 @dataclass
@@ -111,11 +115,11 @@ class HexagonAperture:
 
     Parameters
     ----------
-    side : float
+    side : Quantity
         side length (and/or radius) of hexagon, in meters.
     """
 
-    side: float
+    side: Quantity
 
 
 @dataclass
@@ -124,18 +128,18 @@ class MultiHexagonalAperture:
 
     Parameters
     ----------
-    side : float
+    side : Quantity
         side length (and/or radius) of hexagon, in meters.
     rings : integer
         The number of rings of hexagons to include, not counting the central segment
         (i.e. 2 for a JWST-like aperture, 3 for a Keck-like aperture, and so on)
-    gap : float
+    gap : Quantity
         Gap between adjacent segments, in meters.
     """
 
-    side: float
+    side: Quantity
     rings: int
-    gap: float
+    gap: Quantity
 
 
 @dataclass
@@ -146,18 +150,18 @@ class SecondaryObscuration:
 
     Parameters
     ----------
-    secondary_radius : float
+    secondary_radius : Quantity
         Radius of the circular secondary obscuration, in meters.
     n_supports : int
         Number of secondary mirror supports ("spiders"). These will be
         spaced equally around a circle.
-    support_width : float
+    support_width : Quantity
         Width of each support, in meters.
     """
 
-    secondary_radius: float
+    secondary_radius: Quantity
     n_supports: int
-    support_width: float
+    support_width: Quantity
 
 
 @dataclass
@@ -166,7 +170,7 @@ class ZernikeWFE:
 
     Parameters
     ----------
-    radius : float
+    radius : Quantity
         Pupil radius, in meters, over which the Zernike terms should be
         computed such that rho = 1 at r = `radius`.
     coefficients : iterable of floats
@@ -176,7 +180,7 @@ class ZernikeWFE:
     aperture_stop : float
     """
 
-    radius: float
+    radius: Quantity
     coefficients: Sequence[float]
     aperture_stop: float
 
@@ -187,17 +191,28 @@ class SineWaveWFE:
 
     Parameters
     ----------
-    spatialfreq : float
-    amplitude : float
+    spatialfreq : Quantity
+    amplitude : Quantity
     rotation : float
     """
 
-    spatialfreq: float
-    amplitude: float
+    spatialfreq: Quantity
+    amplitude: Quantity
     rotation: float
 
 
 # Define a type alias
+OpticalParameterDeprecated = Union[
+    CircularAperture,
+    DeprecatedThinLens,
+    SquareAperture,
+    RectangleAperture,
+    HexagonAperture,
+    MultiHexagonalAperture,
+    SecondaryObscuration,
+    ZernikeWFE,
+    SineWaveWFE,
+]
 OpticalParameter = Union[
     CircularAperture,
     ThinLens,
@@ -209,20 +224,9 @@ OpticalParameter = Union[
     ZernikeWFE,
     SineWaveWFE,
 ]
-NewOpticalParameter = Union[
-    CircularAperture,
-    NewThinLens,
-    SquareAperture,
-    RectangleAperture,
-    HexagonAperture,
-    MultiHexagonalAperture,
-    SecondaryObscuration,
-    ZernikeWFE,
-    SineWaveWFE,
-]
 
 
-def create_optical_parameter(dct: Mapping) -> OpticalParameter:
+def _create_optical_parameter_deprecated(dct: Mapping) -> OpticalParameterDeprecated:
     """Create a new ``OpticalParameter`` based on a dictionary.
 
     Parameters
@@ -235,11 +239,15 @@ def create_optical_parameter(dct: Mapping) -> OpticalParameter:
     OpticalParameter
         New parameters.
     """
+    warnings.warn(
+        "Deprecated. Will be removed in Pyxel 2.0", DeprecationWarning, stacklevel=1
+    )
+
     if dct["item"] == "CircularAperture":
         return CircularAperture(radius=dct["radius"])
 
     elif dct["item"] == "ThinLens":
-        return ThinLens(
+        return DeprecatedThinLens(
             nwaves=dct["nwaves"],
             radius=dct["radius"],
         )
@@ -284,13 +292,17 @@ def create_optical_parameter(dct: Mapping) -> OpticalParameter:
         raise NotImplementedError
 
 
-def new_create_optical_parameter(dct: Mapping) -> NewOpticalParameter:
-    """Create a new ``OpticalParameter`` based on a dictionary.
+def create_optical_parameter(
+    dct: Mapping, selected_wavelength: Union[Quantity, tuple[Quantity, Quantity]]
+) -> OpticalParameter:
+    """Create an``OpticalParameter`` based on a dictionary.
 
     Parameters
     ----------
     dct : dict
-        Dictionary to convert
+        Dictionary to convert.
+    selected_wavelength : Union[Quantity, tuple[Quantity,Quantity]]
+        Wavelength in nanometer.
 
     Returns
     -------
@@ -298,50 +310,60 @@ def new_create_optical_parameter(dct: Mapping) -> NewOpticalParameter:
         New parameters.
     """
     if dct["item"] == "CircularAperture":
-        return CircularAperture(radius=dct["radius"])
+        return CircularAperture(radius=Quantity(dct["radius"], unit="m"))
 
     elif dct["item"] == "ThinLens":
-        return NewThinLens(
-            nwaves=dct["nwaves"],
-            radius=dct["radius"],
-            reference_wavelength=dct["reference_wavelength"],
+        if "reference_wavelength" in dct:
+            reference_wavelength = Quantity(dct["reference_wavelength"], unit="nm")
+        elif isinstance(selected_wavelength, Quantity):
+            reference_wavelength = selected_wavelength
+        else:
+            cut_on, cut_off = selected_wavelength
+            reference_wavelength = (cut_on + cut_off) / 2
+        return ThinLens(
+            nwaves=float(dct["nwaves"]),
+            radius=Quantity(dct["radius"], unit="m"),
+            reference_wavelength=reference_wavelength,
         )
 
     elif dct["item"] == "SquareAperture":
-        return SquareAperture(size=dct["size"])
+        return SquareAperture(size=Quantity(dct["size"], unit="m"))
 
     elif dct["item"] == "RectangularAperture":
-        return RectangleAperture(width=dct["width"], height=dct["height"])
+        return RectangleAperture(
+            width=Quantity(dct["width"], unit="m"),
+            height=Quantity(dct["height"], unit="m"),
+        )
 
     elif dct["item"] == "HexagonAperture":
-        return HexagonAperture(side=dct["side"])
+        return HexagonAperture(side=Quantity(dct["side"], unit="m"))
 
     elif dct["item"] == "MultiHexagonalAperture":
         return MultiHexagonalAperture(
-            side=dct["side"],
-            rings=dct["rings"],
-            gap=dct["gap"],
+            side=Quantity(dct["side"], unit="m"),
+            rings=int(dct["rings"]),
+            gap=Quantity(dct["gap"], unit="m"),
         )  # cm
 
     elif dct["item"] == "SecondaryObscuration":
         return SecondaryObscuration(
-            secondary_radius=dct["secondary_radius"],
-            n_supports=dct["n_supports"],
-            support_width=dct["support_width"],
+            secondary_radius=Quantity(dct["secondary_radius"], unit="m"),
+            n_supports=int(dct["n_supports"]),
+            support_width=Quantity(dct["support_width"], unit="m"),
         )  # cm
 
     elif dct["item"] == "ZernikeWFE":
         return ZernikeWFE(
-            radius=dct["radius"],
+            radius=Quantity(dct["radius"], unit="m"),
             coefficients=dct["coefficients"],  # list of floats
-            aperture_stop=dct["aperture_stop"],
+            aperture_stop=float(dct["aperture_stop"]),
         )  # bool
 
     elif dct["item"] == "SineWaveWFE":
         return SineWaveWFE(
-            spatialfreq=dct["spatialfreq"],  # 1/m
-            amplitude=dct["amplitude"],  # um
-            rotation=dct["rotation"],
+            spatialfreq=Quantity(dct["spatialfreq"], unit="1/m"),
+            amplitude=Quantity(dct["amplitude"], unit="um"),
+            rotation=float(dct["rotation"]),
         )
     else:
         raise NotImplementedError
@@ -349,7 +371,7 @@ def new_create_optical_parameter(dct: Mapping) -> NewOpticalParameter:
 
 def create_optical_parameters(
     optical_system: Sequence[Mapping],
-) -> Sequence[OpticalParameter]:
+) -> Sequence[OpticalParameterDeprecated]:
     """Create a list of ``OpticalParameters``.
 
     Parameters
@@ -362,11 +384,11 @@ def create_optical_parameters(
     ``list`` of ``OpticalParameter``
         A new list of parameters.
     """
-    return [create_optical_parameter(dct) for dct in optical_system]
+    return [_create_optical_parameter_deprecated(dct) for dct in optical_system]
 
 
-def create_optical_item(
-    param: OpticalParameter,
+def _create_optical_item_deprecated(
+    param: OpticalParameterDeprecated,
     wavelength: float,
 ) -> "op.OpticalElement":
     """Create a new poppy ``OpticalElement``.
@@ -382,10 +404,14 @@ def create_optical_item(
     ``OpticalElement``
         A new poppy ``OpticalElement``.
     """
+    warnings.warn(
+        "Deprecated. Will be removed in Pyxel 2.0", DeprecationWarning, stacklevel=1
+    )
+
     if isinstance(param, CircularAperture):
         return op.CircularAperture(radius=param.radius)
 
-    elif isinstance(param, ThinLens):
+    elif isinstance(param, DeprecatedThinLens):
         return op.ThinLens(
             nwaves=param.nwaves,
             reference_wavelength=wavelength,
@@ -430,23 +456,23 @@ def create_optical_item(
         raise NotImplementedError
 
 
-def new_create_optical_item(param: NewOpticalParameter) -> "op.OpticalElement":
-    """Create a new poppy ``OpticalElement``.
+def create_optical_item(param: OpticalParameter) -> "op.OpticalElement":
+    """Create a poppy ``OpticalElement``.
 
     Parameters
     ----------
-    param : ``NewOpticalParameter``
+    param : ``OpticalParameter``
         Pyxel Optical parameters to create a poppy ``OpticalElement``.
 
     Returns
     -------
     ``OpticalElement``
-        A new poppy ``OpticalElement``.
+        A poppy ``OpticalElement``.
     """
     if isinstance(param, CircularAperture):
         return op.CircularAperture(radius=param.radius)
 
-    elif isinstance(param, NewThinLens):
+    elif isinstance(param, ThinLens):
         return op.ThinLens(
             nwaves=param.nwaves,
             reference_wavelength=param.reference_wavelength,
@@ -464,7 +490,9 @@ def new_create_optical_item(param: NewOpticalParameter) -> "op.OpticalElement":
 
     elif isinstance(param, MultiHexagonalAperture):
         return op.MultiHexagonAperture(
-            side=param.side, rings=param.rings, gap=param.gap
+            side=param.side,
+            rings=param.rings,
+            gap=param.gap,
         )
 
     elif isinstance(param, SecondaryObscuration):
@@ -540,7 +568,7 @@ def calc_psf(
             name="PyxelInstrument",
         ):
             super().__init__(name=name)
-            self._pixelscale = pixelscale
+            self._pixelscale = Quantity(pixelscale, unit="arcsec/pix")
             self._optical_elements = optical_elements
             self._fov_arcsec = fov_arcsec
 
@@ -584,9 +612,10 @@ def calc_psf(
             for element in self._optical_elements:
                 osys.add_pupil(element)
 
+            analysis_fov = self._pixelscale * Quantity(10, unit="pix")
             osys.add_detector(
                 pixelscale=self._pixelscale,
-                fov_arcsec=self._fov_arcsec,
+                fov_arcsec=analysis_fov,
             )
 
             return osys
@@ -612,6 +641,7 @@ def calc_psf(
     output_fits, wavefronts = instrument.calc_datacube(
         wavelengths=wavelengths,
         fov_arcsec=fov_arcsec,
+        oversample=1,
     )
 
     return output_fits, wavefronts
@@ -645,14 +675,14 @@ def apply_convolution(data: np.ndarray, kernel: np.ndarray) -> np.ndarray:
 
     assert num_rows == num_cols
     # resize kernel, if kernel size too big.
-    if num_rows > 10:
+    if num_rows > 11:
         import skimage.transform as sk
 
         if kernel.ndim == 2:
-            new_shape: tuple[int, ...] = (10, 10)
+            new_shape: tuple[int, ...] = (11, 11)
         elif kernel.ndim == 3:
             num_wavelengths, _, _ = kernel.shape
-            new_shape = num_wavelengths, 10, 10
+            new_shape = num_wavelengths, 11, 11
 
         resized_kernel = sk.resize(kernel, output_shape=new_shape, anti_aliasing=False)
         kernel = resized_kernel / resized_kernel.sum()
@@ -667,11 +697,13 @@ def apply_convolution(data: np.ndarray, kernel: np.ndarray) -> np.ndarray:
     return array
 
 
+# ruff: noqa: C901
 def optical_psf(
     detector: Detector,
-    wavelength: float,
     fov_arcsec: float,
     optical_system: Sequence[Mapping[str, Any]],
+    wavelength: Union[int, float, tuple[float, float], None] = None,
+    pixelscale: Union[float, None] = None,
     apply_jitter: bool = False,
     jitter_sigma: float = 0.007,
 ) -> None:
@@ -681,14 +713,16 @@ def optical_psf(
     ----------
     detector : Detector
         Pyxel Detector object.
-    wavelength : float
-        Wavelength of incoming light in meters.
     fov_arcsec : float
         Field Of View on detector plane in arcsec.
     optical_system : list of dict
         List of optical elements before detector with their specific arguments.
+    wavelength : Union[int, float, tuple[float, float], None]
+        Wavelength of incoming light in meters, default is None.
+    pixelscale :  Union[float, None]
+        Pixel scale of detector, default is None.
     apply_jitter : bool
-        Defines whether jitter should be applied. Default = False.
+        Defines whether jitter should be applied, default is False.
     jitter_sigma : float
         Jitter sigma value in arcsec per axis, default is 0.007.
     """
@@ -696,148 +730,140 @@ def optical_psf(
         logging.WARNING
     )  # TODO: Fix this. See issue #81
 
-    # Validation and Conversion stage
-    # These steps will be probably moved into the YAML engine
-    if wavelength < 0.0 or fov_arcsec < 0.0 or detector.geometry.pixel_scale < 0.0:
+    # get pixel scale either from detector geometry or from model input
+    if pixelscale is None:
+        if detector.geometry.pixel_scale is None:
+            raise ValueError(
+                "Pixel scale is not defined. It must be either provided in the detector geometry "
+                "or as model argument."
+            )
+        pixel_scale: float = detector.geometry.pixel_scale
+    else:
+        pixel_scale = pixelscale
+
+    # get wavelength information either from detector envorinment or from model input
+    if wavelength is None:
+        # take wavelngth input from detector.environment
+        if isinstance(detector.environment.wavelength, float):
+            selected_wavelength: Union[Quantity, tuple[Quantity, Quantity]] = Quantity(
+                detector.environment.wavelength, unit="nm"
+            )
+        else:
+            selected_wavelength = (
+                Quantity(detector.environment.wavelength.cut_on, unit="nm"),
+                Quantity(detector.environment.wavelength.cut_off, unit="nm"),
+            )
+    elif isinstance(wavelength, (int, float)):
+        selected_wavelength = Quantity(wavelength, unit="nm")
+    elif isinstance(wavelength, Sequence) and len(wavelength) == 2:
+        cut_on, cut_off = wavelength
+        selected_wavelength = (
+            Quantity(cut_on, unit="nm"),
+            Quantity(cut_off, unit="nm"),
+        )
+    else:
         raise ValueError(
-            "Expecting strictly positive value for 'wavelength', "
-            "'fov_arcsec' and 'pixel_scale'."
+            "Wavelength is not defined. It must be either provided in the detector environment or as model "
+            "argument."
         )
 
     # Convert 'optical_system' to 'optical_parameters'
     optical_parameters: Sequence[OpticalParameter] = [
-        create_optical_parameter(dct) for dct in optical_system
+        create_optical_parameter(dct, selected_wavelength=selected_wavelength)
+        for dct in optical_system
     ]
 
     optical_elements: Sequence["op.OpticalElement"] = [
-        create_optical_item(param=param, wavelength=wavelength)
-        for param in optical_parameters
+        create_optical_item(param=param) for param in optical_parameters
     ]
 
-    # Processing
-    # Get a Point Spread Function
-    image_hdu_3d: fits.PrimaryHDU
-    # wavefront_hdu_3d: fits.PrimaryHDU
-    image_hdu_3d, wavefront_3d = calc_psf(
-        wavelengths=[wavelength],
-        fov_arcsec=fov_arcsec,
-        pixelscale=detector.geometry.pixel_scale,
-        optical_elements=optical_elements,
-        apply_jitter=apply_jitter,
-        jitter_sigma=jitter_sigma,
-    )
+    # Depending on Type calculate for 2D or 3D photon
+    # 2D
+    if isinstance(selected_wavelength, Quantity):
 
-    data_3d: np.ndarray = image_hdu_3d.data
-    data_2d: np.ndarray = data_3d[0, :, :]
-
-    # Convolution
-    new_array_2d: np.ndarray = apply_convolution(
-        data=detector.photon.array,
-        kernel=data_2d,
-    )
-
-    detector.photon.array = new_array_2d
-
-
-def optical_psf_multi_wavelength(
-    detector: Detector,
-    wavelengths: tuple[float, float],
-    fov_arcsec: float,
-    optical_system: Sequence[Mapping[str, Any]],
-    apply_jitter: bool = False,
-    jitter_sigma: float = 0.007,
-) -> None:
-    """Model function for poppy optics model: convolve photon array with psf.
-
-    Parameters
-    ----------
-    detector : Detector
-        Pyxel Detector object.
-    wavelengths : tuple of floats
-        Wavelengths of incoming light in meters.
-    fov_arcsec : float
-        Field Of View on detector plane in arcsec.
-    optical_system : list of dict
-        List of optical elements before detector with their specific arguments.
-    apply_jitter : bool
-        Defines whether jitter should be applied. Default = False.
-    jitter_sigma : float
-        Jitter sigma value in arcsec per axis, default is 0.007.
-    """
-    import xarray as xr
-    from astropy.units import Quantity
-
-    logging.getLogger("poppy").setLevel(
-        logging.WARNING
-    )  # TODO: Fix this. See issue #81
-
-    # Validation and Conversion stage
-    # These steps will be probably moved into the YAML engine
-    if len(wavelengths) != 2:
-        raise ValueError("Expecting two wavelengths in parameter 'wavelengths'.")
-
-    min_wavelength, max_wavelength = wavelengths
-    if min_wavelength <= 0:
-        raise ValueError("Expecting strictly positive value for the 'wavelengths'")
-
-    if min_wavelength > max_wavelength:
-        raise ValueError(
-            f"Min wavelength must be smaller that max wavelength. Got: {wavelengths!r}"
+        # Processing
+        # Get a Point Spread Function
+        image_hdu: fits.PrimaryHDU
+        # wavefront_hdu_3d: fits.PrimaryHDU
+        image_hdu, wavefront = calc_psf(
+            wavelengths=[selected_wavelength.to("m").value],
+            fov_arcsec=fov_arcsec,
+            pixelscale=pixel_scale,
+            optical_elements=optical_elements,
+            apply_jitter=apply_jitter,
+            jitter_sigma=jitter_sigma,
         )
 
-    if fov_arcsec < 0.0 or detector.geometry.pixel_scale < 0.0:
-        raise ValueError(
-            "Expecting strictly positive value for " "'fov_arcsec' and 'pixel_scale'."
+        data_3d: np.ndarray = image_hdu.data
+        data_2d: np.ndarray = data_3d[0, :, :]
+
+        # Convolution
+        new_array_2d: np.ndarray = apply_convolution(
+            data=detector.photon.array,
+            kernel=data_2d,
         )
 
-    # Convert 'optical_system' to 'optical_parameters'
-    optical_parameters: Sequence[NewOpticalParameter] = [
-        new_create_optical_parameter(dct) for dct in optical_system
-    ]
+        detector.photon.array = new_array_2d
+    # 3D
+    else:
 
-    optical_elements: Sequence["op.OpticalElement"] = [
-        new_create_optical_item(param=param) for param in optical_parameters
-    ]
+        min_wavelength, max_wavelength = selected_wavelength
+        if min_wavelength <= 0:
+            raise ValueError("Expecting strictly positive value for the 'wavelengths'")
 
-    # Get current wavelengths (in nm)
-    start_wavelength = Quantity(min_wavelength, unit="m")
-    end_wavelength = Quantity(max_wavelength, unit="m")
-    wavelengths_nm: Quantity = Quantity(
-        detector.photon.array_3d["wavelength"], unit="nm"
-    )
+        if min_wavelength > max_wavelength:
+            raise ValueError(
+                f"Min wavelength must be smaller that max wavelength. Got: {selected_wavelength!r}"
+            )
 
-    tolerance = Quantity(1e-7, unit="m")
-    selected_wavelengths_nm: Quantity = wavelengths_nm[
-        np.logical_and(
-            wavelengths_nm >= (start_wavelength - tolerance),
-            wavelengths_nm <= (end_wavelength + tolerance),
+        if fov_arcsec < 0.0 or detector.geometry.pixel_scale < 0.0:
+            raise ValueError(
+                "Expecting strictly positive value for "
+                "'fov_arcsec' and 'pixel_scale'."
+            )
+        # Get current wavelengths (in nm)
+        start_wavelength = Quantity(min_wavelength, unit="m")
+        end_wavelength = Quantity(max_wavelength, unit="m")
+        wavelengths_nm: Quantity = Quantity(
+            detector.photon.array_3d["wavelength"], unit="nm"
         )
-    ]
-    if selected_wavelengths_nm.size == 0:
-        raise ValueError
 
-    # Processing
-    # Get a Point Spread Function
-    image_3d: fits.PrimaryHDU
-    wavefront_3d: fits.PrimaryHDU
-    image_3d, wavefront_3d = calc_psf(
-        wavelengths=selected_wavelengths_nm.to("m").value,
-        fov_arcsec=fov_arcsec,
-        pixelscale=detector.geometry.pixel_scale,
-        optical_elements=optical_elements,
-        apply_jitter=apply_jitter,
-        jitter_sigma=jitter_sigma,
-    )
+        tolerance = Quantity(1e-7, unit="m")
+        selected_wavelengths_nm: Quantity = wavelengths_nm[
+            np.logical_and(
+                wavelengths_nm >= (start_wavelength - tolerance),
+                wavelengths_nm <= (end_wavelength + tolerance),
+            )
+        ]
+        if selected_wavelengths_nm.size == 0:
+            raise ValueError(
+                f"The provided wavelength range ({min_wavelength:unicode}, {max_wavelength:unicode}) has "
+                f"no overlap with the wavelengths from detector.photon.array_3d "
+                f"({wavelengths_nm[0]:unicode}, {wavelengths_nm[-1]:unicode})."
+            )
 
-    # Convolution
-    new_array_3d: np.ndarray = apply_convolution(
-        data=detector.photon.array_3d.to_numpy(),
-        kernel=image_3d.data,
-    )
+        # Processing
+        # Get a Point Spread Function
+        image_3d: fits.PrimaryHDU
+        wavefront_3d: fits.PrimaryHDU
+        image_3d, wavefront_3d = calc_psf(
+            wavelengths=selected_wavelengths_nm.to("m").value,
+            fov_arcsec=fov_arcsec,
+            pixelscale=detector.geometry.pixel_scale,
+            optical_elements=optical_elements,
+            apply_jitter=apply_jitter,
+            jitter_sigma=jitter_sigma,
+        )
 
-    array_3d = xr.DataArray(
-        new_array_3d,
-        dims=["wavelength", "y", "x"],
-        coords={"wavelength": selected_wavelengths_nm.value},
-    )
-    detector.photon.array_3d = array_3d
+        # Convolution
+        new_array_3d: np.ndarray = apply_convolution(
+            data=detector.photon.array_3d.to_numpy(),
+            kernel=image_3d.data,
+        )
+
+        array_3d = xr.DataArray(
+            new_array_3d,
+            dims=["wavelength", "y", "x"],
+            coords={"wavelength": selected_wavelengths_nm.value},
+        )
+        detector.photon.array_3d = array_3d

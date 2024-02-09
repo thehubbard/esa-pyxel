@@ -11,6 +11,8 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import Optional, Union
 
+import numpy as np
+import xarray as xr
 from typing_extensions import Self
 
 from pyxel.util import get_size
@@ -23,6 +25,10 @@ class WavelengthHandling:
     cut_on: float
     cut_off: float
     resolution: int
+
+    def __post_init__(self):
+        assert 0 < self.cut_on <= self.cut_off
+        assert self.resolution > 0
 
     def to_dict(self) -> dict:
         return {
@@ -37,6 +43,13 @@ class WavelengthHandling:
             cut_on=data["cut_on"],
             cut_off=data["cut_off"],
             resolution=data["resolution"],
+        )
+
+    def get_wavelengths(self) -> xr.DataArray:
+        return xr.DataArray(
+            np.arange(self.cut_on, self.cut_off + self.resolution, self.resolution),
+            dims="wavelength",
+            attrs={"units": "nm"},
         )
 
 
