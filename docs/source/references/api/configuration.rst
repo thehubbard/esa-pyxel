@@ -12,5 +12,5 @@ Configuration
 
 .. autofunction:: load
 
-.. autofunction:: save
+.. autofunction:: copy_config_file
 
