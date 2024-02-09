@@ -503,7 +503,7 @@ class ModelFittingDataTree(ProblemSingleObjective):
         for id_processor, processor in enumerate(self.param_processor_list):
             delayed_processor = delayed(processor)
 
-            for idx_island, params_array in parameters.groupby("island"):
+            for idx_island, params_array in parameters.groupby("island", squeeze=False):
                 params: np.ndarray = params_array.data  # type
 
                 result_datatree: DataTree = delayed(self.apply_parameters)(
