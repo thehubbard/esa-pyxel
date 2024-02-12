@@ -75,10 +75,15 @@ Simple photoconversion
 :guilabel:`Photon` → :guilabel:`Charge`
 
 With this model you can create and add charge to :py:class:`~pyxel.detectors.Detector` via photoelectric effect
-by converting photons in charge.
+by converting photons to charge.
+This model supports both monochromatic and multiwavelength photons, converting either a 2D photon array or 3D photon array
+to the 2D charge array.
+If the previous model group :ref:`photon collection <photon_collection>` returns a 3D photon array, the
+photon array will be integrated along the wavelength dimension before applying the quantum efficiency (:term:`QE`).
+
 Binomial sampling of incoming Poisson distributed photons is used in the conversion by default,
 with probability :term:`QE`. It can be turned off by setting the argument ``binomial_sampling`` to ``False``.
-User can provide an optional quantum efficiency (``qe``) parameter.
+User can provide an optional quantum efficiency (``quantum_efficiency``) parameter.
 If not provided, quantum efficiency from detector :py:class:`~pyxel.detectors.Characteristics` is used.
 It is also possible to set the seed of the random generator with the argument ``seed``.
 

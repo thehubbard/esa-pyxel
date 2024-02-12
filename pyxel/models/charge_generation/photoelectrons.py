@@ -70,7 +70,13 @@ def simple_conversion(
         Binomial sampling. Default is True.
     """
     if quantum_efficiency is None:
-        final_qe = detector.characteristics.quantum_efficiency
+        if detector.characteristics.quantum_efficiency is None:
+            raise ValueError(
+                "Quantum efficiency is not defined. It must be either provided in the detector characteristics "
+                "or as model argument."
+            )
+        else:
+            final_qe: float = detector.characteristics.quantum_efficiency
     else:
         final_qe = quantum_efficiency
 
