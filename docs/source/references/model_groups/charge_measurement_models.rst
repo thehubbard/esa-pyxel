@@ -5,7 +5,6 @@ Charge Measurement models
 =========================
 
 .. currentmodule:: pyxel.models.charge_measurement
-.. automodule:: pyxel.models.charge_measurement
 
 Charge measurement models are used to add to and manipulate data in :py:class:`~pyxel.data_structure.Signal` array
 inside the :py:class:`~pyxel.detectors.Detector` object.

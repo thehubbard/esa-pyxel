@@ -368,13 +368,13 @@ Dark current
 With this model you can add a temperature dependent dark current to charge data,
 stored in the a :py:class:`~pyxel.detectors.Detector` object.
 The model follows the description in :cite:p:`Konnik:noises`.
-The average dark current rate (in :math:`e^-/s/pixel`) is:
+The average dark current rate (in :math:`\mathit{e^-/s/pixel}`) is:
 
 :math:`D_R=\frac{D_{FM}P_S}{qT_{RM}^{3/2}e^{-E_{g,RM}/-2k_B T_{RM}}} T^{3/2} e^{-E_g/2k_BT}`,
 
 where
 
-:math:`T` is temperature, :math:`T_{RM}` room temperature (:math:`300 K`), :math:`E_{g}` band gap,
+:math:`T` is temperature, :math:`T_{RM}` room temperature (:math:`\mathit{300 K}`), :math:`E_{g}` band gap,
 :math:`k_B` Boltzmann constant, :math:`D_{FM}` dark current figure of merit,
 :math:`P_S` pixel area, :math:`q` charge of an electron and :math:`E_{g, RM}` band gap at room temperature.
 The entire dark current during exposure is:
@@ -386,19 +386,20 @@ where :math:`\sigma_{fpn}=t_{exp} D_R D_N`, :math:`\mathcal{P}` Poisson distribu
 and :math:`t_{exp}` exposure time.
 
 To use the model,
-user has to provide arguments ``figure_of_merit`` in :math:`nA/cm^2` (:math:`D_{FM}`),
-``band_gap`` in :math:`eV`, ``band_gap_room_temperature`` in :math:`eV`, ``spatial_noise_factor`` (:math:`D_N`)
+user has to provide arguments ``figure_of_merit`` in :math:`\mathit{nA/cm^2}` (:math:`D_{FM}`),
+``band_gap`` in :math:`\mathit{eV}`, ``band_gap_room_temperature`` in :math:`\mathit{eV}`, ``spatial_noise_factor`` (:math:`D_N`)
 and ``temporal_noise``.
 If ``temporal_noise`` is true, shot noise will be included.
 The ``spatial_noise_factor`` is typically between 0.1 and 0.4 for CCD and CMOS sensors :cite:p:`Konnik:noises`.
-Parameter ``temperature`` in :math:`K` is taken from detector :py:class:`~pyxel.detectors.Environment`.
+
+Parameter ``temperature`` in :math:`\mathit{K}` is taken from detector :py:class:`~pyxel.detectors.Environment`.
 If arguments ``band_gap`` and ``band_gap_room_temperature`` are not provided,
 the model will use the Varshni empirical formula with parameters for Silicon by default:
 
-:math:`E_{gap}(T) = E_{gap}(0) - \frac{\alpha T^2}{T+\beta}`.
+:math:`E_{gap}(T) = E_{gap}(0) - \frac{\alpha T^2}{T+\beta}`. :math:`\mathit{PTF}
 
-For Silicon, material constants are :math:`E_{gap}(0)=1.1577[eV]`, :math:`\alpha=7.021\times10^{-4}[eV/K]`,
-and :math:`\beta=1108[K]`.
+For Silicon, material constants are :math:`E_{gap}(0)=1.1577\mathit{[eV]}`, :math:`\alpha=7.021\times10^{-4}\mathit{[eV/K]}`,
+and :math:`\beta=1108\mathit{[K]}`.
 
 Example of the configuration file:
 
