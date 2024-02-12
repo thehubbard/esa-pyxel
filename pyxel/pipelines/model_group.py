@@ -7,6 +7,7 @@
 
 """TBW."""
 import logging
+import sys
 from collections.abc import Iterator, Mapping, Sequence
 from copy import deepcopy
 from typing import TYPE_CHECKING
@@ -61,6 +62,7 @@ class ModelGroup:
     def __dir__(self):
         return dir(type(self)) + [model.name for model in self.models]
 
+    # ruff: noqa: C901
     def run(
         self,
         detector: "Detector",
@@ -76,7 +78,14 @@ class ModelGroup:
         model: ModelFunction
         for model in self:
             self._log.info("Model: %r", model.name)
-            model(detector)
+            try:
+                model(detector)
+            except Exception as exc:
+                if sys.version_info >= (3, 11):
+                    note = f"This error is raised in model group '{self._name}' at model '{model.name}'."
+                    exc.add_note(note)
+
+                raise
 
             # TODO: Refactor
             if debug:

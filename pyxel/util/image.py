@@ -7,7 +7,7 @@
 
 
 """Utility functions for images."""
-
+import sys
 from enum import Enum
 from functools import lru_cache
 from pathlib import Path
@@ -185,7 +185,11 @@ def load_cropped_and_aligned_image(
     try:
         image = load_image(filename)
     except OSError as exc:
-        raise OSError(f"Cannot open filename: '{filename}'") from exc
+        if sys.version_info >= (3, 11):
+            exc.add_note(f"Cannot open filename: '{filename}'")
+            raise
+        else:
+            raise OSError(f"Cannot open filename: '{filename}'") from exc
 
     cropped_and_aligned_image: np.ndarray = fit_into_array(
         array=image,
