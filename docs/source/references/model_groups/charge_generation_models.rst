@@ -396,7 +396,7 @@ Parameter ``temperature`` in :math:`\mathit{K}` is taken from detector :py:class
 If arguments ``band_gap`` and ``band_gap_room_temperature`` are not provided,
 the model will use the Varshni empirical formula with parameters for Silicon by default:
 
-:math:`E_{gap}(T) = E_{gap}(0) - \frac{\alpha T^2}{T+\beta}`. :math:`\mathit{PTF}
+:math:`E_{gap}(T) = E_{gap}(0) - \frac{\alpha T^2}{T+\beta}`.
 
 For Silicon, material constants are :math:`E_{gap}(0)=1.1577\mathit{[eV]}`, :math:`\alpha=7.021\times10^{-4}\mathit{[eV/K]}`,
 and :math:`\beta=1108\mathit{[K]}`.
