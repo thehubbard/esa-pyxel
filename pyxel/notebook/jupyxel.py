@@ -276,18 +276,45 @@ def display_detector(
     ----------
     detector : Detector
     new_display : bool, default: False
-        Enable new behaviour.
+        Enable new display.
+
+        .. note:: This pararameter is provisional and can be changed or removed.
+
     custom_histogram : bool, default: True
+        Use a custom method to display the histogram.
+        This parameter can only be used when `new_display` is enabled.
+
+        .. note:: This pararameter is provisional and can be changed or removed.
 
     Notes
     -----
-    Parameters `new_display` and `custom_histogram` are provisional and may be removed.
+    When using `new_display` parameter is enabled and trying to display the detector with the y-log scale,
+    the histogram will not be displayed
+    (see issue [#2591](https://github.com/holoviz/holoviews/issues/2591) in [Bokeh](https://docs.bokeh.org/).
+
+    To resolve this issue, you need to set the `custom_histogram` parameter to `True`.
+
+    Examples
+    --------
+    >>> import pyxel
+    >>> from pyxel.detectors import CCD
+
+    >>> detector = CCD(...)
+    >>> pyxel.display_detector(detector)
+
+    .. image:: _static/display_detector.jpg
+
+    >>> pyxel.display_detector(detector, new_display=True)
+
+    .. image:: _static/new_display_detector.jpg
+
     """
     if new_display is False:
         return _display_detector(detector=detector)
     else:
         return _new_display_detector(
-            detector=detector, custom_histogram=custom_histogram
+            detector=detector,
+            custom_histogram=custom_histogram,
         )
 
 
@@ -304,7 +331,7 @@ def _display_detector(detector: "Detector") -> "pn.Tabs":
     Tabs
     """
     # Late import to speedup start-up time
-    import hvplot.xarray  # To integrate 'hvplot' with 'xarray' # noqa
+    import hvplot.xarray  # To integrate 'hvplot' with 'xarray'
     import panel as pn
     import param
 
