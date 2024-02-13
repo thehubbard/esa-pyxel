@@ -75,7 +75,7 @@ Simple collection
 Converts scene to photon using a given aperture.
 Initially, a xarray Dataset is extracted from the Scene for a selected wavelength band.
 The ``filter_band`` input represents the wavelength range of the selected filter band.
-By default, the ``filter_band`` argument in :math:`nm` is None, and the information is retrieved from the
+By default, the ``filter_band`` argument in :math:`\mathit{nm}` is None, and the information is retrieved from the
 detector properties in the YAML configuration file, where ``cut_on`` and ``cut_off`` wavelengths can be defined
 in the :py:class:`~pyxel.detectors.Detector.Environment`.
 However, you can override this property by providing the ``filter_band`` as a model argument.
@@ -84,7 +84,7 @@ This model supports both monochromatic or multiwavelength modes, generating a 2D
 as output, whereas the 3D Photon array includes the wavelength dimension.
 When ``integrate_wavelength`` is set to true (default) the monochromatic mode is selected,
 where the flux of objects in the scene is integrated across the wavelength band.
-The integrated flux in :math:`photon/(s cm2)` is then converted to :math:`photon/(s pixel)`.
+The integrated flux in :math:`\mathit{photon/(s \cdot cm2)}` is then converted to :math:`\mathit{photon/(s \cdot pixel)}`.
 When ``integrate_wavelength`` set to false, the photons are represented with dimensions "wavelength", "y", and "x".
 
 The objects are projected onto the detector, with object coordinates converted from :math:`arcsec` to detector
@@ -243,8 +243,8 @@ It implements a flexible framework for modeling Fraunhofer and Fresnel diffracti
 particularly in the context of astronomical telescopes.
 
 POPPY calculates the optical Point Spread Function of an optical system and applies the convolution.
-It requires the Field of View (FOV) in :math:`arcsec` (``fov_arcsec``) and the ``optical_system`` as arguments.
-By default, the model uses ``pixelscale`` in :math:`arseconds/pixel` and ``wavelength`` in :math:`nm`,
+It requires the Field of View (FOV) in :math:`\mathit{arcsec}` (``fov_arcsec``) and the ``optical_system`` as arguments.
+By default, the model uses ``pixelscale`` in :math:`\mathit{arseconds/pixel}` and ``wavelength`` in :math:`\mathit{nm}`,
 which are extracted from the detector properties in the YAML configuration file.
 However, you can override these properties by providing them as model arguments.
 
@@ -253,8 +253,8 @@ Additionally, the ``ThinLens`` optical parameter offers an optional argument ``r
 overrides the input wavelength for a single float or calculates the middle wavelength for a range.
 
 When ``apply_jitter`` is set to true (default is false), pointing jitter will be applied using a Gaussian kernel to convolve
-with the PSF. The width of the jitter kernel is defined by ``jitter sigma`` in :math:`arcsec` per axis,
-with a default value of 0.007 :math:`arcsec`.
+with the PSF. The width of the jitter kernel is defined by ``jitter sigma`` in :math:`\mathit{arcsec}` per axis,
+with a default value of 0.007 :math:`\mathit{arcsec}`.
 
 * Developed by: Marshall Perrin et al., STScI
 * Developed for: James Webb Space Telescope

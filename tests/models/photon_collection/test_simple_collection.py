@@ -15,6 +15,7 @@ from pyxel.models.photon_collection.simple_collection import extract_wavelength
 
 @pytest.fixture
 def scene_dataset() -> xr.Dataset:
+    """Create a valid scene dataset."""
     dct = {
         "coords": {
             "ref": {"dims": ("ref",), "attrs": {}, "data": [0, 1, 2]},

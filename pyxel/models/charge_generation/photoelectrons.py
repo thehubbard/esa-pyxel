@@ -11,9 +11,21 @@ from pathlib import Path
 from typing import Literal, Optional, Union
 
 import numpy as np
+import xarray as xr
 
 from pyxel.detectors import Detector
 from pyxel.util import load_cropped_and_aligned_image, set_random_seed
+
+
+# TODO: move this function in class Photon
+def integrate_photon(photon: xr.DataArray) -> xr.DataArray:
+
+    # integrate flux along coordinate wavelength
+    integrated_photon = photon.integrate(coord="wavelength")
+
+    # integrated_photon.attrs["units"] = str(u.Unit(photon.units) * u.nm)
+
+    return integrated_photon
 
 
 def apply_qe(
@@ -59,16 +71,29 @@ def simple_conversion(
         Binomial sampling. Default is True.
     """
     if quantum_efficiency is None:
-        final_qe = detector.characteristics.quantum_efficiency
+        if detector.characteristics.quantum_efficiency is None:
+            raise ValueError(
+                "Quantum efficiency is not defined. It must be either provided in the detector characteristics "
+                "or as model argument."
+            )
+        else:
+            final_qe: float = detector.characteristics.quantum_efficiency
     else:
         final_qe = quantum_efficiency
 
     if not 0 <= final_qe <= 1:
         raise ValueError("Quantum efficiency not between 0 and 1.")
 
+    if detector.photon.ndim == 3:
+        photon_2d: np.ndarray = integrate_photon(detector.photon.array_3d).to_numpy()
+    elif detector.photon.ndim == 2:
+        photon_2d = detector.photon.array_2d
+    else:
+        raise ValueError
+
     with set_random_seed(seed):
         detector_charge = apply_qe(
-            array=detector.photon.array,
+            array=photon_2d,
             qe=final_qe,
             binomial_sampling=binomial_sampling,
         )
@@ -122,42 +147,3 @@ def conversion_with_qe_map(
             array=detector.photon.array, qe=qe, binomial_sampling=binomial_sampling
         )
     detector.charge.add_charge_array(detector_charge)
-
-
-# # TODO: Fix this
-# # @validators.validate
-# # @config.argument(name='', label='', units='', validate=)
-# def monte_carlo_conversion(detector: Detector) -> None:
-#     """Generate charge from incident photon via photoelectric effect, more exact, stochastic (Monte Carlo) model.
-#
-#     :param detector: Pyxel Detector object
-#     """
-#     logging.info("")
-#
-#     # detector.qe <= 1
-#     # detector.eta <= 1
-#     # if np.random.rand(size) <= detector.qe:
-#     #     pass    # 1 e
-#     # else:
-#     #     pass
-#     # if np.random.rand(size) <= detector.eta:
-#     #     pass    # 1 e
-#     # else:
-#     #     pass
-#     # TODO: random number for QE
-#     # TODO: random number for eta
-#     # TODO: energy threshold
-#
-#
-# def random_pos(detector: Detector) -> None:
-#     """Generate random position for photoelectric effect inside detector.
-#
-#     :param detector: Pyxel Detector object
-#     """
-#     # pos1 = detector.vert_dimension * np.random.random()
-#     # pos2 = detector.horz_dimension * np.random.random()
-#
-#     # size = 0
-#     # pos3 = -1 * detector.total_thickness * np.random.rand(size)
-#     # return pos3
-#     raise NotImplementedError
