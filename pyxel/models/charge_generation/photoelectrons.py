@@ -22,6 +22,7 @@ def integrate_photon(photon: xr.DataArray) -> xr.DataArray:
 
     # integrate flux along coordinate wavelength
     integrated_photon = photon.integrate(coord="wavelength")
+
     # integrated_photon.attrs["units"] = str(u.Unit(photon.units) * u.nm)
 
     return integrated_photon
