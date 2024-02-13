@@ -9,13 +9,47 @@ Minor releases include updated stdlib stubs from typeshed.
 
 Pyxel doesn't use SemVer anymore, since most minor releases have at least minor backward incompatible changes.
 
-## UNRELEASED
+## 2.0-rc1 / 2024-02-13
+
 This release brings a number of bugfixes and improvements.
 
 ### Breaking Changes
+
+#### Removed models
+
 The deprecated models in `optics` and `photon_generation` model groups are removed.
 
-The deprecated model `simple_aperture` in `photon_collection` is removed.
+The deprecated model `simple_aperture` in [`photon_collection`](https://esa.gitlab.io/pyxel/doc/stable/references/model_groups/photon_collection_models.html)
+is removed.
+
+#### New unit for `wavelength`
+
+Parameter `wavelength` in model [`optical_psf`](https://esa.gitlab.io/pyxel/doc/stable/references/model_groups/photon_collection_models.html#physical-optics-propagation-in-python-poppy)
+in [`photon_collection`](https://esa.gitlab.io/pyxel/doc/stable/references/model_groups/photon_collection_models.html) is defined in nanometer instead of meter.
+
+Before
+
+```yaml
+- name: optical_psf
+  func: pyxel.models.photon_collection.optical_psf
+  enabled: true
+  arguments:
+    wavelength: 0.6e-6          # wavelength in meters
+```
+
+Now
+
+```yaml
+- name: optical_psf
+  func: pyxel.models.photon_collection.optical_psf
+  enabled: true
+  arguments:
+    wavelength: 600          # wavelength in nm
+#               ^^^                          ^^
+#               new
+```
+
+#### Updated dependencies
 
 The minimum versions of some dependencies were changed:
 
@@ -25,26 +59,29 @@ The minimum versions of some dependencies were changed:
 
 
 ### Core
-* Fix bug when `pyxel.load` is executed and output folder already exists.
+* Fix bug when [`pyxel.load`](https://esa.gitlab.io/pyxel/doc/stable/references/api/configuration.html#pyxel.load) is 
+  executed and output folder already exists.
   (See [!835](https://gitlab.com/esa/pyxel/-/merge_requests/835)
   and [#643](https://gitlab.com/esa/pyxel/-/issues/643)).
-* Fix bug in function `pyxel.run` when saving YAML configuration file.
+* Fix bug in function [`pyxel.run`](https://esa.gitlab.io/pyxel/doc/stable/references/api/run.html#pyxel.run) when
+  saving YAML configuration file.
   (See [!843](https://gitlab.com/esa/pyxel/-/merge_requests/843)).
-* Fix issue with `pyxel.run_mode()` in Calibration mode.
+* Fix issue with [`pyxel.run_mode()`](https://esa.gitlab.io/pyxel/doc/stable/references/api/run.html#pyxel.run_mode) in 
+  Calibration mode.
   (See [!844](https://gitlab.com/esa/pyxel/-/merge_requests/844)).
 * Fix bug in `ModelFittingDataTree`.
   (See [!845](https://gitlab.com/esa/pyxel/-/merge_requests/845)).
-* Add new function `pyxel.new_display_detector`.
+* Add new parameter `new_display` in function [`pyxel.display_detector`](https://esa.gitlab.io/pyxel/doc/stable/references/api/notebook.html#pyxel.display_detector).
   (See [!850](https://gitlab.com/esa/pyxel/-/merge_requests/850)).
 * Rename class `Array` to `ArrayBase`.
   (See [!851](https://gitlab.com/esa/pyxel/-/merge_requests/851)).
 
 ### Documentation
-* Update documentation about quick start installation.
+* Update documentation about [quick start installation](https://esa.gitlab.io/pyxel/doc/stable/tutorials/overview.html#quickstart-setup).
   (See [!830](https://gitlab.com/esa/pyxel/-/merge_requests/830)).
-* Use 'sphinx-design' instead of 'sphinx-panels' in the documentation.
+* Use `sphinx-design` instead of `sphinx-panels` in the documentation.
   (See [!831](https://gitlab.com/esa/pyxel/-/merge_requests/831)).
-* Restructure documentation 'api'.
+* Restructure documentation [api](https://esa.gitlab.io/pyxel/doc/stable/references/apireference.html).
   (See [!840](https://gitlab.com/esa/pyxel/-/merge_requests/840)).
 * Add more documentations.
   (See [!829](https://gitlab.com/esa/pyxel/-/merge_requests/829), 
@@ -59,15 +96,20 @@ The minimum versions of some dependencies were changed:
   (See [!825](https://gitlab.com/esa/pyxel/-/merge_requests/825)).
 * Remove deprecated model `simple_aperture`.
   (See [!827](https://gitlab.com/esa/pyxel/-/merge_requests/827)).
-* Merge 'optical_psf_with_multiiwavelength' into 'optical_psf'.
+* Merge `optical_psf_with_multiwavelength` into
+  [`optical_psf`](https://esa.gitlab.io/pyxel/doc/stable/references/model_groups/photon_collection_models.html#physical-optics-propagation-in-python-poppy).
   (See [!837](https://gitlab.com/esa/pyxel/-/merge_requests/837)).
-* Add capability to integrate photon in 'simple_conversion'.
+* Add capability to integrate photon in 
+  [`simple_conversion`](https://esa.gitlab.io/pyxel/doc/stable/references/model_groups/charge_generation_models.html#simple-photoconversion)
+  in [`charge_generation`](https://esa.gitlab.io/pyxel/doc/stable/references/model_groups/charge_generation_models.html#)
+  model groups.
   (See [!848](https://gitlab.com/esa/pyxel/-/merge_requests/848)).
 
 ### Others
 * Bump pre-commit versions.
   (See [!826](https://gitlab.com/esa/pyxel/-/merge_requests/826)).
-* Remove warnings when using function `pyxel.show_versions()`.
+* Remove warnings when using function 
+  [`pyxel.show_versions()`](https://esa.gitlab.io/pyxel/doc/stable/references/api/run.html#pyxel.show_versions).
   (See [!828](https://gitlab.com/esa/pyxel/-/merge_requests/828)).
 * Reduce size of the Docker image(s).
   (See [!833](https://gitlab.com/esa/pyxel/-/merge_requests/833)).
@@ -91,7 +133,7 @@ The following new models were added:
 * [`conversion_with_3d_qe_map`](https://esa.gitlab.io/pyxel/doc/latest/references/model_groups/charge_generation_models.html#conversion-with-3d-qe-map) in `Charge Generation`.
 
 ### Breaking Changes
-The model argument `pixel_scale` was moved to the [`Detector.geomerty`](https://esa.gitlab.io/pyxel/doc/latest/references/api/detectorproperties.html#pyxel.detectors.Geometry).
+The model argument `pixel_scale` was moved to the [`Detector.geometry`](https://esa.gitlab.io/pyxel/doc/latest/references/api/detectorproperties.html#pyxel.detectors.Geometry).
 
 The model `aperture` in `photon_collection` is deprecated and will be removed in Pyxel 2.0. 
 Please use [`simple_collection`](https://esa.gitlab.io/pyxel/doc/latest/references/model_groups/photon_collection_models.html#simple-collection) instead.
