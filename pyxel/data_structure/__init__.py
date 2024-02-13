@@ -12,7 +12,7 @@ from typing import Optional
 
 import numpy as np
 
-from .array import Array
+from .array import ArrayBase
 from .photon import Photon
 from .scene import Scene
 from .pixel import Pixel
@@ -23,7 +23,7 @@ from .phase import Phase
 from .persistence import Persistence, SimplePersistence
 
 
-def _get_array_if_initialized(obj: Optional[Array]) -> Optional[np.ndarray]:
+def _get_array_if_initialized(obj: Optional[ArrayBase]) -> Optional[np.ndarray]:
     """Get a copy of the numpy array if the object is fully initialized.
 
     Parameters

@@ -46,7 +46,7 @@ def _is_array_initialized(data: Optional[np.ndarray]) -> TypeGuard[np.ndarray]:
 #       It could be done with:
 #       ... self._array = np.array(value)
 #       ... self._array.setflags(write=False)
-class Array:
+class ArrayBase:
     """Base Array class."""
 
     TYPE_LIST: tuple[np.dtype, ...] = ()

@@ -13,13 +13,13 @@ import numpy as np
 from numpy.typing import ArrayLike
 from typing_extensions import override
 
-from pyxel.data_structure import Array
+from pyxel.data_structure import ArrayBase
 
 if TYPE_CHECKING:
     from pyxel.detectors import Geometry
 
 
-class Pixel(Array):
+class Pixel(ArrayBase):
     """Pixel class defining and storing information of charge packets within pixel (unit: e⁻).
 
     Accepted array types: ``np.int32``, ``np.int64``, ``np.uint32``, ``np.uint64``,

@@ -36,6 +36,8 @@ The minimum versions of some dependencies were changed:
   (See [!845](https://gitlab.com/esa/pyxel/-/merge_requests/845)).
 * Add new function `pyxel.new_display_detector`.
   (See [!850](https://gitlab.com/esa/pyxel/-/merge_requests/850)).
+* Rename class `Array` to `ArrayBase`.
+  (See [!851](https://gitlab.com/esa/pyxel/-/merge_requests/851)).
 
 ### Documentation
 * Update documentation about quick start installation.

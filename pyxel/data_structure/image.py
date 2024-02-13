@@ -12,13 +12,13 @@ from typing import TYPE_CHECKING
 import numpy as np
 from typing_extensions import override
 
-from pyxel.data_structure import Array
+from pyxel.data_structure import ArrayBase
 
 if TYPE_CHECKING:
     from pyxel.detectors import Geometry
 
 
-class Image(Array):
+class Image(ArrayBase):
     """Image class defining and storing information of detector image (unit: adu).
 
     Accepted array types: ``np.uint16``, ``np.uint32``, ``np.uint64``

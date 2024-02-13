@@ -11,13 +11,13 @@ from typing import TYPE_CHECKING
 
 import numpy as np
 
-from pyxel.data_structure import Array
+from pyxel.data_structure import ArrayBase
 
 if TYPE_CHECKING:
     from pyxel.detectors import Geometry
 
 
-class Phase(Array):
+class Phase(ArrayBase):
     """Phase class.
 
     Accepted array types: np.float16, np.float32 and np.float64.

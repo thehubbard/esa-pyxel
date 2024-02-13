@@ -54,7 +54,7 @@ Data structures
     :show-inheritance:
     :exclude-members:
 
-.. autoclass:: Array
+.. autoclass:: ArrayBase
     :members:
     :inherited-members:
     :undoc-members:

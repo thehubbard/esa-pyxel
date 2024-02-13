@@ -40,7 +40,7 @@ Data structures
     Phase
     Signal
     Image
-    Array
+    ArrayBase
 
 Detectors
 =========
