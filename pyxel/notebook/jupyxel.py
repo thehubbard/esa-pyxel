@@ -140,7 +140,186 @@ def set_modelstate(processor: "Processor", model_name: str, state: bool = True) 
 # These method are used to display the detector object (all of the array Photon, pixel, signal and image)
 
 
-def display_detector(detector: "Detector") -> "pn.Tabs":
+def _new_display_detector(
+    detector: "Detector", custom_histogram: bool = True
+) -> "pn.Tabs":
+    """Display detector interactively.
+
+    Notes
+    -----
+    This function is provisional and may change.
+    """
+    # Extract a 'dataset' from 'detector'
+    ds: "xr.Dataset" = detector.to_xarray()
+
+    # Extract names from the arrays
+    array_names: list[str] = [str(name) for name in ds]
+    if not array_names:
+        raise ValueError("Detector object does not contain any arrays.")
+
+    import colorcet as cc
+    import hvplot.xarray  # To integrate 'hvplot' with 'xarray'
+    import numpy as np
+    import panel as pn
+    import param as pm
+    import xarray as xr
+    from holoviews.selection import link_selections
+
+    # pn.extension(nthreads=2)
+    # pn.extension()
+
+    class Parameters(pm.Parameterized):
+        array = pm.Selector(objects=array_names)
+        color_norm = pm.Selector(objects=["linear", "log"], doc="foo")
+        color_map = pm.Selector(
+            objects={
+                "fire": cc.fire,
+                "gray": cc.gray,  # linear colormaps, for plotting magnitudes
+                "blues": cc.blues,  # linear colormaps, for plotting magnitudes
+                "colorwheel": cc.colorwheel,  # cyclic colormaps for cyclic quantities like orientation or phase
+                "coolwarm": cc.coolwarm,  # diverging colormap, for plotting magnitude increasing or decreasin from a central point
+                "rainbow": cc.rainbow4,  # To highlight local differences in sequential data
+                "isoluminant": cc.isolum,  # To highlight low spatial-frequency information
+            }
+        )
+        flip_yaxis = pm.Boolean(default=True)
+
+        # Histogram
+        nbins = pm.Selector(objects=["auto", 10, 20, 50, 100])
+        logx = pm.Boolean(False)
+        logy = pm.Boolean(False)
+
+        @pm.depends("color_norm", watch=True)
+        def _change_logx(self):
+            self.logx = bool(self.color_norm == "log")
+
+        def view(self):
+            array_name: str = self.array
+            data: xr.DataArray = ds[array_name]
+
+            # 2D image
+            img = data.hvplot.image(
+                title="Array",
+                aspect=1.0,
+                cnorm=self.color_norm,
+                cmap=self.color_map,
+                flip_yaxis=self.flip_yaxis,
+                hover_cols=[array_name],
+                colorbar=True,
+                tools=[] if custom_histogram else ["box_select"],
+                # datashade=True
+            )
+
+            # Histogram
+            if custom_histogram:
+                frequencies, edges = np.histogram(data, bins=self.nbins)
+
+                data_hist = xr.DataArray(
+                    frequencies,
+                    dims=array_name,
+                    coords={array_name: edges[:-1]},
+                    name="Count",
+                )
+
+                long_name = data.attrs.get("long_name", array_name)
+                unit = data.attrs["units"]
+
+                hist = data_hist.hvplot.step(
+                    logx=self.logx,
+                    logy=self.logy,
+                    xlabel=f"{long_name} [{unit}]",
+                    grid=True,
+                    aspect=1.0,
+                )
+
+                return img + hist
+            else:
+                hist = data.hvplot.hist(
+                    aspect=1.0,
+                    bins=self.nbins,
+                    logx=self.logx,
+                    logy=self.logy,
+                )
+
+                link_selection = link_selections.instance()
+                return link_selection(img + hist)
+                # return pn.Row(pn.widgets.StaticText(value='Yo'),link_selection(img + hist))
+
+            # return pn.Row(img, hist)
+
+    # with param.parameterized.batch_call_watchers(p):
+    #     p.a = 2
+    #     p.a = 3
+    #     p.a = 1
+    #     p.a = 5
+
+    params = Parameters()
+    # obj = pn.Row(
+    #     params.view,
+    #     pn.Param(params.param, widgets={"color_map": pn.widgets.ColorMap}),
+    # )
+    obj = pn.Row(
+        params.view,
+        pn.Param(params.param, widgets={"color_map": pn.widgets.ColorMap}),
+    )
+
+    # return pn.Column(pn.widgets.StaticText(value='Yo'), obj)
+    return obj
+
+
+def display_detector(
+    detector: "Detector", *, new_display: bool = False, custom_histogram: bool = True
+) -> "pn.Tabs":
+    """Display detector interactively.
+
+    Parameters
+    ----------
+    detector : Detector
+    new_display : bool, default: False
+        Enable new display.
+
+        .. note:: This pararameter is provisional and can be changed or removed.
+
+    custom_histogram : bool, default: True
+        Use a custom method to display the histogram.
+        This parameter can only be used when `new_display` is enabled.
+
+        .. note:: This pararameter is provisional and can be changed or removed.
+
+    Notes
+    -----
+    When using `new_display` parameter is enabled and trying to display the detector with the y-log scale,
+    the histogram will not be displayed
+    (see issue [#2591](https://github.com/holoviz/holoviews/issues/2591) in [Bokeh](https://docs.bokeh.org/).
+
+    To resolve this issue, you need to set the `custom_histogram` parameter to `True`.
+
+    Examples
+    --------
+    >>> import pyxel
+    >>> from pyxel.detectors import CCD
+
+    >>> detector = CCD(...)
+    >>> pyxel.display_detector(detector)
+
+    .. image:: _static/display_detector.jpg
+
+    >>> pyxel.display_detector(detector, new_display=True)
+
+    .. image:: _static/new_display_detector.jpg
+
+    """
+    if new_display is False:
+        return _display_detector(detector=detector)
+    else:
+        return _new_display_detector(
+            detector=detector,
+            custom_histogram=custom_histogram,
+        )
+
+
+# ruff: noqa: F401
+def _display_detector(detector: "Detector") -> "pn.Tabs":
     """Display detector interactively.
 
     Parameters
@@ -152,7 +331,7 @@ def display_detector(detector: "Detector") -> "pn.Tabs":
     Tabs
     """
     # Late import to speedup start-up time
-    import hvplot.xarray  # To integrate 'hvplot' with 'xarray' # noqa
+    import hvplot.xarray  # To integrate 'hvplot' with 'xarray'
     import panel as pn
     import param
 
