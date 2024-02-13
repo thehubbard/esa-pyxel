@@ -12,13 +12,13 @@ from typing import TYPE_CHECKING
 import numpy as np
 from typing_extensions import override
 
-from pyxel.data_structure import Array
+from pyxel.data_structure import ArrayBase
 
 if TYPE_CHECKING:
     from pyxel.detectors import Geometry
 
 
-class Signal(Array):
+class Signal(ArrayBase):
     """Signal class defining and storing information of detector signal (unit: Volt).
 
     Accepted array types: ``np.float16``, ``np.float32``, ``np.float64``.
