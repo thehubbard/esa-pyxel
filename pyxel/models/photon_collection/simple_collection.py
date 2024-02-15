@@ -166,8 +166,7 @@ def project_objects_to_detector(
     pixel_scale: u.Quantity,
     rows: int,
     cols: int,
-    integrate_wavelength: bool = True,
-) -> Union[np.ndarray, xr.DataArray]:
+) -> xr.Dataset:
     """
     Project objects onto detector. Converting scene from arcsec to detector coordinates.
 
@@ -181,14 +180,11 @@ def project_objects_to_detector(
         Rows of detector.
     cols : int
         Columns of detector.
-    integrate_wavelength : bool
-        If true, integrates along the wavelength else multiwavelength.
 
     Returns
     -------
-     projected : np.ndarray | xr.DataArray
-        Projected objects in detector coordinates. Numpy.ndarray if integrate_wavelength=True,
-        xr.DataArray if integrate_wavelength=False.
+     projected : Dataset
+        Projected objects in detector coordinates.
 
     Examples
     --------
@@ -307,89 +303,68 @@ def project_objects_to_detector(
         int
     )
 
-    if integrate_wavelength:
-        # get empty array in shape of the detector
-        projection_2d: np.ndarray = np.zeros([rows, cols])
-
-        # fill in projection of objects in detector coordinates
-        for x, group_x in selected_data2.groupby("detector_coords_x"):
-            for y, group_y in group_x.groupby("detector_coords_y"):
-                projection_2d[int(y), int(x)] += group_y["converted_flux"].values.sum()
-
-        return projection_2d
-
-    else:
-        # get empty array in shape of the 3D datacube of the detector
-        projection = np.zeros([selected_data2.wavelength.size, rows, cols])
-
-        # fill in projection of objects in detector coordinates
-        for x, group_x in selected_data2.groupby("detector_coords_x"):
-            for y, group_y in group_x.groupby("detector_coords_y"):
-                projection[:, int(y), int(x)] += np.array(
-                    group_y["converted_flux"].squeeze()
-                )
-
-        projection_3d: xr.DataArray = xr.DataArray(
-            projection,
-            dims=["wavelength", "y", "x"],
-            coords={"wavelength": selected_data2.wavelength},
-            attrs={"units": selected_data2.converted_flux.units},
-        )
-
-        return projection_3d
+    return selected_data2
 
 
-# def _extract_wavelength(
-#     resolution: Optional[int],
-#     filter_band: Optional[tuple[float, float]],
-#     default_wavelength_handling: Union[None, float, WavelengthHandling],
-# ) -> xr.DataArray:
-#     """Extract wavelength."""
-#     if filter_band is not None and resolution is not None:
-#         cut_on, cut_off = filter_band
-#
-#         multi_wavelengths: WavelengthHandling = WavelengthHandling(
-#             cut_on=cut_on, cut_off=cut_off, resolution=resolution,
-#         )
-#
-#     elif filter_band is None and resolution is None:
-#         if not isinstance(default_wavelength_handling, WavelengthHandling):
-#             raise ValueError(
-#                 "'filter_band' and 'resolution' have both to be provided either as model arguments or in the "
-#                 "detector environment. Please provide them in the detector in the detector wavelength or "
-#                 "as input into this model directly"
-#             )
-#
-#         multi_wavelengths = default_wavelength_handling
-#
-#     elif filter_band is None and resolution is not None:
-#         if not isinstance(default_wavelength_handling, WavelengthHandling):
-#             raise ValueError(
-#                 "No 'filter_band' provided for model 'simple_collection'. Please provide 'resolution'` "
-#                 "parameters in the detector environment wavelength or as input into this model directly."
-#             )
-#
-#         multi_wavelengths = WavelengthHandling(cut_on=default_wavelength_handling.cut_on, cut_off=default_wavelength_handling.cut_off, resolution=resolution)
-#
-#     elif filter_band is not None and resolution is None:
-#         if not isinstance(default_wavelength_handling, WavelengthHandling):
-#             raise ValueError(
-#                 "No 'resolution' provided for model 'simple_collection'. Please provide 'resolution'` "
-#                 "parameters in the detector environment wavelength or as input into this model directly."
-#             )
-#
-#         cut_on, cut_off = filter_band
-#
-#         multi_wavelengths=WavelengthHandling(cut_on=cut_on, cut_off=cut_off, resolution=default_wavelength_handling.resolution)
-#
-#     else:
-#         raise ValueError(
-#             "'filter_band' and 'resolution' have both to be provided either as model arguments or in the "
-#             "detector environment."
-#         )
-#
-#     wavelengths: xr.DataArray = multi_wavelengths.get_wavelengths()
-#     return wavelengths
+def aggregate_monochromatic(data: xr.Dataset, rows: int, cols: int) -> np.ndarray:
+    """Aggregate a 3D data array containing fluxes into a 2D array.
+
+    Parameters
+    ----------
+    data : xr.DataArray
+    rows : int
+        The number of rows in the detector.
+    cols : int
+        The number of columns in the detector.
+
+    Returns
+    -------
+    2D array
+    """
+    # get empty array in shape of the detector
+    projection_2d: np.ndarray = np.zeros([rows, cols])
+
+    # fill in projection of objects in detector coordinates
+    for x, group_x in data.groupby("detector_coords_x"):
+        for y, group_y in group_x.groupby("detector_coords_y"):
+            projection_2d[int(y), int(x)] += group_y["converted_flux"].values.sum()
+
+    return projection_2d
+
+
+def aggregate_multiwavelength(data: xr.Dataset, rows: int, cols: int) -> xr.DataArray:
+    """Aggregate a 3D ``DataArray`` containing fluxes into a 3D ``DataArray``.
+
+    Parameters
+    ----------
+    data : xr.DataArray
+    rows : int
+        The number of rows in the detector.
+    cols : int
+        The number of columns in the detector.
+
+    Returns
+    -------
+    3D array
+    """
+    # get empty array in shape of the 3D datacube of the detector
+    projection = np.zeros([data.wavelength.size, rows, cols])
+
+    # fill in projection of objects in detector coordinates
+    for x, group_x in data.groupby("detector_coords_x"):
+        for y, group_y in group_x.groupby("detector_coords_y"):
+            projection[:, int(y), int(x)] += np.array(
+                group_y["converted_flux"].squeeze()
+            )
+
+    projection_3d: xr.DataArray = xr.DataArray(
+        projection,
+        dims=["wavelength", "y", "x"],
+        coords={"wavelength": data.wavelength},
+        attrs={"units": data.converted_flux.units},
+    )
+
+    return projection_3d
 
 
 # TODO: Add unit tests
@@ -548,18 +523,18 @@ def simple_collection(
             converted_flux_2d, dims="ref", attrs={"units": str(converted_flux_2d.unit)}
         )
 
-        photon_projection_2d: Union[np.ndarray, xr.DataArray] = (
-            project_objects_to_detector(
-                scene_data=scene_data,
-                pixel_scale=Quantity(pixel_scale, unit="arcsec/pixel"),
-                rows=detector.geometry.row,
-                cols=detector.geometry.col,
-                integrate_wavelength=integrate_wavelength,
-            )
+        photon_projected: xr.Dataset = project_objects_to_detector(
+            scene_data=scene_data,
+            pixel_scale=Quantity(pixel_scale, unit="arcsec/pixel"),
+            rows=detector.geometry.row,
+            cols=detector.geometry.col,
         )
 
-        if not isinstance(photon_projection_2d, np.ndarray):
-            raise NotImplementedError
+        photon_projection_2d: np.ndarray = aggregate_monochromatic(
+            data=photon_projected,
+            rows=detector.geometry.row,
+            cols=detector.geometry.col,
+        )
 
         detector.photon.array_2d = photon_projection_2d
 
@@ -579,17 +554,17 @@ def simple_collection(
             attrs={"units": str(converted_flux_3d.unit)},
         )
 
-        photon_projection_3d: Union[np.ndarray, xr.DataArray] = (
-            project_objects_to_detector(
-                scene_data=scene_data,
-                pixel_scale=Quantity(pixel_scale, unit="arcsec/pixel"),
-                rows=detector.geometry.row,
-                cols=detector.geometry.col,
-                integrate_wavelength=integrate_wavelength,
-            )
+        photon_projected = project_objects_to_detector(
+            scene_data=scene_data,
+            pixel_scale=Quantity(pixel_scale, unit="arcsec/pixel"),
+            rows=detector.geometry.row,
+            cols=detector.geometry.col,
         )
 
-        if not isinstance(photon_projection_3d, xr.DataArray):
-            raise NotImplementedError
+        photon_projection_3d: xr.DataArray = aggregate_multiwavelength(
+            data=photon_projected,
+            rows=detector.geometry.row,
+            cols=detector.geometry.col,
+        )
 
         detector.photon.array_3d = photon_projection_3d
