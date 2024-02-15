@@ -293,7 +293,10 @@ def project_objects_to_detector(
     )
 
     if selected_data_query.sizes["ref"] == 0:
-        return ValueError
+        raise ValueError(
+            "No objects projected in the detector. "
+            "To resolve this issue you can use function 'pyxel.display_scene'"
+        )
 
     # convert to int
     selected_data2 = selected_data_query.copy(deep=True)
@@ -336,6 +339,59 @@ def project_objects_to_detector(
         return projection_3d
 
 
+# def _extract_wavelength(
+#     resolution: Optional[int],
+#     filter_band: Optional[tuple[float, float]],
+#     default_wavelength_handling: Union[None, float, WavelengthHandling],
+# ) -> xr.DataArray:
+#     """Extract wavelength."""
+#     if filter_band is not None and resolution is not None:
+#         cut_on, cut_off = filter_band
+#
+#         multi_wavelengths: WavelengthHandling = WavelengthHandling(
+#             cut_on=cut_on, cut_off=cut_off, resolution=resolution,
+#         )
+#
+#     elif filter_band is None and resolution is None:
+#         if not isinstance(default_wavelength_handling, WavelengthHandling):
+#             raise ValueError(
+#                 "'filter_band' and 'resolution' have both to be provided either as model arguments or in the "
+#                 "detector environment. Please provide them in the detector in the detector wavelength or "
+#                 "as input into this model directly"
+#             )
+#
+#         multi_wavelengths = default_wavelength_handling
+#
+#     elif filter_band is None and resolution is not None:
+#         if not isinstance(default_wavelength_handling, WavelengthHandling):
+#             raise ValueError(
+#                 "No 'filter_band' provided for model 'simple_collection'. Please provide 'resolution'` "
+#                 "parameters in the detector environment wavelength or as input into this model directly."
+#             )
+#
+#         multi_wavelengths = WavelengthHandling(cut_on=default_wavelength_handling.cut_on, cut_off=default_wavelength_handling.cut_off, resolution=resolution)
+#
+#     elif filter_band is not None and resolution is None:
+#         if not isinstance(default_wavelength_handling, WavelengthHandling):
+#             raise ValueError(
+#                 "No 'resolution' provided for model 'simple_collection'. Please provide 'resolution'` "
+#                 "parameters in the detector environment wavelength or as input into this model directly."
+#             )
+#
+#         cut_on, cut_off = filter_band
+#
+#         multi_wavelengths=WavelengthHandling(cut_on=cut_on, cut_off=cut_off, resolution=default_wavelength_handling.resolution)
+#
+#     else:
+#         raise ValueError(
+#             "'filter_band' and 'resolution' have both to be provided either as model arguments or in the "
+#             "detector environment."
+#         )
+#
+#     wavelengths: xr.DataArray = multi_wavelengths.get_wavelengths()
+#     return wavelengths
+
+
 # TODO: Add unit tests
 def _extract_wavelength(
     resolution: Optional[int],
@@ -343,25 +399,62 @@ def _extract_wavelength(
     default_wavelength_handling: Union[None, float, WavelengthHandling],
 ) -> xr.DataArray:
     """Extract wavelength."""
-    if filter_band is not None and resolution is not None:
-        multi_wavelengths: WavelengthHandling = WavelengthHandling(
-            cut_on=filter_band[0], cut_off=filter_band[1], resolution=resolution
-        )
+    if filter_band is not None:
 
-    elif filter_band is None and resolution is None:
-        if not isinstance(default_wavelength_handling, WavelengthHandling):
+        first_band, last_band = filter_band
+        if not (0 < first_band < last_band):
             raise ValueError(
-                "No filter band provided for model 'simple_collection'. Please provide `cut_on` and `cut_off` "
-                "parameters in the detector environment wavelength or as input to model directly."
+                f"'filter_band' must be increasing and strictly positive. Got: {filter_band!r}"
             )
 
-        multi_wavelengths = default_wavelength_handling
+        if resolution is not None:
+            if resolution <= 0.0:
+                raise ValueError(f"Expected 'resolution' > 0. Got: {resolution!r}")
+
+            step_size = resolution
+
+        else:
+            if not isinstance(default_wavelength_handling, WavelengthHandling):
+                raise ValueError(
+                    "No 'resolution' provided for model 'simple_collection'. Please provide 'resolution'` "
+                    "parameters in the detector environment wavelength or as input into this model directly."
+                )
+
+            step_size = default_wavelength_handling.resolution
 
     else:
-        raise ValueError(
-            "`filter_band` and `resolution` have both to be provided either as model arguments or in the "
-            "detector environment."
-        )
+
+        if resolution is not None:
+            if resolution <= 0.0:
+                raise ValueError(f"Expected 'resolution' > 0. Got: {resolution!r}")
+
+            if not isinstance(default_wavelength_handling, WavelengthHandling):
+                raise ValueError(
+                    "No 'filter_band' provided for model 'simple_collection'. Please provide 'resolution'` "
+                    "parameters in the detector environment wavelength or as input into this model directly."
+                )
+
+            first_band = default_wavelength_handling.cut_on
+            last_band = default_wavelength_handling.cut_off
+            step_size = resolution
+
+        else:
+            if not isinstance(default_wavelength_handling, WavelengthHandling):
+                raise ValueError(
+                    "'filter_band' and 'resolution' have both to be provided either as model arguments or in the "
+                    "detector environment. Please provide them in the detector in the detector wavelength or "
+                    "as input into this model directly"
+                )
+
+            first_band = default_wavelength_handling.cut_on
+            last_band = default_wavelength_handling.cut_off
+            step_size = default_wavelength_handling.resolution
+
+    multi_wavelengths: WavelengthHandling = WavelengthHandling(
+        cut_on=first_band,
+        cut_off=last_band,
+        resolution=step_size,
+    )
 
     wavelengths: xr.DataArray = multi_wavelengths.get_wavelengths()
     return wavelengths
@@ -392,14 +485,34 @@ def simple_collection(
     integrate_wavelength : bool
         If true, integrates along the wavelength else multiwavelength, default is True.
     """
+    if aperture <= 0.0:
+        raise ValueError(f"Expected 'aperture' > 0. Got: {aperture!r}")
+
+    if detector.scene == Scene():
+        raise ValueError(
+            "Missing 'scene' in 'detector'. "
+            "To resolve this issue, you must use a model that generate a 'Scene' "
+            "from the 'Photon Collection' group.\nConsider using the 'load_star_map' "
+            "model."
+        )
+
+    if detector.photon.ndim != 0:
+        raise ValueError(
+            "Photons are already defined in 'detector.photon'. "
+            "To resolve this issue, you must have no photons before running this model."
+        )
+
     if pixelscale is None:
-        if detector.geometry.pixel_scale is None:
+        if detector.geometry._pixel_scale is None:
             raise ValueError(
                 "Pixel scale is not defined. It must be either provided in the detector geometry "
                 "or as model argument."
             )
         pixel_scale: float = detector.geometry.pixel_scale
     else:
+        if pixelscale <= 0.0:
+            raise ValueError(f"Expected 'pixelscale' > 0. Got: {pixelscale!r}")
+
         pixel_scale = pixelscale
 
     wavelengths: xr.DataArray = _extract_wavelength(
@@ -410,7 +523,8 @@ def simple_collection(
 
     # get dataset for given wavelength and scene object.
     scene_data: xr.Dataset = extract_wavelength(
-        scene=detector.scene, wavelengths=wavelengths
+        scene=detector.scene,
+        wavelengths=wavelengths,
     )
 
     # get time in s

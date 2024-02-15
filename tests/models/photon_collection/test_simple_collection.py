@@ -5,7 +5,7 @@
 #  this file, may be copied, modified, propagated, or distributed except according to
 #  the terms contained in the file ‘LICENCE.txt’.
 
-from contextlib import nullcontext as does_not_raise
+from enum import Enum, auto
 
 import numpy as np
 import pytest
@@ -73,6 +73,27 @@ def ccd_4x5_multi_wavelength() -> CCD:
 
 
 @pytest.fixture
+def ccd_3x3_no_photon() -> CCD:
+    """Create a valid CCD detector."""
+    detector = CCD(
+        geometry=CCDGeometry(
+            row=3,
+            col=3,
+            total_thickness=40.0,
+            pixel_vert_size=10.0,
+            pixel_horz_size=10.0,
+            pixel_scale=1.65,
+        ),
+        environment=Environment(),
+        characteristics=Characteristics(),
+    )
+
+    detector.set_readout(times=[1.0], start_time=0.0)
+
+    return detector
+
+
+@pytest.fixture
 def ccd_100x100_no_photon() -> CCD:
     """Create a valid CCD detector."""
     detector = CCD(
@@ -82,7 +103,7 @@ def ccd_100x100_no_photon() -> CCD:
             total_thickness=40.0,
             pixel_vert_size=10.0,
             pixel_horz_size=10.0,
-            pixel_scale=1.65,
+            # pixel_scale=1.65,
         ),
         environment=Environment(),
         characteristics=Characteristics(),
@@ -171,28 +192,53 @@ def test_extract_wavelength(dummy_scene: Scene, scene_dataset: xr.Dataset):
         wavelengths=wavelengths,
     )
 
-    exp_ds = scene_dataset.copy().sel(wavelength=slice(336, 342))
+    exp_ds = scene_dataset.interp(wavelength=wavelengths).sel(
+        wavelength=slice(336, 342)
+    )
 
     xr.testing.assert_equal(ds, exp_ds)
 
 
 @pytest.mark.parametrize(
-    "aperture, wavelength, filter_band, resolution, pixelscale",
+    "aperture, env_wavelength, geo_pixel_scale, filter_band, resolution, pixelscale",
     [
-        (1.0, None, (336, 342), 2, 1.65),
-        (1.5, 336.0, (336, 342), 2, 1.65),
-        (
+        pytest.param(1.0, None, None, (336, 342), 2, 1.65, id="no wavelength"),
+        pytest.param(
+            1.5, 336.0, None, (336, 342), 2, 1.65, id="with 'float' wavelength"
+        ),
+        pytest.param(
             3.0,
             WavelengthHandling(cut_on=336.0, cut_off=342, resolution=2),
+            1.65,
+            (336, 342),
+            None,
+            None,
+            id="no resolution",
+        ),
+        pytest.param(
+            3.0,
+            WavelengthHandling(cut_on=336.0, cut_off=342, resolution=2),
+            1.65,
+            None,
+            2,
+            None,
+            id="no filter_band",
+        ),
+        pytest.param(
+            3.0,
+            WavelengthHandling(cut_on=336.0, cut_off=342, resolution=2),
+            1.65,
             None,
             None,
             None,
+            id="no filter_band, resolution and pixelscale",
         ),
     ],
 )
 def test_simple_collection_photon_2d(
     aperture,
-    wavelength,
+    env_wavelength,
+    geo_pixel_scale,
     filter_band,
     resolution,
     pixelscale,
@@ -201,7 +247,8 @@ def test_simple_collection_photon_2d(
 ):
     """Test function 'simple_collection'."""
     detector = ccd_100x100_no_photon
-    detector.environment._wavelength = wavelength
+    detector.environment._wavelength = env_wavelength
+    detector.geometry._pixel_scale = geo_pixel_scale
 
     # Check if 'scene' and 'photon' are empty
     assert detector.scene == Scene()
@@ -228,22 +275,45 @@ def test_simple_collection_photon_2d(
 
 
 @pytest.mark.parametrize(
-    "aperture, wavelength, filter_band, resolution, pixelscale",
+    "aperture, env_wavelength, geo_pixel_scale, filter_band, resolution, pixelscale",
     [
-        (1.0, None, (336, 342), 2, 1.65),
-        (1.5, 336.0, (336, 342), 2, 1.65),
-        (
+        pytest.param(1.0, None, None, (336, 342), 2, 1.65, id="no wavelength"),
+        pytest.param(
+            1.5, 336.0, None, (336, 342), 2, 1.65, id="with 'float' wavelength"
+        ),
+        pytest.param(
             3.0,
             WavelengthHandling(cut_on=336.0, cut_off=342, resolution=2),
+            1.65,
+            (336, 342),
+            None,
+            None,
+            id="no resolution",
+        ),
+        pytest.param(
+            3.0,
+            WavelengthHandling(cut_on=336.0, cut_off=342, resolution=2),
+            1.65,
+            None,
+            2,
+            None,
+            id="no filter_band",
+        ),
+        pytest.param(
+            3.0,
+            WavelengthHandling(cut_on=336.0, cut_off=342, resolution=2),
+            1.65,
             None,
             None,
             None,
+            id="no filter_band, resolution and pixelscale",
         ),
     ],
 )
 def test_simple_collection_photon_3d(
     aperture,
-    wavelength,
+    env_wavelength,
+    geo_pixel_scale,
     filter_band,
     resolution,
     pixelscale,
@@ -252,7 +322,8 @@ def test_simple_collection_photon_3d(
 ):
     """Test function 'simple_collection'."""
     detector = ccd_100x100_no_photon
-    detector.environment._wavelength = wavelength
+    detector.environment._wavelength = env_wavelength
+    detector.geometry._pixel_scale = geo_pixel_scale
 
     # Check if 'scene' and 'photon' are empty
     assert detector.scene == Scene()
@@ -278,48 +349,467 @@ def test_simple_collection_photon_3d(
     assert photon_2d.dtype == float
 
 
-#
-# @pytest.mark.parametrize(
-#     "with_scene, with_photon_2d, with_photon_3d, env_wavelength, aperture, filter_band, resolution, pixelscale, integrate_wavelength, expectation",
-#     [
-#         # pytest.param(True, False, False, None, 1., (500, 600), 100, 1.2, True)
-#         # pytest.param(3.0, [600.0, 650.0], 10, 0.01, True, does_not_raise(), id="valid"),
-#         # pytest.param(
-#         #     3.0,
-#         #     [650.0, 600.0],
-#         #     10,
-#         #     0.01,
-#         #     True,
-#         #     pytest.raises(ValueError, match=""),
-#         #     id="invalid",
-#         # ),
-#     ],
-# )
-# def test_simple_collection_error(
-#     ccd_3x5_no_photon: CCD,
-#     with_scene: bool,
-#     with_photon_2d: bool,
-#     with_photon_3d: bool,
-#     env_wavelength,
-#     aperture: float,
-#     filter_band: tuple[float, float],
-#     resolution: int,
-#     pixelscale: float,
-#     integrate_wavelength: bool,
-#     expectation,
-#     scene_dataset,
-# ):
-#     """Test input parameters for function 'simple_collection'."""
-#     detector = ccd_3x5_no_photon
-#     if with_scene:
-#         detector.scene = scene_dataset
-#
-#     with expectation:
-#         simple_collection(
-#             detector=detector,
-#             aperture=aperture,
-#             filter_band=filter_band,
-#             resolution=resolution,
-#             pixelscale=pixelscale,
-#             integrate_wavelength=integrate_wavelength,
-#         )
+class SceneType(Enum):
+    """Used only for testing."""
+
+    Missing = auto()
+    Valid = auto()
+    Invalid = auto()
+
+
+class PhotonType(Enum):
+    """Used only for testing."""
+
+    NoPhoton = auto()
+    Photon_2D = auto()
+    Photon_3D = auto()
+
+
+@pytest.mark.parametrize(
+    "scene_type, photon_type, env_wavelength, geo_pixel_scale, aperture, filter_band, resolution, pixelscale, integrate_wavelength, exp_exception, exp_error",
+    [
+        pytest.param(
+            SceneType.Valid,
+            PhotonType.NoPhoton,
+            None,
+            1.65,
+            0.0,
+            (342, 346),
+            10,
+            1.1,
+            True,
+            ValueError,
+            r"Expected \'aperture\' > 0",
+            id="aperture is 0",
+        ),
+        pytest.param(
+            SceneType.Valid,
+            PhotonType.NoPhoton,
+            None,
+            1.65,
+            -1.0,
+            (342, 346),
+            10,
+            1.1,
+            True,
+            ValueError,
+            r"Expected \'aperture\' > 0",
+            id="aperture is negative",
+        ),
+        pytest.param(
+            SceneType.Valid,
+            PhotonType.NoPhoton,
+            None,
+            1.65,
+            1.0,
+            (342, 342),
+            10,
+            1.1,
+            True,
+            ValueError,
+            r"\'filter_band\' must be increasing",
+            id="same filter_band",
+        ),
+        pytest.param(
+            SceneType.Valid,
+            PhotonType.NoPhoton,
+            None,
+            1.65,
+            1.0,
+            (346, 342),
+            10,
+            1.1,
+            True,
+            ValueError,
+            r"\'filter_band\' must be increasing",
+            id="wrong filter_band",
+        ),
+        pytest.param(
+            SceneType.Valid,
+            PhotonType.NoPhoton,
+            None,
+            1.65,
+            1.0,
+            (-1, 342),
+            10,
+            1.1,
+            True,
+            ValueError,
+            r"\'filter_band\' must be increasing",
+            id="negative filter_band",
+        ),
+        pytest.param(
+            SceneType.Valid,
+            PhotonType.NoPhoton,
+            None,
+            1.65,
+            1.0,
+            (342, 346),
+            0,
+            1.1,
+            True,
+            ValueError,
+            r"Expected \'resolution\' > 0",
+            id="resolution is 0",
+        ),
+        pytest.param(
+            SceneType.Valid,
+            PhotonType.NoPhoton,
+            None,
+            1.65,
+            1.0,
+            (342, 346),
+            -1,
+            1.1,
+            True,
+            ValueError,
+            r"Expected \'resolution\' > 0",
+            id="resolution is negative",
+        ),
+        pytest.param(
+            SceneType.Valid,
+            PhotonType.NoPhoton,
+            None,
+            1.65,
+            1.0,
+            (342, 346),
+            10,
+            0,
+            True,
+            ValueError,
+            r"Expected \'pixelscale\' > 0",
+            id="pixelscale is 0",
+        ),
+        pytest.param(
+            SceneType.Valid,
+            PhotonType.NoPhoton,
+            None,
+            1.65,
+            1.0,
+            (342, 346),
+            10,
+            -1,
+            True,
+            ValueError,
+            r"Expected \'pixelscale\' > 0",
+            id="pixelscale is negative",
+        ),
+        pytest.param(
+            SceneType.Missing,
+            PhotonType.NoPhoton,
+            None,
+            1.65,
+            1.0,
+            (342, 346),
+            10,
+            1.1,
+            True,
+            ValueError,
+            r"Missing \'scene\'",
+            id="No Scene - No Photon",
+        ),
+        pytest.param(
+            SceneType.Missing,
+            PhotonType.Photon_2D,
+            None,
+            1.65,
+            1.0,
+            (342, 346),
+            10,
+            1.1,
+            True,
+            ValueError,
+            r"Missing \'scene\'",
+            id="No Scene - Photon2D",
+        ),
+        pytest.param(
+            SceneType.Missing,
+            PhotonType.Photon_3D,
+            None,
+            1.65,
+            1.0,
+            (342, 346),
+            10,
+            1.1,
+            True,
+            ValueError,
+            r"Missing \'scene\'",
+            id="No Scene - Photon3D",
+        ),
+        pytest.param(
+            SceneType.Missing,
+            PhotonType.NoPhoton,
+            None,
+            1.65,
+            1.0,
+            (342, 346),
+            10,
+            1.1,
+            False,
+            ValueError,
+            r"Missing \'scene\'",
+            id="No Scene - No Photon - no integration",
+        ),
+        pytest.param(
+            SceneType.Missing,
+            PhotonType.Photon_2D,
+            None,
+            1.65,
+            1.0,
+            (342, 346),
+            10,
+            1.1,
+            False,
+            ValueError,
+            r"Missing \'scene\'",
+            id="No Scene - Photon2D - no integration",
+        ),
+        pytest.param(
+            SceneType.Missing,
+            PhotonType.Photon_3D,
+            None,
+            1.65,
+            1.0,
+            (342, 346),
+            10,
+            1.1,
+            False,
+            ValueError,
+            r"Missing \'scene\'",
+            id="No Scene - Photon3D - no integration",
+        ),
+        pytest.param(
+            SceneType.Invalid,
+            PhotonType.NoPhoton,
+            None,
+            1.65,
+            1.0,
+            (342, 346),
+            10,
+            1.1,
+            True,
+            ValueError,
+            r"No objects projected in the detector",
+            id="Invalid Scene (Detector too small)",
+        ),
+        pytest.param(
+            SceneType.Invalid,
+            PhotonType.NoPhoton,
+            None,
+            1.65,
+            1.0,
+            (342, 346),
+            10,
+            1.1,
+            False,
+            ValueError,
+            r"No objects projected in the detector",
+            id="Invalid Scene (Detector too small) - no integration",
+        ),
+        pytest.param(
+            SceneType.Valid,
+            PhotonType.Photon_2D,
+            None,
+            1.65,
+            1.0,
+            (342, 346),
+            10,
+            1.1,
+            True,
+            ValueError,
+            r"Photons are already defined",
+            id="With Scene - Photon2D",
+        ),
+        pytest.param(
+            SceneType.Valid,
+            PhotonType.Photon_3D,
+            None,
+            1.65,
+            1.0,
+            (342, 346),
+            10,
+            1.1,
+            True,
+            ValueError,
+            r"Photons are already defined",
+            id="With Scene - Photon3D",
+        ),
+        pytest.param(
+            SceneType.Valid,
+            PhotonType.NoPhoton,
+            344.0,
+            1.65,
+            1.0,
+            (342, 346),
+            None,
+            1.1,
+            True,
+            ValueError,
+            r"No \'resolution\' provided",
+            id="No resolution",
+        ),
+        pytest.param(
+            SceneType.Valid,
+            PhotonType.NoPhoton,
+            344.0,
+            1.65,
+            1.0,
+            None,
+            -1,
+            1.1,
+            True,
+            ValueError,
+            r"Expected \'resolution\' > 0",
+            id="No filter_band, negative resolution",
+        ),
+        pytest.param(
+            SceneType.Valid,
+            PhotonType.NoPhoton,
+            344.0,
+            1.65,
+            1.0,
+            None,
+            10,
+            1.1,
+            True,
+            ValueError,
+            r"No \'filter_band\' provided",
+            id="No filter_band",
+        ),
+        pytest.param(
+            SceneType.Valid,
+            PhotonType.NoPhoton,
+            344.0,
+            1.65,
+            1.0,
+            None,
+            None,
+            1.1,
+            True,
+            ValueError,
+            r"\'filter_band\' and \'resolution\' have both to be provided",
+            id="No filter_band and no resolution",
+        ),
+        pytest.param(
+            SceneType.Valid,
+            PhotonType.NoPhoton,
+            None,
+            1.65,
+            1.0,
+            (342, 346),
+            None,
+            1.1,
+            True,
+            ValueError,
+            r"No \'resolution\' provided",
+            id="No resolution - wavelength is float",
+        ),
+        pytest.param(
+            SceneType.Valid,
+            PhotonType.NoPhoton,
+            None,
+            1.65,
+            1.0,
+            None,
+            10,
+            1.1,
+            True,
+            ValueError,
+            r"No \'filter_band\' provided",
+            id="No filter_band - wavelength is float",
+        ),
+        pytest.param(
+            SceneType.Valid,
+            PhotonType.NoPhoton,
+            None,
+            1.65,
+            1.0,
+            None,
+            None,
+            1.1,
+            True,
+            ValueError,
+            r"\'filter_band\' and \'resolution\' have both to be provided",
+            id="No filter_band and no resolution - wavelength is float",
+        ),
+        pytest.param(
+            SceneType.Valid,
+            PhotonType.NoPhoton,
+            None,
+            None,
+            1.0,
+            (342, 346),
+            10,
+            None,
+            True,
+            ValueError,
+            r"Pixel scale is not defined",
+            id="No pixelscale",
+        ),
+    ],
+)
+def test_simple_collection_error(
+    scene_type: SceneType,
+    photon_type: PhotonType,
+    env_wavelength,
+    geo_pixel_scale,
+    aperture,
+    filter_band,
+    resolution,
+    pixelscale,
+    integrate_wavelength,
+    exp_exception: Exception,
+    exp_error: str,
+    ccd_3x3_no_photon: CCD,
+    ccd_100x100_no_photon: CCD,
+    scene_dataset: xr.Dataset,
+):
+    """Test function 'simple_collection' with wrong inputs."""
+    # Add a scene (or not)
+    if scene_type is SceneType.Missing:
+        detector = ccd_100x100_no_photon
+        assert detector.scene == Scene()
+
+    elif scene_type is SceneType.Invalid:
+        detector = ccd_3x3_no_photon
+        assert detector.scene == Scene()
+
+        detector.scene.add_source(scene_dataset)
+
+    elif scene_type is SceneType.Valid:
+        detector = ccd_100x100_no_photon
+        assert detector.scene == Scene()
+
+        detector.scene.add_source(scene_dataset)
+
+    assert detector.photon.ndim == 0
+
+    detector.environment._wavelength = env_wavelength
+    detector.geometry._pixel_scale = geo_pixel_scale
+
+    # Add Photons (or not)
+    if photon_type is PhotonType.NoPhoton:
+        # Do nothing
+        pass
+    elif photon_type is PhotonType.Photon_2D:
+        detector.photon.array = np.zeros(
+            shape=(detector.geometry.row, detector.geometry.col), dtype=float
+        )
+    else:
+        detector.photon.array_3d = xr.DataArray(
+            np.zeros(
+                shape=(3, detector.geometry.row, detector.geometry.col), dtype=float
+            ),
+            dims=["wavelength", "y", "x"],
+            coords={"wavelength": [400, 500, 600]},
+        )
+
+    with pytest.raises(exp_exception, match=exp_error):
+        simple_collection(
+            detector=detector,
+            aperture=aperture,
+            filter_band=filter_band,
+            resolution=resolution,
+            pixelscale=pixelscale,
+            integrate_wavelength=integrate_wavelength,
+        )

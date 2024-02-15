@@ -124,6 +124,9 @@ class Detector:
 
     @scene.setter
     def scene(self, obj: Scene) -> None:
+        if not isinstance(obj, Scene):
+            raise TypeError(f"Expected a 'Scene' object. Got: {obj!r}")
+
         self._scene = obj
 
     # TODO: Why no setter for charge, pixel, signal and image?
