@@ -223,8 +223,8 @@ OpticalParameter = Union[
 ]
 
 
-def create_optical_parameter(
-    dct: Mapping, selected_wavelength: Union[Quantity, tuple[Quantity, Quantity]]
+def _create_optical_parameter(
+    dct: Mapping, default_wavelength: Union[Quantity, tuple[Quantity, Quantity]]
 ) -> OpticalParameter:
     """Create an``OpticalParameter`` based on a dictionary.
 
@@ -232,7 +232,7 @@ def create_optical_parameter(
     ----------
     dct : dict
         Dictionary to convert.
-    selected_wavelength : Union[Quantity, tuple[Quantity,Quantity]]
+    default_wavelength : Union[Quantity, tuple[Quantity,Quantity]]
         Wavelength in nanometer.
 
     Returns
@@ -241,21 +241,34 @@ def create_optical_parameter(
         New parameters.
     """
     if "item" not in dct:
-        raise ValueError(
+        raise KeyError(
             f"Missing keyword 'item'. Got: {dct!r}.\n{GENERIC_ERROR_MESSAGE}"
         )
 
     if dct["item"] == "CircularAperture":
+        if "radius" not in dct:
+            raise KeyError(
+                "Missing parameter 'radius' for the optical element 'CircularAperture'."
+            )
+
         return CircularAperture(radius=Quantity(dct["radius"], unit="m"))
 
     elif dct["item"] == "ThinLens":
         if "reference_wavelength" in dct:
             reference_wavelength = Quantity(dct["reference_wavelength"], unit="nm")
-        elif isinstance(selected_wavelength, Quantity):
-            reference_wavelength = selected_wavelength
+
+        elif isinstance(default_wavelength, Quantity):
+            reference_wavelength = default_wavelength
         else:
-            cut_on, cut_off = selected_wavelength
+            cut_on, cut_off = default_wavelength
             reference_wavelength = (cut_on + cut_off) / 2
+
+        if "nwaves" not in dct or "radius" not in dct:
+            raise KeyError(
+                "Missing one of these parameters: 'nwaves', 'radius' "
+                "for the optical element 'ThinLens'."
+            )
+
         return ThinLens(
             nwaves=float(dct["nwaves"]),
             radius=Quantity(dct["radius"], unit="m"),
@@ -263,25 +276,57 @@ def create_optical_parameter(
         )
 
     elif dct["item"] == "SquareAperture":
+        if "size" not in dct:
+            raise KeyError(
+                "Missing parameter 'size' for the optical element 'SquareAperture'."
+            )
+
         return SquareAperture(size=Quantity(dct["size"], unit="m"))
 
     elif dct["item"] == "RectangularAperture":
+        if "width" not in dct or "height" not in dct:
+            raise KeyError(
+                "Missing one of these parameters: 'width', 'height' "
+                "for the optical element 'RectangularAperture'."
+            )
+
         return RectangleAperture(
             width=Quantity(dct["width"], unit="m"),
             height=Quantity(dct["height"], unit="m"),
         )
 
     elif dct["item"] == "HexagonAperture":
+        if "side" not in dct:
+            raise KeyError(
+                "Missing parameter 'side' for the optical element 'HexagonAperture'."
+            )
+
         return HexagonAperture(side=Quantity(dct["side"], unit="m"))
 
     elif dct["item"] == "MultiHexagonalAperture":
+        if "side" not in dct or "rings" not in dct or "gap" not in dct:
+            raise KeyError(
+                "Missing one of these parameters: 'side', 'rings', 'gap' "
+                "for the optical element 'MultiHexagonalAperture'."
+            )
+
         return MultiHexagonalAperture(
             side=Quantity(dct["side"], unit="m"),
             rings=int(dct["rings"]),
             gap=Quantity(dct["gap"], unit="m"),
-        )  # cm
+        )
 
     elif dct["item"] == "SecondaryObscuration":
+        if (
+            "secondary_radius" not in dct
+            or "n_supports" not in dct
+            or "support_width" not in dct
+        ):
+            raise KeyError(
+                "Missing one of these parameters: 'secondary_radius', 'n_supports', 'support_width' "
+                "for the optical element 'SecondaryObscuration'."
+            )
+
         return SecondaryObscuration(
             secondary_radius=Quantity(dct["secondary_radius"], unit="m"),
             n_supports=int(dct["n_supports"]),
@@ -289,6 +334,25 @@ def create_optical_parameter(
         )  # cm
 
     elif dct["item"] == "ZernikeWFE":
+        if (
+            "radius" not in dct
+            or "coefficients" not in dct
+            or "aperture_stop" not in dct
+        ):
+            raise KeyError(
+                "Missing one of these parameters: 'radius', 'coefficients', 'aperture_stop' "
+                "for the optical element 'ZernikeWFE'."
+            )
+
+        if (
+            not isinstance(dct["coefficients"], Sequence)
+            or len(dct["coefficients"]) == 0
+        ):
+            raise ValueError(
+                "Expecting a list of numbers for parameter 'coefficients'"
+                "for the optical element 'ZernikeWFE'."
+            )
+
         return ZernikeWFE(
             radius=Quantity(dct["radius"], unit="m"),
             coefficients=dct["coefficients"],  # list of floats
@@ -296,6 +360,12 @@ def create_optical_parameter(
         )  # bool
 
     elif dct["item"] == "SineWaveWFE":
+        if "spatialfreq" not in dct or "amplitude" not in dct or "rotation" not in dct:
+            raise KeyError(
+                "Missing one of these parameters: 'spatialfreq', 'amplitude', 'rotation' "
+                "for the optical element 'SineWaveWFE'."
+            )
+
         return SineWaveWFE(
             spatialfreq=Quantity(dct["spatialfreq"], unit="1/m"),
             amplitude=Quantity(dct["amplitude"], unit="um"),
@@ -307,22 +377,32 @@ def create_optical_parameter(
         ]
         msg = f"Unknown 'optical_element', expected values: {', '.join(valid_optical_elements)}. Got: {dct!r}"
         msg_lst: list[str] = textwrap.wrap(msg, drop_whitespace=False)
-        raise ValueError("\n".join(msg_lst))
+        raise KeyError("\n".join(msg_lst))
 
 
-def create_optical_item(param: OpticalParameter) -> "op.OpticalElement":
+def create_optical_item(
+    dct: Mapping,
+    default_wavelength: Union[Quantity, tuple[Quantity, Quantity]],
+) -> "op.OpticalElement":
     """Create a poppy ``OpticalElement``.
 
     Parameters
     ----------
-    param : ``OpticalParameter``
-        Pyxel Optical parameters to create a poppy ``OpticalElement``.
+    dct : dict
+        Dictionary to convert.
+    default_wavelength : Union[Quantity, tuple[Quantity,Quantity]]
+        Wavelength in nanometer.
 
     Returns
     -------
     ``OpticalElement``
         A poppy ``OpticalElement``.
     """
+    param: OpticalParameter = _create_optical_parameter(
+        dct=dct,
+        default_wavelength=default_wavelength,
+    )
+
     if isinstance(param, CircularAperture):
         return op.CircularAperture(radius=param.radius)
 
@@ -521,7 +601,7 @@ def apply_convolution(data: np.ndarray, kernel: np.ndarray) -> np.ndarray:
         integrated = kernel.sum(axis=0)
         mean = integrated.mean()
     else:
-        raise ValueError
+        raise NotImplementedError
 
     *_, num_rows, num_cols = kernel.shape
 
@@ -651,14 +731,10 @@ def optical_psf(
                     f"Got: {selected_wavelength!r}"
                 )
 
-    # Convert 'optical_system' to 'optical_parameters'
-    optical_parameters: Sequence[OpticalParameter] = [
-        create_optical_parameter(dct, selected_wavelength=selected_wavelength)
-        for dct in optical_system
-    ]
-
+    # Create 'OpticalElement' from an input 'dict'
     optical_elements: Sequence["op.OpticalElement"] = [
-        create_optical_item(param=param) for param in optical_parameters
+        create_optical_item(dct, default_wavelength=selected_wavelength)
+        for dct in optical_system
     ]
 
     # Depending on Type calculate for 2D or 3D photon

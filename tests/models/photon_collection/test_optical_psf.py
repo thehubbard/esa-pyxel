@@ -10,10 +10,10 @@ from dataclasses import dataclass
 from enum import Enum, auto
 from typing import Optional, Union
 
-import astropy.units as u
 import numpy as np
 import pytest
 import xarray as xr
+from astropy.units import Quantity
 
 from pyxel.data_structure import Photon
 from pyxel.detectors import (
@@ -24,20 +24,10 @@ from pyxel.detectors import (
     WavelengthHandling,
 )
 from pyxel.models.photon_collection import optical_psf
-from pyxel.models.photon_collection.poppy import (
-    CircularAperture,
-    HexagonAperture,
-    MultiHexagonalAperture,
-    RectangleAperture,
-    SecondaryObscuration,
-    SineWaveWFE,
-    SquareAperture,
-    ThinLens,
-    ZernikeWFE,
-    create_optical_parameter,
-)
+from pyxel.models.photon_collection.poppy import create_optical_item
 
-_ = pytest.importorskip("poppy")
+# Try to import 'poppy'
+poppy = pytest.importorskip("poppy")
 
 
 @pytest.fixture
@@ -81,17 +71,20 @@ def ccd_100x100_no_photon() -> CCD:
 
 
 @pytest.mark.parametrize(
+    "default_wavelength",
+    [
+        pytest.param(Quantity(300, unit="nm"), id="monochromatic"),
+        pytest.param(
+            (Quantity(200, unit="nm"), Quantity(400, unit="nm")), id="multivavelength"
+        ),
+    ],
+)
+@pytest.mark.parametrize(
     "dct, exp_parameter",
     [
         pytest.param(
-            {},
-            None,
-            marks=pytest.mark.xfail(raises=ValueError, strict=True),
-            id="Empty",
-        ),
-        pytest.param(
             {"item": "CircularAperture", "radius": 3.14},
-            CircularAperture(radius=3.14 * u.m),
+            poppy.CircularAperture(radius=3.14),
             id="CircularAperture",
         ),
         pytest.param(
@@ -101,27 +94,36 @@ def ccd_100x100_no_photon() -> CCD:
                 "radius": 2.2,
                 "reference_wavelength": 600.0,
             },
-            ThinLens(nwaves=1.1, radius=2.2 * u.m, reference_wavelength=600.0 * u.nm),
+            poppy.ThinLens(nwaves=1.1, radius=2.2, reference_wavelength=600.0),
             id="ThinLens",
         ),
         pytest.param(
+            {
+                "item": "ThinLens",
+                "nwaves": 1.1,
+                "radius": 2.2,
+            },
+            poppy.ThinLens(nwaves=1.1, radius=2.2, reference_wavelength=600.0),
+            id="ThinLens - No wavelength",
+        ),
+        pytest.param(
             {"item": "SquareAperture", "size": 1},
-            SquareAperture(size=1 * u.m),
+            poppy.SquareAperture(size=1),
             id="SquareAperture",
         ),
         pytest.param(
             {"item": "RectangularAperture", "width": 1.1, "height": 2.2},
-            RectangleAperture(width=1.1 * u.m, height=2.2 * u.m),
+            poppy.RectangleAperture(width=1.1, height=2.2),
             id="RectangularAperture",
         ),
         pytest.param(
             {"item": "HexagonAperture", "side": 1.1},
-            HexagonAperture(side=1.1 * u.m),
+            poppy.HexagonAperture(side=1.1),
             id="HexagonAperture",
         ),
         pytest.param(
             {"item": "MultiHexagonalAperture", "side": 1.1, "rings": 2, "gap": 3.3},
-            MultiHexagonalAperture(side=1.1 * u.m, rings=2, gap=3.3 * u.m),
+            poppy.MultiHexagonAperture(side=1.1, rings=2, gap=3.3),
             id="MultiHexagonalAperture",
         ),
         pytest.param(
@@ -131,8 +133,8 @@ def ccd_100x100_no_photon() -> CCD:
                 "n_supports": 2,
                 "support_width": 3.3,
             },
-            SecondaryObscuration(
-                secondary_radius=1.1 * u.m, n_supports=2, support_width=3.3 * u.m
+            poppy.SecondaryObscuration(
+                secondary_radius=1.1, n_supports=2, support_width=3.3
             ),
             id="SecondaryObscuration",
         ),
@@ -143,7 +145,7 @@ def ccd_100x100_no_photon() -> CCD:
                 "coefficients": [2.2, 3.3],
                 "aperture_stop": 4.4,
             },
-            ZernikeWFE(radius=1.1 * u.m, coefficients=[2.2, 3.3], aperture_stop=4.4),
+            poppy.ZernikeWFE(radius=1.1, coefficients=[2.2, 3.3], aperture_stop=4.4),
             id="ZernikeWFE",
         ),
         pytest.param(
@@ -153,20 +155,219 @@ def ccd_100x100_no_photon() -> CCD:
                 "amplitude": 3.3,
                 "rotation": 4.4,
             },
-            SineWaveWFE(
-                spatialfreq=2.2 * (1 / u.m), amplitude=3.3 * u.um, rotation=4.4
-            ),
+            poppy.SineWaveWFE(spatialfreq=2.2, amplitude=3.3, rotation=4.4),
             id="SineWaveWFE",
         ),
     ],
 )
-def test_create_optical_parameter(dct: Mapping, ccd_3x3: CCD, exp_parameter):
-    """Test function 'create_optical_parameter'."""
-    parameter = create_optical_parameter(
-        dct, selected_wavelength=ccd_3x3.environment.wavelength * u.nm
-    )
+def test_create_optical_item(dct: Mapping, exp_parameter: dict, default_wavelength):
+    """Test function 'create_optical_item'."""
 
-    assert parameter == exp_parameter
+    parameter = create_optical_item(
+        dct,
+        default_wavelength=default_wavelength,
+    )
+    assert isinstance(parameter, poppy.OpticalElement)
+    assert isinstance(exp_parameter, poppy.OpticalElement)
+
+    parameter_name = parameter.name
+    exp_parameter_name = exp_parameter.name
+
+    assert parameter_name == exp_parameter_name
+
+
+@pytest.mark.parametrize(
+    "dct, exp_error, exp_msg",
+    [
+        pytest.param({}, KeyError, r"Missing keyword \'item\'", id="no input"),
+        pytest.param(
+            {"item": "foo"},
+            KeyError,
+            r"Unknown \'optical_element\'",
+            id="Unknown 'optical_element'",
+        ),
+        pytest.param(
+            {"item": "CircularAperture"},
+            KeyError,
+            r"Missing parameter \'radius\'",
+            id="CircularAperture - Missing 'radius'",
+        ),
+        pytest.param(
+            {
+                "item": "ThinLens",
+                "radius": 2.2,
+                "reference_wavelength": 600.0,
+            },
+            KeyError,
+            r"Missing one of these parameters: \'nwaves\', \'radius\'",
+            id="ThinLens - Missing 'nwaves'",
+        ),
+        pytest.param(
+            {
+                "item": "ThinLens",
+                "nwaves": 1.1,
+                "reference_wavelength": 600.0,
+            },
+            KeyError,
+            r"Missing one of these parameters: \'nwaves\', \'radius\'",
+            id="ThinLens - Missing 'radius'",
+        ),
+        pytest.param(
+            {"item": "SquareAperture"},
+            KeyError,
+            r"Missing parameter \'size\'",
+            id="SquareAperture - Missing 'size'",
+        ),
+        pytest.param(
+            {"item": "RectangularAperture", "height": 2.2},
+            KeyError,
+            r"Missing one of these parameters: \'width\', \'height\'",
+            id="RectangularAperture - Missing 'width'",
+        ),
+        pytest.param(
+            {"item": "RectangularAperture", "width": 1.1},
+            KeyError,
+            r"Missing one of these parameters: \'width\', \'height\'",
+            id="RectangularAperture - Missing 'height'",
+        ),
+        pytest.param(
+            {"item": "HexagonAperture"},
+            KeyError,
+            r"Missing parameter \'side\'",
+            id="HexagonAperture - Missing 'side'",
+        ),
+        pytest.param(
+            {"item": "MultiHexagonalAperture", "rings": 2, "gap": 3.3},
+            KeyError,
+            r"Missing one of these parameters: \'side\', \'rings\', \'gap\'",
+            id="MultiHexagonalAperture - Missing 'side'",
+        ),
+        pytest.param(
+            {"item": "MultiHexagonalAperture", "side": 1.1, "gap": 3.3},
+            KeyError,
+            r"Missing one of these parameters: \'side\', \'rings\', \'gap\'",
+            id="MultiHexagonalAperture - Missing 'rings'",
+        ),
+        pytest.param(
+            {
+                "item": "MultiHexagonalAperture",
+                "side": 1.1,
+                "rings": 2,
+            },
+            KeyError,
+            r"Missing one of these parameters: \'side\', \'rings\', \'gap\'",
+            id="MultiHexagonalAperture - Missing 'gap'",
+        ),
+        pytest.param(
+            {
+                "item": "SecondaryObscuration",
+                "n_supports": 2,
+                "support_width": 3.3,
+            },
+            KeyError,
+            r"Missing one of these parameters: \'secondary_radius\', \'n_supports\', \'support_width\'",
+            id="SecondaryObscuration - Missing 'secondary_radius'",
+        ),
+        pytest.param(
+            {
+                "item": "SecondaryObscuration",
+                "secondary_radius": 1.1,
+                "support_width": 3.3,
+            },
+            KeyError,
+            r"Missing one of these parameters: \'secondary_radius\', \'n_supports\', \'support_width\'",
+            id="SecondaryObscuration - Missing 'n_supports'",
+        ),
+        pytest.param(
+            {
+                "item": "SecondaryObscuration",
+                "secondary_radius": 1.1,
+                "n_supports": 2,
+            },
+            KeyError,
+            r"Missing one of these parameters: \'secondary_radius\', \'n_supports\', \'support_width\'",
+            id="SecondaryObscuration - Missing 'support_width'",
+        ),
+        pytest.param(
+            {
+                "item": "ZernikeWFE",
+                "coefficients": [2.2, 3.3],
+                "aperture_stop": 4.4,
+            },
+            KeyError,
+            r"Missing one of these parameters: \'radius\', \'coefficients\', \'aperture_stop\'",
+            id="ZernikeWFE - Missing 'radius'",
+        ),
+        pytest.param(
+            {
+                "item": "ZernikeWFE",
+                "radius": 1.1,
+                "aperture_stop": 4.4,
+            },
+            KeyError,
+            r"Missing one of these parameters: \'radius\', \'coefficients\', \'aperture_stop\'",
+            id="ZernikeWFE - Missing 'coefficients'",
+        ),
+        pytest.param(
+            {
+                "item": "ZernikeWFE",
+                "radius": 1.1,
+                "coefficients": [2.2, 3.3],
+            },
+            KeyError,
+            r"Missing one of these parameters: \'radius\', \'coefficients\', \'aperture_stop\'",
+            id="ZernikeWFE - Missing 'aperture_stop'",
+        ),
+        pytest.param(
+            {
+                "item": "ZernikeWFE",
+                "radius": 1.1,
+                "coefficients": [],
+                "aperture_stop": 4.4,
+            },
+            ValueError,
+            r"Expecting a list of numbers for parameter \'coefficients\'",
+            id="ZernikeWFE - No 'coefficients'",
+        ),
+        pytest.param(
+            {
+                "item": "SineWaveWFE",
+                "amplitude": 3.3,
+                "rotation": 4.4,
+            },
+            KeyError,
+            r"Missing one of these parameters: \'spatialfreq\', \'amplitude\', \'rotation\'",
+            id="SineWaveWFE - Missing 'spatialfreq'",
+        ),
+        pytest.param(
+            {
+                "item": "SineWaveWFE",
+                "spatialfreq": 2.2,
+                "rotation": 4.4,
+            },
+            KeyError,
+            r"Missing one of these parameters: \'spatialfreq\', \'amplitude\', \'rotation\'",
+            id="SineWaveWFE - Missing 'amplitude'",
+        ),
+        pytest.param(
+            {
+                "item": "SineWaveWFE",
+                "spatialfreq": 2.2,
+                "amplitude": 3.3,
+            },
+            KeyError,
+            r"Missing one of these parameters: \'spatialfreq\', \'amplitude\', \'rotation\'",
+            id="SineWaveWFE - Missing 'rotation'",
+        ),
+    ],
+)
+def test_create_optical_item_error(dct: Mapping, exp_error, exp_msg):
+    """Test function 'create_optical_item' with wrong inputs."""
+    with pytest.raises(exp_error, match=exp_msg):
+        _ = create_optical_item(
+            dct,
+            default_wavelength=Quantity(300, unit="nm"),
+        )
 
 
 class PhotonType(Enum):
@@ -177,6 +378,10 @@ class PhotonType(Enum):
     Photon_3D = auto()
 
 
+@pytest.mark.parametrize(
+    "apply_jitter",
+    [pytest.param(True, id="With jitter"), pytest.param(False, id="Without jitter")],
+)
 @pytest.mark.parametrize(
     "photon_type, env_wavelength, wavelength",
     [
@@ -217,6 +422,7 @@ class PhotonType(Enum):
     [pytest.param([{"item": "CircularAperture", "radius": 1.0}], id="circle")],
 )
 def test_optical_psf(
+    apply_jitter: bool,
     photon_type: PhotonType,
     env_wavelength: Union[WavelengthHandling, float, None],
     wavelength: Union[float, tuple[float, float], None],
@@ -259,7 +465,7 @@ def test_optical_psf(
         optical_system=optical_system,
         wavelength=wavelength,
         pixelscale=pixelscale,
-        apply_jitter=False,
+        apply_jitter=apply_jitter,
         jitter_sigma=0.007,
     )
 
