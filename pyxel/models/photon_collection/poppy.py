@@ -8,7 +8,6 @@
 """Poppy model."""
 
 import logging
-import warnings
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from typing import Any, Optional, Union
@@ -202,17 +201,6 @@ class SineWaveWFE:
 
 
 # Define a type alias
-OpticalParameterDeprecated = Union[
-    CircularAperture,
-    DeprecatedThinLens,
-    SquareAperture,
-    RectangleAperture,
-    HexagonAperture,
-    MultiHexagonalAperture,
-    SecondaryObscuration,
-    ZernikeWFE,
-    SineWaveWFE,
-]
 OpticalParameter = Union[
     CircularAperture,
     ThinLens,
@@ -224,72 +212,6 @@ OpticalParameter = Union[
     ZernikeWFE,
     SineWaveWFE,
 ]
-
-
-def _create_optical_parameter_deprecated(dct: Mapping) -> OpticalParameterDeprecated:
-    """Create a new ``OpticalParameter`` based on a dictionary.
-
-    Parameters
-    ----------
-    dct : dict
-        Dictionary to convert
-
-    Returns
-    -------
-    OpticalParameter
-        New parameters.
-    """
-    warnings.warn(
-        "Deprecated. Will be removed in Pyxel 2.0", DeprecationWarning, stacklevel=1
-    )
-
-    if dct["item"] == "CircularAperture":
-        return CircularAperture(radius=dct["radius"])
-
-    elif dct["item"] == "ThinLens":
-        return DeprecatedThinLens(
-            nwaves=dct["nwaves"],
-            radius=dct["radius"],
-        )
-
-    elif dct["item"] == "SquareAperture":
-        return SquareAperture(size=dct["size"])
-
-    elif dct["item"] == "RectangularAperture":
-        return RectangleAperture(width=dct["width"], height=dct["height"])
-
-    elif dct["item"] == "HexagonAperture":
-        return HexagonAperture(side=dct["side"])
-
-    elif dct["item"] == "MultiHexagonalAperture":
-        return MultiHexagonalAperture(
-            side=dct["side"],
-            rings=dct["rings"],
-            gap=dct["gap"],
-        )  # cm
-
-    elif dct["item"] == "SecondaryObscuration":
-        return SecondaryObscuration(
-            secondary_radius=dct["secondary_radius"],
-            n_supports=dct["n_supports"],
-            support_width=dct["support_width"],
-        )  # cm
-
-    elif dct["item"] == "ZernikeWFE":
-        return ZernikeWFE(
-            radius=dct["radius"],
-            coefficients=dct["coefficients"],  # list of floats
-            aperture_stop=dct["aperture_stop"],
-        )  # bool
-
-    elif dct["item"] == "SineWaveWFE":
-        return SineWaveWFE(
-            spatialfreq=dct["spatialfreq"],  # 1/m
-            amplitude=dct["amplitude"],  # um
-            rotation=dct["rotation"],
-        )
-    else:
-        raise NotImplementedError
 
 
 def create_optical_parameter(
@@ -364,93 +286,6 @@ def create_optical_parameter(
             spatialfreq=Quantity(dct["spatialfreq"], unit="1/m"),
             amplitude=Quantity(dct["amplitude"], unit="um"),
             rotation=float(dct["rotation"]),
-        )
-    else:
-        raise NotImplementedError
-
-
-def create_optical_parameters(
-    optical_system: Sequence[Mapping],
-) -> Sequence[OpticalParameterDeprecated]:
-    """Create a list of ``OpticalParameters``.
-
-    Parameters
-    ----------
-    optical_system : ``list`` of ``dict``
-        List to convert.
-
-    Returns
-    -------
-    ``list`` of ``OpticalParameter``
-        A new list of parameters.
-    """
-    return [_create_optical_parameter_deprecated(dct) for dct in optical_system]
-
-
-def _create_optical_item_deprecated(
-    param: OpticalParameterDeprecated,
-    wavelength: float,
-) -> "op.OpticalElement":
-    """Create a new poppy ``OpticalElement``.
-
-    Parameters
-    ----------
-    param : ``OpticalParameter``
-        Pyxel Optical parameters to create a poppy ``OpticalElement``.
-    wavelength : float
-
-    Returns
-    -------
-    ``OpticalElement``
-        A new poppy ``OpticalElement``.
-    """
-    warnings.warn(
-        "Deprecated. Will be removed in Pyxel 2.0", DeprecationWarning, stacklevel=1
-    )
-
-    if isinstance(param, CircularAperture):
-        return op.CircularAperture(radius=param.radius)
-
-    elif isinstance(param, DeprecatedThinLens):
-        return op.ThinLens(
-            nwaves=param.nwaves,
-            reference_wavelength=wavelength,
-            radius=param.radius,
-        )
-
-    elif isinstance(param, SquareAperture):
-        return op.SquareAperture(size=param.size)
-
-    elif isinstance(param, RectangleAperture):
-        return op.RectangleAperture(width=param.width, height=param.height)
-
-    elif isinstance(param, HexagonAperture):
-        return op.HexagonAperture(side=param.side)
-
-    elif isinstance(param, MultiHexagonalAperture):
-        return op.MultiHexagonAperture(
-            side=param.side, rings=param.rings, gap=param.gap
-        )
-
-    elif isinstance(param, SecondaryObscuration):
-        return op.SecondaryObscuration(
-            secondary_radius=param.secondary_radius,
-            n_supports=param.n_supports,
-            support_width=param.support_width,
-        )
-
-    elif isinstance(param, ZernikeWFE):
-        return op.ZernikeWFE(
-            radius=param.radius,
-            coefficients=param.coefficients,
-            aperture_stop=param.aperture_stop,
-        )
-
-    elif isinstance(param, SineWaveWFE):
-        return op.SineWaveWFE(
-            spatialfreq=param.spatialfreq,
-            amplitude=param.amplitude,
-            rotation=param.rotation,
         )
     else:
         raise NotImplementedError

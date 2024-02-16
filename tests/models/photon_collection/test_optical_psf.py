@@ -5,7 +5,7 @@
 #  this file, may be copied, modified, propagated, or distributed except according to
 #  the terms contained in the file ‘LICENCE.txt’.
 
-from collections.abc import Mapping, Sequence
+from collections.abc import Mapping
 
 import astropy.units as u
 import numpy as np
@@ -13,7 +13,6 @@ import pytest
 import xarray as xr
 
 from pyxel.detectors import CCD, CCDGeometry, Characteristics, Environment
-from pyxel.models.photon_collection import optical_psf
 from pyxel.models.photon_collection.poppy import (
     CircularAperture,
     HexagonAperture,
@@ -160,64 +159,3 @@ def test_create_optical_parameter(dct: Mapping, ccd_3x3: CCD, exp_parameter):
     )
 
     assert parameter == exp_parameter
-
-
-@pytest.mark.parametrize(
-    "wavelength, fov_arcsec, optical_system",
-    [
-        pytest.param(600, 5, [{"item": "CircularAperture", "radius": 1.0}], id="valid"),
-        # pytest.param(
-        #     -1,
-        #     5,
-        #     [{"item": "CircularAperture", "radius": 3.0}],
-        #     marks=pytest.mark.xfail(raises=ValueError, strict=True),
-        #     id="Negative 'wavelength'",
-        # ),
-        # pytest.param(
-        #     600,
-        #     -1,
-        #     [{"item": "CircularAperture", "radius": 3.0}],
-        #     marks=pytest.mark.xfail(raises=ValueError, strict=True),
-        #     id="Negative 'fov_arcsec'",
-        # ),
-    ],
-)
-def test_optical_psf(
-    ccd_3x3: CCD,
-    wavelength: float,
-    fov_arcsec: float,
-    optical_system: Sequence[Mapping],
-):
-    """Test input parameters for function 'optical_psf'."""
-    optical_psf(
-        detector=ccd_3x3,
-        wavelength=wavelength,
-        fov_arcsec=fov_arcsec,
-        optical_system=optical_system,
-    )
-
-
-@pytest.mark.parametrize(
-    "wavelengths, fov_arcsec, optical_system",
-    [
-        pytest.param(
-            (600, 700),
-            5,
-            [{"item": "CircularAperture", "radius": 3.0}],
-            id="valid",
-        ),
-    ],
-)
-def test_optical_psf_multiwavelength(
-    ccd_4x5_multi_wavelength: CCD,
-    wavelengths: tuple[float, float],
-    fov_arcsec: float,
-    optical_system: Sequence[Mapping],
-):
-    """Test input parameters for function 'optical_psf'."""
-    optical_psf(
-        detector=ccd_4x5_multi_wavelength,
-        wavelength=wavelengths,
-        fov_arcsec=fov_arcsec,
-        optical_system=optical_system,
-    )
