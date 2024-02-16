@@ -8,9 +8,10 @@
 """Poppy model."""
 
 import logging
+import textwrap
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
-from typing import Any, Optional, Union
+from typing import Any, Final, Optional, Union, get_args
 
 import numpy as np
 import xarray as xr
@@ -26,6 +27,14 @@ try:
     WITH_POPPY: bool = True
 except ModuleNotFoundError:
     WITH_POPPY = False
+
+GENERIC_ERROR_MESSAGE: Final[str] = (
+    "To resolve this issue, you can use for example this input in the YAML configuration:\n"
+    "arguments:\n"
+    "  optical_system:\n"
+    "    - item: CircularAperture\n"
+    "      radius: 1.0     # radius in meter"
+)
 
 
 @dataclass
@@ -231,6 +240,11 @@ def create_optical_parameter(
     OpticalParameter
         New parameters.
     """
+    if "item" not in dct:
+        raise ValueError(
+            f"Missing keyword 'item'. Got: {dct!r}.\n{GENERIC_ERROR_MESSAGE}"
+        )
+
     if dct["item"] == "CircularAperture":
         return CircularAperture(radius=Quantity(dct["radius"], unit="m"))
 
@@ -288,7 +302,12 @@ def create_optical_parameter(
             rotation=float(dct["rotation"]),
         )
     else:
-        raise NotImplementedError
+        valid_optical_elements: Sequence[str] = [
+            repr(cls.__name__) for cls in get_args(OpticalParameter)
+        ]
+        msg = f"Unknown 'optical_element', expected values: {', '.join(valid_optical_elements)}. Got: {dct!r}"
+        msg_lst: list[str] = textwrap.wrap(msg, drop_whitespace=False)
+        raise ValueError("\n".join(msg_lst))
 
 
 def create_optical_item(param: OpticalParameter) -> "op.OpticalElement":
@@ -569,7 +588,10 @@ def optical_psf(
         )
 
     if not optical_system:
-        raise ValueError
+        raise ValueError(
+            "Parameter 'optical_system' does not contain any optical element(s)."
+            f"\n{GENERIC_ERROR_MESSAGE}"
+        )
 
     # get pixel scale either from detector geometry or from model input
     if pixelscale is None:
@@ -581,7 +603,9 @@ def optical_psf(
         pixel_scale: float = detector.geometry.pixel_scale
     else:
         if pixelscale <= 0:
-            raise ValueError
+            raise ValueError(
+                f"Parameter 'pixelscale' must be strictly positive. Got: {pixelscale}"
+            )
 
         pixel_scale = pixelscale
 
@@ -595,36 +619,37 @@ def optical_psf(
 
         elif isinstance(detector.environment._wavelength, WavelengthHandling):
             selected_wavelength = (
-                Quantity(detector.environment.wavelength.cut_on, unit="nm"),
-                Quantity(detector.environment.wavelength.cut_off, unit="nm"),
+                Quantity(detector.environment._wavelength.cut_on, unit="nm"),
+                Quantity(detector.environment._wavelength.cut_off, unit="nm"),
             )
         else:
-            raise ValueError
-
-    elif isinstance(wavelength, (int, float)):
-        if wavelength <= 0:
-            raise ValueError
-
-        selected_wavelength = Quantity(wavelength, unit="nm")
-
-    elif isinstance(wavelength, Sequence) and len(wavelength) == 2:
-        cut_on, cut_off = wavelength
-
-        selected_wavelength = (
-            Quantity(cut_on, unit="nm"),
-            Quantity(cut_off, unit="nm"),
-        )
-
-        if not (0 < cut_on < cut_off):
             raise ValueError(
-                "Min wavelength must be smaller that max wavelength. "
-                f"Got: {selected_wavelength!r}"
+                "Wavelength is not defined. It must be either provided in the detector geometry "
+                "or as model argument."
             )
     else:
-        raise ValueError(
-            "Wavelength is not defined. It must be either provided in the detector environment or as model "
-            "argument."
-        )
+        if isinstance(wavelength, (int, float)):
+            if wavelength <= 0:
+                raise ValueError(
+                    "Parameter 'wavelength' must be strictly positive. "
+                    f"Got: {wavelength}"
+                )
+
+            selected_wavelength = Quantity(wavelength, unit="nm")
+
+        elif isinstance(wavelength, Sequence) and len(wavelength) == 2:
+            cut_on, cut_off = wavelength
+
+            selected_wavelength = (
+                Quantity(cut_on, unit="nm"),
+                Quantity(cut_off, unit="nm"),
+            )
+
+            if not (0 < cut_on < cut_off):
+                raise ValueError(
+                    "'wavelength' must be increasing and strictly positive. "
+                    f"Got: {selected_wavelength!r}"
+                )
 
     # Convert 'optical_system' to 'optical_parameters'
     optical_parameters: Sequence[OpticalParameter] = [
@@ -637,9 +662,13 @@ def optical_psf(
     ]
 
     # Depending on Type calculate for 2D or 3D photon
-    # 2D
     if isinstance(selected_wavelength, Quantity):
+        if detector.photon.ndim != 2:
+            raise ValueError(
+                f"A 'detector.photon' 2D is expected. Got an '{detector.photon.ndim=}' "
+            )
 
+        # 2D
         # Processing
         # Get a Point Spread Function
         image_hdu: fits.PrimaryHDU
@@ -663,9 +692,13 @@ def optical_psf(
         )
 
         detector.photon.array = new_array_2d
-    # 3D
     else:
+        if detector.photon.ndim != 3:
+            raise ValueError(
+                f"A 'detector.photon' 3D is expected. Got an '{detector.photon.ndim=}' "
+            )
 
+        # 3D
         min_wavelength, max_wavelength = selected_wavelength
 
         # Get current wavelengths (in nm)
@@ -685,7 +718,7 @@ def optical_psf(
         if selected_wavelengths_nm.size == 0:
             raise ValueError(
                 f"The provided wavelength range ({min_wavelength:unicode}, {max_wavelength:unicode}) has "
-                f"no overlap with the wavelengths from detector.photon.array_3d "
+                f"no overlap with the wavelengths from 'detector.photon.array_3d' "
                 f"({wavelengths_nm[0]:unicode}, {wavelengths_nm[-1]:unicode})."
             )
 

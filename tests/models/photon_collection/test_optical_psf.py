@@ -6,6 +6,7 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 from collections.abc import Mapping
+from dataclasses import dataclass
 from enum import Enum, auto
 from typing import Optional, Union
 
@@ -83,7 +84,10 @@ def ccd_100x100_no_photon() -> CCD:
     "dct, exp_parameter",
     [
         pytest.param(
-            {}, None, marks=pytest.mark.xfail(raises=KeyError, strict=True), id="Empty"
+            {},
+            None,
+            marks=pytest.mark.xfail(raises=ValueError, strict=True),
+            id="Empty",
         ),
         pytest.param(
             {"item": "CircularAperture", "radius": 3.14},
@@ -258,3 +262,349 @@ def test_optical_psf(
         apply_jitter=False,
         jitter_sigma=0.007,
     )
+
+
+@dataclass
+class ParamError:
+    """Define parameters for 'test_optical_psf_error'."""
+
+    photon_type: PhotonType
+    env_wavelength: Union[WavelengthHandling, float, None]
+    wavelength: Union[float, tuple[float, float], None]
+    geo_pixel_scale: Optional[float]
+    pixelscale: Optional[float]
+    fov_arcsec: float
+    optical_system: Optional[list]
+    exp_exception: type[Exception]
+    exp_error: str
+
+
+@pytest.mark.parametrize(
+    "param",
+    [
+        pytest.param(
+            ParamError(
+                photon_type=PhotonType.Photon_2D,
+                env_wavelength=None,
+                wavelength=620.0,
+                geo_pixel_scale=None,
+                pixelscale=1.65,
+                fov_arcsec=0.0,
+                optical_system=[{"item": "CircularAperture", "radius": 1.0}],
+                exp_exception=ValueError,
+                exp_error=r"Expecting strictly positive value for \'fov_arcsec\'",
+            ),
+            id="fov is zero",
+        ),
+        pytest.param(
+            ParamError(
+                photon_type=PhotonType.Photon_2D,
+                env_wavelength=None,
+                wavelength=620.0,
+                geo_pixel_scale=None,
+                pixelscale=1.65,
+                fov_arcsec=-1.0,
+                optical_system=[{"item": "CircularAperture", "radius": 1.0}],
+                exp_exception=ValueError,
+                exp_error=r"Expecting strictly positive value for \'fov_arcsec\'",
+            ),
+            id="fov is negative",
+        ),
+        pytest.param(
+            ParamError(
+                photon_type=PhotonType.Photon_2D,
+                env_wavelength=None,
+                wavelength=620.0,
+                geo_pixel_scale=None,
+                pixelscale=1.65,
+                fov_arcsec=5.0,
+                optical_system=[],
+                exp_exception=ValueError,
+                exp_error=r"Parameter \'optical_system\' does not contain any optical element",
+            ),
+            id="No optical_system",
+        ),
+        pytest.param(
+            ParamError(
+                photon_type=PhotonType.Photon_2D,
+                env_wavelength=None,
+                wavelength=620.0,
+                geo_pixel_scale=None,
+                pixelscale=None,
+                fov_arcsec=5.0,
+                optical_system=[{"item": "CircularAperture", "radius": 1.0}],
+                exp_exception=ValueError,
+                exp_error="Pixel scale is not defined",
+            ),
+            id="No pixelscale",
+        ),
+        pytest.param(
+            ParamError(
+                photon_type=PhotonType.Photon_2D,
+                env_wavelength=None,
+                wavelength=620.0,
+                geo_pixel_scale=None,
+                pixelscale=0.0,
+                fov_arcsec=5.0,
+                optical_system=[{"item": "CircularAperture", "radius": 1.0}],
+                exp_exception=ValueError,
+                exp_error=r"\'pixelscale\' must be strictly positive",
+            ),
+            id="pixelscale is zero",
+        ),
+        pytest.param(
+            ParamError(
+                photon_type=PhotonType.Photon_2D,
+                env_wavelength=None,
+                wavelength=620.0,
+                geo_pixel_scale=None,
+                pixelscale=-1.0,
+                fov_arcsec=5.0,
+                optical_system=[{"item": "CircularAperture", "radius": 1.0}],
+                exp_exception=ValueError,
+                exp_error=r"\'pixelscale\' must be strictly positive",
+            ),
+            id="pixelscale is negative",
+        ),
+        pytest.param(
+            ParamError(
+                photon_type=PhotonType.Photon_2D,
+                env_wavelength=None,
+                wavelength=None,
+                geo_pixel_scale=None,
+                pixelscale=1.65,
+                fov_arcsec=5.0,
+                optical_system=[{"item": "CircularAperture", "radius": 1.0}],
+                exp_exception=ValueError,
+                exp_error=r"Wavelength is not defined",
+            ),
+            id="No Wavelength",
+        ),
+        pytest.param(
+            ParamError(
+                photon_type=PhotonType.Photon_2D,
+                env_wavelength=None,
+                wavelength=0,
+                geo_pixel_scale=None,
+                pixelscale=1.65,
+                fov_arcsec=5.0,
+                optical_system=[{"item": "CircularAperture", "radius": 1.0}],
+                exp_exception=ValueError,
+                exp_error=r"\'wavelength\' must be strictly positive",
+            ),
+            id="Wavelength is zero (int)",
+        ),
+        pytest.param(
+            ParamError(
+                photon_type=PhotonType.Photon_2D,
+                env_wavelength=None,
+                wavelength=0.0,
+                geo_pixel_scale=None,
+                pixelscale=1.65,
+                fov_arcsec=5.0,
+                optical_system=[{"item": "CircularAperture", "radius": 1.0}],
+                exp_exception=ValueError,
+                exp_error=r"\'wavelength\' must be strictly positive",
+            ),
+            id="Wavelength is zero (float)",
+        ),
+        pytest.param(
+            ParamError(
+                photon_type=PhotonType.Photon_2D,
+                env_wavelength=None,
+                wavelength=-0.1,
+                geo_pixel_scale=None,
+                pixelscale=1.65,
+                fov_arcsec=5.0,
+                optical_system=[{"item": "CircularAperture", "radius": 1.0}],
+                exp_exception=ValueError,
+                exp_error=r"\'wavelength\' must be strictly positive",
+            ),
+            id="Wavelength is zero",
+        ),
+        pytest.param(
+            ParamError(
+                photon_type=PhotonType.Photon_3D,
+                env_wavelength=None,
+                wavelength=(0, 680),
+                geo_pixel_scale=None,
+                pixelscale=1.65,
+                fov_arcsec=5.0,
+                optical_system=[{"item": "CircularAperture", "radius": 1.0}],
+                exp_exception=ValueError,
+                exp_error=r"\'wavelength\' must be increasing",
+            ),
+            id="Bad multi wavelength1",
+        ),
+        pytest.param(
+            ParamError(
+                photon_type=PhotonType.Photon_3D,
+                env_wavelength=None,
+                wavelength=(-1.0, 680.0),
+                geo_pixel_scale=None,
+                pixelscale=1.65,
+                fov_arcsec=5.0,
+                optical_system=[{"item": "CircularAperture", "radius": 1.0}],
+                exp_exception=ValueError,
+                exp_error=r"\'wavelength\' must be increasing",
+            ),
+            id="Bad multi wavelength2",
+        ),
+        pytest.param(
+            ParamError(
+                photon_type=PhotonType.Photon_3D,
+                env_wavelength=None,
+                wavelength=(680, 680.0),
+                geo_pixel_scale=None,
+                pixelscale=1.65,
+                fov_arcsec=5.0,
+                optical_system=[{"item": "CircularAperture", "radius": 1.0}],
+                exp_exception=ValueError,
+                exp_error=r"\'wavelength\' must be increasing",
+            ),
+            id="Bad multi wavelength3",
+        ),
+        pytest.param(
+            ParamError(
+                photon_type=PhotonType.Photon_3D,
+                env_wavelength=None,
+                wavelength=(680.0, 620.0),
+                geo_pixel_scale=None,
+                pixelscale=1.65,
+                fov_arcsec=5.0,
+                optical_system=[{"item": "CircularAperture", "radius": 1.0}],
+                exp_exception=ValueError,
+                exp_error=r"\'wavelength\' must be increasing",
+            ),
+            id="Bad multi wavelength4",
+        ),
+        pytest.param(
+            ParamError(
+                photon_type=PhotonType.NoPhoton,
+                env_wavelength=None,
+                wavelength=620.0,
+                geo_pixel_scale=None,
+                pixelscale=1.65,
+                fov_arcsec=5.0,
+                optical_system=[{"item": "CircularAperture", "radius": 1.0}],
+                exp_exception=ValueError,
+                exp_error=r"A \'detector.photon\' 2D is expected",
+            ),
+            id="Monochromatic - No photon",
+        ),
+        pytest.param(
+            ParamError(
+                photon_type=PhotonType.Photon_3D,
+                env_wavelength=None,
+                wavelength=620.0,
+                geo_pixel_scale=None,
+                pixelscale=1.65,
+                fov_arcsec=5.0,
+                optical_system=[{"item": "CircularAperture", "radius": 1.0}],
+                exp_exception=ValueError,
+                exp_error=r"A \'detector.photon\' 2D is expected",
+            ),
+            id="Monochromatic - Photon3D",
+        ),
+        pytest.param(
+            ParamError(
+                photon_type=PhotonType.NoPhoton,
+                env_wavelength=None,
+                wavelength=(620.0, 680.0),
+                geo_pixel_scale=None,
+                pixelscale=1.65,
+                fov_arcsec=5.0,
+                optical_system=[{"item": "CircularAperture", "radius": 1.0}],
+                exp_exception=ValueError,
+                exp_error=r"A \'detector.photon\' 3D is expected",
+            ),
+            id="Multiwavelength - No Photon",
+        ),
+        pytest.param(
+            ParamError(
+                photon_type=PhotonType.Photon_2D,
+                env_wavelength=None,
+                wavelength=(620.0, 680.0),
+                geo_pixel_scale=None,
+                pixelscale=1.65,
+                fov_arcsec=5.0,
+                optical_system=[{"item": "CircularAperture", "radius": 1.0}],
+                exp_exception=ValueError,
+                exp_error=r"A \'detector.photon\' 3D is expected",
+            ),
+            id="Multiwavelength - Photon2D",
+        ),
+        pytest.param(
+            ParamError(
+                photon_type=PhotonType.Photon_3D,
+                env_wavelength=None,
+                wavelength=(300.0, 400.0),
+                geo_pixel_scale=None,
+                pixelscale=1.65,
+                fov_arcsec=5.0,
+                optical_system=[{"item": "CircularAperture", "radius": 1.0}],
+                exp_exception=ValueError,
+                exp_error="The provided wavelength range",
+            ),
+            id="Cannot filter wavelength",
+        ),
+        # pytest.param(
+        #     ParamError(
+        #         photon_type=PhotonType.Photon_2D,
+        #         env_wavelength=None,
+        #         wavelength=620.0,
+        #         geo_pixel_scale=None,
+        #         pixelscale=1.65,
+        #         fov_arcsec=5.,
+        #         optical_system=[{"item": "CircularAperture", "radius": 1.0}],
+        #         exp_exception=ValueError,
+        #         exp_error="foo",
+        #     ),
+        #     id="good",
+        # ),
+    ],
+)
+def test_optical_psf_error(
+    param: ParamError,
+    ccd_100x100_no_photon: CCD,
+):
+    """Test function 'optical_psf' with wrong inputs."""
+    assert isinstance(param, ParamError)
+
+    detector = ccd_100x100_no_photon
+    detector.environment._wavelength = param.env_wavelength
+    detector.geometry._pixel_scale = param.geo_pixel_scale
+
+    # Check if 'photon' is empty
+    assert detector.photon == Photon(geo=detector.geometry)
+    assert detector.photon.ndim == 0
+
+    # Add Photons (or not)
+    if param.photon_type is PhotonType.NoPhoton:
+        # Do nothing
+        pass
+    elif param.photon_type is PhotonType.Photon_2D:
+        detector.photon.array = np.zeros(
+            shape=(detector.geometry.row, detector.geometry.col),
+            dtype=float,
+        )
+    else:
+        detector.photon.array_3d = xr.DataArray(
+            np.zeros(
+                shape=(3, detector.geometry.row, detector.geometry.col),
+                dtype=float,
+            ),
+            dims=["wavelength", "y", "x"],
+            coords={"wavelength": [620.0, 640.0, 680.0]},
+        )
+
+    with pytest.raises(param.exp_exception, match=param.exp_error):
+        optical_psf(
+            detector=detector,
+            fov_arcsec=param.fov_arcsec,
+            optical_system=param.optical_system,
+            wavelength=param.wavelength,
+            pixelscale=param.pixelscale,
+            apply_jitter=False,
+            jitter_sigma=0.007,
+        )
