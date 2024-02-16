@@ -6,13 +6,23 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 from collections.abc import Mapping
+from enum import Enum, auto
+from typing import Optional, Union
 
 import astropy.units as u
 import numpy as np
 import pytest
 import xarray as xr
 
-from pyxel.detectors import CCD, CCDGeometry, Characteristics, Environment
+from pyxel.data_structure import Photon
+from pyxel.detectors import (
+    CCD,
+    CCDGeometry,
+    Characteristics,
+    Environment,
+    WavelengthHandling,
+)
+from pyxel.models.photon_collection import optical_psf
 from pyxel.models.photon_collection.poppy import (
     CircularAperture,
     HexagonAperture,
@@ -49,28 +59,22 @@ def ccd_3x3() -> CCD:
 
 
 @pytest.fixture
-def ccd_4x5_multi_wavelength() -> CCD:
+def ccd_100x100_no_photon() -> CCD:
     """Create a valid CCD detector."""
     detector = CCD(
         geometry=CCDGeometry(
-            row=4,
-            col=5,
+            row=100,
+            col=100,
             total_thickness=40.0,
             pixel_vert_size=10.0,
             pixel_horz_size=10.0,
-            pixel_scale=1.65,
+            # pixel_scale=1.65,
         ),
-        environment=Environment(wavelength=600.0),
+        environment=Environment(),
         characteristics=Characteristics(),
     )
 
-    num_rows, num_cols = detector.geometry.shape
-
-    detector.photon.array_3d = xr.DataArray(
-        np.zeros(shape=(3, num_rows, num_cols), dtype=float),
-        dims=["wavelength", "y", "x"],
-        coords={"wavelength": [620.0, 640.0, 680.0]},
-    )
+    detector.set_readout(times=[1.0], start_time=0.0)
 
     return detector
 
@@ -159,3 +163,98 @@ def test_create_optical_parameter(dct: Mapping, ccd_3x3: CCD, exp_parameter):
     )
 
     assert parameter == exp_parameter
+
+
+class PhotonType(Enum):
+    """Used only for testing."""
+
+    NoPhoton = auto()
+    Photon_2D = auto()
+    Photon_3D = auto()
+
+
+@pytest.mark.parametrize(
+    "photon_type, env_wavelength, wavelength",
+    [
+        pytest.param(
+            PhotonType.Photon_2D, None, 620.0, id="Mono. with wavelength (float)"
+        ),
+        pytest.param(PhotonType.Photon_2D, None, 620, id="Mono. with wavelength (int)"),
+        pytest.param(PhotonType.Photon_2D, 620.0, None, id="Mono. without wavelength"),
+        pytest.param(
+            PhotonType.Photon_3D,
+            None,
+            (620.0, 680.0),
+            id="Multi with wavelength (float)",
+        ),
+        pytest.param(
+            PhotonType.Photon_3D, None, (620, 680), id="Multi with wavelength (int)"
+        ),
+        pytest.param(
+            PhotonType.Photon_3D, None, (600.0, 700.0), id="Multi with wavelength2"
+        ),
+        pytest.param(
+            PhotonType.Photon_3D,
+            WavelengthHandling(cut_on=620.0, cut_off=680.0, resolution=2),
+            None,
+            id="Multi without wavelength",
+        ),
+    ],
+)
+@pytest.mark.parametrize(
+    "geo_pixel_scale, pixelscale",
+    [
+        pytest.param(None, 1.65, id="With pixelscale"),
+        pytest.param(1.65, None, id="Without pixelscale"),
+    ],
+)
+@pytest.mark.parametrize(
+    "optical_system",
+    [pytest.param([{"item": "CircularAperture", "radius": 1.0}], id="circle")],
+)
+def test_optical_psf(
+    photon_type: PhotonType,
+    env_wavelength: Union[WavelengthHandling, float, None],
+    wavelength: Union[float, tuple[float, float], None],
+    geo_pixel_scale: Optional[float],
+    pixelscale: Optional[float],
+    optical_system,
+    ccd_100x100_no_photon: CCD,
+):
+    """Test function 'optical_psf'."""
+    detector = ccd_100x100_no_photon
+    detector.environment._wavelength = env_wavelength
+    detector.geometry._pixel_scale = geo_pixel_scale
+
+    # Check if 'photon' is empty
+    assert detector.photon == Photon(geo=detector.geometry)
+    assert detector.photon.ndim == 0
+
+    # Add Photons (or not)
+    if photon_type is PhotonType.NoPhoton:
+        # Do nothing
+        pass
+    elif photon_type is PhotonType.Photon_2D:
+        detector.photon.array = np.zeros(
+            shape=(detector.geometry.row, detector.geometry.col),
+            dtype=float,
+        )
+    else:
+        detector.photon.array_3d = xr.DataArray(
+            np.zeros(
+                shape=(3, detector.geometry.row, detector.geometry.col),
+                dtype=float,
+            ),
+            dims=["wavelength", "y", "x"],
+            coords={"wavelength": [620.0, 640.0, 680.0]},
+        )
+
+    optical_psf(
+        detector=detector,
+        fov_arcsec=5,
+        optical_system=optical_system,
+        wavelength=wavelength,
+        pixelscale=pixelscale,
+        apply_jitter=False,
+        jitter_sigma=0.007,
+    )

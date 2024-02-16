@@ -18,7 +18,7 @@ from astropy.convolution import convolve_fft
 from astropy.io import fits
 from astropy.units import Quantity
 
-from pyxel.detectors import Detector
+from pyxel.detectors import Detector, WavelengthHandling
 
 try:
     import poppy as op
@@ -421,7 +421,7 @@ def calc_psf(
             ----------
             fft_oversample : int
                 Oversampling factor for intermediate plane calculations. Default is 2
-            detector_oversample: int, optional
+            detector_oversample : int, optional
                 By default the detector oversampling is equal to the intermediate calculation oversampling.
                 If you wish to use a different value for the detector, set this parameter.
                 Note that if you just want images at detector pixel resolution you will achieve higher fidelity
@@ -434,12 +434,10 @@ def calc_psf(
             options : dict
                 Other arbitrary options for optical system creation
 
-
             Returns
             -------
             osys : poppy.OpticalSystem
                 an optical system instance representing the desired configuration.
-
             """
             osys = op.OpticalSystem(npix=1000)  # default: 1024
 
@@ -537,8 +535,8 @@ def optical_psf(
     detector: Detector,
     fov_arcsec: float,
     optical_system: Sequence[Mapping[str, Any]],
-    wavelength: Union[int, float, tuple[float, float], None] = None,
-    pixelscale: Union[float, None] = None,
+    wavelength: Union[float, tuple[float, float], None] = None,
+    pixelscale: Optional[float] = None,
     apply_jitter: bool = False,
     jitter_sigma: float = 0.007,
 ) -> None:
@@ -552,9 +550,9 @@ def optical_psf(
         Field Of View on detector plane in arcsec.
     optical_system : list of dict
         List of optical elements before detector with their specific arguments.
-    wavelength : Union[int, float, tuple[float, float], None]
+    wavelength : Union[float, tuple[float, float], None]
         Wavelength of incoming light in meters, default is None.
-    pixelscale :  Union[float, None]
+    pixelscale : float, Optional
         Pixel scale of detector, default is None.
     apply_jitter : bool
         Defines whether jitter should be applied, default is False.
@@ -565,37 +563,63 @@ def optical_psf(
         logging.WARNING
     )  # TODO: Fix this. See issue #81
 
+    if fov_arcsec <= 0.0:
+        raise ValueError(
+            f"Expecting strictly positive value for 'fov_arcsec'. Got {fov_arcsec!r} "
+        )
+
+    if not optical_system:
+        raise ValueError
+
     # get pixel scale either from detector geometry or from model input
     if pixelscale is None:
-        if detector.geometry.pixel_scale is None:
+        if detector.geometry._pixel_scale is None:
             raise ValueError(
                 "Pixel scale is not defined. It must be either provided in the detector geometry "
                 "or as model argument."
             )
         pixel_scale: float = detector.geometry.pixel_scale
     else:
+        if pixelscale <= 0:
+            raise ValueError
+
         pixel_scale = pixelscale
 
-    # get wavelength information either from detector envorinment or from model input
+    # get wavelength information either from detector environment or from model input
     if wavelength is None:
-        # take wavelngth input from detector.environment
-        if isinstance(detector.environment.wavelength, float):
+        # take wavelength input from detector.environment
+        if isinstance(detector.environment._wavelength, float):
             selected_wavelength: Union[Quantity, tuple[Quantity, Quantity]] = Quantity(
                 detector.environment.wavelength, unit="nm"
             )
-        else:
+
+        elif isinstance(detector.environment._wavelength, WavelengthHandling):
             selected_wavelength = (
                 Quantity(detector.environment.wavelength.cut_on, unit="nm"),
                 Quantity(detector.environment.wavelength.cut_off, unit="nm"),
             )
+        else:
+            raise ValueError
+
     elif isinstance(wavelength, (int, float)):
+        if wavelength <= 0:
+            raise ValueError
+
         selected_wavelength = Quantity(wavelength, unit="nm")
+
     elif isinstance(wavelength, Sequence) and len(wavelength) == 2:
         cut_on, cut_off = wavelength
+
         selected_wavelength = (
             Quantity(cut_on, unit="nm"),
             Quantity(cut_off, unit="nm"),
         )
+
+        if not (0 < cut_on < cut_off):
+            raise ValueError(
+                "Min wavelength must be smaller that max wavelength. "
+                f"Got: {selected_wavelength!r}"
+            )
     else:
         raise ValueError(
             "Wavelength is not defined. It must be either provided in the detector environment or as model "
@@ -643,19 +667,7 @@ def optical_psf(
     else:
 
         min_wavelength, max_wavelength = selected_wavelength
-        if min_wavelength <= 0:
-            raise ValueError("Expecting strictly positive value for the 'wavelengths'")
 
-        if min_wavelength > max_wavelength:
-            raise ValueError(
-                f"Min wavelength must be smaller that max wavelength. Got: {selected_wavelength!r}"
-            )
-
-        if fov_arcsec < 0.0 or detector.geometry.pixel_scale < 0.0:
-            raise ValueError(
-                "Expecting strictly positive value for "
-                "'fov_arcsec' and 'pixel_scale'."
-            )
         # Get current wavelengths (in nm)
         start_wavelength = Quantity(min_wavelength, unit="m")
         end_wavelength = Quantity(max_wavelength, unit="m")
@@ -684,7 +696,7 @@ def optical_psf(
         image_3d, wavefront_3d = calc_psf(
             wavelengths=selected_wavelengths_nm.to("m").value,
             fov_arcsec=fov_arcsec,
-            pixelscale=detector.geometry.pixel_scale,
+            pixelscale=pixel_scale,
             optical_elements=optical_elements,
             apply_jitter=apply_jitter,
             jitter_sigma=jitter_sigma,
