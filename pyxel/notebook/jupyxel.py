@@ -22,6 +22,7 @@ if TYPE_CHECKING:
     from panel.widgets import Widget
 
     from pyxel import Configuration
+    from pyxel.data_structure import SceneCoordinates
     from pyxel.detectors import Detector
     from pyxel.pipelines import DetectionPipeline, ModelFunction, Processor
 
@@ -562,8 +563,8 @@ def display_scene(
 
     .. image:: _static/display_scene.jpg
     """
-    import astropy.units as u
     import matplotlib.pyplot as plt
+    from astropy.units import Quantity
 
     scene = detector.scene
     scene_ds: xr.Dataset = scene.to_xarray()
@@ -571,36 +572,19 @@ def display_scene(
     if not scene:
         raise ValueError("Scene not initialized in this detector")
 
-    # right_ascension_key = "right_ascension[deg]"
-    # declination_key = "declination[deg]"
-    # fov_radius_key = "fov_radius[deg]"
-    #
-    # if right_ascension_key not in scene.attrs:
-    #     raise KeyError(f"Missing key {right_ascension_key!r} in the attributes.")
-    #
-    # if declination_key not in scene.attrs:
-    #     raise KeyError(f"Missing key {declination_key!r} in the attributes.")
-    #
-    # if fov_radius_key not in scene.attrs:
-    #     raise KeyError(f"Missing key {fov_radius_key!r} in the attributes.")
-    #
-    # # Extract parameters from 'scene'
-    # right_ascension = u.Quantity(scene.attrs[right_ascension_key], unit="deg")
-    # declination = u.Quantity(scene.attrs[declination_key], unit="deg")
-    # fov_radius_key = u.Quantity(scene.attrs[fov_radius_key], unit="deg")
-
-    scene_coord = scene.get_coordinates()
+    # Get the pointing coordinate from the scene
+    scene_coord: "SceneCoordinates" = scene.get_pointing_coordinates()
     right_ascension = scene_coord.right_ascension
     declination = scene_coord.declination
     fov = scene_coord.fov
 
-    middle_point_x = right_ascension.to(u.arcsec)
-    middle_point_y = declination.to(u.arcsec)
+    middle_point_x = right_ascension.to(unit="arcsec")
+    middle_point_y = declination.to(unit="arcsec")
 
     # Extract parameters from 'detector'
-    pixel_scale = u.Quantity(detector.geometry.pixel_scale, unit="arcsec/pixel")
-    detector_row = u.Quantity(detector.geometry.row, unit="pixel")
-    detector_col = u.Quantity(detector.geometry.col, unit="pixel")
+    pixel_scale = Quantity(detector.geometry.pixel_scale, unit="arcsec/pixel")
+    detector_row = Quantity(detector.geometry.row, unit="pixel")
+    detector_col = Quantity(detector.geometry.col, unit="pixel")
 
     x_factor = detector_row * pixel_scale / 2
     y_factor = detector_col * pixel_scale / 2

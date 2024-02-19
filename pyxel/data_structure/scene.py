@@ -22,12 +22,59 @@ if TYPE_CHECKING:
 
 @dataclass
 class SceneCoordinates:
+    """Represent the coordinates from one scene.
+
+    Parameters
+    ----------
+    right_ascension : Quantity
+        The right ascension of the scene in degree.
+    declination : Quantity
+        The declination of the scene in degree.
+    fov : Quantity
+        The field of view of the scene in degree.
+    """
+
     right_ascension: Quantity
     declination: Quantity
     fov: Quantity
 
     @classmethod
     def from_dataset(cls, ds: xr.Dataset) -> Self:
+        """Create a `SceneCoordinates` object from an xarray Dataset.
+
+        Parameters
+        ----------
+        ds : xr.Dataset
+            The dataset containing the scene coordinates in its attributes.
+
+        Returns
+        -------
+        SceneCoordinates
+            A new `SceneCoordinates` object.
+
+        Examples
+        --------
+        >>> ds = xr.Dataset(...)
+        >>> ds
+        <xarray.Dataset>
+        Dimensions:     (ref: 345, wavelength: 343)
+        Coordinates:
+          * ref         (ref) int64 0 1 2 3 4 5 6 7 ... 337 338 339 340 341 342 343 344
+          * wavelength  (wavelength) float64 336.0 338.0 340.0 ... 1.018e+03 1.02e+03
+        Data variables:
+            x           (ref) float64 1.334e+03 1.434e+03 ... -1.271e+03 -1.381e+03
+            y           (ref) float64 -1.009e+03 -956.1 -797.1 ... 1.195e+03 1.309e+03
+            weight      (ref) float64 11.49 14.13 15.22 14.56 ... 15.21 11.51 8.727
+            flux        (ref, wavelength) float64 0.003769 0.004137 ... 0.1813 0.1896
+        Attributes:
+            right_ascension[deg]:  56.75
+            declination[deg]:      24.1167
+            fov_radius[deg]:       0.5
+
+        >>> SceneCoordinates.from_dataset(ds)
+        SceneCoordinates(right_ascension=<Quantity 56.75 deg>, declination=<Quantity 24.1167 deg>, fov=<Quantity 0.5 deg>)
+        """
+
         right_ascension_key = "right_ascension[deg]"
         declination_key = "declination[deg]"
         fov_radius_key = "fov_radius[deg]"
@@ -47,10 +94,6 @@ class SceneCoordinates:
         fov = Quantity(ds.attrs[fov_radius_key], unit="deg")
 
         return cls(right_ascension=right_ascension, declination=declination, fov=fov)
-
-    def to_skycoord(self):
-        # Check model 'simple_collection'
-        pass
 
 
 class Scene:
@@ -97,6 +140,10 @@ class Scene:
             y           (ref) float64 -1.009e+03 -956.1 -797.1 ... 1.195e+03 1.309e+03
             weight      (ref) float64 11.49 14.13 15.22 14.56 ... 15.21 11.51 8.727
             flux        (ref, wavelength) float64 0.003769 0.004137 ... 0.1813 0.1896
+        Attributes:
+            right_ascension[deg]:  56.75
+            declination[deg]:      24.1167
+            fov_radius[deg]:       0.5
 
         >>> detector.scene.add_source(source)
         >>> detector.scene.data
@@ -112,6 +159,10 @@ class Scene:
                         y           (ref) float64 89.62 -129.3 -48.16 87.87
                         weight      (ref) float64 14.73 12.34 14.63 14.27
                         flux        (ref, wavelength) float64 0.003769 0.004137 ... 0.1813 0.1896
+                    Attributes:
+                        right_ascension[deg]:  56.75
+                        declination[deg]:      24.1167
+                        fov_radius[deg]:       0.5
         """
         if not isinstance(source, xr.Dataset):
             raise TypeError("Expecting a Dataset object for source")
@@ -139,8 +190,10 @@ class Scene:
 
         self.data[f"/list/{key}"] = DataTree(source)
 
-    def get_coordinates(self, scene_id: int = 0) -> SceneCoordinates:
-        assert scene_id == 0
+    def get_pointing_coordinates(self, scene_id: int = 0) -> SceneCoordinates:
+        """Get the `SceneCoordinates` from a source in the scene."""
+        if scene_id != 0:
+            raise NotImplementedError
 
         sub_scene: xr.Dataset = self.data[f"/list/{scene_id}"].to_dataset()
         return SceneCoordinates.from_dataset(sub_scene)
