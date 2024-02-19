@@ -81,7 +81,11 @@ def scene_dataset() -> xr.Dataset:
                 "data": [336.0, 338.0, 340.0, 342.0],
             },
         },
-        "attrs": {},
+        "attrs": {
+            "right_ascension[deg]": 57.1829668,
+            "declination[deg]": 23.84371349,
+            "fov_radius[deg]": 0.5,
+        },
         "dims": {"ref": 3, "wavelength": 4},
         "data_vars": {
             "x": {

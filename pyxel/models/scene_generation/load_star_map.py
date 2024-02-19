@@ -13,10 +13,10 @@ from collections.abc import Sequence
 from enum import Enum
 from typing import TYPE_CHECKING, Callable, Literal
 
-import astropy.units as u
 import numpy as np
 import requests
 import xarray as xr
+from astropy.units import Quantity
 from astroquery.gaia import Gaia
 from specutils import Spectrum1D
 from synphot import SourceSpectrum
@@ -58,7 +58,7 @@ class GaiaPassBand(Enum):
             raise NotImplementedError
 
 
-def compute_flux(wavelength: u.Quantity, flux: u.Quantity) -> u.Quantity:
+def compute_flux(wavelength: Quantity, flux: Quantity) -> Quantity:
     """Compute flux in Photon.
 
     Parameters
@@ -85,9 +85,9 @@ def compute_flux(wavelength: u.Quantity, flux: u.Quantity) -> u.Quantity:
     spectrum_1d = Spectrum1D(spectral_axis=wavelength, flux=flux)
     source_spectrum = SourceSpectrum.from_spectrum1d(spectrum_1d)
 
-    flux_photlam: u.Quantity = source_spectrum(wavelength)
+    flux_photlam: Quantity = source_spectrum(wavelength)
 
-    return flux_photlam.to(u.ph / (u.s * u.cm * u.cm * u.nm))
+    return flux_photlam.to("ph / (nm s cm2)")
 
 
 def _convert_spectrum(flux_1d: np.ndarray, wavelength_1d: np.ndarray) -> np.ndarray:
@@ -117,9 +117,9 @@ def _convert_spectrum(flux_1d: np.ndarray, wavelength_1d: np.ndarray) -> np.ndar
     >>> _convert_spectrum(flux_1d=flux_1d, wavelength_1d=wavelength_1d)
     array([3.76907117e-03, 4.13740861e-03, ..., 8.00785350e-02, 8.32541239e-02])
     """
-    converted_flux: u.Quantity = compute_flux(
-        wavelength=wavelength_1d * u.nm,
-        flux=flux_1d * (u.W / (u.nm * u.m * u.m)),
+    converted_flux: Quantity = compute_flux(
+        wavelength=Quantity(wavelength_1d, unit="nm"),
+        flux=Quantity(flux_1d, unit="W / (nm m2)"),
     )
 
     return np.asarray(converted_flux)
@@ -176,7 +176,7 @@ def convert_spectrum(flux: xr.DataArray) -> xr.DataArray:
         output_core_dims=[["wavelength"]],
     )
 
-    new_flux.attrs["units"] = str(u.ph / (u.s * u.nm * u.cm * u.cm))
+    new_flux.attrs["units"] = "ph / (nm s cm2)"
     new_flux["wavelength"].attrs["units"] = flux["wavelength"].units
     return new_flux
 
@@ -475,11 +475,11 @@ def load_objects_from_gaia(
 
     # Convert the positions to arcseconds and center around 0.0, 0.0.
     # The centering is necessary because ScopeSIM cannot actually 'point' the telescope.
-    ra_arcsec: u.Quantity = u.Quantity(ds_from_gaia["ra"], unit=u.deg).to(u.arcsec)
-    dec_arcsec: u.Quantity = u.Quantity(ds_from_gaia["dec"], unit=u.deg).to(u.arcsec)
+    ra_arcsec: Quantity = Quantity(ds_from_gaia["ra"], unit="deg").to("arcsec")
+    dec_arcsec: Quantity = Quantity(ds_from_gaia["dec"], unit="deg").to("arcsec")
 
-    x: u.Quantity = ra_arcsec  # - ra_arcsec.mean()
-    y: u.Quantity = dec_arcsec  # - dec_arcsec.mean()
+    x: Quantity = ra_arcsec  # - ra_arcsec.mean()
+    y: Quantity = dec_arcsec  # - dec_arcsec.mean()
 
     # Get weights
     weights_from_gaia: xr.DataArray = ds_from_gaia[band.get_magnitude_key()]
@@ -558,4 +558,5 @@ def load_star_map(
         "fov_radius[deg]": fov_radius,
     }
 
+    # Check that there are no other scene
     detector.scene.add_source(ds)

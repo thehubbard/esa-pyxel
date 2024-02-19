@@ -15,7 +15,7 @@ from astropy import wcs
 from astropy.coordinates import SkyCoord
 from astropy.units import Quantity
 
-from pyxel.data_structure import Scene
+from pyxel.data_structure import Scene, SceneCoordinates
 from pyxel.detectors import Detector, WavelengthHandling
 
 
@@ -221,8 +221,14 @@ def project_objects_to_detector(
     )
 
     # coordinates of telescope pointing
-    telescope_ra: u.Quantity = (scene_data["x"].values * u.arcsec).mean()
-    telescope_dec: u.Quantity = (scene_data["y"].values * u.arcsec).mean()
+    # Extract parameters from 'scene'
+    scene_coord: SceneCoordinates = SceneCoordinates.from_dataset(scene_data)
+    telescope_ra: Quantity = scene_coord.right_ascension
+    telescope_dec: Quantity = scene_coord.declination
+    # fov = scene_coord.fov
+
+    # telescope_ra: u.Quantity = (scene_data["x"].values * u.arcsec).mean()
+    # telescope_dec: u.Quantity = (scene_data["y"].values * u.arcsec).mean()
     coords_detector = SkyCoord(ra=telescope_ra, dec=telescope_dec, unit="degree")
 
     # using World Coordinate System (WCS) to convert to pixel
