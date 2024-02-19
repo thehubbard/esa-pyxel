@@ -87,7 +87,7 @@ class Geometry:
         self._total_thickness = total_thickness
         self._pixel_vert_size = pixel_vert_size
         self._pixel_horz_size = pixel_horz_size
-        self._pixel_scale = pixel_scale
+        self._pixel_scale: Optional[float] = pixel_scale
 
         self._numbytes = 0
 
@@ -204,10 +204,10 @@ class Geometry:
     @property
     def pixel_scale(self) -> float:
         """Get pixel scale."""
-        if self._pixel_scale:
-            return self._pixel_scale
-        else:
+        if self._pixel_scale is None:
             raise ValueError("'pixel_scale' not specified in detector geometry.")
+
+        return self._pixel_scale
 
     @pixel_scale.setter
     def pixel_scale(self, value: float) -> None:

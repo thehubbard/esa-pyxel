@@ -19,6 +19,9 @@ Pyxel doesn't use SemVer anymore, since most minor releases have at least minor 
 * Add unit tests for model [`simple_collection`](https://esa.gitlab.io/pyxel/doc/stable/references/model_groups/photon_collection_models.html#simple-collection) 
   in [`photon_collection`](https://esa.gitlab.io/pyxel/doc/stable/references/model_groups/photon_collection_models.html).
   (See [!847](https://gitlab.com/esa/pyxel/-/merge_requests/847)).
+* Add more unit tests tests for model [`optical_psf`](https://esa.gitlab.io/pyxel/doc/stable/references/model_groups/photon_collection_models.html#physical-optics-propagation-in-python-poppy) 
+  in [`photon_collection`](https://esa.gitlab.io/pyxel/doc/stable/references/model_groups/photon_collection_models.html).
+  (See [!854](https://gitlab.com/esa/pyxel/-/merge_requests/854)).
 
 ### Others
 

@@ -309,7 +309,7 @@ def display_detector(
     .. image:: _static/new_display_detector.jpg
 
     """
-    if new_display is False:
+    if not new_display:
         return _display_detector(detector=detector)
     else:
         return _new_display_detector(

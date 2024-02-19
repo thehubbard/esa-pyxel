@@ -5632,9 +5632,6 @@
             "wavelength": {
               "anyOf": [
                 {
-                  "type": "integer"
-                },
-                {
                   "type": "number"
                 },
                 {

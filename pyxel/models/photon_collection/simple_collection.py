@@ -52,11 +52,8 @@ def extract_wavelength(
         flux        (ref, wavelength) float64 0.2331 0.231 0.2269 ... 2.213 2.212
     """
 
-    # get data from scene and convert to xarray
-    data = scene.to_xarray()
-
-    # interpolation
-    interpolated_wavelengths = data.interp(wavelength=wavelengths)
+    # retrieve scene data, convert it to xarray and interpolate it
+    interpolated_wavelengths = scene.to_xarray().interp(wavelength=wavelengths)
 
     # get dataset with x, y, weight and flux of scene for selected wavelength band.
     # selected_data: xr.Dataset = data.sel(
@@ -280,9 +277,9 @@ def project_objects_to_detector(
     )
 
     # make sure that only stars inside the detector
-    selected_data_new = scene_data.copy(deep=True)
     selected_data_query = (
-        selected_data_new.query(ref="detector_coords_x > 0")
+        scene_data.copy(deep=True)
+        .query(ref="detector_coords_x > 0")
         .query(ref=f"detector_coords_x < {cols}")
         .query(ref=f"detector_coords_y < {rows}")
         .query(ref="detector_coords_y > 0")
@@ -295,15 +292,14 @@ def project_objects_to_detector(
         )
 
     # convert to int
-    selected_data2 = selected_data_query.copy(deep=True)
-    selected_data2["detector_coords_x"] = selected_data2["detector_coords_x"].astype(
-        int
-    )
-    selected_data2["detector_coords_y"] = selected_data2["detector_coords_y"].astype(
-        int
-    )
+    selected_data_query["detector_coords_x"] = selected_data_query[
+        "detector_coords_x"
+    ].astype(int)
+    selected_data_query["detector_coords_y"] = selected_data_query[
+        "detector_coords_y"
+    ].astype(int)
 
-    return selected_data2
+    return selected_data_query
 
 
 def aggregate_monochromatic(data: xr.Dataset, rows: int, cols: int) -> np.ndarray:
@@ -425,13 +421,12 @@ def _extract_wavelength(
             last_band = default_wavelength_handling.cut_off
             step_size = default_wavelength_handling.resolution
 
-    multi_wavelengths: WavelengthHandling = WavelengthHandling(
+    wavelengths: xr.DataArray = WavelengthHandling(
         cut_on=first_band,
         cut_off=last_band,
         resolution=step_size,
-    )
+    ).get_wavelengths()
 
-    wavelengths: xr.DataArray = multi_wavelengths.get_wavelengths()
     return wavelengths
 
 

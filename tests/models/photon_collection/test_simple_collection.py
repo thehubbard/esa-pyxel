@@ -6,6 +6,7 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 from enum import Enum, auto
+from typing import Optional, Union
 
 import numpy as np
 import pytest
@@ -24,52 +25,6 @@ from pyxel.models.photon_collection.simple_collection import (
     extract_wavelength,
     simple_collection,
 )
-
-
-@pytest.fixture
-def ccd_3x3() -> CCD:
-    """Create a valid CCD detector."""
-    detector = CCD(
-        geometry=CCDGeometry(
-            row=3,
-            col=3,
-            total_thickness=40.0,
-            pixel_vert_size=10.0,
-            pixel_horz_size=10.0,
-            pixel_scale=1.65,
-        ),
-        environment=Environment(wavelength=600.0),
-        characteristics=Characteristics(),
-    )
-    detector.photon.array = np.zeros(detector.geometry.shape, dtype=float)
-    return detector
-
-
-@pytest.fixture
-def ccd_4x5_multi_wavelength() -> CCD:
-    """Create a valid CCD detector."""
-    detector = CCD(
-        geometry=CCDGeometry(
-            row=4,
-            col=5,
-            total_thickness=40.0,
-            pixel_vert_size=10.0,
-            pixel_horz_size=10.0,
-            pixel_scale=1.65,
-        ),
-        environment=Environment(wavelength=600.0),
-        characteristics=Characteristics(),
-    )
-
-    num_rows, num_cols = detector.geometry.shape
-
-    detector.photon.array_3d = xr.DataArray(
-        np.zeros(shape=(3, num_rows, num_cols), dtype=float),
-        dims=["wavelength", "y", "x"],
-        coords={"wavelength": [620.0, 640.0, 680.0]},
-    )
-
-    return detector
 
 
 @pytest.fixture
@@ -751,8 +706,8 @@ class PhotonType(Enum):
 def test_simple_collection_error(
     scene_type: SceneType,
     photon_type: PhotonType,
-    env_wavelength,
-    geo_pixel_scale,
+    env_wavelength: Union[WavelengthHandling, float, None],
+    geo_pixel_scale: Optional[float],
     aperture,
     filter_band,
     resolution,
