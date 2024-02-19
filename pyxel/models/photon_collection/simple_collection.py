@@ -222,9 +222,9 @@ def project_objects_to_detector(
 
     # coordinates of telescope pointing
     # Extract parameters from 'scene'
-    scene_coord = SceneCoordinates.from_dataset(scene_data)
-    telescope_ra = scene_coord.right_ascension
-    telescope_dec = scene_coord.declination
+    scene_coord: SceneCoordinates = SceneCoordinates.from_dataset(scene_data)
+    telescope_ra: Quantity = scene_coord.right_ascension
+    telescope_dec: Quantity = scene_coord.declination
     # fov = scene_coord.fov
 
     # telescope_ra: u.Quantity = (scene_data["x"].values * u.arcsec).mean()
