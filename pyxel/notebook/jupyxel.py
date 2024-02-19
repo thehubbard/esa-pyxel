@@ -565,28 +565,34 @@ def display_scene(
     import astropy.units as u
     import matplotlib.pyplot as plt
 
-    scene: xr.Dataset = detector.scene.to_xarray()
+    scene = detector.scene
+    scene_ds: xr.Dataset = scene.to_xarray()
 
     if not scene:
         raise ValueError("Scene not initialized in this detector")
 
-    right_ascension_key = "right_ascension[deg]"
-    declination_key = "declination[deg]"
-    fov_radius_key = "fov_radius[deg]"
+    # right_ascension_key = "right_ascension[deg]"
+    # declination_key = "declination[deg]"
+    # fov_radius_key = "fov_radius[deg]"
+    #
+    # if right_ascension_key not in scene.attrs:
+    #     raise KeyError(f"Missing key {right_ascension_key!r} in the attributes.")
+    #
+    # if declination_key not in scene.attrs:
+    #     raise KeyError(f"Missing key {declination_key!r} in the attributes.")
+    #
+    # if fov_radius_key not in scene.attrs:
+    #     raise KeyError(f"Missing key {fov_radius_key!r} in the attributes.")
+    #
+    # # Extract parameters from 'scene'
+    # right_ascension = u.Quantity(scene.attrs[right_ascension_key], unit="deg")
+    # declination = u.Quantity(scene.attrs[declination_key], unit="deg")
+    # fov_radius_key = u.Quantity(scene.attrs[fov_radius_key], unit="deg")
 
-    if right_ascension_key not in scene.attrs:
-        raise KeyError(f"Missing key {right_ascension_key!r} in the attributes.")
-
-    if declination_key not in scene.attrs:
-        raise KeyError(f"Missing key {declination_key!r} in the attributes.")
-
-    if fov_radius_key not in scene.attrs:
-        raise KeyError(f"Missing key {fov_radius_key!r} in the attributes.")
-
-    # Extract parameters from 'scene'
-    right_ascension = u.Quantity(scene.attrs[right_ascension_key], unit="deg")
-    declination = u.Quantity(scene.attrs[declination_key], unit="deg")
-    fov_radius_key = u.Quantity(scene.attrs[fov_radius_key], unit="deg")
+    scene_coord = scene.get_coordinates()
+    right_ascension = scene_coord.right_ascension
+    declination = scene_coord.declination
+    fov = scene_coord.fov
 
     middle_point_x = right_ascension.to(u.arcsec)
     middle_point_y = declination.to(u.arcsec)
@@ -605,12 +611,12 @@ def display_scene(
     b_y = middle_point_y - y_factor
 
     fig, ax = plt.subplots(figsize=figsize)
-    scene.plot.scatter(x="x", y="y", hue="weight", marker="o", ax=ax)
+    scene_ds.plot.scatter(x="x", y="y", hue="weight", marker="o", ax=ax)
 
     ax.set_title(
         f"Right ascension: {right_ascension:latex}, "
         f"declination: {declination:latex}, "
-        f"fov: {fov_radius_key:latex}"
+        f"fov: {fov:latex}"
     )
     ax.hlines(y=t_y.value, xmin=l_x.value, xmax=r_x.value)
     ax.vlines(x=l_x.value, ymin=b_y.value, ymax=t_y.value)

@@ -8,13 +8,49 @@
 """Pyxel Scene class to track multi-wavelength photon."""
 
 from collections.abc import Mapping
+from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 import xarray as xr
+from astropy.units import Quantity
 from datatree import DataTree
+from typing_extensions import Self
 
 if TYPE_CHECKING:
     from scopesim import Source
+
+
+@dataclass
+class SceneCoordinates:
+    right_ascension: Quantity
+    declination: Quantity
+    fov: Quantity
+
+    @classmethod
+    def from_dataset(cls, ds: xr.Dataset) -> Self:
+        right_ascension_key = "right_ascension[deg]"
+        declination_key = "declination[deg]"
+        fov_radius_key = "fov_radius[deg]"
+
+        if right_ascension_key not in ds.attrs:
+            raise KeyError(f"Missing key {right_ascension_key!r} in the attributes.")
+
+        if declination_key not in ds.attrs:
+            raise KeyError(f"Missing key {declination_key!r} in the attributes.")
+
+        if fov_radius_key not in ds.attrs:
+            raise KeyError(f"Missing key {fov_radius_key!r} in the attributes.")
+
+        # Extract parameters from 'scene'
+        right_ascension = Quantity(ds.attrs[right_ascension_key], unit="deg")
+        declination = Quantity(ds.attrs[declination_key], unit="deg")
+        fov = Quantity(ds.attrs[fov_radius_key], unit="deg")
+
+        return cls(right_ascension=right_ascension, declination=declination, fov=fov)
+
+    def to_skycoord(self):
+        # Check model 'simple_collection'
+        pass
 
 
 class Scene:
@@ -102,6 +138,12 @@ class Scene:
             key = self.data.width
 
         self.data[f"/list/{key}"] = DataTree(source)
+
+    def get_coordinates(self, scene_id: int = 0) -> SceneCoordinates:
+        assert scene_id == 0
+
+        sub_scene: xr.Dataset = self.data[f"/list/{scene_id}"].to_dataset()
+        return SceneCoordinates.from_dataset(sub_scene)
 
     @property
     def data(self) -> DataTree:

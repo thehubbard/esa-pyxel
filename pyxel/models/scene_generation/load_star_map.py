@@ -558,4 +558,5 @@ def load_star_map(
         "fov_radius[deg]": fov_radius,
     }
 
+    # Check that there are no other scene
     detector.scene.add_source(ds)
