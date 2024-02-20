@@ -5620,10 +5620,10 @@
               "title": "optical_system",
               "type": "array"
             },
-            "pixelscale": {
+            "pixel_scale": {
               "default": null,
-              "description": "Pixel scale of detector, default is None.",
-              "title": "pixelscale",
+              "description": "Pixel scale of detector in arcsec/pix.",
+              "title": "pixel_scale",
               "type": [
                 "number",
                 "null"

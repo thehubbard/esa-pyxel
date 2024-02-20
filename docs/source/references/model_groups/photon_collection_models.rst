@@ -244,7 +244,7 @@ particularly in the context of astronomical telescopes.
 
 POPPY calculates the optical Point Spread Function of an optical system and applies the convolution.
 It requires the Field of View (FOV) in :math:`\mathit{arcsec}` (``fov_arcsec``) and the ``optical_system`` as arguments.
-By default, the model uses ``pixelscale`` in :math:`\mathit{arseconds/pixel}` and ``wavelength`` in :math:`\mathit{nm}`,
+By default, the model uses ``pixel_scale`` in :math:`\mathit{arseconds/pixel}` and ``wavelength`` in :math:`\mathit{nm}`,
 which are extracted from the detector properties in the YAML configuration file.
 However, you can override these properties by providing them as model arguments.
 
