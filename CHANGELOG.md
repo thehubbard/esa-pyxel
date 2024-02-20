@@ -14,6 +14,9 @@ Pyxel doesn't use SemVer anymore, since most minor releases have at least minor 
 ### Core
 * Fix bug with [`pyxel.display_scene`](https://esa.gitlab.io/pyxel/doc/stable/references/api/notebook.html#pyxel.display_scene).
   (See [!855](https://gitlab.com/esa/pyxel/-/merge_requests/855)).
+* Fix issue in [`pyxel.display_detector`](https://esa.gitlab.io/pyxel/doc/stable/references/api/notebook.html#pyxel.display_detector) 
+  with parameter `new_display=True`.
+  (See [!858](https://gitlab.com/esa/pyxel/-/merge_requests/858)).
 
 ### Documentation
 
