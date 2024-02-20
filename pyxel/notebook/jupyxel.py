@@ -198,7 +198,10 @@ def _new_display_detector(
             array_name: str = self.array
             data: xr.DataArray = ds[array_name]
 
-            # 2D image
+            ####################
+            # Display 2D image #
+            ####################
+
             img = data.hvplot.image(
                 title="Array",
                 aspect=1.0,
@@ -211,9 +214,19 @@ def _new_display_detector(
                 # datashade=True
             )
 
-            # Histogram
+            #####################
+            # Display Histogram #
+            #####################
+
+            # Get min, max range for the histogram
+            min_range, max_range = data.quantile(q=(0.02, 0.98)).to_numpy()
+
             if custom_histogram:
-                frequencies, edges = np.histogram(data, bins=self.nbins)
+                frequencies, edges = np.histogram(
+                    data,
+                    bins=self.nbins,
+                    range=(min_range, max_range),
+                )
 
                 data_hist = xr.DataArray(
                     frequencies,
@@ -235,9 +248,20 @@ def _new_display_detector(
 
                 return img + hist
             else:
+                # Get number of bins
+                if self.nbins == "auto":
+                    nbins = len(
+                        np.histogram_bin_edges(
+                            data, bins="auto", range=(min_range, max_range)
+                        ),
+                    )
+                else:
+                    nbins = self.nbins
+
                 hist = data.hvplot.hist(
                     aspect=1.0,
-                    bins=self.nbins,
+                    bins=nbins,
+                    bin_range=(min_range, max_range),
                     logx=self.logx,
                     logy=self.logy,
                 )
@@ -269,7 +293,10 @@ def _new_display_detector(
 
 
 def display_detector(
-    detector: "Detector", *, new_display: bool = False, custom_histogram: bool = True
+    detector: "Detector",
+    *,
+    new_display: bool = False,
+    custom_histogram: bool = True,
 ) -> "pn.Tabs":
     """Display detector interactively.
 
