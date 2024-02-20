@@ -222,7 +222,7 @@ def test_simple_collection_photon_2d(
         aperture=aperture,
         filter_band=filter_band,
         resolution=resolution,
-        pixelscale=pixelscale,
+        pixel_scale=pixelscale,
         integrate_wavelength=True,
     )
 
@@ -297,7 +297,7 @@ def test_simple_collection_photon_3d(
         aperture=aperture,
         filter_band=filter_band,
         resolution=resolution,
-        pixelscale=pixelscale,
+        pixel_scale=pixelscale,
         integrate_wavelength=False,
     )
 
@@ -436,7 +436,7 @@ class PhotonType(Enum):
             0,
             True,
             ValueError,
-            r"Expected \'pixelscale\' > 0",
+            r"Expected \'pixel_scale\' > 0",
             id="pixelscale is 0",
         ),
         pytest.param(
@@ -450,7 +450,7 @@ class PhotonType(Enum):
             -1,
             True,
             ValueError,
-            r"Expected \'pixelscale\' > 0",
+            r"Expected \'pixel_scale\' > 0",
             id="pixelscale is negative",
         ),
         pytest.param(
@@ -769,6 +769,6 @@ def test_simple_collection_error(
             aperture=aperture,
             filter_band=filter_band,
             resolution=resolution,
-            pixelscale=pixelscale,
+            pixel_scale=pixelscale,
             integrate_wavelength=integrate_wavelength,
         )
