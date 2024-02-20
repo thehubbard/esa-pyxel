@@ -456,7 +456,7 @@ def create_optical_item(
 def calc_psf(
     wavelengths: Sequence[float],
     fov_arcsec: float,
-    pixelscale: float,
+    pixel_scale: Quantity,
     optical_elements: Sequence["op.OpticalElement"],
     apply_jitter: bool = False,
     jitter_sigma: float = 0.007,
@@ -469,7 +469,7 @@ def calc_psf(
         Wavelengths of incoming light in meters.
     fov_arcsec : float, optional
         Field Of View on detector plane in arcsec.
-    pixelscale : float
+    pixel_scale : float
         Pixel scale on detector plane (arcsec/pixel).
         Defines sampling resolution of :term:`PSF`.
     optical_elements : list of OpticalElement
@@ -496,13 +496,13 @@ def calc_psf(
 
         def __init__(
             self,
-            pixelscale: float,
+            pixel_scale: Quantity,
             optical_elements: Sequence["op.OpticalElement"],
             fov_arcsec: float = 2,
             name="PyxelInstrument",
         ):
             super().__init__(name=name)
-            self._pixelscale = Quantity(pixelscale, unit="arcsec/pix")
+            self._pixel_scale: Quantity = pixel_scale.to("arcsec/pix")
             self._optical_elements = optical_elements
             self._fov_arcsec = fov_arcsec
 
@@ -544,9 +544,9 @@ def calc_psf(
             for element in self._optical_elements:
                 osys.add_pupil(element)
 
-            analysis_fov = self._pixelscale * Quantity(10, unit="pix")
+            analysis_fov = self._pixel_scale * Quantity(10, unit="pix")
             osys.add_detector(
-                pixelscale=self._pixelscale,
+                pixelscale=self._pixel_scale,
                 fov_arcsec=analysis_fov,
             )
 
@@ -558,11 +558,11 @@ def calc_psf(
     # Create Instrument
     instrument = PyxelInstrument(
         optical_elements=optical_elements,
-        pixelscale=pixelscale,
+        pixel_scale=pixel_scale,
         fov_arcsec=fov_arcsec,
     )
 
-    instrument.pixelscale = pixelscale
+    instrument.pixelscale = pixel_scale
 
     if apply_jitter:
         instrument.options["jitter"] = "gaussian"
@@ -635,7 +635,7 @@ def optical_psf(
     fov_arcsec: float,
     optical_system: Sequence[Mapping[str, Any]],
     wavelength: Union[float, tuple[float, float], None] = None,
-    pixelscale: Optional[float] = None,
+    pixel_scale: Optional[float] = None,
     apply_jitter: bool = False,
     jitter_sigma: float = 0.007,
 ) -> None:
@@ -651,8 +651,8 @@ def optical_psf(
         List of optical elements before detector with their specific arguments.
     wavelength : Union[float, tuple[float, float], None]
         Wavelength of incoming light in meters, default is None.
-    pixelscale : float, Optional
-        Pixel scale of detector, default is None.
+    pixel_scale : float, Optional, default: None
+        Pixel scale of detector in arcsec/pix.
     apply_jitter : bool
         Defines whether jitter should be applied, default is False.
     jitter_sigma : float
@@ -674,20 +674,23 @@ def optical_psf(
         )
 
     # get pixel scale either from detector geometry or from model input
-    if pixelscale is None:
+    if pixel_scale is None:
         if detector.geometry._pixel_scale is None:
             raise ValueError(
                 "Pixel scale is not defined. It must be either provided in the detector geometry "
                 "or as model argument."
             )
-        pixel_scale: float = detector.geometry.pixel_scale
+        pixel_scale_with_unit: Quantity = Quantity(
+            detector.geometry.pixel_scale,
+            unit="arcsec/pix",
+        )
     else:
-        if pixelscale <= 0:
+        if pixel_scale <= 0:
             raise ValueError(
-                f"Parameter 'pixelscale' must be strictly positive. Got: {pixelscale}"
+                f"Parameter 'pixelscale' must be strictly positive. Got: {pixel_scale}"
             )
 
-        pixel_scale = pixelscale
+        pixel_scale_with_unit = Quantity(pixel_scale, unit="arcsec/pix")
 
     # get wavelength information either from detector environment or from model input
     if wavelength is None:
@@ -752,7 +755,7 @@ def optical_psf(
         image_hdu, wavefront = calc_psf(
             wavelengths=[selected_wavelength.to("m").value],
             fov_arcsec=fov_arcsec,
-            pixelscale=pixel_scale,
+            pixel_scale=pixel_scale_with_unit,
             optical_elements=optical_elements,
             apply_jitter=apply_jitter,
             jitter_sigma=jitter_sigma,
@@ -805,7 +808,7 @@ def optical_psf(
         image_3d, wavefront_3d = calc_psf(
             wavelengths=selected_wavelengths_nm.to("m").value,
             fov_arcsec=fov_arcsec,
-            pixelscale=pixel_scale,
+            pixel_scale=pixel_scale_with_unit,
             optical_elements=optical_elements,
             apply_jitter=apply_jitter,
             jitter_sigma=jitter_sigma,

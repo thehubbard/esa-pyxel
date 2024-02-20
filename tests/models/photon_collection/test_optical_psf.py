@@ -413,8 +413,8 @@ class PhotonType(Enum):
 @pytest.mark.parametrize(
     "geo_pixel_scale, pixelscale",
     [
-        pytest.param(None, 1.65, id="With pixelscale"),
-        pytest.param(1.65, None, id="Without pixelscale"),
+        pytest.param(None, 1.65, id="With pixel_scale"),
+        pytest.param(1.65, None, id="Without pixel_scale"),
     ],
 )
 @pytest.mark.parametrize(
@@ -464,7 +464,7 @@ def test_optical_psf(
         fov_arcsec=5,
         optical_system=optical_system,
         wavelength=wavelength,
-        pixelscale=pixelscale,
+        pixel_scale=pixelscale,
         apply_jitter=apply_jitter,
         jitter_sigma=0.007,
     )
@@ -810,7 +810,7 @@ def test_optical_psf_error(
             fov_arcsec=param.fov_arcsec,
             optical_system=param.optical_system,
             wavelength=param.wavelength,
-            pixelscale=param.pixelscale,
+            pixel_scale=param.pixelscale,
             apply_jitter=False,
             jitter_sigma=0.007,
         )
