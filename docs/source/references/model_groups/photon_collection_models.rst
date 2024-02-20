@@ -88,9 +88,9 @@ The integrated flux in :math:`\mathit{photon/(s \cdot cm2)}` is then converted t
 When ``integrate_wavelength`` set to false, the photons are represented with dimensions "wavelength", "y", and "x".
 
 The objects are projected onto the detector, with object coordinates converted from :math:`arcsec` to detector
-coordinates (pixel) using the ``pixelscale`` in :math:`arseconds/pixel`. By default ``pixelscale`` is None, and
+coordinates (pixel) using the ``pixel_scale`` in :math:`arseconds/pixel`. By default ``pixel_scale`` is None, and
 the model retrieves the ``pixel_scale`` defined in the :py:class:`~pyxel.detectors.Detector.Geometry`.
-However, it is possible to override this property by providing ``pixelscale`` as model argument.
+However, it is possible to override this property by providing ``pixel_scale`` as model argument.
 
 .. code-block:: yaml
 
@@ -100,7 +100,7 @@ However, it is possible to override this property by providing ``pixelscale`` as
       arguments:
         aperture: 126.70e-3 #m
         filter_band: [400, 500] #nm
-        pixelscale: 1.65 #arcsec/pixel
+        pixel_scale: 1.65 #arcsec/pixel
         integrate_wavelength: true
 
 .. autofunction:: simple_collection
