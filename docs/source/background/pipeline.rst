@@ -4,27 +4,30 @@
 Pipeline
 ########
 
-The core algorithm of the architecture is the Detection pipeline allowing to
-host any type of :ref:`models <models_explanation>` in an arbitrary number.
-It is an instance of :py:class:`~pyxel.pipelines.DetectionPipeline` class.
+The core algorithm is the detection pipeline which includes various :ref:`models <models_explanation>` at each stage of
+the pipeline. It is an instance of :py:class:`~pyxel.pipelines.DetectionPipeline` class.
+Each model's input parameters can be configured using the ``YAML`` configuration file.
 
 Inside the pipeline the :ref:`models <models_explanation>` are grouped into different
-levels per detector type imitating the working principle of the detector, for example
+levels per detector type mirroring the operational principles of the detector, for example
 in case of a :term:`CCD` the model groups are :ref:`scene generation <scene_generation>`,
 :ref:`photon collection <photon_collection>`, :ref:`charge <charge_transfer>`, :ref:`generation <charge_generation>`,
 :ref:`charge collection <charge_collection>`, :ref:`charge transfer <charge_transfer>`,
 :ref:`charge measurement <charge_measurement>`, :ref:`readout electronics <readout_electronics>`
 and :ref:`data processing <data_processing>` in this order.
 
-Each group is based on a
-for loop, looping over all the included and selected models in a predefined
-order, which can be changed by the user. All the models in a pipeline, get
-and modify the same :py:class:`~pyxel.detectors.Detector` object one after another.
-At the end, the pipeline returns the :py:class:`~pyxel.detectors.Detector` object
-as an output ready to generate output files from results.
+Each group is structured around a for loop, iterating over all included and selected models in a predefined sequence,
+which can be customized by the user. All models within a pipeline sequentially access and modify the same
+:py:class:`~pyxel.detectors.Detector` object. Upon completion, the pipeline yields the modified
+:py:class:`~pyxel.detectors.Detector` object as output, ready for generating output files based on the results.
+
+Since version 2.0, Pyxel includes the ability to accommodate multi-wavelength models.
+These models, along with their associated groups, are visually highlighted by distinct colors in the accompanying image.
+Integration of multi-wavelength photons occurs either in the photon collection or in the charge generation model group,
+ensuring that they are consolidated across the specified wavelength range.
 
 .. image:: _static/pipeline.png
-    :scale: 70%
+    :width: 600px
     :alt: ccd_pipeline
     :align: center
 
@@ -33,30 +36,25 @@ as an output ready to generate output files from results.
 Models
 ======
 
-By models, we mean various analytical functions, numerical methods or
-algorithms implemented in order to approximate, calculate, visualize
-electro-optical performance and degradation due to the operational
-environment (space, laboratory test) and its effects (e.g. radiation
-damage).
+When referring to "models," we are discussing various analytical functions, numerical methods, or algorithms designed
+to approximate, calculate, and visualize electro-optical performance and degradation resulting from operational
+environments such as space or laboratory tests, including their associated effects like radiation damage.
 
-Models are Python functions with a :py:class:`~pyxel.detectors.Detector` object
-defined as their input argument. The model function has to be
-added to the ``YAML`` configuration file.
-Then the function is automatically called by Pyxel inside a loop of its
-model group and the :py:class:`~pyxel.detectors.Detector` object is passed to it.
-The model may modifies this :py:class:`~pyxel.detectors.Detector` object which is
-also used and modified further by the next models in the pipeline.
+These models are Python functions that require a :py:class:`~pyxel.detectors.Detector` object as their input argument.
+To incorporate a model, it must be added to the ``YAML`` configuration file. Subsequently, Pyxel automatically invokes the
+function within a loop of its corresponding model group, passing the :py:class:`~pyxel.detectors.Detector` object to it.
+The model function has the capability to modify this object, which is then utilized and further modified by subsequent
+models in the pipeline.
 
 
 .. _model_groups_explanation:
 
 Model groups
 ------------
-
-Models are grouped into multiple model groups per detector type according to
-which object of the :py:class:`~pyxel.detectors.Detector` object is used or modified by
-the models. These groups correspond roughly to the detector fundamental
-functions.
+A set of models is associated with a model group according to
+which object of the :py:class:`~pyxel.detectors.Detector` data container is used or modified by the models.
+These groups correspond roughly to the detector fundamental functions, e.g. generating charge, so converting photons
+to charge or modifying the charge bucket.
 
 Models in Pyxel makes changes and storing the data in data buckets (:py:class:`~pyxel.data_structure.Scene`,
 :py:class:`~pyxel.data_structure.Photon`, :py:class:`~pyxel.data_structure.Charge`,
@@ -64,38 +62,40 @@ Models in Pyxel makes changes and storing the data in data buckets (:py:class:`~
 :py:class:`~pyxel.data_structure.Pixel`, :py:class:`~pyxel.data_structure.Signal` or
 :py:class:`~pyxel.data_structure.Image`,
 :py:class:`datatree.DataTree` class).
+The data buckets are not initialized before running a pipeline. The models inside the model groups must initialize
+the data buckets.
 
-Models could also modify any detector attributes (like Quantum Efficiency,
+Models can also modify any detector attributes (like Quantum Efficiency,
 gains, temperature, etc.) stored in a Detector subclass
 (:py:class:`~pyxel.detectors.Characteristics`, :py:class:`~pyxel.detectors.Environment`,
 :py:class:`~pyxel.detectors.Material`).
 
 
-Detector attributes changes could happen globally (on detector level)
+Detector attributes changes can happen globally (on detector level)
 or locally (on pixel level or only for a specific detector area).
 
 .. figure:: _static/model-table.png
-    :scale: 70%
+    :width: 800px
     :alt: models
     :align: center
 
 Most of the model groups work for :term:`CCD`, :term:`CMOS`, :term:`MKID` and :term:`APD` detectors,
-which are imitating the physical working principles of imaging detectors. They were
-grouped according to which physics data storing objects are modified by them. Note that 3 out of the 10 groups are
-specific to a single detector type.
+which are imitating the physical working principles of imaging detectors. They are
+grouped according to which physics data storing objects are modified by them. Note that among the 10 groups,
+three are dedicated to a single detector type. They are visually highlighted in the accompanying image.
 
 Model functions
 ---------------
 
 A model function is a function that takes in the :py:class:`~pyxel.detectors.Detector` object as one of the arguments
 and edits the data stored in it.
-The :py:class:`~pyxel.detectors.Detector` object is the only compulsory input argument,
-and can be of different types,  for example a :py:class:`~pyxel.detectors.CCD` or
+The :py:class:`~pyxel.detectors.Detector` object serves as the mandatory input argument,
+and may vary in type, such as a :py:class:`~pyxel.detectors.CCD` or
 a :py:class:`~pyxel.detectors.CMOS` type :py:class:`~pyxel.detectors.Detector` object,
-depending on what the model is supposed to simulate.
+depending on the simulation requirements of the model.
 Any other (optional) input arguments can be defined for the model as well,
 which will be loaded from the :ref:`YAML <yaml>` file automatically.
-Users can change model parameters or enable/disable them by interacting with the configuration file.
+Users can change model parameters or enable/disable them by modifying with the configuration file.
 For example, a model function that multiplies the photon array with the input argument would look like this in the code:
 
 .. code-block:: python
@@ -122,4 +122,4 @@ Users and developers can easily add any kind of new or already existing
 model to Pyxel, thanks to the easy-to-use model plug-in mechanism
 developed for this purpose.
 
-For more details, see the :ref:`Adding new models <new_model>` page.
+For more details, see the :ref:`adding new models <new_model>` page.
