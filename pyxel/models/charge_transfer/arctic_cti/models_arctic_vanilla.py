@@ -124,9 +124,9 @@ def arctic_add(
         transfers can be computed at once for efficiency.
         The ``express`` input sets the number of times the transfers are calculated.
 
-            * ``express = 1`` is the fastest and least accurate.
-            * ``express = 2`` means the transfers are re-computed half-way through readout.
-            * ``express = N`` where ``N`` is the total number of pixels.
+        * ``express = 1`` is the fastest and least accurate.
+        * ``express = 2`` means the transfers are re-computed half-way through readout.
+        * ``express = N`` where ``N`` is the total number of pixels.
 
         Default ``express = 0`` is a convenient input for automatic ``express = N``.
 
@@ -245,9 +245,9 @@ def arctic_remove(
         transfers can be computed at once for efficiency.
         The ``express`` input sets the number of times the transfers are calculated.
 
-            * ``express = 1`` is the fastest and least accurate.
-            * ``express = 2`` means the transfers are re-computed half-way through readout.
-            * ``express = N`` where ``N`` is the total number of pixels.
+        * ``express = 1`` is the fastest and least accurate.
+        * ``express = 2`` means the transfers are re-computed half-way through readout.
+        * ``express = N`` where ``N`` is the total number of pixels.
 
         Default ``express = 0`` is a convenient input for automatic ``express = N``.
     """
