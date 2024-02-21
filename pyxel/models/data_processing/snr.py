@@ -66,6 +66,10 @@ def signal_to_noise_ratio(
         ("pixel", "photon", "signal", "image", "all").
         Default is "signal" and computes the SNR on "signal".
 
+    Notes
+    -----
+    For more information, you can find an example here:
+    :external+pyxel_data:doc:`examples/models/data_processing/source_extractor/SEP_exposure`.
     """
     if data_structure == "all":
         names = ["pixel", "photon", "signal", "image"]

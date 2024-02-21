@@ -16,6 +16,11 @@ def apd_gain(detector: APD) -> None:
     ----------
     detector : APD
         Pyxel APD detector object.
+
+    Notes
+    -----
+    For more information, you can find an example here:
+    :external+pyxel_data:doc:`use_cases/APD/saphira`.
     """
 
     if not isinstance(detector, APD):

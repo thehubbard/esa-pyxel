@@ -82,6 +82,11 @@ The calculated statistics can then be accessed via ``detector.data.statistics``.
       func: pyxel.models.data_processing.statistics
       enabled: true
 
+.. note::
+    You can find examples of this model in these Jupyter Notebooks from `Pyxel Data <https://esa.gitlab.io/pyxel-data>`_:
+
+    * :external+pyxel_data:doc:`examples/models/dark_current/dark_current_Si`
+    * :external+pyxel_data:doc:`examples/models/data_processing/data_analysis/data_processing-obs`
 
 .. autofunction:: statistics
 
@@ -108,10 +113,15 @@ calculating statistics of a given array.
           minarea: 5
         enabled: true
 
+.. note::
+    You can find an example of this model used in this Jupyter Notebook
+    :external+pyxel_data:doc:`examples/models/data_processing/source_extractor/SEP_exposure`
+    from `Pyxel Data <https://esa.gitlab.io/pyxel-data>`_.
+
 .. autofunction:: extract_roi_to_xarray
 
 There is code within Pyxel capable of harnessing some data,
-such as background subtraction and imaging a given 2D given nupy array.
+such as background subtraction and imaging a given 2D given numpy array.
 
 .. autofunction:: plot_roi
 
@@ -131,6 +141,11 @@ Compute a mean-variance 1D array that shows relationship between the mean signal
       arguments:
         data_structure: image
 
+.. note::
+    You can find an example of this model used in this Jupyter Notebook
+    :external+pyxel_data:doc:`examples/models/data_processing/data_analysis/data_processing-obs`
+    from `Pyxel Data <https://esa.gitlab.io/pyxel-data>`_.
+
 .. autofunction:: mean_variance
 
 .. _linear_regression:
@@ -148,6 +163,11 @@ Compute a linear regression along readout time.
       enabled: true
       arguments:
         data_structure: image
+
+.. note::
+    You can find an example of this model used in this Jupyter Notebook
+    :external+pyxel_data:doc:`examples/models/data_processing/data_analysis/data_processing-obs`
+    from `Pyxel Data <https://esa.gitlab.io/pyxel-data>`_.
 
 .. autofunction:: linear_regression
 
@@ -189,5 +209,10 @@ photon, pixel, signal and image of the detector. The ``data_structure`` "signal"
       enabled: true
       arguments:
         data_structure: "signal"
+
+.. note::
+    You can find an example of this model used in this Jupyter Notebook
+    :external+pyxel_data:doc:`examples/models/data_processing/data_analysis/data_processing-obs`
+    from `Pyxel Data <https://esa.gitlab.io/pyxel-data>`_.
 
 .. autofunction:: signal_to_noise_ratio

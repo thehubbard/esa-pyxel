@@ -129,6 +129,11 @@ Basic example of YAML configuration model:
       arguments:
         filename: data/qe_map.npy
 
+.. note::
+    You can find an example of this model used in this Jupyter Notebook
+    :external+pyxel_data:doc:`use_cases/HxRG/h2rg`
+    from `Pyxel Data <https://esa.gitlab.io/pyxel-data>`_.
+
 .. autofunction:: conversion_with_qe_map
 
 .. warning:: Model assumes shot noise model was applied to photon array when using binomial sampling.
@@ -138,6 +143,9 @@ Basic example of YAML configuration model:
 
 Apply QE curve
 ==============
+
+.. note::
+    This model operates multi-wavelength photons.
 
 :guilabel:`Photon` → :guilabel:`Charge`
 
@@ -167,13 +175,17 @@ Basic example of YAML configuration model:
 Conversion with 3D QE map
 =========================
 
+.. note::
+    This model operates multi-wavelength photons.
+
+
 :guilabel:`Photon` → :guilabel:`Charge`
 
 With this model you can create and add charge to :py:class:`~pyxel.detectors.Detector` via photoelectric effect
 by converting photons in charge. Loading QE values from a file to apply the QE to the photon array.
 Loading a 3D QE map from a file containing one QE map in the size of the detector per wavelength to apply the QE
 to the photon array. The file format must be netCDF, so ending with ``.nc`` to be able to read in.
-The file loaded will be interpreted as xr.DataArray and should have the "wavelength" as coordinate, such that the
+The file loaded will be interpreted as :py:class:`xarray.DataArray` and should have the "wavelength" as coordinate, such that the
 wavelength resolution of the QE map data can be interpolated to match to the resolution of the wavelength used in
 the photon array. After that the photoconversion from photon to charge, applying the QE values to the photon array
 takes places and finally integrating along the wavelength dimension to get a 2D charge array as output.
@@ -223,10 +235,12 @@ Basic example of YAML configuration model:
 Charge injection
 ================
 
+.. note:: This model is specific for the :term:`CCD` detector.
+
 :guilabel:`Charge` → :guilabel:`Charge`
 
 With this model you can inject arbitrary charge block into rows of a :py:class:`~pyxel.detectors.CCD` detector.
-Charge will be injected uniformly from row number `block_start` to row number `block_end`.
+Charge will be injected uniformly from row number ``block_start`` to row number ``block_end``.
 
 Example of YAML configuration model:
 
@@ -239,8 +253,6 @@ Example of YAML configuration model:
         charge_level: 100
         block_start: 10
         block_end: 50
-
-.. note:: This model is specific for the :term:`CCD` detector.
 
 .. autofunction:: charge_blocks
 
@@ -356,6 +368,14 @@ Example of the configuration file:
         spectrum_file: 'data/proton_L2_solarMax_11mm_Shielding.txt'
         seed: 4321
 
+.. note::
+    You can find examples of this model in these Jupyter Notebooks from `Pyxel Data <https://esa.gitlab.io/pyxel-data>`_:
+
+    * :external+pyxel_data:doc:`use_cases/CCD/ccd`
+    * :external+pyxel_data:doc:`use_cases/CMOS/cmos`
+    * :external+pyxel_data:doc:`use_cases/HxRG/h2rg`
+
+
 .. autofunction:: pyxel.models.charge_generation.cosmix
 
 .. _Dark current:
@@ -415,12 +435,19 @@ Example of the configuration file:
         spatial_noise_factor: 0.1
         temporal_noise: false
 
+.. note::
+    You can find an example of this model used in this Jupyter Notebook
+    :external+pyxel_data:doc:`examples/models/dark_current/dark_current_Si`
+    from `Pyxel Data <https://esa.gitlab.io/pyxel-data>`_.
+
 .. autofunction:: pyxel.models.charge_generation.dark_current
 
 .. _Dark current rule07:
 
 Dark current rule07
 ===================
+
+.. note:: This model is specific for the :term:`MCT` detector.
 
 :guilabel:`Charge` → :guilabel:`Charge`
 
@@ -446,7 +473,10 @@ Example of the configuration file:
         spatial_noise_factor: 0.1
         temporal_noise: true
 
-.. note:: This model is specific for the :term:`MCT` detector.
+.. note::
+    You can find an example of this model used in this Jupyter Notebook
+    :external+pyxel_data:doc:`examples/models/dark_current/dark_current_rule07`
+    from `Pyxel Data <https://esa.gitlab.io/pyxel-data>`_.
 
 .. autofunction:: pyxel.models.charge_generation.dark_current_rule07    
 
@@ -476,6 +506,8 @@ Example of the configuration file:
 APD gain
 ========
 
+.. note:: This model is specific to the :term:`APD` detector.
+
 :guilabel:`Charge` → :guilabel:`Charge`
 
 With this model you can apply APD gain to the a :py:class:`~pyxel.detectors.APD` object.
@@ -490,7 +522,10 @@ Example of the configuration file:
       func: pyxel.models.charge_generation.apd_gain
       enabled: true
 
-.. note:: This model is specific to the :term:`APD` detector.
+.. note::
+    You can find an example of this model used in this Jupyter Notebook
+    :external+pyxel_data:doc:`use_cases/APD/saphira`
+    from `Pyxel Data <https://esa.gitlab.io/pyxel-data>`_.
 
 .. autofunction:: pyxel.models.charge_generation.apd_gain
 
@@ -498,6 +533,8 @@ Example of the configuration file:
 
 Dark current Saphira
 ====================
+
+.. note:: This model is specific to the :term:`APD` detector.
 
 :guilabel:`Charge` → :guilabel:`Charge`
 
@@ -516,9 +553,12 @@ Example of the configuration file:
       func: pyxel.models.charge_generation.dark_current_saphira
       enabled: true
 
-.. note:: This model is specific to the :term:`APD` detector.
-
 .. note:: Dark current calculated with this model already takes into account the avalanche gain.
+
+.. note::
+    You can find an example of this model used in this Jupyter Notebook
+    :external+pyxel_data:doc:`use_cases/APD/saphira`
+    from `Pyxel Data <https://esa.gitlab.io/pyxel-data>`_.
 
 .. autofunction:: pyxel.models.charge_generation.dark_current_saphira
 
@@ -527,6 +567,8 @@ Example of the configuration file:
 
 Radiation induced Dark Current
 ==============================
+
+.. note:: This model is only available for CMOS detector.
 
 :guilabel:`Charge` → :guilabel:`Charge`
 
@@ -546,6 +588,9 @@ Example of configuration file:
         displacement_dose:  50  # TeV/g
         shot_noise: false
 
-.. note:: This model is only available for CMOS detector.
+.. note::
+    You can find an example of this model used in this Jupyter Notebook
+    :external+pyxel_data:doc:`examples/models/dark_current_induced/dark_current_induced`
+    from `Pyxel Data <https://esa.gitlab.io/pyxel-data>`_.
 
 .. autofunction:: pyxel.models.charge_generation.radiation_induced_dark_current

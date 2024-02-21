@@ -10,6 +10,9 @@ Scene generation models are used to add a scene to the :py:class:`~pyxel.data_st
 inside the :py:class:`~pyxel.detectors.Detector` object. The values in the :py:class:`~pyxel.data_structure.Scene` array
 represent flux per wavelength and area, i.e. number of photons per nanometer per area per second.
 
+.. note::
+    If you use a model in Scene generation, the :py:class:`~pyxel.data_structure.Scene` data bucket is initialized and
+    you can use function :py:func:`~pyxel.display_scene`.
 
 .. _scene_generation_create_store_detector:
 
@@ -82,5 +85,10 @@ Example of the configuration file:
         right_ascension: 56.75 # deg
         declination: 24.1167 # deg
         fov_radius: 0.5 # deg
+
+.. note::
+    You can find an example of this model in this Jupyter Notebook
+    :external+pyxel_data:doc:`examples/models/scene_generation/tutorial_example_scene_generation`
+    from `Pyxel Data <https://esa.gitlab.io/pyxel-data>`_.
 
 .. autofunction:: load_star_map

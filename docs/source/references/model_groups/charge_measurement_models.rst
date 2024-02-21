@@ -111,6 +111,8 @@ Add a DC offset to signal array of detector.
 Output pixel reset voltage APD
 ==============================
 
+.. note:: This model is specific to the :term:`APD` detector.
+
 :guilabel:`Signal` → :guilabel:`Signal`
 
 Add output pixel reset voltage to the signal array of the :term:`APD` detector.
@@ -123,7 +125,10 @@ Add output pixel reset voltage to the signal array of the :term:`APD` detector.
       arguments:
         roic_drop: 3.3
 
-.. note:: This model is specific to the :term:`APD` detector.
+.. note::
+    You can find an example of this model used in this Jupyter Notebook
+    :external+pyxel_data:doc:`use_cases/APD/saphira`
+    from `Pyxel Data <https://esa.gitlab.io/pyxel-data>`_.
 
 .. autofunction:: output_pixel_reset_voltage_apd
 
@@ -146,12 +151,20 @@ Add kTC reset noise to the signal array of the detector object.
 
 .. note:: When using with the :term:`APD` detector, node capacitance is calculated from detector characteristics.
 
+.. note::
+    You can find examples of this model in these Jupyter Notebooks from `Pyxel Data <https://esa.gitlab.io/pyxel-data>`_:
+
+    * :external+pyxel_data:doc:`use_cases/CMOS/cmos`
+    * :external+pyxel_data:doc:`use_cases/APD/saphira`
+
 .. autofunction:: ktc_noise
 
 .. _Output node noise:
 
 Output node noise
 =================
+
+.. note:: This model is specific to the :term:`CCD` detector.
 
 :guilabel:`Signal` → :guilabel:`Signal`
 
@@ -165,14 +178,14 @@ Add noise to signal array of detector output node using normal random distributi
       arguments:
         std_deviation: 1.0
 
-.. note:: This model is specific to the :term:`CCD` detector.
-
 .. autofunction:: output_node_noise
 
 .. _Output node noise CMOS:
 
 Output node noise CMOS
 ======================
+
+.. note:: This model is specific to the :term:`CMOS` detector.
 
 :guilabel:`Signal` → :guilabel:`Signal`
 
@@ -187,14 +200,14 @@ Output node noise model for :term:`CMOS` detectors where readout is statisticall
         readout_noise: 1.0
         readout_noise_std: 2.0
 
-.. note:: This model is specific to the :term:`CMOS` detector.
-
 .. autofunction:: output_node_noise_cmos
 
 .. _Readout noise Saphira:
 
 Readout noise Saphira
 =====================
+
+.. note:: This model is specific to the :term:`APD` detector.
 
 :guilabel:`Signal` → :guilabel:`Signal`
 
@@ -211,7 +224,10 @@ Noise factor based on a figure from :cite:p:`2015:rauscher` for temperature of 9
         roic_readout_noise: 0.15
         controller_noise: 0.1, optional
 
-.. note:: This model is specific to the :term:`APD` detector.
+.. note::
+    You can find an example of this model used in this Jupyter Notebook
+    :external+pyxel_data:doc:`use_cases/APD/saphira`
+    from `Pyxel Data <https://esa.gitlab.io/pyxel-data>`_.
 
 .. autofunction:: readout_noise_saphira
 
@@ -238,12 +254,21 @@ Example of the configuration file where a 10% non-linearity is introduced as a f
       arguments:
         coefficients: [0, 1, 0.9]  # e- [a,b,c] -> S = a + bx+ cx2 (x is signal)
 
+.. note::
+    You can find examples of this model in these Jupyter Notebooks from `Pyxel Data <https://esa.gitlab.io/pyxel-data>`_:
+
+    * :external+pyxel_data:doc:`use_cases/CCD/euclid_prnu`
+    * :external+pyxel_data:doc:`use_cases/HxRG/h2rg`
+    * :external+pyxel_data:doc:`workshops/leiden_university_workshop/ptc`
+
 .. autofunction:: pyxel.models.charge_measurement.output_node_linearity_poly
 
 .. _Simple physical non-linearity:
 
 Simple physical non-linearity
 =============================
+
+.. note:: This model is specific to the :term:`CMOS` detector.
 
 :guilabel:`Signal` → :guilabel:`Signal`
 
@@ -270,12 +295,12 @@ Example of the configuration file:
 
 .. autofunction:: pyxel.models.charge_measurement.simple_physical_non_linearity
 
-.. note:: This model is specific to the :term:`CMOS` detector.
-
 .. _Physical non-linearity:
 
 Physical non-linearity
 ======================
+
+.. note:: This model is specific to the :term:`CMOS` detector.
 
 :guilabel:`Signal` → :guilabel:`Signal`
 
@@ -323,14 +348,19 @@ Example of the configuration file:
         v_bias: 0.1
         fixed_capacitance: 5.e-15
 
-.. autofunction:: pyxel.models.charge_measurement.physical_non_linearity
+.. note::
+    You can find an example of this model used in this Jupyter Notebook
+    :external+pyxel_data:doc:`examples/models/non_linearity/non_linearity`
+    from `Pyxel Data <https://esa.gitlab.io/pyxel-data>`_.
 
-.. note:: This model is specific to the :term:`CMOS` detector.
+.. autofunction:: pyxel.models.charge_measurement.physical_non_linearity
 
 .. _Physical non-linearity with saturation:
 
 Physical non-linearity with saturation
 ======================================
+
+.. note:: This model is specific to the :term:`CMOS` detector.
 
 :guilabel:`Signal` → :guilabel:`Signal`
 
@@ -388,9 +418,12 @@ Example of the configuration file:
         fixed_capacitance: 5.e-15
         euler_points: 100
 
-.. autofunction:: pyxel.models.charge_measurement.physical_non_linearity_with_saturation
+.. note::
+    You can find an example of this model used in this Jupyter Notebook
+    :external+pyxel_data:doc:`examples/models/non_linearity/non_linearity`
+    from `Pyxel Data <https://esa.gitlab.io/pyxel-data>`_.
 
-.. note:: This model is specific to the :term:`CMOS` detector.
+.. autofunction:: pyxel.models.charge_measurement.physical_non_linearity_with_saturation
 
 .. _HxRG noise generator:
 
@@ -460,6 +493,11 @@ Example of the configuration file:
         reverse_scan_direction: False
         reference_pixel_border_width: 4
 
+.. note::
+    You can find an example of this model used in this Jupyter Notebook
+    :external+pyxel_data:doc:`use_cases/HxRG/h2rg`
+    from `Pyxel Data <https://esa.gitlab.io/pyxel-data>`_.
+
 .. autofunction:: pyxel.models.charge_measurement.nghxrg
 
 * **kTC bias noise**
@@ -527,5 +565,12 @@ Example of the configuration file:
         coupling_matrix: [[1, 0.5, 0, 0], [0.5, 1, 0, 0], [0, 0, 1, 0.5], [0, 0, 0.5, 1]]
         channel_matrix: [1,2,3,4]
         readout_directions: [1,2,1,2]
+
+.. note::
+    You can find examples of this model in these Jupyter Notebooks from `Pyxel Data <https://esa.gitlab.io/pyxel-data>`_:
+
+    * :external+pyxel_data:doc:`examples/models/amplifier_crosstalk/crosstalk`
+    * :external+pyxel_data:doc:`use_cases/HxRG/h2rg`
+    * :external+pyxel_data:doc:`examples/observation/sequential`
 
 .. autofunction:: ac_crosstalk

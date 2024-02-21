@@ -660,7 +660,14 @@ def optical_psf(
         Jitter sigma value in arcsec per axis, default is 0.007.
     extract_psf : bool, default: False
         Copy the computed PSF into the data
-        bucket `detector.data['/photon_collection/optical_psf/[name of the model]/psf']`
+        bucket ``detector.data['/photon_collection/optical_psf/[name of the model]/psf']``
+
+    Notes
+    -----
+    For more information, you can find examples here:
+
+    * :external+pyxel_data:doc:`examples/models/scene_generation/tutorial_example_scene_generation`
+    * :external+pyxel_data:doc:`tutorial/01_first_simulation`
     """
     logging.getLogger("poppy").setLevel(
         logging.WARNING

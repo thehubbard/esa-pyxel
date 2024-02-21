@@ -191,6 +191,11 @@ def readout_noise_saphira(
     controller_noise : float
         Controller noise in volts RMS. Unit: V
     seed : int, optional
+
+    Notes
+    -----
+    For more information, you can find an example here:
+    :external+pyxel_data:doc:`use_cases/APD/saphira`.
     """
 
     if not isinstance(detector, APD):

@@ -77,6 +77,14 @@ def cosmix(
         Mean ionization energy of the semiconductor lattice.
     progressbar : bool
         Progressbar.
+
+    Notes
+    -----
+    For more information, you can find examples here:
+
+    * :external+pyxel_data:doc:`use_cases/CCD/ccd`
+    * :external+pyxel_data:doc:`use_cases/CMOS/cmos`
+    * :external+pyxel_data:doc:`use_cases/HxRG/h2rg`
     """
     if simulation_mode is None:
         raise ValueError("CosmiX: Simulation mode is not defined")

@@ -153,6 +153,8 @@ Basic example of the configuration file:
 Inter-pixel capacitance
 =======================
 
+.. note:: This model is specific for the :term:`CMOS` detector.
+
 :guilabel:`Pixel` → :guilabel:`Pixel`
 
 This model can be used to apply inter-pixel capacitance to :py:class:`~pyxel.data_structure.Pixel` array.
@@ -188,7 +190,11 @@ Example of the configuration file:
           diagonal_coupling: 0.05
           anisotropic_coupling: 0.03
 
-.. note:: This model is specific for the :term:`CMOS` detector.
+.. note::
+    You can find examples of this model in these Jupyter Notebooks from `Pyxel Data <https://esa.gitlab.io/pyxel-data>`_:
+
+    * :external+pyxel_data:doc:`examples/models/inter_pixel_capacitance/ipc`
+    * :external+pyxel_data:doc:`use_cases/HxRG/h2rg`
 
 .. autofunction:: simple_ipc
 
@@ -196,6 +202,8 @@ Example of the configuration file:
 
 Simple Persistence
 ==================
+
+.. note:: This model is specific for the :term:`CMOS` detector.
 
 :guilabel:`Pixel` → :guilabel:`Pixel`
 
@@ -219,8 +227,10 @@ Example of the configuration file:
         trap_densities: [0.307, 0.175]
         trap_capacities: [100., 100.]  # optional
 
-
-.. note:: This model is specific for the :term:`CMOS` detector.
+.. note::
+    You can find an example of this model used in this Jupyter Notebook
+    :external+pyxel_data:doc:`use_cases/HxRG/h2rg`
+    from `Pyxel Data <https://esa.gitlab.io/pyxel-data>`_.
 
 .. autofunction:: simple_persistence
 
@@ -228,6 +238,8 @@ Example of the configuration file:
 
 Persistence
 ===========
+
+.. note:: This model is specific for the CMOS detector.
 
 :guilabel:`Pixel` → :guilabel:`Pixel`
 
@@ -260,6 +272,10 @@ Example of the configuration file:
         trap_densities_filename: trap_densities.fits
         trap_capacities_filename: trap_capacities.fits  # optional
 
-.. note:: This model is specific for the CMOS detector.
+.. note::
+    You can find examples of this model in these Jupyter Notebooks from `Pyxel Data <https://esa.gitlab.io/pyxel-data>`_:
+
+    * :external+pyxel_data:doc:`examples/exposure/exposure_persistence-H4RG`
+    * :external+pyxel_data:doc:`use_cases/HxRG/h2rg`
 
 .. autofunction:: persistence

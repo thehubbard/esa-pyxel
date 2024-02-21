@@ -251,8 +251,13 @@ def radiation_induced_dark_current(
     displacement_dose : float
         Displacement dose parameter. Unit: TeV/g
     shot_noise : bool
-        True to enable shotnoise.
+        True to enable shot noise.
     seed : int, optional
+
+    Notes
+    -----
+    For more information, you can find an example here:
+    :external+pyxel_data:doc:`examples/models/dark_current_induced/dark_current_induced`.
     """
     geo = detector.geometry
     temperature = detector.environment.temperature

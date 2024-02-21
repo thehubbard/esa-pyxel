@@ -91,6 +91,11 @@ def output_pixel_reset_voltage_apd(detector: APD, roic_drop: float) -> None:
         Pyxel APD object.
     roic_drop : float
         Readout circuit drop voltage. Unit: V
+
+    Notes
+    -----
+    For more information, you can find an example here:
+    :external+pyxel_data:doc:`use_cases/APD/saphira`.
     """
     if not isinstance(detector, APD):
         raise TypeError("Expecting a 'APD' detector object.")

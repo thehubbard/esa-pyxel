@@ -539,6 +539,11 @@ def load_star_map(
         * 'red_photometer' is the band from 640 nm to 1050 nm
     with_caching : bool
         Enable/Disable caching request to GAIA catalog.
+
+    Notes
+    -----
+    For more information, you can find an example here:
+    :external+pyxel_data:doc:`examples/models/scene_generation/tutorial_example_scene_generation`.
     """
     band_pass: GaiaPassBand = GaiaPassBand(band)
 

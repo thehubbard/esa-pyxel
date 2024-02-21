@@ -56,6 +56,13 @@ def ktc_noise(
         Node capacitance. Unit: F
     seed : int, optional
         Random seed.
+
+    Notes
+    -----
+    For more information, you can find examples here:
+
+    * :external+pyxel_data:doc:`use_cases/CMOS/cmos`
+    * :external+pyxel_data:doc:`use_cases/APD/saphira`
     """
     with set_random_seed(seed):
         if node_capacitance is not None:

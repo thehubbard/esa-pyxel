@@ -116,6 +116,8 @@ Example of the configuration file:
 Dead time filter
 ================
 
+.. note:: This model is specific to the :term:`MKID` detector.
+
 :guilabel:`Phase` → :guilabel:`Phase`
 
 This model only applies to the :py:class:`~pyxel.detectors.MKID` detector.
@@ -150,8 +152,6 @@ Example of the configuration file:
         tau_pb: 2.8e-10
         tau_esc: 1.4e-10
         tau_sat: 1.0e-3
-
-.. note:: This model is specific to the :term:`MKID` detector.
 
 .. autofunction:: dead_time_filter
 
@@ -205,6 +205,8 @@ Example of the configuration file for ``adc_bit_resolution`` equals to 8 bits:
 Simple phase conversion
 =======================
 
+.. note:: This model is specific to the :term:`MKID` detector.
+
 :guilabel:`Phase` → :guilabel:`Image`
 
 With this model you can convert :py:class:`~pyxel.data_structure.Phase`
@@ -217,7 +219,5 @@ Example of the configuration file:
     - name: simple_phase_conversion
       func: pyxel.models.readout_electronics.simple_phase_conversion
       enabled: true
-
-.. note:: This model is specific to the :term:`MKID` detector.
 
 .. autofunction:: simple_phase_conversion

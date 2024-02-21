@@ -77,6 +77,11 @@ def linear_regression(
         :scale: 70%
         :alt: Linear Regression Slope
         :align: center
+
+    Notes
+    -----
+    For more information, you can find an example here:
+    :external+pyxel_data:doc:`examples/models/data_processing/source_extractor/SEP_exposure`.
     """
     if detector.num_steps < 3:
         raise ValueError(f"Expecting at least 2 steps. Got: {detector.num_steps}")

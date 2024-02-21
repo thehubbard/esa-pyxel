@@ -70,6 +70,8 @@ Accepted file formats are ``.h5``, ``.hdf5``, ``.hdf`` and ``.asdf``.
 Charge Distortion Model (CDM)
 =============================
 
+.. note:: This model is specific for the :term:`CCD` detector.
+
 :guilabel:`Pixel` → :guilabel:`Pixel`
 
 The Charge Distortion Model - CDM :cite:p:`2013:short` describes the effects of the radiation
@@ -96,6 +98,11 @@ detector :py:class:`~pyxel.detectors.Characteristics`.
 
     CDM (Charge Distortion Model)
 
+.. note::
+    You can find examples of this model in these Jupyter Notebooks from `Pyxel Data <https://esa.gitlab.io/pyxel-data>`_:
+
+    * :external+pyxel_data:doc:`exposure`
+    * :external+pyxel_data:doc:`examples/observation/product`
 
 
 Example of the configuration file.
@@ -115,8 +122,6 @@ Example of the configuration file.
         transfer_period: float = 1.e-4,
         charge_injection: true  # only used for parallel mode
         full_well_capacity: 1000.  # optional (otherwise one from detector characteristics is used)
-
-.. note:: This model is specific for the :term:`CCD` detector.
 
 .. autofunction:: cdm
 
@@ -187,6 +192,8 @@ Example of the configuration file:
 EMCCD Model
 ===========
 
+.. note:: This model is specific for the :term:`CCD` detector.
+
 :guilabel:`Pixel` → :guilabel:`Pixel`
 
 The Electron Multiplying CCD (EMCCD) model for the :term:`CCD` detector includes a ``multiplication_register``.
@@ -211,10 +218,8 @@ Example of the configuration file:
         gain_elements: 100
         total_gain: 1000
 
-
 .. autofunction:: multiplication_register
 
-.. note:: This model is specific for the :term:`CCD` detector.
 
 .. _EMCCD Clock Induced Charge (CIC):
 
@@ -243,6 +248,11 @@ Example of the configuration file:
         pcic_rate: 0.01
         scic_rate: 0.005
 
+
+.. note::
+    You can find an example of this model used in this Jupyter Notebook
+    :external+pyxel_data:doc:`examples/models/multiplication_register/emccd_obs`
+    from `Pyxel Data <https://esa.gitlab.io/pyxel-data>`_.
 
 .. autofunction:: multiplication_register_cic
 

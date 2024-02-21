@@ -68,6 +68,11 @@ def load_psf(
         Input filename of the point spread function.
     normalize_kernel : bool
         Normalize kernel.
+
+    Notes
+    -----
+    For more information, you can find an example here:
+    :external+pyxel_data:doc:`examples/models/scene_generation/tutorial_example_scene_generation`.
     """
     psf = load_image(filename)
 

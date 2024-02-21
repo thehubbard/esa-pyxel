@@ -234,6 +234,11 @@ def dark_current(
         Random seed.
     temporal_noise : bool, optional
         Shot noise.
+
+    Notes
+    -----
+    For more information, you can find an example here:
+    :external+pyxel_data:doc:`examples/models/dark_current/dark_current_Si`.
     """
     geo = detector.geometry
     pixel_area = geo.pixel_vert_size * 1e-4 * geo.pixel_horz_size * 1e-4  # in cm^2
@@ -390,6 +395,11 @@ def dark_current_saphira(detector: APD, seed: Optional[int] = None) -> None:
     detector : APD
         An APD detector object.
     seed : int, optional
+
+    Notes
+    -----
+    For more information, you can find an example here:
+    :external+pyxel_data:doc:`use_cases/APD/saphira`.
     """
 
     if not isinstance(detector, APD):
