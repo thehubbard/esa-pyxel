@@ -19,6 +19,8 @@ Pyxel doesn't use SemVer anymore, since most minor releases have at least minor 
   (See [!858](https://gitlab.com/esa/pyxel/-/merge_requests/858)).
 
 ### Documentation
+* Add links from Pyxel Data directly into the documentation.
+  (See [!861](https://gitlab.com/esa/pyxel/-/merge_requests/861)).
 
 ### Models
 * Add unit tests for model [`simple_collection`](https://esa.gitlab.io/pyxel/doc/stable/references/model_groups/photon_collection_models.html#simple-collection) 
