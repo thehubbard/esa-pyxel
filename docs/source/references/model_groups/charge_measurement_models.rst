@@ -126,7 +126,7 @@ Add output pixel reset voltage to the signal array of the :term:`APD` detector.
         roic_drop: 3.3
 
 .. note::
-    You can find example of this model in this Jupyter Notebook
+    You can find an example of this model used in this Jupyter Notebook
     :external+pyxel_data:doc:`use_cases/APD/saphira`
     from `Pyxel Data <https://esa.gitlab.io/pyxel-data>`_.
 
@@ -225,7 +225,7 @@ Noise factor based on a figure from :cite:p:`2015:rauscher` for temperature of 9
         controller_noise: 0.1, optional
 
 .. note::
-    You can find example of this model in this Jupyter Notebook
+    You can find an example of this model used in this Jupyter Notebook
     :external+pyxel_data:doc:`use_cases/APD/saphira`
     from `Pyxel Data <https://esa.gitlab.io/pyxel-data>`_.
 
@@ -349,7 +349,7 @@ Example of the configuration file:
         fixed_capacitance: 5.e-15
 
 .. note::
-    You can find example of this model in this Jupyter Notebook
+    You can find an example of this model used in this Jupyter Notebook
     :external+pyxel_data:doc:`examples/models/non_linearity/non_linearity`
     from `Pyxel Data <https://esa.gitlab.io/pyxel-data>`_.
 
@@ -419,7 +419,7 @@ Example of the configuration file:
         euler_points: 100
 
 .. note::
-    You can find example of this model in this Jupyter Notebook
+    You can find an example of this model used in this Jupyter Notebook
     :external+pyxel_data:doc:`examples/models/non_linearity/non_linearity`
     from `Pyxel Data <https://esa.gitlab.io/pyxel-data>`_.
 
@@ -494,7 +494,7 @@ Example of the configuration file:
         reference_pixel_border_width: 4
 
 .. note::
-    You can find example of this model in this Jupyter Notebook
+    You can find an example of this model used in this Jupyter Notebook
     :external+pyxel_data:doc:`use_cases/HxRG/h2rg`
     from `Pyxel Data <https://esa.gitlab.io/pyxel-data>`_.
 

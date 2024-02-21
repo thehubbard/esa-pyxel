@@ -130,7 +130,7 @@ Basic example of YAML configuration model:
         filename: data/qe_map.npy
 
 .. note::
-    You can find example of this model in this Jupyter Notebook
+    You can find an example of this model used in this Jupyter Notebook
     :external+pyxel_data:doc:`use_cases/HxRG/h2rg`
     from `Pyxel Data <https://esa.gitlab.io/pyxel-data>`_.
 
@@ -143,6 +143,9 @@ Basic example of YAML configuration model:
 
 Apply QE curve
 ==============
+
+.. note::
+    This model operates multi-wavelength photons.
 
 :guilabel:`Photon` → :guilabel:`Charge`
 
@@ -171,6 +174,10 @@ Basic example of YAML configuration model:
 
 Conversion with 3D QE map
 =========================
+
+.. note::
+    This model operates multi-wavelength photons.
+
 
 :guilabel:`Photon` → :guilabel:`Charge`
 
@@ -429,7 +436,7 @@ Example of the configuration file:
         temporal_noise: false
 
 .. note::
-    You can find example of this model in this Jupyter Notebook
+    You can find an example of this model used in this Jupyter Notebook
     :external+pyxel_data:doc:`examples/models/dark_current/dark_current_Si`
     from `Pyxel Data <https://esa.gitlab.io/pyxel-data>`_.
 
@@ -467,7 +474,7 @@ Example of the configuration file:
         temporal_noise: true
 
 .. note::
-    You can find example of this model in this Jupyter Notebook
+    You can find an example of this model used in this Jupyter Notebook
     :external+pyxel_data:doc:`examples/models/dark_current/dark_current_rule07`
     from `Pyxel Data <https://esa.gitlab.io/pyxel-data>`_.
 
@@ -516,7 +523,7 @@ Example of the configuration file:
       enabled: true
 
 .. note::
-    You can find example of this model in this Jupyter Notebook
+    You can find an example of this model used in this Jupyter Notebook
     :external+pyxel_data:doc:`use_cases/APD/saphira`
     from `Pyxel Data <https://esa.gitlab.io/pyxel-data>`_.
 
@@ -549,7 +556,7 @@ Example of the configuration file:
 .. note:: Dark current calculated with this model already takes into account the avalanche gain.
 
 .. note::
-    You can find example of this model in this Jupyter Notebook
+    You can find an example of this model used in this Jupyter Notebook
     :external+pyxel_data:doc:`use_cases/APD/saphira`
     from `Pyxel Data <https://esa.gitlab.io/pyxel-data>`_.
 
@@ -582,7 +589,7 @@ Example of configuration file:
         shot_noise: false
 
 .. note::
-    You can find example of this model in this Jupyter Notebook
+    You can find an example of this model used in this Jupyter Notebook
     :external+pyxel_data:doc:`examples/models/dark_current_induced/dark_current_induced`
     from `Pyxel Data <https://esa.gitlab.io/pyxel-data>`_.
 

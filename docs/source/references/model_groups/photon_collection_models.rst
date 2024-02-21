@@ -355,7 +355,7 @@ Example of the configuration file:
         normalize_kernel: true  # optional
 
 .. note::
-    You can find example of this model in this Jupyter Notebook
+    You can find an example of this model used in this Jupyter Notebook
     :external+pyxel_data:doc:`examples/models/scene_generation/tutorial_example_scene_generation`
     from `Pyxel Data <https://esa.gitlab.io/pyxel-data>`_.
 

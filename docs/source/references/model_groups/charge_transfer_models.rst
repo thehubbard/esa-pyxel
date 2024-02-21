@@ -250,7 +250,7 @@ Example of the configuration file:
 
 
 .. note::
-    You can find example of this model in this Jupyter Notebook
+    You can find an example of this model used in this Jupyter Notebook
     :external+pyxel_data:doc:`examples/models/multiplication_register/emccd_obs`
     from `Pyxel Data <https://esa.gitlab.io/pyxel-data>`_.
 

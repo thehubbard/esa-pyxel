@@ -228,7 +228,7 @@ Example of the configuration file:
         trap_capacities: [100., 100.]  # optional
 
 .. note::
-    You can find example of this model in this Jupyter Notebook
+    You can find an example of this model used in this Jupyter Notebook
     :external+pyxel_data:doc:`use_cases/HxRG/h2rg`
     from `Pyxel Data <https://esa.gitlab.io/pyxel-data>`_.
 

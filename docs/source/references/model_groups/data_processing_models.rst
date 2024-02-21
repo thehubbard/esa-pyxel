@@ -114,7 +114,7 @@ calculating statistics of a given array.
         enabled: true
 
 .. note::
-    You can find example of this model in this Jupyter Notebook
+    You can find an example of this model used in this Jupyter Notebook
     :external+pyxel_data:doc:`examples/models/data_processing/source_extractor/SEP_exposure`
     from `Pyxel Data <https://esa.gitlab.io/pyxel-data>`_.
 
@@ -142,7 +142,7 @@ Compute a mean-variance 1D array that shows relationship between the mean signal
         data_structure: image
 
 .. note::
-    You can find example of this model in this Jupyter Notebook
+    You can find an example of this model used in this Jupyter Notebook
     :external+pyxel_data:doc:`examples/models/data_processing/data_analysis/data_processing-obs`
     from `Pyxel Data <https://esa.gitlab.io/pyxel-data>`_.
 
@@ -165,7 +165,7 @@ Compute a linear regression along readout time.
         data_structure: image
 
 .. note::
-    You can find example of this model in this Jupyter Notebook
+    You can find an example of this model used in this Jupyter Notebook
     :external+pyxel_data:doc:`examples/models/data_processing/data_analysis/data_processing-obs`
     from `Pyxel Data <https://esa.gitlab.io/pyxel-data>`_.
 
@@ -211,7 +211,7 @@ photon, pixel, signal and image of the detector. The ``data_structure`` "signal"
         data_structure: "signal"
 
 .. note::
-    You can find example of this model in this Jupyter Notebook
+    You can find an example of this model used in this Jupyter Notebook
     :external+pyxel_data:doc:`examples/models/data_processing/data_analysis/data_processing-obs`
     from `Pyxel Data <https://esa.gitlab.io/pyxel-data>`_.
 
