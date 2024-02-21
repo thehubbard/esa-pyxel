@@ -102,6 +102,8 @@ The minimum versions of some dependencies were changed:
   (See [!861](https://gitlab.com/esa/pyxel/-/merge_requests/861)).
 * Remove references to 'gitlab.esa.int' with Docker.
   (See [!834](https://gitlab.com/esa/pyxel/-/merge_requests/834)).
+* Update documentation for 2.0.
+  (See [!856](https://gitlab.com/esa/pyxel/-/merge_requests/856)).
 
 ### Models
 * Remove deprecated models under `optics` and `photon_generation` model groups.
