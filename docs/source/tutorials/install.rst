@@ -545,12 +545,9 @@ Package                                                 Minimum version Notes
     After the installation steps above,
     see :ref:`here how to run Pyxel <running_modes>`.
 
-
+..
     Using Docker
     -------------
-
-    .. attention::
-        Not yet available!
 
     Using Docker, you can just download the Pyxel Docker image and run it without
     installing Pyxel.
