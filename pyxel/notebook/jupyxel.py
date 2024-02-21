@@ -186,7 +186,7 @@ def _new_display_detector(
         flip_yaxis = pm.Boolean(default=True)
 
         # Histogram
-        nbins = pm.Selector(objects=["auto", 10, 20, 50, 100])
+        nbins = pm.Selector(objects=[10, 20, 50, 100, "auto"])
         logx = pm.Boolean(False)
         logy = pm.Boolean(False)
 
@@ -219,7 +219,13 @@ def _new_display_detector(
             #####################
 
             # Get min, max range for the histogram
-            min_range, max_range = data.quantile(q=(0.02, 0.98)).to_numpy()
+            min_range, percentile_95, max_range = data.quantile(
+                q=(0.02, 0.95, 0.98)
+            ).to_numpy()
+
+            if np.abs(max_range / percentile_95) > 1e6:
+                # Hack to avoid this issue https://github.com/numpy/numpy/issues/10297
+                self.nbins = 10
 
             if custom_histogram:
                 frequencies, edges = np.histogram(
