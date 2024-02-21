@@ -100,6 +100,13 @@ def simple_ipc(
     coupling : float
     diagonal_coupling : float
     anisotropic_coupling : float
+
+    Notes
+    -----
+    For more information, you can find examples here:
+
+    * :external+pyxel_data:doc:`examples/models/inter_pixel_capacitance/ipc`
+    * :external+pyxel_data:doc:`use_cases/HxRG/h2rg`
     """
     if not isinstance(detector, CMOS):
         raise TypeError("Expecting a CMOS object for detector.")

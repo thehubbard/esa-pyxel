@@ -72,6 +72,12 @@ def statistics(
         ("pixel", "photon", "signal", "image", "all").
         Default is "all" and computes the statistics on "pixel", "photon", "signal" and "image".
 
+    Notes
+    -----
+    For more information, you can find examples here:
+
+    * :external+pyxel_data:doc:`examples/models/dark_current/dark_current_Si`
+    * :external+pyxel_data:doc:`examples/models/data_processing/data_analysis/data_processing-obs`
     """
     if data_structure == "all":
         names = ["pixel", "photon", "signal", "image"]

@@ -92,6 +92,13 @@ def cdm(
         Enable charge injection (only used in ``"parallel"`` mode).
     electron_effective_mass : float
         Electron effective mass in the semiconductor lattice. Unit: 1 electron mass
+
+    Notes
+    -----
+    For more information, you can find examples here:
+
+    * :external+pyxel_data:doc:`exposure`
+    * :external+pyxel_data:doc:`examples/observation/product`
     """
 
     e_effective_mass = electron_effective_mass * const.m_e.value
@@ -258,7 +265,7 @@ def run_cdm_serial(
     array: ndarray
         Input array.
     beta: float
-        Electron cloud expansion coefficient :math:`\beta`.
+        Electron cloud expansion coefficient :math:fdef cdm`\beta`.
     vg: float
         Maximum geometrical volume :math:`V_g` that electrons can occupy within a pixel. Unit: :math:`cm^3`.
     t: float

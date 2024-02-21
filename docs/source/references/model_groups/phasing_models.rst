@@ -73,6 +73,8 @@ Accepted file formats are ``.h5``, ``.hdf5``, ``.hdf`` and ``.asdf``.
 Pulse processing
 ================
 
+.. note:: This model is specific for the :term:`MKID` detector.
+
 :guilabel:`Charge` → :guilabel:`Phase`
 
 This model only applies to the :py:class:`~pyxel.detectors.MKID` detector.
@@ -95,7 +97,5 @@ Example of YAML configuration model:
         wavelength:
         responsivity:
         scaling_factor: 2.5e2
-
-.. note:: This model is specific for the :term:`MKID` detector.
 
 .. autofunction:: pulse_processing

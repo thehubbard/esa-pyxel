@@ -61,6 +61,14 @@ def output_node_linearity_poly(
         Pyxel Detector object.
     coefficients : list of float
         Coefficient of the polynomial function.
+
+    Notes
+    -----
+    For more information, you can find examples here:
+
+    * :external+pyxel_data:doc:`use_cases/CCD/euclid_prnu`
+    * :external+pyxel_data:doc:`use_cases/HxRG/h2rg`
+    * :external+pyxel_data:doc:`workshops/leiden_university_workshop/ptc`
     """
     if len(coefficients) == 0:
         raise ValueError("Length of coefficient list should be more than 0.")
@@ -341,6 +349,11 @@ def physical_non_linearity(
         Initial bias voltage. Unit: V.
     fixed_capacitance : float
         Additional fixed capacitance. Unit: F
+
+    Notes
+    -----
+    For more information, you can find an example here:
+    :external+pyxel_data:doc:`examples/models/non_linearity/non_linearity`.
     """
     if not (4 <= detector.environment.temperature <= 300):
         raise ValueError(
@@ -516,6 +529,11 @@ def physical_non_linearity_with_saturation(
         Additional fixed capacitance. Unit: F.
     euler_points : int
         Number of points in the euler method.
+
+    Notes
+    -----
+    For more information, you can find an example here:
+    :external+pyxel_data:doc:`examples/models/non_linearity/non_linearity`.
     """
     if not (4 <= detector.environment.temperature <= 300):
         raise ValueError(

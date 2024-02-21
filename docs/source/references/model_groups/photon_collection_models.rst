@@ -70,6 +70,9 @@ Accepted file formats are ``.h5``, ``.hdf5``, ``.hdf`` and ``.asdf``.
 Simple collection
 =================
 
+.. note::
+    This model operates with both multi-wavelength and monochromatic photons.
+
 :guilabel:`Scene` → :guilabel:`Photon`
 
 Converts scene to photon using a given aperture.
@@ -80,7 +83,7 @@ detector properties in the YAML configuration file, where ``cut_on`` and ``cut_o
 in the :py:class:`~pyxel.detectors.Detector.Environment`.
 However, you can override this property by providing the ``filter_band`` as a model argument.
 
-This model supports both monochromatic or multiwavelength modes, generating a 2D Photon array or 3D Photon array
+This model supports both monochromatic or multi-wavelength modes, generating a 2D Photon array or 3D Photon array
 as output, whereas the 3D Photon array includes the wavelength dimension.
 When ``integrate_wavelength`` is set to true (default) the monochromatic mode is selected,
 where the flux of objects in the scene is integrated across the wavelength band.
@@ -234,6 +237,9 @@ Example of the configuration file:
 Physical Optics Propagation in PYthon (POPPY)
 =============================================
 
+.. note::
+    This model operates with both multi-wavelength and monochromatic photons.
+
 :guilabel:`Photon` → :guilabel:`Photon`
 
 POPPY (**P**\ hysical **O**\ ptics **P**\ ropagation in **PY**\ thon) model wrapper.
@@ -312,6 +318,12 @@ Example of the configuration file:
             coefficients: [0.1e-6, 3.e-6, -3.e-6, 1.e-6, -7.e-7, 0.4e-6, -2.e-6]
             aperture_stop: false
 
+.. note::
+    You can find examples of this model in these Jupyter Notebooks from `Pyxel Data <https://esa.gitlab.io/pyxel-data>`_:
+
+    * :external+pyxel_data:doc:`examples/models/scene_generation/tutorial_example_scene_generation`
+    * :external+pyxel_data:doc:`tutorial/01_first_simulation`
+
 .. autofunction:: optical_psf
 
 
@@ -342,11 +354,16 @@ Example of the configuration file:
         filename: "psf.npy"
         normalize_kernel: true  # optional
 
+.. note::
+    You can find example of this model in this Jupyter Notebook
+    :external+pyxel_data:doc:`examples/models/scene_generation/tutorial_example_scene_generation`
+    from `Pyxel Data <https://esa.gitlab.io/pyxel-data>`_.
+
 .. autofunction:: load_psf
 
 
-Load multiwavelength PSF
-------------------------
+Load multi-wavelength PSF
+-------------------------
 
 With this model you can load a Point Spread Function (:term:`PSF`) from a file containing wavelength information.
 Currently, only ``.fits`` files are a valid input.
@@ -377,6 +394,8 @@ Example of the configuration file:
 Wavelength dependence AIRS
 ==========================
 
+.. note:: This model is specific for the :term:`CMOS` detector.
+
 :guilabel:`Photon` → :guilabel:`Photon`
 
 This model was specially developed for the `ARIEL AIRS <https://sci.esa.int/web/ariel/-/59801-payload>`_ instrument.
@@ -395,7 +414,5 @@ Example of the configuration file:
         telescope_diameter_m2: 0.7 #m
         expand_factor: 18
         time_scale:  1.0
-
-.. note:: This model is specific for the :term:`CMOS` detector.
 
 .. autofunction:: wavelength_dependence_airs

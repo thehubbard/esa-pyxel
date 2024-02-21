@@ -177,6 +177,11 @@ def dark_current_rule07(
     seed : int, optional
     temporal_noise : bool, optional
         Shot noise.
+
+    Notes
+    -----
+    For more information, you can find an example here:
+    :external+pyxel_data:doc:`examples/models/dark_current/dark_current_rule07`.
     """
     # TODO: investigate on the knee of rule07 for higher 1/le*T values
     if not isinstance(detector, CMOS):

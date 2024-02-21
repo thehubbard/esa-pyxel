@@ -289,6 +289,14 @@ def ac_crosstalk(
     ValueError
         If at least one parameter 'coupling_matrix', 'channel_matrix' or
         'readout_directions' does not have the right shape.
+
+    Notes
+    -----
+    For more information, you can find examples here:
+
+    * :external+pyxel_data:doc:`examples/models/amplifier_crosstalk/crosstalk`
+    * :external+pyxel_data:doc:`use_cases/HxRG/h2rg`
+    * :external+pyxel_data:doc:`examples/observation/sequential`
     """
     # Validation and conversion
     cpl_matrix_2d: np.ndarray = get_matrix(coupling_matrix)

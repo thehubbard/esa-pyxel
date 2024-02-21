@@ -83,4 +83,9 @@ Example of the configuration file:
         declination: 24.1167 # deg
         fov_radius: 0.5 # deg
 
+.. note::
+    You can find an example of this model in this Jupyter Notebook
+    :external+pyxel_data:doc:`examples/models/scene_generation/tutorial_example_scene_generation`
+    from `Pyxel Data <https://esa.gitlab.io/pyxel-data>`_.
+
 .. autofunction:: load_star_map

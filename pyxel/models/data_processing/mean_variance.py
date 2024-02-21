@@ -54,6 +54,11 @@ def compute_mean_variance(data_array: xr.DataArray) -> xr.DataArray:
       * mean     (mean) float64 1.043e+04
     Attributes:
         units:    adu^2
+
+    Notes
+    -----
+    For more information, you can find an example here:
+    :external+pyxel_data:doc:`examples/models/data_processing/source_extractor/SEP_exposure`.
     """
     mean = data_array.mean(dim=["y", "x"])
     variance = data_array.var(dim=["y", "x"])

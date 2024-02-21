@@ -286,6 +286,11 @@ def nghxrg(
         The default setting (False) corresponds to what HxRG detectors default to upon power up.
     reference_pixel_border_width : int
         Width of reference pixel border around image area.
+
+    Notes
+    -----
+    For more information, you can find an example here:
+    :external+pyxel_data:doc:`use_cases/HxRG/h2rg`.
     """
     if n_output not in range(33):
         raise ValueError("'n_output' must be between 0 and 32.")

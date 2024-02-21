@@ -106,6 +106,11 @@ def simple_persistence(
         List of trap densities.
     trap_capacities : sequence of floats, optional
         List of trap capacities.
+
+    Notes
+    -----
+    For more information, you can find an example here:
+    :external+pyxel_data:doc:`use_cases/HxRG/h2rg`.
     """
 
     if not isinstance(detector, CMOS):
@@ -264,6 +269,13 @@ def persistence(
     trap_capacities_align : literal
         Keyword to align the capacities to detector. Can be any from:
         ("center", "top_left", "top_right", "bottom_left", "bottom_right")
+
+    Notes
+    -----
+    For more information, you can find examples here:
+
+    * :external+pyxel_data:doc:`examples/exposure/exposure_persistence-H4RG`
+    * :external+pyxel_data:doc:`use_cases/HxRG/h2rg`
     """
 
     if not isinstance(detector, CMOS):

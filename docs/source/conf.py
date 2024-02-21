@@ -90,6 +90,7 @@ napoleon_type_aliases = {
     "Sequence": ":term:`sequence`",
     "Path": ":py:class:`Path <pathlib.Path>`",
     # XArray
+    "DataArray": "~xarray.DataArray",
     "Dataset": "~xarray.Dataset",
     "DataTree": "~datatree.DataTree",
     # Pandas
@@ -249,6 +250,7 @@ intersphinx_mapping = {
     "xarray": ("https://docs.xarray.dev/en/stable/", None),
     "holoviews": ("https://holoviews.org/", None),
     "datatree": ("https://xarray-datatree.readthedocs.io/en/latest/", None),
+    "pyxel_data": ("https://esa.gitlab.io/pyxel-data/", None),
 }
 
 

@@ -126,6 +126,11 @@ def conversion_with_qe_map(
     seed : int, optional
     binomial_sampling : bool
         Binomial sampling. Default is True.
+
+    Notes
+    -----
+    For more information, you can find an example here:
+    :external+pyxel_data:doc:`use_cases/HxRG/h2rg`.
     """
     geo = detector.geometry
     position_y, position_x = position

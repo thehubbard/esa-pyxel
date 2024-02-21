@@ -164,6 +164,11 @@ def extract_roi_to_xarray(
     ------
     ValueError
         If parameter 'array_type' is not 'pixel','signal','image',photon' or 'charge'
+
+    Notes
+    -----
+    For more information, you can find an example here:
+    :external+pyxel_data:doc:`examples/models/data_processing/source_extractor/SEP_exposure`.
     """
     try:
         import sep

@@ -44,6 +44,11 @@ def multiplication_register_cic(
         Parallel CIC rate
     scic_rate : float
         Serial CIC rate
+
+    Notes
+    -----
+    For more information, you can find an example here:
+    :external+pyxel_data:doc:`examples/models/multiplication_register/emccd_obs`.
     """
 
     if total_gain < 0 or gain_elements < 0:
