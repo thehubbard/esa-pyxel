@@ -1,13 +1,13 @@
-# Conda environment for Pyxel version 1.15
-# Install:    conda env create -f pyxel-1.15-environment.yaml
-# Activate:   conda activate pyxel-1.15
+# Conda environment for Pyxel version 2.0
+# Install:    conda env create -f pyxel-2.0-environment.yaml
+# Activate:   conda activate pyxel-2.0
 # Deactivate: conda deactivate
 
-# Upgrade:    conda update -f pyxel-1.15-environment.yaml
-# Remove:     conda remove -n pyxel-1.15 --all
+# Upgrade:    conda update -f pyxel-2.0-environment.yaml
+# Remove:     conda remove -n pyxel-2.0 --all
 # List envs:  conda env list
 
-name: pyxel-1.15
+name: pyxel-2.0
 
 channels:
   - conda-forge
