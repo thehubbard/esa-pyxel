@@ -112,10 +112,10 @@ versionfile_build = "pyxel/_version.py"
 tag_prefix = ""
 
 [tool.setuptools]
-include-package-data = true
+include-package-data = true  # true by default
 
 [tool.setuptools.packages.find]
-# where = []
+where = ["."]
 exclude = [
     "docs*",
     "tests*",

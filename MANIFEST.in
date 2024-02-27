@@ -2,6 +2,8 @@ include LICENSE.txt
 
 include pyxel/_version.py
 
+include pyxel/static/*.json
+
 include pyxel/templates/*.py
 
 include pyxel/models/charge_generation/cosmix/data/inputs/*.ascii

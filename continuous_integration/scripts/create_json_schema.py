@@ -821,7 +821,7 @@ def generate_all_models() -> Iterator[str]:
     yield "@click.option("
     yield "    '-f',"
     yield "    '--filename',"
-    yield "    default='../../static/pyxel_schema.json',"
+    yield "    default='../../pyxel/static/pyxel_schema.json',"
     yield "    type=click.Path(),"
     yield "    help='JSON schema filename',"
     yield "    show_default=True,"
