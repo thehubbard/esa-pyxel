@@ -19,6 +19,12 @@ from pyxel.detectors import (
 )
 from pyxel.models.data_processing import remove_cosmic_rays
 
+# Check if 'lacosmic' is installed
+_ = pytest.importorskip(
+    "lacosmic",
+    reason="Package 'lacosmic' is not installed. Use 'pip install lacosmic'",
+)
+
 
 def create_image_with_cosmics():
     data = np.zeros(shape=(50, 50), dtype=float)

@@ -12,13 +12,76 @@
 #   (venv-pyxel-dev) $ pip install -r continuous_integration/requirements-dev.txt
 #   (venv-pyxel-dev) $ pip install -e .
 
+
+###############
+# Development #
+###############
 tox
 pre-commit
+ruff
+mypy
 
-# For Pytest
+##############
+# Jupyterlab #
+##############
+jupyterlab
+ipywidgets>=7.5
+ipympl                      # Interactive Matplotlib in Jupyter
+dask-labextension
+
+jupyterlab_code_formatter
+black
+isort
+
+########
+# Dask #
+########
+distributed
+
+#############
+# Profiling #
+#############
+pyinstrument
+memray ; platform_system != "Windows"
+
+#################
+# Documentation #
+#################
+sphinx>=5
+sphinx-book-theme>=1
+pydata-sphinx-theme
+sphinxcontrib-bibtex
+sphinx_design
+ipython>=8.1
+sphinx-inline-tabs
+myst-nb
+sphinx-copybutton
+faqtory
+
+
+#####################
+# Optional packages #
+#####################
+
+# More information about dependency specification PEP508
+# https://peps.python.org/pep-0508/
+
+poppy>=1.1.0
+lacosmic
+sep ; python_version<="3.10"
+
+asdf
+
+pygmo ; platform_system=='Linux'
+
+##############
+# For Pytest #
+##############
+
 pytest
+pytest-cov
+pytest-mock
 pytest-httpserver
 freezegun
 jsonschema
-pytest-cov
-pytest-mock
+statsmodels

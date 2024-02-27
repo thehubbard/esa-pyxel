@@ -14,11 +14,16 @@ import xarray as xr
 from astropy.table import Table
 from astropy.tests.helper import assert_quantity_allclose
 from datatree import DataTree
-from pytest_mock import MockerFixture  # pip install pytest-mock
 
 from pyxel.detectors import CCD
 from pyxel.models.scene_generation import load_star_map
 from pyxel.models.scene_generation.load_star_map import GaiaPassBand, retrieve_from_gaia
+
+# This is equivalent to 'import pytest_mock'
+pytest_mock = pytest.importorskip(
+    "pytest_mock",
+    reason="Package 'pytest_mock' is not installed. Use 'pip install pytest-mock'",
+)
 
 
 @pytest.fixture
@@ -223,7 +228,7 @@ def source1_pyxel(
 
 @pytest.mark.skipif(sys.version_info < (3, 11), reason="Requires Python 3.11+")
 def test_retrieve_from_gaia(
-    mocker: MockerFixture,
+    mocker: pytest_mock.MockerFixture,
     positions_table: Table,
     spectra_dct: dict[int, Table],
     source1_pyxel: xr.Dataset,
@@ -317,7 +322,7 @@ def test_compute_flux_compare_to_manual_conversion():
 
 @pytest.mark.skipif(sys.version_info < (3, 11), reason="Requires Python 3.11+")
 def test_load_star_map(
-    mocker: MockerFixture,
+    mocker: pytest_mock.MockerFixture,
     ccd_10x10: CCD,
     positions_table: Table,
     spectra_dct: dict[int, Table],

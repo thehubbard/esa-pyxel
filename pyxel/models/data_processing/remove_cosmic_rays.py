@@ -1,5 +1,5 @@
 #  Copyright (c) European Space Agency, 2020.
-#  #
+#
 #   This file is subject to the terms and conditions defined in file 'LICENCE.txt', which
 #   is part of this Pyxel package. No part of the package, including
 #   this file, may be copied, modified, propagated, or distributed except according to
@@ -51,7 +51,15 @@ def compute_cosmic_rays(
     readnoise : float
         The read noise (in electrons) in the input data.
     """
-    import lacosmic
+
+    try:
+        import lacosmic
+    except ModuleNotFoundError as exc:
+        raise ModuleNotFoundError(
+            "Missing optional package 'lacosmic'.\n"
+            "Please install it with 'pip install pyxel-sim[model]'"
+            "or 'pip install pyxel-sim[all]' or 'pip install lacosmic'"
+        ) from exc
 
     cleaned_image, cr_mask = lacosmic.lacosmic(
         data_2d,

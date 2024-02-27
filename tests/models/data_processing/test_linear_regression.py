@@ -8,11 +8,16 @@
 
 import numpy as np
 import pytest
-import statsmodels.api as sm
 import xarray as xr
 
 from pyxel.detectors import CCD, CCDGeometry, Characteristics, Environment
 from pyxel.models.data_processing import linear_regression
+
+# This is equivalent to 'import statsmodels'
+sm = pytest.importorskip(
+    "statsmodels.api",
+    reason="Package 'statsmodels' is not installed. Use 'pip install statsmodels'",
+)
 
 
 @pytest.fixture

@@ -11,7 +11,6 @@ from typing import Optional, Union
 import numpy as np
 import pytest
 import xarray as xr
-from pytest_mock import MockerFixture  # pip install pytest-mock
 
 from pyxel.data_structure import Photon, Scene
 from pyxel.detectors import (
@@ -24,6 +23,12 @@ from pyxel.detectors import (
 from pyxel.models.photon_collection.simple_collection import (
     extract_wavelength,
     simple_collection,
+)
+
+# This is equivalent to 'import pytest_mock'
+pytest_mock = pytest.importorskip(
+    "pytest_mock",
+    reason="Package 'pytest_mock' is not installed. Use 'pip install pytest-mock'",
 )
 
 
@@ -133,7 +138,7 @@ def scene_dataset() -> xr.Dataset:
 
 
 @pytest.fixture
-def dummy_scene(mocker: MockerFixture, scene_dataset: xr.Dataset):
+def dummy_scene(mocker: pytest_mock.MockerFixture, scene_dataset: xr.Dataset):
     scene = Scene()
 
     mocker.patch.object(scene, "to_xarray", return_value=scene_dataset)

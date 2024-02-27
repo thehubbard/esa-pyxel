@@ -18,15 +18,13 @@ from pyxel.calibration.util import list_to_slice, read_data, read_single_data
 from pyxel.detectors import CCD
 from pyxel.pipelines import DetectionPipeline, Processor
 
-try:
-    import pygmo as pg
+# This is equivalent to 'import pygmo'
+pg = pytest.importorskip(
+    "pygmo",
+    reason="Package 'pygmo' is not installed. Use 'pip install pygmo'",
+)
 
-    WITH_PYGMO = True
-except ImportError:
-    WITH_PYGMO = False
 
-
-@pytest.mark.skipif(not WITH_PYGMO, reason="Package 'pygmo' is not installed.")
 @pytest.mark.parametrize(
     "yaml",
     [
@@ -136,7 +134,6 @@ def test_list_to_slice(input_data):
 
 
 @pytest.mark.skip(reason="!! FIX THIS TEST !!")
-@pytest.mark.skipif(not WITH_PYGMO, reason="Package 'pygmo' is not installed.")
 @pytest.mark.parametrize("yaml", ["tests/data/calibrate_models.yaml"])
 def test_run_calibration(yaml):
     """Test."""
