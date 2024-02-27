@@ -20,13 +20,11 @@ from pyxel.detectors import (
 )
 from pyxel.models import load_detector, save_detector
 
-try:
-    # Check if library 'asdf' is installed
-    import asdf  # noqa: F401
-except ImportError:
-    WITH_ASDF = False
-else:
-    WITH_ASDF = True
+# This is equivalent to 'import asdf'
+asdf = pytest.importorskip(
+    "asdf",
+    reason="Package 'asdf' is not installed. Use 'pip install asdf'",
+)
 
 
 @pytest.fixture
@@ -60,8 +58,6 @@ def test_save_load_detector(ccd_10x10: CCD, tmp_path: Path, filename: Path):
     exp_detector: Detector = deepcopy(ccd_10x10)
 
     full_filename: Path = tmp_path / filename
-    if full_filename.suffix == ".asdf" and not WITH_ASDF:
-        pytest.skip(reason="Missing library 'asdf'")
 
     # Save to a file
     save_detector(detector=detector, filename=full_filename)

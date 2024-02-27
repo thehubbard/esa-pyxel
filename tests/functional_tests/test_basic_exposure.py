@@ -16,6 +16,12 @@ from pyxel import Configuration
 from pyxel.detectors import Detector
 from pyxel.exposure import Exposure
 
+# Check if 'poppy' is installed
+_ = pytest.importorskip(
+    "poppy",
+    reason="Package 'poppy' is not installed. Use 'pip install poppy'",
+)
+
 
 @pytest.fixture
 def valid_config_filename(request: pytest.FixtureRequest) -> Path:

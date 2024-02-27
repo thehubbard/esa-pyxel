@@ -15,9 +15,14 @@ import pandas as pd
 import pytest
 from astropy.io import fits
 from PIL import Image
-from pytest_httpserver import HTTPServer  # pip install pytest-httpserver
 
 import pyxel
+
+# This is equivalent to 'import pytest_httpserver'
+pytest_httpserver = pytest.importorskip(
+    "pytest_httpserver",
+    reason="Package 'pytest_httpserver' is not installed. Use 'pip install pytest-httpserver'",
+)
 
 
 @pytest.fixture
@@ -47,7 +52,7 @@ def valid_pil_image() -> Image.Image:
 @pytest.fixture
 def valid_data2d_http_hostname(
     tmp_path: Path,
-    httpserver: HTTPServer,
+    httpserver: pytest_httpserver.HTTPServer,
     valid_pil_image: Image.Image,
     valid_multiple_hdus: fits.HDUList,
 ) -> str:
@@ -133,7 +138,9 @@ def valid_data2d_http_hostname(
 
 
 @pytest.fixture
-def invalid_data2d_hostname(tmp_path: Path, httpserver: HTTPServer) -> str:
+def invalid_data2d_hostname(
+    tmp_path: Path, httpserver: pytest_httpserver.HTTPServer
+) -> str:
     """Create invalid 2D files on a temporary folder and HTTP server."""
     # Get current folder
     current_folder: Path = Path().cwd()
@@ -170,7 +177,9 @@ def invalid_data2d_hostname(tmp_path: Path, httpserver: HTTPServer) -> str:
 
 
 @pytest.fixture
-def valid_table_http_hostname(tmp_path: Path, httpserver: HTTPServer) -> str:
+def valid_table_http_hostname(
+    tmp_path: Path, httpserver: pytest_httpserver.HTTPServer
+) -> str:
     """Create valid tables locally and on a temporary HTTP server."""
     # Get current folder
     current_folder: Path = Path().cwd()
@@ -273,7 +282,9 @@ def valid_table_heterogeneous(tmp_path: Path) -> str:
 
 
 @pytest.fixture
-def invalid_table_http_hostname(tmp_path: Path, httpserver: HTTPServer) -> str:
+def invalid_table_http_hostname(
+    tmp_path: Path, httpserver: pytest_httpserver.HTTPServer
+) -> str:
     """Create invalid tables on temporary folder and HTTP server."""
     # Get current folder
     current_folder: Path = Path().cwd()

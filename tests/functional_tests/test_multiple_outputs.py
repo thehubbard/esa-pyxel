@@ -11,10 +11,15 @@ from datetime import datetime
 from pathlib import Path
 
 import pytest
-from freezegun import freeze_time
 
 import pyxel
 from pyxel import Configuration
+
+# This is equivalent to 'import freezegun'
+freezegun = pytest.importorskip(
+    "freezegun",
+    reason="Package 'freezegun' is not installed. Use 'pip install freezegun'",
+)
 
 
 @contextmanager
@@ -80,7 +85,7 @@ def test_exposure_output(
         assert list(tmp_path.glob("*")) == []
 
         # Load YAML configuration file
-        with freeze_time(date_2023_12_18_08_20):
+        with freezegun.freeze_time(date_2023_12_18_08_20):
             config = pyxel.load(full_config_filename)
 
         assert isinstance(config, Configuration)
@@ -98,7 +103,7 @@ def test_exposure_output(
         #
         # First run
         #
-        with freeze_time(date_2023_12_19_08_20):
+        with freezegun.freeze_time(date_2023_12_19_08_20):
             _ = pyxel.run_mode(mode=mode, detector=detector, pipeline=pipeline)
 
         # Check if an empty 'output' folder is created
@@ -124,7 +129,7 @@ def test_exposure_output(
         #
         # Second run - same time
         #
-        with freeze_time(date_2023_12_19_08_20):
+        with freezegun.freeze_time(date_2023_12_19_08_20):
             _ = pyxel.run_mode(mode=mode, detector=detector, pipeline=pipeline)
 
         # Check if the folders in 'output'
@@ -151,7 +156,7 @@ def test_exposure_output(
         #
         # Third run - different time
         #
-        with freeze_time(date_2023_12_19_08_30):
+        with freezegun.freeze_time(date_2023_12_19_08_30):
             _ = pyxel.run_mode(mode=mode, detector=detector, pipeline=pipeline)
 
         # Check if the folders in 'output'
@@ -180,7 +185,7 @@ def test_exposure_output(
         # Fourth run - change 'custom_dir_name'
         #
         mode.outputs.custom_dir_name = "foo_"
-        with freeze_time(date_2023_12_19_08_30):
+        with freezegun.freeze_time(date_2023_12_19_08_30):
             _ = pyxel.run_mode(mode=mode, detector=detector, pipeline=pipeline)
 
         # Check if the folders in 'output'
@@ -208,7 +213,7 @@ def test_exposure_output(
         #
         # Fifth run - same 'custom_dir_name', same time
         #
-        with freeze_time(date_2023_12_19_08_30):
+        with freezegun.freeze_time(date_2023_12_19_08_30):
             _ = pyxel.run_mode(mode=mode, detector=detector, pipeline=pipeline)
 
         # Check if the folders in 'output'
@@ -241,7 +246,7 @@ def test_exposure_output(
         folder_output_02 = tmp_path / "folder1/folder2"
         assert not folder_output_02.exists()
 
-        with freeze_time(date_2023_12_19_08_40):
+        with freezegun.freeze_time(date_2023_12_19_08_40):
             _ = pyxel.run_mode(mode=mode, detector=detector, pipeline=pipeline)
 
         # Check if the folders in 'output'

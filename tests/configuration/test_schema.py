@@ -8,10 +8,14 @@
 import json
 from pathlib import Path
 
-import jsonschema
 import pytest
-from jsonschema import Draft7Validator
 from yaml import safe_load
+
+# This is equivalent to 'import jsonschema'
+jsonschema = pytest.importorskip(
+    "jsonschema",
+    reason="Package 'jsonschema' is not installed. Use 'pip install jsonschema'",
+)
 
 
 @pytest.fixture
@@ -22,7 +26,7 @@ def schema(request: pytest.FixtureRequest) -> dict:
     with full_filename.open() as fh:
         content = json.load(fh)
 
-    Draft7Validator.check_schema(content)
+    jsonschema.Draft7Validator.check_schema(content)
 
     return content
 

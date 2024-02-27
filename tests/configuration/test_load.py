@@ -9,9 +9,14 @@
 from pathlib import Path
 
 import pytest
-from freezegun import freeze_time
 
 import pyxel
+
+# This is equivalent to 'import freezegun'
+freezegun = pytest.importorskip(
+    "freezegun",
+    reason="Package 'freezegun' is not installed. Use 'pip install freezegun'",
+)
 
 
 @pytest.fixture
@@ -412,11 +417,11 @@ def test_load_2_times(folder_data: Path):
     assert full_filename.exists()
 
     # Load the configuration file for the first time
-    with freeze_time("2021-06-15 14:11"):
+    with freezegun.freeze_time("2021-06-15 14:11"):
         _ = pyxel.load(full_filename)
 
     # Load the configuration file for the second time
-    with freeze_time("2021-06-15 14:11"):
+    with freezegun.freeze_time("2021-06-15 14:11"):
         _ = pyxel.load(full_filename)
 
 

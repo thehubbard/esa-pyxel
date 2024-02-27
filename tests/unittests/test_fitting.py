@@ -21,20 +21,18 @@ from pyxel.pipelines import DetectionPipeline, Processor
 
 # from pyxel.pipelines.processor import ResultType
 
-try:
-    import pygmo as pg
-
-    WITH_PYGMO = True
-except ImportError:
-    WITH_PYGMO = False
+# This is equivalent to 'import pygmo'
+pg = pytest.importorskip(
+    "pygmo",
+    reason="Package 'pygmo' is not installed. Use 'pip install pygmo'",
+)
 
 
 def configure(mf: ModelFitting, sim: pyxel.Configuration) -> None:
     """TBW."""
     assert sim.calibration is not None
 
-    if WITH_PYGMO:
-        pg.set_global_rng_seed(sim.calibration.pygmo_seed)
+    pg.set_global_rng_seed(sim.calibration.pygmo_seed)
 
     np.random.seed(sim.calibration.pygmo_seed)
 
@@ -47,7 +45,6 @@ def configure(mf: ModelFitting, sim: pyxel.Configuration) -> None:
     )
 
 
-@pytest.mark.skipif(not WITH_PYGMO, reason="Package 'pygmo' is not installed.")
 @pytest.mark.parametrize("yaml_file", ["tests/data/calibrate.yaml"])
 def test_configure_params(yaml_file):
     """Test."""
@@ -83,7 +80,6 @@ def test_configure_params(yaml_file):
     # assert mf.sim_output == ResultType.Image
 
 
-@pytest.mark.skipif(not WITH_PYGMO, reason="Package 'pygmo' is not installed.")
 @pytest.mark.parametrize("yaml", ["tests/data/calibrate_fits.yaml"])
 def test_configure_fits_target(yaml):
     """Test."""
@@ -124,7 +120,6 @@ def test_configure_fits_target(yaml):
     )
 
 
-@pytest.mark.skipif(not WITH_PYGMO, reason="Package 'pygmo' is not installed.")
 @pytest.mark.parametrize(
     "yaml", ["tests/data/calibrate.yaml", "tests/data/calibrate_fits.yaml"]
 )
@@ -158,7 +153,6 @@ def test_boundaries(yaml):
     assert uu == ubd_expected
 
 
-@pytest.mark.skipif(not WITH_PYGMO, reason="Package 'pygmo' is not installed.")
 @pytest.mark.parametrize(
     "simulated_data, target_data, expected_fitness",
     [
@@ -204,7 +198,6 @@ def test_calculate_fitness(simulated_data, target_data, expected_fitness):
     print("fitness: ", fitness)
 
 
-@pytest.mark.skipif(not WITH_PYGMO, reason="Package 'pygmo' is not installed.")
 @pytest.mark.parametrize(
     "yaml, factor, expected_fitness",
     [
@@ -244,7 +237,6 @@ def custom_fitness_func(simulated, target, weighting=None):
     return np.sum(target * 2 - simulated / 2 + 1.0)
 
 
-@pytest.mark.skipif(not WITH_PYGMO, reason="Package 'pygmo' is not installed.")
 @pytest.mark.parametrize(
     "yaml, simulated, target, weighting",
     [
@@ -367,7 +359,6 @@ def test_fitness(yaml, parameter, expected_fitness):
     print("fitness: ", overall_fitness[0])
 
 
-@pytest.mark.skipif(not WITH_PYGMO, reason="Package 'pygmo' is not installed.")
 @pytest.mark.parametrize(
     "yaml, parameter, expected_array",
     [
@@ -420,7 +411,6 @@ def test_split_and_update(yaml, parameter, expected_array):
     np.testing.assert_array_equal(array, expected_array)
 
 
-@pytest.mark.skipif(not WITH_PYGMO, reason="Package 'pygmo' is not installed.")
 @pytest.mark.parametrize(
     "yaml, param_array",
     [
