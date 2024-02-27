@@ -11,7 +11,7 @@ import logging
 import textwrap
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
-from typing import Any, Final, Optional, Union, get_args
+from typing import TYPE_CHECKING, Any, Final, Optional, Union, get_args
 
 import numpy as np
 import xarray as xr
@@ -21,12 +21,8 @@ from astropy.units import Quantity
 
 from pyxel.detectors import Detector, WavelengthHandling
 
-try:
+if TYPE_CHECKING:
     import poppy as op
-
-    WITH_POPPY: bool = True
-except ModuleNotFoundError:
-    WITH_POPPY = False
 
 GENERIC_ERROR_MESSAGE: Final[str] = (
     "To resolve this issue, you can use for example this input in the YAML configuration:\n"
@@ -398,6 +394,15 @@ def create_optical_item(
     ``OpticalElement``
         A poppy ``OpticalElement``.
     """
+    try:
+        import poppy as op
+    except ModuleNotFoundError as exc:
+        raise ModuleNotFoundError(
+            "Missing optional package 'poppy'.\n"
+            "Please install it with 'pip install pyxel-sim[model]'"
+            "or 'pip install pyxel-sim[all]' or 'pip install poppy'"
+        ) from exc
+
     param: OpticalParameter = _create_optical_parameter(
         dct=dct,
         default_wavelength=default_wavelength,
@@ -484,12 +489,14 @@ def calc_psf(
     Tuple of two :term:`FITS`
         Tuple of psf and intermediate wavefronts.
     """
-    if not WITH_POPPY:
+    try:
+        import poppy as op
+    except ModuleNotFoundError as exc:
         raise ModuleNotFoundError(
             "Missing optional package 'poppy'.\n"
-            "Please install it with 'pip install pyxel-sim[model]' "
-            "or 'pip install pyxel-sim[all]'"
-        )
+            "Please install it with 'pip install pyxel-sim[model]'"
+            "or 'pip install pyxel-sim[all]' or 'pip install poppy'"
+        ) from exc
 
     class PyxelInstrument(op.instrument.Instrument):
         """Instrument class for Pyxel using poppy.instrument."""

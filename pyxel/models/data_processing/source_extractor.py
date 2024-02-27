@@ -45,7 +45,14 @@ def get_background(image_2d: np.ndarray):
     image_2d
         2d image array.
     """
-    import sep
+    try:
+        import sep
+    except ModuleNotFoundError as exc:
+        raise ModuleNotFoundError(
+            "Missing optional package 'sep'.\n"
+            "Please install it with 'pip install pyxel-sim[model]'"
+            "or 'pip install pyxel-sim[all]' or 'pip install sep'"
+        ) from exc
 
     return sep.Background(image_2d)
 
@@ -100,7 +107,14 @@ def extract_roi(
     minarea : int
         minimum area of elements required that are above the threshold for the extractor to extract information
     """
-    import sep
+    try:
+        import sep
+    except ModuleNotFoundError as exc:
+        raise ModuleNotFoundError(
+            "Missing optional package 'sep'.\n"
+            "Please install it with 'pip install pyxel-sim[model]'"
+            "or 'pip install pyxel-sim[all]' or 'pip install sep'"
+        ) from exc
 
     return sep.extract(image_2d, thresh=thresh, segmentation_map=True, minarea=minarea)
 
@@ -175,8 +189,8 @@ def extract_roi_to_xarray(
     except ModuleNotFoundError as exc:
         raise ModuleNotFoundError(
             "Missing optional package 'sep'.\n"
-            "Please install it with 'pip install pyxel-sim[model]' "
-            "or 'pip install pyxel-sim[all]'"
+            "Please install it with 'pip install pyxel-sim[model]'"
+            "or 'pip install pyxel-sim[all]' or 'pip install sep'"
         ) from exc
 
     if array_type == "pixel":
