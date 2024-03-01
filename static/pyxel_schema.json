@@ -628,7 +628,15 @@
           "type": "integer"
         },
         "outputs": {
-          "$ref": "#/definitions/CalibrationOutputs"
+          "anyOf": [
+            {
+              "$ref": "#/definitions/CalibrationOutputs"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
         },
         "parameters": {
           "items": {
@@ -747,7 +755,6 @@
         }
       },
       "required": [
-        "outputs",
         "target_data_path",
         "fitness_function",
         "algorithm",
@@ -1750,7 +1757,15 @@
       "additionalProperties": false,
       "properties": {
         "outputs": {
-          "$ref": "#/definitions/ExposureOutputs"
+          "anyOf": [
+            {
+              "$ref": "#/definitions/ExposureOutputs"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
         },
         "pipeline_seed": {
           "default": null,
@@ -1783,9 +1798,6 @@
           "type": "string"
         }
       },
-      "required": [
-        "outputs"
-      ],
       "title": "Exposure",
       "type": "object"
     },
@@ -6409,7 +6421,15 @@
           "type": "string"
         },
         "outputs": {
-          "$ref": "#/definitions/ObservationOutputs"
+          "anyOf": [
+            {
+              "$ref": "#/definitions/ObservationOutputs"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
         },
         "parameters": {
           "items": {
@@ -6451,7 +6471,6 @@
         }
       },
       "required": [
-        "outputs",
         "parameters"
       ],
       "title": "Observation",
