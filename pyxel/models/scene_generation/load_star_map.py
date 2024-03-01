@@ -560,9 +560,9 @@ def load_star_map(
         band=band_pass,
     )
     ds.attrs = {
-        "right_ascension[deg]": right_ascension,
-        "declination[deg]": declination,
-        "fov_radius[deg]": fov_radius,
+        "right_ascension": str(Quantity(right_ascension, unit="deg")),
+        "declination": str(Quantity(declination, unit="deg")),
+        "fov_radius": str(Quantity(fov_radius, unit="deg")),
     }
 
     # Check that there are no other scene
