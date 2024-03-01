@@ -461,19 +461,38 @@ pipeline:
         if isinstance(self._array, np.ndarray):
             num_rows, num_cols = self.shape
 
+            rows = xr.DataArray(
+                range(num_rows),
+                dims="y",
+                attrs={"units": convert_unit("pixel"), "long_name": "Row"},
+            )
+            cols = xr.DataArray(
+                range(num_cols),
+                dims="x",
+                attrs={"units": convert_unit("pixel"), "long_name": "Column"},
+            )
+
             return xr.DataArray(
                 np.array(self.array, dtype=dtype),
                 name="photon",
                 dims=["y", "x"],
-                coords={"y": range(num_rows), "x": range(num_cols)},
+                coords={"y": rows, "x": cols},
                 attrs={"units": convert_unit("Ph"), "long_name": "Photon"},
             )
 
         else:
             data_3d: xr.DataArray = self._array.astype(dtype=dtype)
             data_3d.name = "photon"
-            data_3d.coords["y"] = range(self._num_rows)
-            data_3d.coords["x"] = range(self._num_cols)
+            data_3d.coords["y"] = xr.DataArray(
+                range(self._num_rows),
+                dims="y",
+                attrs={"units": "pix", "long_name": "row"},
+            )
+            data_3d.coords["x"] = xr.DataArray(
+                range(self._num_cols),
+                dims="y",
+                attrs={"units": "pix", "long_name": "column"},
+            )
             data_3d.attrs = {"units": convert_unit("Ph/nm"), "long_name": "Photon"}
 
             return data_3d

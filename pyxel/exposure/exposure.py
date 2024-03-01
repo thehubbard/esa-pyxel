@@ -303,13 +303,6 @@ def _extract_datatree(detector: "Detector", keys: Sequence[ResultId]) -> DataTre
             signal   (time, y, x) float64 0.04545 0.04776 0.04634 ... 0.04862 0.04862
             image    (time, y, x) uint32 298 314 304 304 304 314 ... 339 339 328 319 319
     """
-    # Get current absolute time
-    absolute_time = xr.DataArray(
-        [detector.absolute_time],
-        dims=["time"],
-        attrs={"units": "s"},
-    )
-
     dataset: xr.Dataset = xr.Dataset()
 
     key: ResultId
@@ -325,12 +318,24 @@ def _extract_datatree(detector: "Detector", keys: Sequence[ResultId]) -> DataTre
                 f"Wrong type from attribute 'detector.{key}'. Type: {type(obj)!r}"
             )
 
-        data_array: xr.DataArray = obj.to_xarray().expand_dims(time=absolute_time)
+        data_array: xr.DataArray = obj.to_xarray()
         data_array.name = "value"
 
         dataset[key] = data_array
 
-    return DataTree(dataset)
+    # Get current absolute time
+    absolute_time = xr.DataArray(
+        [detector.absolute_time],
+        dims="time",
+        attrs={"units": "s", "long_name": "Readout time"},
+    )
+
+    # Add dimension 'time'
+    dataset_with_time: xr.Dataset = dataset.expand_dims(dim="time").assign_coords(
+        time=absolute_time
+    )
+
+    return DataTree(dataset_with_time)
 
 
 def run_pipeline(
