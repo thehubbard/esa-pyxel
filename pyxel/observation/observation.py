@@ -193,8 +193,8 @@ class Observation:
 
     def __init__(
         self,
-        outputs: "ObservationOutputs",
         parameters: Sequence[ParameterValues],
+        outputs: Optional["ObservationOutputs"] = None,
         readout: Optional[Readout] = None,
         mode: Literal["product", "sequential", "custom"] = "product",
         from_file: Optional[str] = None,  # Note: Only For 'custom' mode
@@ -203,7 +203,7 @@ class Observation:
         result_type: str = "all",
         pipeline_seed: Optional[int] = None,
     ):
-        self.outputs = outputs
+        self.outputs: Optional["ObservationOutputs"] = outputs
         self.readout: Readout = readout or Readout()
         self.parameter_mode: ParameterMode = ParameterMode(mode)
         self._parameters: Sequence[ParameterValues] = parameters
@@ -881,7 +881,8 @@ class Observation:
             pipeline_seed=self.pipeline_seed,
         )
 
-        _ = self.outputs.save_to_file(processor=new_processor, run_number=n)
+        if self.outputs:
+            _ = self.outputs.save_to_file(processor=new_processor, run_number=n)
 
         ds: xr.Dataset = new_processor.result_to_dataset(
             x=x,
@@ -924,10 +925,11 @@ class Observation:
             debug=False,  # Not supported in Observation mode
         )
 
-        _ = self.outputs.save_to_file(
-            processor=new_processor,
-            run_number=param_item.run_index,
-        )
+        if self.outputs:
+            _ = self.outputs.save_to_file(
+                processor=new_processor,
+                run_number=param_item.run_index,
+            )
 
         # Can also be done outside dask in a loop
         if isinstance(param_item, ParameterItem):
@@ -981,7 +983,8 @@ class Observation:
             pipeline_seed=self.pipeline_seed,
         )
 
-        _ = self.outputs.save_to_file(processor=new_processor, run_number=n)
+        if self.outputs:
+            _ = self.outputs.save_to_file(processor=new_processor, run_number=n)
 
         ds: xr.Dataset = new_processor.result_to_dataset(
             x=x, y=y, times=times, result_type=self.result_type
@@ -1031,7 +1034,8 @@ class Observation:
             pipeline_seed=self.pipeline_seed,
         )
 
-        _ = self.outputs.save_to_file(processor=new_processor, run_number=n)
+        if self.outputs:
+            _ = self.outputs.save_to_file(processor=new_processor, run_number=n)
 
         ds: xr.Dataset = new_processor.result_to_dataset(
             x=x, y=y, times=times, result_type=self.result_type

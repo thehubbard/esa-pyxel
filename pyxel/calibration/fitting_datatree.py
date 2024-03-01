@@ -89,7 +89,7 @@ class ModelFittingDataTree(ProblemSingleObjective):
         generations: int,
         population_size: int,
         fitness_func: FittingCallable,
-        file_path: Path,
+        file_path: Optional[Path],
         target_fit_range: Union[FitRange2D, FitRange3D],
         out_fit_range: FitRange3D,
         target_filenames: Sequence[Path],
@@ -109,7 +109,7 @@ class ModelFittingDataTree(ProblemSingleObjective):
         self.fitness_func: FittingCallable = fitness_func
         self.sim_output: ResultId = simulation_output
 
-        self.file_path: Path = file_path
+        self.file_path: Optional[Path] = file_path
         self.pipeline_seed: Optional[int] = pipeline_seed
 
         lower_boundaries, upper_boundaries = self._set_bound()
