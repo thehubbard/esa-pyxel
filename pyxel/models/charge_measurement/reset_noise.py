@@ -38,7 +38,7 @@ def compute_ktc_noise(
 
     rms = np.sqrt(const.k_B.value * temperature / capacitance)
 
-    return np.random.normal(0, rms, shape)
+    return np.random.normal(scale=rms, size=shape)
 
 
 def ktc_noise(
@@ -64,29 +64,30 @@ def ktc_noise(
     * :external+pyxel_data:doc:`use_cases/CMOS/cmos`
     * :external+pyxel_data:doc:`use_cases/APD/saphira`
     """
+    if node_capacitance is not None:
+        if node_capacitance <= 0:
+            raise ValueError("Node capacitance should be larger than 0!")
+
+        capacitance: float = node_capacitance
+    else:
+        try:
+            capacitance = detector.characteristics.node_capacitance
+        except AttributeError as ex:
+            raise AttributeError(
+                "Characteristic node_capacitance not available for the detector"
+                " used. Please specify node_capacitance in the model argument!"
+            ) from ex
+
+    if not detector.is_first_readout and detector.non_destructive_readout:
+        # Do nothing when this is not the first readout and non-destructive mode
+        return
+
+    # This it the first readout or the destructive mode
     with set_random_seed(seed):
-        if node_capacitance is not None:
-            if node_capacitance <= 0:
-                raise ValueError("Node capacitance should be larger than 0!")
+        noise_2d = compute_ktc_noise(
+            temperature=detector.environment.temperature,
+            capacitance=capacitance,
+            shape=detector.geometry.shape,
+        )
 
-            detector.signal += compute_ktc_noise(
-                temperature=detector.environment.temperature,
-                capacitance=node_capacitance,
-                shape=detector.geometry.shape,
-            )
-
-        else:
-            try:
-                capacitance = detector.characteristics.node_capacitance
-
-                detector.signal += compute_ktc_noise(
-                    temperature=detector.environment.temperature,
-                    capacitance=capacitance,
-                    shape=detector.geometry.shape,
-                )
-
-            except AttributeError as ex:
-                raise AttributeError(
-                    "Characteristic node_capacitance not available for the detector"
-                    " used. Please specify node_capacitance in the model argument!"
-                ) from ex
+    detector.signal += noise_2d
