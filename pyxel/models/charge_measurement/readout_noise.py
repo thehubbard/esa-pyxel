@@ -15,26 +15,8 @@ from pyxel.detectors import APD, CMOS, Detector
 from pyxel.util import set_random_seed
 
 
-def create_noise(signal_2d: np.ndarray, std_deviation: float) -> np.ndarray:
-    """Create noise to signal array using normal random distribution.
-
-    Parameters
-    ----------
-    signal_2d : ndarray
-    std_deviation : float
-
-    Returns
-    -------
-    ndarray
-    """
-    sigma_2d = std_deviation * np.ones_like(signal_2d)
-    noise_2d = np.random.normal(loc=signal_2d, scale=sigma_2d)
-
-    return noise_2d
-
-
 def create_noise_cmos(
-    signal_2d: np.ndarray,
+    shape: tuple[int, int],
     readout_noise: float,
     readout_noise_std: float,
     charge_readout_sensitivity: float,
@@ -43,7 +25,7 @@ def create_noise_cmos(
 
     Parameters
     ----------
-    signal_2d : ndarray
+    shape : int, int
     readout_noise : float
     readout_noise_std : float
     charge_readout_sensitivity : float
@@ -55,10 +37,10 @@ def create_noise_cmos(
     sigma_2d = np.random.normal(
         loc=readout_noise * charge_readout_sensitivity,
         scale=readout_noise_std * charge_readout_sensitivity,
-        size=signal_2d.shape,
+        size=shape,
     )
 
-    noise_2d = np.random.normal(loc=signal_2d, scale=sigma_2d)
+    noise_2d = np.random.normal(scale=sigma_2d)
 
     return noise_2d
 
@@ -88,12 +70,12 @@ def output_node_noise(
         raise ValueError("'std_deviation' must be positive.")
 
     with set_random_seed(seed):
-        noise_2d: np.ndarray = create_noise(
-            signal_2d=np.asarray(detector.signal.array, dtype=np.float64),
-            std_deviation=std_deviation,
+        noise_2d: np.ndarray = np.random.normal(
+            scale=std_deviation,
+            size=detector.signal.shape,
         )
 
-    detector.signal.array = noise_2d
+    detector.signal.array += noise_2d
 
 
 def output_node_noise_cmos(
@@ -130,13 +112,13 @@ def output_node_noise_cmos(
 
     with set_random_seed(seed):
         noise_2d: np.ndarray = create_noise_cmos(
-            signal_2d=np.asarray(detector.signal.array, dtype=np.float64),
+            shape=detector.signal.shape,
             readout_noise=readout_noise,
             readout_noise_std=readout_noise_std,
             charge_readout_sensitivity=detector.characteristics.charge_to_volt_conversion,
         )
 
-    detector.signal.array = noise_2d
+    detector.signal.array += noise_2d
 
 
 def compute_readout_noise_saphira(
@@ -169,7 +151,7 @@ def compute_readout_noise_saphira(
         (roic_readout_noise * noise_factor) ** 2 + controller_noise**2
     )
 
-    total_noise = np.random.normal(0, total_noise_level, shape)
+    total_noise = np.random.normal(scale=total_noise_level, size=shape)
 
     return total_noise
 
@@ -202,9 +184,11 @@ def readout_noise_saphira(
         raise TypeError("Expecting a 'APD' detector object.")
 
     with set_random_seed(seed):
-        detector.signal += compute_readout_noise_saphira(
+        noise_2d = compute_readout_noise_saphira(
             roic_readout_noise=roic_readout_noise,
             avalanche_gain=detector.characteristics.avalanche_gain,
             shape=detector.geometry.shape,
             controller_noise=controller_noise,
         )
+
+    detector.signal += noise_2d
