@@ -16,6 +16,8 @@ Pyxel doesn't use SemVer anymore, since most minor releases have at least minor 
 ### Documentation
 
 ### Models
+* Add kTC noise only to the frame acquired right after reset.
+  (See [!867](https://gitlab.com/esa/pyxel/-/merge_requests/867)).
 
 ### Others
 * Improved tests when an optional dependency is not installed.
