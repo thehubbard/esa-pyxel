@@ -24,6 +24,8 @@ Pyxel doesn't use SemVer anymore, since most minor releases have at least minor 
   (See [!866](https://gitlab.com/esa/pyxel/-/merge_requests/866)).
 * Reduce size of wheel file.
   (See [!868](https://gitlab.com/esa/pyxel/-/merge_requests/868)).
+* Bump 'versioneer' from 0.28 to 0.29.
+  (See [!869](https://gitlab.com/esa/pyxel/-/merge_requests/869)).
 
 ## 2.0 / 2024-02-22
 
