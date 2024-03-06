@@ -22,6 +22,8 @@ Pyxel doesn't use SemVer anymore, since most minor releases have at least minor 
 ### Others
 * Improved tests when an optional dependency is not installed.
   (See [!866](https://gitlab.com/esa/pyxel/-/merge_requests/866)).
+* Reduce size of wheel file.
+  (See [!868](https://gitlab.com/esa/pyxel/-/merge_requests/868)).
 
 ## 2.0 / 2024-02-22
 
