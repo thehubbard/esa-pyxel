@@ -7,13 +7,6 @@
 
 """Utility functions."""
 
-import logging
-
-
-import numpy as np
-
-from typing import Callable
-
 # flake8: noqa
 from .memory import get_size, memory_usage_details
 from .examples import download_examples

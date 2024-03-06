@@ -116,19 +116,14 @@ include-package-data = true
 
 [tool.setuptools.packages.find]
 # where = []
-#exclude = [
-#    "docs*",
-#    "tests*",
-#]
+exclude = [
+    "docs*",
+    "tests*",
+    "continuous_integration*",
+]
 
 [tool.setuptools.package-data]
 pyxel_sim = ["py.typed"]
-exclude = [
-    "contrib",
-    "docs",
-    "tests",
-    "examples",
-]
 
 [tool.black]
 extend-exclude = """
