@@ -28,6 +28,8 @@ Pyxel doesn't use SemVer anymore, since most minor releases have at least minor 
   (See [!869](https://gitlab.com/esa/pyxel/-/merge_requests/869)).
 * Fix issue with Mypy 1.9.
   (See [!871](https://gitlab.com/esa/pyxel/-/merge_requests/871)).
+* Add more rules in 'ruff'.
+  (See [!870](https://gitlab.com/esa/pyxel/-/merge_requests/870)).
 
 
 ## 2.0 / 2024-02-22

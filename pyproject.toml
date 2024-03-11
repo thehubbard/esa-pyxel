@@ -242,7 +242,7 @@ omit = [
     "pyxel/models/charge_generation/tars/plotting.py",
 ]
 
-[tool.ruff]
+[tool.ruff.lint]
 select = [
     "A",        # flake8-builtins
     "B",        # flake8-bugbear
@@ -251,10 +251,10 @@ select = [
     "D",        # pydocstyle
     "G",        # flake8-logging-format
     "UP",       # pyupgrade
-    # "SIM",      # flake8-simplify
+    "SIM",      # flake8-simplify
     "W",        # pycodestyle
-    # "PD",       # pandas-vet
-    # "S",        # bandit
+#     "PD",       # pandas-vet
+#     "S",        # bandit
     "PTH",      # Flake8 use Pathlib
     "PT",       # Flake8-pytest-style
     "RUF",      # Ruff-specific rules
@@ -262,6 +262,8 @@ select = [
     "TRY",      # Tryceratops
     "C90",      # McCabe
     "N",        # pep8-naming
+    "NPY201",   # Numpy2-deprecation
+    "PERF",     # Perlint
 ]
 ignore = [
     "E501",     # Omit 'Line too long'
@@ -275,16 +277,22 @@ ignore = [
     "TRY003",   # Avoid specifying long messages outside the exception class
     "TRY301",   # Abstract `raise` to an inner function
     "PTH207",   # Replace 'glob' with 'Path.glob' or 'Path.rglob'
+    "SIM108",   # Use ternary operator
+    "SIM114",   # Combine 'if' branches using logical 'or' operator
+    "SIM117",   # Use a single 'with' statement with multiple contexts
+    "SIM300",   # Yoda conditions are discouraged
+    "PERF203",  # try-except within a loop incurs performance overhead
 ]
 
 exclude = ["_TEMPLATE.py", "_version.py"]
 
-[tool.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
 "tests/*" = [
     "D100",     # Missing docstring in public module
     "D104",     # Missing docstring in public package
     "N803",     # Argument name should be lowercase
     "PT006",    # Wrong name(s) type in '@pytest.mark.parametrize'
+    "SIM",      # flake8-simplify
 ]
 "pyxel/models/phasing/mkid_models/*" = [
     "F",        # pyflakes
@@ -297,13 +305,13 @@ exclude = ["_TEMPLATE.py", "_version.py"]
     "UP",       # pyupgrade
 ]
 
-[tool.ruff.flake8-pytest-style]
+[tool.ruff.lint.flake8-pytest-style]
 fixture-parentheses = false
 mark-parentheses = false
 
 
-[tool.ruff.pydocstyle]
+[tool.ruff.lint.pydocstyle]
 convention = "numpy"
 
-[tool.ruff.mccabe]
+[tool.ruff.lint.mccabe]
 max-complexity = 12
