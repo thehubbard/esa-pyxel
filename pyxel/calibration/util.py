@@ -10,7 +10,7 @@
 from collections.abc import Mapping, MutableSequence, Sequence
 from dataclasses import dataclass
 from enum import Enum
-from numbers import Rational, Real
+from numbers import Integral, Real
 from pathlib import Path
 from typing import Any, NamedTuple, Optional, Union
 
@@ -133,7 +133,7 @@ def sanitize(data: Any) -> Any:
     elif isinstance(data, Sequence) and not isinstance(data, str):
         return tuple([sanitize(key) for key in data])
 
-    elif isinstance(data, Rational):
+    elif isinstance(data, Integral):
         return int(data)
 
     elif isinstance(data, Real):
