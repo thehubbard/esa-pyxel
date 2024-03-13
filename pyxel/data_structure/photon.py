@@ -486,13 +486,17 @@ pipeline:
             data_3d.coords["y"] = xr.DataArray(
                 range(self._num_rows),
                 dims="y",
-                attrs={"units": "pix", "long_name": "row"},
+                attrs={"units": "pix", "long_name": "Row"},
             )
             data_3d.coords["x"] = xr.DataArray(
                 range(self._num_cols),
-                dims="y",
-                attrs={"units": "pix", "long_name": "column"},
+                dims="x",
+                attrs={"units": "pix", "long_name": "Column"},
             )
+            data_3d.coords["wavelength"].attrs = {
+                "units": "nm",
+                "long_name": "Wavelength",
+            }
             data_3d.attrs = {"units": convert_unit("Ph/nm"), "long_name": "Photon"}
 
             return data_3d
