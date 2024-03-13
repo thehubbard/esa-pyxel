@@ -373,7 +373,14 @@ def test_to_xarray_2d(photon_2d: Photon):
     exp_obj = xr.DataArray(
         np.array([[0, 1, 2], [4, 5, 6]], dtype=float),
         dims=["y", "x"],
-        coords={"y": [0, 1], "x": [0, 1, 2]},
+        coords={
+            "y": xr.DataArray(
+                [0, 1], dims="y", attrs={"units": "pix", "long_name": "Row"}
+            ),
+            "x": xr.DataArray(
+                [0, 1, 2], dims="x", attrs={"units": "pix", "long_name": "Column"}
+            ),
+        },
         name="photon",
         attrs={"units": "Ph", "long_name": "Photon"},
     )
@@ -394,7 +401,19 @@ def test_to_xarray_3d(photon_3d: Photon):
             dtype=float,
         ),
         dims=["wavelength", "y", "x"],
-        coords={"y": [0, 1], "x": [0, 1, 2], "wavelength": [300.0, 350.0]},
+        coords={
+            "y": xr.DataArray(
+                [0, 1], dims="y", attrs={"units": "pix", "long_name": "Row"}
+            ),
+            "x": xr.DataArray(
+                [0, 1, 2], dims="x", attrs={"units": "pix", "long_name": "Column"}
+            ),
+            "wavelength": xr.DataArray(
+                [300.0, 350.0],
+                dims="wavelength",
+                attrs={"units": "nm", "long_name": "Wavelength"},
+            ),
+        },
         name="photon",
         attrs={"units": "Ph nm⁻¹", "long_name": "Photon"},
     )

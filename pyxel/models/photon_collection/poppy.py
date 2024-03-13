@@ -20,6 +20,7 @@ from astropy.io import fits
 from astropy.units import Quantity
 
 from pyxel.detectors import Detector, WavelengthHandling
+from pyxel.util import convert_unit
 
 if TYPE_CHECKING:
     import poppy as op
@@ -903,9 +904,15 @@ def optical_psf(
             kernel=psf_3d,
         )
 
+        data_selected_wavelength = xr.DataArray(
+            selected_wavelengths_nm.value,
+            dims=["wavelength"],
+            attrs={"wavelength": convert_unit(selected_wavelengths_nm.unit)},
+        )
+
         array_3d = xr.DataArray(
             new_array_3d,
             dims=["wavelength", "y", "x"],
-            coords={"wavelength": selected_wavelengths_nm.value},
+            coords={"wavelength": data_selected_wavelength},
         )
         detector.photon.array_3d = array_3d

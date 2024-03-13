@@ -248,11 +248,22 @@ class ArrayBase:
         if self._array is None:
             return xr.DataArray()
 
+        rows = xr.DataArray(
+            range(num_rows),
+            dims="y",
+            attrs={"units": convert_unit("pixel"), "long_name": "Row"},
+        )
+        cols = xr.DataArray(
+            range(num_cols),
+            dims="x",
+            attrs={"units": convert_unit("pixel"), "long_name": "Column"},
+        )
+
         return xr.DataArray(
             np.array(self.array, dtype=dtype),
             name=self.NAME.lower(),
             dims=["y", "x"],
-            coords={"y": range(num_rows), "x": range(num_cols)},
+            coords={"y": rows, "x": cols},
             attrs={"units": convert_unit(self.UNIT), "long_name": self.NAME},
         )
 

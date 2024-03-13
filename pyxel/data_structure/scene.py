@@ -67,17 +67,17 @@ class SceneCoordinates:
             weight      (ref) float64 11.49 14.13 15.22 14.56 ... 15.21 11.51 8.727
             flux        (ref, wavelength) float64 0.003769 0.004137 ... 0.1813 0.1896
         Attributes:
-            right_ascension[deg]:  56.75
-            declination[deg]:      24.1167
-            fov_radius[deg]:       0.5
+            right_ascension:   56.75 deg
+            declination:       24.1167 deg
+            fov_radius:        0.5 deg
 
         >>> SceneCoordinates.from_dataset(ds)
         SceneCoordinates(right_ascension=<Quantity 56.75 deg>, declination=<Quantity 24.1167 deg>, fov=<Quantity 0.5 deg>)
         """
 
-        right_ascension_key = "right_ascension[deg]"
-        declination_key = "declination[deg]"
-        fov_radius_key = "fov_radius[deg]"
+        right_ascension_key = "right_ascension"
+        declination_key = "declination"
+        fov_radius_key = "fov_radius"
 
         if right_ascension_key not in ds.attrs:
             raise KeyError(f"Missing key {right_ascension_key!r} in the attributes.")
@@ -131,9 +131,9 @@ class Scene:
         weight      (ref) float64 11.49 14.13 15.22 14.56 ... 15.21 11.51 8.727
         flux        (ref, wavelength) float64 0.03769 0.04137 ... 1.813 1.896
     Attributes:
-        right_ascension[deg]:  56.75
-        declination[deg]:      24.1167
-        fov_radius[deg]:       0.5
+        right_ascension:  56.75 deg
+        declination:      24.1167 deg
+        fov_radius:       0.5 deg
 
     >>> detector.scene.add_source(source)
     >>> detector.scene
@@ -193,9 +193,9 @@ class Scene:
             weight      (ref) float64 11.49 14.13 15.22 14.56 ... 15.21 11.51 8.727
             flux        (ref, wavelength) float64 0.003769 0.004137 ... 0.1813 0.1896
         Attributes:
-            right_ascension[deg]:  56.75
-            declination[deg]:      24.1167
-            fov_radius[deg]:       0.5
+            right_ascension:  56.75 deg
+            declination:      24.1167 deg
+            fov_radius:       0.5 deg
 
         >>> detector.scene.add_source(source)
         >>> detector.scene.data
@@ -212,9 +212,9 @@ class Scene:
                         weight      (ref) float64 14.73 12.34 14.63 14.27
                         flux        (ref, wavelength) float64 0.003769 0.004137 ... 0.1813 0.1896
                     Attributes:
-                        right_ascension[deg]:  56.75
-                        declination[deg]:      24.1167
-                        fov_radius[deg]:       0.5
+                        right_ascension:  56.75 deg
+                        declination:      24.1167 deg
+                        fov_radius:       0.5 deg
         """
         if not isinstance(source, xr.Dataset):
             raise TypeError("Expecting a Dataset object for source")
@@ -349,9 +349,9 @@ class Scene:
             weight      (ref) float64 11.49 14.13 15.22 14.56 ... 15.21 11.51 8.727
             flux        (ref, wavelength) float64 0.03769 0.04137 ... 1.813 1.896
         Attributes:
-            right_ascension[deg]:  56.75
-            declination[deg]:      24.1167
-            fov_radius[deg]:       0.5
+            right_ascension:  56.75 deg
+            declination:      24.1167 deg
+            fov_radius:       0.5 deg
         >>> ds["wavelength"]
         <xarray.DataArray 'wavelength' (wavelength: 343)>
         array([ 336.,  338.,  340., ..., 1016., 1018., 1020.])
