@@ -198,7 +198,9 @@ def to_exposure(dct: dict) -> Exposure:
     -------
     Single
     """
-    dct.update({"outputs": to_exposure_outputs(dct["outputs"])})
+    if "outputs" in dct:
+        dct.update({"outputs": to_exposure_outputs(dct["outputs"])})
+
     dct.update({"readout": to_readout(dct.get("readout"))})
 
     return Exposure(**dct)
@@ -246,7 +248,10 @@ def to_observation(dct: dict) -> Observation:
     dct.update(
         {"parameters": [to_parameters(param_dict) for param_dict in dct["parameters"]]}
     )
-    dct.update({"outputs": to_observation_outputs(dct["outputs"])})
+
+    if "outputs" in dct:
+        dct.update({"outputs": to_observation_outputs(dct["outputs"])})
+
     dct.update({"readout": to_readout(dct.get("readout"))})
 
     return Observation(**dct)
@@ -314,7 +319,9 @@ def to_calibration(dct: dict) -> "Calibration":
     # Late import to speedup start-up time
     from pyxel.calibration import Calibration
 
-    dct.update({"outputs": to_calibration_outputs(dct["outputs"])})
+    if "outputs" in dct:
+        dct.update({"outputs": to_calibration_outputs(dct["outputs"])})
+
     dct.update({"fitness_function": to_fitness_function(dct["fitness_function"])})
     dct.update({"algorithm": to_algorithm(dct["algorithm"])})
     dct.update(

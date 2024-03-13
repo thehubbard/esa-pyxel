@@ -91,15 +91,16 @@ def exposure_mode(
     logging.info("Mode: Exposure")
 
     # Create an output folder
-    exposure_outputs: ExposureOutputs = exposure.outputs
-    exposure_outputs.create_output_folder()
+    outputs: Optional[ExposureOutputs] = exposure.outputs
+    if outputs:
+        outputs.create_output_folder()
 
     processor = Processor(detector=detector, pipeline=pipeline)
 
     result: xr.Dataset = exposure._run_exposure_deprecated(processor=processor)
 
-    if exposure_outputs.save_exposure_data:
-        exposure_outputs.save_exposure_outputs(dataset=result)
+    if outputs and outputs.save_exposure_data:
+        outputs.save_exposure_outputs(dataset=result)
 
     return result
 
@@ -173,16 +174,17 @@ def _run_exposure_mode(
     processor = Processor(detector=detector, pipeline=pipeline)
 
     # Create an output folder
-    exposure_outputs: ExposureOutputs = exposure.outputs
-    exposure_outputs.create_output_folder()
+    outputs: Optional[ExposureOutputs] = exposure.outputs
+    if outputs:
+        outputs.create_output_folder()
 
     result: DataTree = exposure.run_exposure(
         processor=processor,
         debug=debug,
     )
 
-    if exposure_outputs.save_exposure_data:
-        exposure_outputs.save_exposure_outputs(dataset=result)
+    if outputs and outputs.save_exposure_data:
+        outputs.save_exposure_outputs(dataset=result)
 
     return result
 
@@ -234,8 +236,9 @@ def observation_mode(
     logging.info("Mode: Observation")
 
     # Create an output folder
-    observation_outputs: ObservationOutputs = observation.outputs
-    observation_outputs.create_output_folder()
+    outputs: Optional[ObservationOutputs] = observation.outputs
+    if outputs:
+        outputs.create_output_folder()
 
     # TODO: This should be done during initializing of object `Configuration`
     # parametric_outputs.params_func(parametric)
@@ -246,8 +249,8 @@ def observation_mode(
         processor=processor
     )
 
-    if observation_outputs.save_observation_data:
-        observation_outputs._save_observation_datasets_deprecated(
+    if outputs and outputs.save_observation_data:
+        outputs._save_observation_datasets_deprecated(
             result=result, mode=observation.parameter_mode
         )
 
@@ -352,13 +355,15 @@ def calibration_mode(
     logging.info("Mode: Calibration")
 
     # Create an output folder
-    calibration_outputs: CalibrationOutputs = calibration.outputs
-    calibration_outputs.create_output_folder()
+    outputs: Optional[CalibrationOutputs] = calibration.outputs
+    if outputs:
+        outputs.create_output_folder()
 
     processor = Processor(detector=detector, pipeline=pipeline)
 
     ds_results, df_processors, df_all_logs = calibration._run_calibration_deprecated(
-        processor=processor, output_dir=calibration_outputs.current_output_folder
+        processor=processor,
+        output_dir=outputs.current_output_folder if outputs else None,
     )
 
     # TODO: Save the processors from 'df_processors'
@@ -377,7 +382,9 @@ def calibration_mode(
     #     col=geometry.col,
     # )
     filenames = calibration._post_processing(
-        ds=ds_results, df_processors=df_processors, output=calibration_outputs
+        ds=ds_results,
+        df_processors=df_processors,
+        output=outputs,
     )
 
     if compute_and_save:
@@ -385,13 +392,11 @@ def calibration_mode(
             ds_results, df_processors, df_all_logs, filenames
         )
 
-        if calibration_outputs._save_calibration_data_deprecated:
-            calibration_outputs._save_calibration_outputs_deprecated(
+        if outputs and outputs._save_calibration_data_deprecated:
+            outputs._save_calibration_outputs_deprecated(
                 dataset=computed_ds, logs=df_logs
             )
-            print(
-                f"Saved calibration outputs to {calibration_outputs.current_output_folder}"
-            )
+            print(f"Saved calibration outputs to {outputs.current_output_folder}")
 
         result = CalibrationResult(
             dataset=computed_ds,
@@ -489,12 +494,13 @@ def _run_calibration_mode(
     processor = Processor(detector=detector, pipeline=pipeline)
 
     # Create an output folder
-    calibration_outputs: CalibrationOutputs = calibration.outputs
-    calibration_outputs.create_output_folder()
+    outputs: Optional[CalibrationOutputs] = calibration.outputs
+    if outputs:
+        outputs.create_output_folder()
 
     data_tree: "DataTree" = calibration.run_calibration(
         processor=processor,
-        output_dir=calibration_outputs.current_output_folder,
+        output_dir=outputs.current_output_folder if outputs else None,
     )
 
     return data_tree
@@ -510,13 +516,14 @@ def _run_observation_mode(
     processor = Processor(detector=detector, pipeline=pipeline)
 
     # Create an output folder
-    observation_outputs: ObservationOutputs = observation.outputs
-    observation_outputs.create_output_folder()
+    outputs: Optional[ObservationOutputs] = observation.outputs
+    if outputs:
+        outputs.create_output_folder()
 
     result: "DataTree" = observation.run_observation_datatree(processor=processor)
 
     # TODO: Fix this. See issue #723
-    if observation_outputs.save_observation_data:
+    if outputs and outputs.save_observation_data:
         raise NotImplementedError
     #     observation_outputs.save_observation_datasets(
     #         result=result, mode=observation.parameter_mode
@@ -818,7 +825,7 @@ def run_mode(
     return data_tree
 
 
-def output_directory(configuration: Configuration) -> Path:
+def output_directory(configuration: Configuration) -> Optional[Path]:
     """Return the output directory from the configuration.
 
     Parameters
@@ -829,8 +836,13 @@ def output_directory(configuration: Configuration) -> Path:
     -------
     output_dir
     """
-    output_dir: Path = configuration.running_mode.outputs.current_output_folder
-    return output_dir
+    outputs: Union[
+        "ExposureOutputs", "ObservationOutputs", "CalibrationOutputs", None
+    ] = configuration.running_mode.outputs
+    if outputs:
+        return outputs.current_output_folder
+
+    return None
 
 
 def run(input_filename: Union[str, Path], random_seed: Optional[int] = None) -> None:
@@ -863,16 +875,19 @@ def run(input_filename: Union[str, Path], random_seed: Optional[int] = None) -> 
 
     _ = run_mode(mode=running_mode, detector=detector, pipeline=pipeline)
 
-    output_dir: Path = output_directory(configuration)
+    output_dir: Optional[Path] = output_directory(configuration)
 
     # TODO: Fix this, see issue #728
-    copy_config_file(input_filename=input_filename, output_dir=output_dir)
+    if output_dir:
+        copy_config_file(input_filename=input_filename, output_dir=output_dir)
 
     logging.info("Pipeline completed.")
     logging.info("Running time: %.3f seconds", (time.time() - start_time))
     # Closing the logger in order to be able to move the file in the output dir
     logging.shutdown()
-    outputs.save_log_file(output_dir)
+
+    if output_dir:
+        outputs.save_log_file(output_dir)
 
     # Late import to speedup start-up time
     from matplotlib import pyplot as plt

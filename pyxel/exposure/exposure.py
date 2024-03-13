@@ -35,12 +35,12 @@ class Exposure:
 
     def __init__(
         self,
-        outputs: "ExposureOutputs",
         readout: "Readout",
+        outputs: Optional["ExposureOutputs"] = None,
         result_type: str = "all",
         pipeline_seed: Optional[int] = None,
     ):
-        self.outputs = outputs
+        self.outputs: Optional["ExposureOutputs"] = outputs
         self.readout = readout
         self._result_type: ResultId = get_result_id(result_type)
         self._pipeline_seed = pipeline_seed

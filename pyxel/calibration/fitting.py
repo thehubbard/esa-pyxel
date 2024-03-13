@@ -56,7 +56,7 @@ class ModelFitting(ProblemSingleObjective):
         generations: int,
         population_size: int,
         fitness_func: FittingCallable,
-        file_path: Path,
+        file_path: Optional[Path],
         pipeline_seed: Optional[int] = None,
     ):
         self.processor: Processor = processor
@@ -75,7 +75,7 @@ class ModelFitting(ProblemSingleObjective):
         self.sim_output: ResultId = simulation_output
         self.param_processor_list: list[Processor] = []
 
-        self.file_path: Path = file_path
+        self.file_path: Optional[Path] = file_path
         self.pipeline_seed: Optional[int] = pipeline_seed
 
         self.fitness_array: Optional[np.ndarray] = None

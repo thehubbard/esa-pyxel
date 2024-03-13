@@ -66,11 +66,11 @@ class Calibration:
 
     def __init__(
         self,
-        outputs: "CalibrationOutputs",
         target_data_path: Sequence[Union[str, Path]],
         fitness_function: FitnessFunction,
         algorithm: Algorithm,
         parameters: Sequence[ParameterValues],
+        outputs: Optional["CalibrationOutputs"] = None,
         readout: Optional["Readout"] = None,
         mode: Literal["pipeline", "single_model"] = "pipeline",
         result_type: Literal["image", "signal", "pixel"] = "image",
@@ -105,7 +105,7 @@ class Calibration:
 
         self._log = logging.getLogger(__name__)
 
-        self.outputs = outputs
+        self.outputs: Optional["CalibrationOutputs"] = outputs
         self.readout: Readout = readout or Readout()
 
         self._calibration_mode = CalibrationMode(mode)
@@ -357,7 +357,11 @@ class Calibration:
         """TBW."""
         self._weights = value
 
-    def get_problem(self, processor: Processor, output_dir: Path) -> ModelFitting:
+    def get_problem(
+        self,
+        processor: Processor,
+        output_dir: Optional[Path],
+    ) -> ModelFitting:
         """Convert a 'processor' object into a Pygmo Problem.
 
         Examples
@@ -399,7 +403,7 @@ class Calibration:
     def _run_calibration_deprecated(
         self,
         processor: Processor,
-        output_dir: Path,
+        output_dir: Optional[Path],
         with_progress_bar: bool = True,
     ) -> tuple["xr.Dataset", "pd.DataFrame", "pd.DataFrame"]:
         """Run calibration pipeline."""
@@ -421,7 +425,8 @@ class Calibration:
 
         # Create a Pygmo problem
         fitting: ModelFitting = self.get_problem(
-            processor=processor, output_dir=output_dir
+            processor=processor,
+            output_dir=output_dir,
         )
 
         # Create an archipelago
@@ -467,7 +472,7 @@ class Calibration:
     def run_calibration(
         self,
         processor: Processor,
-        output_dir: Path,
+        output_dir: Optional[Path],
         with_progress_bar: bool = True,
     ) -> "DataTree":
         """Run calibration pipeline."""
@@ -549,15 +554,18 @@ class Calibration:
         self,
         ds: "xr.Dataset",
         df_processors: "pd.DataFrame",
-        output: "CalibrationOutputs",
+        output: Optional["CalibrationOutputs"],
     ) -> Sequence[Delayed]:
         warnings.warn(
             "Deprecated. Will be removed in Pyxel 2.0", DeprecationWarning, stacklevel=1
         )
 
-        filenames: Sequence[Delayed] = output._save_processors_deprecated(
-            processors=df_processors
-        )
+        if output:
+            filenames: Sequence[Delayed] = output._save_processors_deprecated(
+                processors=df_processors
+            )
+        else:
+            filenames = []
 
         # TODO: Use output.fitting_plot ?
         # TODO: Use output.fitting_plot_close ?
