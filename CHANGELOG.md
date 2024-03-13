@@ -11,7 +11,11 @@ Pyxel doesn't use SemVer anymore, since most minor releases have at least minor 
 
 ## UNRELEASED
 
+This release brings a number of bugfixes and improvements.
+
 ### Core
+* Parameter `output` is optional in YAML files..
+  (See [!872](https://gitlab.com/esa/pyxel/-/merge_requests/872)).
 
 ### Documentation
 
