@@ -192,7 +192,7 @@ doc_development:
   script:
     - tox -e docs
     - mv docs/html latest
-    - (test -f static/pyxel_schema.json && cp static/pyxel_schema.json latest) || echo "No file 'pyxel_schema.json'"
+    - (test -f pyxel/static/pyxel_schema.json && cp pyxel/static/pyxel_schema.json latest) || echo "No file 'pyxel_schema.json'"
     - (cp continuous_integration/*.yaml latest) || echo "No file(s) '*.yaml'"
   artifacts:
     paths:
@@ -210,7 +210,7 @@ doc_production:
   script:
     - tox -e docs
     - mv docs/html stable
-    - (test -f static/pyxel_schema.json && cp static/pyxel_schema.json stable) || echo "No file 'pyxel_schema.json'"
+    - (test -f pyxel/static/pyxel_schema.json && cp pyxel/static/pyxel_schema.json stable) || echo "No file 'pyxel_schema.json'"
     - (cp continuous_integration/*.yaml stable) || echo "No file(s) '*.yaml'"
   artifacts:
     paths:
