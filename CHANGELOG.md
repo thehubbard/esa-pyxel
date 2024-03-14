@@ -36,6 +36,8 @@ This release brings a number of bugfixes and improvements.
   (See [!871](https://gitlab.com/esa/pyxel/-/merge_requests/871)).
 * Add more rules in 'ruff'.
   (See [!870](https://gitlab.com/esa/pyxel/-/merge_requests/870)).
+* Move `pyxel_schema.json` into folder `pyxel/static`.
+  (See [!874](https://gitlab.com/esa/pyxel/-/merge_requests/874)).
 
 
 ## 2.0 / 2024-02-22

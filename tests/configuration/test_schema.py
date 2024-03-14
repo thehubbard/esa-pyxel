@@ -6,10 +6,16 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 import json
+import sys
 from pathlib import Path
 
 import pytest
 from yaml import safe_load
+
+if sys.version_info < (3, 10):
+    import importlib_resources as resources  # pip install importlib_resources
+else:
+    from importlib import resources
 
 # This is equivalent to 'import jsonschema'
 jsonschema = pytest.importorskip(
@@ -20,8 +26,7 @@ jsonschema = pytest.importorskip(
 
 @pytest.fixture
 def schema(request: pytest.FixtureRequest) -> dict:
-    filename: Path = request.path.parent / "../../static/pyxel_schema.json"
-    full_filename = filename.resolve(strict=True)
+    full_filename = resources.files("pyxel.static").joinpath("pyxel_schema.json")
 
     with full_filename.open() as fh:
         content = json.load(fh)
