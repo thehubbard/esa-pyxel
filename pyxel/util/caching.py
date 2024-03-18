@@ -22,12 +22,16 @@ def get_cache(folder: Optional[str] = None) -> Cache:
     --------
     >>> from pyxel.util import get_cache
 
+    Check that 'get_cache()' always return the same object
+
     >>> cache1 = get_cache()
     >>> cache2 = get_cache()
-
     >>> cache1 is cache2
     True
 
+    Clean the cache
+    >>> cache = get_cache()
+    >>> cache.clear()
     """
     global _global_cache
 
