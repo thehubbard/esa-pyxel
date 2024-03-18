@@ -16,7 +16,19 @@ _global_cache: Optional[Cache] = None
 
 
 def get_cache(folder: Optional[str] = None) -> Cache:
-    """Retrieve a global cache instance."""
+    """Retrieve a unique global cache instance.
+
+    Examples
+    --------
+    >>> from pyxel.util import get_cache
+
+    >>> cache1 = get_cache()
+    >>> cache2 = get_cache()
+
+    >>> cache1 is cache2
+    True
+
+    """
     global _global_cache
 
     if _global_cache is None:
