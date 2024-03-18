@@ -22,7 +22,7 @@ if TYPE_CHECKING:
 
 
 class Photon:
-    """Photon class designed to handle the storage of monochromatic (unit: ph_ or multi-wavelength photons (unit ph/nm).
+    """Photon class designed to handle the storage of monochromatic (unit: ph or multi-wavelength photons (unit ph/nm).
 
     Monochromatic photons are stored in a 2D Numpy array and
     multi-wavelength photons are stored in a 3D Xarray DataArray.
