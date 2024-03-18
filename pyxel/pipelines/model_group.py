@@ -90,7 +90,10 @@ class ModelGroup:
                 model(detector)
             except Exception as exc:
                 if sys.version_info >= (3, 11):
-                    note = f"This error is raised in model group '{self._name}' at model '{model.name}'."
+                    note = (
+                        f"This error is raised in group '{self._name}' at "
+                        f"model '{model.name}' ({model.func.__name__})."
+                    )
                     exc.add_note(note)
 
                 raise
