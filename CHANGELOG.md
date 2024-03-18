@@ -24,6 +24,8 @@ This release brings a number of bugfixes and improvements.
 ### Models
 * Add kTC noise only to the frame acquired right after reset.
   (See [!867](https://gitlab.com/esa/pyxel/-/merge_requests/867)).
+* Fix issue in model `load_star_map` from `Scene Generation` with Astroquery 0.4.7+.
+  (See [!875](https://gitlab.com/esa/pyxel/-/merge_requests/875)).
 
 ### Others
 * Improved tests when an optional dependency is not installed.
