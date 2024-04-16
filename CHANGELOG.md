@@ -9,6 +9,19 @@ Minor releases include updated stdlib stubs from typeshed.
 
 Pyxel doesn't use SemVer anymore, since most minor releases have at least minor backward incompatible changes.
 
+
+## UNRELEASED
+
+### Core
+
+### Documentation
+
+### Models
+
+### Others
+* Add a [code of conduct](https://gitlab.com/esa/pyxel/-/blob/master/CODE_OF_CONDUCT.md).
+  (See [!881](https://gitlab.com/esa/pyxel/-/merge_requests/881)).
+
 ## 2.1.1 / 2024-03-19
 
 Add missing documentation on version 2.1 (and 2.1.1).
