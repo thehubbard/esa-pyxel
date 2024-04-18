@@ -51,7 +51,7 @@ ccd_detector:
     pixel_horz_size: 10.0         # um
 
   environment:
-    temperature: 0                    # K
+    temperature: 100.                    # K
 
   characteristics:
     quantum_efficiency: 0.5                 # -
