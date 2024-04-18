@@ -21,6 +21,8 @@ Pyxel doesn't use SemVer anymore, since most minor releases have at least minor 
 ### Others
 * Add a [code of conduct](https://gitlab.com/esa/pyxel/-/blob/master/CODE_OF_CONDUCT.md).
   (See [!881](https://gitlab.com/esa/pyxel/-/merge_requests/881)).
+* Add unit tests for class `ModelFunction`.
+  (See [!883](https://gitlab.com/esa/pyxel/-/merge_requests/883)).
 
 ## 2.1.1 / 2024-03-19
 
