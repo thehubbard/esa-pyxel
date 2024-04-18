@@ -27,8 +27,17 @@ class WavelengthHandling:
     resolution: int
 
     def __post_init__(self):
-        assert 0 < self.cut_on <= self.cut_off
-        assert self.resolution > 0
+        if self.cut_on <= 0:
+            raise ValueError(f"'cut_on' must be > 0. {self.cut_on=}")
+
+        if self.cut_on > self.cut_off:
+            raise ValueError(
+                "'cut_off' must be bigger than 'cut_on'. "
+                f"{self.cut_on=}, {self.cut_off=}"
+            )
+
+        if self.resolution <= 0:
+            raise ValueError(f"'resolution' must be > 0. {self.resolution=}")
 
     def to_dict(self) -> dict:
         return {
@@ -69,17 +78,11 @@ class Environment:
         temperature: Optional[float] = None,
         wavelength: Union[float, WavelengthHandling, None] = None,
     ):
-        if isinstance(temperature, (int, float)) and not (0.0 <= temperature <= 1000.0):
+        if isinstance(temperature, (int, float)) and not (0.0 < temperature <= 1000.0):
             raise ValueError("'temperature' must be between 0.0 and 1000.0.")
 
         if isinstance(wavelength, (int, float)) and not (wavelength > 0.0):
             raise ValueError("'wavelength' must be strictly positive.")
-
-        if isinstance(wavelength, WavelengthHandling):
-            if not (wavelength.cut_on < wavelength.cut_off):
-                raise ValueError("'cut_on' must be strictly inferior to 'cut_off'.")
-            if not (wavelength.resolution > 0):
-                raise ValueError("'resolution' must be strictly positive and not 0.")
 
         self._temperature: Optional[float] = (
             float(temperature) if temperature is not None else None
@@ -105,15 +108,15 @@ class Environment:
     @property
     def temperature(self) -> float:
         """Get Temperature of the detector."""
-        if self._temperature:
-            return self._temperature
-        else:
+        if self._temperature is None:
             raise ValueError("'temperature' not specified in detector environment.")
+
+        return self._temperature
 
     @temperature.setter
     def temperature(self, value: float) -> None:
         """Set Temperature of the detector."""
-        if not (0.0 <= value <= 1000.0):
+        if not (0.0 < value <= 1000.0):
             raise ValueError("'temperature' must be between 0.0 and 1000.0.")
 
         self._temperature = value
@@ -123,21 +126,17 @@ class Environment:
         """Get wavelength of the detector."""
         if self._wavelength is None:
             raise ValueError("'wavelength' not specified in detector environment.")
+
         return self._wavelength
 
     @wavelength.setter
-    def wavelength(self, value: Union[float, WavelengthHandling]) -> None:
+    def wavelength(self, value: Union[int, float, WavelengthHandling]) -> None:
         """Set wavelength of the detector."""
-        if isinstance(value, float) and not (value > 0.0):
-            raise ValueError("'wavelength' must be strictly positive.")
-
-        elif isinstance(value, WavelengthHandling):
-            if not (value.cut_on < value.cut_off):
-                raise ValueError("'cut_on' must be strictly inferior to 'cut_off'.")
-            if not (value.resolution > 0):
-                raise ValueError("'resolution' must be strictly positive and not 0.")
-        else:
-            raise ValueError("A WavelengthHandling object or a float must be provided.")
+        if isinstance(value, (int, float)):
+            if value <= 0.0:
+                raise ValueError("'wavelength' must be strictly positive.")
+        elif not isinstance(value, WavelengthHandling):
+            raise TypeError("A WavelengthHandling object or a float must be provided.")
 
         self._wavelength = value
 
@@ -156,11 +155,12 @@ class Environment:
     def to_dict(self) -> Mapping:
         """Get the attributes of this instance as a `dict`."""
         if self._wavelength is None:
-            wavelength_dict = {}
+            wavelength_dict: dict[str, Union[int, float, dict]] = {}
         elif isinstance(self._wavelength, (int, float)):
             wavelength_dict = {"wavelength": self._wavelength}
         else:
-            wavelength_dict = self._wavelength.to_dict()
+            wavelength_dict = {"wavelength": self._wavelength.to_dict()}
+
         return {"temperature": self._temperature} | wavelength_dict
 
     @classmethod
