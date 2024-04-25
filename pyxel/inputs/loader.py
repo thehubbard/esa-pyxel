@@ -306,14 +306,13 @@ def load_table_v2(
         url_path = filename
 
     if suffix.startswith(".fits"):
-        from astropy.io import fits
         from astropy.table import Table
 
-        with fits.open(url_path) as hdus:
-            if data_path is None:
-                data_path = 0
-            assert isinstance(data_path, int)
-            assert isinstance(hdus[data_path], (fits.TableHDU, fits.BinTableHDU))
+        # with fits.open(url_path) as hdus:
+        #     if data_path is None:
+        #         data_path = 0
+        #     assert isinstance(data_path, int)
+        #     assert isinstance(hdus[data_path], (fits.TableHDU, fits.BinTableHDU))
         table: pd.DataFrame = Table.read(url_path, hdu=data_path).to_pandas()
         if rename_cols:
             col_new = {value: key for key, value in rename_cols.items()}
@@ -332,10 +331,12 @@ def load_table_v2(
                             dims.append(key)
                             break
                     else:
-                        raise ValueError
+                        raise KeyError(f"Missing columns. {rename_cols=}")
 
                 table.columns = dims
                 table_data = table.copy()
+            else:
+                table_data = table
 
     elif suffix.startswith((".txt", ".data", ".csv")):
         with open(url_path) as file_handler:
@@ -355,7 +356,7 @@ def load_table_v2(
             raise ValueError(f"Cannot find the separator. {delimiter=!r}")
 
         with StringIO(data) as file_handler:
-            if suffix.startswith("csv"):
+            if suffix.startswith(".csv"):
                 table = pd.read_csv(
                     file_handler,
                     delimiter=delimiter,
