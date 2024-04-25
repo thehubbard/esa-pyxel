@@ -286,5 +286,5 @@ class ArrayBase:
 
         arr: xr.DataArray = self.to_xarray()
 
-        arr.plot(robust=robust)
+        arr.plot.imshow(robust=robust)
         plt.title(self.NAME)
