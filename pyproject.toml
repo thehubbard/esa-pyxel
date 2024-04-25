@@ -207,6 +207,7 @@ ignore_missing_imports = true
 addopts = [
     "--showlocals",
     "--capture=no",
+    "--log-cli-level=ERROR",
     "-vv",
     "--ignore=old_code"
 ]
@@ -234,12 +235,18 @@ exclude_lines = [
     "pragma: no cover",
     "debug",
     "raise NotImplementedError",
+    "if TYPE_CHECKING:",
+    "class .*\\bProtocol\\):",
+    "if not hv.Store.renderers",
 ]
 
 [tool.coverage.run]
 omit = [
+    "pyxel/models/phasing/mkid_models/*",
     "pyxel/models/charge_measurement/nghxrg/nghxrg_beta.py",
     "pyxel/models/charge_generation/tars/plotting.py",
+    "pyxel/_version.py",
+    "tests/*",
 ]
 
 [tool.ruff.lint]

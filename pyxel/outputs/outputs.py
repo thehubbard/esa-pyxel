@@ -120,13 +120,13 @@ class Outputs:
         if self._current_output_folder is None:
             return f"{cls_name}<NO OUTPUT DIR>"
         else:
-            return f"{cls_name}<output_dir={self.current_output_folder!r}>"
+            return f"{cls_name}<output_dir='{self.current_output_folder!s}'>"
 
     @property
     def current_output_folder(self) -> Path:
         """Get directory where all outputs are saved."""
         if self._current_output_folder is None:
-            raise RuntimeError
+            raise RuntimeError("'current_output_folder' is not defined.")
 
         return self._current_output_folder
 
@@ -137,7 +137,9 @@ class Outputs:
     @output_folder.setter
     def output_folder(self, folder: Union[str, Path]) -> None:
         if not isinstance(folder, (str, Path)):
-            raise TypeError
+            raise TypeError(
+                "Wrong type for parameter 'folder'. Expecting 'str' or 'Path'."
+            )
 
         self._output_folder = Path(folder)
 
@@ -148,7 +150,7 @@ class Outputs:
     @custom_dir_name.setter
     def custom_dir_name(self, name: str) -> None:
         if not isinstance(name, str):
-            raise TypeError
+            raise TypeError("Wrong type for parameter 'name'. Expecting 'str'.")
 
         self._custom_dir_name = name
 
