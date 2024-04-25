@@ -18,6 +18,8 @@ from typing_extensions import Self
 from pyxel.util import convert_unit, get_size
 
 if TYPE_CHECKING:
+    from matplotlib.pyplot import AxesImage
+
     from pyxel.detectors import Geometry
 
 
@@ -521,7 +523,7 @@ pipeline:
 
             return data_3d
 
-    def plot(self, robust: bool = True) -> None:
+    def plot(self, robust: bool = True) -> "AxesImage":
         """Plot the array using Matplotlib.
 
         Parameters
@@ -538,7 +540,7 @@ pipeline:
         """
         arr: xr.DataArray = self.to_xarray()
 
-        return arr.plot(robust=robust)
+        return arr.plot.imshow(robust=robust)
 
     def empty(self) -> None:
         """Empty the data container."""
