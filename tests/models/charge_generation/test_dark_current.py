@@ -8,6 +8,7 @@
 """Tests for dark current models."""
 
 import pytest
+from astropy.units import Quantity, allclose
 
 from pyxel.detectors import (
     APD,
@@ -24,6 +25,18 @@ from pyxel.models.charge_generation import (
     dark_current_saphira,
     simple_dark_current,
 )
+from pyxel.models.charge_generation.dark_current import calculate_band_gap
+
+
+def test_band_gap_silicon():
+    """Test function 'band_gap_silicon'."""
+    result = calculate_band_gap(
+        temperature=Quantity(300, unit="Kelvin"),
+        material="silicon",
+    )
+    exp = Quantity(1.11082145, unit="eV")
+
+    allclose(result, exp)
 
 
 @pytest.fixture
@@ -77,7 +90,11 @@ def test_simple_dark_current_valid(ccd_10x10: CCD):
 
 def test_dark_current_valid(ccd_10x10: CCD):
     """Test model 'dark_current' with valid inputs."""
-    dark_current(detector=ccd_10x10, figure_of_merit=1.0, spatial_noise_factor=0.4)
+    dark_current(
+        detector=ccd_10x10,
+        figure_of_merit=1.0,
+        spatial_noise_factor=0.4,
+    )
 
 
 @pytest.mark.skip(reason="RuntimeWarning is not raised")
@@ -100,7 +117,7 @@ def test_dark_current_warning(ccd_10x10: CCD):
             None,
             1.2,
             ValueError,
-            "Both parameters band_gap and band_gap_room_temperature have to be"
+            "Both parameters 'band_gap' and 'band_gap_room_temperature' must be"
             " defined.",
         ),
         pytest.param(
@@ -109,7 +126,7 @@ def test_dark_current_warning(ccd_10x10: CCD):
             1.2,
             None,
             ValueError,
-            "Both parameters band_gap and band_gap_room_temperature have to be"
+            "Both parameters 'band_gap' and 'band_gap_room_temperature' must be"
             " defined.",
         ),
     ],
