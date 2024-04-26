@@ -461,7 +461,7 @@ class Charge:
         array
         """
         if id_list:
-            df: pd.DataFrame = self._frame.query("index in %s" % id_list)
+            df: pd.DataFrame = self._frame.query(f"index in {id_list}")
         else:
             df = self._frame
 
@@ -496,6 +496,6 @@ class Charge:
         """
         if id_list:
             # TODO: Check carefully if 'inplace' is needed. This could break lot of things.
-            self._frame.query("index not in %s" % id_list, inplace=True)
+            self._frame.query(f"index not in {id_list}", inplace=True)
         else:
             self._frame = self.EMPTY_FRAME.copy()
