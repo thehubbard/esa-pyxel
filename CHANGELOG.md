@@ -35,6 +35,8 @@ This release brings a number of bugfixes and improvements.
   [!888](https://gitlab.com/esa/pyxel/-/merge_requests/888))
 * Fix issues found by 'mypy 1.10'.
   (See [!889](https://gitlab.com/esa/pyxel/-/merge_requests/889)).
+* Fix issues with 'codespell 2.3.0' and 'ruff 0.4.5'.
+  (See [!891](https://gitlab.com/esa/pyxel/-/merge_requests/891)).
 
 
 ## 2.1.1 / 2024-03-19
