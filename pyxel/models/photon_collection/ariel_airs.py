@@ -189,7 +189,7 @@ def integrate_flux(
     flux : quantity array
         Flux. Unit: ph/s/m2/micron. Dimension: big_n.
     psf_wavelength : quantity array
-        Point Spead Function per wavelength.
+        Point Spread Function per wavelength.
 
     Returns
     -------

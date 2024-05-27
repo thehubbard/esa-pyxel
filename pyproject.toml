@@ -227,7 +227,7 @@ ignore = ["D001", "D002", "D004", "D005"]
 exclude_dirs = ["pyxel/_version.py"]
 
 [tool.codespell]
-ignore-words-list = "acn,sade,te"
+ignore-words-list = "acn,sade,te,Tennant"
 skip = "pyxel/_version.py,*.fits,pyxel/models/phasing/mkid_models/*"
 
 [tool.coverage.report]
