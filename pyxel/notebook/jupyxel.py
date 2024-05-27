@@ -178,7 +178,7 @@ def _new_display_detector(
                 "gray": cc.gray,  # linear colormaps, for plotting magnitudes
                 "blues": cc.blues,  # linear colormaps, for plotting magnitudes
                 "colorwheel": cc.colorwheel,  # cyclic colormaps for cyclic quantities like orientation or phase
-                "coolwarm": cc.coolwarm,  # diverging colormap, for plotting magnitude increasing or decreasin from a central point
+                "coolwarm": cc.coolwarm,  # diverging colormap, for plotting magnitude increasing or decreasing from a central point
                 "rainbow": cc.rainbow4,  # To highlight local differences in sequential data
                 "isoluminant": cc.isolum,  # To highlight low spatial-frequency information
             }
