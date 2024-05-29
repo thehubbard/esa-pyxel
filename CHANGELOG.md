@@ -17,10 +17,15 @@ This release brings a number of bugfixes and improvements.
 ### Core
 
 ### Documentation
-* Possible bug in dark current calculation.
+* Possible bug in [`dark current`](https://esa.gitlab.io/pyxel/doc/stable/references/model_groups/charge_generation_models.html#dark-current)
+  calculation.
   (See [!880](https://gitlab.com/esa/pyxel/-/merge_requests/880)).
 
 ### Models
+* Refactor [`dark current`](https://esa.gitlab.io/pyxel/doc/stable/references/model_groups/charge_generation_models.html#dark-current)
+  and [`dark current rule 07`](https://esa.gitlab.io/pyxel/doc/stable/references/model_groups/charge_generation_models.html#dark-current-rule07)
+  from [Charge Generation](https://esa.gitlab.io/pyxel/doc/stable/references/model_groups/charge_generation_models.html#).
+  (See [!892](https://gitlab.com/esa/pyxel/-/merge_requests/892)).
 
 ### Others
 * Add a [code of conduct](https://gitlab.com/esa/pyxel/-/blob/master/CODE_OF_CONDUCT.md).
