@@ -13,6 +13,15 @@ Pyxel doesn't use SemVer anymore, since most minor releases have at least minor 
 
 This release brings a number of bugfixes and improvements.
 
+### Core
+
+* Add option to generate a new model directly in the console with 'pyxel -m create-model'.
+  (See [!894](https://gitlab.com/esa/pyxel/-/merge_requests/894)).
+
+### Documentation
+* Fix issue with netcdf4 version 1.7.1.
+  (See [!896](https://gitlab.com/esa/pyxel/-/merge_requests/896)).
+
 ### Others
 * Add a [code of conduct](https://gitlab.com/esa/pyxel/-/blob/master/CODE_OF_CONDUCT.md).
   (See [!881](https://gitlab.com/esa/pyxel/-/merge_requests/881)).
@@ -22,11 +31,10 @@ This release brings a number of bugfixes and improvements.
 
 This release brings a number of bugfixes and improvements.
 
-### Core
-
 ### Documentation
-* Fix issue with netcdf4 version 1.7.1.
-  (See [!896](https://gitlab.com/esa/pyxel/-/merge_requests/896)).
+* Possible bug in [`dark current`](https://esa.gitlab.io/pyxel/doc/stable/references/model_groups/charge_generation_models.html#dark-current)
+  calculation.
+  (See [!880](https://gitlab.com/esa/pyxel/-/merge_requests/880)).
 
 ### Models
 * Refactor [`dark current`](https://esa.gitlab.io/pyxel/doc/stable/references/model_groups/charge_generation_models.html#dark-current)
