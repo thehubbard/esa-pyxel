@@ -9,6 +9,14 @@ Minor releases include updated stdlib stubs from typeshed.
 
 Pyxel doesn't use SemVer anymore, since most minor releases have at least minor backward incompatible changes.
 
+## UNRELEASED
+
+This release brings a number of bugfixes and improvements.
+
+### Others
+* Add a [code of conduct](https://gitlab.com/esa/pyxel/-/blob/master/CODE_OF_CONDUCT.md).
+  (See [!881](https://gitlab.com/esa/pyxel/-/merge_requests/881)).
+
 
 ## 2.2 / 2024-05-29
 
@@ -17,9 +25,8 @@ This release brings a number of bugfixes and improvements.
 ### Core
 
 ### Documentation
-* Possible bug in [`dark current`](https://esa.gitlab.io/pyxel/doc/stable/references/model_groups/charge_generation_models.html#dark-current)
-  calculation.
-  (See [!880](https://gitlab.com/esa/pyxel/-/merge_requests/880)).
+* Fix issue with netcdf4 version 1.7.1.
+  (See [!896](https://gitlab.com/esa/pyxel/-/merge_requests/896)).
 
 ### Models
 * Refactor [`dark current`](https://esa.gitlab.io/pyxel/doc/stable/references/model_groups/charge_generation_models.html#dark-current)
