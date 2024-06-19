@@ -76,22 +76,22 @@ commands in the terminal:
 
     .. code-block:: bash
 
-        curl -O https://esa.gitlab.io/pyxel/doc/latest/pyxel-2.2-environment.yaml
-        conda env create -f pyxel-2.2-environment.yaml
+        curl -O https://esa.gitlab.io/pyxel/doc/latest/pyxel-2.3-environment.yaml
+        conda env create -f pyxel-2.3-environment.yaml
 
 .. tab:: Windows (Powershell)
 
     .. code-block:: bash
 
-        wget https://esa.gitlab.io/pyxel/doc/latest/pyxel-2.2-environment.yaml -outfile "pyxel-2.2-environment.yaml"
-        conda env create -f pyxel-2.2-environment.yaml
+        wget https://esa.gitlab.io/pyxel/doc/latest/pyxel-2.3-environment.yaml -outfile "pyxel-2.3-environment.yaml"
+        conda env create -f pyxel-2.3-environment.yaml
 
 
 Once the conda environment has been created you can active it using:
 
 .. code-block:: bash
 
-    conda activate pyxel-2.2
+    conda activate pyxel-2.3
 
 You can now proceed to download the Pyxel tutorial notebooks.
 The total size to download is ~200 MB.
