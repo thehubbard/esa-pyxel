@@ -38,7 +38,12 @@ from pyxel.util import resolve_path
 if TYPE_CHECKING:
     import pandas as pd
     import xarray as xr
-    from datatree import DataTree
+
+    # Import 'DataTree'
+    try:
+        from xarray.core.datatree import DataTree
+    except ImportError:
+        from datatree import DataTree  # pip install xarray-datatree
 
     from pyxel.outputs import CalibrationOutputs
 
