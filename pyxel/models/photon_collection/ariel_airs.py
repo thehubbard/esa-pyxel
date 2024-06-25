@@ -41,7 +41,7 @@ import pandas as pd
 from astropy import units as u
 from astropy.io import ascii, fits
 from astropy.units import Quantity
-from scipy.integrate import cumtrapz
+from scipy.integrate import cumulative_trapezoid
 
 from pyxel.detectors import Detector
 
@@ -203,7 +203,7 @@ def integrate_flux(
     bandwidth, all_poles = compute_bandwidth(psf_wavelength)
 
     # Cumulative count
-    cum_sum = cumtrapz(y=flux, x=wavelength, initial=0.0)
+    cum_sum = cumulative_trapezoid(y=flux, x=wavelength, initial=0.0)
 
     # self.wavelength has to quantity: value and units
     # interpolate over psf wavelength
