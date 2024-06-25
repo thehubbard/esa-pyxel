@@ -9,6 +9,22 @@ Minor releases include updated stdlib stubs from typeshed.
 
 Pyxel doesn't use SemVer anymore, since most minor releases have at least minor backward incompatible changes.
 
+## UNRELEASED
+
+This release brings a number of bugfixes and improvements.
+
+### Core
+
+### Documentation
+
+### Models
+* Replace deprecated `scipy.integrate.cumtrapz` by `scipy.integrate.cumulative_trapezoid`
+  in model `wavelength_dependence_airs` in group 'Photon Collection'.
+  (See [!900](https://gitlab.com/esa/pyxel/-/merge_requests/900)).
+
+### Others
+
+
 ## 2.3 / 2024-06-19
 
 This release brings a number of bugfixes and improvements.
