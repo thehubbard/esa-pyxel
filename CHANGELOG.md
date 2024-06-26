@@ -23,6 +23,8 @@ This release brings a number of bugfixes and improvements.
   (See [!900](https://gitlab.com/esa/pyxel/-/merge_requests/900)).
 
 ### Others
+* Pin NetCDF4 to <1.7.1.
+  (See [!901](https://gitlab.com/esa/pyxel/-/merge_requests/901)).
 
 
 ## 2.3 / 2024-06-19
