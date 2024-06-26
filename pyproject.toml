@@ -63,7 +63,7 @@ dependencies = [
     "pyyaml",
     "xlrd",
     "openpyxl",
-    "netcdf4!=1.7.1",
+    "netcdf4<1.7.1",
 
     # Others
     "attrs>=21.3.0",
