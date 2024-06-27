@@ -394,10 +394,7 @@ class Detector:
 
         By default it is not dynamic.
         """
-        if self._readout_properties is not None:
-            return True
-
-        return False
+        return self._readout_properties is not None
 
     @property
     def non_destructive_readout(self) -> bool:
@@ -409,10 +406,7 @@ class Detector:
 
     def has_persistence(self) -> bool:
         """TBW."""
-        if self._persistence is not None:
-            return True
-
-        return False
+        return self._persistence is not None
 
     @property
     def persistence(self) -> Union[Persistence, SimplePersistence]:
