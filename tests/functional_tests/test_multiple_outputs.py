@@ -24,7 +24,7 @@ freezegun = pytest.importorskip(
 
 @contextmanager
 def chdir(folder: Path):
-    current_folder = Path().resolve()
+    current_folder = Path.cwd()
 
     try:
         os.chdir(folder)
