@@ -272,6 +272,8 @@ select = [
     "N",        # pep8-naming
     "NPY201",   # Numpy2-deprecation
     "PERF",     # Perlint
+    "FURB",     # Refurb
+    "PLE",      # Pylint Error
 ]
 ignore = [
     "E501",     # Omit 'Line too long'

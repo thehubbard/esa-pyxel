@@ -423,7 +423,7 @@ def rebin_2d(
         int(data.shape[1] // zoom[1]),
         zoom[1],
     )
-    logging.debug("final_shape ", final_shape)
+    logging.debug("final_shape %r", final_shape)
     result = data.reshape(final_shape).sum(3).sum(1)
 
     return result

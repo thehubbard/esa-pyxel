@@ -43,10 +43,9 @@ class LogFilter(logging.Filter):
 
     def filter(self, record):
         """Filter or modify record."""
-        if record.threadName == "MainThread" or record.threadName.endswith("-0"):
-            return True
-
-        return False
+        return bool(
+            record.threadName == "MainThread" or record.threadName.endswith("-0")
+        )
 
 
 def deprecated(msg: str) -> Callable:
