@@ -556,7 +556,7 @@ def display_persist(persistence: Union[Persistence, SimplePersistence]) -> None:
     # Late import to speedup start-up time
     import matplotlib.pyplot as plt
 
-    trapped_charges = persistence.trapped_charge_array
+    trapped_charges: np.ndarray = persistence.trapped_charge_array
 
     fig, axes = plt.subplots(
         len(trapped_charges), 2, figsize=(10, 5 * len(trapped_charges))
@@ -580,7 +580,8 @@ def display_persist(persistence: Union[Persistence, SimplePersistence]) -> None:
             "Persistence or SimplePersistence expected for argument 'persistence'!"
         )
 
-    for ax, trapmap, keyw in zip(axes, trapped_charges, labels):
+    trapmap: np.ndarray
+    for ax, trapmap, keyw in zip(axes, trapped_charges, labels):  # type: ignore[arg-type]
         display_array(data=trapmap, axes=ax, label=keyw)
 
 

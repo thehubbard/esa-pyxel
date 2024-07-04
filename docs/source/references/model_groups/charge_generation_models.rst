@@ -275,7 +275,7 @@ Example of the configuration file:
 .. code-block:: yaml
 
     - name: charge_deposition
-      func: pyxel.models.charge_generation.charge_deposition_in_mct
+      func: pyxel.models.charge_generation.charge_deposition
       enabled: true
       arguments:
         flux: 100

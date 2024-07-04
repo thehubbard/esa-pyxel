@@ -16,6 +16,8 @@ This release brings a number of bugfixes and improvements.
 ### Core
 
 ### Documentation
+* Fix typo in documentation for model `charge_deposition` from `Charge Generation`.
+  (See [!908](https://gitlab.com/esa/pyxel/-/merge_requests/908)).
 
 ### Models
 * Replace deprecated `scipy.integrate.cumtrapz` by `scipy.integrate.cumulative_trapezoid`
