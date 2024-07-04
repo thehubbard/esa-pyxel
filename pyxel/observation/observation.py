@@ -26,6 +26,7 @@ import toolz
 from tqdm.auto import tqdm
 
 import pyxel
+from pyxel import options_wrapper
 from pyxel.exposure import Readout, _run_exposure_pipeline_deprecated, run_pipeline
 from pyxel.observation.parameter_values import ParameterType, ParameterValues
 from pyxel.pipelines import ResultId, get_result_id
@@ -834,6 +835,40 @@ class Observation:
         else:
             raise ValueError("Parametric mode not specified.")
 
+    def run_observation_without_datatree(self, processor: "Processor") -> None:
+        """Run the observation pipelines."""
+        # Late import to speedup start-up time
+
+        # validation
+        self.validate_steps(processor)
+
+        types: Mapping[str, ParameterType] = self._get_parameter_types()
+        dim_names: Mapping[str, str] = _get_short_dimension_names_new(types)
+
+        parameters: Sequence[Union[ParameterItem, CustomParameterItem]] = (
+            self._get_parameters_item(processor=processor)
+        )
+
+        if self.with_dask:
+            datatree_bag: db.Bag = db.from_sequence(parameters).map(
+                options_wrapper(working_directory=self.working_directory)(
+                    self._apply_exposure_pipeline_without_datatree
+                ),
+                dimension_names=dim_names,
+                processor=processor,
+                types=types,
+            )
+
+            _ = datatree_bag.compute()
+        else:
+            for el in tqdm(parameters):
+                self._apply_exposure_pipeline_without_datatree(
+                    el,
+                    dimension_names=dim_names,
+                    processor=processor,
+                    types=types,
+                )
+
     def run_observation_datatree(self, processor: "Processor") -> "DataTree":
         """Run the observation pipelines."""
         # Late import to speedup start-up time
@@ -844,28 +879,35 @@ class Observation:
         types: Mapping[str, ParameterType] = self._get_parameter_types()
         dim_names: Mapping[str, str] = _get_short_dimension_names_new(types)
 
-        apply_pipeline: Callable[
-            [Union[ParameterItem, CustomParameterItem]], DataTree
-        ] = partial(
-            self._apply_exposure_pipeline,
-            dimension_names=dim_names,
-            processor=processor,
-            types=types,
-        )
-
         parameters: Sequence[Union[ParameterItem, CustomParameterItem]] = (
             self._get_parameters_item(processor=processor)
         )
 
         if self.with_dask:
+
             datatree_bag: db.Bag = (
-                db.from_sequence(parameters).map(apply_pipeline).fold(binop=merge)
+                db.from_sequence(parameters)
+                .map(
+                    options_wrapper(working_directory=self.working_directory)(
+                        self._apply_exposure_pipeline
+                    ),
+                    dimension_names=dim_names,
+                    processor=processor,
+                    types=types,
+                )
+                .fold(binop=merge)
             )
 
             final_datatree: DataTree = datatree_bag.compute()
         else:
             datatree_list: Iterator[DataTree] = (
-                apply_pipeline(el) for el in tqdm(parameters)
+                self._apply_exposure_pipeline(
+                    el,
+                    dimension_names=dim_names,
+                    processor=processor,
+                    types=types,
+                )
+                for el in tqdm(parameters)
             )
 
             final_datatree = merge(*datatree_list)
@@ -933,6 +975,33 @@ class Observation:
         ds.attrs.update({"running mode": "Observation - Product"})
 
         return ds
+
+    def _apply_exposure_pipeline_without_datatree(
+        self,
+        param_item: Union[ParameterItem, CustomParameterItem],
+        dimension_names: Mapping[str, str],
+        processor: "Processor",
+        types: Mapping[str, ParameterType],
+    ) -> None:
+        new_processor = create_new_processor(
+            processor=processor,
+            parameter_dict=param_item.parameters,
+        )
+
+        # run the pipeline
+        _ = run_pipeline(
+            processor=new_processor,
+            readout=self.readout,
+            result_type=self.result_type,
+            pipeline_seed=self.pipeline_seed,
+            debug=False,  # Not supported in Observation mode
+        )
+
+        if self.outputs:
+            _ = self.outputs.save_to_file(
+                processor=new_processor,
+                run_number=param_item.run_index,
+            )
 
     def _apply_exposure_pipeline(
         self,
