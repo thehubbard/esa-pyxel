@@ -944,7 +944,15 @@ def create_new_model(model_name: Optional[str]):
 
 @main.command(name="run")
 @click.argument("config", type=click.Path(exists=True))
-@click.option("--override", multiple=True)
+@click.option(
+    "--override",
+    multiple=True,
+    help="""
+    Override entries from the YAML configuration file.
+    This parameter can be repeated.\f
+    Example:\f
+    --override exposure.outputs.output_folder=new_folder""",
+)
 @click.option(
     "-v",
     "--verbosity",
