@@ -32,7 +32,12 @@ from pyxel.pipelines import ResultId, get_result_id
 
 if TYPE_CHECKING:
     import xarray as xr
-    from datatree import DataTree
+
+    # Import 'DataTree'
+    try:
+        from xarray.core.datatree import DataTree
+    except ImportError:
+        from datatree import DataTree  # type: ignore[assignment]
 
     from pyxel.outputs import ObservationOutputs
     from pyxel.pipelines import Processor
@@ -186,7 +191,12 @@ def _get_short_dimension_names_new(
 # TODO: or 'datatree.merge' when it will be possible
 def merge(*objects: Iterable["DataTree"]) -> "DataTree":
     """Merge any number of DataTree into a single DataTree."""
-    import datatree
+    # Import 'datatree'
+    try:
+        from xarray.core import datatree
+    except ImportError:
+        import datatree  # type: ignore[no-redef]
+
     import xarray as xr
 
     def _merge_dataset(*args: xr.Dataset) -> xr.Dataset:
@@ -195,6 +205,7 @@ def merge(*objects: Iterable["DataTree"]) -> "DataTree":
     _merge_datatree: Callable[..., "DataTree"] = datatree.map_over_subtree(
         _merge_dataset
     )
+
     return _merge_datatree(*objects)
 
 
