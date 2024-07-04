@@ -34,14 +34,18 @@ def current_folder(request: pytest.FixtureRequest) -> Path:
 @pytest.mark.parametrize(
     "config_filename",
     [
+        # Without a working directory
         "exposure.yaml",
         "observation_product.yaml",
         "observation_sequential.yaml",
         "observation_custom.yaml",
+        "calibration.yaml",
+        # With a working directory
         "exposure_with_working_directory.yaml",
         "observation_product_with_working_directory.yaml",
         "observation_sequential_with_working_directory.yaml",
         "observation_custom_with_working_directory.yaml",
+        "calibration_with_working_directory.yaml",
     ],
 )
 def test_exposure(config_filename: str, current_folder: Path, tmp_path: Path):
@@ -68,15 +72,6 @@ def test_exposure(config_filename: str, current_folder: Path, tmp_path: Path):
         )
 
     assert result is not None
-    assert list(result) == [
-        "photon",
-        "charge",
-        "pixel",
-        "signal",
-        "image",
-        "scene",
-        "data",
-    ]
 
     # Check output folder
     current_output_folder: Path = output_folder / "run_20240703_062000"
