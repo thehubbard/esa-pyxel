@@ -13,7 +13,7 @@ from typing import Literal, Optional, Union
 import numpy as np
 
 from pyxel.detectors import Detector, Geometry
-from pyxel.util import load_cropped_and_aligned_image, set_random_seed
+from pyxel.util import load_cropped_and_aligned_image, resolve_path, set_random_seed
 
 
 def fpn_from_file(
@@ -50,7 +50,7 @@ def fpn_from_file(
     """
     position_y, position_x = position
 
-    folder_path = Path(filename).expanduser().resolve()
+    folder_path = Path(resolve_path(filename)).expanduser().resolve()
 
     if not folder_path.exists():
         raise FileNotFoundError(f"Cannot find folder '{folder_path}' !")

@@ -20,6 +20,8 @@ import pandas as pd
 from PIL import Image
 
 from pyxel import __version__ as version
+from pyxel.options import global_options
+from pyxel.util import complete_path
 
 if TYPE_CHECKING:
     import xarray as xr
@@ -155,8 +157,12 @@ class Outputs:
         self._custom_dir_name = name
 
     def create_output_folder(self) -> None:
+        output_folder: Path = complete_path(
+            filename=self._output_folder,
+            working_dir=global_options.working_directory,
+        ).expanduser()
         self._current_output_folder = create_output_directory(
-            output_folder=self._output_folder,
+            output_folder=output_folder,
             custom_dir_name=self._custom_dir_name,
         )
 
@@ -170,13 +176,18 @@ class Outputs:
         """Write array to :term:`FITS` file."""
         name = name.replace(".", "_")
 
+        current_output_folder: Path = complete_path(
+            filename=self.current_output_folder,
+            working_dir=global_options.working_directory,
+        )
+
         if with_auto_suffix:
             filename = apply_run_number(
-                template_filename=self.current_output_folder.joinpath(f"{name}_?.fits"),
+                template_filename=current_output_folder.joinpath(f"{name}_?.fits"),
                 run_number=run_number,
             )
         else:
-            filename = self.current_output_folder / f"{name}.fits"
+            filename = current_output_folder / f"{name}.fits"
 
         full_filename: Path = filename.resolve()
         self._log.info("Save to FITS - filename: '%s'", full_filename)
@@ -199,13 +210,18 @@ class Outputs:
         """Write detector object to HDF5 file."""
         name = name.replace(".", "_")
 
+        current_output_folder: Path = complete_path(
+            filename=self.current_output_folder,
+            working_dir=global_options.working_directory,
+        )
+
         if with_auto_suffix:
             filename = apply_run_number(
-                template_filename=self.current_output_folder.joinpath(f"{name}_?.h5"),
+                template_filename=current_output_folder.joinpath(f"{name}_?.h5"),
                 run_number=run_number,
             )
         else:
-            filename = self.current_output_folder / f"{name}.h5"
+            filename = current_output_folder / f"{name}.h5"
 
         full_filename: Path = filename.resolve()
 
@@ -242,13 +258,18 @@ class Outputs:
         """Write data to txt file."""
         name = name.replace(".", "_")
 
+        current_output_folder: Path = complete_path(
+            filename=self.current_output_folder,
+            working_dir=global_options.working_directory,
+        )
+
         if with_auto_suffix:
             filename = apply_run_number(
-                template_filename=self.current_output_folder.joinpath(f"{name}_?.txt"),
+                template_filename=current_output_folder.joinpath(f"{name}_?.txt"),
                 run_number=run_number,
             )
         else:
-            filename = self.current_output_folder / f"{name}.txt"
+            filename = current_output_folder / f"{name}.txt"
 
         full_filename: Path = filename.resolve()
         np.savetxt(full_filename, data, delimiter=" | ", fmt="%.8e")
@@ -265,13 +286,18 @@ class Outputs:
         """Write Pandas Dataframe or Numpy array to a CSV file."""
         name = name.replace(".", "_")
 
+        current_output_folder: Path = complete_path(
+            filename=self.current_output_folder,
+            working_dir=global_options.working_directory,
+        )
+
         if with_auto_suffix:
             filename = apply_run_number(
-                template_filename=self.current_output_folder.joinpath(f"{name}_?.csv"),
+                template_filename=current_output_folder.joinpath(f"{name}_?.csv"),
                 run_number=run_number,
             )
         else:
-            filename = self.current_output_folder / f"{name}.csv"
+            filename = current_output_folder / f"{name}.csv"
 
         full_filename = filename.resolve()
         try:
@@ -291,13 +317,18 @@ class Outputs:
         """Write Numpy array to Numpy binary npy file."""
         name = name.replace(".", "_")
 
+        current_output_folder: Path = complete_path(
+            filename=self.current_output_folder,
+            working_dir=global_options.working_directory,
+        )
+
         if with_auto_suffix:
             filename = apply_run_number(
-                template_filename=self.current_output_folder.joinpath(f"{name}_?.npy"),
+                template_filename=current_output_folder.joinpath(f"{name}_?.npy"),
                 run_number=run_number,
             )
         else:
-            filename = self.current_output_folder / f"{name}.npy"
+            filename = current_output_folder / f"{name}.npy"
 
         full_filename: Path = filename.resolve()
 
@@ -317,13 +348,18 @@ class Outputs:
         """Write Numpy array to a PNG image file."""
         name = name.replace(".", "_")
 
+        current_output_folder: Path = complete_path(
+            filename=self.current_output_folder,
+            working_dir=global_options.working_directory,
+        )
+
         if with_auto_suffix:
             filename = apply_run_number(
-                template_filename=self.current_output_folder.joinpath(f"{name}_?.png"),
+                template_filename=current_output_folder.joinpath(f"{name}_?.png"),
                 run_number=run_number,
             )
         else:
-            filename = self.current_output_folder / f"{name}.png"
+            filename = current_output_folder / f"{name}.png"
 
         full_filename: Path = filename.resolve()
 
@@ -345,13 +381,18 @@ class Outputs:
         """Write Numpy array to a JPEG image file."""
         name = name.replace(".", "_")
 
+        current_output_folder: Path = complete_path(
+            filename=self.current_output_folder,
+            working_dir=global_options.working_directory,
+        )
+
         if with_auto_suffix:
             filename = apply_run_number(
-                template_filename=self.current_output_folder.joinpath(f"{name}_?.jpeg"),
+                template_filename=current_output_folder.joinpath(f"{name}_?.jpeg"),
                 run_number=run_number,
             )
         else:
-            filename = self.current_output_folder / f"{name}.jpeg"
+            filename = current_output_folder / f"{name}.jpeg"
 
         full_filename: Path = filename.resolve()
 
@@ -373,13 +414,18 @@ class Outputs:
         """Write Numpy array to a JPG image file."""
         name = name.replace(".", "_")
 
+        current_output_folder: Path = complete_path(
+            filename=self.current_output_folder,
+            working_dir=global_options.working_directory,
+        )
+
         if with_auto_suffix:
             filename = apply_run_number(
-                template_filename=self.current_output_folder.joinpath(f"{name}_?.jpg"),
+                template_filename=current_output_folder.joinpath(f"{name}_?.jpg"),
                 run_number=run_number,
             )
         else:
-            filename = self.current_output_folder / f"{name}.jpg"
+            filename = current_output_folder / f"{name}.jpg"
 
         full_filename: Path = filename.resolve()
 
@@ -465,7 +511,11 @@ class Outputs:
                             run_number=run_number,
                         )
 
-                        filenames.append(image_filename)
+                        full_image_filename: Path = complete_path(
+                            filename=image_filename,
+                            working_dir=global_options.working_directory,
+                        )
+                        filenames.append(full_image_filename)
 
                     else:
                         filename: Path = func(
@@ -475,7 +525,10 @@ class Outputs:
                             run_number=run_number,
                         )
 
-                        filenames.append(filename)
+                        full_filename: Path = complete_path(
+                            filename, global_options.working_directory
+                        )
+                        filenames.append(full_filename)
 
         return filenames
 
@@ -497,7 +550,11 @@ class Outputs:
         filename: Path
         """
         name = name.replace(".", "_")
-        filename = self.current_output_folder.joinpath(name + ".nc")
+        current_output_folder: Path = complete_path(
+            filename=self.current_output_folder,
+            working_dir=global_options.working_directory,
+        )
+        filename = current_output_folder.joinpath(name + ".nc")
         data.to_netcdf(filename)
         return filename
 
@@ -548,10 +605,10 @@ def apply_run_number(template_filename: Path, run_number: Optional[int] = None) 
 # TODO: the log file should directly write in 'output_dir'
 def save_log_file(output_dir: Path) -> None:
     """Move log file to the outputs directory of the simulation."""
-    log_file: Path = Path("pyxel.log").resolve(strict=True)
-
-    new_log_filename = output_dir.joinpath(log_file.name)
-    log_file.rename(new_log_filename)
+    log_file: Path = Path("pyxel.log").resolve()
+    if log_file.exists():
+        new_log_filename = output_dir.joinpath("pyxel.log")
+        log_file.rename(new_log_filename)
 
 
 def create_output_directory(

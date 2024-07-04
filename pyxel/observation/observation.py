@@ -16,6 +16,7 @@ from enum import Enum
 from functools import partial
 from itertools import chain
 from numbers import Number
+from pathlib import Path
 from typing import TYPE_CHECKING, Any, Callable, Literal, NamedTuple, Optional, Union
 
 import dask.bag as db
@@ -24,6 +25,7 @@ import pandas as pd
 import toolz
 from tqdm.auto import tqdm
 
+import pyxel
 from pyxel.exposure import Readout, _run_exposure_pipeline_deprecated, run_pipeline
 from pyxel.observation.parameter_values import ParameterType, ParameterValues
 from pyxel.pipelines import ResultId, get_result_id
@@ -210,11 +212,18 @@ class Observation:
         with_dask: bool = False,
         result_type: str = "all",
         pipeline_seed: Optional[int] = None,
+        working_directory: Optional[str] = None,
     ):
         self.outputs: Optional["ObservationOutputs"] = outputs
         self.readout: Readout = readout or Readout()
         self.parameter_mode: ParameterMode = ParameterMode(mode)
+        self.working_directory: Optional[Path] = (
+            Path(working_directory) if working_directory else None
+        )
         self._parameters: Sequence[ParameterValues] = parameters
+
+        # Set 'working_directory'
+        pyxel.set_options(working_directory=self.working_directory)
 
         # Specific to mode 'custom'
         self._custom_file: Optional[str] = from_file

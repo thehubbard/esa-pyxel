@@ -1,0 +1,143 @@
+############################################################
+# Pyxel detector simulation framework                      #
+#                                                          #
+# Example YAML configuration file                          #
+# Calibration mode                                         #        
+# Created by David Lucsanyi                                #
+# ##########################################################
+
+# yaml-language-server: $schema=https://esa.gitlab.io/pyxel/doc/latest/pyxel_schema.json
+calibration:
+  working_directory: data
+
+  result_type:          pixel
+  
+  result_fit_range:     [500, 835, 0, 1]
+  target_fit_range:     [500, 835, 0, 1]
+  result_input_arguments:
+    - key: pipeline.charge_generation.load_charge.arguments.filename
+      values: [ 'input/input_flex_ds7_ch0_1ke.txt',
+                'input/input_flex_ds7_ch0_3ke.txt',
+                'input/input_flex_ds7_ch0_7ke.txt',
+                'input/input_flex_ds7_ch0_10ke.txt',
+                'input/input_flex_ds7_ch0_20ke.txt',
+                'input/input_flex_ds7_ch0_100ke.txt',
+                ]
+
+  target_data_path:     ['target/target_flex_ds7_ch0_1ke.txt',
+                         'target/target_flex_ds7_ch0_3ke.txt',
+                         'target/target_flex_ds7_ch0_7ke.txt',
+                         'target/target_flex_ds7_ch0_10ke.txt',
+                         'target/target_flex_ds7_ch0_20ke.txt',
+                         'target/target_flex_ds7_ch0_100ke.txt']
+
+  pygmo_seed:                 22222
+  num_islands:              2
+  num_evolutions:           2
+  num_best_decisions:       0
+  
+  algorithm:
+    type:               sade
+    generations:        10
+    population_size:    20
+    variant:            2
+    
+  fitness_function:
+    func:               pyxel.calibration.fitness.sum_of_abs_residuals
+    arguments:
+
+    
+  parameters:
+    - key:              pipeline.charge_transfer.cdm.arguments.beta
+      values:           _
+      logarithmic:      false
+      boundaries:       [0.1, 0.9]
+    - key:              pipeline.charge_transfer.cdm.arguments.trap_release_times
+      values:           [_, _, _, _]
+      logarithmic:      true
+      boundaries:       [1.e-5, 1.e-1]
+    - key:              pipeline.charge_transfer.cdm.arguments.trap_densities
+      values:           [_, _, _, _]
+      logarithmic:      true
+      boundaries:       [1.e-2, 1.e+2]
+
+
+  outputs:
+    output_folder:        'calibration_output'
+    save_data_to_file:
+      - detector.image.array:   [fits]
+    save_calibration_data:
+      - dataset: ['nc']
+      - logs: ['csv', 'xlsx']
+
+
+ccd_detector:
+
+  geometry:
+
+    row:   835                  # pixel
+    col:   1                    # pixel
+    total_thickness: 40.        # um
+    pixel_vert_size: 10.        # um
+    pixel_horz_size: 10.        # um
+
+  environment:
+    temperature: 238        # K
+
+  characteristics:
+    quantum_efficiency: 1.                 # -
+    charge_to_volt_conversion: 1.0e-6      # V/e
+    pre_amplification: 80                  # V/V
+    adc_voltage_range: [0., 10.]
+    adc_bit_resolution: 16
+    full_well_capacity: 900000             # e
+
+pipeline:
+
+  # -> photon
+  photon_collection:
+
+  # photon -> charge
+  charge_generation:
+    - name: load_charge
+      func: pyxel.models.charge_generation.load_charge
+      enabled: true
+      arguments:
+        filename: _ # Changing this via Calibration module!
+
+  # charge -> pixel
+  charge_collection:
+    - name: simple_collection
+      func: pyxel.models.charge_collection.simple_collection
+      enabled: true
+
+  # pixel -> pixel
+  charge_transfer:
+    - name: cdm
+      func: pyxel.models.charge_transfer.cdm
+      enabled: true
+      arguments:
+        direction: parallel
+        trap_release_times: [5.e-3, 5.e-3, 5.e-3, 5.e-3]
+        trap_densities: [1., 1., 1., 1.]
+        sigma: [1.e-15, 1.e-15, 1.e-15, 1.e-15]
+        beta: 0.3                       # calibrating this parameter
+        max_electron_volume: 1.62e-10   # cm^2
+        transfer_period: 9.4722e-04     # s
+        charge_injection: true
+
+  # pixel -> signal
+  charge_measurement:
+    - name: simple_measurement
+      func: pyxel.models.charge_measurement.simple_measurement
+      enabled: true
+
+  # signal -> image
+  readout_electronics:
+    - name: simple_amplifier
+      func: pyxel.models.readout_electronics.simple_amplifier
+      enabled: true
+    - name: simple_adc
+      func: pyxel.models.readout_electronics.simple_adc
+      enabled: true
+

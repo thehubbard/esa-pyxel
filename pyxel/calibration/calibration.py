@@ -16,6 +16,7 @@ from typing import TYPE_CHECKING, Any, Literal, Optional, Union
 import numpy as np
 from dask.delayed import Delayed
 
+import pyxel
 from pyxel.calibration import (
     Algorithm,
     ArchipelagoDataTree,
@@ -32,6 +33,7 @@ from pyxel.calibration.fitting_datatree import ModelFittingDataTree
 from pyxel.exposure import Readout
 from pyxel.observation import ParameterValues
 from pyxel.pipelines import FitnessFunction, Processor, ResultId, get_result_id
+from pyxel.util import resolve_path
 
 if TYPE_CHECKING:
     import pandas as pd
@@ -51,7 +53,7 @@ def to_path_list(filenames: Sequence[Union[str, Path]]) -> Sequence[Path]:
     """
     lst: list[Path] = []
     for filename in filenames:
-        full_filename = Path(filename).resolve()
+        full_filename = Path(resolve_path(filename)).resolve()
 
         if not full_filename.exists():
             raise FileNotFoundError(f"File: {full_filename} does not exist !")
@@ -96,6 +98,7 @@ class Calibration:
         ] = "multiprocessing",
         weights_from_file: Optional[Sequence[Union[str, Path]]] = None,
         weights: Optional[Sequence[float]] = None,
+        working_directory: Optional[str] = None,
     ):
         if pygmo_seed is not None and pygmo_seed not in range(100001):
             raise ValueError("'Pygmo seed' must be between 0 and 100000.")
@@ -107,6 +110,12 @@ class Calibration:
 
         self.outputs: Optional["CalibrationOutputs"] = outputs
         self.readout: Readout = readout or Readout()
+        self.working_directory: Optional[Path] = (
+            Path(working_directory) if working_directory else None
+        )
+
+        # Set 'working_directory'
+        pyxel.set_options(working_directory=self.working_directory)
 
         self._calibration_mode = CalibrationMode(mode)
 
@@ -154,6 +163,7 @@ class Calibration:
             raise ValueError("Cannot define both weights and weights from file.")
 
         # TODO: Write functional tests
+        # TODO: implement working_dir
         if not weights_from_file:
             weights_full_path: Optional[Sequence[Path]] = None
         else:

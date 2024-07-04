@@ -15,6 +15,8 @@ import numpy as np
 import pandas as pd
 from scipy import interpolate
 
+from pyxel.util import resolve_path
+
 
 def sampling_distribution(distribution: np.ndarray) -> float:
     u: float = np.random.random()
@@ -75,7 +77,7 @@ def load_histogram_data(
     # TODO store count in pandas dataframe as int !!!
 
     step_size_data = pd.read_csv(
-        file_name,
+        resolve_path(file_name),
         delimiter="\t",
         names=[hist_type, "counts"],
         usecols=[1, 2],
