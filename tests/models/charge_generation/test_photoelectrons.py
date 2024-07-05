@@ -166,7 +166,8 @@ def invalid_qe_map_path(
         pytest.param(None, id="valid_none"),
     ],
 )
-def test_simple_conversion_valid(ccd_5x5: CCD, qe: float):
+def test_simple_conversion_photon_2d(ccd_5x5: CCD, qe: float):
+    """Test model 'simple_conversion' with a 2D photon input."""
     detector = ccd_5x5
     detector.characteristics.quantum_efficiency = 0.5
 
@@ -179,13 +180,34 @@ def test_simple_conversion_valid(ccd_5x5: CCD, qe: float):
     np.testing.assert_array_almost_equal(detector.charge.array, target)
 
 
+def test_simple_conversion_photon_3d(ccd_5x5: CCD):
+    """Test model 'simple_conversion' with a 3D photon input."""
+    detector = ccd_5x5
+    detector.photon.array_3d = xr.DataArray(
+        np.zeros(shape=(6, 5, 5), dtype=float),
+        dims=["wavelength", "y", "x"],
+        coords={"wavelength": [400.0, 420, 440, 460, 480, 500]},
+    )
+
+    simple_conversion(detector=detector, quantum_efficiency=0.8)
+
+
+def test_simple_conversion_no_photon(ccd_5x5: CCD):
+    """Test model 'simple_conversion' with no photons."""
+    detector = ccd_5x5
+
+    with pytest.raises(ValueError, match="container is not initialized"):
+        simple_conversion(detector=detector, quantum_efficiency=0.8)
+
+
 @pytest.mark.parametrize(
     "qe, exp_exc, exp_error",
     [
         pytest.param(1.5, ValueError, "Quantum efficiency not between 0 and 1."),
+        pytest.param(None, ValueError, "Quantum efficiency is not defined."),
     ],
 )
-def test_simple_conversion_valid2(
+def test_simple_conversion_invalid_qe(
     ccd_5x5: CCD,
     qe: float,
     exp_exc,
@@ -201,7 +223,9 @@ def test_conversion_with_qe_valid(ccd_2d: CCD, valid_qe_map_path: Union[str, Pat
     conversion_with_qe_map(detector=detector, filename=valid_qe_map_path)
 
 
-def test_simple_conversion_invalid(ccd_5x5: CCD, invalid_qe_map_path: Union[str, Path]):
+def test_convertsion_with_qe_invalid(
+    ccd_5x5: CCD, invalid_qe_map_path: Union[str, Path]
+):
     with pytest.raises(
         ValueError, match="Quantum efficiency values not between 0 and 1."
     ):
