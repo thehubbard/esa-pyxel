@@ -74,7 +74,7 @@ def simple_conversion(
         final_qe: float = quantum_efficiency
     else:
         try:
-            final_qe: float = detector.characteristics.quantum_efficiency
+            final_qe = detector.characteristics.quantum_efficiency
         except ValueError as exc:
             raise ValueError(
                 "Quantum efficiency is not defined. It must be either provided in the detector characteristics "
