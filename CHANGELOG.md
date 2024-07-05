@@ -37,6 +37,8 @@ This release brings a number of bugfixes and improvements.
 * Replace deprecated `scipy.integrate.cumtrapz` by `scipy.integrate.cumulative_trapezoid`
   in model `wavelength_dependence_airs` in group 'Photon Collection'.
   (See [!900](https://gitlab.com/esa/pyxel/-/merge_requests/900)).
+* Better error message when no photons are provided in model 'simple_conversion' in group 'Charge Generation'.
+  (See [!909](https://gitlab.com/esa/pyxel/-/merge_requests/909)).
 
 ### Others
 * Pin NetCDF4 to <1.7.1.
