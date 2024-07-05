@@ -331,7 +331,7 @@ def invalid_table_http_hostname(
         ("dummy", ValueError, "Image format not supported"),
         ("dummy.foo", ValueError, "Image format not supported"),
         ("unknown.fits", FileNotFoundError, None),
-        (Path("unknown.fits"), FileNotFoundError, r"can not be found\.$"),
+        (Path("unknown.fits"), FileNotFoundError, r"can not be found"),
         ("https://domain/unknown.fits", FileNotFoundError, None),
         ("invalid_data/img_X.txt", ValueError, "Cannot find the separator"),
         (

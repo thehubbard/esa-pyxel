@@ -8,11 +8,12 @@
 """Subpackage to load images and tables."""
 
 import csv
+import sys
 from collections.abc import Sequence
 from contextlib import suppress
 from io import BytesIO, StringIO
 from pathlib import Path
-from typing import Optional, Union
+from typing import TYPE_CHECKING, Optional, Union
 
 import fsspec
 import numpy as np
@@ -22,7 +23,24 @@ from numpy.typing import DTypeLike
 from PIL import Image
 
 from pyxel.options import global_options
-from pyxel.util import complete_path
+from pyxel.util import resolve_path
+
+if TYPE_CHECKING:
+    from astropy.io import fits
+
+
+def load_header(filename: Union[str, Path]) -> Optional["fits.Header"]:
+    from astropy.io import fits
+
+    full_filename = resolve_path(filename)
+
+    if Path(full_filename).suffix == ".fits":
+        header: fits.Header = fits.getheader(full_filename)
+
+        return header
+
+    else:
+        return None
 
 
 def load_image(filename: Union[str, Path]) -> np.ndarray:
@@ -61,63 +79,77 @@ def load_image(filename: Union[str, Path]) -> np.ndarray:
     >>> load_image("rgb_frame.jpg")
     array([[234, 211, ...]])
     """
-    filename = complete_path(
-        filename=filename, working_dir=global_options.working_directory
-    )
-    # Extract suffix (e.g. '.txt', '.fits'...)
-    suffix: str = Path(filename).suffix.lower()
+    try:
+        filename = resolve_path(filename=filename)
+        # Extract suffix (e.g. '.txt', '.fits'...)
+        suffix: str = Path(filename).suffix.lower()
 
-    if isinstance(filename, Path):
-        full_filename: Path = filename.expanduser().resolve()
-        if not full_filename.exists():
-            raise FileNotFoundError(f"Input file '{full_filename}' can not be found.")
+        if isinstance(filename, Path):
+            full_filename: Path = filename.expanduser().resolve()
+            if not full_filename.exists():
+                raise FileNotFoundError(
+                    f"Input file '{full_filename}' can not be found."
+                )
 
-        url_path: str = str(full_filename)
+            url_path: str = str(full_filename)
 
-    else:
-        url_path = filename
-
-    # Define extra parameters to use with 'fsspec'
-    extras = {}
-    if global_options.cache_enabled:
-        url_path = f"simplecache::{url_path}"
-
-        if global_options.cache_folder:
-            extras["simplecache"] = {"cache_storage": global_options.cache_folder}
-
-    if suffix.startswith(".fits"):
-        # with fits.open(url_path, use_fsspec=True, fsspec_kwargs=extras) as file_handler:
-        with fsspec.open(url_path, mode="rb", **extras) as file_handler:
-            from astropy.io import fits  # Late import to speed-up general import time
-
-            with BytesIO(file_handler.read()) as content:
-                data_2d: np.ndarray = fits.getdata(content)
-
-    elif suffix.startswith(".npy"):
-        with fsspec.open(url_path, mode="rb", **extras) as file_handler:
-            data_2d = np.load(file_handler)
-
-    elif suffix.startswith((".txt", ".data")):
-        for sep in ("\t", " ", ",", "|", ";"):
-            with suppress(ValueError):
-                with fsspec.open(url_path, mode="r", **extras) as file_handler:
-                    data_2d = np.loadtxt(file_handler, delimiter=sep, ndmin=2)
-                break
         else:
-            raise ValueError(f"Cannot find the separator for filename '{url_path}'.")
+            url_path = filename
 
-    elif suffix.startswith((".jpg", ".jpeg", ".png", ".bmp", ".tiff", ".tif")):
-        with fsspec.open(url_path, mode="rb", **extras) as file_handler:
-            image_2d = Image.open(file_handler)
-            image_2d_converted = image_2d.convert("LA")  # RGB to grayscale conversion
+        # Define extra parameters to use with 'fsspec'
+        extras = {}
+        if global_options.cache_enabled:
+            url_path = f"simplecache::{url_path}"
 
-        data_2d = np.array(image_2d_converted)[:, :, 0]
+            if global_options.cache_folder:
+                extras["simplecache"] = {"cache_storage": global_options.cache_folder}
 
-    else:
-        raise ValueError(
-            "Image format not supported. List of supported image formats: "
-            ".npy, .fits, .txt, .data, .jpg, .jpeg, .bmp, .png, .tiff, .tif."
-        )
+        if suffix.startswith(".fits"):
+            # with fits.open(url_path, use_fsspec=True, fsspec_kwargs=extras) as file_handler:
+            with fsspec.open(url_path, mode="rb", **extras) as file_handler:
+                from astropy.io import (
+                    fits,  # Late import to speed-up general import time
+                )
+
+                with BytesIO(file_handler.read()) as content:
+                    data_2d: np.ndarray = fits.getdata(content)
+
+        elif suffix.startswith(".npy"):
+            with fsspec.open(url_path, mode="rb", **extras) as file_handler:
+                data_2d = np.load(file_handler)
+
+        elif suffix.startswith((".txt", ".data")):
+            for sep in ("\t", " ", ",", "|", ";"):
+                with suppress(ValueError):
+                    with fsspec.open(url_path, mode="r", **extras) as file_handler:
+                        data_2d = np.loadtxt(file_handler, delimiter=sep, ndmin=2)
+                    break
+            else:
+                raise ValueError(
+                    f"Cannot find the separator for filename '{url_path}'."
+                )
+
+        elif suffix.startswith((".jpg", ".jpeg", ".png", ".bmp", ".tiff", ".tif")):
+            with fsspec.open(url_path, mode="rb", **extras) as file_handler:
+                image_2d = Image.open(file_handler)
+                image_2d_converted = image_2d.convert(
+                    "LA"
+                )  # RGB to grayscale conversion
+
+            data_2d = np.array(image_2d_converted)[:, :, 0]
+
+        else:
+            raise ValueError(
+                "Image format not supported. List of supported image formats: "
+                ".npy, .fits, .txt, .data, .jpg, .jpeg, .bmp, .png, .tiff, .tif."
+            )
+    except Exception as exc:
+        if sys.version_info >= (3, 11):
+            exc.add_note(
+                f"Raised when trying to load file '{filename}' and "
+                f"{global_options.working_directory=}"
+            )
+        raise
 
     return data_2d
 
@@ -131,9 +163,7 @@ def load_image_v2(
     rename_dims: dict,
     data_path: Union[str, int, None] = None,
 ) -> xr.DataArray:
-    filename = complete_path(
-        filename=filename, working_dir=global_options.working_directory
-    )
+    filename = resolve_path(filename=filename)
     # Extract suffix (e.g. '.txt', '.fits'...)
     suffix: str = Path(filename).suffix.lower()
 
@@ -221,9 +251,7 @@ def load_table(
     # Late import to speedup start-up time
     import pandas as pd
 
-    filename = complete_path(
-        filename=filename, working_dir=global_options.working_directory
-    )
+    filename = resolve_path(filename=filename)
     suffix: str = Path(filename).suffix.lower()
 
     if isinstance(filename, Path):
@@ -304,9 +332,7 @@ def load_table_v2(
     data_path: Union[str, int, None] = None,
     header: bool = False,
 ) -> pd.DataFrame:
-    filename = complete_path(
-        filename=filename, working_dir=global_options.working_directory
-    )
+    filename = resolve_path(filename=filename)
     suffix: str = Path(filename).suffix.lower()
 
     if isinstance(filename, Path):
@@ -411,9 +437,7 @@ def load_dataarray(filename: Union[str, Path]) -> "xr.DataArray":
     FileNotFoundError
         If an image is not found.
     """
-    filename = complete_path(
-        filename=filename, working_dir=global_options.working_directory
-    )
+    filename = resolve_path(filename=filename)
     if isinstance(filename, Path):
         full_filename: Path = filename.expanduser().resolve()
         if not full_filename.exists():
@@ -461,9 +485,7 @@ def load_datacube(filename: Union[str, Path]) -> np.ndarray:
     ValueError
         When the extension of the filename is unknown or separator is not found.
     """
-    filename = complete_path(
-        filename=filename, working_dir=global_options.working_directory
-    )
+    filename = resolve_path(filename=filename)
     # Extract suffix (e.g. '.txt', '.fits'...)
     suffix: str = Path(filename).suffix.lower()
 
