@@ -299,6 +299,7 @@ exclude = ["_TEMPLATE.py", "_version.py"]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = [
+    "D101",     # Missing docstring in public class
     "D100",     # Missing docstring in public module
     "D104",     # Missing docstring in public package
     "N803",     # Argument name should be lowercase

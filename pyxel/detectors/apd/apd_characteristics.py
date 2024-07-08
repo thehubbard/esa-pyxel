@@ -72,24 +72,49 @@ class APDCharacteristics:
         pixel_reset_voltage: Optional[float] = None,  # unit: V
         common_voltage: Optional[float] = None,  # unit: V
     ):
-        self._avalanche_gain = avalanche_gain
-        self._common_voltage = common_voltage
-        self._pixel_reset_voltage = pixel_reset_voltage
+        self._original_avalanche_gain: Optional[float] = avalanche_gain
+        self._original_pixel_reset_voltage: Optional[float] = pixel_reset_voltage
+        self._original_common_voltage: Optional[float] = common_voltage
 
-        if avalanche_gain and pixel_reset_voltage and common_voltage:
-            raise ValueError(
-                "Please only specify two inputs out of: avalanche gain, pixel reset"
-                " voltage, common voltage."
-            )
-        elif avalanche_gain and pixel_reset_voltage and not common_voltage:
-            self._avalanche_bias = self.gain_to_bias_saphira(avalanche_gain)
-            self._common_voltage = pixel_reset_voltage - self.avalanche_bias
-        elif avalanche_gain and common_voltage and not pixel_reset_voltage:
-            self._avalanche_bias = self.gain_to_bias_saphira(avalanche_gain)
-            self._pixel_reset_voltage = common_voltage + self.avalanche_bias
-        elif common_voltage and pixel_reset_voltage and not avalanche_gain:
+        if avalanche_gain is not None:
+            self._avalanche_gain: float = avalanche_gain
+
+            if not (1.0 <= avalanche_gain <= 1000.0):
+                raise ValueError("'apd_gain' must be between 1.0 and 1000.0.")
+
+            if pixel_reset_voltage is not None:
+                if common_voltage is not None:
+                    raise ValueError(
+                        "Please only specify two inputs out of: avalanche gain, pixel reset"
+                        " voltage, common voltage."
+                    )
+
+                self._avalanche_bias: float = self.gain_to_bias_saphira(avalanche_gain)
+                self._pixel_reset_voltage: float = pixel_reset_voltage
+                self._common_voltage: float = pixel_reset_voltage - self.avalanche_bias
+
+            elif common_voltage is not None:
+                self._avalanche_bias = self.gain_to_bias_saphira(avalanche_gain)
+                self._pixel_reset_voltage = common_voltage + self.avalanche_bias
+                self._common_voltage = common_voltage
+
+            else:
+                raise ValueError(
+                    "Only 'avalanche_gain', missing parameter 'pixel_reset_voltage' "
+                    "or 'common_voltage'."
+                )
+
+        elif common_voltage is not None:
+            if pixel_reset_voltage is None:
+                raise ValueError(
+                    "Only 'common_voltage', missing parameter 'pixel_reset_voltage' or "
+                    "'avalanche_gain'"
+                )
             self._avalanche_bias = pixel_reset_voltage - common_voltage
+            self._pixel_reset_voltage = pixel_reset_voltage
             self._avalanche_gain = self.bias_to_gain_saphira(self.avalanche_bias)
+            self._common_voltage = common_voltage
+
         else:
             raise ValueError(
                 "Not enough input parameters provided to calculate avalanche bias!"
@@ -97,8 +122,7 @@ class APDCharacteristics:
 
         if quantum_efficiency and not (0.0 <= quantum_efficiency <= 1.0):
             raise ValueError("'quantum_efficiency' must be between 0.0 and 1.0.")
-        if avalanche_gain and not (1.0 <= avalanche_gain <= 1000.0):
-            raise ValueError("'apd_gain' must be between 1.0 and 1000.0.")
+
         if adc_bit_resolution and not (4 <= adc_bit_resolution <= 64):
             raise ValueError("'adc_bit_resolution' must be between 4 and 64.")
         if adc_voltage_range and not len(adc_voltage_range) == 2:
@@ -106,16 +130,17 @@ class APDCharacteristics:
         if full_well_capacity and not (0.0 <= full_well_capacity <= 1.0e7):
             raise ValueError("'full_well_capacity' must be between 0 and 1e7.")
 
-        self._quantum_efficiency = quantum_efficiency
-        self._full_well_capacity = full_well_capacity
-        self._adc_voltage_range = adc_voltage_range
-        self._adc_bit_resolution = adc_bit_resolution
+        self._quantum_efficiency: Optional[float] = quantum_efficiency
+        self._full_well_capacity: Optional[float] = full_well_capacity
+        self._adc_voltage_range: Optional[tuple[float, float]] = adc_voltage_range
+        self._adc_bit_resolution: Optional[int] = adc_bit_resolution
         self._node_capacitance: float = self.bias_to_node_capacitance_saphira(
             self.avalanche_bias
         )
-        self._roic_gain = roic_gain
+        self._roic_gain: float = roic_gain
         self._charge_to_volt_conversion: float = self.detector_gain_saphira(
-            capacitance=self.node_capacitance, roic_gain=self.roic_gain
+            capacitance=self.node_capacitance,
+            roic_gain=self.roic_gain,
         )
         self._numbytes = 0
 
@@ -134,17 +159,17 @@ class APDCharacteristics:
     @property
     def quantum_efficiency(self) -> float:
         """Get Quantum efficiency."""
-        if self._quantum_efficiency:
-            return self._quantum_efficiency
-        else:
+        if self._quantum_efficiency is None:
             raise ValueError(
                 "'quantum_efficiency' not specified in detector characteristics."
             )
 
+        return self._quantum_efficiency
+
     @quantum_efficiency.setter
     def quantum_efficiency(self, value: float) -> None:
         """Set Quantum efficiency."""
-        if np.min(value) < 0.0 and np.max(value) <= 1.0:
+        if np.min(value) < 0.0 or np.max(value) > 1.0:
             raise ValueError("'quantum_efficiency' values must be between 0.0 and 1.0.")
 
         self._quantum_efficiency = value
@@ -152,15 +177,12 @@ class APDCharacteristics:
     @property
     def avalanche_gain(self) -> float:
         """Get APD gain."""
-        if self._avalanche_gain:
-            return self._avalanche_gain
-        else:
-            raise ValueError("'apd_gain' not specified in detector characteristics.")
+        return self._avalanche_gain
 
     @avalanche_gain.setter
     def avalanche_gain(self, value: float) -> None:
         """Set APD gain."""
-        if np.min(value) < 1.0 and np.max(value) <= 1000.0:
+        if np.min(value) < 1.0 or np.max(value) > 1000.0:
             raise ValueError("'apd_gain' values must be between 1.0 and 1000.")
         self._avalanche_gain = value
         self._avalanche_bias = self.gain_to_bias_saphira(value)
@@ -169,10 +191,7 @@ class APDCharacteristics:
     @property
     def pixel_reset_voltage(self) -> float:
         """Get pixel reset voltage."""
-        if self._pixel_reset_voltage:
-            return self._pixel_reset_voltage
-        else:
-            raise ValueError("'apd_gain' not specified in detector characteristics.")
+        return self._pixel_reset_voltage
 
     @pixel_reset_voltage.setter
     def pixel_reset_voltage(self, value: float) -> None:
@@ -184,10 +203,7 @@ class APDCharacteristics:
     @property
     def common_voltage(self) -> float:
         """Get common voltage."""
-        if self._common_voltage:
-            return self._common_voltage
-        else:
-            raise ValueError("'apd_gain' not specified in detector characteristics.")
+        return self._common_voltage
 
     @common_voltage.setter
     def common_voltage(self, value: float) -> None:
@@ -199,18 +215,12 @@ class APDCharacteristics:
     @property
     def avalanche_bias(self) -> float:
         """Get avalanche bias."""
-        if self._avalanche_bias:
-            return self._avalanche_bias
-        else:
-            raise ValueError("'apd_gain' not specified in detector characteristics.")
+        return self._avalanche_bias
 
     @property
     def roic_gain(self) -> float:
         """Get roic gainn."""
-        if self._roic_gain:
-            return self._roic_gain
-        else:
-            raise ValueError("'roic_gain' not specified in detector characteristics.")
+        return self._roic_gain
 
     @property
     def node_capacitance(self) -> float:
@@ -221,7 +231,7 @@ class APDCharacteristics:
         return self._node_capacitance
 
     @property
-    def charge_to_volt_conversion(self):
+    def charge_to_volt_conversion(self) -> float:
         """Get charge to voltage conversion factor."""
         self._charge_to_volt_conversion = self.detector_gain_saphira(
             capacitance=self.node_capacitance, roic_gain=self.roic_gain
@@ -231,27 +241,30 @@ class APDCharacteristics:
     @property
     def adc_bit_resolution(self) -> int:
         """Get bit resolution of the Analog-Digital Converter."""
-        if self._adc_bit_resolution:
-            return self._adc_bit_resolution
-        else:
+        if self._adc_bit_resolution is None:
             raise ValueError(
                 "'adc_bit_resolution' not specified in detector characteristics."
             )
 
+        return self._adc_bit_resolution
+
     @adc_bit_resolution.setter
     def adc_bit_resolution(self, value: int) -> None:
         """Set bit resolution of the Analog-Digital Converter."""
+        if not (4 <= value <= 64):
+            raise ValueError("'adc_bit_resolution' must be between 4 and 64.")
+
         self._adc_bit_resolution = value
 
     @property
     def adc_voltage_range(self) -> tuple[float, float]:
         """Get voltage range of the Analog-Digital Converter."""
-        if self._adc_voltage_range:
-            return self._adc_voltage_range
-        else:
+        if self._adc_voltage_range is None:
             raise ValueError(
                 "'adc_voltage_range' not specified in detector characteristics."
             )
+
+        return self._adc_voltage_range
 
     @adc_voltage_range.setter
     def adc_voltage_range(self, value: tuple[float, float]) -> None:
@@ -261,17 +274,17 @@ class APDCharacteristics:
     @property
     def full_well_capacity(self) -> float:
         """Get Full well capacity."""
-        if self._full_well_capacity:
-            return self._full_well_capacity
-        else:
+        if self._full_well_capacity is None:
             raise ValueError(
                 "'full_well_capacity' not specified in detector characteristics."
             )
 
+        return self._full_well_capacity
+
     @full_well_capacity.setter
     def full_well_capacity(self, value: float) -> None:
         """Set Full well capacity."""
-        if value not in range(10000001):
+        if not (0.0 <= value <= 1.0e7):
             raise ValueError("'full_well_capacity' must be between 0 and 1e+7.")
 
         self._full_well_capacity = value
@@ -337,11 +350,12 @@ class APDCharacteristics:
 
         Parameters
         ----------
-        bias: float
+        bias : float
 
         Returns
         -------
-        gain: float
+        float
+            gain
         """
 
         gain = 2 ** ((bias - 2.65) / 2.17)
@@ -391,28 +405,10 @@ class APDCharacteristics:
 
     def to_dict(self) -> Mapping:
         """Get the attributes of this instance as a `dict`."""
-        if self._avalanche_gain and self._pixel_reset_voltage:
-            dct = {
-                "avalanche_gain": self._avalanche_gain,
-                "common_voltage": None,
-                "pixel_reset_voltage": self._pixel_reset_voltage,
-            }
-        elif self._avalanche_gain and self._common_voltage:
-            dct = {
-                "avalanche_gain": self._avalanche_gain,
-                "common_voltage": self._common_voltage,
-                "pixel_reset_voltage": None,
-            }
-        elif self._common_voltage and self._pixel_reset_voltage:
-            dct = {
-                "avalanche_gain": None,
-                "common_voltage": self._common_voltage,
-                "pixel_reset_voltage": self._pixel_reset_voltage,
-            }
-        else:
-            raise NotImplementedError
-
-        other_dct = {
+        dct = {
+            "avalanche_gain": self._original_avalanche_gain,
+            "common_voltage": self._original_common_voltage,
+            "pixel_reset_voltage": self._original_pixel_reset_voltage,
             "quantum_efficiency": self._quantum_efficiency,
             "full_well_capacity": self._full_well_capacity,
             "adc_voltage_range": self._adc_voltage_range,
@@ -420,18 +416,15 @@ class APDCharacteristics:
             "roic_gain": self._roic_gain,
         }
 
-        return dct | other_dct
+        return dct
 
     @classmethod
     def from_dict(cls, dct: Mapping):
         """Create a new instance from a `dict`."""
-        if "adc_voltage_range" in dct:
-            new_dct: Mapping = dicttoolz.dissoc(dct, "adc_voltage_range")
-            adc_voltage_range = dct["adc_voltage_range"]
+        new_dct: Mapping = dicttoolz.dissoc(dct, "adc_voltage_range")
+        adc_voltage_range = dct["adc_voltage_range"]
 
-            if adc_voltage_range is not None:
-                adc_voltage_range = tuple(adc_voltage_range)
+        if adc_voltage_range is not None:
+            adc_voltage_range = tuple(adc_voltage_range)
 
-            return cls(adc_voltage_range=adc_voltage_range, **new_dct)
-
-        return cls(**dct)
+        return cls(adc_voltage_range=adc_voltage_range, **new_dct)
