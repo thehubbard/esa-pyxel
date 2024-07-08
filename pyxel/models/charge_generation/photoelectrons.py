@@ -70,26 +70,24 @@ def simple_conversion(
     binomial_sampling : bool
         Binomial sampling. Default is True.
     """
-    if quantum_efficiency is None:
-        if detector.characteristics.quantum_efficiency is None:
+    if quantum_efficiency is not None:
+        final_qe: float = quantum_efficiency
+    else:
+        try:
+            final_qe = detector.characteristics.quantum_efficiency
+        except ValueError as exc:
             raise ValueError(
                 "Quantum efficiency is not defined. It must be either provided in the detector characteristics "
                 "or as model argument."
-            )
-        else:
-            final_qe: float = detector.characteristics.quantum_efficiency
-    else:
-        final_qe = quantum_efficiency
+            ) from exc
 
     if not 0 <= final_qe <= 1:
         raise ValueError("Quantum efficiency not between 0 and 1.")
 
     if detector.photon.ndim == 3:
         photon_2d: np.ndarray = integrate_photon(detector.photon.array_3d).to_numpy()
-    elif detector.photon.ndim == 2:
-        photon_2d = detector.photon.array_2d
     else:
-        raise ValueError
+        photon_2d = detector.photon.array_2d
 
     with set_random_seed(seed):
         detector_charge = apply_qe(
