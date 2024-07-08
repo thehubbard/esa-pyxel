@@ -45,6 +45,8 @@ This release brings a number of bugfixes and improvements.
   (See [!901](https://gitlab.com/esa/pyxel/-/merge_requests/901)).
 * Fix issues found by ruff 0.5.
   (See [!902](https://gitlab.com/esa/pyxel/-/merge_requests/902)).
+* Add unit tests for class `APDCharacteristics`.
+  (See [!910](https://gitlab.com/esa/pyxel/-/merge_requests/910)).
 
 
 ## 2.3 / 2024-06-19
