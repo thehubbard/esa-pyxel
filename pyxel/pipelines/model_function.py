@@ -215,7 +215,7 @@ class ModelFunction:
                 self._func = evaluate_reference(self._func_name)
             except Exception as exc:
                 if sys.version_info >= (3, 11):
-                    exc.add_note(f"Cannot retrieve function from {self._func_name!r}'")
+                    exc.add_note(f"Cannot retrieve function from {self._func_name!r}")
 
                 raise
 

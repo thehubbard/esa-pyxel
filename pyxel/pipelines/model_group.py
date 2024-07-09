@@ -91,7 +91,7 @@ class ModelGroup:
                 if sys.version_info >= (3, 11):
                     note = (
                         f"This error is raised in group '{self._name}' at "
-                        f"model '{model.name}' ({model.func.__name__})."
+                        f"model '{model.name}' ({model._func_name})."
                     )
                     exc.add_note(note)
 
