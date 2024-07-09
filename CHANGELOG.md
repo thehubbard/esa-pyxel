@@ -28,6 +28,8 @@ This release brings a number of bugfixes and improvements.
   (See [!905](https://gitlab.com/esa/pyxel/-/merge_requests/905)).
 * Cannot access attribute `observation` from processor.
   (See [!907](https://gitlab.com/esa/pyxel/-/merge_requests/907)).
+* Improve error message when loading an non-existing model.
+  (See [!912](https://gitlab.com/esa/pyxel/-/merge_requests/912)).
 
 ### Documentation
 * Fix typo in documentation for model `charge_deposition` from `Charge Generation`.
