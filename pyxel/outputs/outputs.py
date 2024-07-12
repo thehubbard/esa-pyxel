@@ -602,7 +602,7 @@ class Outputs:
             working_dir=global_options.working_directory,
         )
         filename = current_output_folder.joinpath(name + ".nc")
-        data.to_netcdf(filename)
+        data.to_netcdf(filename, engine="h5netcdf")
         return filename
 
 
