@@ -300,6 +300,7 @@ exclude = ["_TEMPLATE.py", "_version.py"]
     "D101",     # Missing docstring in public class
     "D100",     # Missing docstring in public module
     "D104",     # Missing docstring in public package
+    "E721",     # Use 'is' and 'is not' for type comparisons
     "N803",     # Argument name should be lowercase
     "PT006",    # Wrong name(s) type in '@pytest.mark.parametrize'
     "SIM",      # flake8-simplify
