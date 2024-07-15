@@ -46,7 +46,8 @@ This release brings a number of bugfixes and improvements.
 * Remove dependency to `netcdf4`.
   (See [!914](https://gitlab.com/esa/pyxel/-/merge_requests/914)).
 * Fix issues found by ruff 0.5.
-  (See [!902](https://gitlab.com/esa/pyxel/-/merge_requests/902)).
+  (See [!902](https://gitlab.com/esa/pyxel/-/merge_requests/902) and 
+  [!915](https://gitlab.com/esa/pyxel/-/merge_requests/915)).
 * Add unit tests for class `APDCharacteristics`.
   (See [!910](https://gitlab.com/esa/pyxel/-/merge_requests/910)).
 * Add compatibility with Numpy 2.
