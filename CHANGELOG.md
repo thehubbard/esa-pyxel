@@ -52,6 +52,8 @@ This release brings a number of bugfixes and improvements.
   (See [!910](https://gitlab.com/esa/pyxel/-/merge_requests/910)).
 * Add compatibility with Numpy 2.
   (See [!913](https://gitlab.com/esa/pyxel/-/merge_requests/913)).
+* Fix some issues in some tests.
+  (See [!916](https://gitlab.com/esa/pyxel/-/merge_requests/916)).
 
 
 ## 2.3 / 2024-06-19
