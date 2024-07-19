@@ -43,7 +43,7 @@ dependencies = [
     # Plotting
     "matplotlib>=3.1",
     "seaborn",
-    "hvplot",
+    "hvplot>=0.9",
     "bokeh>=3.3.0",
     "panel",
 
@@ -91,7 +91,8 @@ calibration = [ "pygmo>=2.16.1" ]
 model = [
     "poppy>=1.1.0",
     "lacosmic",
-    "sep",    # 'sep' is not available for Python 3.11+ via PyPi (only with conda)
+    "sep",     # 'sep' is not available for Python 3.11+ via PyPi (only with conda)
+    "numpy<2", # 'sep' is not compatible with Numpy 2
 ]
 io = [ "asdf" ]
 all = [
