@@ -53,6 +53,10 @@ def test_exposure(config_filename: str, current_folder: Path, tmp_path: Path):
     config_full_path: Path = current_folder / config_filename
     assert config_full_path.exists()
 
+    if "calibration" in config_filename:
+        # Skip this test if 'pygmo' is not installed
+        _ = pytest.importorskip("pygmo", reason="Pygmo is not installed")
+
     cfg = pyxel.load(config_full_path)
 
     current_date = datetime(
