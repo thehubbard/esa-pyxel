@@ -14,12 +14,13 @@ import xarray as xr
 from astropy.table import Table
 from astropy.tests.helper import assert_quantity_allclose
 
+from pyxel.util import get_cache
+
 # Import 'DataTree'
 try:
     from xarray.core.datatree import DataTree
 except ImportError:
     from datatree import DataTree  # pip install xarray-datatree
-
 
 from pyxel.detectors import CCD
 from pyxel.models.scene_generation import load_star_map
@@ -350,6 +351,11 @@ def test_load_star_map(
 
     # Run model
     detector: CCD = ccd_10x10
+
+    # Clean the cache
+    cache = get_cache()
+    cache.clear()
+
     load_star_map(
         detector=detector,
         right_ascension=0.0,  # This parameter is not important
