@@ -161,7 +161,7 @@ class Simulation:
             (df.type == p_type) & (df.energy == energy) & (df.thickness == distance)
         ]
 
-        series: pd.Series = df_filtered["path"]
+        series: pd.Series = df_filtered["filename"]
         filename: Path = series.values[0]
 
         return filename

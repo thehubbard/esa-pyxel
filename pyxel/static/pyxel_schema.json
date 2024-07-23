@@ -3167,6 +3167,18 @@
                 "array",
                 "null"
               ]
+            },
+            "stepsize": {
+              "default": null,
+              "description": "Define the different step sizes. Only for running mode 'stepsize'",
+              "items": {
+                "type": "object"
+              },
+              "title": "stepsize",
+              "type": [
+                "array",
+                "null"
+              ]
             }
           },
           "title": "Parameters",
