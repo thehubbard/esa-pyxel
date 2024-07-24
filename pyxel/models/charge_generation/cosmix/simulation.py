@@ -87,9 +87,9 @@ class Simulation:
         self.position_z: str = position_z
         self.angle_alpha: str = angle_alpha
         self.angle_beta: str = angle_beta
-        self.step_length = (
-            1.0  # fix, all the other data/parameters should be adjusted to this
-        )
+
+        # fix, all the other data/parameters should be adjusted to this
+        self.step_length = 1.0
         self.energy_cut: float = 1.0e-5  # MeV
         self.ionization_energy: float = ionization_energy
 
@@ -229,7 +229,11 @@ class Simulation:
 
         if self.energy_loss_data == "stepsize":
             # data_filename = self.select_stepsize_data(particle.type, particle.energy, particle.track_length)
-            data_filename = self.select_stepsize_data(particle.type, 1000.0, 40.0)
+            data_filename = self.select_stepsize_data(
+                p_type=particle.type,
+                p_energy=1000.0,  # TODO: this should be a parameter
+                p_track_length=40.0,  # TODO: this should be a parameter
+            )
             self.set_stepsize_distribution(data_filename)
             # TODO make a stack of stepsize cdfs and do not load them more than once!!!
         # elif self.energy_loss_data == 'geant4':
@@ -385,9 +389,8 @@ class Simulation:
         )
         g4data = read_data(g4_data_path)  # mm (!)
 
-        if g4data.shape == (
-            3,
-        ):  # alternative running mode, only all electron number without proton step size data
+        if g4data.shape == (3,):
+            # alternative running mode, only all electron number without proton step size data
             electron_number_vector: Union[list, np.ndarray] = [g4data[0].astype(int)]
             secondaries = g4data[1].astype(int)
             tertiaries = g4data[2].astype(int)
