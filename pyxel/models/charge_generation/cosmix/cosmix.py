@@ -39,7 +39,7 @@ class StepSize(TypedDict):
     energy : float
         The energy of the particle. Unit: MeV
     thickness : float
-        The tickness of the material the particle interacts with. Unit: um
+        The thickness of the material the particle interacts with. Unit: um
     filename : str
         Filename to the file containing the step size data for the specified particle type, energy and material
         thickness.
