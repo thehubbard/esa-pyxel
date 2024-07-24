@@ -41,6 +41,43 @@ def ccd_8x8() -> CCD:
             {"incident_angles": None, "starting_position": None},
             id="with empties 'incident_angles' and 'starting_positions'",
         ),
+        pytest.param(
+            {
+                "stepsize": [
+                    {
+                        "type": "proton",
+                        "energy": 100.0,
+                        "thickness": 40.0,
+                        "filename": "data/stepsize_proton_100MeV_40um_Si_10k.ascii",
+                    },
+                    {
+                        "type": "proton",
+                        "energy": 100.0,
+                        "thickness": 50.0,
+                        "filename": "data/stepsize_proton_100MeV_50um_Si_10k.ascii",
+                    },
+                    {
+                        "type": "proton",
+                        "energy": 100.0,
+                        "thickness": 60.0,
+                        "filename": "data/stepsize_proton_100MeV_60um_Si_10k.ascii",
+                    },
+                    {
+                        "type": "proton",
+                        "energy": 100.0,
+                        "thickness": 70.0,
+                        "filename": "data/stepsize_proton_100MeV_70um_Si_10k.ascii",
+                    },
+                    {
+                        "type": "proton",
+                        "energy": 100.0,
+                        "thickness": 100.0,
+                        "filename": "data/stepsize_proton_100MeV_100um_Si_10k.ascii",
+                    },
+                ]
+            },
+            id="with 'stepsize'",
+        ),
     ],
 )
 def test_cosmix_stepsize(extra_params, ccd_8x8: CCD, request: pytest.FixtureRequest):
@@ -59,10 +96,21 @@ def test_cosmix_stepsize(extra_params, ccd_8x8: CCD, request: pytest.FixtureRequ
             [13358.0, 12026.0, 11948.0, 11952.0, 11755.0, 11513.0, 11443.0, 11536.0],
         ]
     )
-
     detector.charge.add_charge_array(charge_2d)
 
     current_folder: Path = request.path.parent
+
+    if "stepsize" in extra_params:
+        new_stepsizes = [
+            {
+                key: value if key != "filename" else str(current_folder / value)
+                for key, value in element.items()
+            }
+            for element in extra_params["stepsize"]
+        ]
+
+        extra_params["stepsize"] = new_stepsizes
+
     cosmix(
         detector=detector,
         simulation_mode="cosmic_ray",
