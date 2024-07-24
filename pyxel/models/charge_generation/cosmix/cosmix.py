@@ -220,16 +220,27 @@ class Cosmix:
         self.simulation_mode = simulation_mode
         self.part_type = particle_type
         self.init_energy = initial_energy
-        self.particle_number = particle_number
-        self.angle_alpha = incident_angle_alpha
-        self.angle_beta = incident_angle_beta
-        self.position_ver = start_pos_ver
-        self.position_hor = start_pos_hor
-        self.position_z = start_pos_z
-        self.ionization_energy = ionization_energy
-        self._progressbar = progressbar
+        self.particle_number: int = particle_number
+        self.angle_alpha: str = incident_angle_alpha
+        self.angle_beta: str = incident_angle_beta
+        self.position_ver: str = start_pos_ver
+        self.position_hor: str = start_pos_hor
+        self.position_z: str = start_pos_z
+        self.ionization_energy: float = ionization_energy
+        self._progressbar: bool = progressbar
 
-        self.sim_obj = Simulation(detector)
+        self.sim_obj = Simulation(
+            detector,
+            simulation_mode=simulation_mode,
+            particle_type=particle_type,
+            initial_energy=initial_energy,
+            position_ver=start_pos_ver,
+            position_hor=start_pos_hor,
+            position_z=start_pos_z,
+            angle_alpha=incident_angle_alpha,
+            angle_beta=incident_angle_beta,
+            ionization_energy=ionization_energy,
+        )
         self.charge_obj = detector.charge
         self._log = logging.getLogger(__name__)
 
@@ -362,18 +373,6 @@ class Cosmix:
     def run(self) -> None:
         # print("CosmiX - simulation processing...\n")
 
-        self.sim_obj.parameters(
-            sim_mode=self.simulation_mode,
-            part_type=self.part_type,
-            init_energy=self.init_energy,
-            pos_ver=self.position_ver,
-            pos_hor=self.position_hor,
-            pos_z=self.position_z,
-            alpha=self.angle_alpha,
-            beta=self.angle_beta,
-            ionization_energy=self.ionization_energy,
-        )
-
         # Get output folder and create it (if needed)
         out_path = Path("data").resolve()
         out_path.mkdir(parents=True, exist_ok=True)
@@ -387,12 +386,15 @@ class Cosmix:
             disable=(not self._progressbar),
         ):
             # for k in range(0, self.particle_number):
-            err: Optional[bool] = None
-            if self.sim_obj.energy_loss_data == "stepsize":  # TODO
-                err = self.sim_obj.event_generation()
+            if self.sim_obj.energy_loss_data == "stepsize":
+                err: bool = self.sim_obj.event_generation()
             elif self.sim_obj.energy_loss_data == "geant4":
                 err = self.sim_obj.event_generation_geant4()
+            else:
+                raise NotImplementedError
 
+            # TODO: These '.npy' files should not be generated.
+            # TODO: This will cause a lot of undefined behaviours when running in parallel
             if k % 10 == 0:
                 np.save(
                     f"{out_path}/cosmix-e_num_lst_per_event.npy",

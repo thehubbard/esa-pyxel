@@ -35,11 +35,28 @@ class Simulation:
         the simulated detector specs.
     """
 
-    def __init__(self, detector: Detector) -> None:
+    def __init__(
+        self,
+        detector: Detector,
+        simulation_mode: Literal[
+            "cosmic_ray", "cosmics", "radioactive_decay", "snowflakes"
+        ],
+        particle_type: Literal[
+            "proton", "ion", "alpha", "beta", "electron", "gamma", "x-ray"
+        ],
+        initial_energy: Union[int, float, Literal["random"]],
+        position_ver: str,
+        position_hor: str,
+        position_z: str,
+        angle_alpha: str,
+        angle_beta: str,
+        ionization_energy: float = 3.6,
+    ) -> None:
         self.detector = detector
-        self.simulation_mode: Optional[
-            Literal["cosmic_ray", "cosmics", "radioactive_decay", "snowflakes"]
-        ] = None
+
+        self.simulation_mode: Literal[
+            "cosmic_ray", "cosmics", "radioactive_decay", "snowflakes"
+        ] = simulation_mode
 
         self.flux_dist: Optional[np.ndarray] = None
         self.spectrum_cdf: Optional[np.ndarray] = None
@@ -61,20 +78,20 @@ class Simulation:
 
         self.particle: Optional[Particle] = None
 
-        self.particle_type: Optional[
-            Literal["proton", "ion", "alpha", "beta", "electron", "gamma", "x-ray"]
-        ] = None
-        self.initial_energy: Optional[Union[int, float, Literal["random"]]] = None
-        self.position_ver: Optional[str] = None
-        self.position_hor: Optional[str] = None
-        self.position_z: Optional[str] = None
-        self.angle_alpha: Optional[str] = None
-        self.angle_beta: Optional[str] = None
+        self.particle_type: Literal[
+            "proton", "ion", "alpha", "beta", "electron", "gamma", "x-ray"
+        ] = particle_type
+        self.initial_energy: Union[int, float, Literal["random"]] = initial_energy
+        self.position_ver: str = position_ver
+        self.position_hor: str = position_hor
+        self.position_z: str = position_z
+        self.angle_alpha: str = angle_alpha
+        self.angle_beta: str = angle_beta
         self.step_length = (
             1.0  # fix, all the other data/parameters should be adjusted to this
         )
-        self.energy_cut = 1.0e-5  # MeV
-        self.ionization_energy = 3.6
+        self.energy_cut: float = 1.0e-5  # MeV
+        self.ionization_energy: float = ionization_energy
 
         self.e_num_lst_per_step: list[int] = []
         self.e_energy_lst: list[float] = []
@@ -98,30 +115,6 @@ class Simulation:
         self.p_energy_lst_per_event: list[float] = []
         self.alpha_lst_per_event: list[float] = []
         self.beta_lst_per_event: list[float] = []
-
-    def parameters(
-        self,
-        sim_mode: Literal["cosmic_ray", "cosmics", "radioactive_decay", "snowflakes"],
-        part_type: Literal[
-            "proton", "ion", "alpha", "beta", "electron", "gamma", "x-ray"
-        ],
-        init_energy: Union[int, float, Literal["random"]],
-        pos_ver: str,
-        pos_hor: str,
-        pos_z: str,
-        alpha: str,
-        beta: str,
-        ionization_energy: float = 3.6,
-    ) -> None:
-        self.simulation_mode = sim_mode
-        self.particle_type = part_type
-        self.initial_energy = init_energy
-        self.position_ver = pos_ver
-        self.position_hor = pos_hor
-        self.position_z = pos_z
-        self.angle_alpha = alpha
-        self.angle_beta = beta
-        self.ionization_energy = ionization_energy
 
     def find_smaller_neighbor(self, column: str, value: float) -> float:
         sorted_list: Sequence[float] = sorted(self.data_library[column].unique())
@@ -215,13 +208,7 @@ class Simulation:
         geo = self.detector.geometry
         ioniz_energy = self.ionization_energy  # eV
 
-        assert self.simulation_mode is not None
-        assert self.particle_type is not None
-        assert self.initial_energy is not None
         assert self.spectrum_cdf is not None
-        assert self.position_ver is not None
-        assert self.position_hor is not None
-        assert self.position_z is not None
 
         self.particle = Particle(
             detector=self.detector,
@@ -235,7 +222,7 @@ class Simulation:
             # self.angle_alpha, self.angle_beta)
         )
 
-        particle = self.particle
+        particle: Particle = self.particle
         assert particle.track_length is not None
 
         self.track_length_lst_per_event += [particle.track_length]
@@ -331,13 +318,7 @@ class Simulation:
         secondaries = 0
         tertiaries = 0
 
-        assert self.simulation_mode is not None
-        assert self.particle_type is not None
-        assert self.initial_energy is not None
         assert self.spectrum_cdf is not None
-        assert self.position_ver is not None
-        assert self.position_hor is not None
-        assert self.position_z is not None
 
         self.particle = Particle(
             detector=self.detector,
@@ -350,7 +331,7 @@ class Simulation:
             starting_pos_z=self.position_z,
             # self.angle_alpha, self.angle_beta
         )
-        particle = self.particle
+        particle: Particle = self.particle
 
         assert particle.track_length is not None
         if particle.track_length < 1.0:
