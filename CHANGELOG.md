@@ -50,6 +50,8 @@ The minimum versions of some dependencies were changed:
   (See [!900](https://gitlab.com/esa/pyxel/-/merge_requests/900)).
 * Better error message when no photons are provided in model 'simple_conversion' in group 'Charge Generation'.
   (See [!909](https://gitlab.com/esa/pyxel/-/merge_requests/909)).
+* Add possibility to provide external files with incident energy for model 'Cosmix' in group 'Charge Generation'.
+  (See [!919](https://gitlab.com/esa/pyxel/-/merge_requests/919)).
 
 ### Others
 * Remove dependency to `netcdf4`.
