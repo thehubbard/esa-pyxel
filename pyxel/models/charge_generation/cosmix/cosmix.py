@@ -56,20 +56,27 @@ class StepSize(TypedDict):
 # @config.argument(name='', label='', units='', validate=)
 def cosmix(
     detector: Detector,
-    simulation_mode: Optional[
-        Literal["cosmic_ray", "cosmics", "radioactive_decay", "snowflakes"]
-    ] = None,
-    running_mode: Optional[
-        Literal["stopping", "stepsize", "geant4", "plotting"]
-    ] = None,
-    particle_type: Optional[Literal["proton", "alpha", "ion"]] = None,
-    initial_energy: Optional[Union[int, float, Literal["random"]]] = None,
-    particles_per_second: Optional[float] = None,
-    incident_angles: Optional[tuple[str, str]] = None,
-    starting_position: Optional[tuple[str, str, str]] = None,
+    simulation_mode: Literal[
+        "cosmic_ray", "cosmics", "radioactive_decay", "snowflakes"
+    ],
+    running_mode: Literal["stopping", "stepsize", "geant4", "plotting"],
+    particle_type: Literal["proton", "alpha", "ion"],
+    particles_per_second: float,
+    spectrum_file: str,
+    initial_energy: Optional[
+        Union[int, float, Literal["random"]]
+    ] = "random",  # TODO: Remove 'Optional'
+    incident_angles: Optional[tuple[str, str]] = (
+        "random",
+        "random",
+    ),  # TODO: Remove 'Optional'
+    starting_position: Optional[tuple[str, str, str]] = (
+        "random",
+        "random",
+        "random",
+    ),  # TODO: Remove 'Optional'
     # step_size_file: str = None,
     # stopping_file: str = None,
-    spectrum_file: Optional[str] = None,
     seed: Optional[int] = None,
     ionization_energy: float = 3.6,
     progressbar: bool = True,
@@ -89,16 +96,16 @@ def cosmix(
         Mode: ``stopping``, ``stepsize``, ``geant4``, ``plotting``.
     particle_type
         Type of particle: ``proton``, ``alpha``, ``ion``.
-    initial_energy : int or float or literal
-        Kinetic energy of particle, set `random` for random.
     particles_per_second : float
         Number of particles per second.
+    spectrum_file : str
+        Path to input spectrum
+    initial_energy : int or float or literal
+        Kinetic energy of particle, set `random` for random.
     incident_angles : tuple of str
         Incident angles: ``(α, β)``.
     starting_position : tuple of str
         Starting position: ``(x, y, z)``.
-    spectrum_file : str
-        Path to input spectrum
     seed : int, optional
         Random seed.
     ionization_energy : float
@@ -116,29 +123,20 @@ def cosmix(
     * :external+pyxel_data:doc:`use_cases/CMOS/cmos`
     * :external+pyxel_data:doc:`use_cases/HxRG/h2rg`
     """
-    if simulation_mode is None:
-        raise ValueError("CosmiX: Simulation mode is not defined")
-    if running_mode is None:
-        raise ValueError("CosmiX: Running mode is not defined")
-    if particle_type is None:
-        raise ValueError("CosmiX: Particle type is not defined")
-    if particles_per_second is None:
-        raise ValueError("CosmiX: Particles per second is not defined")
-    if spectrum_file is None:
-        raise ValueError("CosmiX: Spectrum is not defined")
-
+    # TODO: Remove this
     if initial_energy is None:
-        initial_energy = "random"  # TODO
+        initial_energy = "random"
 
+    # TODO: Remove this
     if incident_angles is None:
-        incident_angle_alpha, incident_angle_beta = ("random", "random")
-    else:
-        incident_angle_alpha, incident_angle_beta = incident_angles
+        incident_angles = ("random", "random")
 
+    # TODO: Remove this
     if starting_position is None:
-        start_pos_ver, start_pos_hor, start_pos_z = ("random", "random", "random")
-    else:
-        start_pos_ver, start_pos_hor, start_pos_z = starting_position
+        starting_position = ("random", "random", "random")
+
+    incident_angle_alpha, incident_angle_beta = incident_angles
+    start_pos_ver, start_pos_hor, start_pos_z = starting_position
 
     particle_number = int(particles_per_second * detector.time_step)
 
@@ -394,6 +392,7 @@ class Cosmix:
                 err = self.sim_obj.event_generation()
             elif self.sim_obj.energy_loss_data == "geant4":
                 err = self.sim_obj.event_generation_geant4()
+
             if k % 10 == 0:
                 np.save(
                     f"{out_path}/cosmix-e_num_lst_per_event.npy",

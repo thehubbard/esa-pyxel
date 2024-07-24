@@ -3009,7 +3009,10 @@
           "properties": {
             "incident_angles": {
               "additionalItems": false,
-              "default": null,
+              "default": [
+                "random",
+                "random"
+              ],
               "description": "Incident angles: ``(\u03b1, \u03b2)``.",
               "items": [
                 {
@@ -3068,19 +3071,12 @@
                 "ion"
               ],
               "title": "particle_type",
-              "type": [
-                "string",
-                "null"
-              ]
+              "type": "string"
             },
             "particles_per_second": {
-              "default": null,
               "description": "Number of particles per second.",
               "title": "particles_per_second",
-              "type": [
-                "number",
-                "null"
-              ]
+              "type": "number"
             },
             "progressbar": {
               "default": true,
@@ -3097,10 +3093,7 @@
                 "plotting"
               ],
               "title": "running_mode",
-              "type": [
-                "string",
-                "null"
-              ]
+              "type": "string"
             },
             "seed": {
               "default": null,
@@ -3120,23 +3113,20 @@
                 "snowflakes"
               ],
               "title": "simulation_mode",
-              "type": [
-                "string",
-                "null"
-              ]
+              "type": "string"
             },
             "spectrum_file": {
-              "default": null,
               "description": "Path to input spectrum",
               "title": "spectrum_file",
-              "type": [
-                "string",
-                "null"
-              ]
+              "type": "string"
             },
             "starting_position": {
               "additionalItems": false,
-              "default": null,
+              "default": [
+                "random",
+                "random",
+                "random"
+              ],
               "description": "Starting position: ``(x, y, z)``.",
               "items": [
                 {
@@ -3181,6 +3171,13 @@
               ]
             }
           },
+          "required": [
+            "simulation_mode",
+            "running_mode",
+            "particle_type",
+            "particles_per_second",
+            "spectrum_file"
+          ],
           "title": "Parameters",
           "type": "object"
         },
@@ -3198,7 +3195,8 @@
         }
       },
       "required": [
-        "name"
+        "name",
+        "arguments"
       ],
       "title": "Model 'cosmix'",
       "type": "object"
