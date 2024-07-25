@@ -10,11 +10,12 @@
 import logging
 import math
 from pathlib import Path
-from typing import Literal, Optional, Union
+from typing import Any, Literal, Optional, Union
 
 import numpy as np
 import pandas as pd
 from tqdm.auto import tqdm
+from typing_extensions import TypedDict
 
 from pyxel.detectors import Detector
 
@@ -27,27 +28,61 @@ from pyxel.util import resolve_path, set_random_seed
 # TODO: write basic test to check inputs, private function, documentation
 
 
+# TODO: This will be use when issue #794 is fixed
+class StepSize(TypedDict):
+    """Define structure of a Step size for different particle types in the CosmiX model.
+
+    Parameters
+    ----------
+    type: "proton", "ion", "alpha", "beta", "electron", "gamma", "x-ray"
+        Specify the type of particle.
+    energy : float
+        The energy of the particle. Unit: MeV
+    thickness : float
+        The thickness of the material the particle interacts with. Unit: um
+    filename : str
+        Filename to the file containing the step size data for the specified particle type, energy and material
+        thickness.
+
+    """
+
+    type: Literal["proton", "ion", "alpha", "beta", "electron", "gamma", "x-ray"]
+    energy: float  # in MeV
+    thickness: float  # in um
+    filename: str
+
+
 # @validators.validate
 # @config.argument(name='', label='', units='', validate=)
 def cosmix(
     detector: Detector,
-    simulation_mode: Optional[
-        Literal["cosmic_ray", "cosmics", "radioactive_decay", "snowflakes"]
-    ] = None,
-    running_mode: Optional[
-        Literal["stopping", "stepsize", "geant4", "plotting"]
-    ] = None,
-    particle_type: Optional[Literal["proton", "alpha", "ion"]] = None,
-    initial_energy: Optional[Union[int, float, Literal["random"]]] = None,
-    particles_per_second: Optional[float] = None,
-    incident_angles: Optional[tuple[str, str]] = None,
-    starting_position: Optional[tuple[str, str, str]] = None,
+    simulation_mode: Literal[
+        "cosmic_ray", "cosmics", "radioactive_decay", "snowflakes"
+    ],
+    running_mode: Literal["stopping", "stepsize", "geant4", "plotting"],
+    particle_type: Literal["proton", "alpha", "ion"],
+    particles_per_second: float,
+    spectrum_file: str,
+    initial_energy: Optional[
+        Union[int, float, Literal["random"]]
+    ] = "random",  # TODO: Remove 'Optional'
+    incident_angles: Optional[tuple[str, str]] = (
+        "random",
+        "random",
+    ),  # TODO: Remove 'Optional'
+    starting_position: Optional[tuple[str, str, str]] = (
+        "random",
+        "random",
+        "random",
+    ),  # TODO: Remove 'Optional'
     # step_size_file: str = None,
     # stopping_file: str = None,
-    spectrum_file: Optional[str] = None,
     seed: Optional[int] = None,
     ionization_energy: float = 3.6,
     progressbar: bool = True,
+    stepsize: Optional[
+        list[dict[str, Any]]
+    ] = None,  # TODO: replace by Optional[list[StepSize]]
 ) -> None:
     """Apply CosmiX model.
 
@@ -61,22 +96,24 @@ def cosmix(
         Mode: ``stopping``, ``stepsize``, ``geant4``, ``plotting``.
     particle_type
         Type of particle: ``proton``, ``alpha``, ``ion``.
-    initial_energy : int or float or literal
-        Kinetic energy of particle, set `random` for random.
     particles_per_second : float
         Number of particles per second.
+    spectrum_file : str
+        Path to input spectrum
+    initial_energy : int or float or literal
+        Kinetic energy of particle, set `random` for random.
     incident_angles : tuple of str
         Incident angles: ``(α, β)``.
     starting_position : tuple of str
         Starting position: ``(x, y, z)``.
-    spectrum_file : str
-        Path to input spectrum
     seed : int, optional
         Random seed.
     ionization_energy : float
         Mean ionization energy of the semiconductor lattice.
     progressbar : bool
         Progressbar.
+    stepsize : optional, list of dict
+        Define the different step sizes. Only for running mode 'stepsize'
 
     Notes
     -----
@@ -86,29 +123,20 @@ def cosmix(
     * :external+pyxel_data:doc:`use_cases/CMOS/cmos`
     * :external+pyxel_data:doc:`use_cases/HxRG/h2rg`
     """
-    if simulation_mode is None:
-        raise ValueError("CosmiX: Simulation mode is not defined")
-    if running_mode is None:
-        raise ValueError("CosmiX: Running mode is not defined")
-    if particle_type is None:
-        raise ValueError("CosmiX: Particle type is not defined")
-    if particles_per_second is None:
-        raise ValueError("CosmiX: Particles per second is not defined")
-    if spectrum_file is None:
-        raise ValueError("CosmiX: Spectrum is not defined")
-
+    # TODO: Remove this
     if initial_energy is None:
-        initial_energy = "random"  # TODO
+        initial_energy = "random"
 
+    # TODO: Remove this
     if incident_angles is None:
-        incident_angle_alpha, incident_angle_beta = ("random", "random")
-    else:
-        incident_angle_alpha, incident_angle_beta = incident_angles
+        incident_angles = ("random", "random")
 
+    # TODO: Remove this
     if starting_position is None:
-        start_pos_ver, start_pos_hor, start_pos_z = ("random", "random", "random")
-    else:
-        start_pos_ver, start_pos_hor, start_pos_z = starting_position
+        starting_position = ("random", "random", "random")
+
+    incident_angle_alpha, incident_angle_beta = incident_angles
+    start_pos_ver, start_pos_hor, start_pos_z = starting_position
 
     particle_number = int(particles_per_second * detector.time_step)
 
@@ -137,7 +165,7 @@ def cosmix(
         cosmix.set_particle_spectrum(Path(spectrum_file))
 
         if running_mode == "stepsize":
-            cosmix.set_stepsize()
+            cosmix.set_stepsize(stepsize)
         elif running_mode == "geant4":
             cosmix.set_geant4()
         else:
@@ -192,55 +220,29 @@ class Cosmix:
         self.simulation_mode = simulation_mode
         self.part_type = particle_type
         self.init_energy = initial_energy
-        self.particle_number = particle_number
-        self.angle_alpha = incident_angle_alpha
-        self.angle_beta = incident_angle_beta
-        self.position_ver = start_pos_ver
-        self.position_hor = start_pos_hor
-        self.position_z = start_pos_z
-        self.ionization_energy = ionization_energy
-        self._progressbar = progressbar
+        self.particle_number: int = particle_number
+        self.angle_alpha: str = incident_angle_alpha
+        self.angle_beta: str = incident_angle_beta
+        self.position_ver: str = start_pos_ver
+        self.position_hor: str = start_pos_hor
+        self.position_z: str = start_pos_z
+        self.ionization_energy: float = ionization_energy
+        self._progressbar: bool = progressbar
 
-        self.sim_obj = Simulation(detector)
+        self.sim_obj = Simulation(
+            detector,
+            simulation_mode=simulation_mode,
+            particle_type=particle_type,
+            initial_energy=initial_energy,
+            position_ver=start_pos_ver,
+            position_hor=start_pos_hor,
+            position_z=start_pos_z,
+            angle_alpha=incident_angle_alpha,
+            angle_beta=incident_angle_beta,
+            ionization_energy=ionization_energy,
+        )
         self.charge_obj = detector.charge
         self._log = logging.getLogger(__name__)
-
-    # TODO: Is it still used ?
-    def set_simulation_mode(
-        self,
-        sim_mode: Literal["cosmic_ray", "cosmics", "radioactive_decay", "snowflakes"],
-    ) -> None:
-        self.simulation_mode = sim_mode
-
-    # TODO: Is it still used ?
-    def set_particle_type(
-        self,
-        particle_type: Literal[
-            "proton", "ion", "alpha", "beta", "electron", "gamma", "x-ray"
-        ],
-    ) -> None:
-        self.part_type = particle_type
-
-    # TODO: Is it still used ?
-    def set_initial_energy(self, energy: Union[int, float, Literal["random"]]) -> None:
-        self.init_energy = energy
-
-    # TODO: Is it still used ?
-    def set_particle_number(self, number: int) -> None:
-        self.particle_number = number
-
-    # TODO: Is it still used ?
-    def set_incident_angles(self, angles: tuple[str, str]) -> None:
-        alpha, beta = angles
-        self.angle_alpha = alpha
-        self.angle_beta = beta
-
-    # TODO: Is it still used ?
-    def set_starting_position(self, start_position: tuple[str, str, str]) -> None:
-        position_vertical, position_horizontal, position_z = start_position
-        self.position_ver = position_vertical
-        self.position_hor = position_horizontal
-        self.position_z = position_z
 
     def set_particle_spectrum(self, file_name: Path) -> None:
         """Set up the particle specs according to a spectrum.
@@ -271,70 +273,68 @@ class Cosmix:
         self.sim_obj.energy_loss_data = "stopping"
         self.sim_obj.stopping_power = read_data(stopping_file)
 
-    def set_stepsize(self) -> None:
+    def set_stepsize(
+        self,
+        stepsizes: Optional[
+            list[dict]
+        ] = None,  # TODO: Replace by  Optional[list[StepSize]]
+    ) -> None:
         self.sim_obj.energy_loss_data = "stepsize"
-        self.create_data_library()
+
+        if stepsizes is None:
+            # Get default values
+            folder: Path = Path(__file__).parent.joinpath("data", "inputs")
+            stepsizes = [
+                {
+                    "type": "proton",
+                    "energy": 100.0,
+                    "thickness": 40.0,
+                    "filename": str(
+                        folder / "stepsize_proton_100MeV_40um_Si_10k.ascii"
+                    ),
+                },
+                {
+                    "type": "proton",
+                    "energy": 100.0,
+                    "thickness": 50.0,
+                    "filename": str(
+                        folder / "stepsize_proton_100MeV_50um_Si_10k.ascii"
+                    ),
+                },
+                {
+                    "type": "proton",
+                    "energy": 100.0,
+                    "thickness": 60.0,
+                    "filename": str(
+                        folder / "stepsize_proton_100MeV_60um_Si_10k.ascii"
+                    ),
+                },
+                {
+                    "type": "proton",
+                    "energy": 100.0,
+                    "thickness": 70.0,
+                    "filename": str(
+                        folder / "stepsize_proton_100MeV_70um_Si_10k.ascii"
+                    ),
+                },
+                {
+                    "type": "proton",
+                    "energy": 100.0,
+                    "thickness": 100.0,
+                    "filename": str(
+                        folder / "stepsize_proton_100MeV_100um_Si_10k.ascii"
+                    ),
+                },
+            ]
+
+        df = pd.DataFrame(stepsizes)
+        self.sim_obj.data_library = df  # TODO: Concatenate or replace ?
 
     def set_geant4(self) -> None:
         self.sim_obj.energy_loss_data = "geant4"
 
-    def create_data_library(self) -> None:
-        self.sim_obj.data_library = pd.DataFrame(
-            columns=["type", "energy", "thickness", "path"]
-        )
-
-        # mat_list = ['Si']
-
-        type_list = [
-            "proton"
-        ]  # , 'ion', 'alpha', 'beta', 'electron', 'gamma', 'x-ray']
-        energy_list = [100.0]  # MeV
-        thick_list = [40.0, 50.0, 60.0, 70.0, 100.0]  # um
-
-        # TODO: Fix this. See issue #152
-        path = Path(__file__).parent.joinpath("data", "inputs")
-        filename_list = [
-            "stepsize_proton_100MeV_40um_Si_10k.ascii",
-            "stepsize_proton_100MeV_50um_Si_10k.ascii",
-            "stepsize_proton_100MeV_60um_Si_10k.ascii",
-            "stepsize_proton_100MeV_70um_Si_10k.ascii",
-            "stepsize_proton_100MeV_100um_Si_10k.ascii",
-        ]
-
-        i = 0
-        for pt in type_list:
-            for en in energy_list:
-                for th in thick_list:
-                    data_dict = {
-                        "type": pt,
-                        "energy": en,
-                        "thickness": th,
-                        "path": str(Path(path, filename_list[i])),
-                    }
-                    new_df = pd.DataFrame(data_dict, index=[0])
-
-                    if self.sim_obj.data_library.empty:
-                        self.sim_obj.data_library = new_df
-                    else:
-                        self.sim_obj.data_library = pd.concat(
-                            [self.sim_obj.data_library, new_df], ignore_index=True
-                        )
-                    i += 1
-
     def run(self) -> None:
         # print("CosmiX - simulation processing...\n")
-
-        self.sim_obj.parameters(
-            sim_mode=self.simulation_mode,
-            part_type=self.part_type,
-            init_energy=self.init_energy,
-            pos_ver=self.position_ver,
-            pos_hor=self.position_hor,
-            pos_z=self.position_z,
-            alpha=self.angle_alpha,
-            beta=self.angle_beta,
-            ionization_energy=self.ionization_energy,
-        )
 
         # Get output folder and create it (if needed)
         out_path = Path("data").resolve()
@@ -349,11 +349,15 @@ class Cosmix:
             disable=(not self._progressbar),
         ):
             # for k in range(0, self.particle_number):
-            err: Optional[bool] = None
-            if self.sim_obj.energy_loss_data == "stepsize":  # TODO
-                err = self.sim_obj.event_generation()
+            if self.sim_obj.energy_loss_data == "stepsize":
+                err: bool = self.sim_obj.event_generation()
             elif self.sim_obj.energy_loss_data == "geant4":
                 err = self.sim_obj.event_generation_geant4()
+            else:
+                raise NotImplementedError
+
+            # TODO: These '.npy' files should not be generated.
+            # TODO: This will cause a lot of undefined behaviours when running in parallel
             if k % 10 == 0:
                 np.save(
                     f"{out_path}/cosmix-e_num_lst_per_event.npy",
