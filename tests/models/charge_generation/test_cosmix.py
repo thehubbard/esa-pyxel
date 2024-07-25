@@ -48,31 +48,31 @@ def ccd_8x8() -> CCD:
                         "type": "proton",
                         "energy": 100.0,
                         "thickness": 40.0,
-                        "filename": "data/stepsize_proton_100MeV_40um_Si_10k.ascii",
+                        "filename": "{folder}/data/stepsize_proton_100MeV_40um_Si_10k.ascii",
                     },
                     {
                         "type": "proton",
                         "energy": 100.0,
                         "thickness": 50.0,
-                        "filename": "data/stepsize_proton_100MeV_50um_Si_10k.ascii",
+                        "filename": "{folder}/data/stepsize_proton_100MeV_50um_Si_10k.ascii",
                     },
                     {
                         "type": "proton",
                         "energy": 100.0,
                         "thickness": 60.0,
-                        "filename": "data/stepsize_proton_100MeV_60um_Si_10k.ascii",
+                        "filename": "{folder}/data/stepsize_proton_100MeV_60um_Si_10k.ascii",
                     },
                     {
                         "type": "proton",
                         "energy": 100.0,
                         "thickness": 70.0,
-                        "filename": "data/stepsize_proton_100MeV_70um_Si_10k.ascii",
+                        "filename": "{folder}/data/stepsize_proton_100MeV_70um_Si_10k.ascii",
                     },
                     {
                         "type": "proton",
                         "energy": 100.0,
                         "thickness": 100.0,
-                        "filename": "data/stepsize_proton_100MeV_100um_Si_10k.ascii",
+                        "filename": "{folder}/data/stepsize_proton_100MeV_100um_Si_10k.ascii",
                     },
                 ]
             },
@@ -103,7 +103,7 @@ def test_cosmix_stepsize(extra_params, ccd_8x8: CCD, request: pytest.FixtureRequ
     if "stepsize" in extra_params:
         new_stepsizes = [
             {
-                key: value if key != "filename" else str(current_folder / value)
+                key: value if key != "filename" else value.format(folder=current_folder)
                 for key, value in element.items()
             }
             for element in extra_params["stepsize"]

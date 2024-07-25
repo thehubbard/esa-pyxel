@@ -244,43 +244,6 @@ class Cosmix:
         self.charge_obj = detector.charge
         self._log = logging.getLogger(__name__)
 
-    # TODO: Is it still used ?
-    def set_simulation_mode(
-        self,
-        sim_mode: Literal["cosmic_ray", "cosmics", "radioactive_decay", "snowflakes"],
-    ) -> None:
-        self.simulation_mode = sim_mode
-
-    # TODO: Is it still used ?
-    def set_particle_type(
-        self,
-        particle_type: Literal[
-            "proton", "ion", "alpha", "beta", "electron", "gamma", "x-ray"
-        ],
-    ) -> None:
-        self.part_type = particle_type
-
-    # TODO: Is it still used ?
-    def set_initial_energy(self, energy: Union[int, float, Literal["random"]]) -> None:
-        self.init_energy = energy
-
-    # TODO: Is it still used ?
-    def set_particle_number(self, number: int) -> None:
-        self.particle_number = number
-
-    # TODO: Is it still used ?
-    def set_incident_angles(self, angles: tuple[str, str]) -> None:
-        alpha, beta = angles
-        self.angle_alpha = alpha
-        self.angle_beta = beta
-
-    # TODO: Is it still used ?
-    def set_starting_position(self, start_position: tuple[str, str, str]) -> None:
-        position_vertical, position_horizontal, position_z = start_position
-        self.position_ver = position_vertical
-        self.position_hor = position_horizontal
-        self.position_z = position_z
-
     def set_particle_spectrum(self, file_name: Path) -> None:
         """Set up the particle specs according to a spectrum.
 

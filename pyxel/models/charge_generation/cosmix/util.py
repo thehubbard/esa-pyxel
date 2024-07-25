@@ -68,6 +68,7 @@ def get_yvalue_with_interpolation(function_array, x_value):
     return intpol_y_value
 
 
+# TODO: Use 'pyxel.inputs.load_table' or 'pyxel.inputs.load_table2'
 def load_histogram_data(
     file_name: Path,
     hist_type: str,
@@ -101,6 +102,7 @@ def load_histogram_data(
 #     return spectrum_data
 
 
+# TODO: Use 'pyxel.inputs.load_array' or 'pyxel.inputs.load_array2'
 def read_data(file_name: Path) -> np.ndarray:
     full_path = file_name.resolve()
     if not full_path.exists():
