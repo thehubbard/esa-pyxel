@@ -581,7 +581,7 @@ def display_persist(persistence: Union[Persistence, SimplePersistence]) -> None:
         )
 
     trapmap: np.ndarray
-    for ax, trapmap, keyw in zip(axes, trapped_charges, labels):  # type: ignore[arg-type]
+    for ax, trapmap, keyw in zip(axes, trapped_charges, labels):
         display_array(data=trapmap, axes=ax, label=keyw)
 
 
