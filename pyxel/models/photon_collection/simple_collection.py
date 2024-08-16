@@ -356,7 +356,7 @@ def aggregate_multiwavelength(data: xr.Dataset, rows: int, cols: int) -> xr.Data
     for x, group_x in data.groupby("detector_coords_x"):
         for y, group_y in group_x.groupby("detector_coords_y"):
             projection[:, int(y), int(x)] += np.array(
-                group_y["converted_flux"].squeeze()
+                group_y["converted_flux"].sum(dim="ref")
             )
 
     projection_3d: xr.DataArray = xr.DataArray(
