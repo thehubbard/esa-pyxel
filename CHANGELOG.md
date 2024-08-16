@@ -14,6 +14,10 @@ Pyxel doesn't use SemVer anymore, since most minor releases have at least minor 
 This release brings a number of bugfixes and improvements.
 
 ### Core
+* Fix issue in function `aggregate_multiwavelength` for model 
+  [`simple_collection`](https://esa.gitlab.io/pyxel/doc/stable/references/model_groups/photon_collection_models.html#pyxel.models.photon_collection.simple_collection)
+  from [`Photon Collection`](https://esa.gitlab.io/pyxel/doc/stable/references/model_groups/photon_collection_models.html#photon-collection-models).
+  (See [!928](https://gitlab.com/esa/pyxel/-/merge_requests/928)).
 
 ### Documentation
 
