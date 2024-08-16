@@ -21,6 +21,8 @@ from pyxel.detectors import (
     WavelengthHandling,
 )
 from pyxel.models.photon_collection.simple_collection import (
+    aggregate_monochromatic,
+    aggregate_multiwavelength,
     extract_wavelength,
     simple_collection,
 )
@@ -777,3 +779,88 @@ def test_simple_collection_error(
             pixel_scale=pixelscale,
             integrate_wavelength=integrate_wavelength,
         )
+
+
+def test_aggregate_monochromatic():
+    """Test function 'aggregate_monochromatic'."""
+    ds = xr.Dataset()
+    ds["converted_flux"] = xr.DataArray(
+        [10.0, 20.0, 30.0, 1.0, 40.0],
+        dims=["ref"],
+        coords={
+            "ref": [22, 23, 24, 25, 26],
+            "detector_coords_x": xr.DataArray([2, 0, 4, 2, 2], dims="ref"),
+            "detector_coords_y": xr.DataArray([3, 0, 4, 3, 2], dims="ref"),
+        },
+    )
+
+    result_2d = aggregate_monochromatic(data=ds, rows=5, cols=5)
+    assert isinstance(result_2d, np.ndarray)
+
+    exp_result_2d = np.array(
+        [
+            [20.0, 0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 0.0],
+            [0.0, 0.0, 40.0, 0.0, 0.0],
+            [0.0, 0.0, 11.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0, 0.0, 30.0],
+        ]
+    )
+
+    np.testing.assert_allclose(result_2d, exp_result_2d)
+
+
+def test_aggregate_multiwavelength():
+    """Test function 'aggregate_multiwavelength'."""
+    ds = xr.Dataset()
+    ds["converted_flux"] = xr.DataArray(
+        [
+            [10.0, 11.0, 12.0],
+            [20.0, 21.0, 22.0],
+            [32.0, 31.0, 30.0],
+            [1.0, 1.0, 1.0],
+            [40.0, 40.5, 41.0],
+        ],
+        dims=["ref", "wavelength"],
+        coords={
+            "ref": [22, 23, 24, 25, 26],
+            "wavelength": [336, 338, 340],
+            "detector_coords_x": xr.DataArray([2, 0, 4, 2, 2], dims="ref"),
+            "detector_coords_y": xr.DataArray([3, 0, 4, 3, 2], dims="ref"),
+        },
+        attrs={"units": "m2 ph / cm2"},
+    )
+
+    result_3d = aggregate_multiwavelength(data=ds, rows=5, cols=5)
+    assert isinstance(result_3d, xr.DataArray)
+
+    exp_result_3d = xr.DataArray(
+        [
+            [
+                [20.0, 0.0, 0.0, 0.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0, 0.0],
+                [0.0, 0.0, 40.0, 0.0, 0.0],
+                [0.0, 0.0, 11.0, 0.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0, 32.0],
+            ],
+            [
+                [21.0, 0.0, 0.0, 0.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0, 0.0],
+                [0.0, 0.0, 40.5, 0.0, 0.0],
+                [0.0, 0.0, 12.0, 0.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0, 31.0],
+            ],
+            [
+                [22.0, 0.0, 0.0, 0.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0, 0.0],
+                [0.0, 0.0, 41.0, 0.0, 0.0],
+                [0.0, 0.0, 13.0, 0.0, 0.0],
+                [0.0, 0.0, 0.0, 0.0, 30.0],
+            ],
+        ],
+        dims=["wavelength", "y", "x"],
+        coords={"wavelength": [336, 338, 340]},
+        attrs={"units": "m2 ph / cm2"},
+    )
+
+    xr.testing.assert_allclose(result_3d, exp_result_3d)
