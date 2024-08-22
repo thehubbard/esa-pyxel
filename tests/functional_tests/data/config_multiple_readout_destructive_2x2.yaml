@@ -3,7 +3,6 @@ exposure:
     times: [10,20,30]
     non_destructive: false
 
-
 cmos_detector:
   geometry:
     row: 2

@@ -1,0 +1,41 @@
+exposure:
+  readout:
+    times: [10,20,30]
+    non_destructive: true
+
+cmos_detector:
+  geometry:
+    row: 2
+    col: 2
+  environment:
+  characteristics:
+    charge_to_volt_conversion: 3.0e-6
+    pre_amplification: 100
+    adc_bit_resolution: 16
+    adc_voltage_range: [0.,6.]
+
+pipeline:
+  charge_generation:
+    - name: load_charge
+      func: pyxel.models.charge_generation.load_charge
+      arguments:
+        filename: tests/functional_tests/data/charge_2x2.fits
+
+  charge_collection:
+    - name: simple_collection
+      func: pyxel.models.charge_collection.simple_collection
+      enabled: true
+
+  charge_measurement:
+    - name: simple_measurement
+      func: pyxel.models.charge_measurement.simple_measurement
+      enabled: true
+
+  readout_electronics:
+    - name: simple_amplifier
+      func: pyxel.models.readout_electronics.simple_amplifier
+      enabled: true
+
+    - name: simple_adc
+      func: pyxel.models.readout_electronics.simple_adc
+      enabled: true

@@ -93,10 +93,12 @@ def test_multiple_run_only_single_readout():
     xr.testing.assert_equal(charge_array_3d, exp_charge_array_3d)
 
 
-def test_multiple_run_multiple_readout():
-    """Test multiple consecutive run with multiple readouts."""
+def test_multiple_run_multiple_readout_destructive_readout():
+    """Test multiple consecutive run with multiple readouts with destructive readout."""
 
-    cfg = pyxel.load("tests/functional_tests/data/config_multiple_readout_2x2.yaml")
+    cfg = pyxel.load(
+        "tests/functional_tests/data/config_multiple_readout_destructive_2x2.yaml"
+    )
 
     result = pyxel.run_mode(
         mode=cfg.exposure,
@@ -111,8 +113,8 @@ def test_multiple_run_multiple_readout():
         np.array(
             [
                 [[10.0, 10.0], [10.0, 10.0]],
-                [[20.0, 20.0], [20.0, 20.0]],
-                [[30.0, 30.0], [30.0, 30.0]],
+                [[10.0, 10.0], [10.0, 10.0]],
+                [[10.0, 10.0], [10.0, 10.0]],
             ],
             dtype=float,
         ),
@@ -121,3 +123,71 @@ def test_multiple_run_multiple_readout():
         attrs={"units": "e⁻", "long_name": "Charge"},
     )
     xr.testing.assert_equal(charge_array_3d, exp_charge_array_3d)
+
+    # Check 'result.pixel'
+    pixel_3d = result["pixel"]
+    assert isinstance(pixel_3d, xr.DataArray)
+    exp_pixel_3d = xr.DataArray(
+        np.array(
+            [
+                [[10.0, 10.0], [10.0, 10.0]],
+                [[10.0, 10.0], [10.0, 10.0]],
+                [[10.0, 10.0], [10.0, 10.0]],
+            ],
+            dtype=float,
+        ),
+        dims=["time", "y", "x"],
+        coords={"time": [10.0, 20.0, 30.0], "y": [0, 1], "x": [0, 1]},
+        attrs={"units": "e⁻", "long_name": "Pixel"},
+    )
+    xr.testing.assert_equal(pixel_3d, exp_pixel_3d)
+
+
+def test_multiple_run_multiple_readout_non_destructive_readout():
+    """Test multiple consecutive run with multiple readouts with destructive readout."""
+
+    cfg = pyxel.load(
+        "tests/functional_tests/data/config_multiple_readout_non_destructive_2x2.yaml"
+    )
+
+    result = pyxel.run_mode(
+        mode=cfg.exposure,
+        detector=cfg.detector,
+        pipeline=cfg.pipeline,
+    )
+
+    # Check 'result.charge'
+    charge_array_3d = result["charge"]
+    assert isinstance(charge_array_3d, xr.DataArray)
+    exp_charge_array_3d = xr.DataArray(
+        np.array(
+            [
+                [[10.0, 10.0], [10.0, 10.0]],
+                [[10.0, 10.0], [10.0, 10.0]],
+                [[10.0, 10.0], [10.0, 10.0]],
+            ],
+            dtype=float,
+        ),
+        dims=["time", "y", "x"],
+        coords={"time": [10.0, 20.0, 30.0], "y": [0, 1], "x": [0, 1]},
+        attrs={"units": "e⁻", "long_name": "Charge"},
+    )
+    xr.testing.assert_equal(charge_array_3d, exp_charge_array_3d)
+
+    # Check 'result.pixel'
+    pixel_3d = result["pixel"]
+    assert isinstance(pixel_3d, xr.DataArray)
+    exp_pixel_3d = xr.DataArray(
+        np.array(
+            [
+                [[10.0, 10.0], [10.0, 10.0]],
+                [[20.0, 20.0], [20.0, 20.0]],
+                [[30.0, 30.0], [30.0, 30.0]],
+            ],
+            dtype=float,
+        ),
+        dims=["time", "y", "x"],
+        coords={"time": [10.0, 20.0, 30.0], "y": [0, 1], "x": [0, 1]},
+        attrs={"units": "e⁻", "long_name": "Pixel"},
+    )
+    xr.testing.assert_equal(pixel_3d, exp_pixel_3d)
