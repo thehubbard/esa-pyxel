@@ -198,4 +198,7 @@ def load_cropped_and_aligned_image(
         allow_smaller_array=allow_smaller_array,
     )
 
+    # Set this array as read-only. It avoids a lot of problems with 'lru_cache'
+    cropped_and_aligned_image.setflags(write=False)
+
     return cropped_and_aligned_image

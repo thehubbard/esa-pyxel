@@ -75,7 +75,7 @@ def load_charge(
         align=align,
     )
 
-    charges *= detector.time_step / time_scale
+    new_charges = charges * detector.time_step / time_scale
 
     # Add charges in 'detector'
-    detector.charge.add_charge_array(charges)
+    detector.charge.add_charge_array(new_charges)
