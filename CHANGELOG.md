@@ -22,6 +22,10 @@ This release brings a number of bugfixes and improvements.
 ### Documentation
 
 ### Models
+* Fix bug with charges getting accumulated between two loads of YAML config 
+  with model [`load_charge`](https://esa.gitlab.io/pyxel/doc/stable/references/model_groups/charge_generation_models.html#load-charge) 
+  from [`Charge Generation`](https://esa.gitlab.io/pyxel/doc/stable/references/model_groups/charge_generation_models.html).
+  (See [!931](https://gitlab.com/esa/pyxel/-/merge_requests/931)).
 
 ### Others
 
