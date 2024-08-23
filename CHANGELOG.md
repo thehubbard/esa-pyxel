@@ -13,15 +13,29 @@ Pyxel doesn't use SemVer anymore, since most minor releases have at least minor 
 
 This release brings a number of bugfixes and improvements.
 
+The minimum versions of some dependencies were changed:
+
+  | Package      | Old    | New            |
+  |--------------|--------|----------------|
+  | matplotlib   | 3.1    | **3.6+**       |  
+  | numpy        | 1.23   | **1.24+**      |
+  | pandas       |        | **1.5+**       | 
+  | scikit-image |        | **0.20.0+**    |
+  | scipy        |        | **1.10+**      |
+  | xarray       | 2022.6 | **2023.12.0+** |  
+
+
 ### Core
-* Fix issue in function `aggregate_multiwavelength` for model 
-  [`simple_collection`](https://esa.gitlab.io/pyxel/doc/stable/references/model_groups/photon_collection_models.html#pyxel.models.photon_collection.simple_collection)
-  from [`Photon Collection`](https://esa.gitlab.io/pyxel/doc/stable/references/model_groups/photon_collection_models.html#photon-collection-models).
-  (See [!928](https://gitlab.com/esa/pyxel/-/merge_requests/928)).
+* Add compatibility to `xarray` 2024.07.0.
+  (See [!929](https://gitlab.com/esa/pyxel/-/merge_requests/929)).
 
 ### Documentation
 
 ### Models
+* Fix issue in function `aggregate_multiwavelength` for model 
+  [`simple_collection`](https://esa.gitlab.io/pyxel/doc/stable/references/model_groups/photon_collection_models.html#pyxel.models.photon_collection.simple_collection)
+  from [`Photon Collection`](https://esa.gitlab.io/pyxel/doc/stable/references/model_groups/photon_collection_models.html#photon-collection-models).
+  (See [!928](https://gitlab.com/esa/pyxel/-/merge_requests/928)).
 * Fix bug with charges getting accumulated between two loads of YAML config 
   with model [`load_charge`](https://esa.gitlab.io/pyxel/doc/stable/references/model_groups/charge_generation_models.html#load-charge) 
   from [`Charge Generation`](https://esa.gitlab.io/pyxel/doc/stable/references/model_groups/charge_generation_models.html).
