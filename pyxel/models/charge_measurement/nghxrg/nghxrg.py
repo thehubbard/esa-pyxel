@@ -119,7 +119,7 @@ def compute_nghxrg(
     else:
         window_mode = "WINDOW"
 
-    data_hxrg_2d: np.ndarray = np.asarray(pixel_2d.copy(), dtype=float)
+    data_hxrg_2d: np.ndarray = np.array(pixel_2d, dtype=float)
 
     ng: HXRGNoise = HXRGNoise(
         n_out=num_outputs,
@@ -139,7 +139,7 @@ def compute_nghxrg(
         verbose=True,
     )
 
-    final_data_2d = np.zeros(shape=window_size)
+    final_data_2d = np.zeros(shape=detector_shape)
 
     item: NoiseType
     for item in noise:
@@ -169,7 +169,7 @@ def compute_nghxrg(
             data = ng.add_pca_zero_noise(pca0_amp=item.pca0_amp)
 
         else:
-            raise TypeError(f"Unknown item: {item!r} !")
+            raise NotImplementedError
 
         data_2d: np.ndarray = ng.format_result(data)
         if data_2d.any():
@@ -315,9 +315,14 @@ def nghxrg(
     geo: CMOSGeometry = detector.geometry
 
     if window_position is None:
-        window_position = (0, 0)
+        window_pos_y, window_pos_x = (0, 0)
+    else:
+        window_pos_y, window_pos_x = window_position
+
     if window_size is None:
-        window_size = (geo.row, geo.col)
+        window_nrows, window_ncols = geo.row, geo.col
+    else:
+        window_nrows, window_ncols = window_size
 
     if detector.is_dynamic:
         time_step: int = int(detector.time / detector.time_step)
@@ -330,8 +335,8 @@ def nghxrg(
             pixel_2d=detector.pixel.array,
             noise=params,
             detector_shape=(geo.row, geo.col),
-            window_pos=window_position,
-            window_size=window_size,
+            window_pos=(window_pos_y, window_pos_x),
+            window_size=(window_nrows, window_ncols),
             num_outputs=n_output,
             time_step=time_step,
             num_rows_overhead=n_row_overhead,
