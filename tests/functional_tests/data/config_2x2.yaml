@@ -1,0 +1,17 @@
+exposure:
+  readout:
+    times: [10]
+
+cmos_detector:
+  geometry:
+    row: 2
+    col: 2
+  environment:
+  characteristics:
+
+pipeline:
+  charge_generation:
+    - name: load_charge
+      func: pyxel.models.charge_generation.load_charge
+      arguments:
+        filename: tests/functional_tests/data/charge_2x2.fits
