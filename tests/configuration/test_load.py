@@ -477,3 +477,46 @@ def test_load_two_detectors(config_two_detectors: Path):
         ),
     ):
         _ = pyxel.load(filename)
+
+
+def test_load_observation_without_parameters(tmp_path: Path):
+    """Test function 'pyxel.load' with Observation mode but without 'parameters'."""
+    content = """
+observation:
+  readout:
+    times: [10, 20, 30]
+    non_destructive: true
+
+  # parameters:
+  #   - key: pipeline.photon_collection.illumination.arguments.level
+  #     values: numpy.unique(numpy.logspace(0, 6, 10, dtype=int))
+  #
+cmos_detector:
+  geometry:
+    row: 16
+    col: 16
+  environment:
+  characteristics:
+    charge_to_volt_conversion: 3.0e-6
+    pre_amplification: 100
+    adc_bit_resolution: 16
+    adc_voltage_range: [0.,6.]
+
+pipeline:
+  photon_collection:
+  charge_generation:
+  charge_collection:
+  charge_measurement:
+  readout_electronics:
+  data_processing:
+"""
+
+    filename = tmp_path / "observation_no_parameters.yaml"
+
+    with filename.open(mode="w") as fh:
+        fh.write(content)
+
+    with pytest.raises(
+        ValueError, match=r"Missing entry \'parameters\' in the YAML configuration file"
+    ):
+        pyxel.load(filename)

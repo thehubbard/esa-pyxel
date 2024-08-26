@@ -245,9 +245,18 @@ def to_observation(dct: dict) -> Observation:
     -------
     Observation
     """
-    dct.update(
-        {"parameters": [to_parameters(param_dict) for param_dict in dct["parameters"]]}
-    )
+    parameters: Sequence[Mapping[str, Any]] = dct.get("parameters", [])
+
+    if not parameters:
+        raise ValueError(
+            "Missing entry 'parameters' in the YAML configuration file !\n"
+            "Consider adding the following YAML snippet in the configuration file:\n"
+            "  parameters:\n"
+            "    - key: pipeline.photon_collection.illumination.arguments.level\n"
+            "      value: [1, 2, 3, 4]\n",
+        )
+
+    dct.update({"parameters": [to_parameters(param_dict) for param_dict in parameters]})
 
     if "outputs" in dct:
         dct.update({"outputs": to_observation_outputs(dct["outputs"])})
