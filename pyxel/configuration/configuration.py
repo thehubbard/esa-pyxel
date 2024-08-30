@@ -107,16 +107,7 @@ class Configuration:
 
 
 def load(yaml_file: Union[str, Path]) -> Configuration:
-    """Load configuration from a ``YAML`` file.
-
-    Parameters
-    ----------
-    yaml_file: str or Path
-
-    Returns
-    -------
-    configuration: Configuration
-    """
+    """Load configuration from a ``YAML`` file."""
     filename = Path(yaml_file).resolve()
     if not filename.exists():
         raise FileNotFoundError(f"Cannot find configuration file '{filename}'.")
@@ -127,77 +118,31 @@ def load(yaml_file: Union[str, Path]) -> Configuration:
 
 
 def loads(yaml_string: str) -> Configuration:
-    """Load configuration from a ``YAML`` string.
-
-    Parameters
-    ----------
-    yaml_string: str
-
-    Returns
-    -------
-    configuration: Configuration
-    """
+    """Load configuration from a ``YAML`` string."""
     dct = load_yaml(yaml_string)
     return _build_configuration(dct)
 
 
 def load_yaml(stream: Union[str, IO]) -> Any:
-    """Load a ``YAML`` document.
-
-    Parameters
-    ----------
-    stream
-
-    Returns
-    -------
-    result: dict
-
-    """
+    """Load a ``YAML`` document."""
     result = yaml.load(stream, Loader=yaml.SafeLoader)
     return result
 
 
 def to_exposure_outputs(dct: dict) -> ExposureOutputs:
-    """Create a ExposureOutputs class from a dictionary.
-
-    Parameters
-    ----------
-    dct
-
-    Returns
-    -------
-    ExposureOutputs
-    """
+    """Create a ExposureOutputs class from a dictionary."""
     return ExposureOutputs(**dct)
 
 
 def to_readout(dct: Optional[dict] = None) -> Readout:
-    """Create a Readout class from a dictionary.
-
-    Parameters
-    ----------
-    dct
-
-    Returns
-    -------
-    Readout
-    """
+    """Create a Readout class from a dictionary."""
     if dct is None:
         dct = {}
     return Readout(**dct)
 
 
 def to_exposure(dct: dict) -> Exposure:
-    """Create a Exposure class from a dictionary.
-
-    Parameters
-    ----------
-    dct
-
-    Returns
-    -------
-    Single
-    """
+    """Create a Exposure class from a dictionary."""
     if "outputs" in dct:
         dct.update({"outputs": to_exposure_outputs(dct["outputs"])})
 
@@ -207,44 +152,17 @@ def to_exposure(dct: dict) -> Exposure:
 
 
 def to_observation_outputs(dct: dict) -> ObservationOutputs:
-    """Create a ObservationOutputs class from a dictionary.
-
-    Parameters
-    ----------
-    dct
-
-    Returns
-    -------
-    ObservationOutputs
-    """
+    """Create a ObservationOutputs class from a dictionary."""
     return ObservationOutputs(**dct)
 
 
-def to_parameters(dct: dict) -> ParameterValues:
-    """Create a ParameterValues class from a dictionary.
-
-    Parameters
-    ----------
-    dct
-
-    Returns
-    -------
-    ParameterValues
-    """
+def to_parameters(dct: Mapping[str, Any]) -> ParameterValues:
+    """Create a ParameterValues class from a dictionary."""
     return ParameterValues(**dct)
 
 
 def to_observation(dct: dict) -> Observation:
-    """Create a Parametric class from a dictionary.
-
-    Parameters
-    ----------
-    dct
-
-    Returns
-    -------
-    Observation
-    """
+    """Create a Parametric class from a dictionary."""
     parameters: Sequence[Mapping[str, Any]] = dct.get("parameters", [])
 
     if not parameters:
@@ -267,30 +185,12 @@ def to_observation(dct: dict) -> Observation:
 
 
 def to_calibration_outputs(dct: dict) -> CalibrationOutputs:
-    """Create a CalibrationOutputs class from a dictionary.
-
-    Parameters
-    ----------
-    dct
-
-    Returns
-    -------
-    CalibrationOutputs
-    """
+    """Create a CalibrationOutputs class from a dictionary."""
     return CalibrationOutputs(**dct)
 
 
 def to_algorithm(dct: dict) -> "Algorithm":
-    """Create an Algorithm class from a dictionary.
-
-    Parameters
-    ----------
-    dct
-
-    Returns
-    -------
-    Algorithm
-    """
+    """Create an Algorithm class from a dictionary."""
     # Late import to speedup start-up time
     from pyxel.calibration import Algorithm
 
@@ -298,16 +198,7 @@ def to_algorithm(dct: dict) -> "Algorithm":
 
 
 def to_fitness_function(dct: dict) -> FitnessFunction:
-    """Create a callable from a dictionary.
-
-    Parameters
-    ----------
-    dct
-
-    Returns
-    -------
-    callable
-    """
+    """Create a callable from a dictionary."""
     func: str = dct["func"]
     arguments: Optional[Mapping[str, Any]] = dct.get("arguments")
 
@@ -315,16 +206,7 @@ def to_fitness_function(dct: dict) -> FitnessFunction:
 
 
 def to_calibration(dct: dict) -> "Calibration":
-    """Create a Calibration class from a dictionary.
-
-    Parameters
-    ----------
-    dct
-
-    Returns
-    -------
-    Calibration
-    """
+    """Create a Calibration class from a dictionary."""
     # Late import to speedup start-up time
     from pyxel.calibration import Calibration
 
@@ -345,153 +227,62 @@ def to_calibration(dct: dict) -> "Calibration":
 
 
 def to_ccd_geometry(dct: dict) -> CCDGeometry:
-    """Create a CCDGeometry class from a dictionary.
-
-    Parameters
-    ----------
-    dct
-
-    Returns
-    -------
-    CCDGeometry
-    """
-
+    """Create a CCDGeometry class from a dictionary."""
     return CCDGeometry(**dct)
 
 
 def to_cmos_geometry(dct: dict) -> CMOSGeometry:
-    """Create a CMOSGeometry class from a dictionary.
-
-    Parameters
-    ----------
-    dct
-
-    Returns
-    -------
-    CMOSGeometry
-    """
+    """Create a CMOSGeometry class from a dictionary."""
     return CMOSGeometry(**dct)
 
 
 def to_mkid_geometry(dct: dict) -> MKIDGeometry:
-    """Create a MKIDGeometry class from a dictionary.
-
-    Parameters
-    ----------
-    dct
-
-    Returns
-    -------
-    MKIDGeometry
-    """
+    """Create a MKIDGeometry class from a dictionary."""
     return MKIDGeometry(**dct)
 
 
 def to_apd_geometry(dct: dict) -> APDGeometry:
-    """Create a APDGeometry class from a dictionary.
-
-    Parameters
-    ----------
-    dct
-
-    Returns
-    -------
-    APDGeometry
-    """
+    """Create a APDGeometry class from a dictionary."""
     return APDGeometry(**dct)
 
 
 def to_environment(dct: Optional[dict]) -> Environment:
-    """Create an Environment class from a dictionary.
-
-    Parameters
-    ----------
-    dct
-
-    Returns
-    -------
-    Environment
-    """
+    """Create an Environment class from a dictionary."""
     if dct is None:
         dct = {}
     return Environment.from_dict(dct)
 
 
 def to_ccd_characteristics(dct: Optional[dict]) -> Characteristics:
-    """Create a CCDCharacteristics class from a dictionary.
-
-    Parameters
-    ----------
-    dct
-
-    Returns
-    -------
-    CCDCharacteristics
-    """
+    """Create a CCDCharacteristics class from a dictionary."""
     if dct is None:
         dct = {}
     return Characteristics(**dct)
 
 
 def to_cmos_characteristics(dct: Optional[dict]) -> Characteristics:
-    """Create a CMOSCharacteristics class from a dictionary.
-
-    Parameters
-    ----------
-    dct
-
-    Returns
-    -------
-    CMOSCharacteristics
-    """
+    """Create a CMOSCharacteristics class from a dictionary."""
     if dct is None:
         dct = {}
     return Characteristics(**dct)
 
 
 def to_mkid_characteristics(dct: Optional[dict]) -> Characteristics:
-    """Create a MKIDCharacteristics class from a dictionary.
-
-    Parameters
-    ----------
-    dct
-
-    Returns
-    -------
-    MKIDCharacteristics
-    """
+    """Create a MKIDCharacteristics class from a dictionary."""
     if dct is None:
         dct = {}
     return Characteristics(**dct)
 
 
 def to_apd_characteristics(dct: Optional[dict]) -> APDCharacteristics:
-    """Create a APDCharacteristics class from a dictionary.
-
-    Parameters
-    ----------
-    dct
-
-    Returns
-    -------
-    APDCharacteristics
-    """
+    """Create a APDCharacteristics class from a dictionary."""
     if dct is None:
         dct = {}
     return APDCharacteristics(**dct)
 
 
 def to_ccd(dct: dict) -> CCD:
-    """Create a CCD class from a dictionary.
-
-    Parameters
-    ----------
-    dct
-
-    Returns
-    -------
-    CCD
-    """
+    """Create a CCD class from a dictionary."""
     return CCD(
         geometry=to_ccd_geometry(dct["geometry"]),
         environment=to_environment(dct["environment"]),
@@ -500,16 +291,7 @@ def to_ccd(dct: dict) -> CCD:
 
 
 def to_cmos(dct: dict) -> CMOS:
-    """Create a :term:`CMOS` class from a dictionary.
-
-    Parameters
-    ----------
-    dct
-
-    Returns
-    -------
-    CMOS
-    """
+    """Create a :term:`CMOS` class from a dictionary."""
     return CMOS(
         geometry=to_cmos_geometry(dct["geometry"]),
         environment=to_environment(dct["environment"]),
@@ -518,16 +300,7 @@ def to_cmos(dct: dict) -> CMOS:
 
 
 def to_mkid_array(dct: dict) -> MKID:
-    """Create an MKIDarray class from a dictionary.
-
-    Parameters
-    ----------
-    dct
-
-    Returns
-    -------
-    MKID-array
-    """
+    """Create an MKIDarray class from a dictionary."""
     return MKID(
         geometry=to_mkid_geometry(dct["geometry"]),
         environment=to_environment(dct["environment"]),
@@ -536,16 +309,7 @@ def to_mkid_array(dct: dict) -> MKID:
 
 
 def to_apd(dct: dict) -> APD:
-    """Create an APDarray class from a dictionary.
-
-    Parameters
-    ----------
-    dct
-
-    Returns
-    -------
-    MKID-array
-    """
+    """Create an APDarray class from a dictionary."""
     return APD(
         geometry=to_apd_geometry(dct["geometry"]),
         environment=to_environment(dct["environment"]),
@@ -554,30 +318,12 @@ def to_apd(dct: dict) -> APD:
 
 
 def to_model_function(dct: dict) -> ModelFunction:
-    """Create a ModelFunction class from a dictionary.
-
-    Parameters
-    ----------
-    dct
-
-    Returns
-    -------
-    ModelFunction
-    """
+    """Create a ModelFunction class from a dictionary."""
     return ModelFunction(**dct)
 
 
 def to_pipeline(dct: dict) -> DetectionPipeline:
-    """Create a DetectionPipeline class from a dictionary.
-
-    Parameters
-    ----------
-    dct
-
-    Returns
-    -------
-    DetectionPipeline
-    """
+    """Create a DetectionPipeline class from a dictionary."""
     for model_group_name in dct:
         models_list: Optional[Sequence[dict]] = dct[model_group_name]
 
@@ -591,16 +337,7 @@ def to_pipeline(dct: dict) -> DetectionPipeline:
 
 
 def _build_configuration(dct: dict) -> Configuration:
-    """Create a Configuration class from a dictionary.
-
-    Parameters
-    ----------
-    dct
-
-    Returns
-    -------
-    Configuration
-    """
+    """Create a Configuration class from a dictionary."""
     pipeline: DetectionPipeline = to_pipeline(dct["pipeline"])
 
     # Sanity checks
