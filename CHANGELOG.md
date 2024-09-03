@@ -18,6 +18,7 @@ The minimum versions of some dependencies were changed:
   | Package      | Old    | New            |
   |--------------|--------|----------------|
   | matplotlib   | 3.1    | **3.6+**       |  
+  | numba        | 0.56.4 | **1.24+**      |
   | numpy        | 1.23   | **1.24+**      |
   | pandas       |        | **1.5+**       | 
   | scikit-image |        | **0.20.0+**    |
@@ -48,6 +49,8 @@ The minimum versions of some dependencies were changed:
   (See [!930](https://gitlab.com/esa/pyxel/-/merge_requests/930)).
 
 ### Others
+* Update documentation about the new dependencies.
+  (See [!934](https://gitlab.com/esa/pyxel/-/merge_requests/934)).
 
 
 ## 2.4.1 / 2024-07-10
