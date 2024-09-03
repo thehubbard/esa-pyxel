@@ -28,6 +28,8 @@ The minimum versions of some dependencies were changed:
 ### Core
 * Add compatibility to `xarray` 2024.07.0.
   (See [!929](https://gitlab.com/esa/pyxel/-/merge_requests/929)).
+* Add error message when a YAML file uses `Observation` mode without `parameters`.
+  (See [!933](https://gitlab.com/esa/pyxel/-/merge_requests/933)).
 
 ### Documentation
 
