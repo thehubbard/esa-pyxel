@@ -10,12 +10,13 @@
 import logging
 import operator
 import warnings
-from collections.abc import Sequence
+from collections.abc import Mapping, Sequence
 from copy import deepcopy
 from numbers import Number
 from typing import TYPE_CHECKING, Any, Callable, NewType, Optional, Union
 
 import numpy as np
+from typing_extensions import Self
 
 from pyxel import __version__
 from pyxel.evaluator import eval_entry
@@ -394,3 +395,10 @@ class Processor:
         """
         self._numbytes = get_size(self)
         return self._numbytes
+
+    def replace(self, changes: Mapping[str, Any]) -> Self:
+        new_processor = deepcopy(self)
+        for key, value in changes.items():
+            new_processor.set(key=key, value=value)
+
+        return new_processor

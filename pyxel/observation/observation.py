@@ -11,7 +11,14 @@ import itertools
 import sys
 import warnings
 from collections import Counter
-from collections.abc import Iterable, Iterator, Mapping, MutableMapping, Sequence
+from collections.abc import (
+    Hashable,
+    Iterable,
+    Iterator,
+    Mapping,
+    MutableMapping,
+    Sequence,
+)
 from copy import deepcopy
 from dataclasses import dataclass
 from enum import Enum
@@ -88,6 +95,160 @@ class CustomParameterItem:
     index: int
     parameters: ParametersType
     run_index: int
+
+
+# def _convert_params_to_dataset(
+#     parameters: Sequence[Union[ParameterItem, CustomParameterItem]],
+# ) -> tuple["xr.DataArray", "xr.Dataset"]:
+#     import xarray as xr
+#
+#     # Convert 'parameters' into a DataArray
+#     lst: list[xr.Dataset] = []
+#     lst_index: list[xr.DataArray] = []
+#
+#     parameter: Union[ParameterItem, CustomParameterItem]
+#     for parameter in parameters:
+#         lst.append(
+#             xr.Dataset(parameter.parameters)
+#             .expand_dims("run_index")
+#             .assign_coords(run_index=[parameter.run_index])
+#         )
+#
+#         index: Union[tuple[int, ...], int] = parameter.index
+#
+#         if not isinstance(index, tuple):
+#             raise NotImplementedError
+#
+#         lst_index.append(
+#             xr.DataArray(list(index), dims=["param_id"])
+#             .expand_dims("run_index")
+#             .assign_coords(run_index=[parameter.run_index])
+#         )
+#     ds_parameters: xr.Dataset = xr.concat(lst, dim="run_index")
+#     ds_index: xr.DataArray = xr.concat(lst_index, dim="run_index")
+#
+#     return ds_index, ds_parameters
+
+
+# TODO: Only with Dask
+@dataclass
+class MetaDataVars:
+    dims: tuple[Hashable, ...]
+    attrs: Mapping[str, Any]
+    dtype: np.dtype
+
+
+# TODO: Only with Dask
+@dataclass
+class MetaCoords:
+    data: np.ndarray
+    attrs: Mapping[str, Any]
+
+
+# TODO: Only with Dask
+@dataclass
+class MetaData:
+    dims: tuple[Hashable, ...]
+    data_vars: Mapping[str, MetaDataVars]
+    coords: Mapping[Hashable, MetaCoords]
+    attrs: Mapping[Hashable, Any]
+
+
+# TODO: Only with Dask
+def build_metadata(data_tree: "DataTree") -> Mapping[str, MetaData]:
+    metadata = {}
+
+    all_paths: Sequence[str] = sorted(data_tree.groups)
+
+    for path in all_paths:
+        sub_data_tree: Union["DataTree", xr.DataArray] = data_tree[path]
+
+        dims: tuple[Hashable, ...] = tuple(sub_data_tree.dims)
+
+        # if not path.startswith('/bucket'):
+        #     if sub_data_tree.dims:
+        #         print('yolo')
+        #
+        #         for dim in dims:
+        #             if dim not in foo:
+        #                 foo[f'{dim}'] = dim
+
+        metadata[path] = MetaData(
+            dims=dims,
+            data_vars={
+                key: MetaDataVars(
+                    dims=value.dims,
+                    attrs=value.attrs,
+                    dtype=value.dtype,
+                )
+                for key, value in sub_data_tree.data_vars.items()
+            },
+            coords={
+                key: MetaCoords(attrs=value.attrs, data=value.data)
+                for key, value in sub_data_tree.coords.items()
+            },
+            attrs=sub_data_tree.attrs,
+        )
+
+    return metadata
+
+
+# TODO: Only with Dask
+def _get_output_core_dimensions(
+    all_metadata: Mapping[str, MetaData],
+) -> Sequence[tuple]:
+    lst = []
+
+    metadata: MetaData
+    for metadata in all_metadata.values():
+        if not metadata.data_vars:
+            continue
+
+        data_variable: MetaDataVars
+        for data_variable in metadata.data_vars.values():
+            lst.append(data_variable.dims)
+
+    return lst
+
+
+# TODO: Only with Dask
+def _get_output_dtypes(all_metadata: Mapping[str, MetaData]) -> Sequence[np.dtype]:
+    lst = []
+
+    metadata: MetaData
+    for metadata in all_metadata.values():
+        if not metadata.data_vars:
+            continue
+
+        data_variable: MetaDataVars
+        for data_variable in metadata.data_vars.values():
+            lst.append(data_variable.dtype)
+
+    return lst
+
+
+# TODO: Only with Dask
+def _get_output_sizes(all_metadata: Mapping[str, MetaData]) -> Mapping[Hashable, int]:
+    result: dict[Hashable, int] = {}
+
+    key: str
+    metadata: MetaData
+    for key, metadata in all_metadata.items():
+        if not metadata.data_vars:
+            continue
+
+        coord_sizes: Mapping[Hashable, int] = {
+            coord_key: len(meta_coords.data)
+            for coord_key, meta_coords in metadata.coords.items()
+        }
+
+        for coord_key in coord_sizes:
+            if coord_key in result:
+                raise NotImplementedError
+
+        result.update(coord_sizes)
+
+    return result
 
 
 def _get_short_name_with_model(name: str) -> str:
@@ -886,8 +1047,15 @@ class Observation:
     ) -> "DataTree":
         """Run the observation pipelines and return a `DataTree` object."""
         # Late import to speedup start-up time
-        import dask.bag as db
+        import pandas as pd
+        import xarray as xr
         from tqdm.auto import tqdm
+
+        # Import 'DataTree'
+        try:
+            from xarray.core.datatree import DataTree
+        except ImportError:
+            from datatree import DataTree  # type: ignore[assignment]
 
         # Validate the processor steps before running the pipeline
         self.validate_steps(processor)
@@ -896,112 +1064,131 @@ class Observation:
         types: Mapping[str, ParameterType] = self._get_parameter_types()
         dim_names: Mapping[str, str] = _get_short_dimension_names_new(types)
 
+        # TODO: Create new class for 'Sequence[Union[ParameterItem, CustomParameterItem]]'
         # Fetch the observation parameters to be passed to the pipeline
         parameters: Sequence[Union[ParameterItem, CustomParameterItem]] = (
             self._get_parameters_item(processor=processor)
         )
 
         if self.with_dask:
-            # If Dask is enabled, use it for parallel processing
-
-            # TODO: Move this somewhere else
-            # Convert 'parameters' into a DataArray
-            lst: list[xr.Dataset] = []
-            lst_index: list = []
-
-            parameter: ParameterItem
-            for parameter in parameters:
-                lst.append(
-                    xr.Dataset(parameter.parameters)
-                    .expand_dims("run_index")
-                    .assign_coords(run_index=[parameter.run_index])
+            # Get parameters as a DataArray
+            if self.parameter_mode is ParameterMode.Product:
+                all_steps: Mapping[str, Sequence[Any]] = {
+                    step.key: step.values for step in self.enabled_steps
+                }
+                params_indexes: pd.MultiIndex = pd.MultiIndex.from_product(
+                    all_steps.values(),
+                    names=[dim_names[key] for key in all_steps],
                 )
 
-                lst_index.append(
-                    xr.DataArray(list(parameter.index), dims=["param_id"])
-                    .expand_dims("run_index")
-                    .assign_coords(run_index=[parameter.run_index])
-                )
+                # Create a Pandas MultiIndex
+                params_serie = pd.Series(list(params_indexes), index=params_indexes)
+                params_dataarray: xr.DataArray = params_serie.to_xarray()
 
-            ds_parameters = xr.concat(lst, dim="run_index")
-            ds_index = xr.concat(lst_index, dim="run_index")
+            else:
+                raise NotImplementedError
 
-            # First run
-            first_param_item: ParameterItem = parameters[0]
-            first_param_dct: Mapping[str, Optional[xr.DataArray]] = (
-                self._apply_exposure_to_dict(
-                    param_item=first_param_item,
-                    dimension_names=dim_names,
-                    processor=processor,
-                    types=types,
-                    with_buckets_separated=with_buckets_separated,
-                )
+            # Get the first parameter
+            first_param: tuple = (
+                params_dataarray.head(1)  # Get the first parameter(s)
+                .squeeze()  # Remove dimensions of length 1
+                .to_numpy()  # Convert to a numpy array
+                .tolist()  # Convert to a tuple
             )
 
-            # TODO: Refactor this
-            output_sizes: dict[str, int] = {}
+            # Extract metadata
+            metadata: Mapping[str, MetaData] = self._build_metadata(
+                params_tuple=first_param,
+                dimension_names=dim_names,
+                processor=processor,
+                with_inherited_coords=with_inherited_coords,
+            )
 
-            dataarray: Optional[xr.DataArray]
-            for dataarray in first_param_dct.values():
-                if dataarray is None:
-                    continue
+            # Get the output core dimensions
+            output_core_dims: Sequence[tuple] = _get_output_core_dimensions(metadata)
 
-                dimension_sizes: Mapping[str, int] = dataarray.sizes
-                output_sizes.update(dimension_sizes)
+            # Get output sizes
+            output_sizes: Mapping[Hashable, int] = _get_output_sizes(metadata)
 
-            # TODO: Refactor this
-            output_dtypes: Sequence[np.dtype] = [
-                value.dtype if value is not None else np.dtype(float)
-                for value in first_param_dct.values()
-            ]
+            # Get output dtypes
+            output_dtypes: Sequence[np.dtype] = _get_output_dtypes(metadata)
 
-            output_core_dims: Mapping[tuple[str, ...]] = [
-                value.dims if value is not None else tuple()
-                for value in first_param_dct.values()
-            ]
-            # TODO: Get the dimensions names from all DataSet from 'first_dct'
-            #       Then rename them and keep track of all the coordinates
-
-            results: tuple[xr.DataArray, ...] = xr.apply_ufunc(
-                self._apply_exposure_to_array,
-                ds_parameters.to_dataarray().chunk(run_index=1),  # First parameter
-                ds_index,  # .chunk(run_index=1), # Second parameter
-                ds_parameters["run_index"],  # Third parameter
-                input_core_dims=[["variable"], ["param_id"], []],
-                output_core_dims=output_core_dims,
-                kwargs={
+            # Create 'Dask' data arrays
+            dask_dataarrays: tuple[xr.DataArray, ...] = xr.apply_ufunc(
+                self._apply_exposure_tuple_to_array,  # Function to apply
+                params_dataarray.chunk(1),  # Argument 'params_tuple'
+                kwargs={  # other arguments
                     "dimension_names": dim_names,
                     "processor": processor,
-                    "types": types,
-                    "with_buckets_separated": with_buckets_separated,
+                    "metadata": metadata,
+                    # "types": types,
+                    "with_inherited_coords": with_inherited_coords,
                 },
-                vectorize=True,
+                input_core_dims=[[]],
+                output_core_dims=output_core_dims,
+                vectorize=True,  # loop over non-core dims
                 dask="parallelized",
-                dask_gufunc_kwargs={
-                    # "output_dtypes": output_dtypes,
-                    "output_sizes": output_sizes,
-                },
-                output_dtypes=output_dtypes,  # TODO: This should be moved to 'dask_gufunc_kwargs'
+                dask_gufunc_kwargs={"output_sizes": output_sizes},
+                output_dtypes=output_dtypes,  # TODO: Move this to 'dask_gufunc_kwargs'
             )
 
-            foo = dask.compute(*results)
+            # Rebuild the DataTree from 'all_dataarrays'
+            dct: dict[str, xr.DataArray] = {}
 
-            datatree_bag: db.Bag = (
-                db.from_sequence(parameters)
-                .map(
-                    options_wrapper(working_directory=self.working_directory)(
-                        self._apply_exposure_pipeline
-                    ),
-                    dimension_names=dim_names,
-                    processor=processor,
-                    types=types,
-                    with_inherited_coords=with_inherited_coords,
-                )
-                .fold(binop=merge)
-            )
+            idx = 0
 
-            # Compute the final DataTree in parallel
-            final_datatree: DataTree = datatree_bag.compute()
+            path: str
+            partial_metadata: MetaData
+            for path, partial_metadata in metadata.items():
+                if not partial_metadata.data_vars:
+                    # TODO: Use this ?
+                    # assert not partial_metadata.dims
+                    # assert not partial_metadata.coords
+
+                    short_name = path
+                    dct[path] = xr.DataArray(
+                        name=short_name,
+                        attrs=partial_metadata.attrs,
+                    )
+
+                else:
+                    assert partial_metadata.dims
+                    assert partial_metadata.coords
+
+                    short_name = path
+                    dct[path] = xr.DataArray(
+                        name=short_name,
+                        dims=partial_metadata.dims,
+                        coords=partial_metadata.coords,
+                        attrs=partial_metadata.attrs,
+                    )
+
+                    var_name: str
+                    metadata_vars: MetaDataVars
+                    for var_name, metadata_vars in partial_metadata.data_vars.items():
+                        data_array: xr.DataArray = (
+                            dask_dataarrays[idx]
+                            .rename(var_name)
+                            .assign_attrs(metadata_vars.attrs)
+                        )
+
+                        idx += 1
+                        assert idx <= len(dask_dataarrays)
+
+                        dct[f"{path}/{var_name}"] = data_array
+
+            for (key, partial_metadata), data_array in zip(
+                metadata.items(), dask_dataarrays
+            ):
+                *_, name = key.split("/")
+                dct[key] = data_array.rename(name).assign_attrs(partial_metadata.attrs)
+
+            final_datatree = DataTree.from_dict(dct)
+
+            import dask
+
+            _foo = dask.compute(final_datatree)
+
         else:
             # If Dask is not enabled, process each parameter sequentially
             datatree_list: Iterator[DataTree] = (
@@ -1111,106 +1298,290 @@ class Observation:
                 run_number=param_item.run_index,
             )
 
-    def _apply_exposure_to_dict(
+    #
+    # def _extract_meta_info(
+    #     self,
+    #     param_item: Union[ParameterItem, CustomParameterItem],
+    #     dimension_names: Mapping[str, str],
+    #     processor: "Processor",
+    #     types: Mapping[str, ParameterType],
+    #     with_inherited_coords: bool,
+    # ) -> ObservationDaskMeta:
+    #
+    #     with pyxel.set_options(working_directory=self.working_directory):
+    #         result_datatree: "DataTree" = self._apply_exposure_pipeline(
+    #             param_item=param_item,
+    #             dimension_names=dimension_names,
+    #             processor=processor,
+    #             types=types,
+    #             with_inherited_coords=True,  # TODO: Is it ok like that ?
+    #             with_outputs=False,
+    #             with_extra_dims=False,
+    #         )
+    #
+    #     # TODO: Convert from 'DataTree' to tuple of NDArrays
+    #     # TODO: Convert from tuple of NDArrays + Meta to 'DataTree'
+    #     # TODO: Convert from 'DataTree' to Meta (dtypes, sizes, dims)
+    #     if "bucket" not in result_datatree:
+    #         raise NotImplementedError
+    #
+    #     # First extract number of data variables in bucket '/bucket'
+    #     meta = ObservationDaskMeta(
+    #         num_buckets=len(result_datatree["/bucket"].data_vars)
+    #     )
+    #
+    #     return meta
+    #
+    #     def _yolo(
+    #         full_datatree: "DataTree",
+    #         path: str,
+    #         partial_dct: Optional[Mapping] = None,
+    #     ) -> dict:
+    #         partial_datatree = full_datatree[path]
+    #
+    #         dct = {
+    #             "dims": partial_datatree.dims,
+    #             "data_vars": {
+    #                 key: {
+    #                     "dims": value.dims,
+    #                     "attrs": value.attrs,
+    #                     "dtype": value.dtype,
+    #                 }
+    #                 for key, value in partial_datatree.data_vars.items()
+    #             },
+    #             "coords": {
+    #                 key: {
+    #                     "attrs": value.attrs,
+    #                     "data": value.data,
+    #                 }
+    #                 for key, value in partial_datatree.coords.items()
+    #             },
+    #             "attrs": partial_datatree.attrs,
+    #         }
+    #
+    #         yield (path, dct)
+    #
+    #         for var_name, dataset in partial_datatree.children.items():
+    #
+    #             yield from _yolo(
+    #                 full_datatree,
+    #                 path=f"{path}{var_name}/",
+    #                 # partial_dct=dct,
+    #             )
+    #             print("yol")
+    #             print("yol")
+    #
+    #             # if dataset.data_vars:
+    #             #     dct[var_name] = {
+    #             #         "dims": dataset.dims,  # dict[str, int]
+    #             #         "data_vars": {
+    #             #             key: {
+    #             #                 "dims": value.dims,
+    #             #                 "attrs": value.attrs,
+    #             #                 "dtype": value.dtype,
+    #             #             }
+    #             #             for key, value in dataset.data_vars.items()
+    #             #         },
+    #             #         "attrs": dataset.attrs,  # dict[str, Any]
+    #             #         "coords": {
+    #             #             key: {"attrs": value.attrs, "data": value.data}
+    #             #             for key, value in dataset.coords.items()
+    #             #         },
+    #             #     }
+    #             # else:
+    #             #     dct[var_name] = {"attrs": dataset.attrs}
+    #
+    #     # foo = dict(_yolo(result_datatree, path="/"))
+    #     #
+    #     # print("yo")
+    #
+    #     #     print("Hello")
+    #     #     print("Hello")
+    #     #
+    #     # # TODO: Create a function that convert a 'Datatree' to a dict
+    #     # # Convert 'datatree' to a dict of DataArray
+    #     # result_dct: dict[Hashable, Optional["xr.DataArray"]] = {}
+    #     #
+    #     # node_name: Hashable
+    #     # dataset: "xr.Dataset"
+    #     # for idx, (node_name, dataset) in enumerate(result_datatree.to_dict().items()):
+    #     #     if not dataset.data_vars:
+    #     #         result_dct[node_name] = None
+    #     #     else:
+    #     #         dataarray: "xr.DataArray" = dataset.to_dataarray()
+    #     #         renamed_dimensions: Mapping[Hashable, str] = {
+    #     #             dim: f"{idx}_{dim}" for dim in dataarray.dims
+    #     #         }
+    #     #
+    #     #         result_dct[node_name] = dataarray.rename(renamed_dimensions)
+    #     #
+    #     # return result_dct
+
+    # # TODO: Remove this
+    # def _extra_meta_old(
+    #     self,
+    #     param_item: Union[ParameterItem, CustomParameterItem],
+    #     dimension_names: Mapping[str, str],
+    #     processor: "Processor",
+    #     types: Mapping[str, ParameterType],
+    #     with_hiearchical_format: bool,
+    # ) -> Mapping[Hashable, Optional["xr.DataArray"]]:
+    #
+    #     with pyxel.set_options(working_directory=self.working_directory):
+    #         result_datatree: "DataTree" = self._apply_exposure_pipeline(
+    #             param_item=param_item,
+    #             dimension_names=dimension_names,
+    #             processor=processor,
+    #             types=types,
+    #             with_inherited_coords=True,  # TODO: Is it ok like that ?
+    #         )
+    #
+    #     dct: dict = {}
+    #     for var_name, dataset in result_datatree.to_dict().items():
+    #         if dataset.data_vars:
+    #             dct[var_name] = {
+    #                 "dims": dataset.dims,  # dict[str, int]
+    #                 "data_vars": {
+    #                     key: {
+    #                         "dims": value.dims,
+    #                         "attrs": value.attrs,
+    #                         "dtype": value.dtype,
+    #                     }
+    #                     for key, value in dataset.data_vars.items()
+    #                 },
+    #                 "attrs": dataset.attrs,  # dict[str, Any]
+    #                 "coords": {
+    #                     key: {"attrs": value.attrs, "data": value.data}
+    #                     for key, value in dataset.coords.items()
+    #                 },
+    #             }
+    #         else:
+    #             dct[var_name] = {"attrs": dataset.attrs}
+    #
+    #         print("Hello")
+    #         print("Hello")
+    #
+    #     # TODO: Create a function that convert a 'Datatree' to a dict
+    #     # Convert 'datatree' to a dict of DataArray
+    #     result_dct: dict[Hashable, Optional["xr.DataArray"]] = {}
+    #
+    #     node_name: Hashable
+    #     dataset: "xr.Dataset"
+    #     for idx, (node_name, dataset) in enumerate(result_datatree.to_dict().items()):
+    #         if not dataset.data_vars:
+    #             result_dct[node_name] = None
+    #         else:
+    #             dataarray: "xr.DataArray" = dataset.to_dataarray()
+    #             renamed_dimensions: Mapping[Hashable, str] = {
+    #                 dim: f"{idx}_{dim}" for dim in dataarray.dims
+    #             }
+    #
+    #             result_dct[node_name] = dataarray.rename(renamed_dimensions)
+    #
+    #     return result_dct
+
+    # TODO: Remove this
+    # def _apply_exposure_to_dict(
+    #     self,
+    #     param_item: Union[ParameterItem, CustomParameterItem],
+    #     dimension_names: Mapping[str, str],
+    #     processor: "Processor",
+    #     types: Mapping[str, ParameterType],
+    #     with_inherited_coords: bool,
+    # ) -> Mapping[Hashable, Optional["xr.DataArray"]]:
+    #
+    #     with pyxel.set_options(working_directory=self.working_directory):
+    #         result_datatree: "DataTree" = self._apply_exposure_pipeline(
+    #             param_item=param_item,
+    #             dimension_names=dimension_names,
+    #             processor=processor,
+    #             types=types,
+    #             with_inherited_coords=True,  # TODO: Is it ok like that ?
+    #         )
+    #
+    #     # TODO: Create a function that convert a 'Datatree' to a dict
+    #     # Convert 'datatree' to a dict of DataArray
+    #     result_dct: dict[Hashable, Optional["xr.DataArray"]] = {}
+    #
+    #     node_name: Hashable
+    #     dataset: "xr.Dataset"
+    #     for idx, (node_name, dataset) in enumerate(result_datatree.to_dict().items()):
+    #         if not dataset.data_vars:
+    #             result_dct[node_name] = None
+    #         else:
+    #             dataarray: "xr.DataArray" = dataset.to_dataarray()
+    #             renamed_dimensions: Mapping[Hashable, str] = {
+    #                 dim: f"{idx}_{dim}" for dim in dataarray.dims
+    #             }
+    #
+    #             result_dct[node_name] = dataarray.rename(renamed_dimensions)
+    #
+    #     return result_dct
+
+    def _apply_exposure_from_tuple(
         self,
-        param_item: ParameterItem,
+        params_tuple: tuple,
         dimension_names: Mapping[str, str],
         processor: "Processor",
-        types: Mapping[str, ParameterType],
-        with_buckets_separated: bool,
-    ) -> Mapping[str, Optional["xr.DataArray"]]:
-
-        with pyxel.set_options(working_directory=self.working_directory):
-            result_datatree: "DataTree" = self._apply_exposure_pipeline(
-                param_item=param_item,
-                dimension_names=dimension_names,
-                processor=processor,
-                types=types,
-                with_buckets_separated=True,
-            )
-
-        # result_dct: Mapping[str, "xr.DataArray"] = {
-        #     node_name: (
-        #         dataset.to_dataarray().rename(
-        #             {dim: f"{idx}_{dim}" for dim in dataset.dims}
-        #         )
-        #         if dataset.data_vars
-        #         else None
-        #     )
-        #     for idx, (node_name, dataset) in enumerate(
-        #         result_datatree.to_dict().items()
-        #     )
-        # }
-
-        # TODO: Create a function that convert a 'Datatree' to a dict
-        # Convert 'datatree' to a dict of DataArray
-        result_dct: Mapping[str, Optional["xr.DataArray"]] = {}
-
-        node_name: str
-        dataset: "xr.Dataset"
-        for idx, (node_name, dataset) in enumerate(result_datatree.to_dict().items()):
-            if not dataset.data_vars:
-                result_dct[node_name] = None
-            else:
-                dataarray: "xr.DataArray" = dataset.to_dataarray()
-                renamed_dimensions: Mapping[str, str] = {
-                    dim: f"{idx}_{dim}" for dim in dataarray.dims
-                }
-
-                result_dct[node_name] = dataarray.rename(renamed_dimensions)
-
-        return result_dct
-
-    def _apply_exposure_to_array(
-        self,
-        param_arr_1d: np.ndarray,
-        idx_1d: np.ndarray,
-        run_index,
-        dimension_names: Mapping[str, str],
-        processor: "Processor",
-        types: Mapping[str, ParameterType],
-        with_buckets_separated: bool,
-    ) -> tuple[np.ndarray, ...]:
+        with_inherited_coords: bool,
+    ) -> "DataTree":
         # TODO: Fix this
-        if param_arr_1d.shape == (1,):
+        if with_inherited_coords is False:
             raise NotImplementedError
-            # return param_arr_1d
 
-        param_item = ParameterItem(
-            index=tuple(idx_1d),
-            parameters=dict(zip(types, param_arr_1d)),
-            run_index=run_index,
+        dct = dict(zip(dimension_names, params_tuple))
+        new_processor: Processor = processor.replace(dct)
+
+        data_tree: "DataTree" = run_pipeline(
+            processor=new_processor,
+            readout=self.readout,
+            result_type=self.result_type,
+            pipeline_seed=self.pipeline_seed,
+            debug=False,  # Not supported in Observation mode
+            with_inherited_coords=with_inherited_coords,
         )
 
-        result_dct: Mapping[str, Optional["xr.DataArray"]] = (
-            self._apply_exposure_to_dict(
-                param_item=param_item,
-                dimension_names=dimension_names,
-                processor=processor,
-                types=types,
-                with_buckets_separated=with_buckets_separated,
-            )
+        return data_tree
+
+    def _build_metadata(
+        self,
+        params_tuple: tuple,
+        dimension_names: Mapping[str, str],
+        processor: "Processor",
+        with_inherited_coords: bool,
+    ) -> Mapping[str, MetaData]:
+        data_tree: "DataTree" = self._apply_exposure_from_tuple(
+            params_tuple=params_tuple,
+            dimension_names=dimension_names,
+            processor=processor,
+            with_inherited_coords=with_inherited_coords,
         )
 
-        # print("Hello World")
-        result_tuple: tuple[np.ndarray, ...] = tuple(
-            [
-                data.to_numpy() if data is not None else np.array([])
-                for data in result_dct.values()
-            ]
+        return build_metadata(data_tree)
+
+    def _apply_exposure_tuple_to_array(
+        self,
+        params_tuple: tuple,
+        # idx_1d: np.ndarray,
+        # run_index: int,
+        dimension_names: Mapping[str, str],
+        metadata: dict,
+        processor: "Processor",
+        # types: Mapping[str, ParameterType],
+        with_inherited_coords: bool,
+    ) -> tuple[np.ndarray, ...]:
+        data_tree: "DataTree" = self._apply_exposure_from_tuple(
+            params_tuple=params_tuple,
+            dimension_names=dimension_names,
+            processor=processor,
+            with_inherited_coords=with_inherited_coords,
         )
 
-        assert len(result_tuple) == 6
-        assert result_tuple[0].ndim == 0
-        assert result_tuple[1].ndim == 9
-        assert result_tuple[2].ndim == 0
-        assert result_tuple[3].ndim == 0
-        assert result_tuple[4].ndim == 0
-        assert result_tuple[5].ndim == 7
-
-        return result_tuple
-
-        # return param_item
+        # Convert the result from 'DataTree' to a tuple of numpy array(s)
+        output_data: tuple[np.ndarray, ...] = tuple(
+            [data_tree[key].to_numpy() for key in metadata]
+        )
+        return output_data
 
     def _apply_exposure_pipeline(
         self,
@@ -1219,6 +1590,8 @@ class Observation:
         processor: "Processor",
         types: Mapping[str, ParameterType],
         with_inherited_coords: bool,
+        with_outputs: bool = True,  # TODO: Refactor this
+        with_extra_dims: bool = True,  # TODO: Refactor this
     ) -> "DataTree":
         """Run a single exposure pipeline for a given parameter item."""
         # Create a new processor using the given parameters
@@ -1250,33 +1623,36 @@ class Observation:
             raise
 
         # Save the outputs if configured
-        if self.outputs:
+        if with_outputs and self.outputs:
             _ = self.outputs.save_to_file(
                 processor=new_processor,
                 run_number=param_item.run_index,
             )
 
-        # Add observation-specific parameters to the DataTree
-        # Can also be done outside dask in a loop
-        if isinstance(param_item, ParameterItem):
-            final_data_tree = _add_product_parameters(
-                data_tree=data_tree,
-                parameter_dict=param_item.parameters,
-                indexes=param_item.index,
-                dimension_names=dimension_names,
-                types=types,
-            )
+        if not with_extra_dims:
+            return data_tree
 
         else:
-            final_data_tree = _add_custom_parameters(
-                data_tree=data_tree,
-                parameter_dict=param_item.parameters,
-                index=param_item.index,
-                dimension_names=dimension_names,
-                types=types,
-            )
+            # Can also be done outside dask in a loop
+            if isinstance(param_item, ParameterItem):
+                final_data_tree = _add_product_parameters(
+                    data_tree=data_tree,
+                    parameter_dict=param_item.parameters,
+                    indexes=param_item.index,
+                    dimension_names=dimension_names,
+                    types=types,
+                )
 
-        return final_data_tree
+            else:
+                final_data_tree = _add_custom_parameters(
+                    data_tree=data_tree,
+                    parameter_dict=param_item.parameters,
+                    index=param_item.index,
+                    dimension_names=dimension_names,
+                    types=types,
+                )
+
+            return final_data_tree
 
     def _apply_exposure_pipeline_custom(
         self,
