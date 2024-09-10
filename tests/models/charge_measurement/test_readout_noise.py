@@ -182,6 +182,35 @@ def test_output_node_noise_with_ccd(ccd_2x3: CCD):
         )
 
 
+def test_output_node_noise_readout_noise_low_charge_to_volt():
+    """Test model 'output_node_noise_ccd' with low charge to volt conversion."""
+    detector = CMOS(
+        geometry=CMOSGeometry(
+            row=100,
+            col=100,
+            total_thickness=40.0,
+            pixel_vert_size=10.0,
+            pixel_horz_size=10.0,
+            pixel_scale=0.01,
+        ),
+        environment=Environment(),
+        characteristics=Characteristics(
+            charge_to_volt_conversion=1e-6,  # This value is used in 'output_node_noise_cmos'
+        ),
+    )
+    detector.signal.array = np.zeros(detector.geometry.shape, dtype=float)
+
+    # Add output node noise
+    output_node_noise_cmos(
+        detector,
+        readout_noise=10.0,
+        readout_noise_std=5,
+        seed=12345,
+    )
+
+    return detector
+
+
 def test_output_node_noise_invalid_noise(cmos_2x3: CMOS):
     """Test model 'output_node_noise_ccd' with a 'CCD'."""
     detector = cmos_2x3

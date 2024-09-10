@@ -40,6 +40,8 @@ def create_noise_cmos(
         size=shape,
     )
 
+    sigma_2d = sigma_2d.clip(min=0.0)
+
     noise_2d = np.random.normal(scale=sigma_2d)
 
     return noise_2d
