@@ -9,10 +9,6 @@
 
 import shutil
 from pathlib import Path
-from zipfile import ZipFile
-
-import requests
-from tqdm import tqdm
 
 
 def download_examples(foldername: str = "pyxel-examples", force: bool = False) -> None:
@@ -23,6 +19,12 @@ def download_examples(foldername: str = "pyxel-examples", force: bool = False) -
     foldername: str
     force: bool
     """
+    # Late import to speedup start-up time
+    from zipfile import ZipFile
+
+    import requests
+    from tqdm import tqdm
+
     folder: Path = Path(foldername).resolve()
 
     if folder.is_dir():
