@@ -139,6 +139,7 @@ def _run_exposure_mode_without_datatree(
     _ = exposure.run_exposure(
         processor=processor,
         debug=False,
+        with_inherited_coords=False,
     )
 
 
@@ -146,6 +147,7 @@ def _run_exposure_mode(
     exposure: "Exposure",
     processor: Processor,
     debug: bool,
+    with_inherited_coords: bool,
 ) -> "DataTree":
     """Run an 'exposure' pipeline.
 
@@ -214,6 +216,7 @@ def _run_exposure_mode(
     result: DataTree = exposure.run_exposure(
         processor=processor,
         debug=debug,
+        with_inherited_coords=with_inherited_coords,
     )
 
     if outputs and outputs.save_exposure_data:
@@ -452,6 +455,7 @@ def calibration_mode(
 def _run_calibration_mode_without_datatree(
     calibration: "Calibration",
     processor: Processor,
+    with_buckets_separated: bool,
 ) -> None:
     """Run a 'Calibration' pipeline."""
     logging.info("Mode: Calibration")
@@ -465,12 +469,14 @@ def _run_calibration_mode_without_datatree(
     calibration.run_calibration(
         processor=processor,
         output_dir=outputs.current_output_folder if outputs else None,
+        with_inherited_coords=with_buckets_separated,
     )
 
 
 def _run_calibration_mode(
     calibration: "Calibration",
     processor: Processor,
+    with_inherited_coords: bool,
 ) -> "DataTree":
     """Run a 'Calibration' pipeline.
 
@@ -544,6 +550,7 @@ def _run_calibration_mode(
     data_tree: "DataTree" = calibration.run_calibration(
         processor=processor,
         output_dir=outputs.current_output_folder if outputs else None,
+        with_inherited_coords=with_inherited_coords,
     )
 
     return data_tree
@@ -566,15 +573,21 @@ def _run_observation_mode_without_datatree(
 def _run_observation_mode(
     observation: Observation,
     processor: Processor,
+    with_inherited_coords: bool,
 ) -> "DataTree":
+    """Run the observation mode."""
     logging.info("Mode: Observation")
 
-    # Create an output folder
+    # Create an output folder (if needed)
     outputs: Optional[ObservationOutputs] = observation.outputs
     if outputs:
         outputs.create_output_folder()
 
-    result: "DataTree" = observation.run_observation_datatree(processor=processor)
+    # Run the observation mode
+    result: "DataTree" = observation._run_observation_datatree(
+        processor=processor,
+        with_inherited_coords=with_inherited_coords,
+    )
 
     # TODO: Fix this. See issue #723
     if outputs and outputs.save_observation_data:
@@ -592,6 +605,7 @@ def run_mode(
     pipeline: DetectionPipeline,
     override_dct: Optional[Mapping[str, Any]] = None,
     debug: bool = False,
+    with_inherited_coords: bool = False,
 ) -> "DataTree":
     """Run a pipeline.
 
@@ -603,13 +617,16 @@ def run_mode(
         This object is the container for all the data used for the models.
     pipeline : DetectionPipeline
         This is the core algorithm of Pyxel. This pipeline contains all the models to run.
+    override_dct: dict, optional
+        A dictionary of parameter(s) to override during processing.
     debug : bool, default: False
         Add all intermediate steps into the results as a ``DataTree``. This mode is used for debugging.
-
+    with_inherited_coords : bool, default: False
+        Return the results a DataTree with better hierarchical format. This parameter is provisional.
 
     Notes
     -----
-    Parameter ``debug`` is not (yet) stable and may change in the future.
+    Parameter ``debug`` and ``with_hiearchical_format`` are not (yet) stable and may change in the future.
 
     Returns
     -------
@@ -625,66 +642,72 @@ def run_mode(
 
     Examples
     --------
-    Load a configuration file
+     Run an 'Exposure' pipeline
 
     >>> import pyxel
     >>> config = pyxel.load("exposure_configuration.yaml")
-    >>> config
-
-     Run a 'Exposure' pipeline
-
-    >>> data = pyxel.run_mode(
+    >>> data_tree = pyxel.run_mode(
     ...     mode=config.exposure,
     ...     detector=config.detector,
     ...     pipeline=config.pipeline,
+    ...     with_inherited_coords=True,  # with the new 'provisional' parameter
+    ...     override={  # optional
+    ...         "exposure.outputs.output_folder": "new_folder",
+    ...         "pipeline.photon_collection.load_image.arguments.image_file": "new_image.fits",
+    ...     },
     ... )
-    >>> data
-    DataTree('None', parent=None)
-    │   Dimensions:  (time: 54, y: 100, x: 100)
-    │   Coordinates:
-    │     * time     (time) float64 0.02 0.06 0.12 0.2 0.3 ... 113.0 117.8 122.7 127.7
-    │     * y        (y) int64 0 1 2 3 4 5 6 7 8 9 10 ... 90 91 92 93 94 95 96 97 98 99
-    │     * x        (x) int64 0 1 2 3 4 5 6 7 8 9 10 ... 90 91 92 93 94 95 96 97 98 99
+    >>> data_tree
+    <xarray.DataTree>
+    Group: /
+    │   Dimensions: ()
     │   Data variables:
-    │       photon   (time, y, x) float64 85.0 120.0 109.0 ... 2.533e+04 2.51e+04
-    │       charge   (time, y, x) float64 201.0 196.0 202.0 ... 2.543e+04 2.52e+04
-    │       pixel    (time, y, x) float64 77.38 110.0 99.09 ... 2.406e+04 2.406e+04
-    │       signal   (time, y, x) float64 0.0009377 0.001322 0.00133 ... 0.2968 0.2968
-    │       image    (time, y, x) float64 16.0 22.0 22.0 ... 4.863e+03 4.863e+03
+    │       *empty*
     │   Attributes:
-    │       pyxel version:  1.9.1+104.g9da11bb2
+    │       pyxel version:  2.4.1+56.ga760893c.dirty
     │       running mode:   Exposure
-    ├── DataTree('scene')
-    │   └── DataTree('list')
-    │       └── DataTree('0')
-    │               Dimensions:     (ref: 345, wavelength: 343)
-    │               Coordinates:
-    │                 * ref         (ref) int64 0 1 2 3 4 5 6 7 ... 337 338 339 340 341 342 343 344
-    │                 * wavelength  (wavelength) float64 336.0 338.0 340.0 ... 1.018e+03 1.02e+03
-    │               Data variables:
-    │                   x           (ref) float64 2.057e+05 2.058e+05 ... 2.031e+05 2.03e+05
-    │                   y           (ref) float64 8.575e+04 8.58e+04 ... 8.795e+04 8.807e+04
-    │                   weight      (ref) float64 11.49 14.13 15.22 14.56 ... 15.21 11.51 8.727
-    │                   flux        (ref, wavelength) float64 0.03769 0.04137 ... 1.813 1.896
-    └── DataTree('data')
-        ├── DataTree('mean_variance')
-        │   └── DataTree('image')
+    ├── Group: /bucket
+    │   │   Dimensions:  (time: 54, y: 100, x: 100)
+    │   │   Coordinates:
+    │   │     * time     (time) float64 0.02 0.06 0.12 0.2 0.3 ... 113.0 117.8 122.7 127.7
+    │   │     * y        (y) int64 0 1 2 3 4 5 6 7 8 9 10 ... 90 91 92 93 94 95 96 97 98 99
+    │   │     * x        (x) int64 0 1 2 3 4 5 6 7 8 9 10 ... 90 91 92 93 94 95 96 97 98 99
+    │   │   Data variables:
+    │   │       photon   (time, y, x) float64 4MB 85.0 120.0 109.0 ... 2.533e+04 2.51e+04
+    │   │       charge   (time, y, x) float64 4MB 201.0 196.0 202.0 ... 2.543e+04 2.52e+04
+    │   │       pixel    (time, y, x) float64 4MB 77.38 110.0 99.09 ... 2.406e+04 2.406e+04
+    │   │       signal   (time, y, x) float64 4MB 0.0009377 0.001322 0.00133 ... 0.2968 0.2968
+    │   │       image    (time, y, x) float64 4MB 16.0 22.0 22.0 ... 4.863e+03 4.863e+03
+    │   └── Group: /bucket/scene
+    │       └── Group: /bucket/scene/list
+    │           └── Group: /bucket/scene/list/0
+    │                   Dimensions:     (ref: 345, wavelength: 343)
+    │                   Coordinates:
+    │                     * ref         (ref) int64 0 1 2 3 4 5 6 7 ... 337 338 339 340 341 342 343 344
+    │                     * wavelength  (wavelength) float64 336.0 338.0 340.0 ... 1.018e+03 1.02e+03
+    │                   Data variables:
+    │                       x           (ref) float64 3KB 2.057e+05 2.058e+05 ... 2.031e+05 2.03e+05
+    │                       y           (ref) float64 3KB 8.575e+04 8.58e+04 ... 8.795e+04 8.807e+04
+    │                       weight      (ref) float64 3KB 11.49 14.13 15.22 14.56 ... 15.21 11.51 8.727
+    │                       flux        (ref, wavelength) 1MB float64 0.03769 0.04137 ... 1.813 1.896
+    └── Group: /data
+        ├── Group: /data/mean_variance
+        │   └── Group: /data/mean_variance/image
         │           Dimensions:   (mean: 54)
         │           Coordinates:
         │             * mean      (mean) float64 19.64 38.7 57.77 ... 4.586e+03 4.682e+03 4.777e+03
         │           Data variables:
-        │               variance  (mean) float64 5.893 10.36 15.13 ... 1.235e+04 1.297e+04 1.342e+04
-        └── DataTree('statistics')
-            └── DataTree('pixel')
+        │               variance  (mean) float64 432B 5.893 10.36 15.13 ... 1.235e+04 1.297e+04 1.342e+04
+        └── Group: /data/statistics
+            └── Group: /data/statistics/pixel
                     Dimensions:  (time: 54)
                     Coordinates:
                       * time     (time) float64 0.02 0.06 0.12 0.2 0.3 ... 113.0 117.8 122.7 127.7
                     Data variables:
-                        var      (time) float64 92.4 197.8 317.2 ... 3.027e+05 3.175e+05 3.286e+05
-                        mean     (time) float64 94.64 189.1 283.5 ... 2.269e+04 2.316e+04 2.363e+04
-                        min      (time) float64 63.39 134.9 220.3 ... 2.135e+04 2.193e+04 2.24e+04
-                        max      (time) float64 134.8 248.1 359.7 ... 2.522e+04 2.569e+04 2.64e+04
-                        count    (time) float64 1e+04 1e+04 1e+04 1e+04 ... 1e+04 1e+04 1e+04 1e+04
+                        var      (time) float64 432B 92.4 197.8 317.2 ... 3.027e+05 3.175e+05 3.286e+05
+                        mean     (time) float64 432B 94.64 189.1 283.5 ... 2.269e+04 2.316e+04 2.363e+04
+                        min      (time) float64 432B 63.39 134.9 220.3 ... 2.135e+04 2.193e+04 2.24e+04
+                        max      (time) float64 432B 134.8 248.1 359.7 ... 2.522e+04 2.569e+04 2.64e+04
+                        count    (time) float64 432B 1e+04 1e+04 1e+04 1e+04 ... 1e+04 1e+04 1e+04 1e+04
 
     Run a 'Calibration' pipeline
 
@@ -843,12 +866,16 @@ def run_mode(
                         long_name:  Group: 'simple_adc'
     """
 
+    # Ensure debug mode is only used with Exposure mode.
     if debug and not isinstance(mode, Exposure):
         raise NotImplementedError(
             "Parameter 'debug' is only implemented for 'Exposure' mode."
         )
 
+    # Initialize the Processor object with the detector and pipeline.
     processor = Processor(detector=detector, pipeline=pipeline)
+
+    # Apply any overrides provided in the 'override_dct' to adjust processor settings.
     if override_dct is not None:
         apply_overrides(
             overrides=override_dct,
@@ -856,17 +883,20 @@ def run_mode(
             mode=mode,
         )
 
+    # Execute the appropriate processing function based on the mode type.
     if isinstance(mode, Exposure):
         data_tree = _run_exposure_mode(
             exposure=mode,
             processor=processor,
             debug=debug,
+            with_inherited_coords=with_inherited_coords,
         )
 
     elif isinstance(mode, Observation):
         data_tree = _run_observation_mode(
             observation=mode,
             processor=processor,
+            with_inherited_coords=with_inherited_coords,
         )
 
     else:
@@ -878,6 +908,7 @@ def run_mode(
             data_tree = _run_calibration_mode(
                 calibration=mode,
                 processor=processor,
+                with_inherited_coords=with_inherited_coords,
             )
         else:
             raise TypeError("Please provide a valid simulation mode !")
@@ -974,7 +1005,9 @@ def run(
 
         if isinstance(running_mode, Calibration):
             _run_calibration_mode_without_datatree(
-                calibration=running_mode, processor=processor
+                calibration=running_mode,
+                processor=processor,
+                with_buckets_separated=False,
             )
         else:
             raise TypeError("Please provide a valid simulation mode !")

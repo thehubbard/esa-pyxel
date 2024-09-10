@@ -870,22 +870,28 @@ class Observation:
                     types=types,
                 )
 
-    def run_observation_datatree(self, processor: "Processor") -> "DataTree":
-        """Run the observation pipelines."""
+    def _run_observation_datatree(
+        self,
+        processor: "Processor",
+        with_inherited_coords: bool,
+    ) -> "DataTree":
+        """Run the observation pipelines and return a `DataTree` object."""
         # Late import to speedup start-up time
 
-        # validation
+        # Validate the processor steps before running the pipeline
         self.validate_steps(processor)
 
+        # Retrieve the types of parameters and assign short dimension names
         types: Mapping[str, ParameterType] = self._get_parameter_types()
         dim_names: Mapping[str, str] = _get_short_dimension_names_new(types)
 
+        # Fetch the observation parameters to be passed to the pipeline
         parameters: Sequence[Union[ParameterItem, CustomParameterItem]] = (
             self._get_parameters_item(processor=processor)
         )
 
         if self.with_dask:
-
+            # If Dask is enabled, use it for parallel processing
             datatree_bag: db.Bag = (
                 db.from_sequence(parameters)
                 .map(
@@ -895,24 +901,30 @@ class Observation:
                     dimension_names=dim_names,
                     processor=processor,
                     types=types,
+                    with_inherited_coords=with_inherited_coords,
                 )
                 .fold(binop=merge)
             )
 
+            # Compute the final DataTree in parallel
             final_datatree: DataTree = datatree_bag.compute()
         else:
+            # If Dask is not enabled, process each parameter sequentially
             datatree_list: Iterator[DataTree] = (
                 self._apply_exposure_pipeline(
                     el,
                     dimension_names=dim_names,
                     processor=processor,
                     types=types,
+                    with_inherited_coords=with_inherited_coords,
                 )
                 for el in tqdm(parameters)
             )
 
+            # Merge the sequentially processed DataTrees into the final result
             final_datatree = merge(*datatree_list)
 
+        # Assign the running mode to the final DataTree attributes
         parameter_name: str = self.parameter_mode.name
         final_datatree.attrs["running mode"] = f"Observation - {parameter_name}"
 
@@ -996,6 +1008,7 @@ class Observation:
             result_type=self.result_type,
             pipeline_seed=self.pipeline_seed,
             debug=False,  # Not supported in Observation mode
+            with_inherited_coords=False,
         )
 
         if self.outputs:
@@ -1010,13 +1023,16 @@ class Observation:
         dimension_names: Mapping[str, str],
         processor: "Processor",
         types: Mapping[str, ParameterType],
+        with_inherited_coords: bool,
     ) -> "DataTree":
+        """Run a single exposure pipeline for a given parameter item."""
+        # Create a new processor using the given parameters
         new_processor = create_new_processor(
             processor=processor,
             parameter_dict=param_item.parameters,
         )
 
-        # Run a single pipeline
+        # Run a single pipeline for the given parameters
         try:
             data_tree: "DataTree" = run_pipeline(
                 processor=new_processor,
@@ -1024,8 +1040,10 @@ class Observation:
                 result_type=self.result_type,
                 pipeline_seed=self.pipeline_seed,
                 debug=False,  # Not supported in Observation mode
+                with_inherited_coords=with_inherited_coords,
             )
         except Exception as exc:
+            # In Python 3.11+, add context notes to the exception
             if sys.version_info >= (3, 11):
                 exc.add_note(
                     "This error occurred in 'Observation' mode with the following parameters:"
@@ -1036,12 +1054,14 @@ class Observation:
 
             raise
 
+        # Save the outputs if configured
         if self.outputs:
             _ = self.outputs.save_to_file(
                 processor=new_processor,
                 run_number=param_item.run_index,
             )
 
+        # Add observation-specific parameters to the DataTree
         # Can also be done outside dask in a loop
         if isinstance(param_item, ParameterItem):
             final_data_tree = _add_product_parameters(
