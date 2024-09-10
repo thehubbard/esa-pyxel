@@ -55,6 +55,10 @@ The minimum versions of some dependencies were changed:
   from group [`Data Processing`](https://esa.gitlab.io/pyxel/doc/stable/references/model_groups/data_processing_models.html#data-processing-models) 
   in [Observation mode](https://esa.gitlab.io/pyxel/doc/stable/background/running_modes/observation_mode.html#observation-mode).
   (See [!938](https://gitlab.com/esa/pyxel/-/merge_requests/938)).
+* Fix bug in model [`output_node_noise_cmos`](https://esa.gitlab.io/pyxel/doc/stable/references/model_groups/charge_measurement_models.html#output-node-noise-cmos)
+  from [`Charge Measurement`](https://esa.gitlab.io/pyxel/doc/stable/references/model_groups/charge_measurement_models.html#charge-measurement-models)
+  with some values.
+  (See [!941](https://gitlab.com/esa/pyxel/-/merge_requests/941)).
 
 ### Others
 * Add compatibility to `xarray` 2024.07.0.
