@@ -9,19 +9,20 @@ Minor releases include updated stdlib stubs from typeshed.
 
 Pyxel doesn't use SemVer anymore, since most minor releases have at least minor backward incompatible changes.
 
-## UNRELEASED
+## 2.5 / 2024-09-11
 
 This release brings a number of bugfixes and improvements.
 
-**🚀 New way to quickly install and use Pyxel 🚀**
+### **🚀 New way to quickly install and use Pyxel 🚀**
 
-There is a new quickstart setup guide to explain how to quickly install and use Pyxel using `uv <https://docs.astral.sh/uv/>`.
+We've introduced a new [quickstart setup guide](https://esa.gitlab.io/pyxel/doc/stable/tutorials/overview.html#quickstart-setup-with-quick-installation-recommended-with-uv)
+for faster and easier installation and use of Pyxel with [uv](https://docs.astral.sh/uv).
 
-You must first install `uv <https://docs.astral.sh/uv/>`
-(see the installation guide [here](https://docs.astral.sh/uv/#highlights)).
+#### How to get Started:
 
-Then you can use the following commands to download the Pyxel tutorial notebooks (~200 MB) and 
-use them with Jupyter Lab:
+1. First, install [uv](https://docs.astral.sh/uv) by following the installation guide [here](https://docs.astral.sh/uv/#highlights).
+1. Then, run the following commands to download the Pyxel tutorial notebooks (~200 MB) and 
+open them in Jupyter Lab:
 ```bash
 $ uvx pyxel-sim download-examples
 Downloading examples: 388MB [00:08, 47.9MB/s]
@@ -33,13 +34,15 @@ $ uvx --with pyxel-sim[model] --from jupyterlab jupyter-lab
 [Server App] http://localhost:8888/lab?token=...
 ```
 
-**New parameter `with_inherited_coords` for function `pyxel.run_mode`**
+This streamlined process makes it simplet to get Pyxel up and running quickly !
 
-A new **optional** parameter `with_inherited_coords` has been added to the `pyxel.run_mode` 
-function to ensure coordinate inheritance in the DataTree.
-Coordinate inheritance makes the hierarchical structure easier to understand and 
-reduces data repetition
-(see [issue #9077](https://github.com/pydata/xarray/issues/9077) from Xarray).
+### **New parameter `with_inherited_coords` for `pyxel.run_mode` function**
+
+A new **optional** `with_inherited_coords` parameter has been added to the `pyxel.run_mode` function.
+This ensures that coordinates are inherited within the DataTree, simplifying the hierarchical structure and
+reducing data redundancy. For more detail, see [Xarray issue #9077](https://github.com/pydata/xarray/issues/9077).
+
+⚠️ This parameter is provisional. ⚠️
 
 Example:
 ```python
@@ -83,7 +86,7 @@ Group: /
                     variance      (pipeline_idx) float64 800B 12.17 13.45 ... 1.348e+03
 ```
 
-
+### Breaking changes
 
 The minimum versions of some dependencies were changed:
 
