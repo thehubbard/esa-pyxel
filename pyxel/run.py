@@ -7,6 +7,7 @@
 
 """CLI to run Pyxel."""
 import logging
+import platform
 import sys
 import time
 import warnings
@@ -1092,7 +1093,10 @@ def apply_overrides(
 
 # TODO: Add an option to display colors ?
 @click.group()
-@click.version_option(version=version)
+@click.version_option(
+    version=version
+    + f"\nPython ({platform.python_implementation()}) {platform.python_version()}"
+)
 def main():
     """Pyxel detector simulation framework.
 
