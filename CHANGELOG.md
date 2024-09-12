@@ -9,6 +9,15 @@ Minor releases include updated stdlib stubs from typeshed.
 
 Pyxel doesn't use SemVer anymore, since most minor releases have at least minor backward incompatible changes.
 
+## UNRELEASED
+
+This release brings a number of bugfixes and improvements.
+
+### Others
+* Pin `xarray` version to <2024.9.0.
+  (See [!946](https://gitlab.com/esa/pyxel/-/merge_requests/946)).
+
+
 ## 2.5 / 2024-09-11
 
 This release brings a number of bugfixes and improvements.
