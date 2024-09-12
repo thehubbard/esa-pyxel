@@ -82,7 +82,7 @@ def _get_short_dimension_names_new(
 
 # TODO: Replace this function by 'xr.merge'
 # TODO: or 'datatree.merge' when it will be possible
-def merge(*objects: Iterable["DataTree"]) -> "DataTree":
+def merge(*objects: "DataTree") -> "DataTree":
     """Merge any number of DataTree into a single DataTree."""
     # Import 'datatree'
     try:
@@ -321,7 +321,7 @@ class Observation:
                 )
 
             # If Dask is not enabled, process each parameter sequentially
-            datatree_list: Iterator["DataTree"] = (
+            datatree_list: Sequence["DataTree"] = (
                 self._run_single_pipeline(
                     el,
                     dimension_names=dim_names,
@@ -330,7 +330,7 @@ class Observation:
                     with_inherited_coords=with_inherited_coords,
                 )
                 for el in tqdm(parameters)
-            )
+            ]
 
             # Merge the sequentially processed DataTrees into the final result
             final_datatree = merge(*datatree_list)
