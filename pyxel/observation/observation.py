@@ -6,6 +6,7 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """Parametric mode class and helper functions."""
+
 import itertools
 import sys
 import warnings
@@ -111,7 +112,7 @@ def _get_final_short_name(
 
 
 def _get_short_dimension_names(
-    types: Mapping[str, ParameterType]
+    types: Mapping[str, ParameterType],
 ) -> Mapping[str, str]:  # pragma: no cover
     warnings.warn(
         "Deprecated. Will be removed in Pyxel 2.0", DeprecationWarning, stacklevel=1
