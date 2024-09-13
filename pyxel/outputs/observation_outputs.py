@@ -18,7 +18,7 @@ from pyxel.observation import ParameterMode
 from pyxel.outputs import Outputs, ValidFormat, ValidName
 
 if TYPE_CHECKING:
-    from pyxel.observation import ObservationResult
+    from pyxel.observation.deprecated import ObservationResult
 
     class SaveToFile(Protocol):
         """TBW."""

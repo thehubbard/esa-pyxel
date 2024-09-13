@@ -227,7 +227,6 @@ def _apply_exposure_tuple_to_array(
 
     metadata: MetaData
     for path, metadata in all_metadata.items():
-
         for key in metadata.data_vars:
             output_data.append(data_tree[f"{path}/{key}"].to_numpy())  # noqa: PERF401
 

@@ -9,12 +9,9 @@
 
 import itertools
 import sys
-import warnings
 from collections import Counter
 from collections.abc import Iterable, Iterator, Mapping, Sequence
-from copy import deepcopy
 from dataclasses import dataclass
-from functools import partial
 from itertools import chain
 from numbers import Number
 from pathlib import Path
@@ -24,7 +21,7 @@ import numpy as np
 
 import pyxel
 from pyxel import options_wrapper
-from pyxel.exposure import Readout, _run_exposure_pipeline_deprecated, run_pipeline
+from pyxel.exposure import Readout, run_pipeline
 from pyxel.observation import (
     ParameterMode,
     ParametersType,
@@ -32,23 +29,13 @@ from pyxel.observation import (
     ParameterValues,
     _get_short_name_with_model,
     build_datatree,
+    create_new_processor,
     short,
-)
-from pyxel.observation.deprecated import (
-    ObservationResult,
-    _add_custom_parameters_deprecated,
-    _add_product_parameters_deprecated,
-    _add_sequential_parameters_deprecated,
-    _get_short_dimension_names,
-    compute_final_sequential_dataset,
-    log_parameters,
-    parameter_to_dataset,
 )
 from pyxel.pipelines import ResultId, get_result_id
 
 if TYPE_CHECKING:
     import pandas as pd
-    import xarray as xr
 
     # Import 'DataTree'
     try:
@@ -344,22 +331,6 @@ class Observation:
                 parameter_dict.update({key: value})
             yield indices, parameter_dict
 
-    def _parameter_it(self) -> Iterator[tuple]:  # pragma: no cover
-        """Return the method for generating parameters based on parametric mode."""
-        warnings.warn(
-            "Deprecated. Will be removed in Pyxel 2.0", DeprecationWarning, stacklevel=1
-        )
-        if self.parameter_mode == ParameterMode.Product:
-            yield from self._product_parameters()
-
-        elif self.parameter_mode == ParameterMode.Sequential:
-            yield from self._sequential_parameters()
-
-        elif self.parameter_mode == ParameterMode.Custom:
-            yield from self._custom_parameters()
-        else:
-            raise NotImplementedError
-
     def _get_parameters_item(
         self, processor: "Processor"
     ) -> Sequence[Union[ParameterItem, CustomParameterItem]]:
@@ -408,88 +379,11 @@ class Observation:
         else:
             raise ValueError("Parametric mode not specified.")
 
-    def _processors_it(
-        self, processor: "Processor"
-    ) -> Iterator[tuple["Processor", Union[int, tuple[int]], dict]]:  # pragma: no cover
-        """Generate processors with different product parameters.
-
-        Parameters
-        ----------
-        processor: Processor
-
-        Yields
-        ------
-        new_processor: Processor
-        index: tuple of int
-        parameter_dict: dict
-        """
-        warnings.warn(
-            "Deprecated. Will be removed in Pyxel 2.0",
-            DeprecationWarning,
-            stacklevel=1,
-        )
-
-        for index, parameter_dict in self._parameter_it():
-            new_processor = create_new_processor(
-                processor=processor,
-                parameter_dict=parameter_dict,
-            )
-            yield new_processor, index, parameter_dict
-
     def _get_parameter_types(self) -> Mapping[str, ParameterType]:
         """Check for each step if parameters can be used as dataset coordinates (1D, simple) or not (multi)."""
         for step in self.enabled_steps:
             self.parameter_types.update({step.key: step.type})
         return self.parameter_types
-
-    def _run_debug_mode_deprecated(
-        self, processor: "Processor"
-    ) -> tuple[list["Processor"], "xr.Dataset"]:  # pragma: no cover
-        """Run observation pipelines in debug mode and return list of processors and parameter logs.
-
-        Parameters
-        ----------
-        processor: Processor
-
-        Returns
-        -------
-        processors: list
-        final_logs: Dataset
-        """
-        warnings.warn(
-            "Deprecated. Will be removed in Pyxel 2.0",
-            DeprecationWarning,
-            stacklevel=1,
-        )
-
-        # Late import to speedup start-up time
-        import xarray as xr
-        from tqdm.auto import tqdm
-
-        processors = []
-        logs: list[xr.Dataset] = []
-
-        for processor_id, (proc, _index, parameter_dict) in enumerate(
-            tqdm(self._processors_it(processor))
-        ):
-            log: xr.Dataset = log_parameters(
-                processor_id=processor_id, parameter_dict=parameter_dict
-            )
-            logs.append(log)
-            _ = _run_exposure_pipeline_deprecated(
-                processor=proc,
-                readout=self.readout,
-                outputs=self.outputs,
-                pipeline_seed=self.pipeline_seed,
-            )
-            processors.append(processor)
-
-        # See issue #276
-        final_logs = xr.combine_by_coords(logs)
-        if not isinstance(final_logs, xr.Dataset):
-            raise TypeError("Expecting 'Dataset'.")
-
-        return processors, final_logs
 
     def validate_steps(self, processor: "Processor") -> None:
         """Validate enabled parameter steps in processor before running the pipelines.
@@ -533,243 +427,6 @@ class Observation:
                     "Either define 'custom' as parametric mode or "
                     "do not use '_' character in 'values' field"
                 )
-
-    # ruff: noqa: C901
-    def _run_observation_deprecated(
-        self, processor: "Processor"
-    ) -> ObservationResult:  # pragma: no cover
-        """Run the observation pipelines.
-
-        Parameters
-        ----------
-        processor : Processor
-
-        Returns
-        -------
-        Result
-        """
-        warnings.warn(
-            "Deprecated. Will be removed in Pyxel 2.0",
-            DeprecationWarning,
-            stacklevel=1,
-        )
-
-        # Late import to speedup start-up time
-        import dask.bag as db
-        import xarray as xr
-        from tqdm.auto import tqdm
-
-        # validation
-        self.validate_steps(processor)
-
-        types: Mapping[str, ParameterType] = self._get_parameter_types()
-
-        dim_names: Mapping[str, str] = _get_short_dimension_names(types)
-
-        y = range(processor.detector.geometry.row)
-        x = range(processor.detector.geometry.col)
-        times = self.readout.times
-
-        if self.parameter_mode == ParameterMode.Product:
-            apply_pipeline = partial(
-                self._apply_exposure_pipeline_product,
-                dimension_names=dim_names,
-                x=x,
-                y=y,
-                processor=processor,
-                times=times,
-                types=types,
-            )
-            lst = [
-                (index, parameter_dict, n)
-                for n, (index, parameter_dict) in enumerate(self._parameter_it())
-            ]
-
-            if self.with_dask:
-                dataset_list = db.from_sequence(lst).map(apply_pipeline).compute()
-            else:
-                dataset_list = list(map(apply_pipeline, tqdm(lst)))
-
-            # prepare lists for to-be-merged datasets
-            parameters: list[list[xr.Dataset]] = [
-                [] for _ in range(len(self.enabled_steps))
-            ]
-            logs = []
-
-            for processor_id, (indices, parameter_dict, _) in enumerate(lst):
-                # log parameters for this pipeline
-                log = log_parameters(
-                    processor_id=processor_id, parameter_dict=parameter_dict
-                )
-                logs.append(log)
-
-                # save parameters with appropriate product mode indices
-                for i, coordinate in enumerate(parameter_dict):
-                    parameter_ds = parameter_to_dataset(
-                        parameter_dict=parameter_dict,
-                        dimension_names=dim_names,
-                        index=indices[i],
-                        coordinate_name=coordinate,
-                    )
-                    parameters[i].append(parameter_ds)
-
-            # merging/combining the outputs
-            final_parameters_list: list[xr.Dataset] = []
-            for p in parameters:
-                # See issue #276
-                new_dataset = xr.combine_by_coords(p)
-                if not isinstance(new_dataset, xr.Dataset):
-                    raise TypeError("Expecting 'Dataset'.")
-
-                final_parameters_list.append(new_dataset)
-
-            final_parameters_merged = xr.merge(final_parameters_list)
-
-            # See issue #276
-            final_logs = xr.combine_by_coords(logs)
-            if not isinstance(final_logs, xr.Dataset):
-                raise TypeError("Expecting 'Dataset'.")
-
-            # See issue #276
-            final_dataset = xr.combine_by_coords(dataset_list)
-            if not isinstance(final_dataset, xr.Dataset):
-                raise TypeError("Expecting 'Dataset'.")
-
-            result = ObservationResult(
-                dataset=final_dataset,
-                parameters=final_parameters_merged,
-                logs=final_logs,
-            )
-
-            return result
-
-        elif self.parameter_mode == ParameterMode.Sequential:
-            apply_pipeline = partial(
-                self._apply_exposure_pipeline_sequential,
-                dimension_names=dim_names,
-                x=x,
-                y=y,
-                processor=processor,
-                times=times,
-                types=types,
-            )
-
-            lst = [
-                (index, parameter_dict, n)
-                for n, (index, parameter_dict) in enumerate(self._parameter_it())
-            ]
-
-            if self.with_dask:
-                dataset_list = db.from_sequence(lst).map(apply_pipeline).compute()
-            else:
-                dataset_list = list(map(apply_pipeline, tqdm(lst)))
-
-            # prepare lists/dictionaries for to-be-merged datasets
-            parameters = [[] for _ in range(len(self.enabled_steps))]
-            logs = []
-
-            # overflow to next parameter step counter
-            step_counter = -1
-
-            for processor_id, (index, parameter_dict, _) in enumerate(lst):
-                # log parameters for this pipeline
-                # TODO: somehow refactor logger so that default parameters
-                #  from other steps are also logged in sequential mode
-                log = log_parameters(
-                    processor_id=processor_id, parameter_dict=parameter_dict
-                )
-                logs.append(log)
-
-                # Figure out current coordinate
-                coordinate = str(next(iter(parameter_dict)))
-                # Check for overflow to next parameter
-                if index == 0:
-                    step_counter += 1
-
-                # save sequential parameter with appropriate index
-                parameter_ds = parameter_to_dataset(
-                    parameter_dict=parameter_dict,
-                    dimension_names=dim_names,
-                    index=index,
-                    coordinate_name=coordinate,
-                )
-                parameters[step_counter].append(parameter_ds)
-
-            # merging/combining the outputs
-            # See issue #276
-            final_logs = xr.combine_by_coords(logs)
-            if not isinstance(final_logs, xr.Dataset):
-                raise TypeError("Expecting 'Dataset'.")
-
-            final_datasets = compute_final_sequential_dataset(
-                list_of_index_and_parameter=lst,
-                list_of_datasets=dataset_list,
-                dimension_names=dim_names,
-            )
-
-            final_parameters_list = []
-            for p in parameters:
-                # See issue #276
-                new_dataset = xr.combine_by_coords(p)
-                if not isinstance(new_dataset, xr.Dataset):
-                    raise TypeError("Expecting 'Dataset'.")
-
-                final_parameters_list.append(new_dataset)
-
-            final_parameters_merged = xr.merge(final_parameters_list)
-
-            result = ObservationResult(
-                dataset=final_datasets,
-                parameters=final_parameters_merged,
-                logs=final_logs,
-            )
-            return result
-
-        elif self.parameter_mode == ParameterMode.Custom:
-            apply_pipeline = partial(
-                self._apply_exposure_pipeline_custom,
-                x=x,
-                y=y,
-                processor=processor,
-                times=times,
-            )
-            lst = [
-                (index, parameter_dict, n)
-                for n, (index, parameter_dict) in enumerate(self._parameter_it())
-            ]
-
-            if self.with_dask:
-                dataset_list = db.from_sequence(lst).map(apply_pipeline).compute()
-            else:
-                dataset_list = list(map(apply_pipeline, tqdm(lst)))
-
-            # prepare lists for to-be-merged datasets
-            logs = []
-
-            for index, parameter_dict, _ in lst:
-                # log parameters for this pipeline
-                log = log_parameters(processor_id=index, parameter_dict=parameter_dict)
-                logs.append(log)
-
-            # merging/combining the outputs
-            final_ds = xr.combine_by_coords(dataset_list)
-            final_log = xr.combine_by_coords(logs)
-
-            # See issue #276
-            if not isinstance(final_ds, xr.Dataset):
-                raise TypeError("Expecting 'Dataset'.")
-            if not isinstance(final_log, xr.Dataset):
-                raise TypeError("Expecting 'Dataset'.")
-
-            final_parameters = final_log  # parameter dataset same as logs
-
-            result = ObservationResult(
-                dataset=final_ds, parameters=final_parameters, logs=final_log
-            )
-            return result
-
-        else:
-            raise ValueError("Parametric mode not specified.")
 
     def run_observation_without_datatree(self, processor: "Processor") -> None:
         """Run the observation pipelines."""
@@ -866,61 +523,6 @@ class Observation:
         #     raise TypeError("Expecting 'Dataset'.")
 
         return final_datatree
-
-    def _apply_exposure_pipeline_product(
-        self,
-        index_and_parameter: tuple[
-            tuple[int, ...],
-            ParametersType,
-            int,
-        ],
-        dimension_names: Mapping[str, str],
-        processor: "Processor",
-        x: range,
-        y: range,
-        times: np.ndarray,
-        types: Mapping[str, ParameterType],
-    ) -> "xr.Dataset":  # pragma: no cover
-        warnings.warn(
-            "Deprecated. Will be removed in Pyxel 2.0", DeprecationWarning, stacklevel=1
-        )
-
-        index, parameter_dict, n = index_and_parameter
-
-        new_processor = create_new_processor(
-            processor=processor, parameter_dict=parameter_dict
-        )
-
-        # run the pipeline
-        _ = _run_exposure_pipeline_deprecated(
-            processor=new_processor,
-            readout=self.readout,
-            result_type=self.result_type,
-            pipeline_seed=self.pipeline_seed,
-        )
-
-        if self.outputs:
-            _ = self.outputs.save_to_file(processor=new_processor, run_number=n)
-
-        ds: xr.Dataset = new_processor.result_to_dataset(
-            x=x,
-            y=y,
-            times=times,
-            result_type=self.result_type,
-        )
-
-        # Can also be done outside dask in a loop
-        ds = _add_product_parameters_deprecated(
-            ds=ds,
-            parameter_dict=parameter_dict,
-            dimension_names=dimension_names,
-            indices=index,
-            types=types,
-        )
-
-        ds.attrs.update({"running mode": "Observation - Product"})
-
-        return ds
 
     def _apply_exposure_pipeline_without_datatree(
         self,
@@ -1020,133 +622,6 @@ class Observation:
                 )
 
             return final_data_tree
-
-    def _apply_exposure_pipeline_custom(
-        self,
-        index_and_parameter: tuple[
-            int,
-            ParametersType,
-            int,
-        ],
-        processor: "Processor",
-        x: range,
-        y: range,
-        times: np.ndarray,
-    ):  # pragma: no cover
-        warnings.warn(
-            "Deprecated. Will be removed in Pyxel 2.0", DeprecationWarning, stacklevel=1
-        )
-
-        index, parameter_dict, n = index_and_parameter
-
-        new_processor = create_new_processor(
-            processor=processor,
-            parameter_dict=parameter_dict,
-        )
-
-        # run the pipeline
-        _ = _run_exposure_pipeline_deprecated(
-            processor=new_processor,
-            readout=self.readout,
-            result_type=self.result_type,
-            pipeline_seed=self.pipeline_seed,
-        )
-
-        if self.outputs:
-            _ = self.outputs.save_to_file(processor=new_processor, run_number=n)
-
-        ds: xr.Dataset = new_processor.result_to_dataset(
-            x=x, y=y, times=times, result_type=self.result_type
-        )
-
-        # Can also be done outside dask in a loop
-        ds = _add_custom_parameters_deprecated(
-            ds=ds,
-            index=index,
-        )
-        ds.attrs.update({"running mode": "Observation - Custom"})
-
-        return ds
-
-    def _apply_exposure_pipeline_sequential(
-        self,
-        index_and_parameter: tuple[
-            int,
-            ParametersType,
-            int,
-        ],
-        dimension_names: Mapping[str, str],
-        processor: "Processor",
-        x: range,
-        y: range,
-        times: np.ndarray,
-        types: Mapping[str, ParameterType],
-    ):  # pragma: no cover
-        warnings.warn(
-            "Deprecated. Will be removed in Pyxel 2.0", DeprecationWarning, stacklevel=1
-        )
-
-        index, parameter_dict, n = index_and_parameter
-
-        new_processor = create_new_processor(
-            processor=processor,
-            parameter_dict=parameter_dict,
-        )
-
-        coordinate = str(next(iter(parameter_dict)))
-
-        # run the pipeline
-        _ = _run_exposure_pipeline_deprecated(
-            processor=new_processor,
-            readout=self.readout,
-            result_type=self.result_type,
-            pipeline_seed=self.pipeline_seed,
-        )
-
-        if self.outputs:
-            _ = self.outputs.save_to_file(processor=new_processor, run_number=n)
-
-        ds: xr.Dataset = new_processor.result_to_dataset(
-            x=x, y=y, times=times, result_type=self.result_type
-        )
-
-        # Can also be done outside dask in a loop
-        ds = _add_sequential_parameters_deprecated(
-            ds=ds,
-            parameter_dict=parameter_dict,
-            dimension_names=dimension_names,
-            index=index,
-            coordinate_name=coordinate,
-            types=types,
-        )
-
-        ds.attrs.update({"running mode": "Observation - Sequential"})
-
-        return ds
-
-
-def create_new_processor(
-    processor: "Processor",
-    parameter_dict: ParametersType,
-) -> "Processor":
-    """Create a copy of processor and set new attributes from a dictionary before returning it.
-
-    Parameters
-    ----------
-    processor: Processor
-    parameter_dict: dict
-
-    Returns
-    -------
-    Processor
-    """
-
-    new_processor = deepcopy(processor)
-
-    for key in parameter_dict:
-        new_processor.set(key=key, value=parameter_dict[key])
-
-    return new_processor
 
 
 def _add_custom_parameters(

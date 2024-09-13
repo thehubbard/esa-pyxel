@@ -8,11 +8,13 @@
 """TBW."""
 
 # flake8: noqa
-from .misc import ParameterMode, short, _get_short_name_with_model, ParametersType
+from .misc import (
+    ParameterMode,
+    short,
+    _get_short_name_with_model,
+    ParametersType,
+    create_new_processor,
+)
 from .parameter_values import ParameterValues, ParameterType
 from .observation_dask import build_datatree
-from .observation import (
-    Observation,
-    ObservationResult,
-    log_parameters,
-)
+from .observation import Observation

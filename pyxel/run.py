@@ -23,7 +23,8 @@ from pyxel import __version__ as version
 from pyxel import copy_config_file, load, outputs
 from pyxel.detectors import APD, CCD, CMOS, MKID, Detector
 from pyxel.exposure import Exposure
-from pyxel.observation import Observation, ObservationResult
+from pyxel.observation import Observation
+from pyxel.observation.deprecated import _run_observation_deprecated
 from pyxel.pipelines import DetectionPipeline, Processor
 from pyxel.pipelines.processor import _get_obj_att
 from pyxel.util import create_model, create_model_to_console, download_examples
@@ -39,6 +40,7 @@ if TYPE_CHECKING:
         from datatree import DataTree  # type: ignore[assignment]
 
     from pyxel.calibration import Calibration
+    from pyxel.observation.deprecated import ObservationResult
     from pyxel.outputs import CalibrationOutputs, ExposureOutputs, ObservationOutputs
 
 
@@ -282,8 +284,8 @@ def observation_mode(
 
     processor = Processor(detector=detector, pipeline=pipeline)
 
-    result: ObservationResult = observation._run_observation_deprecated(
-        processor=processor
+    result: "ObservationResult" = _run_observation_deprecated(
+        observation, processor=processor
     )
 
     if outputs and outputs.save_observation_data:
