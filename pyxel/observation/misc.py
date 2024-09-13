@@ -5,14 +5,13 @@
 #  this file, may be copied, modified, propagated, or distributed except according to
 #  the terms contained in the file ‘LICENCE.txt’.
 
-"""TBW."""
 
-# flake8: noqa
-from .misc import ParameterMode
-from .parameter_values import ParameterValues, ParameterType
-from .observation_dask import build_datatree
-from .observation import (
-    Observation,
-    ObservationResult,
-    log_parameters,
-)
+from enum import Enum
+
+
+class ParameterMode(Enum):
+    """Parameter mode class."""
+
+    Product = "product"
+    Sequential = "sequential"
+    Custom = "custom"
