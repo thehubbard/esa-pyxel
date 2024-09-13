@@ -15,7 +15,7 @@ import xarray as xr
 import pyxel
 from pyxel.configuration import Configuration
 from pyxel.detectors import CCD
-from pyxel.observation import Observation, ParameterMode
+from pyxel.observation import Observation, ProductMode, SequentialMode
 from pyxel.observation.deprecated import ObservationResult
 from pyxel.pipelines import DetectionPipeline
 
@@ -38,7 +38,7 @@ def test_product_simple(with_dask: bool):
     observation.with_dask = with_dask
 
     assert isinstance(observation, Observation)
-    assert observation.parameter_mode == ParameterMode.Product
+    assert isinstance(observation.parameter_mode, ProductMode)
 
     assert isinstance(detector, CCD)
     assert isinstance(pipeline, DetectionPipeline)
@@ -115,7 +115,7 @@ def test_product(with_dask: bool):
     observation.with_dask = with_dask
 
     assert isinstance(observation, Observation)
-    assert observation.parameter_mode == ParameterMode.Product
+    assert isinstance(observation.parameter_mode, ProductMode)
 
     assert isinstance(detector, CCD)
     assert isinstance(pipeline, DetectionPipeline)
@@ -212,7 +212,7 @@ def test_sequential_simple_deprecated(with_dask: bool):
     observation.with_dask = with_dask
 
     assert isinstance(observation, Observation)
-    assert observation.parameter_mode == ParameterMode.Sequential
+    assert isinstance(observation.parameter_mode, SequentialMode)
 
     assert isinstance(detector, CCD)
     assert isinstance(pipeline, DetectionPipeline)
@@ -310,7 +310,7 @@ def test_sequential_simple(with_dask: bool):
     observation.with_dask = with_dask
 
     assert isinstance(observation, Observation)
-    assert observation.parameter_mode == ParameterMode.Sequential
+    assert isinstance(observation.parameter_mode, SequentialMode)
 
     assert isinstance(detector, CCD)
     assert isinstance(pipeline, DetectionPipeline)
@@ -408,7 +408,7 @@ def test_sequential(with_dask: bool):
     observation.with_dask = with_dask
 
     assert isinstance(observation, Observation)
-    assert observation.parameter_mode == ParameterMode.Sequential
+    assert isinstance(observation.parameter_mode, SequentialMode)
 
     assert isinstance(detector, CCD)
     assert isinstance(pipeline, DetectionPipeline)

@@ -5,6 +5,7 @@
 #  this file, may be copied, modified, propagated, or distributed except according to
 #  the terms contained in the file ‘LICENCE.txt’.
 
+"""Subpackage for deprecated functions for Observation mode."""
 
 import warnings
 from collections import Counter
@@ -15,9 +16,11 @@ import numpy as np
 
 from pyxel.exposure import _run_exposure_pipeline_deprecated
 from pyxel.observation import (
-    ParameterMode,
+    CustomMode,
     ParametersType,
     ParameterType,
+    ProductMode,
+    SequentialMode,
     _get_short_name_with_model,
     create_new_processor,
     short,
@@ -443,7 +446,7 @@ def _run_observation_deprecated(
     x = range(processor.detector.geometry.col)
     times = observation.readout.times
 
-    if observation.parameter_mode == ParameterMode.Product:
+    if isinstance(observation.parameter_mode, ProductMode):
 
         def _apply_pipeline(index_and_parameter):
             return _apply_exposure_pipeline_product(
@@ -469,7 +472,7 @@ def _run_observation_deprecated(
 
         # prepare lists for to-be-merged datasets
         parameters: list[list[xr.Dataset]] = [
-            [] for _ in range(len(observation.enabled_steps))
+            [] for _ in range(len(observation.parameter_mode.enabled_steps))
         ]
         logs = []
 
@@ -520,7 +523,7 @@ def _run_observation_deprecated(
 
         return result
 
-    elif observation.parameter_mode == ParameterMode.Sequential:
+    elif isinstance(observation.parameter_mode, SequentialMode):
 
         def _apply_pipeline(index_and_parameter):
             return _apply_exposure_pipeline_sequential(
@@ -545,7 +548,7 @@ def _run_observation_deprecated(
             dataset_list = list(map(_apply_pipeline, tqdm(lst)))
 
         # prepare lists/dictionaries for to-be-merged datasets
-        parameters = [[] for _ in range(len(observation.enabled_steps))]
+        parameters = [[] for _ in range(len(observation.parameter_mode.enabled_steps))]
         logs = []
 
         # overflow to next parameter step counter
@@ -605,7 +608,7 @@ def _run_observation_deprecated(
         )
         return result
 
-    elif observation.parameter_mode == ParameterMode.Custom:
+    elif isinstance(observation.parameter_mode, CustomMode):
 
         def _apply_pipeline(index_and_parameter):
             return _apply_exposure_pipeline_custom(
@@ -653,7 +656,7 @@ def _run_observation_deprecated(
         return result
 
     else:
-        raise ValueError("Parametric mode not specified.")
+        raise TypeError("Parametric mode not specified.")
 
 
 def _processors_it(
@@ -690,14 +693,14 @@ def _parameter_it(observation: "Observation") -> Iterator[tuple]:  # pragma: no 
     warnings.warn(
         "Deprecated. Will be removed in Pyxel 2.0", DeprecationWarning, stacklevel=1
     )
-    if observation.parameter_mode == ParameterMode.Product:
-        yield from observation._product_parameters()
+    if isinstance(observation.parameter_mode, ProductMode):
+        yield from observation.parameter_mode._product_parameters()
 
-    elif observation.parameter_mode == ParameterMode.Sequential:
-        yield from observation._sequential_parameters()
+    elif isinstance(observation.parameter_mode, SequentialMode):
+        yield from observation.parameter_mode._sequential_parameters()
 
-    elif observation.parameter_mode == ParameterMode.Custom:
-        yield from observation._custom_parameters()
+    elif isinstance(observation.parameter_mode, CustomMode):
+        yield from observation.parameter_mode._custom_parameters()
     else:
         raise NotImplementedError
 

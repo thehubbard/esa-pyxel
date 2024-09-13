@@ -29,7 +29,10 @@ class ParameterType(Enum):
 
 
 # TODO: Add unit tests
-def convert_values(values, parameter_type: ParameterType) -> Union[
+def convert_values(
+    values,
+    parameter_type: ParameterType,
+) -> Union[
     Literal["_"],
     Sequence[Literal["_"]],
     Sequence[Number],

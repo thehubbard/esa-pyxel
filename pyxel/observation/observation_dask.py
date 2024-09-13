@@ -5,21 +5,20 @@
 #  this file, may be copied, modified, propagated, or distributed except according to
 #  the terms contained in the file ‘LICENCE.txt’.
 
+"""Subpackage for running Observation mode with Dask enabled."""
+
 from collections.abc import Hashable, Mapping, Sequence
 from copy import deepcopy
 from dataclasses import dataclass
-from itertools import count
 from typing import TYPE_CHECKING, Any, Optional, Union
 
 import numpy as np
-from typing_extensions import Literal
 
 from pyxel.exposure import Readout, run_pipeline
-from pyxel.observation import ParameterMode, ParameterValues
+from pyxel.observation import CustomMode, ProductMode, SequentialMode
 from pyxel.pipelines import ResultId
 
 if TYPE_CHECKING:
-    import pandas as pd
     import xarray as xr
 
     # Import 'DataTree'
@@ -32,23 +31,61 @@ if TYPE_CHECKING:
 
 
 @dataclass
-class MetaDataVars:
+class VariableMetadata:
+    """Store metadata for a Xarray data variable.
+
+    Parameters
+    ----------
+    dims
+        The dimensions of the data variable.
+    attrs
+        The attributes associated with the data variable.
+    dtype
+        The data type of the data variable.
+    """
+
     dims: tuple[Hashable, ...]
     attrs: Mapping[str, Any]
     dtype: np.dtype
 
 
 @dataclass
-class MetaCoords:
+class CoordinateMetadata:
+    """Store metadata for a coordinate in an Xarray Dataset.
+
+    Parameters
+    ----------
+    data
+        The data associated with the coordinates
+    attrs
+        The attributes of the coordinates
+    """
+
     data: np.ndarray
     attrs: Mapping[str, Any]
 
 
 @dataclass
-class MetaData:
+class DatasetMetadata:
+    """Store metadata for a Xarray dataset.
+
+    It includes its dimensions, data variables, coordinates and attributes.
+
+    Parameters
+    ----------
+    dims
+        The dimension(s) of the dataset.
+    data_vars
+        Metadata for the data variables within the dataset.
+    coords
+        Metadata for the coordinates within the dataset.
+    attrs
+        Attributes associates with dataset.
+    """
+
     dims: tuple[Hashable, ...]
-    data_vars: Mapping[str, MetaDataVars]
-    coords: Mapping[Hashable, MetaCoords]
+    data_vars: Mapping[str, VariableMetadata]
+    coords: Mapping[Hashable, CoordinateMetadata]
     attrs: Mapping[Hashable, Any]
 
     def to_coords(self) -> Mapping[Hashable, "xr.DataArray"]:
@@ -57,7 +94,7 @@ class MetaData:
 
         dct: dict[Hashable, xr.DataArray] = {}
 
-        meta_coord: MetaCoords
+        meta_coord: CoordinateMetadata
         for coord_name, meta_coord in self.coords.items():
             dct[coord_name] = xr.DataArray(
                 meta_coord.data,
@@ -68,7 +105,7 @@ class MetaData:
         return dct
 
 
-def build_metadata(data_tree: "DataTree") -> Mapping[str, MetaData]:
+def build_metadata(data_tree: "DataTree") -> Mapping[str, DatasetMetadata]:
     metadata = {}
 
     all_paths: Sequence[str] = sorted(data_tree.groups)
@@ -78,10 +115,10 @@ def build_metadata(data_tree: "DataTree") -> Mapping[str, MetaData]:
 
         dims: tuple[Hashable, ...] = tuple(sub_data_tree.dims)
 
-        metadata[path] = MetaData(
+        metadata[path] = DatasetMetadata(
             dims=dims,
             data_vars={
-                key: MetaDataVars(
+                key: VariableMetadata(
                     dims=value.dims,
                     attrs=value.attrs,
                     dtype=value.dtype,
@@ -89,7 +126,7 @@ def build_metadata(data_tree: "DataTree") -> Mapping[str, MetaData]:
                 for key, value in sub_data_tree.data_vars.items()
             },
             coords={
-                key: MetaCoords(attrs=value.attrs, data=value.data)
+                key: CoordinateMetadata(attrs=value.attrs, data=value.data)
                 for key, value in sub_data_tree.coords.items()
             },
             attrs=sub_data_tree.attrs,
@@ -99,41 +136,45 @@ def build_metadata(data_tree: "DataTree") -> Mapping[str, MetaData]:
 
 
 def _get_output_core_dimensions(
-    all_metadata: Mapping[str, MetaData],
+    all_metadata: Mapping[str, DatasetMetadata],
 ) -> Sequence[tuple]:
     lst = []
 
-    metadata: MetaData
+    metadata: DatasetMetadata
     for metadata in all_metadata.values():
         if not metadata.data_vars:
             continue
 
-        data_variable: MetaDataVars
+        data_variable: VariableMetadata
         for data_variable in metadata.data_vars.values():
             lst.append(data_variable.dims)  # noqa: PERF401
 
     return lst
 
 
-def _get_output_dtypes(all_metadata: Mapping[str, MetaData]) -> Sequence[np.dtype]:
+def _get_output_dtypes(
+    all_metadata: Mapping[str, DatasetMetadata],
+) -> Sequence[np.dtype]:
     lst = []
 
-    metadata: MetaData
+    metadata: DatasetMetadata
     for metadata in all_metadata.values():
         if not metadata.data_vars:
             continue
 
-        data_variable: MetaDataVars
+        data_variable: VariableMetadata
         for data_variable in metadata.data_vars.values():
             lst.append(data_variable.dtype)  # noqa: PERF401
 
     return lst
 
 
-def _get_output_sizes(all_metadata: Mapping[str, MetaData]) -> Mapping[Hashable, int]:
+def _get_output_sizes(
+    all_metadata: Mapping[str, DatasetMetadata],
+) -> Mapping[Hashable, int]:
     result: dict[Hashable, int] = {}
 
-    metadata: MetaData
+    metadata: DatasetMetadata
     for metadata in all_metadata.values():
         if not metadata.data_vars:
             continue
@@ -191,7 +232,7 @@ def _build_metadata(
     readout: Readout,
     result_type: ResultId,
     pipeline_seed: Optional[int],
-) -> Mapping[str, MetaData]:
+) -> Mapping[str, DatasetMetadata]:
     data_tree: "DataTree" = _apply_exposure_from_tuple(
         params_tuple=params_tuple,
         dimension_names=dimension_names,
@@ -210,7 +251,7 @@ def _apply_exposure_tuple_to_array(
     # idx_1d: np.ndarray,
     # run_index: int,
     dimension_names: Mapping[str, str],
-    all_metadata: Mapping[str, MetaData],
+    all_metadata: Mapping[str, DatasetMetadata],
     processor: "Processor",
     # types: Mapping[str, ParameterType],
     with_inherited_coords: bool,
@@ -231,7 +272,7 @@ def _apply_exposure_tuple_to_array(
     # Convert the result from 'DataTree' to a tuple of numpy array(s)
     output_data: list[np.ndarray] = []
 
-    metadata: MetaData
+    metadata: DatasetMetadata
     for path, metadata in all_metadata.items():
         for key in metadata.data_vars:
             output_data.append(data_tree[f"{path}/{key}"].to_numpy())  # noqa: PERF401
@@ -239,165 +280,10 @@ def _apply_exposure_tuple_to_array(
     return tuple(output_data)
 
 
-def convert_custom_data(
-    custom_data: "pd.DataFrame",
-    params_custom_list: Sequence,
-    params_names: Sequence[str],
-) -> "pd.DataFrame":
-    """Transform data for custom mode into a formatted DataFrame.
-
-    Parameters
-    ----------
-    custom_data : DataFrame
-        Input data containing columns to be mapped to parameters. Each column represents a
-        potential parameter or part of a parameter group.
-    params_custom_list
-    params_names : Sequence
-        A list of strings that represent the names of the parameters to be assigned to the
-        columns of the resulting DataFrame. Each name corresponds to an entry in `params_custom_list`.
-    Examples
-    --------
-    >>> custom_data = pd.DataFrame(
-    ...     {
-    ...         0: {0: 0.3, 1: 0.3},
-    ...         1: {0: 3, 1: 5},
-    ...         2: {0: 5, 1: 7},
-    ...     }
-    ... )
-    >>> custom_data
-         0  1  2
-    0  0.3  3  5
-    1  0.3  5  7
-
-    >>> params_custom_list = [["_"], ["_", "_"]]
-    >>> params_names = ["beta", "trap_densities"]
-
-    >>> convert_custom_data(
-    ...     custom_data=custom_data,
-    ...     params_custom_list=params_custom_list,
-    ...     params_names=params_names,
-    ... )
-       beta trap_densities
-    0   0.3         (3, 5)
-    1   0.3         (5, 7)
-
-    Returns
-    -------
-    DataFrame
-
-    Notes
-    -----
-    - The length of `params_custom_list` should match the length of `params_names`.
-    - If an entry in `params_custom_list` contains multiple placeholders (e.g., `["_", "_"]`),
-      the corresponding columns in `custom_data` will be combined into tuples in the resulting DataFrame.
-    """
-
-    # Late import to speedup start-up time
-    import pandas as pd
-
-    new_custom_data = pd.DataFrame()
-    num_columns = len(custom_data.columns)
-
-    idx = 0
-    params: Sequence[Literal["_"]]
-    for name, params in zip(params_names, params_custom_list):
-        if len(params) == 1:
-            assert idx < num_columns
-            new_custom_data[name] = custom_data[idx]
-            idx += 1
-
-        else:
-            assert (idx + len(params)) <= num_columns
-            columns = [cnt for cnt, _ in zip(count(idx), params)]
-            new_values: list[list] = custom_data[columns].values.tolist()
-            new_values_tuples: Sequence[tuple] = [tuple(el) for el in new_values]
-
-            new_custom_data[name] = new_values_tuples
-
-            idx += len(params)
-
-    return new_custom_data
-
-
-# TODO: Add unit tests
-def create_params(
-    dim_names: Mapping[str, str],
-    parameter_mode: ParameterMode,
-    enabled_steps: Sequence[ParameterValues],
-    custom_data: Optional["xr.DataArray"],
-) -> "xr.DataArray":
-    # Late import to speedup start-up time
-    import pandas as pd
-
-    all_steps: Mapping[str, Sequence[Any]] = {
-        step.key: list(step) for step in enabled_steps
-    }
-    params_names = [dim_names[key] for key in all_steps]
-
-    if parameter_mode is ParameterMode.Product:
-        params_indexes: pd.MultiIndex = pd.MultiIndex.from_product(
-            list(all_steps.values()),
-            names=params_names,
-        )
-
-        # Create a Pandas MultiIndex
-        params_serie = pd.Series(list(params_indexes), index=params_indexes)
-        params_dataarray: "xr.DataArray" = params_serie.to_xarray()
-        return params_dataarray
-
-    elif parameter_mode is ParameterMode.Sequential:
-        params_sequential_list = list(zip(*all_steps.values()))
-        params_sequential_with_index = [
-            (idx, *el) for idx, el in zip(count(), params_sequential_list)
-        ]
-
-        params_sequential_dataframe = pd.DataFrame(
-            params_sequential_with_index,
-            columns=["id", *params_names],
-        )
-        params_sequential_dataframe["custom_values"] = params_sequential_list
-
-        params_sequential_data_array: "xr.DataArray" = (
-            params_sequential_dataframe.set_index("id")
-            .to_xarray()
-            .set_coords([dim_names[key] for key in all_steps])["custom_values"]
-        )
-
-        return params_sequential_data_array
-
-    elif parameter_mode is ParameterMode.Custom:
-        if custom_data is None:
-            raise NotImplementedError
-
-        params_custom_list = list(all_steps.values())
-        custom_data_df: pd.DataFrame = convert_custom_data(
-            custom_data=custom_data,
-            params_custom_list=params_custom_list,
-            params_names=params_names,
-        )
-
-        new_values: list[list] = custom_data_df.values.tolist()
-        new_values_tuple: list[tuple] = [tuple(el) for el in new_values]
-
-        custom_data_df["custom_values"] = new_values_tuple
-        params_custom_data_array: "xr.DataArray" = (
-            custom_data_df.rename_axis(index="id")
-            .to_xarray()
-            .set_coords(params_names)["custom_values"]
-        )
-
-        return params_custom_data_array
-
-    else:
-        raise NotImplementedError
-
-
 def build_datatree(
     dim_names: Mapping[str, str],
-    parameter_mode: ParameterMode,
-    enabled_steps: Sequence[ParameterValues],
+    parameter_mode: Union[ProductMode, SequentialMode, CustomMode],
     processor: "Processor",
-    custom_data: Optional["pd.DataFrame"],
     with_inherited_coords: bool,
     readout: Readout,
     result_type: ResultId,
@@ -413,12 +299,7 @@ def build_datatree(
         from datatree import DataTree  # type: ignore[assignment]
 
     # Get parameters as a DataArray
-    params_dataarray: xr.DataArray = create_params(
-        dim_names=dim_names,
-        parameter_mode=parameter_mode,
-        enabled_steps=enabled_steps,
-        custom_data=custom_data,
-    )
+    params_dataarray: xr.DataArray = parameter_mode.create_params(dim_names=dim_names)
 
     # Get the first parameter
     first_param: tuple = (
@@ -429,7 +310,7 @@ def build_datatree(
     )
 
     # Extract metadata
-    all_metadata: Mapping[str, MetaData] = _build_metadata(
+    all_metadata: Mapping[str, DatasetMetadata] = _build_metadata(
         params_tuple=first_param,
         dimension_names=dim_names,
         processor=processor,
@@ -476,7 +357,7 @@ def build_datatree(
     idx = 0
 
     path: str
-    partial_metadata: MetaData
+    partial_metadata: DatasetMetadata
     for path, partial_metadata in all_metadata.items():
         if not partial_metadata.data_vars:
             # TODO: Use this ?
@@ -495,7 +376,7 @@ def build_datatree(
             data_set = xr.Dataset(attrs=partial_metadata.attrs)
 
             var_name: str
-            metadata_vars: MetaDataVars
+            metadata_vars: VariableMetadata
             for var_name, metadata_vars in partial_metadata.data_vars.items():
                 data_set[var_name] = (
                     dask_dataarrays[idx]

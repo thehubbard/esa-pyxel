@@ -7,15 +7,11 @@
 
 """Parametric mode class and helper functions."""
 
-import itertools
 import sys
 from collections import Counter
 from collections.abc import Iterable, Iterator, Mapping, Sequence
-from dataclasses import dataclass
-from itertools import chain
-from numbers import Number
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Callable, Literal, Optional, Union
+from typing import TYPE_CHECKING, Callable, Literal, Optional, Union
 
 import numpy as np
 
@@ -23,10 +19,14 @@ import pyxel
 from pyxel import options_wrapper
 from pyxel.exposure import Readout, run_pipeline
 from pyxel.observation import (
-    ParameterMode,
+    CustomMode,
+    CustomParameterEntry,
+    ParameterEntry,
     ParametersType,
     ParameterType,
     ParameterValues,
+    ProductMode,
+    SequentialMode,
     _get_short_name_with_model,
     build_datatree,
     create_new_processor,
@@ -35,8 +35,6 @@ from pyxel.observation import (
 from pyxel.pipelines import ResultId, get_result_id
 
 if TYPE_CHECKING:
-    import pandas as pd
-
     # Import 'DataTree'
     try:
         from xarray.core.datatree import DataTree
@@ -45,26 +43,6 @@ if TYPE_CHECKING:
 
     from pyxel.outputs import ObservationOutputs
     from pyxel.pipelines import Processor
-
-
-@dataclass(frozen=True)
-class ParameterItem:
-    """Internal Parameter Item."""
-
-    # TODO: Merge 'index' and 'parameters'
-    index: tuple[int, ...]
-    parameters: ParametersType
-    run_index: int
-
-
-@dataclass(frozen=True)
-class CustomParameterItem:
-    """Internal Parameter Item."""
-
-    # TODO: Merge 'index' and 'parameters'
-    index: int
-    parameters: ParametersType
-    run_index: int
 
 
 # TODO: Add unit tests
@@ -142,33 +120,44 @@ class Observation:
     ):
         self.outputs: Optional["ObservationOutputs"] = outputs
         self.readout: Readout = readout or Readout()
-        self.parameter_mode: ParameterMode = ParameterMode(mode)
+
+        parameter_mode: Union[ProductMode, SequentialMode, CustomMode]
+        if mode == "product":
+            parameter_mode = ProductMode(parameters)
+        elif mode == "sequential":
+            parameter_mode = ProductMode(parameters)
+        elif mode == "custom":
+            custom_columns: Optional[slice] = (
+                slice(*column_range) if column_range else None
+            )
+            assert from_file is not None
+            parameter_mode = CustomMode.build(
+                parameters,
+                custom_file=from_file,
+                custom_columns=custom_columns,
+            )
+        else:
+            raise NotImplementedError
+
+        self.parameter_mode: Union[ProductMode, SequentialMode, CustomMode] = (
+            parameter_mode
+        )
+
         self.working_directory: Optional[Path] = (
             Path(working_directory) if working_directory else None
         )
-        self._parameters: Sequence[ParameterValues] = parameters
 
         # Set 'working_directory'
         pyxel.set_options(working_directory=self.working_directory)
-
-        # Specific to mode 'custom'
-        self._custom_file: Optional[str] = from_file
-        self._custom_data: Optional["pd.DataFrame"] = None
-        self._custom_columns: Optional[slice] = (
-            slice(*column_range) if column_range else None
-        )
 
         self.with_dask = with_dask
         self.parameter_types: dict[str, ParameterType] = {}
         self._result_type: ResultId = get_result_id(result_type)
         self._pipeline_seed = pipeline_seed
 
-        if self.parameter_mode == ParameterMode.Custom:
-            self._load_custom_parameters()
-
     def __repr__(self):
         cls_name: str = self.__class__.__name__
-        return f"{cls_name}<mode={self.parameter_mode!s}, num_parameters={len(self._parameters)}>"
+        return f"{cls_name}<mode={self.parameter_mode!s}, num_parameters={len(self.parameter_mode.parameters)}>"
 
     @property
     def result_type(self) -> ResultId:
@@ -190,198 +179,9 @@ class Observation:
         """TBW."""
         self._pipeline_seed = value
 
-    @property
-    def enabled_steps(self) -> Sequence[ParameterValues]:
-        """Return a list of enabled ParameterValues."""
-        out = [step for step in self._parameters if step.enabled]
-        return out
-
-    # TODO: is self._custom_data really needed?
-    def _load_custom_parameters(self) -> None:
-        """Load custom parameters from file."""
-        from pyxel import load_table
-
-        if self._custom_file is None:
-            raise ValueError("File for custom parametric mode not specified!")
-
-        # Read the file without forcing its data type
-        all_data: "pd.DataFrame" = load_table(self._custom_file, dtype=None)
-        filtered_data: "pd.DataFrame" = all_data.loc[:, self._custom_columns]
-
-        # Sanity check
-        num_columns = len(filtered_data.columns)
-        all_values = [list(el.values) for el in self.enabled_steps]
-
-        counter = Counter(chain.from_iterable(all_values))
-        if "_" not in counter:
-            raise ValueError("Missing at parameter '_'")
-
-        num_parameters: int = counter["_"]
-        if num_parameters != num_columns:
-            raise ValueError(
-                f"Custom data file has {num_columns} column(s). "
-                f"{num_parameters} is/are expected ! "
-            )
-
-        self._custom_data = filtered_data
-
-    def _custom_parameters(
-        self,
-    ) -> Iterator[tuple[int, ParametersType]]:
-        """Generate custom mode parameters based on input file.
-
-        Yields
-        ------
-        index: int
-        parameter_dict: dict
-        """
-        # Late import to speedup start-up time
-        import pandas as pd
-
-        if not isinstance(self._custom_data, pd.DataFrame):
-            raise TypeError("Custom parameters not loaded from file.")
-
-        index: int
-        row_serie: pd.Series
-        for index, row_serie in self._custom_data.iterrows():
-            row: Sequence[Union[Number, str]] = row_serie.to_list()
-
-            i: int = 0
-            parameter_dict: ParametersType = {}
-            for step in self.enabled_steps:
-                key: str = step.key
-
-                # TODO: this is confusing code. Fix this.
-                #       Furthermore 'step.values' should be a `List[int, float]` and not a `str`
-                if step.values == "_":
-                    parameter_dict[key] = row[i]
-
-                elif isinstance(step.values, Sequence):
-                    values: np.ndarray = np.array(step.values)
-                    values_flattened = values.flatten()
-
-                    # TODO: find a way to remove the ignore
-                    if not all(x == "_" for x in values_flattened):
-                        raise ValueError(
-                            'Only "_" characters (or a list of them) should be used to '
-                            "indicate parameters updated from file in custom mode"
-                        )
-
-                    value: Sequence[Union[Number, str]] = row[
-                        i : i + len(values_flattened)
-                    ]
-                    assert len(value) == len(step.values)
-
-                    parameter_dict[key] = value
-
-                else:
-                    raise NotImplementedError
-
-                i += len(step.values)
-
-            yield index, parameter_dict
-
-    def _sequential_parameters(self) -> Iterator[tuple[int, ParametersType]]:
-        """Generate sequential mode parameters.
-
-        Yields
-        ------
-        index: int
-        parameter_dict: dict
-        """
-        index = 0
-
-        step: ParameterValues
-        for step in self.enabled_steps:
-            key: str = step.key
-            for value in step:
-                parameter_dict: ParametersType = {key: value}
-                yield index, parameter_dict
-
-                index += 1
-
-    def _product_indices(self) -> Iterator[tuple]:
-        """Return an iterator of product parameter indices.
-
-        Returns
-        -------
-        iterator
-        """
-        step_ranges = [range(len(step)) for step in self.enabled_steps]
-        out = itertools.product(*step_ranges)
-        return out
-
-    def _product_parameters(
-        self,
-    ) -> Iterator[tuple[tuple, dict[str, Any]]]:
-        """Generate product mode parameters.
-
-        Yields
-        ------
-        indices: tuple
-        parameter_dict: dict
-        """
-        all_steps = self.enabled_steps
-        keys = [step.key for step in self.enabled_steps]
-        for indices, params in zip(
-            self._product_indices(), itertools.product(*all_steps)
-        ):
-            parameter_dict = {}
-            for key, value in zip(keys, params):
-                parameter_dict.update({key: value})
-            yield indices, parameter_dict
-
-    def _get_parameters_item(
-        self, processor: "Processor"
-    ) -> Sequence[Union[ParameterItem, CustomParameterItem]]:
-        # Late import to speedup start-up time
-        import toolz
-
-        if self.parameter_mode == ParameterMode.Product:
-            params_it: Iterator = self._product_parameters()
-
-            return [
-                ParameterItem(index=index, parameters=parameter_dict, run_index=n)
-                for n, (index, parameter_dict) in enumerate(params_it)
-            ]
-
-        elif self.parameter_mode == ParameterMode.Sequential:
-            # Get default values for all unique parameters
-            params_all_keys: Sequence[str] = [
-                param_value.key for param_value in self.enabled_steps
-            ]
-            params_unique_keys: Iterator[str] = toolz.unique(params_all_keys)
-
-            params_defaults: ParametersType = {
-                key: processor.get(key) for key in params_unique_keys
-            }
-
-            params_it = self._sequential_parameters()
-
-            return [
-                CustomParameterItem(
-                    index=index,
-                    # parameters=params_defaults | parameter_dict,
-                    parameters={**params_defaults, **parameter_dict},
-                    run_index=n,
-                )
-                for n, (index, parameter_dict) in enumerate(params_it)
-            ]
-
-        elif self.parameter_mode == ParameterMode.Custom:
-            params_it = self._custom_parameters()
-
-            return [
-                CustomParameterItem(index=index, parameters=parameter_dict, run_index=n)
-                for n, (index, parameter_dict) in enumerate(params_it)
-            ]
-
-        else:
-            raise ValueError("Parametric mode not specified.")
-
     def _get_parameter_types(self) -> Mapping[str, ParameterType]:
         """Check for each step if parameters can be used as dataset coordinates (1D, simple) or not (multi)."""
-        for step in self.enabled_steps:
+        for step in self.parameter_mode.enabled_steps:
             self.parameter_types.update({step.key: step.type})
         return self.parameter_types
 
@@ -400,7 +200,7 @@ class Observation:
             If a model referenced in the configuration has not been enabled.
         """
         step: ParameterValues
-        for step in self.enabled_steps:
+        for step in self.parameter_mode.enabled_steps:
             key: str = step.key
             if not processor.has(key):
                 raise KeyError(f"Missing parameter: {key!r} in steps.")
@@ -419,9 +219,8 @@ class Observation:
                         " configuration has not been enabled in yaml config!"
                     )
 
-            if (
-                any(x == "_" for x in step.values[:])
-                and self.parameter_mode != ParameterMode.Custom
+            if any(x == "_" for x in step.values[:]) and not isinstance(
+                self.parameter_mode, CustomMode
             ):
                 raise ValueError(
                     "Either define 'custom' as parametric mode or "
@@ -437,21 +236,17 @@ class Observation:
         # validation
         self.validate_steps(processor)
 
-        types: Mapping[str, ParameterType] = self._get_parameter_types()
-        dim_names: Mapping[str, str] = _get_short_dimension_names_new(types)
-
-        parameters: Sequence[Union[ParameterItem, CustomParameterItem]] = (
-            self._get_parameters_item(processor=processor)
-        )
+        if isinstance(self.parameter_mode, ProductMode):
+            parameters = self.parameter_mode.get_parameters_item()
+        else:
+            parameters = self.parameter_mode.get_parameters_item(processor=processor)
 
         if self.with_dask:
             datatree_bag: db.Bag = db.from_sequence(parameters).map(
                 options_wrapper(working_directory=self.working_directory)(
                     self._apply_exposure_pipeline_without_datatree
                 ),
-                dimension_names=dim_names,
                 processor=processor,
-                types=types,
             )
 
             _ = datatree_bag.compute()
@@ -459,9 +254,7 @@ class Observation:
             for el in tqdm(parameters):
                 self._apply_exposure_pipeline_without_datatree(
                     el,
-                    dimension_names=dim_names,
                     processor=processor,
-                    types=types,
                 )
 
     def _run_observation_datatree(
@@ -484,9 +277,7 @@ class Observation:
             final_datatree = build_datatree(
                 dim_names=dim_names,
                 parameter_mode=self.parameter_mode,
-                enabled_steps=self.enabled_steps,
                 processor=processor,
-                custom_data=self._custom_data,
                 with_inherited_coords=with_inherited_coords,
                 readout=self.readout,
                 result_type=self.result_type,
@@ -496,9 +287,12 @@ class Observation:
         else:
             # TODO: Create new class for 'Sequence[Union[ParameterItem, CustomParameterItem]]'
             # Fetch the observation parameters to be passed to the pipeline
-            parameters: Sequence[Union[ParameterItem, CustomParameterItem]] = (
-                self._get_parameters_item(processor=processor)
-            )
+            if isinstance(self.parameter_mode, ProductMode):
+                parameters = self.parameter_mode.get_parameters_item()
+            else:
+                parameters = self.parameter_mode.get_parameters_item(
+                    processor=processor
+                )
 
             # If Dask is not enabled, process each parameter sequentially
             datatree_list: Iterator["DataTree"] = (
@@ -516,7 +310,7 @@ class Observation:
             final_datatree = merge(*datatree_list)
 
         # Assign the running mode to the final DataTree attributes
-        parameter_name: str = self.parameter_mode.name
+        parameter_name: str = str(self.parameter_mode.__class__)
         final_datatree.attrs["running mode"] = f"Observation - {parameter_name}"
 
         # See issue #276. TODO: Is this still valid ?
@@ -527,10 +321,8 @@ class Observation:
 
     def _apply_exposure_pipeline_without_datatree(
         self,
-        param_item: Union[ParameterItem, CustomParameterItem],
-        dimension_names: Mapping[str, str],
+        param_item: Union[ParameterEntry, CustomParameterEntry],
         processor: "Processor",
-        types: Mapping[str, ParameterType],
     ) -> None:
         new_processor = create_new_processor(
             processor=processor,
@@ -555,7 +347,7 @@ class Observation:
 
     def _apply_exposure_pipeline(
         self,
-        param_item: Union[ParameterItem, CustomParameterItem],
+        param_item: Union[ParameterEntry, CustomParameterEntry],
         dimension_names: Mapping[str, str],
         processor: "Processor",
         types: Mapping[str, ParameterType],
@@ -604,7 +396,7 @@ class Observation:
 
         else:
             # Can also be done outside dask in a loop
-            if isinstance(param_item, ParameterItem):
+            if isinstance(param_item, ParameterEntry):
                 final_data_tree = _add_product_parameters(
                     data_tree=data_tree,
                     parameter_dict=param_item.parameters,
