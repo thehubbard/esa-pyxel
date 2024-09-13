@@ -18,6 +18,7 @@ from pyxel import Configuration
 from pyxel.detectors import CCD
 from pyxel.exposure import _run_exposure_pipeline_deprecated
 from pyxel.observation import Observation, ParameterMode
+from pyxel.observation.deprecated import _processors_it
 from pyxel.pipelines import DetectionPipeline, Processor
 from pyxel.pipelines.processor import _get_obj_att
 
@@ -68,7 +69,7 @@ def get_value(obj: Any, key: str) -> Any:
 def debug_parameters(observation: Observation, processor: Processor) -> list:
     """List the parameters using processor parameters in processor generator."""
     result = []
-    processor_generator = observation._processors_it(processor=processor)
+    processor_generator = _processors_it(observation, processor=processor)
     for i, (proc, _, _) in enumerate(processor_generator):
         values = []
         for step in observation.enabled_steps:
@@ -117,7 +118,7 @@ def test_pipeline_parametric_without_init_photon(mode: ParameterMode, expected):
     detector.pixel.array = np.zeros(detector.geometry.shape, dtype=float)
     detector.signal.array = np.zeros(detector.geometry.shape, dtype=float)
 
-    processor_generator = observation._processors_it(processor=processor)
+    processor_generator = _processors_it(observation, processor=processor)
     assert isinstance(processor_generator, abc.Generator)
 
     for proc, _, _ in processor_generator:

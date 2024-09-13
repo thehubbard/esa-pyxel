@@ -486,6 +486,7 @@ class Observation:
                 parameter_mode=self.parameter_mode,
                 enabled_steps=self.enabled_steps,
                 processor=processor,
+                custom_data=self._custom_data,
                 with_inherited_coords=with_inherited_coords,
                 readout=self.readout,
                 result_type=self.result_type,

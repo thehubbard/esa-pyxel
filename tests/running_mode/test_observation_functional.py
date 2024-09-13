@@ -15,7 +15,8 @@ import xarray as xr
 import pyxel
 from pyxel.configuration import Configuration
 from pyxel.detectors import CCD
-from pyxel.observation import Observation, ObservationResult, ParameterMode
+from pyxel.observation import Observation, ParameterMode
+from pyxel.observation.deprecated import ObservationResult
 from pyxel.pipelines import DetectionPipeline
 
 dask.config.set(scheduler="single-threaded")

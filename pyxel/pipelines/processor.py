@@ -243,7 +243,7 @@ class Processor:
         if convert_value:  # and value:
             # TODO: Refactor this
             # convert the string based value to a number
-            if isinstance(value, list):
+            if isinstance(value, Sequence) and not isinstance(value, str):
                 new_value_lst: list[Union[str, Number, np.ndarray]] = []
 
                 val: Union[str, Number, np.ndarray]
@@ -255,10 +255,12 @@ class Processor:
                     str, Number, np.ndarray, Sequence[Union[str, Number, np.ndarray]]
                 ] = new_value_lst
 
-            elif isinstance(value, (str, Number, np.ndarray)):
+            elif isinstance(value, str):
                 converted_value: Union[str, Number, np.ndarray] = eval_entry(value)
-
                 new_value = converted_value
+
+            elif isinstance(value, (Number, np.ndarray)):
+                new_value = value
 
             else:
                 raise TypeError

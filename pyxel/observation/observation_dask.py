@@ -8,15 +8,18 @@
 from collections.abc import Hashable, Mapping, Sequence
 from copy import deepcopy
 from dataclasses import dataclass
+from itertools import count
 from typing import TYPE_CHECKING, Any, Optional, Union
 
 import numpy as np
+from typing_extensions import Literal
 
 from pyxel.exposure import Readout, run_pipeline
 from pyxel.observation import ParameterMode, ParameterValues
 from pyxel.pipelines import ResultId
 
 if TYPE_CHECKING:
+    import pandas as pd
     import xarray as xr
 
     # Import 'DataTree'
@@ -162,6 +165,9 @@ def _apply_exposure_from_tuple(
     if with_inherited_coords is False:
         raise NotImplementedError
 
+    if len(dimension_names) != len(params_tuple):
+        raise NotImplementedError
+
     dct = dict(zip(dimension_names, params_tuple))
     new_processor: Processor = processor.replace(dct)
 
@@ -233,27 +239,154 @@ def _apply_exposure_tuple_to_array(
     return tuple(output_data)
 
 
+def convert_custom_data(
+    custom_data: "pd.DataFrame",
+    params_custom_list: Sequence,
+    params_names: Sequence[str],
+) -> "pd.DataFrame":
+    """Transform data for custom mode into a formatted DataFrame.
+
+    Parameters
+    ----------
+    custom_data : DataFrame
+        Input data containing columns to be mapped to parameters. Each column represents a
+        potential parameter or part of a parameter group.
+    params_custom_list
+    params_names : Sequence
+        A list of strings that represent the names of the parameters to be assigned to the
+        columns of the resulting DataFrame. Each name corresponds to an entry in `params_custom_list`.
+    Examples
+    --------
+    >>> custom_data = pd.DataFrame(
+    ...     {
+    ...         0: {0: 0.3, 1: 0.3},
+    ...         1: {0: 3, 1: 5},
+    ...         2: {0: 5, 1: 7},
+    ...     }
+    ... )
+    >>> custom_data
+         0  1  2
+    0  0.3  3  5
+    1  0.3  5  7
+
+    >>> params_custom_list = [["_"], ["_", "_"]]
+    >>> params_names = ["beta", "trap_densities"]
+
+    >>> convert_custom_data(
+    ...     custom_data=custom_data,
+    ...     params_custom_list=params_custom_list,
+    ...     params_names=params_names,
+    ... )
+       beta trap_densities
+    0   0.3         (3, 5)
+    1   0.3         (5, 7)
+
+    Returns
+    -------
+    DataFrame
+
+    Notes
+    -----
+    - The length of `params_custom_list` should match the length of `params_names`.
+    - If an entry in `params_custom_list` contains multiple placeholders (e.g., `["_", "_"]`),
+      the corresponding columns in `custom_data` will be combined into tuples in the resulting DataFrame.
+    """
+
+    # Late import to speedup start-up time
+    import pandas as pd
+
+    new_custom_data = pd.DataFrame()
+    num_columns = len(custom_data.columns)
+
+    idx = 0
+    params: Sequence[Literal["_"]]
+    for name, params in zip(params_names, params_custom_list):
+        if len(params) == 1:
+            assert idx < num_columns
+            new_custom_data[name] = custom_data[idx]
+            idx += 1
+
+        else:
+            assert (idx + len(params)) <= num_columns
+            columns = [cnt for cnt, _ in zip(count(idx), params)]
+            new_values: list[list] = custom_data[columns].values.tolist()
+            new_values_tuples: Sequence[tuple] = [tuple(el) for el in new_values]
+
+            new_custom_data[name] = new_values_tuples
+
+            idx += len(params)
+
+    return new_custom_data
+
+
+# TODO: Add unit tests
 def create_params(
     dim_names: Mapping[str, str],
     parameter_mode: ParameterMode,
     enabled_steps: Sequence[ParameterValues],
+    custom_data: Optional["xr.DataArray"],
 ) -> "xr.DataArray":
     # Late import to speedup start-up time
     import pandas as pd
 
+    all_steps: Mapping[str, Sequence[Any]] = {
+        step.key: list(step) for step in enabled_steps
+    }
+    params_names = [dim_names[key] for key in all_steps]
+
     if parameter_mode is ParameterMode.Product:
-        all_steps: Mapping[str, Sequence[Any]] = {
-            step.key: step.values for step in enabled_steps
-        }
         params_indexes: pd.MultiIndex = pd.MultiIndex.from_product(
-            all_steps.values(),
-            names=[dim_names[key] for key in all_steps],
+            list(all_steps.values()),
+            names=params_names,
         )
 
         # Create a Pandas MultiIndex
         params_serie = pd.Series(list(params_indexes), index=params_indexes)
         params_dataarray: "xr.DataArray" = params_serie.to_xarray()
         return params_dataarray
+
+    elif parameter_mode is ParameterMode.Sequential:
+        params_sequential_list = list(zip(*all_steps.values()))
+        params_sequential_with_index = [
+            (idx, *el) for idx, el in zip(count(), params_sequential_list)
+        ]
+
+        params_sequential_dataframe = pd.DataFrame(
+            params_sequential_with_index,
+            columns=["id", *params_names],
+        )
+        params_sequential_dataframe["custom_values"] = params_sequential_list
+
+        params_sequential_data_array: "xr.DataArray" = (
+            params_sequential_dataframe.set_index("id")
+            .to_xarray()
+            .set_coords([dim_names[key] for key in all_steps])["custom_values"]
+        )
+
+        return params_sequential_data_array
+
+    elif parameter_mode is ParameterMode.Custom:
+        if custom_data is None:
+            raise NotImplementedError
+
+        params_custom_list = list(all_steps.values())
+        custom_data_df: pd.DataFrame = convert_custom_data(
+            custom_data=custom_data,
+            params_custom_list=params_custom_list,
+            params_names=params_names,
+        )
+
+        new_values: list[list] = custom_data_df.values.tolist()
+        new_values_tuple: list[tuple] = [tuple(el) for el in new_values]
+
+        custom_data_df["custom_values"] = new_values_tuple
+        params_custom_data_array: "xr.DataArray" = (
+            custom_data_df.rename_axis(index="id")
+            .to_xarray()
+            .set_coords(params_names)["custom_values"]
+        )
+
+        return params_custom_data_array
 
     else:
         raise NotImplementedError
@@ -264,6 +397,7 @@ def build_datatree(
     parameter_mode: ParameterMode,
     enabled_steps: Sequence[ParameterValues],
     processor: "Processor",
+    custom_data: Optional["pd.DataFrame"],
     with_inherited_coords: bool,
     readout: Readout,
     result_type: ResultId,
@@ -283,6 +417,7 @@ def build_datatree(
         dim_names=dim_names,
         parameter_mode=parameter_mode,
         enabled_steps=enabled_steps,
+        custom_data=custom_data,
     )
 
     # Get the first parameter
