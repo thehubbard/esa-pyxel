@@ -14,6 +14,8 @@ Pyxel doesn't use SemVer anymore, since most minor releases have at least minor 
 This release brings a number of bugfixes and improvements.
 
 ### Core
+* Improved Observation mode with `dask` enabled.
+  (See [!951](https://gitlab.com/esa/pyxel/-/merge_requests/951)).
 
 ### Documentation
 
