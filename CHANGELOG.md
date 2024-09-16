@@ -20,7 +20,8 @@ This release brings a number of bugfixes and improvements.
 ### Models
 
 ### Others
-
+* Apply `ruff format` on the source code.
+  (See [!950](https://gitlab.com/esa/pyxel/-/merge_requests/950)).
 
 
 ## 2.5.1 / 2024-09-12

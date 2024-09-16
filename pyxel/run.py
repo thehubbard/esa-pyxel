@@ -6,6 +6,7 @@
 #  the terms contained in the file ‘LICENCE.txt’.
 
 """CLI to run Pyxel."""
+
 import logging
 import platform
 import sys

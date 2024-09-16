@@ -328,3 +328,6 @@ convention = "numpy"
 
 [tool.ruff.lint.mccabe]
 max-complexity = 14
+
+[tool.ruff.format]
+exclude = ["pyxel/models/phasing/mkid_models/*"]

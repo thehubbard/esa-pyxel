@@ -9,6 +9,7 @@
 
 https://esa.github.io/pagmo2/index.html
 """
+
 import copy
 import logging
 import math
