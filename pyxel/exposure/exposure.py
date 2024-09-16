@@ -30,6 +30,7 @@ if TYPE_CHECKING:
     from pyxel.exposure import Readout
     from pyxel.outputs import CalibrationOutputs, ExposureOutputs, ObservationOutputs
 
+    # Import 'DataTree'
     try:
         from xarray.core.datatree import DataTree
     except ImportError:
