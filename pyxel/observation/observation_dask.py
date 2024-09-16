@@ -193,7 +193,7 @@ def _get_output_sizes(
     return result
 
 
-def _apply_exposure_from_tuple(
+def _run_pipelines_array_to_datatree(
     params_tuple: tuple,
     dimension_names: Mapping[str, str],
     processor: "Processor",
@@ -233,7 +233,7 @@ def _build_metadata(
     result_type: ResultId,
     pipeline_seed: Optional[int],
 ) -> Mapping[str, DatasetMetadata]:
-    data_tree: "DataTree" = _apply_exposure_from_tuple(
+    data_tree: "DataTree" = _run_pipelines_array_to_datatree(
         params_tuple=params_tuple,
         dimension_names=dimension_names,
         processor=processor,
@@ -246,20 +246,18 @@ def _build_metadata(
     return build_metadata(data_tree)
 
 
-def _apply_exposure_tuple_to_array(
+def _run_pipelines_tuple_to_array(
     params_tuple: tuple,
-    # idx_1d: np.ndarray,
-    # run_index: int,
     dimension_names: Mapping[str, str],
     all_metadata: Mapping[str, DatasetMetadata],
     processor: "Processor",
-    # types: Mapping[str, ParameterType],
     with_inherited_coords: bool,
     readout: Readout,
     result_type: ResultId,
     pipeline_seed: Optional[int],
 ) -> tuple[np.ndarray, ...]:
-    data_tree: "DataTree" = _apply_exposure_from_tuple(
+
+    data_tree: "DataTree" = _run_pipelines_array_to_datatree(
         params_tuple=params_tuple,
         dimension_names=dimension_names,
         processor=processor,
@@ -280,7 +278,7 @@ def _apply_exposure_tuple_to_array(
     return tuple(output_data)
 
 
-def build_datatree(
+def run_pipelines(
     dim_names: Mapping[str, str],
     parameter_mode: Union[ProductMode, SequentialMode, CustomMode],
     processor: "Processor",
@@ -303,8 +301,8 @@ def build_datatree(
 
     # Get the first parameter
     first_param: tuple = (
-        params_dataarray.head(1)  # Get the first parameter(s)
-        .squeeze()  # Remove dimensions of length 1
+        params_dataarray.head(1)  # Get the first parameter
+        .squeeze()  # Remove all dimensions of length 1
         .to_numpy()  # Convert to a numpy array
         .tolist()  # Convert to a tuple
     )
@@ -329,15 +327,17 @@ def build_datatree(
     # Get output dtypes
     output_dtypes: Sequence[np.dtype] = _get_output_dtypes(all_metadata)
 
+    # Coerce 'params_dataarray' to a Dask array
+    params_dataarray_dask: xr.DataArray = params_dataarray.chunk(1)
+
     # Create 'Dask' data arrays
     dask_dataarrays: tuple[xr.DataArray, ...] = xr.apply_ufunc(
-        _apply_exposure_tuple_to_array,  # Function to apply
-        params_dataarray.chunk(1),  # Argument 'params_tuple'
+        _run_pipelines_tuple_to_array,  # Function to apply
+        params_dataarray_dask,  # Argument 'params_tuple'
         kwargs={  # other arguments
             "dimension_names": dim_names,
             "processor": processor,
             "all_metadata": all_metadata,
-            # "types": types,
             "with_inherited_coords": with_inherited_coords,
             "readout": readout,
             "result_type": result_type,
@@ -389,12 +389,6 @@ def build_datatree(
 
             coords: Mapping[Hashable, xr.DataArray] = partial_metadata.to_coords()
             dct[path] = data_set.assign_coords(coords)
-
-    # for (key, partial_metadata), data_array in zip(metadata.items(), dask_dataarrays):
-    #     *_, name = key.split("/")
-    #     dct[key] = data_array.rename(name).assign_attrs(partial_metadata.attrs)
-
-    # del dct['/bucket']
 
     if xr.__version__ <= "2024.9.0":
         final_datatree = DataTree.from_dict(deepcopy(dct))  # type: ignore[arg-type]

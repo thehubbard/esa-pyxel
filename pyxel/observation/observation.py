@@ -28,8 +28,8 @@ from pyxel.observation import (
     ProductMode,
     SequentialMode,
     _get_short_name_with_model,
-    build_datatree,
     create_new_processor,
+    run_pipelines,
     short,
 )
 from pyxel.pipelines import ResultId, get_result_id
@@ -102,6 +102,45 @@ def merge(*objects: Iterable["DataTree"]) -> "DataTree":
     return _merge_datatree(*objects)
 
 
+def build_parameter_mode(
+    mode: Literal["product", "sequential", "custom"],
+    parameters: Sequence[ParameterValues],
+    custom_filename: Optional[str] = None,
+    column_range: Optional[tuple[int, int]] = None,
+) -> Union[ProductMode, SequentialMode, CustomMode]:
+    """Build a new parameter mode object.
+
+    Parameters
+    ----------
+    mode : 'product', 'sequential' or 'custom'
+        Define the type of mode to be returned.
+    parameters
+        A list or tuple of ``ParameterValues`` objects.
+    custom_filename : str, optional
+        Provide a valid filename for 'custom' mode.
+    column_range : tuple[int, int], optional
+        Specifu a range of columns (start and end indiced) for 'custom' mode
+    """
+    if mode == "product":
+        return ProductMode(parameters)
+
+    elif mode == "sequential":
+        return SequentialMode(parameters)
+
+    elif mode == "custom":
+        custom_columns: Optional[slice] = slice(*column_range) if column_range else None
+        assert custom_filename is not None
+
+        return CustomMode.build(
+            parameters,
+            custom_file=custom_filename,
+            custom_columns=custom_columns,
+        )
+
+    else:
+        raise NotImplementedError
+
+
 class Observation:
     """Observation class."""
 
@@ -121,26 +160,13 @@ class Observation:
         self.outputs: Optional["ObservationOutputs"] = outputs
         self.readout: Readout = readout or Readout()
 
-        parameter_mode: Union[ProductMode, SequentialMode, CustomMode]
-        if mode == "product":
-            parameter_mode = ProductMode(parameters)
-        elif mode == "sequential":
-            parameter_mode = ProductMode(parameters)
-        elif mode == "custom":
-            custom_columns: Optional[slice] = (
-                slice(*column_range) if column_range else None
-            )
-            assert from_file is not None
-            parameter_mode = CustomMode.build(
-                parameters,
-                custom_file=from_file,
-                custom_columns=custom_columns,
-            )
-        else:
-            raise NotImplementedError
-
         self.parameter_mode: Union[ProductMode, SequentialMode, CustomMode] = (
-            parameter_mode
+            build_parameter_mode(
+                mode=mode,
+                parameters=parameters,
+                custom_filename=from_file,
+                column_range=column_range,
+            )
         )
 
         self.working_directory: Optional[Path] = (
@@ -227,7 +253,7 @@ class Observation:
                     "do not use '_' character in 'values' field"
                 )
 
-    def run_observation_without_datatree(self, processor: "Processor") -> None:
+    def run_pipelines_without_datatree(self, processor: "Processor") -> None:
         """Run the observation pipelines."""
         # Late import to speedup start-up time
         import dask.bag as db
@@ -244,7 +270,7 @@ class Observation:
         if self.with_dask:
             datatree_bag: db.Bag = db.from_sequence(parameters).map(
                 options_wrapper(working_directory=self.working_directory)(
-                    self._apply_exposure_pipeline_without_datatree
+                    self._run_single_pipeline_without_datatree
                 ),
                 processor=processor,
             )
@@ -252,12 +278,12 @@ class Observation:
             _ = datatree_bag.compute()
         else:
             for el in tqdm(parameters):
-                self._apply_exposure_pipeline_without_datatree(
+                self._run_single_pipeline_without_datatree(
                     el,
                     processor=processor,
                 )
 
-    def _run_observation_datatree(
+    def run_pipelines(
         self,
         processor: "Processor",
         with_inherited_coords: bool,
@@ -274,7 +300,7 @@ class Observation:
         dim_names: Mapping[str, str] = _get_short_dimension_names_new(types)
 
         if self.with_dask:
-            final_datatree = build_datatree(
+            final_datatree = run_pipelines(
                 dim_names=dim_names,
                 parameter_mode=self.parameter_mode,
                 processor=processor,
@@ -296,7 +322,7 @@ class Observation:
 
             # If Dask is not enabled, process each parameter sequentially
             datatree_list: Iterator["DataTree"] = (
-                self._apply_exposure_pipeline(
+                self._run_single_pipeline(
                     el,
                     dimension_names=dim_names,
                     processor=processor,
@@ -319,7 +345,7 @@ class Observation:
 
         return final_datatree
 
-    def _apply_exposure_pipeline_without_datatree(
+    def _run_single_pipeline_without_datatree(
         self,
         param_item: Union[ParameterEntry, CustomParameterEntry],
         processor: "Processor",
@@ -345,7 +371,7 @@ class Observation:
                 run_number=param_item.run_index,
             )
 
-    def _apply_exposure_pipeline(
+    def _run_single_pipeline(
         self,
         param_item: Union[ParameterEntry, CustomParameterEntry],
         dimension_names: Mapping[str, str],

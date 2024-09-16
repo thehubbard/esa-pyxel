@@ -572,7 +572,7 @@ def _run_observation_mode_without_datatree(
     if outputs:
         outputs.create_output_folder()
 
-    observation.run_observation_without_datatree(processor=processor)
+    observation.run_pipelines_without_datatree(processor=processor)
 
 
 def _run_observation_mode(
@@ -589,7 +589,7 @@ def _run_observation_mode(
         outputs.create_output_folder()
 
     # Run the observation mode
-    result: "DataTree" = observation._run_observation_datatree(
+    result: "DataTree" = observation.run_pipelines(
         processor=processor,
         with_inherited_coords=with_inherited_coords,
     )
