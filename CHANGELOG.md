@@ -20,6 +20,8 @@ This release brings a number of bugfixes and improvements.
   (See [!953](https://gitlab.com/esa/pyxel/-/merge_requests/953)).
 * Use method `xarray.drop_vars` instead of `xarray.drop`.
   (See [!955](https://gitlab.com/esa/pyxel/-/merge_requests/955)).
+* Fix bug when using function `load_table` with data containing only a single column.
+  (See [!954](https://gitlab.com/esa/pyxel/-/merge_requests/954)).
 
 ### Documentation
 
