@@ -34,6 +34,8 @@ This release brings a number of bugfixes and improvements.
   from [`Charge Generation`](https://esa.gitlab.io/pyxel/doc/stable/references/model_groups/charge_generation_models.html)
   can also be used with CCDs.
   (See [!956](https://gitlab.com/esa/pyxel/-/merge_requests/956)).
+* Fix unit bug with ``trap_densities`` in model [`CDM`](https://esa.gitlab.io/pyxel/doc/stable/references/model_groups/charge_transfer_models.html#charge-distortion-model-cdm)
+  (See [!949](https://gitlab.com/esa/pyxel/-/merge_requests/949)).
 
 ### Others
 * Apply `ruff format` on the source code.
