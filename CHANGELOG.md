@@ -26,6 +26,10 @@ This release brings a number of bugfixes and improvements.
 ### Documentation
 
 ### Models
+* Model [`dark_current_rule07`](https://esa.gitlab.io/pyxel/doc/stable/references/model_groups/charge_generation_models.html#dark-current-rule07)
+  from [`Charge Generation`](https://esa.gitlab.io/pyxel/doc/stable/references/model_groups/charge_generation_models.html)
+  can also be used with CCDs.
+  (See [!956](https://gitlab.com/esa/pyxel/-/merge_requests/956)).
 
 ### Others
 * Apply `ruff format` on the source code.
