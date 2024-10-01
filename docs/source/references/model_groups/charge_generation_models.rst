@@ -610,8 +610,6 @@ Example of the configuration file:
 Radiation induced Dark Current
 ==============================
 
-.. note:: This model is only available for CMOS detector.
-
 :guilabel:`Charge` → :guilabel:`Charge`
 
 This model adds dark current induced by radiation. A more detailed description of the models can be found in
