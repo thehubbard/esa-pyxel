@@ -36,7 +36,8 @@ This release brings a number of bugfixes and improvements.
 * Model [`radiation_induced_dark_current`](https://esa.gitlab.io/pyxel/doc/stable/references/model_groups/charge_generation_models.html#radiation-induced-dark-current)
   from [`Charge Generation`](https://esa.gitlab.io/pyxel/doc/stable/references/model_groups/charge_generation_models.html)
   can also be used with CCDs.
-  (See [!956](https://gitlab.com/esa/pyxel/-/merge_requests/956)).
+  (See [!959](https://gitlab.com/esa/pyxel/-/merge_requests/959)
+  and [!961](https://gitlab.com/esa/pyxel/-/merge_requests/961)).
 * Fix unit bug with ``trap_densities`` in model [`CDM`](https://esa.gitlab.io/pyxel/doc/stable/references/model_groups/charge_transfer_models.html#charge-distortion-model-cdm)
   (See [!949](https://gitlab.com/esa/pyxel/-/merge_requests/949)).
 
