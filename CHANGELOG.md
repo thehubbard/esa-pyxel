@@ -27,6 +27,8 @@ This release brings a number of bugfixes and improvements.
   (See [!957](https://gitlab.com/esa/pyxel/-/merge_requests/957)).
 * Remove progress bar when running Observation mode with Dask enabled.
   (See [!958](https://gitlab.com/esa/pyxel/-/merge_requests/958)).
+* Force parameter 'with_inherited_coords' to True if 'Scene' is not empty.
+  (See [!962](https://gitlab.com/esa/pyxel/-/merge_requests/962)).
 
 ### Documentation
 

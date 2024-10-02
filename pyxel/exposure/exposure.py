@@ -492,6 +492,19 @@ def run_pipeline(
         # Prepare the final dictionary to construct the `DataTree`.
         dct: dict[str, Union[xr.Dataset, DataTree, None]] = {}
 
+        if not detector.scene.data.is_empty and not with_inherited_coords:
+            warnings.warn(
+                "The 'Scene' container is not empty.\n"
+                "To ensure proper behavior, the 'with_inherited_coords' parameter must be set to True when calling 'pyxel.run_mode'.\n"
+                "Please use the following syntax:\n"
+                "\n"
+                "    pyxel.run_mode(..., with_inherited_coords=True)\n"
+                "\n"
+                "This will ensure that inherited coordinates are applied correctly in the current 'Scene'.",
+                stacklevel=5,
+            )
+            with_inherited_coords = True
+
         # Add the final buckets data to the tree.
         if with_inherited_coords:
             dct["/bucket"] = buckets_data_tree
@@ -509,10 +522,7 @@ def run_pipeline(
 
         # Add additional data based on the requested result types.
         if "scene" in keys:
-            if with_inherited_coords:
-                dct["/bucket/scene"] = detector.scene.data
-            else:
-                dct["/scene"] = detector.scene.data
+            dct["/scene"] = detector.scene.data
 
         if "data" in keys:
             dct["/data"] = detector.data
