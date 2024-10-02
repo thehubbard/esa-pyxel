@@ -492,7 +492,7 @@ def run_pipeline(
         # Prepare the final dictionary to construct the `DataTree`.
         dct: dict[str, Union[xr.Dataset, DataTree, None]] = {}
 
-        if detector.scene.data.is_empty and not with_inherited_coords:
+        if not detector.scene.data.is_empty and not with_inherited_coords:
             warnings.warn(
                 "The 'Scene' container is not empty.\n"
                 "To ensure proper behavior, the 'with_inherited_coords' parameter must be set to True when calling 'pyxel.run_mode'.\n"

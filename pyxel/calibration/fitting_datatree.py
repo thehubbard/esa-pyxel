@@ -13,6 +13,7 @@ https://esa.github.io/pagmo2/index.html
 import copy
 import logging
 import math
+import sys
 from collections.abc import Sequence
 from copy import deepcopy
 from numbers import Number
@@ -317,7 +318,11 @@ class ModelFittingDataTree(ProblemSingleObjective):
 
         return lbd, ubd
 
-    def _get_simulated_data(self, data: "DataTree") -> "xr.DataArray":
+    def _get_simulated_data(
+        self,
+        data: "DataTree",
+        with_inherited_coords: bool,
+    ) -> "xr.DataArray":
         """Extract 2D data from a processor."""
         import xarray as xr
 
@@ -330,7 +335,17 @@ class ModelFittingDataTree(ProblemSingleObjective):
                 f"Simulation mode: {self.sim_output!r} not implemented"
             )
 
-        simulated_data = data[self.sim_output]
+        if with_inherited_coords:
+            sim_output = (
+                f"/bucket/{self.sim_output}"
+                if self.sim_output in ("photon", "charge", "pixel", "signal", "image")
+                else self.sim_output
+            )
+
+            simulated_data = data[sim_output]
+        else:
+            simulated_data = data[self.sim_output]
+
         if not isinstance(simulated_data, xr.DataArray):
             raise TypeError("Expected a 'DataArray'")
 
@@ -431,8 +446,15 @@ class ModelFittingDataTree(ProblemSingleObjective):
 
                 logger.setLevel(prev_log_level)  # TODO: Fix this. See issue #81
 
+                if "bucket" in data_tree and self._with_inherited_coords is False:
+                    # Force to True
+                    with_inherited_coords = True
+                else:
+                    with_inherited_coords = self._with_inherited_coords
+
                 simulated_data: "xr.DataArray" = self._get_simulated_data(
-                    data=data_tree
+                    data=data_tree,
+                    with_inherited_coords=with_inherited_coords,
                 )
 
                 weighting: Optional[np.ndarray] = None
@@ -458,15 +480,17 @@ class ModelFittingDataTree(ProblemSingleObjective):
                 )
 
         except Exception as exc:
+            if sys.version_info >= (3, 11):
+                exc.add_note(
+                    f"Exception raised with ModelFitting: {self} "
+                    f"with {decision_vector_1d=} ."
+                )
+
             logging.exception(
                 "Catch an exception in 'fitness' for ModelFitting: %r with decision vector: %r.",
                 self,
                 decision_vector_1d,
             )
-            print(f"--- 3 - {exc=}, {exc.__notes__}")
-            # logging.warning('--- 3.1')
-            # logging.error('--- 3.1')
-            # logging.handlers[0].flush()
 
             raise
 
