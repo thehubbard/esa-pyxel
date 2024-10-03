@@ -72,7 +72,7 @@ def compute_mean_variance(data_array: xr.DataArray) -> xr.Dataset:
     if "units" in data_array.attrs:
         unit = data_array.attrs["units"]
         mean_variance["mean"].attrs["units"] = unit
-        mean_variance["variance"].attrs["units"] = f"{unit}^2"
+        mean_variance["variance"].attrs["units"] = f"{unit}²"
 
     return mean_variance
 
@@ -129,7 +129,7 @@ def mean_variance(
     Coordinates:
       * mean     (mean) float64 5.723e+03 1.144e+04 ... 5.238e+04 5.238e+04
     Attributes:
-        units:    adu^2
+        units:    adu²
 
     Display mean-variance plot
 
