@@ -61,7 +61,10 @@ class Exposure:
 
     def __repr__(self) -> str:
         cls_name: str = self.__class__.__name__
-        return f"{cls_name}<outputs={self.outputs!r}>"
+        if self.outputs is None:
+            return f"{cls_name}<no outputs>"
+        else:
+            return f"{cls_name}<outputs={self.outputs!r}>"
 
     @property
     def result_type(self) -> ResultId:
