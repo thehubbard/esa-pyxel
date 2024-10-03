@@ -5,7 +5,11 @@
 #  this file, may be copied, modified, propagated, or distributed except according to
 #  the terms contained in the file ‘LICENCE.txt’.
 
-"""Model to compute Mean-Variance."""
+"""Model to compute Mean-Variance metrics.
+
+This module provides functions to calculate and store the mean and variance of detector data.
+The results are stored in xarray Dataset objects, which can be further analyzed or visualized.
+"""
 
 from typing import TYPE_CHECKING, Literal, Optional, Union
 
@@ -24,7 +28,9 @@ if TYPE_CHECKING:
 
 
 def compute_mean_variance(data_array: xr.DataArray) -> xr.Dataset:
-    """Compute mean-variance into a Dataset.
+    """Compute the mean and variance into a Dataset.
+
+    This functions calculates the mean and variance across the dimension 'x' and 'y'.
 
     Parameters
     ----------
@@ -69,6 +75,7 @@ def compute_mean_variance(data_array: xr.DataArray) -> xr.Dataset:
     mean_variance["mean"] = data_array.mean(dim=["y", "x"])
     mean_variance["variance"] = data_array.var(dim=["y", "x"])
 
+    # Assign units to mean and variance if the data array has a 'units' attribute
     if "units" in data_array.attrs:
         unit = data_array.attrs["units"]
         mean_variance["mean"].attrs["units"] = unit
@@ -82,13 +89,13 @@ def mean_variance(
     data_structure: Literal["pixel", "photon", "image", "signal"] = "image",
     name: Optional[str] = None,
 ) -> None:
-    """Compute mean-variance and store it in '.data' bucket.
+    """Compute the mean and variance and store the result it in '.data' bucket.
 
     Parameters
     ----------
     detector : Detector
-    data_structure : 'pixel', 'photon', 'image' or 'signal'
-        Data bucket to use for the linear regression.
+    data_structure : 'pixel', 'photon', 'image' or 'signal', optional. Default: 'image'
+        Data bucket to use to compute the mean and variance.
     name : str, optional
         Name to use for the result.
 
@@ -97,7 +104,7 @@ def mean_variance(
     >>> import pyxel
     >>> config = pyxel.load("exposure_mode.yaml")
 
-    Run exposure mode with 'data_processing/mean_variance' model
+    Run exposure mode with 'mean-variance' model
 
     >>> data_tree = pyxel.run_mode(
     ...     mode=config.exposure,
@@ -108,33 +115,35 @@ def mean_variance(
     Get results
 
     >>> data_tree["/data/mean_variance"]
-    DataTree('mean_variance', parent="data")
-    └── DataTree('image')
-            Dimensions:   (mean: 19)
-            Coordinates:
-              * mean      (mean) float64 5.723e+03 1.144e+04 ... 5.238e+04 5.238e+04
-            Data variables:
-                variance  (mean) float64 3.238e+06 1.294e+07 2.91e+07 ... 4.03e+05 3.778e+05
+    <xarray.DataTree 'data'>
+    Group: /data
+    └── Group: /data/mean_variance
+        └── Group: /data/mean_variance/image
+                Dimensions:      (pipeline_idx: 100)
+                Coordinates:
+                  * pipeline_idx (pipeline_idx) int64 0 1 ... 98 99
+                Data variables:
+                    mean         (pipeline_idx) float64 5.723e+03 1.144e+04 ... 5.238e+04 5.238e+04
+                    variance     (pipeline_idx) float64 3.238e+06 1.294e+07 2.91e+07 ... 4.03e+05 3.778e+05
 
-    >>> mean_variance = data_tree["/data/mean_variance/image/variance"]
+    >>> mean_variance = data_tree["/data/mean_variance/image"]
     >>> mean_variance
-    <xarray.DataArray 'variance' (mean: 19)>
-    array([ 3238372.98476575, 12940428.69349581, 29101219.32832065,
-           51711636.17586413, 68442386.58453502, 73522594.46113221,
-           70591532.43505114, 54799694.83319437, 36351341.15700997,
-           19577907.89405003,  7877859.3907925 ,  2284048.60403896,
-             839388.11541348,   605169.50892288,   527554.54598688,
-             474694.21759011,   434408.74359875,   402970.36722454,
-             377784.5672024 ])
-    Coordinates:
-      * mean     (mean) float64 5.723e+03 1.144e+04 ... 5.238e+04 5.238e+04
-    Attributes:
-        units:    adu²
+    <xarray.DataTree 'image'>
+    Group: /data/mean_variance/image
+        Dimensions:      (pipeline_idx: 100)
+        Coordinates:
+          * pipeline_idx (pipeline_idx) int64 0 1 ... 98 99
+        Data variables:
+            mean         (pipeline_idx) float64 5.723e+03 1.144e+04 ... 5.238e+04 5.238e+04
+            variance     (pipeline_idx) float64 3.238e+06 1.294e+07 2.91e+07 ... 4.03e+05 3.778e+05
 
     Display mean-variance plot
 
-    >>> mean_variance.plot()
-
+    >>> (
+    ...     data_tree["/data/mean_variance/image"]
+    ...     .to_dataset()
+    ...     .plot.scatter(x="mean", y="variance", xscale="log", yscale="log")
+    ... )
     .. figure:: _static/mean_variance_plot.png
         :scale: 70%
         :alt: Mean-Variance plot
@@ -147,14 +156,17 @@ def mean_variance(
     data_bucket: Union[Pixel, Photon, Image, Signal] = getattr(detector, data_structure)
     data_array: xr.DataArray = data_bucket.to_xarray(dtype=float)
 
-    # Get Mean-Variance data
+    # Computer the mean and variance
     mean_variance_1d: xr.Dataset = compute_mean_variance(data_array)
     mean_variance = mean_variance_1d.expand_dims(pipeline_idx=[detector.pipeline_count])
+
+    # Prepare paths for storing the results
     parent: str = "/mean_variance"
     parent_partial: str = f"{parent}/partial"
     key: str = f"{parent}/{name}"
     key_partial: str = f"{parent_partial}/{name}"
 
+    # Check if partial results exist
     # TODO: Use 'detector.data.get(...)'
     try:
         _ = detector.data[key_partial]
@@ -163,14 +175,17 @@ def mean_variance(
     else:
         has_key_partial = True
 
+    # If no partial data exists, create a new DataTree
     if not has_key_partial:
         data_tree: DataTree = DataTree(mean_variance)
     else:
-        # Concatenate data
+        # Concatenate new data with existing partial data
         data_tree = detector.data[key_partial].combine_first(mean_variance)  # type: ignore
 
+    # If pipeline is at its final step, clean up partial results and store the full result
     if detector.pipeline_count == (detector.num_steps - 1):
         detector.data[parent_partial].orphan()
         detector.data[key] = data_tree.sortby("mean")
     else:
+        # Otherwise, continue storing partial results
         detector.data[key_partial] = data_tree

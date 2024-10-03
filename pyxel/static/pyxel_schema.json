@@ -4960,7 +4960,7 @@
     },
     "ModelDataProcessingMeanVariance": {
       "additionalProperties": false,
-      "description": "Compute mean-variance and store it in '.data' bucket.",
+      "description": "Compute the mean and variance and store the result it in '.data' bucket.",
       "properties": {
         "arguments": {
           "additionalProperties": false,
@@ -4971,7 +4971,7 @@
           "properties": {
             "data_structure": {
               "default": "image",
-              "description": "Data bucket to use for the linear regression.",
+              "description": "Data bucket to use to compute the mean and variance.",
               "enum": [
                 "pixel",
                 "photon",
