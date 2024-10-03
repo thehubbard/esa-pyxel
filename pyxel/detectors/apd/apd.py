@@ -45,12 +45,10 @@ class APD(Detector):
 
     @property
     def geometry(self) -> "APDGeometry":
-        """TBW."""
         return self._geometry
 
     @property
     def characteristics(self) -> "APDCharacteristics":
-        """TBW."""
         return self._characteristics
 
     # TODO: Refactor this

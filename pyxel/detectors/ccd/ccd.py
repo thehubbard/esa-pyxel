@@ -45,12 +45,10 @@ class CCD(Detector):
 
     @property
     def geometry(self) -> "CCDGeometry":
-        """TBW."""
         return self._geometry
 
     @property
     def characteristics(self) -> "Characteristics":
-        """TBW."""
         return self._characteristics
 
     # TODO: Refactor this

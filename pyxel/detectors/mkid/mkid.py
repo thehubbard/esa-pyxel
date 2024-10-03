@@ -66,12 +66,10 @@ class MKID(Detector):
 
     @property
     def geometry(self) -> "MKIDGeometry":
-        """TBW."""
         return self._geometry
 
     @property
     def characteristics(self) -> "Characteristics":
-        """TBW."""
         return self._characteristics
 
     @property
