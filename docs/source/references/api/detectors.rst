@@ -24,6 +24,7 @@ Detector
 
 .. autoclass:: Detector
     :members:
+    :no-index:
     :inherited-members:
     :undoc-members:
     :show-inheritance:

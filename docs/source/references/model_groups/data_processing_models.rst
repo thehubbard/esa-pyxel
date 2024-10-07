@@ -130,7 +130,19 @@ such as background subtraction and imaging a given 2D given numpy array.
 Mean-variance
 =============
 
-Compute a mean-variance 1D array that shows relationship between the mean signal of a detector and its variance.
+Compute a **Mean-Variance** 1D array that represents the relationship between the mean signal of a detector and
+its variance.
+
+This is particularly useful for analyzing the statistical properties of image data,
+such as determining the consistency of pixel values in a detector.
+
+This model takes detector data (e.g., pixel, photon, image, or signal) and computes
+the mean and variance of the specified data structure.
+The results are stored within the detector's internal `.data` tree for further analysis or visualization.
+
+**YAML configuration example:**
+
+Below is an example of how to configure the **Mean-Variance** model in the Pyxel YAML configuration file:
 
 .. code-block:: yaml
 
@@ -139,12 +151,48 @@ Compute a mean-variance 1D array that shows relationship between the mean signal
       func: pyxel.models.data_processing.mean_variance
       enabled: true
       arguments:
-        data_structure: image
+        data_structure: image  # Options: 'pixel', 'photon', 'image', 'signal'
+
+.. hint::
+
+    .. code-block:: python
+
+       >>> import pyxel
+       >>> config = pyxel.load("configuration.yaml")
+
+       >>> data_tree = pyxel.run_mode(
+       ...     mode=config.running_mode,
+       ...     detector=config.detector,
+       ...     pipeline=config.pipeline,
+       ... )
+
+       >>> data_tree["/data/mean_variance/image/variance"]
+       <xarray.DataTree 'image'>
+       Group: /data/mean_variance/image
+           Dimensions:      (pipeline_idx: 100)
+           Coordinates:
+             * pipeline_idx (pipeline_idx) int64 0 1 ... 98 99
+           Data variables:
+               mean         (pipeline_idx) float64 5.723e+03 1.144e+04 ... 5.238e+04 5.238e+04
+               variance     (pipeline_idx) float64 3.238e+06 1.294e+07 2.91e+07 ... 4.03e+05 3.778e+05
+
+       >>> (
+       ...     data_tree["/data/mean_variance/image"]
+       ...     .to_dataset()
+       ...     .plot.scatter(x="mean", y="variance", xscale="log", yscale="log")
+       ... )
+
+   .. figure:: _static/mean_variance_plot.png
+       :scale: 70%
+       :alt: Mean-Variance plot
+       :align: center
 
 .. note::
     You can find an example of this model used in this Jupyter Notebook
     :external+pyxel_data:doc:`examples/models/data_processing/data_analysis/data_processing-obs`
     from `Pyxel Data <https://esa.gitlab.io/pyxel-data>`_.
+
+
 
 .. autofunction:: mean_variance
 
