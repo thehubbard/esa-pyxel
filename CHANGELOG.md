@@ -34,6 +34,8 @@ This release brings a number of bugfixes and improvements.
 * Add more documentation for model [`mean_variance`](https://esa.gitlab.io/pyxel/doc/stable/references/model_groups/data_processing_models.html#mean-variance)
   from [`Data Processing`](https://esa.gitlab.io/pyxel/doc/stable/references/model_groups/data_processing_models.html).
   (See [!963](https://gitlab.com/esa/pyxel/-/merge_requests/963)).
+* Add more documentation.
+  (See [!965](https://gitlab.com/esa/pyxel/-/merge_requests/965)).
 
 ### Models
 * Model [`dark_current_rule07`](https://esa.gitlab.io/pyxel/doc/stable/references/model_groups/charge_generation_models.html#dark-current-rule07)

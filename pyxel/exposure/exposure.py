@@ -61,7 +61,10 @@ class Exposure:
 
     def __repr__(self) -> str:
         cls_name: str = self.__class__.__name__
-        return f"{cls_name}<outputs={self.outputs!r}>"
+        if self.outputs is None:
+            return f"{cls_name}<no outputs>"
+        else:
+            return f"{cls_name}<outputs={self.outputs!r}>"
 
     @property
     def result_type(self) -> ResultId:
@@ -404,6 +407,7 @@ def run_pipeline(
     DataTree
     """
     # Late import to speedup start-up time
+    from dask.utils import format_bytes
     from tqdm.auto import tqdm
 
     try:
@@ -428,8 +432,11 @@ def run_pipeline(
         detector.empty()
 
         if progressbar:
+
             pbar = tqdm(
-                total=detector.readout_properties.num_steps, desc="Readout time: "
+                total=detector.readout_properties.num_steps,
+                desc="Run pipeline: ",
+                postfix={"size": format_bytes(0)},
             )
 
         # Get attributes to extract from 'detector'
@@ -487,7 +494,17 @@ def run_pipeline(
 
             # Update the progress bar after each step.
             if progressbar:
+                num_bytes = buckets_data_tree.nbytes
+                num_bytes += detector.scene.data.nbytes
+
+                if debug:
+                    num_bytes += detector.intermediate.nbytes
+
+                if detector._data is not None:
+                    num_bytes += detector.data.nbytes
+
                 pbar.update(1)
+                pbar.set_postfix(size=format_bytes(num_bytes))
 
         # Prepare the final dictionary to construct the `DataTree`.
         dct: dict[str, Union[xr.Dataset, DataTree, None]] = {}

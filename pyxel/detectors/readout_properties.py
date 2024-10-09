@@ -16,15 +16,18 @@ from pyxel.exposure.readout import calculate_steps
 
 
 class ReadoutProperties:
-    """Readout sampling detector properties.
+    """Readout sampling detector properties related to the readout process of a detector.
+
+    These properties include sampling times, readout steps, and other simulation parameters.
 
     Parameters
     ----------
     times : Sequence[Number]
-        A sequence of numeric values representing the sampling times for the readout simulation.
-    start_time : float, optional. Default: 0.0
-        A float representing the starting time of the readout simulation.
-        The readout time(s) should be greater that this ``start_time``.
+        A sequence of increasing numerical values representing the times at which
+        the detector samples are read.
+    start_time : float, optional. default: 0.0
+        The start time for the readout process.
+        All value in ``times`` must be greater that ``start_time``.
     non_destructive : bool, optional. Default: False
         A boolean flag indicating whether the readout simulation is non-destructive.
         If set to ``True``, the readout process will not modify the underlying data.
@@ -82,95 +85,308 @@ class ReadoutProperties:
 
     @property
     def times(self) -> np.ndarray:
-        """Return readout times."""
+        """Return the sampling times for readout process.
+
+        Examples
+        --------
+        >>> readout_properties = ReadoutProperties(
+        ...     times=[1, 2, 4, 7, 10], start_time=0.0
+        ... )
+        >>> readout_properties.times
+        array([ 1.,  2.,  4.,  7., 10.])
+        """
         return self._times
 
     @property
     def steps(self) -> np.ndarray:
-        """Return time steps between consecutive readout times."""
+        """Return the time interval between consecutive readout samples.
+
+        Examples
+        --------
+        >>> readout_properties = ReadoutProperties(
+        ...     times=[1, 2, 4, 7, 10], start_time=0.0
+        ... )
+        >>> readout_properties.steps
+        array([0., 1., 2., 3., 3.])
+        """
         return self._steps
 
     @property
     def num_steps(self) -> int:
-        """TBW."""
+        """Return the total number of readout steps.
+
+        Examples
+        --------
+        >>> readout_properties = ReadoutProperties(
+        ...     times=[1, 2, 4, 7, 10], start_time=0.0
+        ... )
+        >>> readout_properties.num_steps
+        5
+        """
         return self._num_steps
 
     @property
     def start_time(self) -> float:
-        """TBW."""
+        """Get the start time for the readout simulation.
+
+        Examples
+        --------
+        >>> readout_properties = ReadoutProperties(
+        ...     times=[1, 2, 4, 7, 10], start_time=0.0
+        ... )
+        >>> readout_properties.start_time
+        0.0
+        """
         return self._start_time
 
     @start_time.setter
     def start_time(self, value: float) -> None:
-        """TBW."""
+        """Set a new start time for the readout simulation.
+
+        Parameters
+        ----------
+        value : float
+            The new start time to set.
+
+        Examples
+        --------
+        >>> readout_properties = ReadoutProperties(
+        ...     times=[1, 2, 4, 7, 10], start_time=0.0
+        ... )
+        >>> readout_properties.start_time = 0.5
+        >>> readout_properties.start_time
+        0.5
+        """
         self._start_time = value
 
     @property
     def end_time(self) -> float:
-        """TBW."""
+        """Return the last time in the readout sequence.
+
+        Examples
+        --------
+        >>> readout_properties = ReadoutProperties(
+        ...     times=[1, 2, 4, 7, 10], start_time=0.0
+        ... )
+        >>> readout_properties.end_time
+        10.0
+        """
         return self._end_time
 
     @property
     def non_destructive(self) -> bool:
-        """TBW."""
+        """Check if the readout process is non-destructive.
+
+        Returns
+        -------
+        bool
+            True if the readout does not alter the underlying data.
+            False otherwise.
+
+        Examples
+        --------
+        >>> readout_properties = ReadoutProperties(
+        ...     times=[1, 2, 4, 7, 10], start_time=0.0
+        ... )
+        >>> readout_properties.non_destructive
+        False
+        """
         return self._non_destructive
 
     @property
     def times_linear(self) -> bool:
-        """TBW."""
+        """Check if the time intervals between readout samples are uniform.
+
+        Returns
+        -------
+        bool
+            True is all readout steps are equal (i.e., time intervals are linear),
+            False otherwise.
+
+        Examples
+        --------
+        >>> readout_properties = ReadoutProperties(
+        ...     times=[1, 2, 4, 7, 10], start_time=0.0
+        ... )
+        >>> readout_properties.times_linear
+        False
+
+        >>> readout_properties = ReadoutProperties(
+        ...     times=[1, 2, 3, 4, 5], start_time=0.0
+        ... )
+        >>> readout_properties.times_linear
+        True
+        """
         return self._times_linear
 
     @property
     def time(self) -> float:
-        """TBW."""
+        """Get the current time within the readout simulation.
+
+        Returns
+        -------
+        float
+            The current time during the readout process.
+
+        Examples
+        --------
+        >>> readout_properties = ReadoutProperties(
+        ...     times=[1, 2, 3, 4, 5], start_time=0.5
+        ... )
+        >>> readout_properties.time
+        0.0
+        """
         return self._time
 
     @time.setter
     def time(self, value: float) -> None:
-        """TBW."""
+        """Set the current time within the readout simulation.
+
+        Parameters
+        ----------
+        value : float
+            The new current time to set in the simulation.
+        """
         self._time = value
 
     @property
     def absolute_time(self) -> float:
-        """TBW."""
+        """Get the absolute time relative to the simulation start.
+
+        Returns
+        -------
+        float
+            The absolute time, calculated as `start_time` + `time`.
+
+        Examples
+        --------
+        >>> readout_properties = ReadoutProperties(
+        ...     times=[1, 2, 3, 4, 5], start_time=0.5
+        ... )
+        >>> readout_properties.absolute_time
+        0.5
+        """
         return self._start_time + self._time
 
     @property
     def time_step(self) -> float:
-        """TBW."""
+        """Get the step size used for advancing in the simulation.
+
+        Returns
+        -------
+        float
+            The current time step value for advancing time.
+
+        Examples
+        --------
+        >>> readout_properties = ReadoutProperties(
+        ...     times=[1, 2, 3, 4, 5], start_time=0.5
+        ... )
+        >>> readout_properties.time_step = 1.0
+        """
         return self._time_step
 
     @time_step.setter
     def time_step(self, value: float) -> None:
-        """TBW."""
+        """Set the time step size for advancing the simulation.
+
+        Parameters
+        ----------
+        value : float
+            The time step size to set.
+        """
         self._time_step = value
 
     @property
     def read_out(self) -> bool:
-        """TBW."""
+        """Get the status of the readout process.
+
+        Returns
+        -------
+        bool
+            True if the readout process is active,
+            False otherwise.
+
+        Examples
+        --------
+        >>> readout_properties = ReadoutProperties(
+        ...     times=[1, 2, 3, 4, 5], start_time=0.5
+        ... )
+        >>> readout_properties.read_out
+        True
+        """
         return self._read_out
 
     @read_out.setter
     def read_out(self, value: bool) -> None:
-        """TBW."""
+        """Set the readout status.
+
+        Parameters
+        ----------
+        value : bool
+            Boolean flag indicating whether the readout process is active.
+        """
         self._read_out = value
 
     @property
     def pipeline_count(self) -> int:
-        """TBW."""
+        """Get the current readout pipeline count.
+
+        This count indicates the number of times the readout process has advanced.
+
+        Returns
+        -------
+        int
+            The number of completed readout steps.
+        """
         return self._pipeline_count
 
     @pipeline_count.setter
     def pipeline_count(self, value: int) -> None:
-        """TBW."""
+        """Set the pipeline count for the readout process.
+
+        Parameters
+        ----------
+        value : int
+        The new value for the number of completed readout steps.
+        """
         self._pipeline_count = value
 
     @property
     def is_first_readout(self) -> bool:
-        """Check if this is the first readout time."""
+        """Check if the current step is the first readout time.
+
+        Returns
+        -------
+        bool
+            True if this is the first readout time,
+            False otherwise.
+
+        Examples
+        --------
+        >>> readout_properties = ReadoutProperties(
+        ...     times=[1, 2, 3, 4, 5], start_time=0.5
+        ... )
+        >>> readout_properties.is_first_readout
+        True
+        """
         return bool(self.pipeline_count == 0)
 
     @property
     def is_last_readout(self) -> bool:
-        """Check if this is the last readout time."""
+        """Check if the current step is the last readout time.
+
+        Returns
+        -------
+        bool
+            True if this is the last readout time, False otherwise.
+
+        Examples
+        --------
+        >>> readout_properties = ReadoutProperties(
+        ...     times=[1, 2, 3, 4, 5], start_time=0.5
+        ... )
+        >>> readout_properties.is_last_readout
+        False
+        """
         return bool(self.pipeline_count == (self.num_steps - 1))

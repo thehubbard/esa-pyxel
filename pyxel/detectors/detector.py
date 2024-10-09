@@ -43,12 +43,45 @@ __all__ = ["Detector"]
 
 # TODO: Add methods to save/load a `Detector` instance to the filesystem. See #329
 class Detector:
-    """The detector base class.
+    """Base class for simulating a generic detector (e.g., CCD, CMOS).
 
-    Note
-    ----
-    This class is not intended to be directly used.
-    This is the base class for the other detectors such as CCD, CMOS...
+    This class is responsible for handling the various stages of a detector's data acquisition process,
+    including scene initialization, photon detection, charge distribution, pixel-level processing,
+    signal generation, and final image creation.
+
+    It is designed to be extended by more specific detector types.
+
+    Notes
+    -----
+    - This class is not intended to be directly used.
+    - This is the base class for the other detectors such as CCD, CMOS...
+
+    Attributes
+    ----------
+    geometry : Any
+        Geometrical attributes of the detector, defined in subclasses.
+    characteristics : Any
+        Characteristic attributes of the detector, defined in subclasses.
+    environment : Environment
+        Environmental attributes affecting the detector (e.g., temperature).
+    scene : Scene
+        The current scene being observed by the detector.
+    photon : Photon
+        Information about detected photons (in photons or photons/nm).
+    charge : Charge
+        Information about charge distribution (in electrons).
+    pixel : Pixel
+        Information about charge packets within a pixel (in electrons).
+    signal : Signal
+        Information about the detector signal (in Volts).
+    image : Image
+        Information about the detector image (in Analog-to-Digital Units, ADU).
+    data : DataTree
+        Structured data representing the results of the detector’s processing.
+    intermediate : DataTree
+        Data used for intermediate calculations during processing.
+    output_dir : Optional[Path]
+        Directory for output files related to the detector's operations.
     """
 
     def __init__(self, environment: Optional[Environment] = None):
@@ -103,39 +136,59 @@ class Detector:
 
     @property
     def geometry(self):
-        """Geometrical attributes of the detector (e.g. num of rows, columns...)."""
+        """Geometrical attributes of the detector (e.g. num of rows, columns...).
+
+        Raises
+        ------
+        NotImplementedError
+            If called directly on the base class.
+        """
         raise NotImplementedError
 
     @property
     def characteristics(self):
-        """Characteristics attributes of the detector (e.g. quantum efficiency...)."""
+        """Characteristics attributes of the detector (e.g. quantum efficiency...).
+
+        Raises
+        ------
+        NotImplementedError
+            If called directly on the base class.
+        """
         raise NotImplementedError
 
     @property
     def environment(self) -> Environment:
-        """Environmental attributes of the detector (e.g. temperature...)."""
+        """Environmental attributes affecting the detector (e.g. temperature...)."""
         return self._environment
 
     @property
     def photon(self) -> Photon:
-        """Define and store information of all photon (in ph or ph/nm)."""
+        """Get the information of detected photon (in ph or ph/nm)."""
         if not self._photon:
             raise RuntimeError("Photon array is not initialized ! ")
         return self._photon
 
     @photon.setter
     def photon(self, obj: Photon) -> None:
+        """Set the photon information for the detector."""
         self.photon._array = obj._array
 
     @property
     def scene(self) -> Scene:
-        """Define and store information of a scene (in ph / (cm2 nm s))."""
+        """Get the current scene being observed by the detector.
+
+        Returns
+        -------
+        Scene
+            The scene object. Unit: ph / (cm2 nm s)
+        """
         if not self._scene:
             raise RuntimeError("Scene object is not initialized ! ")
         return self._scene
 
     @scene.setter
     def scene(self, obj: Scene) -> None:
+        """Set a new scene being observed by the detector."""
         if not isinstance(obj, Scene):
             raise TypeError(f"Expected a 'Scene' object. Got: {obj!r}")
 
@@ -144,7 +197,7 @@ class Detector:
     # TODO: Why no setter for charge, pixel, signal and image?
     @property
     def charge(self) -> Charge:
-        """Define and store information of charge distribution (in electron)."""
+        """Get the charge information of charge distribution (in electron)."""
 
         if not self._charge:
             raise RuntimeError("'charge' not initialized.")
@@ -153,7 +206,7 @@ class Detector:
 
     @property
     def pixel(self) -> Pixel:
-        """Define and store information of charge packets within pixel (in electron)."""
+        """Get the pixel information of charge packets within pixel (in electron)."""
 
         if not self._pixel:
             raise RuntimeError("'pixel' not initialized.")
@@ -162,11 +215,12 @@ class Detector:
 
     @pixel.setter
     def pixel(self, obj: Pixel) -> None:
+        """Set the pixel information for the detector."""
         self.pixel.array = obj.array
 
     @property
     def signal(self) -> Signal:
-        """Define and store information of detector signal (in Volt)."""
+        """Get the signal information from the detector (in Volt)."""
         if not self._signal:
             raise RuntimeError("'signal' not initialized.")
 
@@ -174,11 +228,12 @@ class Detector:
 
     @signal.setter
     def signal(self, obj: Pixel) -> None:
+        """Set the signal information for the detector."""
         self.signal.array = obj.array
 
     @property
     def image(self) -> Image:
-        """Define and store information of detector 'image' (in adu)."""
+        """Get the image information from the detector (in adu)."""
         if not self._image:
             raise RuntimeError("'image' not initialized.")
 
@@ -186,11 +241,12 @@ class Detector:
 
     @image.setter
     def image(self, obj: Pixel) -> None:
+        """Set the image information for the detector."""
         self.image.array = obj.array
 
     @property
     def data(self) -> "DataTree":
-        """TBW."""
+        """Get the structured ata from the detector's processing."""
         if self._data is None:
             raise RuntimeError("'data' not initialized.")
 
@@ -198,7 +254,7 @@ class Detector:
 
     @property
     def intermediate(self) -> "DataTree":
-        """TBW."""
+        """Get the intermediate data used during processing."""
         if self._intermediate is None:
             raise RuntimeError("'intermediate' not initialized.")
 
@@ -320,7 +376,7 @@ class Detector:
 
     @property
     def readout_properties(self) -> ReadoutProperties:
-        """Return current ``ReadoutProperties``."""
+        """Return current readout sampling properties."""
         if self._readout_properties is None:
             raise ValueError("No readout defined.")
 
@@ -328,12 +384,24 @@ class Detector:
 
     @property
     def time(self) -> float:
-        """TBW."""
+        """Get the current time within the readout simulation.
+
+        Returns
+        -------
+        float
+            The current time during the readout process.
+        """
         return self.readout_properties.time
 
     @time.setter
     def time(self, value: float) -> None:
-        """TBW."""
+        """Set the current time within the readout simulation.
+
+        Parameters
+        ----------
+        value : float
+            The new current time to set in the simulation.
+        """
         self.readout_properties.time = value
 
     @property
@@ -343,42 +411,42 @@ class Detector:
 
     @start_time.setter
     def start_time(self, value: float) -> None:
-        """TBW."""
+        """Get the start time for the readout simulation."""
         self.readout_properties.start_time = value
 
     @property
     def absolute_time(self) -> float:
-        """TBW."""
+        """Get the absolute time relative to the simulation start."""
         return self.readout_properties.absolute_time
 
     @property
     def time_step(self) -> float:
-        """TBW."""
+        """Get the step size used for advancing in the simulation."""
         return self.readout_properties.time_step
 
     @time_step.setter
     def time_step(self, value: float) -> None:
-        """TBW."""
+        """Set the time step size for advancing the simulation."""
         self.readout_properties.time_step = value
 
     @property
     def times_linear(self) -> bool:
-        """TBW."""
+        """Check if the time intervals between readout samples are uniform."""
         return self.readout_properties.times_linear
 
     @property
     def num_steps(self) -> int:
-        """TBW."""
+        """Return the total number of readout steps."""
         return self.readout_properties.num_steps
 
     @property
     def pipeline_count(self) -> int:
-        """TBW."""
+        """Get the current readout pipeline count."""
         return self.readout_properties.pipeline_count
 
     @pipeline_count.setter
     def pipeline_count(self, value: int) -> None:
-        """TBW."""
+        """Set the pipeline count for the readout process."""
         self.readout_properties.pipeline_count = value
 
     @property
@@ -393,12 +461,12 @@ class Detector:
 
     @property
     def read_out(self) -> bool:
-        """TBW."""
+        """Get the status of the readout process."""
         return self.readout_properties.read_out
 
     @read_out.setter
     def read_out(self, value: bool) -> None:
-        """TBW."""
+        """Set the readout status."""
         self.readout_properties.read_out = value
 
     @property
@@ -454,7 +522,11 @@ class Detector:
     def memory_usage(
         self, print_result: bool = True, human_readable: bool = True
     ) -> dict:
-        """Calculate the memory usage of this detector.
+        """Calculate and return the memory usage of each component of the detector.
+
+        This method computes the memory usafe of the internal data structures
+        (e.g. scene, photon, charge, pixel, etc.) to provide insights into the
+        memory consumption of this Detector object.
 
         Parameters
         ----------
@@ -491,6 +563,11 @@ class Detector:
     def load(cls, filename: Union[str, Path]) -> "Detector":
         """Load a detector object from a filename.
 
+        This is a general-purpose load method that can handle different file formats (e.g., HDF5, ASDF)
+        based on the file extension.
+
+        It restores the internal state of the detector from the file.
+
         Parameters
         ----------
         filename : str or Path
@@ -506,6 +583,11 @@ class Detector:
             If ``filename`` is not found.
         ValueError
             If the extension of filename is not recognized.
+
+        Examples
+        --------
+        >>> detector = Detector()
+        >>> detector.load("detector.h5")  # Loads from HDF5 format
         """
         full_filename = Path(resolve_path(filename)).resolve()
         if not full_filename.exists():
@@ -523,6 +605,11 @@ class Detector:
     def save(self, filename: Union[str, Path]) -> None:
         """Save a detector object into a filename.
 
+        This is a general-purpose save method that can use different formats (e.g., HDF5, ASDF)
+        to serialize the detector's current state to disk.
+
+        The format is inferred from the file extension.
+
         Parameters
         ----------
         filename : str or Path
@@ -531,6 +618,12 @@ class Detector:
         ------
         ValueError
             If the extension of filename is not recognized.
+
+        Examples
+        --------
+        >>> detector = ...
+        >>> detector.save("detector.h5")  # Save in HDF5 format
+        >>> detector.save("detector.asdf")  # Save in ASDF format
         """
         full_filename = Path(resolve_path(filename)).resolve()
         extension: str = full_filename.suffix
