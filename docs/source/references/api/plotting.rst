@@ -1,6 +1,6 @@
-========
-Plotting
-========
+==================
+Plotting Utilities
+==================
 
 .. currentmodule:: pyxel.plotting
 
