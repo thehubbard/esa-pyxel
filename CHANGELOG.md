@@ -31,8 +31,11 @@ This release brings a number of bugfixes and improvements.
   (See [!962](https://gitlab.com/esa/pyxel/-/merge_requests/962)).
 * Fix bug in [Observation mode](https://esa.gitlab.io/pyxel/doc/stable/background/running_modes/observation_mode.html).
   (See [!967](https://gitlab.com/esa/pyxel/-/merge_requests/967)).
-* Add new module 'plotting'.
+* Add new module [`pyxel.plotting`](https://esa.gitlab.io/pyxel/doc/stable/references/api/plotting.html).
   (See [!966](https://gitlab.com/esa/pyxel/-/merge_requests/966)).
+* Better error message when a parameter for
+  [Observation mode](https://esa.gitlab.io/pyxel/doc/stable/background/running_modes/observation_mode.html) is wrong.
+  (See [!968](https://gitlab.com/esa/pyxel/-/merge_requests/968)).
 
 ### Documentation
 * Add more documentation for model [`mean_variance`](https://esa.gitlab.io/pyxel/doc/stable/references/model_groups/data_processing_models.html#mean-variance)
