@@ -139,9 +139,21 @@ def _get_obj_att(
             elif hasattr(obj, part):
                 obj = getattr(obj, part)
             else:
-                raise NotImplementedError(
-                    f"obj={obj!r}, key={key!r}, obj_type={obj_type!r}, part={part!r}"
-                )
+                # There is an error
+                if isinstance(obj, ModelGroup):
+                    raise KeyError(
+                        f"Cannot access Observation parameter {key!r} because the specified name {part!r} "
+                        f"does not exist in group {obj._name!r}\n"
+                        f"Please check the YAML configuration under model group {obj._name!r} to ensure the correct name is defined.\n"
+                        f"Expected structure in the YAML file\n"
+                        f"{obj._name}:\n"
+                        f"  - name: {part}\n"
+                        f"    func: ...\n"
+                    )
+                else:
+                    raise NotImplementedError(
+                        f"obj={obj!r}, key={key!r}, obj_type={obj_type!r}, part={part!r}"
+                    )
 
             if obj_type and isinstance(obj, obj_type):
                 return obj, tail

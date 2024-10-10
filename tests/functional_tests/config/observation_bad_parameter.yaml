@@ -1,0 +1,100 @@
+#############################################################
+# Pyxel detector simulation framework                       #
+#                                                           #
+# Example yaml configuration file                           #
+# Dynamic mode                                              #
+# Created by Thibaut Pichon (CEA)                           #
+#############################################################
+
+observation:
+
+  parameters:
+    - key: pipeline.charge_measurement.as24_nonlinearity_example.arguments.amplitude
+      values: [0, 0.03]
+      
+  readout:
+    non_destructive:  true
+    times: 'numpy.arange(5.2,200,5.2)'
+
+cmos_detector:
+
+  geometry:
+
+    row: 130              # pixel
+    col: 64               # pixel
+    total_thickness: 10.    # um
+    pixel_vert_size: 18.    # um
+    pixel_horz_size: 18.    # um
+
+  environment:
+    temperature: 42        # K
+    
+  characteristics:
+    quantum_efficiency: 1.                # -
+    charge_to_volt_conversion: 4.75e-6      # V/e
+    pre_amplification: 1.                   # V/V
+    adc_bit_resolution: 16
+    adc_voltage_range: [0., 5.]  # From 78.125uV/DN
+    full_well_capacity: 40000             # e
+    
+pipeline:
+
+  # photon -> photon
+  photon_collection:
+            
+    - name: illumination
+      func: pyxel.models.photon_collection.illumination
+      enabled: true
+      arguments:
+          level: 10000
+          option: "uniform"
+
+    - name: shot_noise
+      func: pyxel.models.photon_collection.shot_noise
+      enabled: true
+
+  # photon -> charge
+  charge_generation:
+    - name: photoelectrons
+      func: pyxel.models.charge_generation.simple_conversion
+      enabled: true
+
+    - name: dark_current
+      func: pyxel.models.charge_generation.simple_dark_current
+      enabled: true
+      arguments:
+        dark_rate: 0.2
+
+  # charge -> pixel
+  charge_collection:
+  
+    - name: simple_collection
+      func: pyxel.models.charge_collection.simple_collection
+      enabled: true
+
+  # pixel -> signal
+  charge_measurement:
+  
+    - name: simple_measurement
+      func: pyxel.models.charge_measurement.simple_measurement
+      enabled: true
+      arguments:
+        gain: null  # float value or set to null to use detector.characteristics.charge_to_volt_conversion
+
+    # Fill here for non-linearity
+
+
+  # signal -> image
+  readout_electronics:
+    - name: simple_amplifier
+      func: pyxel.models.readout_electronics.simple_amplifier
+      enabled: true
+      
+    - name: simple_adc
+      func: pyxel.models.readout_electronics.simple_adc
+      enabled: true
+
+  # -> data
+  data_processing:
+    # Fill here for ADC saturationd detection
+
