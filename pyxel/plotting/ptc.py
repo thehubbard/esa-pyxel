@@ -7,16 +7,22 @@
 
 """Plotting functions for Photon Transfer Curve."""
 
-from typing import Optional
+from typing import Optional, Union
 
 import matplotlib.pyplot as plt
 import numpy as np
 import xarray as xr
 from matplotlib.patches import Rectangle
 
+# Import 'DataTree'
+try:
+    from xarray.core.datatree import DataTree
+except ImportError:
+    from datatree import DataTree  # type: ignore[assignment]
+
 
 def plot_ptc(
-    dataset: xr.Dataset,
+    dataset: Union[xr.Dataset, DataTree],
     text_base_fontsize: int = 8,
     alpha_rectangle: float = 0.05,
     ax: Optional[plt.Axes] = None,
@@ -79,6 +85,15 @@ def plot_ptc(
         :alt: Linear Regression Slope
         :align: center
     """
+    if not isinstance(dataset, (xr.Dataset, DataTree)):
+        raise TypeError(
+            "Expecting a 'Dataset' or 'DataTree' object for parameter 'dataset'."
+        )
+
+    if "mean" not in dataset:
+        raise ValueError("Missing data variable 'mean' in 'dataset'.")
+    if "variance" not in dataset:
+        raise ValueError("Missing data variable 'variance' in 'dataset'.")
 
     data: xr.DataArray = (
         dataset["variance"]
