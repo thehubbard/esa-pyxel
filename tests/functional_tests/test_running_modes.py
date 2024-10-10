@@ -84,3 +84,18 @@ def test_exposure(config_filename: str, current_folder: Path, tmp_path: Path):
     if isinstance(cfg.running_mode, Exposure):
         output_dataset = current_output_folder / "dataset.nc"
         assert output_dataset.exists()
+
+
+def test_observation_bad_parameter(current_folder: Path):
+    """Test function 'run_mode' with a Observation configuration file and bad parameters."""
+    config_filename = current_folder / "observation_bad_parameter.yaml"
+    assert config_filename.exists()
+
+    config = pyxel.load(config_filename)
+
+    with pytest.raises(KeyError, match=r"Cannot access Observation parameter"):
+        _ = pyxel.run_mode(
+            mode=config.running_mode,
+            detector=config.detector,
+            pipeline=config.pipeline,
+        )
