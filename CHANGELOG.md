@@ -11,7 +11,15 @@ Pyxel doesn't use SemVer anymore, since most minor releases have at least minor 
 
 ## UNRELEASED
 
-This release brings a number of bugfixes and improvements.
+This release brings a number of bug fixes and improvements.
+
+### 📈 Plotting utilities 📈
+
+A new plotting utilities library has been added in
+[`pyxel.plotting`](https://esa.gitlab.io/pyxel/doc/stable/references/api/plotting.html).
+
+The first plot is the function [`pyxel.plotting.plot_ptc`](https://esa.gitlab.io/pyxel/doc/stable/references/api/plotting.html#pyxel.plotting.plot_ptc)
+to plot a Photon Transfer Curve (PTC) on log-log scale using Matplotlib.
 
 ### Core
 * Improved Observation mode with `dask` enabled.
@@ -27,7 +35,9 @@ This release brings a number of bugfixes and improvements.
   (See [!957](https://gitlab.com/esa/pyxel/-/merge_requests/957)).
 * Remove progress bar when running Observation mode with Dask enabled.
   (See [!958](https://gitlab.com/esa/pyxel/-/merge_requests/958)).
-* Force parameter 'with_inherited_coords' to True if 'Scene' is not empty.
+* Force parameter `with_inherited_coords` in
+  [`pyxel.run_mode`](https://esa.gitlab.io/pyxel/doc/stable/references/api/run.html#pyxel.run_mode) to True
+  if 'Scene' is not empty.
   (See [!962](https://gitlab.com/esa/pyxel/-/merge_requests/962)).
 * Fix bug in [Observation mode](https://esa.gitlab.io/pyxel/doc/stable/background/running_modes/observation_mode.html).
   (See [!967](https://gitlab.com/esa/pyxel/-/merge_requests/967)).
@@ -43,6 +53,8 @@ This release brings a number of bugfixes and improvements.
   (See [!963](https://gitlab.com/esa/pyxel/-/merge_requests/963)).
 * Add more documentation.
   (See [!965](https://gitlab.com/esa/pyxel/-/merge_requests/965)).
+* Add more documentation for function [`pyxel.plotting`](https://esa.gitlab.io/pyxel/doc/stable/references/api/plotting.html).
+  (See [!970](https://gitlab.com/esa/pyxel/-/merge_requests/970)).
 
 ### Models
 * Model [`dark_current_rule07`](https://esa.gitlab.io/pyxel/doc/stable/references/model_groups/charge_generation_models.html#dark-current-rule07)
@@ -93,12 +105,12 @@ Downloading examples: 388MB [00:08, 47.9MB/s]
 Done in folder /.../pyxel-examples.
 
 $ cd pyxel-examples
-$ uvx --with pyxel-sim[model] --from jupyterlab jupyter-lab
+$ uvx --with pyxel-sim[model] jupyter lab
 [Server App] Jupyter Server is running at:
 [Server App] http://localhost:8888/lab?token=...
 ```
 
-This streamlined process makes it simplet to get Pyxel up and running quickly !
+This streamlined process makes it simpler to get Pyxel up and running quickly !
 
 ### **New parameter `with_inherited_coords` for `pyxel.run_mode` function**
 
