@@ -106,6 +106,7 @@ class DatasetMetadata:
 
 
 def build_metadata(data_tree: "DataTree") -> Mapping[str, DatasetMetadata]:
+    """Construct metadata from a DataTree."""
     metadata = {}
 
     all_paths: Sequence[str] = sorted(data_tree.groups)
@@ -172,10 +173,11 @@ def _get_output_dtypes(
 def _get_output_sizes(
     all_metadata: Mapping[str, DatasetMetadata],
 ) -> Mapping[Hashable, int]:
+    """Retrieve the sizes our the output variables' dimensions from the metadata."""
     result: dict[Hashable, int] = {}
 
     metadata: DatasetMetadata
-    for metadata in all_metadata.values():
+    for metadata_key, metadata in all_metadata.items():
         if not metadata.data_vars:
             continue
 
@@ -185,8 +187,8 @@ def _get_output_sizes(
         }
 
         for coord_key in coord_sizes:
-            if coord_key in result:
-                raise NotImplementedError
+            if coord_key in result and coord_sizes[coord_key] != coord_sizes[coord_key]:
+                raise NotImplementedError(f"{metadata_key=}, {coord_key=}")
 
         result.update(coord_sizes)
 
@@ -203,6 +205,7 @@ def _run_pipelines_array_to_datatree(
     pipeline_seed: Optional[int],
     progressbar: bool,
 ) -> "DataTree":
+    """Execute a single pipeline."""
     # TODO: Fix this
     if with_inherited_coords is False:
         raise NotImplementedError
@@ -235,6 +238,7 @@ def _build_metadata(
     result_type: ResultId,
     pipeline_seed: Optional[int],
 ) -> Mapping[str, DatasetMetadata]:
+    """Build metadata from a single pipeline run."""
     data_tree: "DataTree" = _run_pipelines_array_to_datatree(
         params_tuple=params_tuple,
         dimension_names=dimension_names,
