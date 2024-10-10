@@ -149,6 +149,15 @@ Fitness functions
     sum_of_squared_residuals
     reduced_chi_squared
 
+Plotting
+========
+
+.. currentmodule:: pyxel.plotting
+
+.. autosummary::
+
+    plot_ptc
+
 Notebook
 ========
 
@@ -271,5 +280,6 @@ Outputs
    api/calibration.rst
    api/inputs.rst
    api/outputs.rst
+   api/plotting.rst
    api/notebook.rst
    api/util.rst
