@@ -106,7 +106,7 @@ Check the current version of the latest Pyxel release by entering:
 .. code-block:: bash
 
     $ uvx pyxel-sim --version
-    pyxel-sim, version 2.5.1
+    pyxel-sim, version 2.6
     Python (CPython) 3.11.9
 
 
@@ -131,14 +131,23 @@ Then you can start a Jupyter Lab server with the latest version of Pyxel:
 .. code-block:: bash
 
     $ cd pyxel-examples
-    $ uvx --with pyxel-sim[model] --from jupyterlab jupyter-lab
+    $ uvx --with pyxel-sim[model] jupyter lab
 
 Alternatively, start Jupyter Lab server with a specific version of Pyxel and Python:
 
 .. code-block:: bash
 
     $ cd pyxel-examples
-    $ uvx --python 3.11 --with "pyxel-sim[model]==2.5.1" --from jupyterlab jupyter-lab
+    $ uvx --python 3.11 --with "pyxel-sim[model]==2.6" jupyter lab
+
+
+or with the current Pyxel development code in Gitlab
+
+.. code-block:: bash
+
+    $ cd pyxel-examples
+    $ uvx --python 3.11 --with git+https://gitlab.com/esa/pyxel.git[model] jupyter lab
+
 
 .. note::
 
@@ -192,22 +201,22 @@ commands in the terminal:
 
     .. code-block:: bash
 
-        curl -O https://esa.gitlab.io/pyxel/doc/latest/pyxel-2.5.1-environment.yaml
-        conda env create -f pyxel-2.5.1-environment.yaml
+        curl -O https://esa.gitlab.io/pyxel/doc/latest/pyxel-2.6-environment.yaml
+        conda env create -f pyxel-2.6-environment.yaml
 
 .. tab:: Windows (Powershell)
 
     .. code-block:: bash
 
-        wget https://esa.gitlab.io/pyxel/doc/latest/pyxel-2.5.1-environment.yaml -outfile "pyxel-2.5.1-environment.yaml"
-        conda env create -f pyxel-2.5.1-environment.yaml
+        wget https://esa.gitlab.io/pyxel/doc/latest/pyxel-2.6-environment.yaml -outfile "pyxel-2.6-environment.yaml"
+        conda env create -f pyxel-2.6-environment.yaml
 
 
 Once the conda environment has been created you can active it using:
 
 .. code-block:: bash
 
-    conda activate pyxel-2.5.1
+    conda activate pyxel-2.6
 
 You can now proceed to download the Pyxel tutorial notebooks.
 The total size to download is ~200 MB.
