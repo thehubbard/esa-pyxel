@@ -13,6 +13,7 @@ from pyxel.evaluator import eval_range, evaluate_reference
 @pytest.mark.parametrize(
     "expr, exp",
     [
+        (1, [1]),
         ("[1,2,3]", [1, 2, 3]),
         ([1, 2, 3], [1, 2, 3]),
         ("numpy.array([1,2,3])", [1, 2, 3]),
@@ -44,7 +45,6 @@ def test_eval_range(expr: str, exp):
             "numpy data type is not a float or int",
         ),
         ("np.array([1,2,3])", NameError, r"name \'np\' is not defined"),
-        (1, NotImplementedError, ""),
     ],
 )
 def test_eval_range_failing(expr: str, exp_exc: Exception, exp_msg: str):
