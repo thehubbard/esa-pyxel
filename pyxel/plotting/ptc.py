@@ -128,7 +128,7 @@ def plot_ptc(
 
     dim_name, *_ = list(dataset.dims)
     data: xr.DataArray = (
-        dataset.drop_vars(dim_name)  # Drop core dimension (e.g. 'time')
+        dataset.drop_vars(str(dim_name))  # Drop core dimension (e.g. 'time')
         .rename({dim_name: "mean"})  # Rename core dimension to 'mean'
         .set_coords("mean")["variance"]  # Set 'mean' as a coordinate
     )
