@@ -17,6 +17,9 @@ Pyxel doesn't use SemVer anymore, since most minor releases have at least minor 
 ### Documentation
 
 ### Models
+* Fix bug in model [`photon_collection.load_image`](https://esa.gitlab.io/pyxel/doc/stable/references/model_groups/photon_collection_models.html#load-image) where the photon array is now correctly "added to"
+instead of "replaced by a new one".
+  (See TODO: create issue).
 
 ### Others
 * Pin to xarray < 2024.10.0.
