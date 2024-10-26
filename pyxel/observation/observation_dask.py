@@ -8,7 +8,6 @@
 """Subpackage for running Observation mode with Dask enabled."""
 
 from collections.abc import Hashable, Mapping, Sequence
-from copy import deepcopy
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any, Optional, Union
 
@@ -445,10 +444,7 @@ def run_pipelines_with_dask(
         all_metadata=all_metadata,
     )
 
-    if xr.__version__ <= "2024.9.0":
-        final_datatree = DataTree.from_dict(deepcopy(dct))
-    else:
-        final_datatree = DataTree.from_dict(dct)
+    final_datatree = DataTree.from_dict(dct)  # type: ignore[arg-type]
 
     if "observation.readout.times" in dim_names:
         # TODO: See #836
