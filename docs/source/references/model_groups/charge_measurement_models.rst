@@ -536,7 +536,7 @@ Example of the configuration file:
 .. code-block:: yaml
 
     - name: dc_crosstalk
-      func: pyxel.models.readout_electronics.dc_crosstalk
+      func: pyxel.models.charge_measurement.dc_crosstalk
       enabled: true
       arguments:
         coupling_matrix: [[1, 0.5, 0, 0], [0.5, 1, 0, 0], [0, 0, 1, 0.5], [0, 0, 0.5, 1]]
@@ -559,7 +559,7 @@ Example of the configuration file:
 .. code-block:: yaml
 
     - name: ac_crosstalk
-      func: pyxel.models.readout_electronics.ac_crosstalk
+      func: pyxel.models.charge_measurement.ac_crosstalk
       enabled: true
       arguments:
         coupling_matrix: [[1, 0.5, 0, 0], [0.5, 1, 0, 0], [0, 0, 1, 0.5], [0, 0, 0.5, 1]]
