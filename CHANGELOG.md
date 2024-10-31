@@ -17,10 +17,12 @@ Pyxel doesn't use SemVer anymore, since most minor releases have at least minor 
   (See [!979](https://gitlab.com/esa/pyxel/-/merge_requests/979)).
 
 ### Documentation
+* Fix documentation for model 'crosstalk' by Antoine Kaszczyc.
+  (See [!983](https://gitlab.com/esa/pyxel/-/merge_requests/983)).
 
 ### Models
 * Fix bug in model [`photon_collection.load_image`](https://esa.gitlab.io/pyxel/doc/stable/references/model_groups/photon_collection_models.html#load-image) where the photon array is now correctly "added to"
-  instead of "replaced by a new one".
+  instead of "replaced by a new one". By Antoine Kaszczyc.
   (See [!977](https://gitlab.com/esa/pyxel/-/merge_requests/977)).
 
 ### Others
