@@ -107,27 +107,24 @@ def eval_range(values: Union[Number, str, Sequence]) -> Sequence:
     return values_lst
 
 
-# TODO: Use 'numexpr.evaluate' ? See #331
-def eval_entry(value: Union[str, Number, np.ndarray]) -> Union[str, Number, np.ndarray]:
-    """TBW.
+def eval_entry(
+    value: Union[str, Number, np.ndarray, Sequence],
+) -> Union[str, Number, np.ndarray, Sequence]:
+    """Evaluate a value and try to convert it from a string to its corresponding data type."""
+    if not isinstance(value, str):
+        return value
 
-    :param value:
-    :return:
-    """
-    assert isinstance(value, (str, Number, list, np.ndarray))
+    try:
+        literal_eval(value)
+    except (SyntaxError, ValueError, NameError):
+        # ensure quotes in case of string literal value
+        first_char = value[0]
+        last_char = value[-1]
 
-    if isinstance(value, str):
-        try:
-            literal_eval(value)
-        except (SyntaxError, ValueError, NameError):
-            # ensure quotes in case of string literal value
-            first_char = value[0]
-            last_char = value[-1]
+        if first_char != last_char or first_char not in ("'", '"'):
+            value = '"' + value + '"'
 
-            if first_char != last_char or first_char not in ("'", '"'):
-                value = '"' + value + '"'
+    new_value = literal_eval(value)
+    assert isinstance(new_value, (str, Number, Sequence))
 
-        value = literal_eval(value)
-        assert isinstance(value, (str, Number, np.ndarray))
-
-    return value
+    return new_value

@@ -7,7 +7,7 @@
 
 import pytest
 
-from pyxel.evaluator import eval_range, evaluate_reference
+from pyxel.evaluator import eval_entry, eval_range, evaluate_reference
 
 
 @pytest.mark.parametrize(
@@ -81,3 +81,25 @@ def test_evaluate_reference_with_bad_inputs(reference, exp_exc, exp_msg):
     """Test function 'evaluate_reference' with invalid parameters."""
     with pytest.raises(exp_exc, match=exp_msg):
         _ = evaluate_reference(reference)
+
+
+@pytest.mark.parametrize(
+    "value, exp_output",
+    [
+        pytest.param("hello world", "hello world", id="str"),
+        pytest.param(42, 42, id="int"),
+        pytest.param("42", 42, id="int as str"),
+        pytest.param('"42"', "42", id="int as str2"),
+        pytest.param(3.14, 3.14, id="float"),
+        pytest.param("3.14", 3.14, id="float as str"),
+        pytest.param([1, 2, 3], [1, 2, 3], id="list 1D"),
+        pytest.param("[1,2,3]", [1, 2, 3], id="list 1D as str"),
+        pytest.param((1, 0.3, 0, 0), (1, 0.3, 0, 0), id="tuple 1D"),
+        pytest.param("(1, 0.3, 0, 0)", (1, 0.3, 0, 0), id="tuple 1D as str"),
+    ],
+)
+def test_eval_entry(value, exp_output):
+    """Test function eval entry."""
+    result = eval_entry(value)
+
+    assert result == exp_output
