@@ -28,7 +28,6 @@ class ParameterType(Enum):
     Multi = "multi"
 
 
-# TODO: Add unit tests
 def convert_values(
     values,
     parameter_type: ParameterType,
@@ -39,11 +38,16 @@ def convert_values(
     Sequence[str],
     Sequence[tuple[Number, ...]],
 ]:
+    """Convert a sequence of input values based on a specified parameter type."""
     if parameter_type is ParameterType.Simple or values == "_":
         return values
 
-    return [
-        (tuple(el) if (isinstance(el, Sequence) and not isinstance(el, str)) else el)
+    return [  # type: ignore[return-value]
+        (
+            tuple(convert_values(el, parameter_type=parameter_type))
+            if (isinstance(el, Sequence) and not isinstance(el, str))
+            else el
+        )
         for el in values
     ]
 
