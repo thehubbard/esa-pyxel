@@ -19,6 +19,8 @@ Pyxel doesn't use SemVer anymore, since most minor releases have at least minor 
   (See [!980](https://gitlab.com/esa/pyxel/-/merge_requests/980)).
 * Refactor 'ObservationDask'.
   (See [!981](https://gitlab.com/esa/pyxel/-/merge_requests/981)).
+* Refactor function 'eval_entry'.
+  (See [!984](https://gitlab.com/esa/pyxel/-/merge_requests/984)).
 
 ### Documentation
 * Fix documentation for model 'crosstalk' by Antoine Kaszczyc.
