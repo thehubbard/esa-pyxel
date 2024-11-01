@@ -21,6 +21,8 @@ Pyxel doesn't use SemVer anymore, since most minor releases have at least minor 
   (See [!981](https://gitlab.com/esa/pyxel/-/merge_requests/981)).
 * Refactor function 'eval_entry'.
   (See [!984](https://gitlab.com/esa/pyxel/-/merge_requests/984)).
+* Add unit tests for function 'convert_values'.
+  (See [!985](https://gitlab.com/esa/pyxel/-/merge_requests/985)).
 
 ### Documentation
 * Fix documentation for model 'crosstalk' by Antoine Kaszczyc.
