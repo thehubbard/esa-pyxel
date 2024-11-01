@@ -38,6 +38,7 @@ def convert_values(
     Sequence[str],
     Sequence[tuple[Number, ...]],
 ]:
+    """Convert a sequence of input values based on a specified parameter type."""
     if parameter_type is ParameterType.Simple or values == "_":
         return values
 
