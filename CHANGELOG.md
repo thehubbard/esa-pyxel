@@ -27,6 +27,8 @@ Pyxel doesn't use SemVer anymore, since most minor releases have at least minor 
 ### Documentation
 * Fix documentation for model 'crosstalk' by Antoine Kaszczyc.
   (See [!983](https://gitlab.com/esa/pyxel/-/merge_requests/983)).
+* When running 'uvx' force the python version.
+  (See [!987](https://gitlab.com/esa/pyxel/-/merge_requests/987)).
 
 ### Models
 * Fix bug in model [`photon_collection.load_image`](https://esa.gitlab.io/pyxel/doc/stable/references/model_groups/photon_collection_models.html#load-image) where the photon array is now correctly "added to"
