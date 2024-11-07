@@ -152,8 +152,8 @@ def _get_obj_att(
                         f"    func: ...\n"
                     )
                 else:
-                    raise NotImplementedError(
-                        f"obj={obj!r}, key={key!r}, obj_type={obj_type!r}, part={part!r}"
+                    raise AttributeError(  # noqa: TRY004
+                        f"Attribute {key!r} does not exist !"
                     )
 
             if obj_type and isinstance(obj, obj_type):
@@ -164,6 +164,13 @@ def _get_obj_att(
             obj = None
             break
     return obj, tail
+
+
+class _MISSING_TYPE: ...  # noqa: N801
+
+
+# This is a sentinel object
+MISSING = _MISSING_TYPE()
 
 
 # TODO: Is this class needed ?
@@ -221,19 +228,25 @@ class Processor:
         >>> processor.has("pipeline.photon_collection.illumination.arguments.level")
         True
         """
-        found = False
-        obj, att = _get_obj_att(self, key)
+        att: str
+        obj, att = _get_obj_att(obj=self, key=key)
         if isinstance(obj, dict) and att in obj:
+            return True
+
+        try:
+            found = hasattr(obj, att)
+        except AttributeError:
+            found = False
+        except ValueError:
             found = True
-        elif hasattr(obj, att):
-            found = True
+
         return found
 
     # TODO: Could it be renamed '__getitem__' ?
     # TODO: Is it really needed ?
     # TODO: What are the valid keys ? (e.g. 'detector.image.array',
     #       'detector.signal.array' and 'detector.pixel.array')
-    def get(self, key: str) -> Any:
+    def get(self, key: str, default: Any = MISSING) -> Any:
         """Get the current value from a Parameter.
 
         Examples
@@ -245,7 +258,14 @@ class Processor:
         array(0.1)
         """
         func: Callable = operator.attrgetter(key)
-        result = func(self)
+
+        try:
+            result = func(self)
+        except (KeyError, ValueError):
+            if default is not MISSING:
+                return default
+
+            raise
 
         return result
 
