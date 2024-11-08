@@ -24,7 +24,6 @@ from pyxel.pipelines import Processor, ResultId, get_result_id, result_keys
 from pyxel.util import set_random_seed
 
 if TYPE_CHECKING:
-    import pandas as pd
     import xarray as xr
 
     from pyxel.detectors import Detector
