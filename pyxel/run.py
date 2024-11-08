@@ -1100,7 +1100,7 @@ def run(
         num_filenames = 0
     else:
         num_filenames = len(df_filenames)
-        df_filenames.to_csv(output_dir / "output_filenames.csv")
+        df_filenames.to_csv(output_dir / "output_filenames.csv", index=False)
 
     # TODO: Fix this, see issue #728
     copy_config_file(input_filename=input_filename, output_dir=output_dir)
