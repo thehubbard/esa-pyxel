@@ -9,6 +9,8 @@
 
 from typing import Literal, Optional
 
+import pooch
+
 from pyxel.detectors import Detector
 from pyxel.models.photon_collection import load_image
 
@@ -45,9 +47,13 @@ def usaf_illumination(
         Time scale of the photon flux, default is 1 second. 0.001 would be ms.
     bit_resolution : int
         Bit resolution of the loaded image.
-
     """
-    filename = "https://gitlab.com/esa/pyxel-data/-/raw/master/samples/USAF-1951-optical-calibration-target.png"
+    # Download the PNG file and save it locally.
+    # Running this again will not cause a download
+    filename: str = pooch.retrieve(
+        url="https://gitlab.com/esa/pyxel-data/-/raw/master/samples/USAF-1951-optical-calibration-target.png",
+        known_hash="md5:0a62eda6187aded13aca0e453db60665",
+    )
 
     load_image(  # type: ignore[operator]
         detector=detector,
