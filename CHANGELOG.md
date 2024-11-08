@@ -44,6 +44,8 @@ Pyxel doesn't use SemVer anymore, since most minor releases have at least minor 
 ### Others
 * Pin to xarray < 2024.10.0.
   (See [!978](https://gitlab.com/esa/pyxel/-/merge_requests/978)).
+* Simplify usage of `ruff`.
+  (See [!991](https://gitlab.com/esa/pyxel/-/merge_requests/991)).
 
 
 ## 2.6.1 / 2024-10-14
