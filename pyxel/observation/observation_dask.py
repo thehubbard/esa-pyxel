@@ -21,6 +21,7 @@ if TYPE_CHECKING:
     import xarray as xr
 
     from pyxel.exposure import Readout
+    from pyxel.outputs import ObservationOutputs
 
     # Import 'DataTree'
     try:
@@ -126,6 +127,10 @@ def build_metadata(data_tree: "DataTree") -> Mapping[str, DatasetMetadata]:
                     dtype=value.dtype,
                 )
                 for key, value in sub_data_tree.data_vars.items()
+                if (
+                    path != "/bucket"
+                    or (path == "/bucket" and {"y", "x"}.issubset(value.dims))
+                )
             },
             coords={
                 key: CoordinateMetadata(attrs=value.attrs, data=value.data)
@@ -198,6 +203,7 @@ def _get_output_sizes(
 
 def _run_pipelines_array_to_datatree(
     params_tuple: tuple,
+    params_index: int,
     dimension_names: Mapping[str, str],
     processor: "Processor",
     readout: "Readout",
@@ -231,6 +237,37 @@ def _run_pipelines_array_to_datatree(
         progressbar=progressbar,
     )
 
+    # TODO: Remove this ! This should be done in
+    # Save the outputs if configured
+    # if (
+    #     processor.observation
+    #     and processor.observation.outputs
+    #     and processor.observation.outputs.save_data_to_file
+    # ):
+    #     import xarray as xr
+    #
+    #     # Import 'DataTree'
+    #     try:
+    #         from xarray.core.datatree import DataTree
+    #     except ImportError:
+    #         from datatree import DataTree  # type: ignore[assignment]
+    #
+    #     filenames_dct: Mapping[str, Mapping[str, str]] = (
+    #         processor.observation.outputs.save_to_file(
+    #             processor=new_processor,
+    #             run_number=params_index,
+    #         )
+    #     )
+    #
+    #     datatree_dct: dict[str, xr.Dataset] = {}
+    #     for name, partial_dct in filenames_dct.items():
+    #         for file_formats, filename in partial_dct.items():
+    #             datatree_dct[name] = xr.Dataset(
+    #                 {file_formats: np.array(filename, dtype=np.object_)}
+    #             )
+    #
+    #     data_tree["/output"] = DataTree.from_dict(datatree_dct)
+
     return data_tree
 
 
@@ -243,8 +280,13 @@ def _build_metadata(
     pipeline_seed: Optional[int],
 ) -> Mapping[str, DatasetMetadata]:
     """Build metadata from a single pipeline run."""
-    data_tree: "DataTree" = _run_pipelines_array_to_datatree(
+    # TODO: Create a new temporary 'Output' (if needed) and remove it
+    if processor.observation is None:
+        raise NotImplementedError
+
+    data_tree = _run_pipelines_array_to_datatree(
         params_tuple=params_tuple,
+        params_index=0,
         dimension_names=dimension_names,
         processor=processor,
         readout=readout,
@@ -258,6 +300,7 @@ def _build_metadata(
 
 def _run_pipelines_tuple_to_array(
     params_tuple: tuple,
+    params_index: int,
     dimension_names: Mapping[str, str],
     all_metadata: Mapping[str, DatasetMetadata],
     processor: "Processor",
@@ -267,6 +310,7 @@ def _run_pipelines_tuple_to_array(
 ) -> tuple[np.ndarray, ...]:
     data_tree: "DataTree" = _run_pipelines_array_to_datatree(
         params_tuple=params_tuple,
+        params_index=params_index,
         dimension_names=dimension_names,
         processor=processor,
         readout=readout,
@@ -360,15 +404,11 @@ def run_pipelines_with_dask(
     dim_names: Mapping[str, str],
     parameter_mode: Union[ProductMode, SequentialMode, CustomMode],
     processor: "Processor",
-    with_inherited_coords: bool,
     readout: "Readout",
+    outputs: Optional["ObservationOutputs"],
     result_type: ResultId,
     pipeline_seed: Optional[int],
 ) -> "DataTree":
-    # TODO: Add better error message
-    if with_inherited_coords is False:
-        raise NotImplementedError
-
     # Late import to speedup start-up time
     import xarray as xr
 
@@ -411,10 +451,17 @@ def run_pipelines_with_dask(
     # Coerce 'params_dataarray' to a Dask array
     params_dataarray_dask: xr.DataArray = params_dataarray.chunk(1)
 
+    params_indexes: xr.DataArray = xr.zeros_like(params_dataarray)
+    params_indexes[...] = np.arange(params_dataarray.size, dtype=int).reshape(
+        params_indexes.shape
+    )
+    params_indexes_dask: xr.DataArray = params_indexes.chunk(1)
+
     # Create 'Dask' data arrays
     dask_dataarrays: tuple[xr.DataArray, ...] = xr.apply_ufunc(
         _run_pipelines_tuple_to_array,  # Function to apply
         params_dataarray_dask,  # Argument 'params_tuple'
+        params_indexes_dask,  # Argument 'params_index'
         kwargs={  # other arguments
             "dimension_names": dim_names,
             "processor": processor,
@@ -423,7 +470,7 @@ def run_pipelines_with_dask(
             "result_type": result_type,
             "pipeline_seed": pipeline_seed,
         },
-        input_core_dims=[[]],
+        input_core_dims=[[], []],
         output_core_dims=output_core_dims,
         vectorize=True,  # loop over non-core dims
         dask="parallelized",
@@ -431,6 +478,7 @@ def run_pipelines_with_dask(
         output_dtypes=output_dtypes,  # TODO: Move this to 'dask_gufunc_kwargs'
     )
 
+    # Rebuild a DataTree from 'dask_dataarrays'
     dct: Mapping[str, Union[xr.Dataset, DataTree]] = _rebuild_datatree_from_dask(
         dask_dataarrays=dask_dataarrays,
         all_metadata=all_metadata,
@@ -450,5 +498,19 @@ def run_pipelines_with_dask(
             "units": "s",
             "long_name": "Readout time",
         }
+
+    # TODO: Fix this. See issue #723
+    if outputs and outputs.save_data_to_file:
+        # Late import
+        from pyxel.outputs.outputs import save_datatree
+
+        data_tree_filenames: Optional["DataTree"] = save_datatree(
+            data_tree=final_datatree.isel(time=-1),
+            outputs=outputs.save_data_to_file,
+            current_output_folder=outputs.current_output_folder,
+            with_inherited_coords=True,
+        )
+
+        final_datatree["/output"] = data_tree_filenames
 
     return final_datatree

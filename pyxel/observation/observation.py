@@ -8,13 +8,13 @@
 """Parametric mode class and helper functions."""
 
 import sys
-import warnings
 from collections import Counter
 from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import TYPE_CHECKING, Callable, Literal, Optional, Union
 
 import numpy as np
+from typing_extensions import deprecated
 
 import pyxel
 from pyxel import options_wrapper
@@ -258,6 +258,7 @@ class Observation:
                     "do not use '_' character in 'values' field"
                 )
 
+    @deprecated("This method will be removed")
     def run_pipelines_without_datatree(self, processor: "Processor") -> None:
         """Run the observation pipelines."""
         # Late import to speedup start-up time
@@ -305,23 +306,24 @@ class Observation:
         dim_names: Mapping[str, str] = _get_short_dimension_names_new(types)
 
         if self.with_dask:
+            # Run observation mode using 'dask' (in parallel)
             if with_inherited_coords is False:
-                warnings.warn(
-                    "Parameter 'with_inherited_coords' is forced to True !",
-                    stacklevel=1,
-                )
+                raise NotImplementedError
 
             final_datatree = run_pipelines_with_dask(
                 dim_names=dim_names,
                 parameter_mode=self.parameter_mode,
                 processor=processor,
-                with_inherited_coords=True,
                 readout=self.readout,
+                outputs=self.outputs,
                 result_type=self.result_type,
                 pipeline_seed=self.pipeline_seed,
             )
 
         else:
+            # Run observation mode sequentially (not in parallel)
+            # Note: output files are generated at this stage
+
             # TODO: Create new class for 'Sequence[Union[ParameterItem, CustomParameterItem]]'
             # Fetch the observation parameters to be passed to the pipeline
             if isinstance(self.parameter_mode, ProductMode):
@@ -356,6 +358,7 @@ class Observation:
 
         return final_datatree
 
+    # NOTES: This method is only called when running Observation mode sequentially or in parallel (with Dask)
     def _run_single_pipeline_without_datatree(
         self,
         param_item: Union[ParameterEntry, CustomParameterEntry],
@@ -392,7 +395,12 @@ class Observation:
         with_outputs: bool = True,  # TODO: Refactor this
         with_extra_dims: bool = True,  # TODO: Refactor this
     ) -> "DataTree":
-        """Run a single exposure pipeline for a given parameter item."""
+        """Run a single exposure pipeline for a given parameter item.
+
+        Notes
+        -----
+        This method is only called when running Observation mode sequentially (without dask).
+        """
         # Create a new processor using the given parameters
         new_processor = create_new_processor(
             processor=processor,
@@ -421,9 +429,9 @@ class Observation:
 
             raise
 
-        # Save the outputs if configured
+        # Save the outputs (if configured)
         if with_outputs and self.outputs:
-            _ = self.outputs.save_to_file(
+            data_tree["/output"] = self.outputs.save_to_file(
                 processor=new_processor,
                 run_number=param_item.run_index,
             )

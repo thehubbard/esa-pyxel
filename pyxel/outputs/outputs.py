@@ -8,17 +8,18 @@
 """Classes for creating outputs."""
 
 import logging
-import re
+import warnings
 from collections.abc import Mapping, Sequence
 from datetime import datetime
-from glob import glob
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Literal, Optional, Protocol, Union
+from typing import TYPE_CHECKING, Any, Literal, Optional, Union
 
 import numpy as np
 
 from pyxel import __version__ as version
 from pyxel.options import global_options
+from pyxel.outputs import SaveToFileProtocol, ValidFormat, apply_run_number
+from pyxel.outputs.utils import to_csv, to_fits, to_hdf, to_jpg, to_npy, to_png, to_txt
 from pyxel.util import complete_path
 
 if TYPE_CHECKING:
@@ -36,19 +37,6 @@ if TYPE_CHECKING:
     from pyxel.detectors import Detector
     from pyxel.pipelines import Processor
 
-    class SaveToFile(Protocol):
-        """TBW."""
-
-        def __call__(
-            self,
-            data: Any,
-            name: str,
-            with_auto_suffix: bool = True,
-            run_number: Optional[int] = None,
-        ) -> Path:
-            """TBW."""
-            ...
-
 
 ValidName = Literal[
     "detector.photon.array",
@@ -57,7 +45,268 @@ ValidName = Literal[
     "detector.signal.array",
     "detector.image.array",
 ]
-ValidFormat = Literal["fits", "hdf", "npy", "txt", "csv", "png", "jpg", "jpeg"]
+
+
+def _save_data_2d(
+    data_2d: "np.ndarray",
+    run_number,
+    data_formats: Sequence[ValidFormat],
+    current_output_folder: Path,
+    name: str,
+    prefix: Optional[str] = None,
+) -> np.ndarray[Any, np.dtype[np.object_]]:
+    save_methods: Mapping[ValidFormat, "SaveToFileProtocol"] = {
+        "fits": to_fits,
+        "hdf": to_hdf,
+        "npy": to_npy,
+        "txt": to_txt,
+        "csv": to_csv,
+        "png": to_png,
+        "jpg": to_jpg,
+        "jpeg": to_jpg,
+    }
+
+    if prefix:
+        full_name: str = f"{prefix}_{name}"
+    else:
+        full_name = name
+
+    filenames: list[str] = []
+    for output_format in data_formats:
+        func = save_methods[output_format]
+
+        filename = func(
+            current_output_folder=current_output_folder,
+            data=data_2d,
+            name=full_name,
+            # with_auto_suffix=with_auto_suffix,
+            run_number=run_number,
+            # header=header,
+        )
+
+        filenames.append(str(filename.relative_to(current_output_folder)))
+
+    return np.array(filenames, dtype=np.object_)
+
+
+def save_dataarray(
+    data_array: "xr.DataArray",
+    name: str,
+    full_name: str,
+    data_formats: Sequence["ValidFormat"],
+    current_output_folder: Path,
+) -> "xr.Dataset":
+    # Late import
+    import numpy as np
+    import xarray as xr
+
+    num_elements = int(data_array.isel(y=0, x=0).size)
+
+    if (
+        "data_format" in data_array.dims
+        or "bucket_name" in data_array.dims
+        or "filename" in data_array.dims
+    ):
+        raise NotImplementedError
+
+    shape_run_number: tuple[int, ...] = tuple(
+        {
+            dim_name: dim_size
+            for dim_name, dim_size in data_array.sizes.items()
+            if dim_name not in ("x", "y")
+        }.values()
+    )
+
+    run_number = np.arange(num_elements, dtype=int).reshape(shape_run_number)
+    output_data_array: xr.DataArray = xr.apply_ufunc(
+        _save_data_2d,
+        data_array.reset_coords(drop=True).rename("filename"),  # parameter 'data_2d'
+        run_number,  # parameter 'run_number'
+        kwargs={
+            "data_formats": data_formats,
+            "current_output_folder": current_output_folder,
+            "name": full_name,
+        },
+        input_core_dims=[
+            ["y", "x"],  # for parameter 'data_2d'
+            [],  # for parameter 'run_number'
+        ],
+        output_core_dims=[["data_format"]],
+        vectorize=True,  # loop over non-core dims
+        dask="parallelized",
+        dask_gufunc_kwargs={"output_sizes": {"data_format": len(data_formats)}},
+        output_dtypes=[np.object_],  # TODO: Move this to 'dask_gufunc_kwargs'
+    )
+
+    output_dataset: xr.Dataset = (
+        output_data_array.expand_dims("bucket_name")
+        .assign_coords(bucket_name=[name], data_format=data_formats)
+        .to_dataset()
+    )
+    return output_dataset
+
+
+def _datasets_to_datatree(filenames_ds: list["xr.Dataset"]) -> Optional["DataTree"]:
+    # Import 'DataTree'
+    try:
+        from xarray.core.datatree import DataTree
+    except ImportError:
+        from datatree import DataTree  # type: ignore[assignment]
+
+    if not filenames_ds:
+        return None
+
+    first_dataset, *_ = filenames_ds
+    dims = [
+        dim for dim in first_dataset.dims if dim not in ("bucket_name", "data_format")
+    ]
+
+    dct = {"/": first_dataset[dims]}
+    for partial_dataset in filenames_ds:
+        bucket_name: str = str(partial_dataset["bucket_name"][0].data)
+
+        dct[f"/{bucket_name}"] = partial_dataset.squeeze("bucket_name")
+
+    final_datatree = DataTree.from_dict(dct)  # type: ignore[arg-type]
+
+    return final_datatree
+
+
+def save_datatree(
+    data_tree: "DataTree",
+    outputs: Sequence[Mapping[ValidName, Sequence[ValidFormat]]],
+    current_output_folder: Path,
+    with_inherited_coords: bool,
+) -> Optional["DataTree"]:
+    """Save output file(s) from a DataTree.
+
+    Parameters
+    ----------
+    data_tree
+    outputs
+    current_output_folder
+    with_inherited_coords
+
+    Returns
+    -------
+    Dask DataFrame, optional
+
+    Examples
+    --------
+    >>> save_datatree(...)
+    <xarray.DataTree>
+    Group: /
+    │   Dimensions:  (id: 6)
+    │   Coordinates:
+    │     * id       (id) int64 48B 0 1 2 3 4 5
+    ├── Group: /image
+    │       Dimensions:      (id: 6, data_format: 2)
+    │       Coordinates:
+    │         * id           (id) int64 48B 0 1 2 3 4 5
+    │           bucket_name  <U5 20B 'image'
+    │         * data_format  (data_format) <U4 32B 'fits' 'npy'
+    │       Data variables:
+    │           filename     (id, data_format) object 96B dask.array<chunksize=(1, 2), meta=np.ndarray>
+    └── Group: /pixel
+            Dimensions:      (id: 6, data_format: 1)
+            Coordinates:
+              * id           (id) int64 48B 0 1 2 3 4 5
+                bucket_name  <U5 20B 'pixel'
+              * data_format  (data_format) <U3 12B 'npy'
+            Data variables:
+                filename     (id, data_format) object 48B dask.array<chunksize=(1, 1), meta=np.ndarray>
+    """
+    # Late import
+    import xarray as xr
+
+    if not outputs:
+        raise NotImplementedError
+
+    filenames_ds: list[xr.Dataset] = []
+
+    dct: Mapping["ValidName", Sequence["ValidFormat"]]
+    for dct in outputs:
+        full_name: "ValidName"
+        data_formats: Sequence["ValidFormat"]
+        for full_name, data_formats in dct.items():
+            name: str = full_name.removeprefix("detector.").removesuffix(".array")
+
+            # Get a node name
+            if with_inherited_coords:
+                node_name: str = f"/bucket/{name}"
+            else:
+                node_name = name
+
+            # TODO: Create a function 'has_node' ??
+            # Check if 'node_name' exists in 'data_tree'
+            try:
+                partial_path = "/"
+                for partial_node_name in node_name.removeprefix("/").split("/"):
+                    if partial_node_name not in data_tree[partial_path]:
+                        raise KeyError(
+                            f"Cannot find node '{partial_path}/{partial_node_name}'"
+                        )
+
+                    partial_path += partial_node_name
+
+            except KeyError:
+                logging.exception(
+                    "Cannot find node '%s/%s'", partial_path, partial_node_name
+                )
+                continue
+
+            data_array: Union[xr.DataArray, "DataTree"] = data_tree[node_name]
+            if not isinstance(data_array, xr.DataArray):
+                raise TypeError
+
+            output_dataframe: xr.Dataset = save_dataarray(
+                data_array=data_array,
+                name=name,
+                full_name=full_name,
+                data_formats=data_formats,
+                current_output_folder=current_output_folder,
+            )
+
+            filenames_ds.append(output_dataframe)
+
+    final_datatree = _datasets_to_datatree(filenames_ds)
+    return final_datatree
+
+
+def _dict_to_datatree(all_filenames: Mapping[str, Mapping[str, str]]) -> "DataTree":
+    # Import 'DataTree'
+    try:
+        from xarray.core.datatree import DataTree
+    except ImportError:
+        from datatree import DataTree  # type: ignore[assignment]
+    import xarray as xr
+
+    datatree_dct = {}
+
+    full_bucket_name: str
+    bucket_dct: Mapping[str, str]
+    for full_bucket_name, bucket_dct in all_filenames.items():
+        bucket_name: str = full_bucket_name.removeprefix("detector.").removesuffix(
+            ".array"
+        )
+
+        datatree_dct[f"/{bucket_name}"] = (
+            xr.concat(
+                [
+                    xr.DataArray(
+                        [filename],
+                        dims=["data_format"],
+                        coords={"data_format": [data_format]},
+                    )
+                    for data_format, filename in bucket_dct.items()
+                ],
+                dim="data_format",
+            )
+            .rename("filename")
+            .to_dataset()
+        )
+
+    return DataTree.from_dict(datatree_dct)  # type: ignore[arg-type]
 
 
 # TODO: Create a new class that will contain the parameter 'save_data_to_file'
@@ -110,6 +359,9 @@ class Outputs:
             Sequence[Mapping[ValidName, Sequence[ValidFormat]]]
         ] = None,
     ):
+        if save_data_to_file is None:
+            save_data_to_file = [{"detector.image.array": ["fits"]}]
+
         self._log = logging.getLogger(__name__)
 
         self._current_output_folder: Optional[Path] = None
@@ -177,10 +429,12 @@ class Outputs:
         self._custom_dir_name = name
 
     def create_output_folder(self) -> None:
+        """Create the output folder."""
         output_folder: Path = complete_path(
             filename=self._output_folder,
             working_dir=global_options.working_directory,
         ).expanduser()
+
         self._current_output_folder = create_output_directory(
             output_folder=output_folder,
             custom_dir_name=self._custom_dir_name,
@@ -195,6 +449,13 @@ class Outputs:
         header: Optional["fits.Header"] = None,
     ) -> Path:
         """Write array to :term:`FITS` file."""
+        warnings.warn(
+            "Deprecated. This will be removed in a future version of Pyxel. "
+            "Please use function 'to_fits'.",
+            DeprecationWarning,
+            stacklevel=1,
+        )
+
         name = name.replace(".", "_")
 
         current_output_folder: Path = complete_path(
@@ -233,6 +494,13 @@ class Outputs:
         run_number: Optional[int] = None,
     ) -> Path:
         """Write detector object to HDF5 file."""
+        warnings.warn(
+            "Deprecated. This will be removed in a future version of Pyxel. "
+            "Please use function 'to_hdf'.",
+            DeprecationWarning,
+            stacklevel=1,
+        )
+
         # Late import to speedup start-up time
         import h5py as h5
 
@@ -284,6 +552,13 @@ class Outputs:
         run_number: Optional[int] = None,
     ) -> Path:
         """Write data to txt file."""
+        warnings.warn(
+            "Deprecated. This will be removed in a future version of Pyxel. "
+            "Please use function 'to_txt'.",
+            DeprecationWarning,
+            stacklevel=1,
+        )
+
         name = name.replace(".", "_")
 
         current_output_folder: Path = complete_path(
@@ -312,6 +587,13 @@ class Outputs:
         run_number: Optional[int] = None,
     ) -> Path:
         """Write Pandas Dataframe or Numpy array to a CSV file."""
+        warnings.warn(
+            "Deprecated. This will be removed in a future version of Pyxel. "
+            "Please use function 'to_csv'.",
+            DeprecationWarning,
+            stacklevel=1,
+        )
+
         name = name.replace(".", "_")
 
         current_output_folder: Path = complete_path(
@@ -343,6 +625,13 @@ class Outputs:
         run_number: Optional[int] = None,
     ) -> Path:
         """Write Numpy array to Numpy binary npy file."""
+        warnings.warn(
+            "Deprecated. This will be removed in a future version of Pyxel. "
+            "Please use function 'to_npy'.",
+            DeprecationWarning,
+            stacklevel=1,
+        )
+
         name = name.replace(".", "_")
 
         current_output_folder: Path = complete_path(
@@ -374,6 +663,13 @@ class Outputs:
         run_number: Optional[int] = None,
     ) -> Path:
         """Write Numpy array to a PNG image file."""
+        warnings.warn(
+            "Deprecated. This will be removed in a future version of Pyxel. "
+            "Please use function 'to_png'.",
+            DeprecationWarning,
+            stacklevel=1,
+        )
+
         # Late import to speedup start-up time
         from PIL import Image
 
@@ -410,6 +706,13 @@ class Outputs:
         run_number: Optional[int] = None,
     ) -> Path:
         """Write Numpy array to a JPEG image file."""
+        warnings.warn(
+            "Deprecated. This will be removed in a future version of Pyxel. "
+            "Please use function 'to_jpg'.",
+            DeprecationWarning,
+            stacklevel=1,
+        )
+
         # Late import to speedup start-up time
         from PIL import Image
 
@@ -446,6 +749,13 @@ class Outputs:
         run_number: Optional[int] = None,
     ) -> Path:
         """Write Numpy array to a JPG image file."""
+        warnings.warn(
+            "Deprecated. This will be removed in a future version of Pyxel. "
+            "Please use function 'to_jpg'.",
+            DeprecationWarning,
+            stacklevel=1,
+        )
+
         # Late import to speedup start-up time
         from PIL import Image
 
@@ -474,134 +784,121 @@ class Outputs:
 
         return full_filename
 
+    # ruff: noqa: C901
     def save_to_file(
         self,
         processor: "Processor",
         prefix: Optional[str] = None,
         with_auto_suffix: bool = True,
         run_number: Optional[int] = None,
-    ) -> Sequence[Path]:
-        """Save outputs into file(s).
+    ) -> "DataTree":
+        if not self.save_data_to_file:
+            raise NotImplementedError
 
-        Parameters
-        ----------
-        run_number
-        prefix
-        with_auto_suffix
-        processor : Processor
-
-        Returns
-        -------
-        list of Path
-            TBW.
-        """
-        save_methods: Mapping[ValidFormat, SaveToFile] = {
-            "fits": self.save_to_fits,
-            "hdf": self.save_to_hdf,
-            "npy": self.save_to_npy,
-            "txt": self.save_to_txt,
-            "csv": self.save_to_csv,
-            "png": self.save_to_png,
-            "jpg": self.save_to_jpg,
-            "jpeg": self.save_to_jpeg,
+        save_methods: Mapping[ValidFormat, SaveToFileProtocol] = {
+            "fits": to_fits,
+            "hdf": to_hdf,
+            "npy": to_npy,
+            "txt": to_txt,
+            "csv": to_csv,
+            "png": to_png,
+            "jpg": to_jpg,
+            "jpeg": to_jpg,
         }
 
-        filenames: list[Path] = []
+        all_filenames: dict[str, dict[str, str]] = {}
 
         dct: Mapping[ValidName, Sequence[ValidFormat]]
-        if self.save_data_to_file:
-            for dct in self.save_data_to_file:
-                # TODO: Why looking at first entry ? Check this !
-                # Get first entry of `dict` 'item'
-                first_item: tuple[ValidName, Sequence[ValidFormat]]
-                first_item, *_ = dct.items()
+        for dct in self.save_data_to_file:
+            # TODO: Why looking at first entry ? Check this !
+            # Get first entry of `dict` 'item'
+            first_item: tuple[ValidName, Sequence[ValidFormat]]
+            first_item, *_ = dct.items()
 
-                obj: ValidName
-                format_list: Sequence[ValidFormat]
-                obj, format_list = first_item
+            valid_name: ValidName
+            format_list: Sequence[ValidFormat]
+            valid_name, format_list = first_item
 
-                data: np.ndarray = np.array(processor.get(obj))
+            value: Optional[np.ndarray] = processor.get(valid_name, default=None)
+            if value is None:
+                continue
 
-                if prefix:
-                    name: str = f"{prefix}_{obj}"
+            data: np.ndarray = np.array(value)
+
+            if prefix:
+                name: str = f"{prefix}_{valid_name}"
+            else:
+                name = valid_name
+
+            partial_filenames: dict[str, str] = {}
+            out_format: ValidFormat
+            for out_format in format_list:
+                func: SaveToFileProtocol = save_methods[out_format]
+
+                if out_format in ("png", "jpg", "jpeg"):
+                    if valid_name != "detector.image.array":
+                        raise ValueError(
+                            "Cannot save non-digitized data into image formats."
+                        )
+                    maximum = (
+                        2**processor.detector.characteristics.adc_bit_resolution - 1
+                    )
+                    rescaled_data = (255.0 / maximum * data).astype(np.uint8)
+
+                    filename: Path = func(
+                        current_output_folder=self.current_output_folder,
+                        data=rescaled_data,
+                        name=name,
+                        with_auto_suffix=with_auto_suffix,
+                        run_number=run_number,
+                    )
+
+                elif out_format == "fits":
+                    # Create FITS header
+                    from astropy.io import fits
+
+                    header = fits.Header()
+
+                    line: str
+                    for line in processor.pipeline.describe():
+                        header.add_history(line)
+
+                    previous_header: Optional[fits.Header] = (
+                        processor.detector._headers.get(valid_name)
+                    )
+                    if previous_header is not None:
+                        for card in previous_header.cards:
+                            key, *_ = card
+
+                            if key in ("SIMPLE", "BITPIX") or key.startswith("NAXIS"):
+                                continue
+
+                            header.append(card)
+
+                    filename = func(
+                        current_output_folder=self.current_output_folder,
+                        data=data,
+                        name=name,
+                        with_auto_suffix=with_auto_suffix,
+                        run_number=run_number,
+                        header=header,
+                    )
+
                 else:
-                    name = obj
+                    filename = func(
+                        current_output_folder=self.current_output_folder,
+                        data=data,
+                        name=name,
+                        with_auto_suffix=with_auto_suffix,
+                        run_number=run_number,
+                    )
 
-                out_format: ValidFormat
-                for out_format in format_list:
-                    func: SaveToFile = save_methods[out_format]
+                partial_filenames[out_format] = filename.name
 
-                    if out_format in ("png", "jpg", "jpeg"):
-                        if obj != "detector.image.array":
-                            raise ValueError(
-                                "Cannot save non-digitized data into image formats."
-                            )
-                        maximum = (
-                            2**processor.detector.characteristics.adc_bit_resolution - 1
-                        )
-                        rescaled_data = (255.0 / maximum * data).astype(np.uint8)
+            all_filenames[valid_name] = partial_filenames
 
-                        image_filename: Path = func(
-                            data=rescaled_data,
-                            name=name,
-                            with_auto_suffix=with_auto_suffix,
-                            run_number=run_number,
-                        )
-
-                        full_image_filename: Path = complete_path(
-                            filename=image_filename,
-                            working_dir=global_options.working_directory,
-                        )
-                        filenames.append(full_image_filename)
-
-                    elif out_format == "fits":
-                        # Create FITS header
-                        from astropy.io import fits
-
-                        header = fits.Header()
-
-                        line: str
-                        for line in processor.pipeline.describe():
-                            header.add_history(line)
-
-                        previous_header: Optional[fits.Header] = (
-                            processor.detector._headers.get(obj)
-                        )
-                        if previous_header is not None:
-                            for card in previous_header.cards:
-                                key, *_ = card
-
-                                if key in ("SIMPLE", "BITPIX") or key.startswith(
-                                    "NAXIS"
-                                ):
-                                    continue
-
-                                header.append(card)
-
-                        filename: Path = self.save_to_fits(
-                            data=data,
-                            name=name,
-                            with_auto_suffix=with_auto_suffix,
-                            run_number=run_number,
-                            header=header,
-                        )
-
-                        filenames.append(filename)
-
-                    else:
-                        filename = func(
-                            data=data,
-                            name=name,
-                            with_auto_suffix=with_auto_suffix,
-                            run_number=run_number,
-                        )
-
-                        full_filename: Path = complete_path(
-                            filename, global_options.working_directory
-                        )
-                        filenames.append(full_filename)
-
-        return filenames
+        datatree: "DataTree" = _dict_to_datatree(all_filenames)
+        return datatree
 
     def save_to_netcdf(
         self,
@@ -620,6 +917,13 @@ class Outputs:
         -------
         filename: Path
         """
+        warnings.warn(
+            "Deprecated. This will be removed in a future version of Pyxel. "
+            "Please use function 'to_netcdf'.",
+            DeprecationWarning,
+            stacklevel=1,
+        )
+
         name = name.replace(".", "_")
         current_output_folder: Path = complete_path(
             filename=self.current_output_folder,
@@ -628,49 +932,6 @@ class Outputs:
         filename = current_output_folder.joinpath(name + ".nc")
         data.to_netcdf(filename, engine="h5netcdf")
         return filename
-
-
-# TODO: Refactor this in 'def apply_run_number(folder, template_filename) -> Path'.
-#       See #332.
-def apply_run_number(template_filename: Path, run_number: Optional[int] = None) -> Path:
-    """Convert the file name numeric placeholder to a unique number.
-
-    Parameters
-    ----------
-    template_filename
-    run_number
-
-    Returns
-    -------
-    output_path: Path
-    """
-    template_str = str(template_filename)
-
-    def get_number(string: str) -> int:
-        search = re.search(r"\d+$", string.split(".")[-2])
-        if not search:
-            return 0
-
-        return int(search.group())
-
-    if "?" in template_str:
-        if run_number is not None:
-            path_str = template_str.replace("?", "{}")
-            output_str = path_str.format(run_number + 1)
-        else:
-            path_str_for_glob = template_str.replace("?", "*")
-            dir_list = glob(path_str_for_glob)
-            num_list: list[int] = sorted(get_number(d) for d in dir_list)
-            if num_list:
-                next_num = num_list[-1] + 1
-            else:
-                next_num = 1
-            path_str = template_str.replace("?", "{}")
-            output_str = path_str.format(next_num)
-
-    output_path = Path(output_str)
-
-    return output_path
 
 
 # TODO: the log file should directly write in 'output_dir'
