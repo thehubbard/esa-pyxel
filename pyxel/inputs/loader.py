@@ -19,11 +19,32 @@ import numpy as np
 from numpy.typing import DTypeLike
 
 from pyxel.options import global_options
-from pyxel.util import resolve_path
+from pyxel.util import resolve_with_working_directory
 
 if TYPE_CHECKING:
     import pandas as pd
     import xarray as xr
+
+
+def resolve_path(filename: Path) -> str:
+    """Resolve the given path."""
+    full_filename: Path = filename.expanduser().resolve()
+    if not full_filename.exists():
+        raise FileNotFoundError(f"Input file '{full_filename}' can not be found.")
+
+    return str(full_filename)
+
+
+def prepare_cache_path(url_path: str) -> tuple[str, dict]:
+    """Prepare and return the cache path and fsspec's configuration extra."""
+    extras = {}
+    if global_options.cache_enabled:
+        url_path = f"simplecache::{url_path}"
+
+        if global_options.cache_folder:
+            extras["simplecache"] = {"cache_storage": global_options.cache_folder}
+
+    return url_path, extras
 
 
 def load_header(
@@ -34,20 +55,20 @@ def load_header(
 
     Parameters
     ----------
-       filename : str or Path,
-           Path to the file from which to load the header.
-       section : int, str or None, optional
-           Specifies the section of the file to extract the header.
+    filename : str or Path,
+        Path to the file from which to load the header.
+    section : int, str or None, optional
+        Specifies the section of the file to extract the header.
 
     Returns
     -------
-       dict or None
-           A dictionary containing header information
+    dict or None
+        A dictionary containing header information
 
     Examples
     --------
-       >>> load_header("image.fits", section="RAW")
-       {'SIMPLE': (True, 'conforms to FITS standard'),
+    >>> load_header("image.fits", section="RAW")
+    {'SIMPLE': (True, 'conforms to FITS standard'),
     'BITPIX': (-32, 'array data type'),
     'NAXIS': (2, 'number of array dimensions'),
     'BUNIT': ('ADU', 'Image Units.'),}
@@ -56,28 +77,17 @@ def load_header(
     import fsspec
 
     try:
-        filename = resolve_path(filename)
+        filename = resolve_with_working_directory(filename)
         # Extract suffix (e.g. '.txt', '.fits'...)
         suffix: str = Path(filename).suffix.lower()
 
         if isinstance(filename, Path):
-            full_filename: Path = filename.expanduser().resolve()
-            if not full_filename.exists():
-                raise FileNotFoundError(
-                    f"Input file '{full_filename}' can not be found."
-                )
-
-            url_path: str = str(full_filename)
+            url_path: str = resolve_path(filename)
         else:
             url_path = filename
 
         # Define extra parameters to use with 'fsspec'
-        extras = {}
-        if global_options.cache_enabled:
-            url_path = f"simplecache::{url_path}"
-
-            if global_options.cache_folder:
-                extras["simplecache"] = {"cache_storage": global_options.cache_folder}
+        url_path, extras = prepare_cache_path(url_path)
 
         if suffix.startswith(".fits"):
             with fsspec.open(url_path, mode="rb", **extras) as file_handler:
@@ -165,29 +175,17 @@ def load_image(filename: Union[str, Path]) -> np.ndarray:
     import fsspec
 
     try:
-        filename = resolve_path(filename=filename)
+        filename = resolve_with_working_directory(filename=filename)
         # Extract suffix (e.g. '.txt', '.fits'...)
         suffix: str = Path(filename).suffix.lower()
 
         if isinstance(filename, Path):
-            full_filename: Path = filename.expanduser().resolve()
-            if not full_filename.exists():
-                raise FileNotFoundError(
-                    f"Input file '{full_filename}' can not be found."
-                )
-
-            url_path: str = str(full_filename)
-
+            url_path: str = resolve_path(filename)
         else:
             url_path = filename
 
         # Define extra parameters to use with 'fsspec'
-        extras = {}
-        if global_options.cache_enabled:
-            url_path = f"simplecache::{url_path}"
-
-            if global_options.cache_folder:
-                extras["simplecache"] = {"cache_storage": global_options.cache_folder}
+        url_path, extras = prepare_cache_path(url_path)
 
         if suffix.startswith(".fits"):
             # with fits.open(url_path, use_fsspec=True, fsspec_kwargs=extras) as file_handler:
@@ -253,17 +251,12 @@ def load_image_v2(
     # Late import to speedup start-up time
     import xarray as xr
 
-    filename = resolve_path(filename=filename)
+    filename = resolve_with_working_directory(filename=filename)
     # Extract suffix (e.g. '.txt', '.fits'...)
     suffix: str = Path(filename).suffix.lower()
 
     if isinstance(filename, Path):
-        full_filename: Path = filename.expanduser().resolve()
-        if not full_filename.exists():
-            raise FileNotFoundError(f"Input file '{full_filename}' can not be found.")
-
-        url_path: str = str(full_filename)
-
+        url_path: str = resolve_path(filename)
     else:
         url_path = filename
 
@@ -345,25 +338,16 @@ def load_table(
     import fsspec
     import pandas as pd
 
-    resolved_filename = resolve_path(filename=filename)
+    resolved_filename = resolve_with_working_directory(filename=filename)
     suffix: str = Path(resolved_filename).suffix.lower()
 
     if isinstance(resolved_filename, Path):
-        full_filename = Path(resolved_filename).expanduser().resolve()
-        if not full_filename.exists():
-            raise FileNotFoundError(f"Input file '{full_filename}' can not be found.")
-
-        url_path: str = str(full_filename)
+        url_path: str = resolve_path(resolved_filename)
     else:
         url_path = resolved_filename
 
     # Define extra parameters to use with 'fsspec'
-    extras = {}
-    if global_options.cache_enabled:
-        url_path = f"simplecache::{url_path}"
-
-        if global_options.cache_folder:
-            extras["simplecache"] = {"cache_storage": global_options.cache_folder}
+    url_path, extras = prepare_cache_path(url_path)
 
     if suffix.startswith(".npy"):
         with fsspec.open(url_path, mode="rb", **extras) as file_handler:
@@ -442,15 +426,11 @@ def load_table_v2(
     # Late import to speedup start-up time
     import pandas as pd
 
-    filename = resolve_path(filename=filename)
+    filename = resolve_with_working_directory(filename=filename)
     suffix: str = Path(filename).suffix.lower()
 
     if isinstance(filename, Path):
-        full_filename = Path(filename).expanduser().resolve()
-        if not full_filename.exists():
-            raise FileNotFoundError(f"Input file '{full_filename}' can not be found.")
-
-        url_path: str = str(full_filename)
+        url_path: str = resolve_path(filename)
     else:
         url_path = filename
 
@@ -549,27 +529,16 @@ def load_dataarray(filename: Union[str, Path]) -> "xr.DataArray":
     """
     # Late import to speedup start-up time
     import fsspec
+    import xarray as xr
 
-    filename = resolve_path(filename=filename)
+    filename = resolve_with_working_directory(filename=filename)
     if isinstance(filename, Path):
-        full_filename: Path = filename.expanduser().resolve()
-        if not full_filename.exists():
-            raise FileNotFoundError(f"Input file '{full_filename}' can not be found.")
-
-        url_path: str = str(full_filename)
-
+        url_path: str = resolve_path(filename)
     else:
         url_path = filename
 
     # Define extra parameters to use with 'fsspec'
-    extras = {}
-    if global_options.cache_enabled:
-        url_path = f"simplecache::{url_path}"
-
-        if global_options.cache_folder:
-            extras["simplecache"] = {"cache_storage": global_options.cache_folder}
-
-    import xarray as xr
+    url_path, extras = prepare_cache_path(url_path)
 
     with fsspec.open(url_path, mode="rb", **extras) as file_handler:
         data_array = xr.load_dataarray(file_handler)
@@ -601,27 +570,17 @@ def load_datacube(filename: Union[str, Path]) -> np.ndarray:
     # Late import to speedup start-up time
     import fsspec
 
-    filename = resolve_path(filename=filename)
+    filename = resolve_with_working_directory(filename=filename)
     # Extract suffix (e.g. '.txt', '.fits'...)
     suffix: str = Path(filename).suffix.lower()
 
     if isinstance(filename, Path):
-        full_filename: Path = filename.expanduser().resolve()
-        if not full_filename.exists():
-            raise FileNotFoundError(f"Input file '{full_filename}' can not be found.")
-
-        url_path: str = str(full_filename)
-
+        url_path: str = resolve_path(filename)
     else:
         url_path = filename
 
     # Define extra parameters to use with 'fsspec'
-    extras = {}
-    if global_options.cache_enabled:
-        url_path = f"simplecache::{url_path}"
-
-        if global_options.cache_folder:
-            extras["simplecache"] = {"cache_storage": global_options.cache_folder}
+    url_path, extras = prepare_cache_path(url_path)
 
     if suffix.startswith(".npy"):
         with fsspec.open(url_path, mode="rb", **extras) as file_handler:
