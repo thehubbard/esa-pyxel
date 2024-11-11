@@ -39,7 +39,8 @@ Pyxel doesn't use SemVer anymore, since most minor releases have at least minor 
   instead of "replaced by a new one". By Antoine Kaszczyc.
   (See [!977](https://gitlab.com/esa/pyxel/-/merge_requests/977)).
 * Add a `USAF pattern illumination` model from `Photon Collection`.
-  (See [!990](https://gitlab.com/esa/pyxel/-/merge_requests/990)).
+  (See [!990](https://gitlab.com/esa/pyxel/-/merge_requests/990) and 
+  [!992](https://gitlab.com/esa/pyxel/-/merge_requests/992)).
 
 ### Others
 * Pin to xarray < 2024.10.0.

@@ -58,6 +58,7 @@ dependencies:
   - openpyxl
   - h5netcdf
   - asdf
+  - pooch>=1.1.0
 # Others
   - attrs
   - click
