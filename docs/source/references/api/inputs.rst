@@ -8,4 +8,6 @@ Inputs
 
 .. autofunction:: load_image
 
+.. autofunction:: load_header
+
 .. autofunction:: load_table
