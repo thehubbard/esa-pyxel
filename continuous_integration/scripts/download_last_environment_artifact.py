@@ -9,6 +9,7 @@
 
 import sys
 import typing as t
+from pathlib import Path
 
 import click
 import requests
@@ -83,8 +84,7 @@ def main(
     r.raise_for_status()
 
     # Save artifact
-    with open(artifact_filename, "wb") as fh:
-        fh.write(r.content)
+    Path(artifact_filename).write_bytes(r.content)
 
     print(f"File {artifact_filename!r} is successfully downloaded !")
     sys.exit()

@@ -19,6 +19,8 @@ Pyxel doesn't use SemVer anymore, since most minor releases have at least minor 
 ### Models
 
 ### Others
+* Minor refactoring using `ruff check --preview`.
+  (See [!998](https://gitlab.com/esa/pyxel/-/merge_requests/998)).
 
 
 ## 2.7 / 2024-11-11

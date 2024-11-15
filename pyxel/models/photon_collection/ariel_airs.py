@@ -201,7 +201,7 @@ def integrate_flux(
     logging.debug("Integrate flux on each bin around the psf...")
 
     # Set the parameters of the function
-    bandwidth, all_poles = compute_bandwidth(psf_wavelength)
+    _, all_poles = compute_bandwidth(psf_wavelength)
 
     # Cumulative count
     cum_sum = cumulative_trapezoid(y=flux, x=wavelength, initial=0.0)
@@ -502,7 +502,7 @@ def wavelength_dependence_airs(
 
     # row, col = 130, 64  # Could be replaced
     # Expend factor used: expand_factor = 18
-    photon_incident, photo_electron_generated = project_psfs(
+    _, photo_electron_generated = project_psfs(
         psf_datacube_3d=psf_datacube,
         line_psf_pos_1d=line_psf_pos,
         col_psf_pos=col_psf_pos,

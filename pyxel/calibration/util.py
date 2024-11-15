@@ -22,20 +22,20 @@ from pyxel import load_datacube, load_image
 
 #  from pyxel.pipelines import Processor
 __all__ = [
-    "CalibrationResult",
     "CalibrationMode",
-    "Island",
-    "check_ranges",
-    "list_to_slice",
-    "read_data",
-    "sanitize",
-    "create_processor_data_array",
-    "read_datacubes",
-    "list_to_3d_slice",
+    "CalibrationResult",
     "FitRange2D",
     "FitRange3D",
-    "to_fit_range",
+    "Island",
     "check_fit_ranges",
+    "check_ranges",
+    "create_processor_data_array",
+    "list_to_3d_slice",
+    "list_to_slice",
+    "read_data",
+    "read_datacubes",
+    "sanitize",
+    "to_fit_range",
 ]
 
 

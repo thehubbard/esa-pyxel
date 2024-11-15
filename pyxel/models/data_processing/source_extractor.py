@@ -136,7 +136,7 @@ def plot_roi(data: np.ndarray, roi) -> None:
     roi : np.ndarray / xarray.Dataset
         structured numpy array or xarray dataset of extracted data
     """
-    fig, ax = plt.subplots()
+    _, ax = plt.subplots()
     m, s = np.mean(data), np.std(data)
     im = ax.imshow(
         data,

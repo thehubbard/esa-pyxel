@@ -129,7 +129,7 @@ def _get_obj_att(
                     index = int(part)
                     obj = obj[index]
                 except ValueError:
-                    for _, obj_i in enumerate(obj):
+                    for obj_i in obj:
                         if hasattr(obj_i, part):
                             obj = getattr(obj_i, part)
                             break

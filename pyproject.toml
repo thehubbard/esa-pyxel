@@ -310,6 +310,8 @@ exclude = [
     "D100",     # Missing docstring in public module
     "D104",     # Missing docstring in public package
     "E721",     # Use 'is' and 'is not' for type comparisons
+    "FURB152",  # Replace '3.14' with 'math.pi'
+    "FURB157",  # Verbose expression in 'Decimal' constructor
     "N803",     # Argument name should be lowercase
     "PT006",    # Wrong name(s) type in '@pytest.mark.parametrize'
     "SIM",      # flake8-simplify
@@ -323,6 +325,10 @@ exclude = [
     "W",        # pycodestyle
     "PTH",      # Flake8 use Pathlib
     "UP",       # pyupgrade
+]
+"pyxel/models/charge_measurement/nghxrg/*.ipynb" = [
+    "E266",     # Too many leading '#'
+    "W391",     # Extra newline at end of file
 ]
 "continuous_integration/scripts/create_json_schema.py" = [
     "RUF001",   # String contains ambigyous `'`

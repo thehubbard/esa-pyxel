@@ -392,7 +392,7 @@ def to_pipeline(dct: dict) -> DetectionPipeline:
         else:
             models = [to_model_function(model_dict) for model_dict in models_list]
 
-        dct.update({model_group_name: models})
+        dct[model_group_name] = models
     return DetectionPipeline(**dct)
 
 

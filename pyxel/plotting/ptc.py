@@ -201,7 +201,7 @@ def plot_ptc(
         # Get current axes
         ax = plt.gca()
 
-    fig_width, fig_height = ax.get_figure().get_size_inches()  # type: ignore[union-attr]
+    fig_width, _ = ax.get_figure().get_size_inches()  # type: ignore[union-attr]
     text_size = fig_width * text_base_fontsize / 6.4
 
     # Add minor and majoir grid lines

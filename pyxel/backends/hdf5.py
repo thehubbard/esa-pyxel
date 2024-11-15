@@ -129,7 +129,7 @@ def to_hdf5(filename: Union[str, Path], dct: Mapping[str, Any]) -> None:
 
 def _load(
     h5file: "h5.File", name: str
-) -> Union[None, int, float, str, Mapping[str, Any], np.ndarray, "pd.DataFrame"]:
+) -> Union[int, float, str, Mapping[str, Any], np.ndarray, "pd.DataFrame", None]:
     """Write data from a HDF5 group.
 
     Parameters

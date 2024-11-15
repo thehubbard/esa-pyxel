@@ -480,7 +480,7 @@ def test_detector_and_model_update(yaml: str, param_array: np.ndarray):
         mf.processor.detector.environment.temperature,
     ]
     a = 0
-    for _idx, attr in enumerate(attributes):
+    for attr in attributes:
         if isinstance(attr, np.ndarray):
             b = len(attr)
             np.testing.assert_array_equal(attr, param_array[a : a + b])

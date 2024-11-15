@@ -161,7 +161,7 @@ def sar_adc_with_noise(
        \left(1 + \mathit{np.random.normal}(\mathit{strength}_\mathit{bit0}, \mathit{noise}_\mathit{bit0})\right)
        \end{matrix}
     """
-    min_volt, max_volt = detector.characteristics.adc_voltage_range
+    _, max_volt = detector.characteristics.adc_voltage_range
     adc_bits = detector.characteristics.adc_bit_resolution
 
     if len(strengths) != detector.characteristics.adc_bit_resolution:

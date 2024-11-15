@@ -558,7 +558,7 @@ def display_persist(persistence: Union[Persistence, SimplePersistence]) -> None:
 
     trapped_charges: np.ndarray = persistence.trapped_charge_array
 
-    fig, axes = plt.subplots(
+    _, axes = plt.subplots(
         len(trapped_charges), 2, figsize=(10, 5 * len(trapped_charges))
     )
 
@@ -628,7 +628,7 @@ def display_scene(
     t_y = middle_point_y + y_factor
     b_y = middle_point_y - y_factor
 
-    fig, ax = plt.subplots(figsize=figsize)
+    _, ax = plt.subplots(figsize=figsize)
     scene_ds.plot.scatter(x="x", y="y", hue="weight", marker="o", ax=ax)
 
     ax.set_title(

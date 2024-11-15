@@ -16,7 +16,7 @@ from typing import Callable, Union
 
 import numpy as np
 
-__all__ = ["evaluate_reference", "eval_range", "eval_entry"]
+__all__ = ["eval_entry", "eval_range", "evaluate_reference"]
 
 
 def evaluate_reference(reference_str: str) -> Callable:
