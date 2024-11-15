@@ -15,7 +15,7 @@ import numpy as np
 if TYPE_CHECKING:
     import pygmo as pg
 
-__all__ = ["IslandProtocol", "ProblemSingleObjective", "FittingCallable"]
+__all__ = ["FittingCallable", "IslandProtocol", "ProblemSingleObjective"]
 
 
 class IslandProtocol(Protocol):

@@ -74,7 +74,7 @@ def image_filename(
             np.savetxt(full_path, X=data_2d, delimiter="|")
         elif file_name.lower() == "image_semicolon.txt":
             np.savetxt(full_path, X=data_2d, delimiter=";")
-        elif file_name.lower() in ("image.png",):
+        elif file_name.lower() == "image.png":
             pil_image: Image = Image.fromarray(data_2d)
             pil_image.save(full_path)
 

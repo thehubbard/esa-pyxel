@@ -770,8 +770,7 @@ def optical_psf(
         # Processing
         # Get a Point Spread Function
         psf_hdu: fits.PrimaryHDU
-        # wavefront_hdu_3d: fits.PrimaryHDU
-        psf_hdu, wavefront = calc_psf(
+        psf_hdu, _ = calc_psf(
             wavelengths=[selected_wavelength.to("m").value],
             fov_arcsec=fov_arcsec,
             pixel_scale=pixel_scale_with_unit,
@@ -854,8 +853,7 @@ def optical_psf(
         # Processing
         # Get a Point Spread Function
         psf_hdu_3d: fits.PrimaryHDU
-        wavefront_3d: fits.PrimaryHDU
-        psf_hdu_3d, wavefront_3d = calc_psf(
+        psf_hdu_3d, _ = calc_psf(
             wavelengths=selected_wavelengths_nm.to("m").value,
             fov_arcsec=fov_arcsec,
             pixel_scale=pixel_scale_with_unit,

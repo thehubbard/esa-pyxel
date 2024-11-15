@@ -374,7 +374,7 @@ def aggregate_multiwavelength(data: xr.Dataset, rows: int, cols: int) -> xr.Data
 def _extract_wavelength(
     resolution: Optional[int],
     filter_band: Optional[tuple[float, float]],
-    default_wavelength_handling: Union[None, float, WavelengthHandling],
+    default_wavelength_handling: Union[float, WavelengthHandling, None],
 ) -> xr.DataArray:
     """Extract wavelength."""
     if filter_band is not None:
