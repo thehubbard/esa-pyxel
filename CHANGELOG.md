@@ -13,6 +13,8 @@ Pyxel doesn't use SemVer anymore, since most minor releases have at least minor 
 ## UNRELEASED
 
 ### Core
+* Add compatibility with ASDF version 4.
+  (See [!999](https://gitlab.com/esa/pyxel/-/merge_requests/999)).
 
 ### Documentation
 
