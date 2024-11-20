@@ -65,7 +65,7 @@ def from_asdf(filename: Union[str, Path]) -> Iterator[Mapping[str, Any]]:
 
     dct: dict[str, Any] = {}
 
-    with asdf.open(filename, copy_arrays=True) as af:
+    with asdf.open(filename) as af:
         # TODO: Use a JSON schema to validate 'dct'
         if "version" not in af:
             raise ValueError("Missing 'version' !")
