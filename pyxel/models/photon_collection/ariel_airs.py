@@ -36,10 +36,11 @@
 import logging
 from pathlib import Path
 
+import astropy.io.ascii
 import numpy as np
 import pandas as pd
 from astropy import units as u
-from astropy.io import ascii, fits
+from astropy.io import fits
 from astropy.units import Quantity
 from scipy.integrate import cumulative_trapezoid
 
@@ -75,7 +76,7 @@ def read_star_flux_from_file(
         flux = flux * u.photon / u.s / u.m / u.m / u.micron
 
     elif extension == ".ecsv":
-        data = ascii.read(filename)
+        data = astropy.io.ascii.read(filename)
         flux = data["flux"].data * data["flux"].unit
         wavelength = data["wavelength"].data * data["wavelength"].unit
 
