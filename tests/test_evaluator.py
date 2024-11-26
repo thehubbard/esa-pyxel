@@ -72,7 +72,7 @@ def test_evaluate_reference():
         (
             "pyxel.evaluator.unknown_func",
             ImportError,
-            r"Module: 'pyxel.evaluator', does not contain 'unknown_func",
+            r"Function: 'unknown_func' is not contained",
         ),
         ("pyxel.__version__", TypeError, "'pyxel.__version__' is not a callable"),
     ],
