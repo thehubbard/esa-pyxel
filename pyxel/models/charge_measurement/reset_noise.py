@@ -20,7 +20,7 @@ from pyxel.util import set_random_seed
 def compute_ktc_noise(
     temperature: float, capacitance: float, shape: tuple[int, int]
 ) -> np.ndarray:
-    """Compute KTC noise array.
+    """Compute KTC noise array. Formula from :cite:p:`Goebel_2018`.
 
     Parameters
     ----------
