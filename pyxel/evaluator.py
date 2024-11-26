@@ -60,7 +60,7 @@ def evaluate_reference(reference_str: str) -> Callable:
         raise ModuleNotFoundError(f"Cannot import module: {module_str!r}.") from exc
     except AttributeError as ex:
         raise ImportError(
-            f"Module: {module_str!r}, does not contain {function_str!r}"
+            f"Function: {function_str!r} is not contained in {module_str!r} or may not be defined in its __init__.py"
         ) from ex
 
     return reference
