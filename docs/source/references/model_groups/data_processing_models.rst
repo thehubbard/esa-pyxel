@@ -90,24 +90,23 @@ The calculated statistics can then be accessed via ``detector.data.statistics``.
 
 .. autofunction:: statistics
 
-.. _extract_roi_to_xarray:
+.. _source_extractor:
 
 Extract ROI
 ===========
 
 Extracts the source data of the final pixel array and output in the form of an xarray dataset. The models makes use of
-the `SEP library <https://sep.readthedocs.io/en/v1.1.x/index.html>`_ which has taken the
-`original source extractor <https://sep.readthedocs.io/en/v1.1.x/index.html>`_ package and configured it into a library of
+the `Photutils library <https://photutils.readthedocs.io/en/stable/>`_  and configured it into a library of
 stand-alone functions and classes.
 
-The `SEP library <https://sep.readthedocs.io/en/v1.1.x/index.html>`_ is a useful post-processing tool capable of
+The `Photutils library <https://photutils.readthedocs.io/en/stable/>`_ is a useful post-processing tool capable of
 calculating statistics of a given array.
 
 .. code-block:: yaml
 
     data_processing:
-      - name: extract_roi_to_xarray
-        func: pyxel.models.data_processing.extract_roi_to_xarray
+      - name: source_extractor
+        func: pyxel.models.data_processing.source_extractor
         arguments:
           thresh: 80
           minarea: 5
@@ -118,7 +117,7 @@ calculating statistics of a given array.
     :external+pyxel_data:doc:`examples/models/data_processing/source_extractor/SEP_exposure`
     from `Pyxel Data <https://esa.gitlab.io/pyxel-data>`_.
 
-.. autofunction:: extract_roi_to_xarray
+.. autofunction:: source_extractor
 
 There is code within Pyxel capable of harnessing some data,
 such as background subtraction and imaging a given 2D given numpy array.

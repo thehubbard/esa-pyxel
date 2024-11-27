@@ -294,7 +294,7 @@ def extract_sources_to_xarray(
     return ds_sources
 
 
-def extract_roi_to_xarray(
+def source_extractor(
     detector: Detector,
     array_type: str = "pixel",
     thresh: int = 50,
@@ -346,4 +346,43 @@ def extract_roi_to_xarray(
 
     detector.data["/source_extractor"] = DataTree(
         extract_sources_to_xarray(data_2d, thresh=thresh, minarea=minarea)
+    )
+
+
+def extract_roi_to_xarray(
+    detector: Detector,
+    array_type: str = "pixel",
+    thresh: int = 50,
+    minarea: int = 5,
+) -> None:
+    """Extract the roi data converts it to xarray dataset and saves the information to the final result.
+
+    A warning is generated if the processed data_array is empty.
+
+    Parameters
+    ----------
+    array_type
+    detector : Detector
+        Pyxel Detector object.
+    thresh : int
+        Threshold pixel value above which information from the image array is extracted
+    minarea : int
+        Minimum area of pixels required that are above the threshold for the extractor to extract information
+
+    Raises
+    ------
+    ValueError
+        If parameter 'array_type' is not 'pixel','signal','image',photon' or 'charge'
+
+    Notes
+    -----
+    For more information, you can find an example here:
+    :external+pyxel_data:doc:`examples/models/data_processing/source_extractor/SEP_exposure`.
+    """
+    warnings.warn(
+        "Deprecated. Use model 'source_extractor'", DeprecationWarning, stacklevel=1
+    )
+
+    source_extractor(
+        detector=detector, array_type=array_type, thresh=thresh, minarea=minarea
     )
