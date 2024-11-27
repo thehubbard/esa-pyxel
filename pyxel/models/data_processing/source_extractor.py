@@ -208,13 +208,13 @@ def extract_sources_to_xarray(
         npixels=minarea,
     )
 
-    # Analyze the segmentation map
-    catalog = SourceCatalog(data=data_2d, segment_img=segmentation_image)
-
     if segmentation_image is None:
         ds_sources: xr.Dataset = xr.Dataset()
 
     else:
+        # Analyze the segmentation map
+        catalog = SourceCatalog(data=data_2d, segment_img=segmentation_image)
+
         ds_sources = (
             pd.DataFrame(
                 [
