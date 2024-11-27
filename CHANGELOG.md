@@ -19,6 +19,8 @@ Pyxel doesn't use SemVer anymore, since most minor releases have at least minor 
 ### Documentation
 
 ### Models
+* Use `photoutils` instead of `sep` for model `source_extractor` in `Data Processing`.
+  (See [!1002](https://gitlab.com/esa/pyxel/-/merge_requests/1002)).
 
 ### Others
 * Minor refactoring using `ruff check --preview`.

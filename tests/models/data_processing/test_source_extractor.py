@@ -15,9 +15,9 @@ from pyxel.detectors import (
     Environment,
     ReadoutProperties,
 )
-from pyxel.models.data_processing import extract_roi_to_xarray
+from pyxel.models.data_processing import source_extractor
 
-_ = pytest.importorskip("sep")
+_ = pytest.importorskip("photutils")
 
 
 @pytest.mark.parametrize(
@@ -30,10 +30,10 @@ _ = pytest.importorskip("sep")
         ("charge", "charge data array is empty"),
     ],
 )
-def test_extract_roi_to_xarray_empty_array(ccd_10x10: CCD, array_type, exp_warn):
+def test_source_extractor_empty_array(ccd_10x10: CCD, array_type, exp_warn):
     """Tests empty array warning."""
     with pytest.warns(UserWarning, match=exp_warn):
-        extract_roi_to_xarray(detector=ccd_10x10, array_type=array_type)
+        source_extractor(detector=ccd_10x10, array_type=array_type)
 
 
 @pytest.fixture
@@ -58,40 +58,40 @@ def ccd_10x10() -> CCD:
     return detector
 
 
-def test_extract_roi_to_xarray_pixel(ccd_10x10: CCD):
+def test_source_extractor_pixel(ccd_10x10: CCD):
     ccd_10x10.pixel.array = np.full(fill_value=1, shape=(10, 10), dtype=float)
-    extract_roi_to_xarray(detector=ccd_10x10, array_type="pixel")
+    source_extractor(detector=ccd_10x10, array_type="pixel")
 
 
-def test_extract_roi_to_xarray_signal(ccd_10x10: CCD):
+def test_source_extractor_signal(ccd_10x10: CCD):
     ccd_10x10.signal.array = np.full(fill_value=1, shape=(10, 10), dtype=float)
-    extract_roi_to_xarray(detector=ccd_10x10, array_type="signal")
+    source_extractor(detector=ccd_10x10, array_type="signal")
 
 
-def test_extract_roi_to_xarray_image(ccd_10x10: CCD):
+def test_source_extractor_image(ccd_10x10: CCD):
     ccd_10x10.image.array = np.full(fill_value=1, shape=(10, 10), dtype=np.uint64)
-    extract_roi_to_xarray(detector=ccd_10x10, array_type="image")
+    source_extractor(detector=ccd_10x10, array_type="image")
 
 
-def test_extract_roi_to_xarray_photon(ccd_10x10: CCD):
+def test_source_extractor_photon(ccd_10x10: CCD):
     ccd_10x10.photon.array = np.full(fill_value=1, shape=(10, 10), dtype=float)
-    extract_roi_to_xarray(detector=ccd_10x10, array_type="photon")
+    source_extractor(detector=ccd_10x10, array_type="photon")
 
 
-def test_extract_roi_to_xarray_charge(ccd_10x10: CCD):
+def test_source_extractor_charge(ccd_10x10: CCD):
     ccd_10x10.charge.add_charge_array(
         np.full(fill_value=1, shape=(10, 10), dtype=float)
     )
-    extract_roi_to_xarray(detector=ccd_10x10, array_type="charge")
+    source_extractor(detector=ccd_10x10, array_type="charge")
 
 
 #     #assert np.any(ccd_10x10.pixel.array != 0)
 #     """Test to ensure warning isn't triggered for filled array"""
 
 
-def test_extract_roi_to_xarray_incorrect_array_type(ccd_10x10: CCD, array_type="test"):
+def test_source_extractor_incorrect_array_type(ccd_10x10: CCD, array_type="test"):
     ccd_10x10.pixel.array = np.random.rand(10, 10)
     """Test to ensure warning isn't triggered for filled array"""
 
     with pytest.raises(ValueError, match=r"Incorrect array_type\. Must be one of"):
-        extract_roi_to_xarray(ccd_10x10, array_type="test")
+        source_extractor(ccd_10x10, array_type="test")

@@ -1551,6 +1551,9 @@
                 "$ref": "#/definitions/ModelDataProcessingSignalToNoiseRatio"
               },
               {
+                "$ref": "#/definitions/ModelDataProcessingSourceExtractor"
+              },
+              {
                 "$ref": "#/definitions/ModelDataProcessingStatistics"
               },
               {
@@ -5127,6 +5130,58 @@
         "name"
       ],
       "title": "Model 'signal_to_noise_ratio'",
+      "type": "object"
+    },
+    "ModelDataProcessingSourceExtractor": {
+      "additionalProperties": false,
+      "description": "Extract the roi data converts it to xarray dataset and saves the information to the final result.",
+      "properties": {
+        "arguments": {
+          "additionalProperties": false,
+          "default": {
+            "array_type": "pixel",
+            "minarea": 5,
+            "thresh": 50
+          },
+          "properties": {
+            "array_type": {
+              "default": "pixel",
+              "title": "array_type",
+              "type": "string"
+            },
+            "minarea": {
+              "default": 5,
+              "description": "Minimum area of pixels required that are above the threshold for the extractor to extract information",
+              "title": "minarea",
+              "type": "integer"
+            },
+            "thresh": {
+              "default": 50,
+              "description": "Threshold pixel value above which information from the image array is extracted",
+              "title": "thresh",
+              "type": "integer"
+            }
+          },
+          "title": "Parameters",
+          "type": "object"
+        },
+        "enabled": {
+          "default": true,
+          "type": "boolean"
+        },
+        "func": {
+          "const": "pyxel.models.data_processing.source_extractor",
+          "default": "pyxel.models.data_processing.source_extractor",
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "title": "Model 'source_extractor'",
       "type": "object"
     },
     "ModelDataProcessingStatistics": {
