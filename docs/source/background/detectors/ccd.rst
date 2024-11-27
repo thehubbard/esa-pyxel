@@ -71,6 +71,6 @@ Available models
     * :ref:`statistics`
     * :ref:`mean_variance`
     * :ref:`linear_regression`
-    * :ref:`extract_roi_to_xarray`
+    * :ref:`source_extractor`
     * :ref:`remove_cosmic_rays`
     * :ref:`snr`
