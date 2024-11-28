@@ -24,7 +24,7 @@ def exponential_qe(
     filename: Union[str, Path],
     x_epi: float,
     detector_type: str,  # BI: Back-Illuminated, FI: Front-Illuminated
-    default_wavelength: Union[str, float] = None,  # User must provide a value
+    default_wavelength: Union[str, float, None] = None,  # User must provide a value
     x_poly: float = 0.0,  # Default x_poly to 0.0, change only if the detector is front-illuminated
     delta_t: float = 0.0,  # Temperature difference from 300 K
     cce: float = 1.0,  # Default Charge Collection Efficiency (CCE)
@@ -70,7 +70,9 @@ def exponential_qe(
 
     # Validate default_wavelength for single-wavelength mode
     if isinstance(default_wavelength, (int, float)):
-        if not (valid_wavelength_range[0] <= default_wavelength <= valid_wavelength_range[1]):
+        if not (
+            valid_wavelength_range[0] <= default_wavelength <= valid_wavelength_range[1]
+        ):
             raise ValueError(
                 f"Wavelength {default_wavelength} nm is out of the valid range "
                 f"{valid_wavelength_range} for the equation."
@@ -96,9 +98,9 @@ def exponential_qe(
         )
 
     # Step 1: Detect the shape of the photon array
-    photon_array = detector.photon.array
+    if detector.photon.ndim == 2:
+        photon_2d: np.ndarray = detector.photon.array_2d
 
-    if len(photon_array.shape) == 2:  # If 2D
         if default_wavelength == "multi":
             raise ValueError(
                 "Photon array is 2D, but you specified 'multi' for `default_wavelength`. Ensure the photon array matches your wavelength input."
@@ -108,43 +110,33 @@ def exponential_qe(
                 "Photon array is 2D. Transforming it into a 3D array with a single wavelength slice."
             )
             dummy_wavelength = np.array([default_wavelength])  # Single wavelength value
+
             # Generate coordinates for x and y
-            y_coords = np.arange(photon_array.shape[0])  # Row indices
-            x_coords = np.arange(photon_array.shape[1])  # Column indices
+            y_coords = np.arange(photon_2d.shape[0])  # Row indices
+            x_coords = np.arange(photon_2d.shape[1])  # Column indices
 
             # Create 3D xarray DataArray
             photon_array_3d = xr.DataArray(
-                np.expand_dims(photon_array, axis=0),  # Add wavelength as a new dimension
+                np.expand_dims(photon_2d, axis=0),  # Add wavelength as a new dimension
                 coords={"wavelength": dummy_wavelength, "y": y_coords, "x": x_coords},
                 dims=["wavelength", "y", "x"],
             )
-            detector.photon.array_3d = photon_array_3d  # Assign back to the detector
         else:
             raise ValueError(
                 "Invalid `default_wavelength` value. Must be a numeric value in nm or 'multi' for multiple wavelengths."
             )
 
-    elif len(photon_array.shape) == 3:  # If already 3D
+    elif detector.photon.ndim == 3:
         if default_wavelength != "multi":
             print(
                 "Photon array is 3D, but `default_wavelength` is not 'multi'. Proceeding with the existing wavelength data."
             )
         print("Photon array is 3D. Proceeding normally.")
-        photon_array_3d = xr.DataArray(
-            photon_array,
-            coords={
-                "wavelength": np.arange(
-                    photon_array.shape[0]
-                ),  # Generate wavelength coordinates
-                "y": np.arange(photon_array.shape[1]),
-                "x": np.arange(photon_array.shape[2]),
-            },
-            dims=["wavelength", "y", "x"],
-        )
-        detector.photon.array_3d = photon_array_3d  # Ensure it's an xarray.DataArray
+        photon_array_3d = detector.photon.array_3d
+
     else:
         raise ValueError(
-            f"Unexpected photon array dimensions: {photon_array.shape}. Expected 2D or 3D."
+            f"Unexpected photon array dimensions: {detector.photon.shape}. Expected 2D or 3D."
         )
 
     # Convert x_epi to Quantity
