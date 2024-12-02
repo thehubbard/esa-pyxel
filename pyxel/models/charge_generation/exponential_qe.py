@@ -13,6 +13,7 @@ from typing import TYPE_CHECKING, Union
 import numpy as np
 import pandas as pd
 import xarray as xr
+import math
 from astropy.units import Quantity
 
 if TYPE_CHECKING:
@@ -53,12 +54,11 @@ def exponential_qe(
     """
     # Validate delta_t to ensure resulting temperature is 300 K
     resulting_temperature = detector.environment.temperature - delta_t
-    if resulting_temperature != 300.0:
+    # Validate if resulting_temperature is close to 300 K
+    if not math.isclose(resulting_temperature, 300, abs_tol=0.01):
         raise ValueError(
-            f"The temperature provided (delta_t = {delta_t}) does not match with the environment. "
-            f"Temperature difference: {resulting_temperature} K."
+            f"The temperature provided does not match with the environment."
         )
-
     # Ensure default_wavelength is provided
     if default_wavelength is None:
         raise ValueError(
@@ -66,7 +66,7 @@ def exponential_qe(
         )
 
     # Define valid wavelength range for the equation
-    valid_wavelength_range = (250.0, 1400.0)  # Range in nm
+    valid_wavelength_range = (250.0, 1450.0)  # Range in nm
 
     # Validate default_wavelength for single-wavelength mode
     if isinstance(default_wavelength, (int, float)):
@@ -74,8 +74,8 @@ def exponential_qe(
             valid_wavelength_range[0] <= default_wavelength <= valid_wavelength_range[1]
         ):
             raise ValueError(
-                f"Wavelength {default_wavelength} nm is out of the valid range "
-                f"{valid_wavelength_range} for the equation."
+                f"Wavelength is out of the valid range "
+                f"for the equation."
             )
 
     # Validate detector_type
@@ -141,21 +141,41 @@ def exponential_qe(
 
     # Convert x_epi to Quantity
     x_epi_cm = Quantity(x_epi, unit="cm")
+    x_poly_cm = Quantity(x_poly, unit="cm")
 
     # Read total detector thickness from the detector object
     total_thickness = Quantity(detector.geometry.total_thickness, unit="um")
     if x_epi_cm > total_thickness.to("cm"):
         raise ValueError(
-            f"x_epi ({x_epi_cm}) cannot be greater than the total detector thickness ({total_thickness.to('cm')})."
+            f"x_epi cannot be greater than the total detector thickness."
         )
 
     # Load data from the provided CSV file
     qe_data = pd.read_csv(filename)
 
     # Check for required columns
-    required_columns = {"reflectivity", "absorptivity", "wavelength"}
-    if not required_columns.issubset(qe_data.columns):
-        raise ValueError(f"CSV file must contain the columns: {required_columns}")
+    required_columns = ["reflectivity", "absorptivity", "wavelength"]
+    if not set(required_columns).issubset(qe_data.columns):
+        raise ValueError(f"CSV file must contain the columns: {', '.join(required_columns)}")
+
+    # Validate that no NaN values exist in the required columns
+    nan_columns = [
+        col for col in required_columns if qe_data[col].isna().any()
+    ]
+    if nan_columns:
+        raise ValueError(
+            f"NaN values found in the file. All values for 'wavelength', 'reflectivity', and 'absorptivity' must be present."
+        )
+
+    # Validate that no negative values exist in the required columns
+    negative_columns = [
+        col for col in required_columns if (qe_data[col] < 0).any()
+    ]
+    if negative_columns:
+        raise ValueError(
+            f"Negative values found in the following columns: {', '.join(negative_columns)}. "
+            f"All values for 'wavelength', 'reflectivity', and 'absorptivity' must be non-negative."
+        )
 
     # Extract data
     reflectivity = qe_data["reflectivity"].values
@@ -290,21 +310,60 @@ def exponential_qe(
         unit="1/K",
     )  # Embedded c-values
 
+    embedded_absorptivity_values = Quantity(
+        [
+            1840219.313, 1970020.255, 2180032.591, 2370107.258, 2290112.714,
+            1770182.741, 1460131.192, 1299833.96, 1180096.44, 1099927.028,
+            1040188.716, 999402.2122, 972244.3148, 951255.5361, 933230.7961,
+            917315.0366, 903100.905, 889457.0984, 876379.5276, 863889.645,
+            851993.563, 840692.9717, 829985.7003, 819866.4986, 810328.7327,
+            801364.4082, 792965.8568, 785125.8917, 777837.6556, 771094.5403,
+            764890.0175, 759217.6618, 754071.1094, 749444.0822, 745330.3542,
+            741723.7431, 738618.1025, 735907.318, 733585.3345, 731646.1347,
+            730083.7368, 728892.1945, 728065.5961, 727598.0633, 727483.7523,
+            727716.8536, 728291.5938, 729202.2343, 730443.0705, 732008.4298,
+            733892.6722, 736090.1897, 738595.4062, 741402.7728, 744506.7655,
+            747901.8855, 751582.6596, 755543.6376, 759779.3916, 764284.5143,
+            769053.6188, 774081.3373, 779362.321, 784891.2403, 790662.7842,
+            796671.6608, 802912.5966, 809380.3363, 816069.6422, 822975.2969,
+            830092.1027, 837414.881, 844938.4712, 852657.7305, 860567.5335,
+            868662.7726, 876938.3586, 885389.2205, 894010.3058, 902796.5802,
+            911743.0283, 920844.6536, 930096.4789, 939493.5457, 949030.9153,
+            958703.6686, 968506.9068, 978435.7513, 988485.3433, 998650.8447,
+            1008927.436, 1019320.319, 1029814.712, 1040415.854, 1051129.003,
+            1061960.435, 1072916.443, 1084003.342, 1095227.466, 1106595.161,
+            1118112.791, 1129786.735, 1141623.387, 1153629.152, 1165810.447,
+            1178173.701, 1190725.354, 1203461.856
+        ],
+        unit="1/cm",
+    )
+
     embedded_wavelengths = Quantity(
-        np.arange(250, 1410, 10), unit="nm"
+        np.arange(250, 1460, 10), unit="nm"
     )  # Wavelengths for embedded `c` values
 
     # Check if the 'c' column exists, otherwise use embedded values
     if "c" in qe_data.columns:
+        # Check for NaN values in the 'c' column
+        if qe_data["c"].isna().any():
+            raise ValueError("NaN values found in the 'c' column. All values must be present.")
         c_values = Quantity(qe_data["c"].values, unit="1/K")
     else:
         c_values = (
-            np.interp(
-                x=wavelength.value,  # Use the numeric values of wavelength
-                xp=embedded_wavelengths.value,  # Use the numeric values of embedded wavelengths
-                fp=embedded_c_values.value,  # Use the numeric values of embedded c-values
-            )
-            * embedded_c_values.unit
+                np.interp(
+                    x=wavelength.value,  # Use the numeric values of wavelength
+                    xp=embedded_wavelengths.value,  # Use the numeric values of embedded wavelengths
+                    fp=embedded_c_values.value,  # Use the numeric values of embedded c-values
+                )
+                * embedded_c_values.unit
+        )  # Add the unit back to the interpolated result
+        absorptivity = (
+                np.interp(
+                    x=wavelength.value,  # Use the numeric values of wavelength
+                    xp=embedded_wavelengths.value,  # Use the numeric values of embedded wavelengths
+                    fp=embedded_absorptivity_values.value,  # Use the numeric values of embedded c-values
+                )
+                * embedded_c_values.unit
         )  # Add the unit back to the interpolated result
 
     # Correct absorptivity for temperature, if delta_t != 0
@@ -312,18 +371,15 @@ def exponential_qe(
         delta_t = Quantity(delta_t, unit="K")
         absorptivity = absorptivity * np.exp(c_values * delta_t)
 
-    # Calculate absorption length (L_A) as the inverse of corrected absorptivity
-    l_a = 1 / absorptivity
-
     # Define the QE formula based on the detector type
     if detector_type == "BI":
-        qe = cce * (1 - reflectivity) * (1 - np.exp(-x_epi_cm / l_a))
+        qe = cce * (1 - reflectivity) * (1 - np.exp(-x_epi_cm * absorptivity))
     elif detector_type == "FI":
         qe = (
             cce
             * (1 - reflectivity)
-            * np.exp(-x_poly / l_a)
-            * (1 - np.exp(-x_epi_cm / l_a))
+            * np.exp(-x_poly_cm * absorptivity)
+            * (1 - np.exp(-x_epi_cm * absorptivity))
         )
     else:
         raise ValueError("Invalid detector type. Choose 'BI' or 'FI'.")

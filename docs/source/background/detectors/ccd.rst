@@ -36,8 +36,9 @@ Available models
     * :ref:`charge_generation_create_store_detector`
     * :ref:`Simple photoconversion`
     * :ref:`Conversion with custom QE map`
-    * :ref:`Conversion with 3D QE map`
     * :ref:`Apply QE curve`
+    * :ref:`Conversion with 3D QE map`
+    * :ref:`Exponential absorption law`
     * :ref:`Load charge`
     * :ref:`Charge injection`
     * :ref:`CosmiX cosmic ray model`
