@@ -200,7 +200,7 @@ Basic example of YAML configuration model:
       arguments:
         filename: "qe_map.nc"
 
-.. autofunction:: exponential_qe
+.. autofunction:: conversion_with_3d_qe_map
 
 .. _Exponential absorption law :
 
@@ -289,7 +289,6 @@ Basic example of YAML configuration model for monochromatic pipeline:
           default_wavelength: 750.0 #in nm
           delta_t: -200.0 #optional, from the reference 300K
           x_poly: 0.0001 #only in case of "FI" detector
-.. autofunction:: exponential_qe
 
 Basic example of YAML configuration model for multi-wavelength pipeline:
 
@@ -305,7 +304,9 @@ Basic example of YAML configuration model for multi-wavelength pipeline:
           default_wavelength: 'multi'
           delta_t: -200.0 #optional, from the reference 300K
           x_poly: 0.0001 #only in case of "FI" detector
+
 .. autofunction:: exponential_qe
+
 .. _Load charge:
 
 Load charge
