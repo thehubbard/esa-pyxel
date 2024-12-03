@@ -205,7 +205,7 @@ Basic example of YAML configuration model:
 .. _Exponential absorption law :
 
 Exponential absorption law
-=========================
+==========================
 
 .. note::
     This model can operate with monochromatic and multi-wavelength photons.
@@ -290,7 +290,8 @@ Basic example of YAML configuration model for monochromatic pipeline:
           delta_t: -200.0 #optional, from the reference 300K
           x_poly: 0.0001 #only in case of "FI" detector
 .. autofunction:: exponential_qe
-Basic example of YAML configuration model for multi wavelength pipeline:
+
+Basic example of YAML configuration model for multi-wavelength pipeline:
 
 .. code-block:: yaml
 
