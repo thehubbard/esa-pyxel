@@ -1404,6 +1404,9 @@
                 "$ref": "#/definitions/ModelChargeGenerationDarkCurrentSaphira"
               },
               {
+                "$ref": "#/definitions/ModelChargeGenerationExponentialQe"
+              },
+              {
                 "$ref": "#/definitions/ModelChargeGenerationLoadCharge"
               },
               {
@@ -3393,6 +3396,93 @@
         "name"
       ],
       "title": "Model 'dark_current_saphira'",
+      "type": "object"
+    },
+    "ModelChargeGenerationExponentialQe": {
+      "additionalProperties": false,
+      "description": "Apply QE with temperature correction for absorptivity using a provided or backup coefficient `c`.",
+      "properties": {
+        "arguments": {
+          "additionalProperties": false,
+          "properties": {
+            "cce": {
+              "default": 1.0,
+              "description": "Charge Collection Efficiency (default: 1.0).",
+              "title": "cce",
+              "type": "number"
+            },
+            "default_wavelength": {
+              "default": null,
+              "description": "Wavelength in nm for 2D photon arrays, or 'multi' for multiple wavelengths (no default value).",
+              "title": "default_wavelength",
+              "type": [
+                "string",
+                "number",
+                "null"
+              ]
+            },
+            "delta_t": {
+              "default": 0.0,
+              "description": "Temperature difference from 300 K (default: 0.0).",
+              "title": "delta_t",
+              "type": "number"
+            },
+            "detector_type": {
+              "description": "Type of detector (\"BI\" for Back-Illuminated, \"FI\" for Front-Illuminated).",
+              "title": "detector_type",
+              "type": "string"
+            },
+            "filename": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "format": "uri",
+                  "type": "string"
+                }
+              ],
+              "description": "Path to the CSV file containing reflectivity, absorptivity, and c.",
+              "title": "filename"
+            },
+            "x_epi": {
+              "description": "Thickness of the epitaxial layer in cm.",
+              "title": "x_epi",
+              "type": "number"
+            },
+            "x_poly": {
+              "default": 0.0,
+              "description": "Thickness of the poly layer in cm.",
+              "title": "x_poly",
+              "type": "number"
+            }
+          },
+          "required": [
+            "filename",
+            "x_epi",
+            "detector_type"
+          ],
+          "title": "Parameters",
+          "type": "object"
+        },
+        "enabled": {
+          "default": true,
+          "type": "boolean"
+        },
+        "func": {
+          "const": "pyxel.models.charge_generation.exponential_qe",
+          "default": "pyxel.models.charge_generation.exponential_qe",
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "arguments"
+      ],
+      "title": "Model 'exponential_qe'",
       "type": "object"
     },
     "ModelChargeGenerationLoadCharge": {

@@ -42,18 +42,18 @@ def exponential_qe(
         Pyxel Detector object.
     filename : str or Path
         Path to the CSV file containing reflectivity, absorptivity, and c.
-    x_poly : float
-        Thickness of the poly layer in cm.
     x_epi : float
         Thickness of the epitaxial layer in cm.
-    delta_t : float
-        Temperature difference from 300 K (default: 0.0).
     detector_type : str
         Type of detector ("BI" for Back-Illuminated, "FI" for Front-Illuminated).
-    cce : float
-        Charge Collection Efficiency (default: 1.0).
     default_wavelength : str or float
         Wavelength in nm for 2D photon arrays, or 'multi' for multiple wavelengths (no default value).
+    x_poly : float
+        Thickness of the poly layer in cm.
+    delta_t : float
+        Temperature difference from 300 K (default: 0.0).
+    cce : float
+        Charge Collection Efficiency (default: 1.0).
     """
     # Validate delta_t to ensure resulting temperature is 300 K
     resulting_temperature = detector.environment.temperature - delta_t
