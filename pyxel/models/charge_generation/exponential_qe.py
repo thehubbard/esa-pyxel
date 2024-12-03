@@ -390,10 +390,6 @@ def exponential_qe(
         coords={"wavelength": wavelength},
     )
 
-    # Step 8: Apply QE to photon array and integrate charge
-    qe_dataset = xr.Dataset(
-        {"QE": (["wavelength"], qe)}, coords={"wavelength": wavelength}
-    )
     qe_interpolated = qe_dataset.interp(wavelength=photon_array_3d["wavelength"])
     charge_array = photon_array_3d * qe_interpolated["QE"]
     # Check the number of wavelengths in charge_array
