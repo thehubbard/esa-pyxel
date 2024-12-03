@@ -202,6 +202,111 @@ Basic example of YAML configuration model:
 
 .. autofunction:: conversion_with_3d_qe_map
 
+.. _Exponential absorption law :
+
+Exponential absorption law
+==========================
+
+.. note::
+    This model can operate with monochromatic and multi-wavelength photons.
+
+.. note::
+    This model is valid only for silicon detectors at the moment.
+
+
+:guilabel:`Photon` → :guilabel:`Charge`
+
+With this model you can create and add charge to :py:class:`~pyxel.detectors.Detector` via photoelectric effect by estimating the
+QE of your detector through an exponential absorption law (:cite:p:'2001:janesick').
+
+The QE calculation depends on the detector type (**Back-Illuminated** or **Front-Illuminated**) and incorporates
+various parameters. The equations are as follows:
+
+1. **Back-Illuminated (BI) Detector**
+
+The QE for a Back-Illuminated detector is given by:
+
+.. math::
+
+   QE = CCE \cdot (1 - R) \cdot \left(1 - e^{- \frac{x_{\text{epi}}}{\alpha}} \right)
+
+Where:
+- :math:`CCE`: Charge collection efficiency (fraction, between 0 and 1)
+- :math:`R`: Reflectivity (fraction, between 0 and 1)
+- :math:`x_{\text{epi}}`: Thickness of the epitaxial layer (in cm)
+- :math:`\alpha`: Absorptivity (in :math:`\text{cm}^{-1}`)
+
+2. **Front-Illuminated (FI) Detector**
+
+For a Front-Illuminated detector, the QE calculation includes the additional effect of the poly layer. The formula is:
+
+.. math::
+
+   QE = CCE \cdot (1 - R) \cdot e^{- \frac{x_{\text{poly}}}{\alpha}} \cdot \left(1 - e^{- \frac{x_{\text{epi}}}{\alpha}} \right)
+
+Where:
+- :math:`x_{\text{poly}}`: Thickness of the poly layer (in cm)
+- Other terms are as defined above.
+
+**Temperature-Dependent Absorptivity Correction**
+
+The absorptivity, :math:`\alpha`, is corrected for temperature changes using the following formula:
+
+.. math::
+
+   \alpha' = \alpha \cdot e^{c \cdot \Delta T}
+
+Where:
+- :math:`\alpha'`: Adjusted absorptivity at the new temperature.
+- :math:`\alpha`: Absorptivity at the reference temperature (300 K).
+- :math:`c`: Temperature correction coefficient (in :math:`1/\text{K}`).
+- :math:`\Delta T`: Temperature difference from the reference temperature (in :math:`\text{K}`).
+
+The embedded conversion coefficient :math:`c` is wavelength and temperature-specific.
+
+"""
+2. ** User-specified coefficients **
+
+In case you want to operate with your own conversion coefficients, you can add an additional column to the ``.csv`` file, with a :math:`c` value for each working wavelength.
+
+.. warning::
+    The reference model has been validated at 300 K; the conversion equation may be inaccurate for coefficients measured at different temperatures.
+
+Once the QE is computed for the required wavelength(s) and at the desired temperature, it is applied to the detector photon array and a charge array is generated for the
+next steps of the pipeline.
+
+Basic example of YAML configuration model for monochromatic pipeline:
+
+.. code-block:: yaml
+
+    - name: exponential_qe
+      func: pyxel.models.charge_generation.exponential_qe
+      enabled: true
+      arguments:
+          filename: qe_cleaned_data.csv
+          x_epi: 0.0002
+          detector_type: "BI" #or "FI"
+          default_wavelength: 750.0 #in nm
+          delta_t: -200.0 #optional, from the reference 300K
+          x_poly: 0.0001 #only in case of "FI" detector
+
+Basic example of YAML configuration model for multi-wavelength pipeline:
+
+.. code-block:: yaml
+
+    - name: exponential_qe
+      func: pyxel.models.charge_generation.exponential_qe
+      enabled: true
+      arguments:
+          filename: qe_cleaned_data.csv
+          x_epi: 0.0002
+          detector_type: "BI" #or "FI"
+          default_wavelength: 'multi'
+          delta_t: -200.0 #optional, from the reference 300K
+          x_poly: 0.0001 #only in case of "FI" detector
+
+.. autofunction:: exponential_qe
+
 .. _Load charge:
 
 Load charge
