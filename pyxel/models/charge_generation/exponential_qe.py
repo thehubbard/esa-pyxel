@@ -7,19 +7,22 @@
 
 """Model to calculate the QE based on the characteristics of the detector (Front/Back Illumination, Charge Collection Efficiency, Absorption coefficient, Reflectivity, Epilayer thickness, Poly gate thickness)."""
 
+import logging
+import math
 from pathlib import Path
 from typing import TYPE_CHECKING, Union
 
 import numpy as np
 import pandas as pd
 import xarray as xr
-import math
 from astropy.units import Quantity
 
 if TYPE_CHECKING:
     from pyxel.detectors import Detector
 
 
+# TODO: Decrease complexity
+# ruff: noqa: C901
 def exponential_qe(
     detector: "Detector",
     filename: Union[str, Path],
@@ -57,7 +60,7 @@ def exponential_qe(
     # Validate if resulting_temperature is close to 300 K
     if not math.isclose(resulting_temperature, 300, abs_tol=0.01):
         raise ValueError(
-            f"The temperature provided does not match with the environment."
+            "The temperature provided does not match with the environment."
         )
     # Ensure default_wavelength is provided
     if default_wavelength is None:
@@ -69,14 +72,10 @@ def exponential_qe(
     valid_wavelength_range = (250.0, 1450.0)  # Range in nm
 
     # Validate default_wavelength for single-wavelength mode
-    if isinstance(default_wavelength, (int, float)):
-        if not (
-            valid_wavelength_range[0] <= default_wavelength <= valid_wavelength_range[1]
-        ):
-            raise ValueError(
-                f"Wavelength is out of the valid range "
-                f"for the equation."
-            )
+    if isinstance(default_wavelength, (int, float)) and not (
+        valid_wavelength_range[0] <= default_wavelength <= valid_wavelength_range[1]
+    ):
+        raise ValueError("Wavelength is out of the valid range " "for the equation.")
 
     # Validate detector_type
     if detector_type not in ["BI", "FI"]:
@@ -86,7 +85,7 @@ def exponential_qe(
 
     # Enforce x_poly = 0 for Back-Illuminated detectors
     if detector_type == "BI" and x_poly != 0.0:
-        print(
+        logging.warning(
             "Warning: x_poly should be 0 for Back-Illuminated detectors. Setting x_poly to 0."
         )
         x_poly = 0.0
@@ -106,7 +105,7 @@ def exponential_qe(
                 "Photon array is 2D, but you specified 'multi' for `default_wavelength`. Ensure the photon array matches your wavelength input."
             )
         elif isinstance(default_wavelength, (int, float)):
-            print(
+            logging.info(
                 "Photon array is 2D. Transforming it into a 3D array with a single wavelength slice."
             )
             dummy_wavelength = np.array([default_wavelength])  # Single wavelength value
@@ -146,9 +145,7 @@ def exponential_qe(
     # Read total detector thickness from the detector object
     total_thickness = Quantity(detector.geometry.total_thickness, unit="um")
     if x_epi_cm > total_thickness.to("cm"):
-        raise ValueError(
-            f"x_epi cannot be greater than the total detector thickness."
-        )
+        raise ValueError("x_epi cannot be greater than the total detector thickness.")
 
     # Load data from the provided CSV file
     qe_data = pd.read_csv(filename)
@@ -156,21 +153,19 @@ def exponential_qe(
     # Check for required columns
     required_columns = ["reflectivity", "absorptivity", "wavelength"]
     if not set(required_columns).issubset(qe_data.columns):
-        raise ValueError(f"CSV file must contain the columns: {', '.join(required_columns)}")
+        raise ValueError(
+            f"CSV file must contain the columns: {', '.join(required_columns)}"
+        )
 
     # Validate that no NaN values exist in the required columns
-    nan_columns = [
-        col for col in required_columns if qe_data[col].isna().any()
-    ]
+    nan_columns = [col for col in required_columns if qe_data[col].isna().any()]
     if nan_columns:
         raise ValueError(
-            f"NaN values found in the file. All values for 'wavelength', 'reflectivity', and 'absorptivity' must be present."
+            "NaN values found in the file. All values for 'wavelength', 'reflectivity', and 'absorptivity' must be present."
         )
 
     # Validate that no negative values exist in the required columns
-    negative_columns = [
-        col for col in required_columns if (qe_data[col] < 0).any()
-    ]
+    negative_columns = [col for col in required_columns if (qe_data[col] < 0).any()]
     if negative_columns:
         raise ValueError(
             f"Negative values found in the following columns: {', '.join(negative_columns)}. "
@@ -432,7 +427,8 @@ def exponential_qe(
             5e-08,
             2.5e-08,
             1.8e-08,
-            1.2e-08],
+            1.2e-08,
+        ],
         unit="1/cm",
     )
 
@@ -444,24 +440,26 @@ def exponential_qe(
     if "c" in qe_data.columns:
         # Check for NaN values in the 'c' column
         if qe_data["c"].isna().any():
-            raise ValueError("NaN values found in the 'c' column. All values must be present.")
+            raise ValueError(
+                "NaN values found in the 'c' column. All values must be present."
+            )
         c_values = Quantity(qe_data["c"].values, unit="1/K")
     else:
         c_values = (
-                np.interp(
-                    x=wavelength.value,  # Use the numeric values of wavelength
-                    xp=embedded_wavelengths.value,  # Use the numeric values of embedded wavelengths
-                    fp=embedded_c_values.value,  # Use the numeric values of embedded c-values
-                )
-                * embedded_c_values.unit
+            np.interp(
+                x=wavelength.value,  # Use the numeric values of wavelength
+                xp=embedded_wavelengths.value,  # Use the numeric values of embedded wavelengths
+                fp=embedded_c_values.value,  # Use the numeric values of embedded c-values
+            )
+            * embedded_c_values.unit
         )  # Add the unit back to the interpolated result
         absorptivity = (
-                np.interp(
-                    x=wavelength.value,  # Use the numeric values of wavelength
-                    xp=embedded_wavelengths.value,  # Use the numeric values of embedded wavelengths
-                    fp=embedded_absorptivity_values.value,  # Use the numeric values of embedded c-values
-                )
-                * embedded_c_values.unit
+            np.interp(
+                x=wavelength.value,  # Use the numeric values of wavelength
+                xp=embedded_wavelengths.value,  # Use the numeric values of embedded wavelengths
+                fp=embedded_absorptivity_values.value,  # Use the numeric values of embedded c-values
+            )
+            * embedded_c_values.unit
         )  # Add the unit back to the interpolated result
 
     # Correct absorptivity for temperature, if delta_t != 0
