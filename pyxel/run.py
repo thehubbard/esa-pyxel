@@ -1111,8 +1111,10 @@ def run(
             try:
                 # Save the DataFrame to CSV
                 df_filenames.to_csv(output_dir / "output_filenames.csv", index=False)
-            except Exception as e:
-                logging.error("Failed to save output filenames: %s", str(e))
+            except Exception:
+                logging.exception(
+                    "Failed to save output filenames."
+                )  # Removed redundant `str(e)`
                 raise
         else:
             logging.error("Output directory is None. Cannot save the output filenames.")
