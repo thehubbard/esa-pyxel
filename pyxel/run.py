@@ -1097,6 +1097,9 @@ def run(
 
     output_dir: Path = running_mode.outputs.current_output_folder
 
+    if not output_dir.exists():
+        output_dir.mkdir(parents=True, exist_ok=True)
+
     if df_filenames is None:
         num_filenames = 0
     else:
