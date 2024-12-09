@@ -1095,16 +1095,27 @@ def run(
             with_inherited_coords=True,
         )
 
-    output_dir: Path = running_mode.outputs.current_output_folder
+    if running_mode.outputs is not None:
+        output_dir = running_mode.outputs.current_output_folder
 
-    if not output_dir.exists():
+    # Ensure the output directory exists if it's not None
+    if output_dir:
         output_dir.mkdir(parents=True, exist_ok=True)
 
     if df_filenames is None:
         num_filenames = 0
+        logging.warning("No filenames to save. Skipping CSV generation.")
     else:
         num_filenames = len(df_filenames)
-        df_filenames.to_csv(output_dir / "output_filenames.csv", index=False)
+        if output_dir:
+            try:
+                # Save the DataFrame to CSV
+                df_filenames.to_csv(output_dir / "output_filenames.csv", index=False)
+            except Exception as e:
+                logging.error("Failed to save output filenames: %s", str(e))
+                raise
+        else:
+            logging.error("Output directory is None. Cannot save the output filenames.")
 
     # TODO: Fix this, see issue #728
     copy_config_file(input_filename=input_filename, output_dir=output_dir)
