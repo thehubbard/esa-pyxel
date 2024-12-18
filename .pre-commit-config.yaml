@@ -11,11 +11,11 @@
 exclude: pyxel/models/phasing/mkid_models
 repos:
   - repo: https://github.com/asottile/pyupgrade
-    rev: v3.15.0
+    rev: v3.19.0
     hooks:
       - id: pyupgrade
         args:
-          - --py39-plus
+          - --py310-plus
 
   # isort should run before black as black sometimes tweaks the isort output
   - repo: https://github.com/timothycrosley/isort
@@ -25,7 +25,7 @@ repos:
 
   # https://github.com/python/black#version-control-integration
   - repo: https://github.com/python/black
-    rev: 24.1.1
+    rev: 24.10.0
     hooks:
       - id: black
 
