@@ -15,7 +15,10 @@ from typing import TYPE_CHECKING
 import numpy as np
 import pandas as pd
 import xarray as xr
-from astropy.units import Quantity
+from astropy import units
+from astropy.units import Quantity, UnitsError
+
+from pyxel.detectors import environment
 
 if TYPE_CHECKING:
     from pyxel.detectors import Detector
@@ -28,9 +31,9 @@ def exponential_qe(
     filename: str | Path,
     x_epi: float,
     detector_type: str,  # BI: Back-Illuminated, FI: Front-Illuminated
-    default_wavelength: str | float | None = None,  # User must provide a value
+    default_wavelength: str | int | float | None = None,  # User must provide a value
     x_poly: float = 0.0,  # Default x_poly to 0.0, change only if the detector is front-illuminated
-    delta_t: float = 0.0,  # Temperature difference from 300 K
+    temperature: float | None = None,  # Temperature
     cce: float = 1.0,  # Default Charge Collection Efficiency (CCE)
 ) -> None:
     """
@@ -50,32 +53,45 @@ def exponential_qe(
         Wavelength in nm for 2D photon arrays, or 'multi' for multiple wavelengths (no default value).
     x_poly : float
         Thickness of the poly layer in cm.
-    delta_t : float
+    temperature : float
         Temperature difference from 300 K (default: 0.0).
     cce : float
         Charge Collection Efficiency (default: 1.0).
     """
-    # Validate delta_t to ensure resulting temperature is 300 K
-    resulting_temperature = detector.environment.temperature - delta_t
-    # Validate if resulting_temperature is close to 300 K
-    if not math.isclose(resulting_temperature, 300, abs_tol=0.01):
-        raise ValueError(
-            "The temperature provided does not match with the environment."
-        )
+    # Validate temperature to ensure it is matching with environment. If not provided, take temperature from environment as value
+    if temperature is not None:
+        check_temperature = Quantity(
+            detector.environment.temperature, unit="K"
+        ) - Quantity(temperature, unit="K")
+        temperature = Quantity(temperature, unit="K")
+        # Validate if check_temperature is close to 0 K
+        if not math.isclose(
+            check_temperature.to("K", equivalencies=units.temperature()).value,
+            0,
+            abs_tol=0.01,
+        ):
+            raise ValueError(
+                "The temperature provided does not match with the environment."
+            )
+    else:
+        temperature = Quantity(detector.environment.temperature, unit="K")
+
+    # Define valid wavelength range for the equation
+    valid_wavelength_range = Quantity((250.0, 1450.0), unit="nm")
+
     # Ensure default_wavelength is provided
     if default_wavelength is None:
         raise ValueError(
             "You must specify a `default_wavelength` value in nm or use 'multi' for multiple wavelengths."
         )
-
-    # Define valid wavelength range for the equation
-    valid_wavelength_range = (250.0, 1450.0)  # Range in nm
-
-    # Validate default_wavelength for single-wavelength mode
-    if isinstance(default_wavelength, int | float) and not (
-        valid_wavelength_range[0] <= default_wavelength <= valid_wavelength_range[1]
+    elif isinstance(default_wavelength, int | float) and not (
+        valid_wavelength_range.value[0]
+        <= default_wavelength
+        <= valid_wavelength_range.value[1]
     ):
         raise ValueError("Wavelength is out of the valid range for the equation.")
+    elif isinstance(default_wavelength, int | float):
+        default_wavelength = Quantity(default_wavelength, unit="nm")
 
     # Validate detector_type
     if detector_type not in ["BI", "FI"]:
@@ -90,8 +106,12 @@ def exponential_qe(
         )
         x_poly = 0.0
 
+    # Convert x_epi to Quantity
+    x_epi = Quantity(x_epi, unit="cm")
+    x_poly = Quantity(x_poly, unit="cm")
     # Validate non-negative thickness values
-    if x_epi < 0 or x_poly < 0:
+
+    if x_epi.value < 0 or x_poly.value < 0:
         raise ValueError(
             "Epitaxial thickness (x_epi) and poly layer thickness (x_poly) must be non-negative."
         )
@@ -104,11 +124,13 @@ def exponential_qe(
             raise ValueError(
                 "Photon array is 2D, but you specified 'multi' for `default_wavelength`. Ensure the photon array matches your wavelength input."
             )
-        elif isinstance(default_wavelength, int | float):
+        elif isinstance(default_wavelength.value, int | float):
             logging.info(
                 "Photon array is 2D. Transforming it into a 3D array with a single wavelength slice."
             )
-            dummy_wavelength = np.array([default_wavelength])  # Single wavelength value
+            dummy_wavelength = np.array(
+                [default_wavelength.value]
+            )  # Single wavelength value
 
             # Generate coordinates for x and y
             y_coords = np.arange(photon_2d.shape[0])  # Row indices
@@ -127,10 +149,10 @@ def exponential_qe(
 
     elif detector.photon.ndim == 3:
         if default_wavelength != "multi":
-            print(
+            logging.info(
                 "Photon array is 3D, but `default_wavelength` is not 'multi'. Proceeding with the existing wavelength data."
             )
-        print("Photon array is 3D. Proceeding normally.")
+        logging.info("Photon array is 3D. Proceeding normally.")
         photon_array_3d = detector.photon.array_3d
 
     else:
@@ -138,13 +160,9 @@ def exponential_qe(
             f"Unexpected photon array dimensions: {detector.photon.shape}. Expected 2D or 3D."
         )
 
-    # Convert x_epi to Quantity
-    x_epi_cm = Quantity(x_epi, unit="cm")
-    x_poly_cm = Quantity(x_poly, unit="cm")
-
     # Read total detector thickness from the detector object
     total_thickness = Quantity(detector.geometry.total_thickness, unit="um")
-    if x_epi_cm > total_thickness.to("cm"):
+    if x_epi > total_thickness.to("cm"):
         raise ValueError("x_epi cannot be greater than the total detector thickness.")
 
     # Load data from the provided CSV file
@@ -445,37 +463,42 @@ def exponential_qe(
             )
         c_values = Quantity(qe_data["c"].values, unit="1/K")
     else:
-        c_values = (
+        c_values = Quantity(
             np.interp(
                 x=wavelength.value,  # Use the numeric values of wavelength
                 xp=embedded_wavelengths.value,  # Use the numeric values of embedded wavelengths
                 fp=embedded_c_values.value,  # Use the numeric values of embedded c-values
-            )
-            * embedded_c_values.unit
+            ),
+            unit=embedded_c_values.unit,
         )  # Add the unit back to the interpolated result
-        absorptivity = (
+
+        absorptivity = Quantity(
             np.interp(
                 x=wavelength.value,  # Use the numeric values of wavelength
                 xp=embedded_wavelengths.value,  # Use the numeric values of embedded wavelengths
                 fp=embedded_absorptivity_values.value,  # Use the numeric values of embedded c-values
-            )
-            * embedded_c_values.unit
+            ),
+            unit=embedded_absorptivity_values.unit,
         )  # Add the unit back to the interpolated result
 
+    temperature_reference = Quantity(300, unit="K")
     # Correct absorptivity for temperature, if delta_t != 0
-    if delta_t != 0:
-        delta_t = Quantity(delta_t, unit="K")
-        absorptivity = absorptivity * np.exp(c_values * delta_t)
+    # TODO: Implement input of temperature units from the user and conversion in the code
+    if temperature.value != temperature_reference.value:
+        temperature_delta = Quantity(
+            temperature.value - temperature_reference.value, unit="K"
+        )
+        absorptivity = absorptivity * np.exp(c_values * temperature_delta)
 
     # Define the QE formula based on the detector type
     if detector_type == "BI":
-        qe = cce * (1 - reflectivity) * (1 - np.exp(-x_epi_cm * absorptivity))
+        qe = cce * (1 - reflectivity) * (1 - np.exp(-x_epi * absorptivity))
     elif detector_type == "FI":
         qe = (
             cce
             * (1 - reflectivity)
-            * np.exp(-x_poly_cm * absorptivity)
-            * (1 - np.exp(-x_epi_cm * absorptivity))
+            * np.exp(-x_poly * absorptivity)
+            * (1 - np.exp(-x_epi * absorptivity))
         )
     else:
         raise ValueError("Invalid detector type. Choose 'BI' or 'FI'.")
@@ -492,11 +515,15 @@ def exponential_qe(
     if len(charge_array["wavelength"]) == 1:
         # If only one wavelength, squeeze the wavelength dimension
         charges = charge_array.squeeze(dim="wavelength")
-        print("Single wavelength detected. Skipping integration over wavelength.")
+        logging.info(
+            "Single wavelength detected. Skipping integration over wavelength."
+        )
     else:
         # Otherwise, integrate over the wavelength
         charges = charge_array.integrate(coord="wavelength")
-        print("Multiple wavelengths detected. Performing integration over wavelength.")
+        logging.info(
+            "Multiple wavelengths detected. Performing integration over wavelength."
+        )
 
     # Add charges to the detector
     detector.charge.add_charge_array(np.asarray(charges))
