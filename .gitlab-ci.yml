@@ -65,7 +65,7 @@ python312:
   image: python:3.12
   stage: test
   script:
-    - tox -e py312-extra_all
+    - tox -e py312-extra_model
 
 # Run mypy
 mypy:
@@ -141,11 +141,11 @@ gemnasium-dependency_scanning:
 
 # Run pytest + coverage
 coverage:
-  image: python:3.12
+  image: python:3.11
   stage: build
   needs: []
   script:
-    - tox -e py312-cov-extra_all
+    - tox -e py311-cov-extra_all
   coverage: '/(?i)total.*? (100(?:\.0+)?\%|[1-9]?\d(?:\.\d+)?\%)$/'
   artifacts:
     reports:
