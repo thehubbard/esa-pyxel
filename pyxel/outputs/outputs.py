@@ -430,10 +430,13 @@ class Outputs:
             custom_dir_name=self._custom_dir_name,
         )
 
-    def build_filenames(self) -> Sequence[Path]:
+    def build_filenames(
+        self,
+        filename_suffix: int | str | None = None,
+    ) -> Sequence[Path]:
         """Generate a list of output filename(s).
 
-        Returns
+        Examples
         -------
         >>> output = Outputs(
         ...     output_folder="output",
@@ -442,12 +445,9 @@ class Outputs:
         ...         {"detector.charge.array": ["png"]},
         ...     ],
         ... )
+
         >>> output.build_filenames()
-        [
-            Path('detector_photon.fits'),
-            Path('detector_photon.hdf'),
-            Path('detector_charge.png'),
-        ]
+        [Path('detector_photon.fits'), Path('detector_photon.hdf'),  Path('detector_charge.png')]
         """
         if self.save_data_to_file is None:
             raise NotImplementedError
@@ -463,9 +463,14 @@ class Outputs:
                 bucket_name: str = name.removeprefix("detector.").removesuffix(".array")
 
                 for extension in formats:
-                    filenames.append(  # noqa: PERF401
-                        f"detector_{bucket_name}.{extension}"
-                    )
+                    if filename_suffix is None:
+                        filename = Path(f"detector_{bucket_name}.{extension}")
+                    else:
+                        filename = Path(
+                            f"detector_{bucket_name}_{filename_suffix}.{extension}"
+                        )
+
+                    filenames.append(filename)
 
         return filenames
 
