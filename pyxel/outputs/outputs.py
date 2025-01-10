@@ -437,7 +437,7 @@ class Outputs:
         """Generate a list of output filename(s).
 
         Examples
-        -------
+        --------
         >>> output = Outputs(
         ...     output_folder="output",
         ...     save_data_to_file=[
