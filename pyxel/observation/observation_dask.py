@@ -8,7 +8,9 @@
 """Subpackage for running Observation mode with Dask enabled."""
 
 from collections.abc import Hashable, Mapping, Sequence
+from copy import deepcopy
 from dataclasses import dataclass
+from tempfile import TemporaryDirectory
 from typing import TYPE_CHECKING, Optional
 
 import numpy as np
@@ -279,16 +281,28 @@ def run_pipelines_with_dask(
     )
 
     # Extract metadata from 'first_param'
-    first_data_tree: xr.DataTree = _run_pipelines_array_to_datatree(
-        params_tuple=first_param_tuple,
-        output_filename_suffix=None,
-        dimension_names=dim_names,
-        processor=processor,
-        readout=readout,
-        outputs=outputs,  # TODO: Create a new temporary outputs only for here
-        pipeline_seed=pipeline_seed,
-        progressbar=True,
-    )
+    with TemporaryDirectory() as temp_folder:
+        # Late import
+        from pyxel.outputs import ObservationOutputs
+
+        # Create new temporary outputs
+        temp_outputs: ObservationOutputs | None = None
+        if outputs:
+            temp_outputs = ObservationOutputs(
+                output_folder=temp_folder,
+                save_data_to_file=deepcopy(outputs.save_data_to_file),
+            )
+
+        first_data_tree: xr.DataTree = _run_pipelines_array_to_datatree(
+            params_tuple=first_param_tuple,
+            output_filename_suffix=None,
+            dimension_names=dim_names,
+            processor=processor,
+            readout=readout,
+            outputs=temp_outputs,  # TODO: Create a new temporary outputs only for here
+            pipeline_seed=pipeline_seed,
+            progressbar=True,
+        )
 
     # Extract output dimensions metadata
     output_dimensions: Sequence[OutputDimension] = get_gufunc_info(first_data_tree)
