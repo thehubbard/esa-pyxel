@@ -1172,7 +1172,7 @@ def run(
         # Closing the logger in order to be able to move the file in the output dir
         logging.shutdown()
 
-        if running_mode.outputs:
+        if running_mode.outputs and running_mode.outputs._current_output_folder:
             output_dir = running_mode.outputs.current_output_folder
             if output_dir:
                 outputs.save_log_file(output_dir)

@@ -293,6 +293,8 @@ def run_pipelines_with_dask(
                 save_data_to_file=deepcopy(outputs.save_data_to_file),
             )
 
+            temp_outputs.create_output_folder()
+
         first_data_tree: xr.DataTree = _run_pipelines_array_to_datatree(
             params_tuple=first_param_tuple,
             output_filename_suffix=None,
