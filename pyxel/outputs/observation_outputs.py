@@ -69,8 +69,8 @@ class ObservationOutputs(Outputs):
             save_observation_data
         )
 
-    @deprecated("This property will be removed")
     @property
+    @deprecated("This property will be removed")
     def save_observation_data(self) -> Sequence[Mapping[str, Sequence[str]]] | None:
         return self._save_observation_data
 
