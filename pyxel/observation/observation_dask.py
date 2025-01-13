@@ -26,10 +26,27 @@ if TYPE_CHECKING:
 
 @dataclass
 class OutputDimension:
-    """Represent metadata for the output dimensions used by 'xarray.apply_ufunc'."""
+    """Represent metadata for the output dimensions used by 'xarray.apply_ufunc'.
+
+    Parameters
+    ----------
+    path : str
+        Path of the output variable in the DataTree.
+    prefix_name : str
+        Prefix used for naming dimensions.
+    core_dimensions : tuple[str, ...]
+        Core dimension(s) for the output.
+    sizes : dict[str, int]
+        Sizes of each dimension.
+    dtype : numpy.dtype
+        Data type of the output variable
+
+    Notes
+    -----
+    The `OutputDimensions` objects are created by function 'get_gufunc_info'.
+    """
 
     path: str
-    dim_name: str
     prefix_name: str
     core_dimensions: tuple[str, ...]
     sizes: Mapping[str, int]
@@ -37,7 +54,7 @@ class OutputDimension:
 
 
 def get_gufunc_info(data_tree: "xr.DataTree") -> Sequence[OutputDimension]:
-    """Extract metadata for the output dimensions used by 'xarray.apply_udfunc'."""
+    """Extract metadata for the output dimensions used by 'xarray.apply_ufunc'."""
     lst: list[OutputDimension] = []
 
     sub_data_tree: "xr.DataTree"
@@ -52,7 +69,6 @@ def get_gufunc_info(data_tree: "xr.DataTree") -> Sequence[OutputDimension]:
         for data_name, data_variable in sub_data_tree.data_vars.items():
             output_dimension = OutputDimension(
                 path=f"{sub_data_tree.path}/{data_name}",
-                dim_name=data_name,
                 prefix_name=sub_path,
                 core_dimensions=tuple(
                     [f"{sub_path}_{var_name}" for var_name in data_variable.dims]
@@ -80,7 +96,7 @@ def _run_pipelines_array_to_datatree(
     pipeline_seed: int | None,
     progressbar: bool,
 ) -> "xr.DataTree":
-    """Execute a single pipeline.
+    """Execute a single pipeline to generate a DataTree output.
 
     Parameters
     ----------
@@ -102,7 +118,7 @@ def _run_pipelines_array_to_datatree(
     >>> _run_pipelines_array_to_datatree(
     ...     params=(
     ...         0.3,  # parameter 'beta'
-    ...         (3, 5, 6, 4),  # parameter 'trap_densitities'
+    ...         (3, 5, 6, 4),  # parameter 'trap_densities'
     ...     ),
     ...     dimension_names={
     ...         "pipeline.charge_transfer.cdm.arguments.beta": "beta",
@@ -146,6 +162,7 @@ def _run_pipelines_array_to_datatree(
     dct: dict[str, tuple] = dict(zip(dimension_names, params_tuple, strict=False))
     new_processor: Processor = processor.replace(dct)
 
+    # Adjust readout configuration if required
     # TODO: Move this to 'Processor' ? See #836
     new_readout: Readout = readout
     for key, value in dct.items():
@@ -155,14 +172,15 @@ def _run_pipelines_array_to_datatree(
 
             new_readout = new_readout.replace(times=value)
 
+    # Run a single pipeline with the adjusted configurations
     data_tree: "xr.DataTree" = run_pipeline(
         processor=new_processor,
         readout=new_readout,
         outputs=outputs,
         output_filename_suffix=output_filename_suffix,
         pipeline_seed=pipeline_seed,
-        debug=False,  # Not supported in Observation mode
-        with_inherited_coords=True,  # Must be set to True
+        debug=False,  # Debug not supported in Observation mode
+        with_inherited_coords=True,  # Ensure inherited coordinates
         progressbar=progressbar,
     )
 
@@ -180,6 +198,7 @@ def _run_pipelines_tuple_to_array(
     outputs: Optional["ObservationOutputs"],
     pipeline_seed: int | None,
 ) -> tuple[np.ndarray, ...]:
+    """Execute a single pipeline and generate a tuple of numpy arrays instead of a DataTree."""
     data_tree: "xr.DataTree" = _run_pipelines_array_to_datatree(
         params_tuple=params_tuple,
         dimension_names=dimension_names,
@@ -191,7 +210,7 @@ def _run_pipelines_tuple_to_array(
         progressbar=False,
     )
 
-    # Convert the result from 'DataTree' to a tuple of numpy array(s)
+    # Extract numpy arrays from the DataTree
     output_data: list[np.ndarray] = [
         data_tree[output_dim.path].to_numpy() for output_dim in output_dimensions
     ]
@@ -204,6 +223,7 @@ def _build_data_tree(
     output_dimensions: Sequence[OutputDimension],
     output_data_tree_reference: "xr.DataTree",
 ) -> "xr.DataTree":
+    """Build a DataTree from a sequence of DataArrays."""
     # Late import
     import xarray as xr
 
@@ -243,13 +263,14 @@ def run_pipelines_with_dask(
     outputs: Optional["ObservationOutputs"],
     pipeline_seed: int | None,
 ) -> "xr.DataTree":
+    """Run observation pipelines using Dask for parallelized computation."""
     # Late import to speedup start-up time
     import xarray as xr
 
-    # Get all parameters to apply as a DataArray
+    # Generate parameters for the pipelines (as a DataArray)
     params_dataarray: xr.DataArray = parameter_mode.create_params(dim_names=dim_names)
 
-    # Get the first parameter from 'params_dataarray' as a tuple
+    # Run the pipeline for the first parameter set to extract metadata
     first_param_tuple: tuple = (
         params_dataarray.head(1)  # Get the first parameter
         .squeeze()  # Remove all dimensions of length 1
@@ -269,27 +290,25 @@ def run_pipelines_with_dask(
         progressbar=True,
     )
 
+    # Extract output dimensions metadata
     output_dimensions: Sequence[OutputDimension] = get_gufunc_info(first_data_tree)
 
-    # Get the output core dimensions
+    # Define core dimensions, data types, and sizes for the output
     output_core_dims: Sequence[tuple[str, ...]] = [
         output_dim.core_dimensions for output_dim in output_dimensions
     ]
 
-    # Get output dtypes
     output_dtypes: Sequence[np.dtype] = [
         output_dim.dtype for output_dim in output_dimensions
     ]
 
-    # Get output sizes
     output_sizes: Mapping[Hashable, int] = dicttoolz.merge(
         *[output_dim.sizes for output_dim in output_dimensions]
     )
 
-    # Get all output filename suffixes
-    if not outputs:
-        output_filename_indices: xr.DataArray | None = None
-    else:
+    # Prepare filename suffix indices for outputs
+    output_filename_indices: xr.DataArray | None = None
+    if outputs:
         # Generate indices for the filename(s)
         output_filename_indices = (
             xr.DataArray(
@@ -302,7 +321,7 @@ def run_pipelines_with_dask(
             .chunk(1)
         )
 
-    # Run '_run_pipelines_tuple_to_array' as a vectorized function and create new 'Dask' DataArrays
+    # Apply the pipeline function using Dask for parallelization
     dask_dataarrays: tuple[xr.DataArray, ...] = xr.apply_ufunc(
         _run_pipelines_tuple_to_array,  # Function to apply
         params_dataarray.chunk(1),  # Argument 'params_tuple'
@@ -323,13 +342,14 @@ def run_pipelines_with_dask(
         output_dtypes=output_dtypes,  # TODO: Move this to 'dask_gufunc_kwargs'
     )
 
-    # Rebuild a DataTree from 'dask_dataarrays'
+    # Rebuild the DataTree from the Dask DataArrays
     final_datatree: "xr.DataTree" = _build_data_tree(
         data_array_lst=dask_dataarrays,
         output_dimensions=output_dimensions,
         output_data_tree_reference=first_data_tree,
     )
 
+    # Post-process the DataTree to adjust readout time attributes
     if "observation.readout.times" in dim_names:
         # TODO: See #836
         final_datatree["/bucket"] = (
