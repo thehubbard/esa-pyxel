@@ -165,7 +165,7 @@ def mean_variance(
         data_set: xr.Dataset = mean_variance
     else:
         # Concatenate new data with existing partial data
-        data_set = xr.merge([detector.data[key_partial].to_dataset(), mean_variance])  # type: ignore[assignment]
+        data_set = xr.merge([detector.data[key_partial].to_dataset(), mean_variance])
 
     # If pipeline is at its final step, clean up partial results and store the full result
     if detector.pipeline_count == (detector.num_steps - 1):
